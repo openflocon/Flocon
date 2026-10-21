@@ -1,138 +1,68 @@
 package io.github.openflocon.library.designsystem.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-
-data class FloconColorPaletteNew(
-    // Base color // 0xFF2C2C2E
-    val surface: Color,
-    // Base content color on surface // 0xffF2F2F7
-    val onSurface: Color,
-
-    // Color of container on the surface // 0xFF29282c
-    val primary: Color,
-    // Color of content on the primary // 0xffF2F2F7
-    val onPrimary: Color,
-
-    // Color of container on the primary // 0xff1E1F22
-    val secondary: Color,
-    // Color of content on the secondary // Color.LightGray
-    val onSecondary: Color,
-
-    // Color of container on the secondary // 0xFFe2e2e9
-    val tertiary: Color,
-    // Color of content on the tertiary // 0xFF2e3036
-    val onTertiary: Color,
-
-    // Color of container when actif // 0xFF4a330c
-    val accent: Color,
-    // Color of content when actif // 0xFFfcaf28
-    val onAccent: Color,
-
-    // Color of container when in error // 0xFFCF6679
-    val error: Color,
-    // Color of content when in error // 0xFF000000
-    val onError: Color,
-
-    // Specific to exception status
-    val exceptions: Color
-)
-
-internal val lightPalette = FloconColorPaletteNew(
-    surface = Color(0xFFF2F2F7),
-    onSurface = Color(0xFF1C1C1E),
-    primary = Color(0xFFFFFFFF),
-    onPrimary = Color(0xFF1C1C1E),
-    secondary = Color(0xFFE4E6EC),
-    onSecondary = Color(0xFF3A3C42),
-    tertiary = Color(0xFF2e3036),
-    onTertiary = Color(0xFFe2e2e9),
-    accent = Color(0xFFEDC25E),
-    onAccent = Color(0xFF4a330c),
-    error = Color(0xFFC62828),
-    onError = Color(0xFFFFFFFF),
-    exceptions = Color(0xFF9C27B0)
-)
-
-internal val darkPalette = FloconColorPaletteNew(
-    surface = Color(0xFF2C2C2E),
-    onSurface = Color(0xffF2F2F7),
-    primary = Color(0xFF1f1e21),
-    onPrimary = Color(0xffF2F2F7),
-    secondary = Color(0xff3a3c42),
-    onSecondary = Color(0xFFbfc8e0),
-    tertiary = Color(0xFFe2e2e9),
-    onTertiary = Color(0xFF2e3036),
-    accent = Color(0xFF4a330c),
-    onAccent = Color(0xFFfcaf28),
-    error = Color(0xFFFF6B6B),
-    onError = Color(0xFF000000),
-    exceptions = Color(0xFFAB47BC)
-)
 
 /**
  * TODO Remove when all component are overriden
  */
-internal fun materialDarkScheme(palette: FloconColorPaletteNew) = darkColorScheme(
-    primary = palette.primary,
-    onPrimary = palette.onPrimary,
-    primaryContainer = palette.primary.copy(alpha = 0.2f),
-    onPrimaryContainer = palette.onPrimary,
-    secondary = palette.secondary,
-    onSecondary = palette.onSecondary,
-    secondaryContainer = palette.secondary.copy(alpha = 0.2f),
-    onSecondaryContainer = palette.onSecondary,
-    tertiary = palette.tertiary,
-    onTertiary = palette.onTertiary,
-    tertiaryContainer = palette.tertiary.copy(alpha = 0.2f),
-    onTertiaryContainer = palette.onTertiary,
-    surface = palette.surface,
-    onSurface = palette.onSurface,
-    surfaceVariant = palette.surface.copy(alpha = 0.8f),
-    onSurfaceVariant = palette.onSurface,
-    error = palette.error,
-    onError = palette.onError,
+internal fun materialDarkScheme(colors: FloconColors): ColorScheme = darkColorScheme(
+    primary = colors.bg100,
+    onPrimary = colors.ink,
+    primaryContainer = colors.bg100.copy(alpha = 0.2f),
+    onPrimaryContainer = colors.ink,
+    secondary = colors.bg300,
+    onSecondary = colors.inkMuted,
+    secondaryContainer = colors.bg300.copy(alpha = 0.2f),
+    onSecondaryContainer = colors.inkMuted,
+    tertiary = colors.ink,
+    onTertiary = colors.bg100,
+    tertiaryContainer = colors.ink.copy(alpha = 0.2f),
+    onTertiaryContainer = colors.bg100,
+    surface = colors.bg000,
+    onSurface = colors.ink,
+    surfaceVariant = colors.bg000.copy(alpha = 0.8f),
+    onSurfaceVariant = colors.ink,
+    error = colors.statusError,
+    onError = colors.accentInk,
     errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
     onErrorContainer = Color(0xFF601410),
-    outline = palette.secondary.copy(alpha = 0.5f),
+    outline = colors.line,
 )
 
-internal fun materialLightScheme(palette: FloconColorPaletteNew) = lightColorScheme(
-    primary = palette.primary,
-    onPrimary = palette.onPrimary,
-    primaryContainer = palette.primary.copy(alpha = 0.2f),
-    onPrimaryContainer = palette.onPrimary,
-    secondary = palette.secondary,
-    onSecondary = palette.onSecondary,
-    secondaryContainer = palette.secondary.copy(alpha = 0.2f),
-    onSecondaryContainer = palette.onSecondary,
-    tertiary = palette.tertiary,
-    onTertiary = palette.onTertiary,
-    tertiaryContainer = palette.tertiary.copy(alpha = 0.2f),
-    onTertiaryContainer = palette.onTertiary,
-    surface = palette.surface,
-    onSurface = palette.onSurface,
-    surfaceVariant = palette.surface.copy(alpha = 0.8f),
-    onSurfaceVariant = palette.onSurface,
-    error = palette.error,
-    onError = palette.onError,
+internal fun materialLightScheme(colors: FloconColors): ColorScheme = lightColorScheme(
+    primary = colors.bg100,
+    onPrimary = colors.ink,
+    primaryContainer = colors.bg100.copy(alpha = 0.2f),
+    onPrimaryContainer = colors.ink,
+    secondary = colors.bg300,
+    onSecondary = colors.inkMuted,
+    secondaryContainer = colors.bg300.copy(alpha = 0.2f),
+    onSecondaryContainer = colors.inkMuted,
+    tertiary = colors.ink,
+    onTertiary = colors.bg100,
+    tertiaryContainer = colors.ink.copy(alpha = 0.2f),
+    onTertiaryContainer = colors.bg100,
+    surface = colors.bg000,
+    onSurface = colors.ink,
+    surfaceVariant = colors.bg000.copy(alpha = 0.8f),
+    onSurfaceVariant = colors.ink,
+    error = colors.statusError,
+    onError = colors.accentInk,
     errorContainer = Color(0xFFF2B8B5), // These specific error container colors are hardcoded Material 3 defaults
     onErrorContainer = Color(0xFF601410),
-    outline = palette.secondary.copy(alpha = 0.5f),
+    outline = colors.line,
 )
-
-internal val LocalFloconColorPalette = staticCompositionLocalOf { lightPalette }
 
 @Stable
-fun FloconColorPaletteNew.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
-    primary -> onPrimary
-    secondary -> onSecondary
-    tertiary -> onTertiary
-    surface -> onSurface
-    error -> onError
-    accent -> onAccent
+fun FloconColors.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
+    bg000, bg100, bg200, bg300 -> ink
+    accentSoft -> accent
+    accent -> accentInk
+    ink -> bg100
+    statusError -> accentInk
     else -> Color.Unspecified
 }

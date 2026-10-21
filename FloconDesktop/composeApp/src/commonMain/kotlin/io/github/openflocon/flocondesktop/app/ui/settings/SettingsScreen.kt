@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Cable
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Computer
@@ -39,6 +43,7 @@ import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +61,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -76,15 +82,35 @@ import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconSlider
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.general_copy_all
+import flocondesktop.composeapp.generated.resources.general_open_folder
+import flocondesktop.composeapp.generated.resources.general_pick
+import flocondesktop.composeapp.generated.resources.general_reset_default
+import flocondesktop.composeapp.generated.resources.settings_adb_configuration
+import flocondesktop.composeapp.generated.resources.settings_adb_description
+import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
+import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
+import flocondesktop.composeapp.generated.resources.settings_documents_description
+import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
+import flocondesktop.composeapp.generated.resources.settings_licenses_description
+import flocondesktop.composeapp.generated.resources.settings_no_logs
+import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
+import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
+import flocondesktop.composeapp.generated.resources.settings_scale_description
+import flocondesktop.composeapp.generated.resources.settings_scale_title
+import flocondesktop.composeapp.generated.resources.settings_system_logs_title
+import flocondesktop.composeapp.generated.resources.settings_theme_description
 
 // ---------------------------------------------------------------------------
 // Tabs
@@ -94,7 +120,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
-    Logs("Logs", Icons.Outlined.List),
+    Logs("Logs", Icons.AutoMirrored.Outlined.List),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
 }
@@ -159,11 +185,11 @@ private fun SettingsScreen(
     Row(modifier = modifier) {
         // ── Drawer ──────────────────────────────────────────────────────────
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             modifier = Modifier
-                .width(180.dp)
+                .width(200.dp)
                 .fillMaxHeight()
-                .padding(vertical = 8.dp, horizontal = 4.dp)
+                .padding(FloconTheme.spacing.medium)
         ) {
             SettingsTab.entries.forEach { tab ->
                 DrawerItem(
@@ -176,14 +202,14 @@ private fun SettingsScreen(
 
         FloconVerticalDivider(
             modifier = Modifier.fillMaxHeight(),
-            color = FloconTheme.colorPalette.secondary,
+            color = FloconTheme.colors.line,
         )
 
         // ── Content pane ────────────────────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(FloconTheme.spacing.large)
         ) {
             when (selectedTab) {
                 SettingsTab.General -> GeneralPane(
@@ -239,21 +265,15 @@ private fun DrawerItem(
     val shape = FloconTheme.shapes.medium
 
     val bgColor = when {
-        selected -> FloconTheme.colorPalette.secondary
-        hovered -> FloconTheme.colorPalette.secondary.copy(alpha = 0.5f)
-        else -> FloconTheme.colorPalette.primary.copy(alpha = 0f)
+        selected -> FloconTheme.colors.accentSoft
+        hovered -> FloconTheme.colors.bg300
+        else -> Color.Transparent
     }
 
     val contentColor = when {
-        selected -> FloconTheme.colorPalette.onSecondary
-        hovered -> FloconTheme.colorPalette.onSecondary.copy(alpha = 0.8f)
-        else -> FloconTheme.colorPalette.onPrimary
-    }
-
-    val borderColor = if (selected) {
-        FloconTheme.colorPalette.accent
-    } else {
-        Color.Transparent
+        selected -> FloconTheme.colors.accent
+        hovered -> FloconTheme.colors.ink
+        else -> FloconTheme.colors.inkMuted
     }
 
     FloconSurface(
@@ -261,15 +281,15 @@ private fun DrawerItem(
         color = bgColor,
         contentColor = contentColor,
         shape = shape,
-        border = BorderStroke(1.dp, borderColor),
+        interactionSource = interactionSource,
         modifier = modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(36.dp)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 12.dp)
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium)
         ) {
             FloconIcon(
                 imageVector = tab.icon,
@@ -279,7 +299,7 @@ private fun DrawerItem(
             Text(
                 text = tab.label,
                 style = FloconTheme.typography.bodyMedium,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                fontWeight = FontWeight.Medium,
                 color = contentColor,
             )
         }
@@ -289,6 +309,8 @@ private fun DrawerItem(
 // ---------------------------------------------------------------------------
 // Reusable Settings Card
 // ---------------------------------------------------------------------------
+
+private val PanelShape = RoundedCornerShape(12.dp)
 
 @Composable
 private fun SettingsCard(
@@ -300,29 +322,30 @@ private fun SettingsCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     FloconSurface(
-        color = FloconTheme.colorPalette.primary,
-        shape = FloconTheme.shapes.medium,
+        color = FloconTheme.colors.bg100,
+        shape = PanelShape,
+        border = BorderStroke(1.dp, FloconTheme.colors.line),
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(FloconTheme.spacing.large),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 FloconIcon(
                     imageVector = icon,
-                    tint = FloconTheme.colorPalette.onAccent,
-                    modifier = Modifier.size(20.dp)
+                    tint = FloconTheme.colors.accent,
+                    modifier = Modifier.size(18.dp)
                 )
                 Text(
                     text = title,
                     style = FloconTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    color = FloconTheme.colors.ink,
                     modifier = Modifier.weight(1f)
                 )
                 headerActions?.invoke(this)
@@ -332,7 +355,7 @@ private fun SettingsCard(
                 Text(
                     text = description,
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+                    color = FloconTheme.colors.inkMuted,
                 )
             }
 
@@ -356,51 +379,52 @@ private fun GeneralPane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
         SettingsCard(
             title = "Flocon Documents",
             icon = Icons.Outlined.Folder,
-            description = "Directory where screenshots, screen recordings, and exported files are saved. Defaults to ~/Documents/Flocon."
+            description = stringResource(Res.string.settings_documents_description)
         ) {
             Text(
-                text = "Documents Folder Path",
+                text = stringResource(Res.string.settings_documents_folder_path),
                 style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
+                color = FloconTheme.colors.inkMuted
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 FloconTextFieldWithoutM3(
                     value = floconDocumentsPath,
                     onValueChange = onFloconDocumentsPathChanged,
                     placeholder = defaultPlaceHolder("~/Documents/Flocon"),
-                    containerColor = FloconTheme.colorPalette.secondary,
-                    contentPadding = PaddingValues(12.dp),
+                    containerColor = FloconTheme.colors.bg200,
+                    contentPadding = PaddingValues(FloconTheme.spacing.medium),
                     modifier = Modifier.weight(1f)
                 )
 
                 SettingsButton(
-                    text = "Pick...",
+                    text = stringResource(Res.string.general_pick),
                     onClick = onPickFolder,
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
                 SettingsButton(
                     text = stringResource(Res.string.general_save),
                     onClick = onSavePath,
+                    primary = true,
                 )
                 SettingsButton(
-                    text = "Reset to default",
+                    text = stringResource(Res.string.general_reset_default),
                     onClick = onResetPath,
                 )
                 SettingsButton(
-                    text = "Open Folder",
+                    text = stringResource(Res.string.general_open_folder),
                     onClick = onOpenFolder,
                 )
             }
@@ -419,13 +443,13 @@ private fun AdbPane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
         SettingsCard(
-            title = "ADB Configuration",
+            title = stringResource(Res.string.settings_adb_configuration),
             icon = Icons.Outlined.Settings,
-            description = "Flocon communicates with Android devices using the Android Debug Bridge (ADB). Set the path to your adb binary below."
+            description = stringResource(Res.string.settings_adb_description)
         ) {
             // Setup alert or status
             if (needsAdbSetup) {
@@ -433,19 +457,19 @@ private fun AdbPane(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.error.copy(alpha = 0.15f))
-                        .padding(12.dp),
+                        .background(FloconTheme.colors.catCrashSoft)
+                        .padding(FloconTheme.spacing.medium),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     FloconIcon(
                         imageVector = Icons.Outlined.Warning,
-                        tint = FloconTheme.colorPalette.error,
+                        tint = FloconTheme.colors.statusError,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = stringResource(Res.string.settings_adb_setup_title),
-                        color = FloconTheme.colorPalette.error,
+                        color = FloconTheme.colors.statusError,
                         style = FloconTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                     )
@@ -455,46 +479,47 @@ private fun AdbPane(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.accent.copy(alpha = 0.15f))
-                        .padding(12.dp),
+                        .background(FloconTheme.colors.statusSuccess.copy(alpha = 0.12f))
+                        .padding(FloconTheme.spacing.medium),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     FloconIcon(
                         imageVector = Icons.Outlined.Check,
-                        tint = FloconTheme.colorPalette.onAccent,
+                        tint = FloconTheme.colors.statusSuccess,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = stringResource(Res.string.settings_adb_valid),
-                        color = FloconTheme.colorPalette.onAccent,
+                        color = FloconTheme.colors.statusSuccess,
                         style = FloconTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                     )
                 }
             }
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
 
             Text(
-                text = "ADB Executable Path",
+                text = stringResource(Res.string.settings_adb_executable_path),
                 style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f)
+                color = FloconTheme.colors.inkMuted
             )
 
             FloconTextFieldWithoutM3(
                 value = adbPathText,
                 onValueChange = onAdbPathChanged,
                 placeholder = defaultPlaceHolder("Eg: /Users/youruser/Library/Android/sdk/platform-tools/adb"),
-                containerColor = FloconTheme.colorPalette.secondary,
-                contentPadding = PaddingValues(12.dp),
+                containerColor = FloconTheme.colors.bg200,
+                contentPadding = PaddingValues(FloconTheme.spacing.medium),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
                 SettingsButton(
                     text = stringResource(Res.string.general_save),
                     onClick = saveAdbPath,
+                    primary = true,
                 )
                 SettingsButton(
                     text = stringResource(Res.string.settings_test),
@@ -504,18 +529,18 @@ private fun AdbPane(
         }
 
         SettingsCard(
-            title = "ADB Reverse Port Forwarding",
+            title = stringResource(Res.string.settings_adb_reverse_forwarding),
             icon = Icons.Outlined.Cable,
-            description = "Flocon runs a local server that communicates with the daemon on the device. Reverse port forwarding enables high-throughput data transfer (logs, preferences, screenshots)."
+            description = stringResource(Res.string.settings_reverse_forwarding_description)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(FloconTheme.shapes.small)
-                    .background(FloconTheme.colorPalette.secondary)
-                    .padding(12.dp)
+                    .background(FloconTheme.colors.bg200)
+                    .padding(FloconTheme.spacing.medium)
             ) {
                 AdbForwardStatusBadge(status = adbForwardStatus)
 
@@ -525,7 +550,7 @@ private fun AdbPane(
                         AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
                         AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
                     },
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.8f),
+                    color = FloconTheme.colors.inkMuted,
                     style = FloconTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f)
                 )
@@ -549,33 +574,33 @@ private fun AdbForwardStatusBadge(
     val theme = when (status) {
         AdbForwardStatus.OK -> BadgeTheme(
             "ACTIVE",
-            FloconTheme.colorPalette.accent.copy(alpha = 0.2f),
-            FloconTheme.colorPalette.onAccent,
+            FloconTheme.colors.statusSuccess.copy(alpha = 0.15f),
+            FloconTheme.colors.statusSuccess,
             Icons.Outlined.Check
         )
 
         AdbForwardStatus.NOK -> BadgeTheme(
             "FAILED",
-            FloconTheme.colorPalette.error.copy(alpha = 0.2f),
-            FloconTheme.colorPalette.error,
+            FloconTheme.colors.catCrashSoft,
+            FloconTheme.colors.statusError,
             Icons.Outlined.ErrorOutline
         )
 
         AdbForwardStatus.UNKNOWN -> BadgeTheme(
             "PENDING",
-            FloconTheme.colorPalette.secondary.copy(alpha = 0.5f),
-            FloconTheme.colorPalette.onSecondary,
+            FloconTheme.colors.bg300,
+            FloconTheme.colors.inkMuted,
             Icons.Outlined.Info
         )
     }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
         modifier = modifier
             .clip(FloconTheme.shapes.small)
             .background(theme.bgColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall)
     ) {
         FloconIcon(
             imageVector = theme.icon,
@@ -599,16 +624,16 @@ private fun AppearancePane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
         SettingsCard(
             title = stringResource(Res.string.settings_theme),
             icon = Icons.Outlined.ModeNight,
-            description = "Choose the color scheme of Flocon. Light mode uses bright backgrounds, Dark mode uses dark backgrounds, and System automatically matches your operating system."
+            description = stringResource(Res.string.settings_theme_description)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ThemeSetting.entries.forEach { theme ->
@@ -623,30 +648,68 @@ private fun AppearancePane(
         }
 
         SettingsCard(
-            title = "Text Scaling",
+            title = stringResource(Res.string.settings_scale_title),
             icon = Icons.Outlined.TextFields,
-            description = "Increase or decrease the font size multiplier to scale all application labels, logs, and values."
+            description = stringResource(Res.string.settings_scale_description)
         ) {
+            ScaleDropdown(
+                selected = AppScale.closestTo(fontSizeMultiplier),
+                onSelect = { onAction(SettingsAction.FontSizeMultiplierChange(it.multiplier)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScaleDropdown(
+    selected: AppScale,
+    onSelect: (AppScale) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             ) {
-                FloconSlider(
-                    value = fontSizeMultiplier,
-                    onValueChange = { onAction(SettingsAction.FontSizeMultiplierChange(it)) },
-                    valueRange = 1f..2f,
-                    modifier = Modifier.weight(1f)
-                )
-
                 Text(
-                    text = "${(fontSizeMultiplier * 100).toInt()}%",
-                    style = FloconTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = FloconTheme.colorPalette.onPrimary,
-                    modifier = Modifier.width(48.dp)
+                    text = "${selected.label} (${selected.percent}%)",
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.ink,
+                )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
                 )
             }
+        },
+    ) {
+        AppScale.entries.forEach { scale ->
+            FloconDropdownMenuItem(
+                text = "${scale.label} (${scale.percent}%)",
+                leadingIcon = if (scale == selected) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(scale)
+                },
+            )
         }
     }
 }
@@ -660,19 +723,19 @@ private fun LogsPane(
     val clipboardManager = LocalClipboardManager.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
         ) {
             Text(
-                text = "Flocon System Logs",
+                text = stringResource(Res.string.settings_system_logs_title),
                 style = FloconTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = FloconTheme.colorPalette.onPrimary,
+                fontWeight = FontWeight.SemiBold,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier.weight(1f)
             )
 
@@ -682,33 +745,33 @@ private fun LogsPane(
                         val text = logs.joinToString("\n") { "[${it.timestamp} ${it.level.name}] ${it.message}" }
                         clipboardManager.setText(AnnotatedString(text))
                     },
-                    containerColor = FloconTheme.colorPalette.secondary,
+                    containerColor = FloconTheme.colors.bg200,
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact)
                     ) {
                         FloconIcon(
                             imageVector = Icons.Outlined.ContentCopy,
                             modifier = Modifier.size(14.dp)
                         )
-                        Text("Copy All", style = FloconTheme.typography.bodySmall)
+                        Text(stringResource(Res.string.general_copy_all), style = FloconTheme.typography.bodySmall)
                     }
                 }
 
                 FloconButton(
                     onClick = onClearLogs,
-                    containerColor = FloconTheme.colorPalette.secondary,
+                    containerColor = FloconTheme.colors.bg200,
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact)
                     ) {
                         FloconIcon(
                             imageVector = Icons.Outlined.Delete,
                             modifier = Modifier.size(14.dp)
                         )
-                        Text("Clear", style = FloconTheme.typography.bodySmall)
+                        Text(stringResource(Res.string.general_clear), style = FloconTheme.typography.bodySmall)
                     }
                 }
             }
@@ -720,22 +783,23 @@ private fun LogsPane(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+                    .clip(PanelShape)
+                    .background(FloconTheme.colors.bg100)
+                    .border(1.dp, FloconTheme.colors.line, PanelShape)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     FloconIcon(
                         imageVector = Icons.Outlined.Info,
-                        tint = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.3f),
+                        tint = FloconTheme.colors.inkFaint,
                         modifier = Modifier.size(36.dp)
                     )
                     Text(
-                        text = "No system logs generated yet",
+                        text = stringResource(Res.string.settings_no_logs),
                         style = FloconTheme.typography.bodyMedium,
-                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                        color = FloconTheme.colors.inkFaint,
                     )
                 }
             }
@@ -755,26 +819,27 @@ private fun AboutPane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "Open Source Licenses",
+            text = stringResource(Res.string.settings_open_source_licenses),
             style = FloconTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = FloconTheme.colorPalette.onPrimary,
+            fontWeight = FontWeight.SemiBold,
+            color = FloconTheme.colors.ink,
         )
         Text(
-            text = "Flocon is built using open source software. The licenses of libraries used in this project are listed below.",
+            text = stringResource(Res.string.settings_licenses_description),
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+            color = FloconTheme.colors.inkMuted,
         )
         AboutScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary),
+                .clip(PanelShape)
+                .background(FloconTheme.colors.bg100)
+                .border(1.dp, FloconTheme.colors.line, PanelShape),
         )
     }
 }
@@ -788,15 +853,21 @@ private fun SettingsButton(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
+    primary: Boolean = false,
 ) {
-    FloconButton(
+    FloconSurface(
         onClick = onClick,
-        containerColor = FloconTheme.colorPalette.secondary,
-        modifier = modifier
+        color = if (primary) FloconTheme.colors.accent else FloconTheme.colors.bg200,
+        contentColor = if (primary) FloconTheme.colors.accentInk else FloconTheme.colors.ink,
+        shape = FloconTheme.shapes.medium,
+        border = if (primary) null else BorderStroke(1.dp, FloconTheme.colors.lineStrong),
+        modifier = modifier,
     ) {
         Text(
             text = text,
-            style = FloconTheme.typography.bodySmall
+            style = FloconTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         )
     }
 }
@@ -813,20 +884,20 @@ private fun ThemeButton(
     val shape = FloconTheme.shapes.medium
 
     val bgColor = when {
-        selected -> FloconTheme.colorPalette.accent
-        hovered -> FloconTheme.colorPalette.secondary
-        else -> FloconTheme.colorPalette.secondary.copy(alpha = 0.5f)
+        selected -> FloconTheme.colors.accentSoft
+        hovered -> FloconTheme.colors.bg300
+        else -> FloconTheme.colors.bg200
     }
 
     val contentColor = when {
-        selected -> FloconTheme.colorPalette.onAccent
-        else -> FloconTheme.colorPalette.onPrimary
+        selected -> FloconTheme.colors.accent
+        else -> FloconTheme.colors.ink
     }
 
     val borderColor = if (selected) {
-        FloconTheme.colorPalette.onAccent.copy(alpha = 0.5f)
+        FloconTheme.colors.accent
     } else {
-        Color.Transparent
+        FloconTheme.colors.lineStrong
     }
 
     val icon = when (theme) {
@@ -846,7 +917,7 @@ private fun ThemeButton(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small, Alignment.CenterHorizontally)
         ) {
             FloconIcon(
                 imageVector = icon,
@@ -880,26 +951,26 @@ private fun ConsoleLogPanel(
 
     LazyColumn(
         state = listState,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.secondary)
-            .border(1.dp, FloconTheme.colorPalette.primary, FloconTheme.shapes.medium)
-            .padding(12.dp)
+            .background(FloconTheme.colors.bg000)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(FloconTheme.spacing.medium)
     ) {
         items(logs) { entry ->
             val color = when (entry.level) {
-                LogLevel.ERROR -> FloconTheme.colorPalette.onError
-                LogLevel.DEBUG -> FloconTheme.colorPalette.onAccent
+                LogLevel.ERROR -> FloconTheme.colors.statusError
+                LogLevel.DEBUG -> FloconTheme.colors.statusInfo
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 Text(
                     text = "[${entry.timestamp}]",
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                    color = FloconTheme.colors.inkFaint,
                     style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 )
                 Text(
@@ -911,7 +982,7 @@ private fun ConsoleLogPanel(
                 )
                 Text(
                     text = entry.message,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     modifier = Modifier.weight(1f)
                 )

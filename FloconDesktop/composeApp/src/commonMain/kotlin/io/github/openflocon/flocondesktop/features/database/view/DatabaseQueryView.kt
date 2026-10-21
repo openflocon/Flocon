@@ -50,7 +50,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 interface SqlColorPalette {
     val keywordColor: Color
@@ -146,7 +146,7 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -166,7 +166,7 @@ fun DatabaseQueryView(
             maxLines = 10,
             textStyle = FloconTheme.typography.bodyMedium,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.bg200,
             visualTransformation = remember { ColorsTransformation() },
             modifier = Modifier.fillMaxWidth()
                 .onKeyEvent { keyEvent ->
@@ -181,7 +181,7 @@ fun DatabaseQueryView(
                         return@onKeyEvent true
                     }
                     return@onKeyEvent false
-                }.padding(horizontal = 6.dp, vertical = 4.dp),
+                }.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -193,17 +193,17 @@ fun DatabaseQueryView(
                     if (isEnabled)
                         onAction(DatabaseTabAction.ExecuteQuery(query))
                 },
-                containerColor = FloconTheme.colorPalette.tertiary,
+                containerColor = FloconTheme.colors.ink,
                 modifier = Modifier
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (!isEnabled) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colorPalette.onTertiary
+                val contentColor = FloconTheme.colors.bg100
                 Row(
-                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
@@ -217,8 +217,8 @@ fun DatabaseQueryView(
             }
 
             Row(
-                Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
@@ -227,13 +227,13 @@ fun DatabaseQueryView(
                         onAction(DatabaseTabAction.UpdateAutoUpdate(it))
                     },
                     colors = CheckboxDefaults.colors(
-                        uncheckedColor = FloconTheme.colorPalette.secondary,
-                        checkedColor = FloconTheme.colorPalette.secondary,
+                        uncheckedColor = FloconTheme.colors.bg200,
+                        checkedColor = FloconTheme.colors.bg200,
                     )
                 )
                 Text(
                     stringResource(Res.string.auto_update),
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodySmall
                 )
             }

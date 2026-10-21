@@ -24,11 +24,21 @@ Before starting, ensure you have:
 
 Add the appropriate network interceptor to your project depending on your networking library:
 
+Mocks are handled by the network plugin, install it first (module `flocon-network-core`):
+
+```kotlin
+startFlocon(context) {
+    install(FloconNetwork)
+}
+```
+
 === "With OkHttp (Android)"
 
     Add dependencies:
     ```kotlin
     dependencies {
+        debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
         debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
         releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }
@@ -48,6 +58,7 @@ Add the appropriate network interceptor to your project depending on your networ
     kotlin {
         sourceSets {
             commonMain.dependencies {
+                implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
                 implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
             }
         }
@@ -150,7 +161,7 @@ Use the **Export** and **Import** buttons in the dialog to save your mocks to `.
 
 | Action | Where |
 | :--- | :--- |
-| **1. Install Interceptor** | Add `FloconOkhttpInterceptor` (OkHttp) or `FloconKtorPlugin` (Ktor) |
+| **1. Install Interceptor** | `install(FloconNetwork)`, then add `FloconOkhttpInterceptor` (OkHttp) or `FloconKtorPlugin` (Ktor) |
 | **2. Connect App** | Ensure device appears in Flocon Desktop top bar |
 | **3. Capture Request** | Trigger baseline request from mobile app |
 | **4. Open Mock Manager** | Click the **Mocks** toolbar icon or **Create Mock** on a captured request |

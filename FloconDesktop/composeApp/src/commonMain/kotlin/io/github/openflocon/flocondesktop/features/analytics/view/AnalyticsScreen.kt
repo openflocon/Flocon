@@ -63,7 +63,7 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.max
 
@@ -181,10 +181,10 @@ fun AnalyticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
                 .onSizeChanged {
@@ -204,7 +204,7 @@ fun AnalyticsScreen(
                         .onSizeChanged {
                             widthPx = max(widthPx, it.width.toFloat())
                         },
-                    contentPadding = PaddingValues(vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
                 ) {
                     items(
                         count = rows.itemCount,

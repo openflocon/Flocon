@@ -22,21 +22,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
-import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
+import io.github.openflocon.library.designsystem.theme.FloconColors
+import io.github.openflocon.library.designsystem.theme.FloconDarkColors
+import io.github.openflocon.library.designsystem.theme.FloconLightColors
+import io.github.openflocon.library.designsystem.theme.LocalFloconColors
+import io.github.openflocon.library.designsystem.theme.LocalFloconScale
 import io.github.openflocon.library.designsystem.theme.FloconShape
-import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
+import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
-import io.github.openflocon.library.designsystem.theme.darkPalette
-import io.github.openflocon.library.designsystem.theme.lightPalette
+import io.github.openflocon.library.designsystem.theme.LocalFloconSpacing
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
 import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
+import io.github.openflocon.library.designsystem.theme.scaledBy
 
 object FloconTheme {
 
-    val colorPalette: FloconColorPaletteNew
+    // the tokens of the design system (bg, ink, categories, http statuses…)
+    val colors: FloconColors
         @Composable @ReadOnlyComposable
-        get() = LocalFloconColorPalette.current
+        get() = LocalFloconColors.current
 
     val typography: Typography
         @Composable @ReadOnlyComposable
@@ -49,24 +54,30 @@ object FloconTheme {
     val isDarkTheme: Boolean
         @Composable @ReadOnlyComposable
         get() = LocalIsDarkTheme.current
+
+    val spacing: FloconSpacing
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconSpacing.current
+
+    val scale: Float
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconScale.current
 }
 
 private val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 @Composable
 fun FloconTheme(
-    fontSizeMultiplier: Float = 1f,
+    // scales the typography and the spacing
+    scale: Float = 1f,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorPalette = when {
-        isDarkTheme -> darkPalette
-        else -> lightPalette
-    }
-    val ripple = ripple(color = colorPalette.accent)
+    val colors = if (isDarkTheme) FloconDarkColors else FloconLightColors
+    val ripple = ripple(color = colors.accent)
     val selectionTextColor = TextSelectionColors(
-        handleColor = colorPalette.accent,
-        backgroundColor = colorPalette.accent,
+        handleColor = colors.accent,
+        backgroundColor = colors.accent.copy(alpha = 0.35f),
     )
 
     val materialTypo = MaterialTheme.typography
@@ -84,22 +95,24 @@ fun FloconTheme(
         )
     }
     val scrollbarStyle = LocalScrollbarStyle.current.copy(
-        unhoverColor = colorPalette.secondary,
-        hoverColor = colorPalette.onSecondary
+        unhoverColor = colors.bg300,
+        hoverColor = colors.inkMuted
     )
 
     MaterialTheme(
-        typography = typography.multiplyFontSizeBy(fontSizeMultiplier),
+        typography = typography.multiplyFontSizeBy(scale),
         colorScheme = if (isDarkTheme) {
-            materialDarkScheme(colorPalette)
+            materialDarkScheme(colors)
         } else {
-            materialLightScheme(colorPalette)
+            materialLightScheme(colors)
         }
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
             LocalIsDarkTheme provides isDarkTheme,
-            LocalFloconColorPalette provides colorPalette,
+            LocalFloconColors provides colors,
+            LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
+            LocalFloconScale provides scale,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,

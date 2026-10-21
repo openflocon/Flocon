@@ -28,6 +28,11 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.diff_title
+import flocondesktop.composeapp.generated.resources.network_body
+import flocondesktop.composeapp.generated.resources.network_mocks_title
 
 internal sealed interface NetworkRoutes : FloconRoute {
 

@@ -10,8 +10,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 @Composable
 fun LeftPannelDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
-        modifier = modifier.padding(horizontal = 4.dp),
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
         thickness = 1.dp,
-        color = FloconTheme.colorPalette.secondary,
+        color = FloconTheme.colors.bg200,
     )
 }

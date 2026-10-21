@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,8 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
@@ -73,7 +76,7 @@ private data class BigDialogScene(
                 .graphicsLayer {
                     this.alpha = this@BigDialogScene.alpha.value
                 }
-                .background(FloconTheme.colorPalette.primary.copy(alpha = 0.7f))
+                .background(FloconTheme.colors.bg000.copy(alpha = 0.7f))
                 .clickable(
                     onClick = onBack,
                     indication = null,
@@ -88,11 +91,12 @@ private data class BigDialogScene(
                     shape = RoundedCornerShape(12.dp),
                     shadow = Shadow(
                         radius = 4.dp,
-                        color = FloconTheme.colorPalette.onAccent.copy(alpha = 0.5f)
+                        color = Color.Black.copy(alpha = 0.35f)
                     )
                 )
                 .clip(RoundedCornerShape(12.dp))
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
+                .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -101,7 +105,8 @@ private data class BigDialogScene(
             ) {
                 Text(
                     text = properties.title,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
+                    fontWeight = FontWeight.SemiBold,
                     style = FloconTheme.typography.headlineSmall
                 )
                 FloconIconButton(
@@ -109,12 +114,12 @@ private data class BigDialogScene(
                 ) {
                     FloconIcon(
                         imageVector = Icons.Default.Close,
-                        tint = FloconTheme.colorPalette.onPrimary
+                        tint = FloconTheme.colors.inkFaint
                     )
                 }
             }
             Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
+            HorizontalDivider(color = FloconTheme.colors.line)
             Spacer(Modifier.height(8.dp))
             Box(
                 Modifier

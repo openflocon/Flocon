@@ -8,6 +8,9 @@ interface RemoteDeviceDataSource {
     val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> // devices with active websocket connection
 
     fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String?
+
+    // null when the message does not list the plugins (older SDK)
+    fun getInstalledPlugins(message: FloconIncomingMessageDomainModel): Set<String>?
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
     suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)

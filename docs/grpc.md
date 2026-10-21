@@ -14,6 +14,15 @@ Flocon allows you to inspect **gRPC calls and Protocol Buffers messages** in rea
 !!! warning "gRPC Version"
     Ensure your `grpc-android` / `grpc-java` version is at least **`1.70.0`**.
 
+The gRPC calls are reported to the network plugin: add `flocon-network-core` and install it
+(the bad network simulation also applies to gRPC calls):
+
+```kotlin
+startFlocon(FloconContext(context)) {
+    install(FloconNetwork)
+}
+```
+
 ---
 
 ## Choosing the Right Artifact
@@ -44,9 +53,17 @@ Android projects frequently use either standard Protobuf (`protobuf-java` / `pro
 
 ---
 
+!!! note "Release builds"
+    The gRPC interceptors are Android only. The `-no-op` artifacts expose the same API
+    (`FloconGrpcInterceptor`, `FloconGrpcFormatter`) and forward every call untouched, so the same
+    code compiles in debug and release.
+
+---
+
 ## Interceptor Configuration
 
-Attach `FloconGrpcInterceptor` to your `ManagedChannelBuilder`:
+Attach `FloconGrpcInterceptor` to your `ManagedChannelBuilder`
+(`io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor` for the lite artifact):
 
 ```kotlin
 val channel = ManagedChannelBuilder.forAddress(host, port)

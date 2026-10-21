@@ -18,3 +18,24 @@ From the desktop companion, you can:
 - **Browse Directories**: Traverse internal files, cache folders, and databases.
 - **Inspect Metadata**: View exact file sizes, MIME types, modification timestamps, and absolute file paths.
 - **Download & View**: Inspect logs, exported JSON/database backups, and downloaded cached media directly on your desktop.
+
+---
+
+## Setup
+
+```kotlin
+dependencies {
+    debugImplementation("io.github.openflocon:flocon-files:LAST_VERSION")
+    releaseImplementation("io.github.openflocon:flocon-files-no-op:LAST_VERSION")
+}
+```
+
+```kotlin
+startFlocon(FloconContext(context)) {
+    install(FloconFiles)
+}
+```
+
+!!! info "Platforms"
+    File browsing is available on Android, JVM and iOS. On Wasm there is no file system, so the plugin lists no files.
+

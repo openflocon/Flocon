@@ -24,7 +24,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardCont
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardPlainTextView(
@@ -37,15 +37,15 @@ internal fun DashboardPlainTextView(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     rowItem.label,
                     modifier =
-                    Modifier.padding(start = 4.dp)
+                    Modifier.padding(start = FloconTheme.spacing.extraSmall)
                         .align(Alignment.CenterStart),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style =
                     MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Thin,
@@ -63,15 +63,15 @@ internal fun DashboardPlainTextView(
                 modifier =
                 Modifier.fillMaxWidth()
                     .background(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = RoundedCornerShape(8.dp),
                     )
-                    .padding(8.dp),
+                    .padding(FloconTheme.spacing.small),
             ) {
                 SelectionContainer {
                     Text(
                         text = rowItem.value,
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style =
                         FloconTheme.typography.bodySmall.copy(
                             fontFamily = FontFamily.Monospace
@@ -96,7 +96,7 @@ internal fun DashboardPlainTextViewPreview() {
         DashboardPlainTextView(
             modifier =
             Modifier.fillMaxWidth().background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
@@ -142,7 +142,7 @@ internal fun DashboardPlainTextViewPreview_json() {
         DashboardPlainTextView(
             modifier =
             Modifier.fillMaxWidth().background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             onOpenExternalClicked = {},

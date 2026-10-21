@@ -24,4 +24,5 @@ data class DeviceAppEntity(
     val iconEncoded: String?, // base64
     val lastAppInstance: Long, // last start the app has been started
     val floconVersionOnDevice: String, // our sdk version on the device, eg: 1.3.3
+    val installedPlugins: String? = null, // plugins installed in the sdk, comma separated, null if unknown
 )

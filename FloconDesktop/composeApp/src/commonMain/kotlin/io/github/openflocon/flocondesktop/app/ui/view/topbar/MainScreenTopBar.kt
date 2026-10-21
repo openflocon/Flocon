@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.em
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleUp
 import androidx.compose.material3.Icon
@@ -37,6 +39,9 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.app_logo_content_description
+import flocondesktop.composeapp.generated.resources.app_name
 
 @Composable
 fun MainScreenTopBar(
@@ -57,15 +62,16 @@ fun MainScreenTopBar(
 ) {
     Row(
         modifier = modifier
-            .background(FloconTheme.colorPalette.surface)
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .background(FloconTheme.colors.bg000)
+            .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Title(
             updateChip = updateChip,
             onUpdateChipClicked = onUpdateChipClicked,
+            modifier = Modifier.padding(end = FloconTheme.spacing.medium),
         )
-        Spacer(modifier = Modifier.width(18.dp))
         TopBarDeviceAndAppView(
             devicesState = devicesState,
             appsState = appsState,
@@ -92,33 +98,29 @@ private fun TopBarUpdateChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = FloconTheme.colors
+
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(FloconTheme.colorPalette.accent.copy(alpha = 0.2f))
-            .border(
-                width = 1.dp,
-                color = FloconTheme.colorPalette.onAccent.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(4.dp),
-            )
+            .clip(CircleShape)
+            .background(colors.accentSoft)
             .clickable(onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
     ) {
         Icon(
             imageVector = Icons.Outlined.ArrowCircleUp,
             contentDescription = null,
-            tint = FloconTheme.colorPalette.onAccent,
+            tint = colors.accent,
             modifier = Modifier.size(12.dp),
         )
         Text(
             text = uiModel.text,
-            color = FloconTheme.colorPalette.onAccent,
+            color = colors.accent,
             style = FloconTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
             ),
         )
     }
@@ -132,31 +134,31 @@ private fun Title(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             modifier = Modifier
-                .size(28.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp)),
             painter = painterResource(Res.drawable.app_icon_small),
-            contentDescription = "Description de mon image",
+            contentDescription = stringResource(Res.string.app_logo_content_description),
         )
 
         Column(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "Flocon",
-                style = FloconTheme.typography.titleSmall.copy(
-                    fontSize = 18.sp,
-                    color = FloconTheme.colorPalette.onSurface,
+                text = stringResource(Res.string.app_name),
+                style = FloconTheme.typography.titleMedium.copy(
+                    color = FloconTheme.colors.ink,
                     fontWeight = FontWeight.SemiBold,
+                    letterSpacing = (-0.01).em,
                 ),
             )
 
             if (updateChip != null) {
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.tiny))
                 TopBarUpdateChip(
                     uiModel = updateChip,
                     onClick = { onUpdateChipClicked(updateChip) },
