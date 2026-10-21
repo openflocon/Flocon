@@ -82,7 +82,7 @@ private fun CrashReportScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary),
+                    .background(FloconTheme.colors.bg100),
             )
         } else Row(Modifier.fillMaxSize()) {
             LeftPannel(
@@ -93,15 +93,15 @@ private fun CrashReportScreen(
                 selected = selected,
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             Surface(
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 modifier = Modifier.fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
                     .border(
                         width = 1.dp,
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = FloconTheme.shapes.medium
                     )
             ) {
@@ -131,24 +131,24 @@ fun LeftPannel(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             )
     ) {
         Column(
             Modifier.fillMaxSize()
-                .padding(all = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = FloconTheme.spacing.extraSmall),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     stringResource(Res.string.crashes),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -156,8 +156,8 @@ fun LeftPannel(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(top = FloconTheme.spacing.small)
+                        .padding(horizontal = FloconTheme.spacing.medium)
                 )
                 FeatureDocButton(doc = FeatureDoc.CrashReporter)
                 Box(
@@ -171,14 +171,14 @@ fun LeftPannel(
                         Icons.Filled.Delete,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(FloconTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
             ) {
                 items(count = crashReports.itemCount) { index ->
                     crashReports[index]?.let { crash ->

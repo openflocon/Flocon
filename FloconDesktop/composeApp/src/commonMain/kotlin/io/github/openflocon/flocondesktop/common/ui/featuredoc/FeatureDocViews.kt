@@ -24,7 +24,7 @@ import io.github.openflocon.library.designsystem.components.FloconEmptyState
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Small (i) button, always visible on a page, opening its documentation.
@@ -67,7 +67,7 @@ fun FeatureEmptyState(
         action = {
             FloconButton(
                 onClick = { runCatching { uriHandler.openUri(doc.setupUrl) } },
-                containerColor = FloconTheme.colorPalette.accent,
+                containerColor = FloconTheme.colors.accent,
                 modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Row(

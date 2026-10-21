@@ -3,11 +3,14 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.list.view
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.BadQualityEditionWindow
@@ -20,6 +23,9 @@ fun BadNetworkQualityWindow(
 ) {
     FloconDialog(
         onDismissRequest = onCloseRequest,
+        // the list has several columns: the default width of a dialog is too narrow
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.width(920.dp),
     ) {
         BadNetworkQualityContent(
             onCloseRequest = onCloseRequest,

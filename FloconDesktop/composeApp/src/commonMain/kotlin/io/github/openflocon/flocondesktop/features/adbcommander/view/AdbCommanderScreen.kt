@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderViewModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -46,7 +47,7 @@ private fun AdbCommanderScreen(
                 modifier = Modifier.fillMaxHeight().width(340.dp),
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 CommandInputView(
@@ -56,7 +57,7 @@ private fun AdbCommanderScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
                 RunnerContent(
                     consoleOutput = uiState.consoleOutput,

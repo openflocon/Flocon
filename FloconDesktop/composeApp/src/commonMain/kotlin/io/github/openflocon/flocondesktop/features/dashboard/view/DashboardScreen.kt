@@ -112,7 +112,7 @@ fun DashboardScreen(
                 }
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             if (deviceDashboards is DashboardsStateUiModel.Empty) {
                 FeatureEmptyState(
@@ -120,7 +120,7 @@ fun DashboardScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary),
+                        .background(FloconTheme.colors.bg100),
                 )
             } else Row(Modifier.fillMaxSize()) {
                 DashboardSidebarView(
@@ -132,15 +132,15 @@ fun DashboardScreen(
                     onDeleteClicked = onDeleteClicked,
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
                 state?.let {
                     DashboardView(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colorPalette.primary)
-                            .padding(all = 8.dp),
+                            .background(FloconTheme.colors.bg100)
+                            .padding(all = FloconTheme.spacing.small),
                         viewState = state,
                         onClickButton = onClickButton,
                         submitTextField = submitTextField,

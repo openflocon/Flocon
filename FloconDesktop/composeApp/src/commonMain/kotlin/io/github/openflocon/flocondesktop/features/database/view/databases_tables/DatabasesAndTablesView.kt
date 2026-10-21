@@ -37,10 +37,10 @@ fun DatabasesAndTablesView(
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
+    val borderColor = FloconTheme.colors.bg200
 
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
@@ -56,8 +56,8 @@ fun DatabasesAndTablesView(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -65,7 +65,7 @@ fun DatabasesAndTablesView(
                 ) {
                     Text(
                         "Databases",
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style = FloconTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                         ),
@@ -73,7 +73,7 @@ fun DatabasesAndTablesView(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                     )
                     FeatureDocButton(doc = FeatureDoc.Database)
                 }
@@ -117,18 +117,18 @@ fun DatabasesAndTablesView(
                     Modifier.fillMaxWidth()
                         .weight(0.4f)
                         .verticalScroll(rememberScrollState())
-                        .padding(all = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(all = FloconTheme.spacing.extraSmall),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         stringResource(Res.string.databases_favorites),
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style = FloconTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                     )
 
                     favorites.forEach {

@@ -74,7 +74,7 @@ fun DatabaseScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary),
+                    .background(FloconTheme.colors.bg100),
             )
         } else Row(Modifier.fillMaxSize()) {
             DatabasesAndTablesView(
@@ -85,11 +85,11 @@ fun DatabaseScreen(
                 favorites = favorites,
                 onAction = onAction
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 DatabaseTabsView(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
                     tabs = tabs,
                     selected = selectedTab,
                     onAction = {

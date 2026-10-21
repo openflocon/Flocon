@@ -10,20 +10,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import io.github.openflocon.library.designsystem.components.FloconStatusPill
+import io.github.openflocon.library.designsystem.components.floconMonoStyle
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
-private val successTagText = Color(0xFF28A745)
+/**
+ * The color of a status: an http code is colored by family (1xx info, 2xx success, 4xx warning, 5xx error),
+ * the other statuses (exception, graphQl, gRPC…) by what they say.
+ */
+@Composable
+internal fun NetworkStatusUi.color(): Color {
+    val colors = FloconTheme.colors
+    return text.toIntOrNull()?.let { colors.httpStatus(it) } ?: when (status) {
+        NetworkStatusUi.Status.SUCCESS -> colors.statusSuccess
+        NetworkStatusUi.Status.ERROR,
+        NetworkStatusUi.Status.EXCEPTION -> colors.statusError
+
+        NetworkStatusUi.Status.LOADING -> colors.inkMuted
+    }
+}
 
 @Composable
 fun StatusView(
     status: NetworkStatusUi,
-    textSize: TextUnit = 12.sp,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -33,23 +49,24 @@ fun StatusView(
         when (status.status) {
             NetworkStatusUi.Status.SUCCESS,
             NetworkStatusUi.Status.ERROR,
-            NetworkStatusUi.Status.EXCEPTION -> SelectionContainer {
-                BasicText(
-                    text = status.text,
-                    autoSize = TextAutoSize.StepBased(
-                        maxFontSize = textSize,
-                        minFontSize = 8.sp,
-                    ),
-                    maxLines = 1,
-                    style = FloconTheme.typography.labelSmall.copy(
-                        color = when (status.status) {
-                            NetworkStatusUi.Status.SUCCESS -> successTagText
-                            NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
-                            NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
-                            else -> successTagText
-                        },
-                    ),
-                )
+            NetworkStatusUi.Status.EXCEPTION -> {
+                val color = status.color()
+                FloconStatusPill(color = color) {
+                    SelectionContainer {
+                        BasicText(
+                            text = status.text,
+                            autoSize = TextAutoSize.StepBased(
+                                maxFontSize = textSize,
+                                minFontSize = FloconTheme.typography.labelSmall.fontSize * 0.8f,
+                            ),
+                            maxLines = 1,
+                            style = floconMonoStyle(small = true).copy(
+                                color = color,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                        )
+                    }
+                }
             }
 
             NetworkStatusUi.Status.LOADING -> Box(

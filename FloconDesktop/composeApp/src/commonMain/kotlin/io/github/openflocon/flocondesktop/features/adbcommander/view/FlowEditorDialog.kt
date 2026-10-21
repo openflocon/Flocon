@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -56,9 +55,9 @@ fun FlowEditorDialog(
 
             Column(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(FloconTheme.spacing.medium)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 FloconTextField(
                     value = state.name,
@@ -82,7 +81,7 @@ fun FlowEditorDialog(
                     Text(
                         text = stringResource(Res.string.adb_commander_steps),
                         style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                     )
                     FloconButton(onClick = { onAction(AdbCommanderAction.FlowEditorAddStep) }) {
                         FloconIcon(imageVector = Icons.Outlined.Add)
@@ -91,7 +90,7 @@ fun FlowEditorDialog(
                 }
 
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 ) {
                     itemsIndexed(state.steps) { index, step ->
                         StepEditorItem(
@@ -112,7 +111,7 @@ fun FlowEditorDialog(
                 FloconDialogButtons(
                     onCancel = { onAction(AdbCommanderAction.DismissFlowEditor) },
                     onValidate = { onAction(AdbCommanderAction.SaveFlow) },
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = FloconTheme.spacing.small),
                 )
             }
         }
@@ -134,18 +133,18 @@ private fun StepEditorItem(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = "${index + 1}.",
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary,
-            modifier = Modifier.padding(top = 8.dp),
+            color = FloconTheme.colors.ink,
+            modifier = Modifier.padding(top = FloconTheme.spacing.small),
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             FloconTextField(
                 value = command,
@@ -153,7 +152,7 @@ private fun StepEditorItem(
                 placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_step_command)),
                 modifier = Modifier.fillMaxWidth(),
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                 FloconTextField(
                     value = label,
                     onValueChange = onLabelChanged,

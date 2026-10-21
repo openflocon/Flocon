@@ -28,6 +28,7 @@ internal fun AnalyticsItemDomainModel.mapToDetailUi(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?
 ): AnalyticsDetailUiModel = AnalyticsDetailUiModel(
     id = itemId,
+    tableId = analyticsTableId,
     dateFormatted = formatTimestamp(createdAt),
     eventName = eventName,
     properties = properties.map {

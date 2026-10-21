@@ -11,6 +11,6 @@ fun FloconLinearProgressIndicator(
 ) {
     LinearProgressIndicator(
         modifier = modifier,
-        color = FloconTheme.colorPalette.onSurface
+        color = FloconTheme.colors.accent
     )
 }

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
 // Every illustration is drawn in a 160 x 120 virtual canvas, then scaled to the available size
@@ -46,18 +46,16 @@ fun FeatureIllustration(
     doc: FeatureDoc,
     modifier: Modifier = Modifier,
 ) {
-    val palette = FloconTheme.colorPalette
-    // in dark mode `accent` is a dark brown and `onAccent` the bright orange
-    val accent = if (FloconTheme.isDarkTheme) palette.onAccent else palette.accent
+    val tokens = FloconTheme.colors
     val colors = ArtColors(
-        backdrop = palette.secondary.copy(alpha = 0.45f),
-        card = palette.primary,
-        cardStroke = palette.onPrimary.copy(alpha = 0.18f),
-        line = palette.onPrimary.copy(alpha = 0.18f),
-        strongLine = palette.onPrimary.copy(alpha = 0.45f),
-        accent = accent,
-        accentSoft = accent.copy(alpha = 0.3f),
-        error = palette.error,
+        backdrop = tokens.bg300,
+        card = tokens.bg100,
+        cardStroke = tokens.line,
+        line = tokens.line,
+        strongLine = tokens.inkFaint,
+        accent = tokens.accent,
+        accentSoft = tokens.accent.copy(alpha = 0.3f),
+        error = tokens.statusError,
     )
 
     Canvas(modifier = modifier) {

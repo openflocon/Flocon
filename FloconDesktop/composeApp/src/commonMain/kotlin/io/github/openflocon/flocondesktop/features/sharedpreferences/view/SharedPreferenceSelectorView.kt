@@ -47,10 +47,10 @@ fun SharedPreferenceSelectorView(
     state: SharedPrefsStateUiModel,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
+    val borderColor = FloconTheme.colors.bg200
 
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
@@ -66,8 +66,8 @@ fun SharedPreferenceSelectorView(
                 Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -75,7 +75,7 @@ fun SharedPreferenceSelectorView(
                 ) {
                     Text(
                         stringResource(Res.string.preferences),
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style = FloconTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                         ),
@@ -83,7 +83,7 @@ fun SharedPreferenceSelectorView(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                     )
                     FeatureDocButton(doc = FeatureDoc.SharedPreferences)
                 }
@@ -109,7 +109,7 @@ fun SharedPreferenceSelectorView(
                             onTextChange = {
                                 filterText.value = it
                             },
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(bottom = 12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium).padding(bottom = FloconTheme.spacing.medium),
                         )
                         filtered.preferences.forEach {
                             PreferenceItemView(
@@ -136,9 +136,9 @@ private fun PreferenceItemView(
     modifier: Modifier = Modifier
 ) {
     val (background, textColor) = if (isSelected) {
-        FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent
+        FloconTheme.colors.accent.copy(alpha = 0.4f) to FloconTheme.colors.accent
     } else {
-        Color.Transparent to FloconTheme.colorPalette.onSurface
+        Color.Transparent to FloconTheme.colors.ink
     }
 
     Row(
@@ -148,7 +148,7 @@ private fun PreferenceItemView(
             .clickable(onClick = {
                 onSelect(state)
             })
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
@@ -157,7 +157,7 @@ private fun PreferenceItemView(
             contentDescription = null,
             colorFilter = ColorFilter.tint(textColor),
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
         Text(
             state.name,
             color = textColor,

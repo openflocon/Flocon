@@ -18,16 +18,24 @@ From the desktop companion, you can:
 - **Browse Directories**: Traverse internal files, cache folders, and databases.
 - **Inspect Metadata**: View exact file sizes, MIME types, modification timestamps, and absolute file paths.
 - **Download & View**: Inspect logs, exported JSON/database backups, and downloaded cached media directly on your desktop.
+
 ---
 
 ## Setup
 
-No extra code is needed: the file explorer is available as soon as `Flocon.initialize(...)` is called (see [Initialize the SDK](setup.md#2-initialize-the-sdk)).
+```kotlin
+dependencies {
+    debugImplementation("io.github.openflocon:flocon-files:LAST_VERSION")
+    releaseImplementation("io.github.openflocon:flocon-files-no-op:LAST_VERSION")
+}
+```
 
-On Android, the root lists the two folders of your app sandbox:
+```kotlin
+startFlocon(FloconContext(context)) {
+    install(FloconFiles)
+}
+```
 
-- **Caches**: `context.cacheDir`
-- **Files**: `context.filesDir`
+!!! info "Platforms"
+    File browsing is available on Android, JVM and iOS. On Wasm there is no file system, so the plugin lists no files.
 
-!!! tip
-    Select your device and app in the top bar of Flocon Desktop, then open a folder to browse its content. Use the refresh button to reload a folder that changed on the device.

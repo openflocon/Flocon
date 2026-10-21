@@ -51,9 +51,9 @@ private fun VersionCheckerDialog(
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
 ) {
     Column(
-        modifier.padding(16.dp),
+        modifier.padding(FloconTheme.spacing.large),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         state.client?.let {
             VersionCheckerDialog(
@@ -84,46 +84,46 @@ private fun VersionCheckerDialog(
                     // intercept click behind
                 }
             ).background(
-                color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
-            ).padding(horizontal = 12.dp, 10.dp)
+                color = FloconTheme.colors.ink, shape = FloconTheme.shapes.medium
+            ).padding(horizontal = FloconTheme.spacing.medium, 10.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = version.title,
-                color = FloconTheme.colorPalette.onTertiary,
+                color = FloconTheme.colors.bg100,
                 style = FloconTheme.typography.titleSmall,
             )
 
             version.subtitle?.let {
                 Text(
                     text = it,
-                    color = FloconTheme.colorPalette.onTertiary,
+                    color = FloconTheme.colors.bg100,
                     style = FloconTheme.typography.bodySmall,
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(
-                    containerColor = FloconTheme.colorPalette.primary, onClick = {
+                    containerColor = FloconTheme.colors.bg100, onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
                     }
                 ) {
-                    Text(stringResource(Res.string.download), color = FloconTheme.colorPalette.onPrimary)
+                    Text(stringResource(Res.string.download), color = FloconTheme.colors.ink)
                 }
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
-                    }, borderColor = FloconTheme.colorPalette.primary
+                    }, borderColor = FloconTheme.colors.bg100
                 ) {
-                    Text(stringResource(Res.string.close), color = FloconTheme.colorPalette.primary)
+                    Text(stringResource(Res.string.close), color = FloconTheme.colors.bg100)
                 }
             }
         }

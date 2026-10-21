@@ -50,7 +50,7 @@ enum class FeatureDoc(
     ),
     Database(
         page = "database",
-        setupAnchor = "database-registration",
+        setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_database_empty_title,
         emptyDescription = Res.string.feature_doc_database_empty_description,
     ),
@@ -69,19 +69,19 @@ enum class FeatureDoc(
     ),
     Dashboard(
         page = "dashboard",
-        setupAnchor = "defining-dashboards",
+        setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_dashboard_empty_title,
         emptyDescription = Res.string.feature_doc_dashboard_empty_description,
     ),
     Analytics(
         page = "analytics",
-        setupAnchor = "usage",
+        setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_analytics_empty_title,
         emptyDescription = Res.string.feature_doc_analytics_empty_description,
     ),
     Tables(
         page = "table",
-        setupAnchor = "logging-table-rows",
+        setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_tables_empty_title,
         emptyDescription = Res.string.feature_doc_tables_empty_description,
     ),
@@ -92,7 +92,7 @@ enum class FeatureDoc(
         emptyDescription = Res.string.feature_doc_deeplinks_empty_description,
     ),
     CrashReporter(
-        page = "crash-reporter",
+        page = "crashreporter",
         setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_crashreporter_empty_title,
         emptyDescription = Res.string.feature_doc_crashreporter_empty_description,

@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardButtonView(
@@ -26,15 +26,15 @@ internal fun DashboardButtonView(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(FloconTheme.colorPalette.onSurface)
+                .background(FloconTheme.colors.ink)
                 .clickable(onClick = {
                     onClickButton(rowItem.id)
                 })
-                .padding(all = 8.dp),
+                .padding(all = FloconTheme.spacing.small),
         ) {
             Text(
                 text = rowItem.text,
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -50,7 +50,7 @@ internal fun DashboardButtonViewPreview() {
     )
     FloconTheme {
         DashboardButtonView(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary),
+            modifier = Modifier.background(FloconTheme.colors.bg100),
             onClickButton = {},
             rowItem = rowItem,
         )

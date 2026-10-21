@@ -36,29 +36,29 @@ fun FloconEmptyState(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier
                 .widthIn(max = 420.dp)
-                .padding(24.dp),
+                .padding(FloconTheme.spacing.extraLarge),
         ) {
             if (illustration != null) {
                 illustration()
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
             }
             Text(
                 text = title,
                 style = FloconTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 textAlign = TextAlign.Center,
             )
             Text(
                 text = description,
                 style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted,
                 textAlign = TextAlign.Center,
             )
             if (action != null) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
                 action()
             }
         }

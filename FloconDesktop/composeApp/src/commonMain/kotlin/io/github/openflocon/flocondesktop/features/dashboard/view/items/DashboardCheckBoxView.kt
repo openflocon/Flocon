@@ -12,11 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardCheckBoxView(
@@ -27,21 +26,21 @@ internal fun DashboardCheckBoxView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     text = rowItem.label,
                 )
@@ -49,7 +48,7 @@ internal fun DashboardCheckBoxView(
             FloconCheckbox(
                 checked = value,
                 onCheckedChange = onCheckedChange,
-                uncheckedColor = FloconTheme.colorPalette.secondary
+                uncheckedColor = FloconTheme.colors.bg200
             )
         }
     }
@@ -65,7 +64,7 @@ internal fun DashboardCheckBoxViewPreview() {
     )
     FloconTheme {
         DashboardCheckBoxView(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary),
+            modifier = Modifier.background(FloconTheme.colors.bg100),
             rowItem = rowItem,
             value = rowItem.value,
             onCheckedChange = {},

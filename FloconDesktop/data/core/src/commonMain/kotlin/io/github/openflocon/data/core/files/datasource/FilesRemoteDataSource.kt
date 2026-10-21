@@ -4,7 +4,9 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.models.FromDeviceFilesResultDomainModel
+import io.github.openflocon.domain.files.models.FromDeviceFilesRootsDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import kotlin.uuid.ExperimentalUuidApi
@@ -12,7 +14,12 @@ import kotlin.uuid.ExperimentalUuidApi
 interface FilesRemoteDataSource {
 
     fun onGetFilesResultReceived(received: FromDeviceFilesResultDomainModel)
+    fun onGetRootsResultReceived(received: FromDeviceFilesRootsDomainModel)
     fun onFloconReceivedFilesDomainModel(received: FloconReceivedFileDomainModel)
+
+    suspend fun executeGetRoots(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Either<Throwable, List<FileRootDomainModel>>
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun executeListFiles(
@@ -45,4 +52,6 @@ interface FilesRemoteDataSource {
     ): Either<Exception, List<FileDomainModel>>
 
     fun getItems(message: FloconIncomingMessageDomainModel): FromDeviceFilesResultDomainModel?
+
+    fun getRoots(message: FloconIncomingMessageDomainModel): FromDeviceFilesRootsDomainModel?
 }
