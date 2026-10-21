@@ -79,13 +79,15 @@ class FloconMcpServer(
             - Bad network simulation: list_bad_network_configs shows the configs (latency, random errors) and the active one,
               set_active_bad_network_config turns one on (only one at a time) or off. Always turn the simulation off
               when you are done and tell the user which config you left active.
-            - Files of the app: list_files browses the "files" / "caches" directories, read_file returns a file content.
+            - Files of the app: list_file_roots lists the root folders announced by the app, list_files browses them, read_file returns a file content.
             - Analytics events sent by the app: count_analytics_events gives an overview per event name,
               list_analytics_events the events with their properties.
             - Feature flags of the app: list_feature_flags gives the provider, name and variant of each flag,
               get_feature_flag the full payload.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - Deeplinks: list_deeplinks gives the deeplinks declared by the app with their parameters, list_deeplink_history those opened from Flocon,
+              open_deeplink opens a deeplink on the device (this one acts on the device, the other ones are read only).
             - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
               get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
             - Dashboards sent by the app: list_dashboards gives the ids, get_dashboard the containers and elements with their values.

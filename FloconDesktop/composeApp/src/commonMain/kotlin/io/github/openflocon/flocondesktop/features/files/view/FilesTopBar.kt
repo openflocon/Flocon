@@ -214,7 +214,7 @@ private fun FilesTopBarPreview() {
     val current = FileUiModel(
         name = "File Name",
         type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Constants.CachesDir,
+        path = FilePathUiModel.Root(id = "caches"),
         icon = Icons.Outlined.Folder,
         sizeFormatted = "10 KB",
         contextualActions = persistentListOf(),
