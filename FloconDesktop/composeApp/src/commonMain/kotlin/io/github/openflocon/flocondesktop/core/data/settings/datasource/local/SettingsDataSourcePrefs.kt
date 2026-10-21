@@ -54,6 +54,25 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { it.toThemeSetting() }
         .stateIn(ThemeSetting.DEFAULT)
 
+    override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
+        .mapLatest { it.toIdList() }
+
+    override val collapsedMenuSections: Flow<Set<String>> = flowSettings.getStringOrNullFlow(COLLAPSED_MENU_SECTIONS)
+        .mapLatest { it.toIdList().toSet() }
+
+    override suspend fun setPinnedMenuItems(items: List<String>) {
+        settings.putString(PINNED_MENU_ITEMS, items.joinToString(ID_SEPARATOR))
+    }
+
+    override suspend fun setCollapsedMenuSections(sections: Set<String>) {
+        settings.putString(COLLAPSED_MENU_SECTIONS, sections.joinToString(ID_SEPARATOR))
+    }
+
+    private fun String?.toIdList(): List<String> = this
+        ?.split(ID_SEPARATOR)
+        ?.filter { it.isNotEmpty() }
+        .orEmpty()
+
     override fun getAdbPath(): String? = settings.getStringOrNull(ADB_PATH)
 
     override suspend fun setAdbPath(path: String) {
@@ -136,5 +155,9 @@ internal class SettingsDataSourcePrefs(
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"
 
         private const val NETWORK_SETTINGS = "network_settings"
+
+        private const val PINNED_MENU_ITEMS = "pinned_menu_items"
+        private const val COLLAPSED_MENU_SECTIONS = "collapsed_menu_sections"
+        private const val ID_SEPARATOR = ","
     }
 }

@@ -69,7 +69,7 @@ fun CommandInputView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -95,11 +95,11 @@ fun CommandInputView(
                         .graphicsLayer(
                             alpha = if (isInputEmpty) 0.6f else 1f
                         ),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
 
-            VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+            VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
             // Copy icon
             Box(
@@ -116,11 +116,11 @@ fun CommandInputView(
                         .graphicsLayer(
                             alpha = if (isInputEmpty) 0.6f else 1f
                         ),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
 
-            VerticalDivider(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp))
+            VerticalDivider(modifier = Modifier.padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.tiny))
 
             // History dropdown
             var isHistoryExpanded by remember { mutableStateOf(false) }
@@ -142,7 +142,7 @@ fun CommandInputView(
                         Icons.Outlined.History,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
 
@@ -153,7 +153,7 @@ fun CommandInputView(
                 ) {
                     historyEntries.fastForEach { entry ->
                         Text(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).clickable {
+                            modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small).clickable {
                                 onAction(AdbCommanderAction.RerunCommand(entry.command))
                                 isHistoryExpanded = false
                             },
@@ -177,7 +177,7 @@ fun CommandInputView(
                     Icons.Filled.Delete,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
         }
@@ -190,7 +190,7 @@ fun CommandInputView(
             minLines = 3,
             maxLines = 6,
             textStyle = FloconTheme.typography.bodyMedium,
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.bg200,
             placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_input_placeholder)),
             modifier = Modifier.fillMaxWidth()
                 .onKeyEvent { keyEvent ->
@@ -202,7 +202,7 @@ fun CommandInputView(
                         return@onKeyEvent true
                     }
                     return@onKeyEvent false
-                }.padding(horizontal = 6.dp, vertical = 4.dp),
+                }.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         )
 
         // Execute button row
@@ -215,17 +215,17 @@ fun CommandInputView(
                     if (!isInputEmpty)
                         onAction(AdbCommanderAction.ExecuteCommand)
                 },
-                containerColor = FloconTheme.colorPalette.tertiary,
+                containerColor = FloconTheme.colors.ink,
                 modifier = Modifier
-                    .padding(all = 8.dp)
+                    .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colorPalette.onTertiary
+                val contentColor = FloconTheme.colors.bg100
                 Row(
-                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(

@@ -65,6 +65,18 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.filter_exclude
+import flocondesktop.composeapp.generated.resources.filter_include
+import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.general_export_markdown
+import flocondesktop.composeapp.generated.resources.general_hide_transactions
+import flocondesktop.composeapp.generated.resources.general_next_page
+import flocondesktop.composeapp.generated.resources.general_previous_page
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.settings_filter_logs
 
 @Composable
 fun DatabaseQueryLogsView(
@@ -91,7 +103,7 @@ fun DatabaseQueryLogsView(
         DatabaseLogsHeader(
             modifier = Modifier.fillMaxWidth().border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             ),
             searchQuery = searchQuery,
@@ -114,15 +126,15 @@ fun DatabaseQueryLogsView(
         )
 
         Box(
-            modifier = Modifier.fillMaxSize().padding(top = 12.dp)
+            modifier = Modifier.fillMaxSize().padding(top = FloconTheme.spacing.medium)
                 .clip(FloconTheme.shapes.medium)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
                 .background(
-                    color = FloconTheme.colorPalette.primary,
+                    color = FloconTheme.colors.bg100,
                     shape = FloconTheme.shapes.medium
                 )
         ) {
@@ -163,10 +175,10 @@ fun DatabaseQueryLogsView(
                             log = log,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
                         )
                     }
-                    HorizontalDivider(color = FloconTheme.colorPalette.secondary)
+                    HorizontalDivider(color = FloconTheme.colors.bg200)
                 }
             }
             FloconVerticalScrollbar(
@@ -203,20 +215,20 @@ private fun DatabaseLogsHeader(
         Column(Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
                 ) {
                     FloconTextFieldWithoutM3(
                         value = searchQuery,
                         onValueChange = onSearchQueryChanged,
                         modifier = Modifier.weight(1f),
-                        placeholder = { defaultPlaceHolder("Filter logs...") },
-                        containerColor = FloconTheme.colorPalette.secondary,
+                        placeholder = { defaultPlaceHolder(stringResource(Res.string.settings_filter_logs)) },
+                        containerColor = FloconTheme.colors.bg200,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
@@ -233,10 +245,10 @@ private fun DatabaseLogsHeader(
                     )
 
                     IconButton(onClick = addIncludeFilter) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Include")
+                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.filter_include))
                     }
                     IconButton(onClick = addExcludeFilter) {
-                        Icon(imageVector = Icons.Default.Remove, contentDescription = "Exclude")
+                        Icon(imageVector = Icons.Default.Remove, contentDescription = stringResource(Res.string.filter_exclude))
                     }
                 }
 
@@ -246,7 +258,7 @@ private fun DatabaseLogsHeader(
                         toggleShowTransactions()
                     },
                     label = {
-                        Text("Hide transactions", style = FloconTheme.typography.bodySmall)
+                        Text(stringResource(Res.string.general_hide_transactions), style = FloconTheme.typography.bodySmall)
                     },
                     leadingIcon = {
                         if (!showTransactions) {
@@ -264,23 +276,23 @@ private fun DatabaseLogsHeader(
                     paginationLabel = paginationLabel,
                     onNextPage = onNextPage,
                     isNextEnabled = isNextEnabled,
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = FloconTheme.spacing.large),
                 )
 
                     FloconOverflow {
                         FloconDropdownMenuItem(
-                            text = "Export CSV",
+                            text = stringResource(Res.string.export_csv),
                             leadingIcon = Icons.Outlined.Upload,
                             onClick = { exportToCsv() }
                         )
                         FloconDropdownMenuItem(
-                            text = "Export Markdown",
+                            text = stringResource(Res.string.general_export_markdown),
                             leadingIcon = Icons.Outlined.UploadFile,
                             onClick = { exportToMarkdown() }
                         )
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
-                            text = "Clear",
+                            text = stringResource(Res.string.general_clear),
                             leadingIcon = Icons.Outlined.Delete,
                             onClick = { clearLogs() }
                         )
@@ -289,7 +301,7 @@ private fun DatabaseLogsHeader(
             }
             FilterChips(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(top = FloconTheme.spacing.small),
                 filterChips = filterChips,
                 toggleFilterType = toggleFilterType,
                 removeFilterChip = removeFilterChip,
@@ -309,7 +321,7 @@ private fun PageSelectorView(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier,
     ) {
         IconButton(
@@ -318,7 +330,7 @@ private fun PageSelectorView(
         ) {
             Icon(
                 imageVector = Icons.Default.ChevronLeft,
-                contentDescription = "Previous Page",
+                contentDescription = stringResource(Res.string.general_previous_page),
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -326,7 +338,7 @@ private fun PageSelectorView(
         Text(
             text = paginationLabel,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary
+            color = FloconTheme.colors.ink
         )
 
         IconButton(
@@ -335,7 +347,7 @@ private fun PageSelectorView(
         ) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
-                contentDescription = "Next Page",
+                contentDescription = stringResource(Res.string.general_next_page),
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -349,11 +361,11 @@ private fun FilterChips(
     toggleFilterType: (FilterChipUiModel) -> Unit,
     removeFilterChip: (FilterChipUiModel) -> Unit
 ) {
-    val itemsColor = FloconTheme.colorPalette.onSecondary
+    val itemsColor = FloconTheme.colors.inkMuted
     if (filterChips.isNotEmpty()) {
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = modifier,
         ) {
             filterChips.fastForEach { chip ->
@@ -380,7 +392,7 @@ private fun FilterChips(
                         Icon(
                             imageVector = Icons.Default.Close,
                             tint = itemsColor,
-                            contentDescription = "Remove",
+                            contentDescription = stringResource(Res.string.remove),
                             modifier = Modifier.clip(CircleShape).size(14.dp)
                                 .clickable {
                                     removeFilterChip(chip)

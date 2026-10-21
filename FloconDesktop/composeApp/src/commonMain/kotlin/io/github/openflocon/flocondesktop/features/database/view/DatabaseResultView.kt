@@ -53,7 +53,7 @@ import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.mp.KoinPlatform
 
 @Serializable
@@ -79,13 +79,13 @@ fun DatabaseResultView(
             is QueryResultUiModel.Text -> {
                 Text(
                     text = result.text,
-                    color = FloconTheme.colorPalette.onPrimary,
-                    modifier = Modifier.padding(8.dp),
+                    color = FloconTheme.colors.ink,
+                    modifier = Modifier.padding(FloconTheme.spacing.small),
                 )
             }
 
             is QueryResultUiModel.Values -> {
-                val color = FloconTheme.colorPalette.secondary
+                val color = FloconTheme.colors.bg200
 
                 var selectedItem by remember(result) {
                     mutableStateOf<DetailResultItem?>(null)
@@ -95,7 +95,7 @@ fun DatabaseResultView(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg100)
                         .border(
                             width = 1.dp,
                             color = color,
@@ -161,9 +161,9 @@ fun DatabaseResultView(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(FloconTheme.colorPalette.primary)
+                                    .background(FloconTheme.colors.bg100)
                                     .height(32.dp)
-                                    .padding(horizontal = 8.dp),
+                                    .padding(horizontal = FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 result.columns
@@ -173,10 +173,10 @@ fun DatabaseResultView(
                                             style = FloconTheme.typography.bodySmall.copy(
                                                 fontWeight = FontWeight.Bold
                                             ),
-                                            color = FloconTheme.colorPalette.onPrimary,
+                                            color = FloconTheme.colors.ink,
                                             modifier = Modifier
                                                 .width(columnsWidth)
-                                                .padding(all = 4.dp),
+                                                .padding(all = FloconTheme.spacing.extraSmall),
                                         )
                                     }
                             }
@@ -221,12 +221,12 @@ private fun DatabaseResultRowView(
     Row(
         modifier = Modifier
             .height(32.dp)
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = FloconTheme.spacing.small)
             .then(
                 if (selected) {
                     Modifier.border(
                         width = 1.dp,
-                        color = FloconTheme.colorPalette.accent,
+                        color = FloconTheme.colors.accentSoft,
                         shape = FloconTheme.shapes.medium
                     )
                 } else {
@@ -249,14 +249,14 @@ private fun DatabaseResultRowView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier
                     .width(columnsWidth)
                     .graphicsLayer {
                         if (item == null)
                             alpha = 0.5f
                     }
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
             )
         }
     }
@@ -270,16 +270,16 @@ private fun ResultHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colorPalette.surface)
-            .padding(horizontal = 8.dp),
+            .background(FloconTheme.colors.bg000)
+            .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             stringResource(Res.string.nb_lines, result.rows.size),
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier
-                .padding(all = 4.dp),
+                .padding(all = FloconTheme.spacing.extraSmall),
         )
 
         Spacer(Modifier.weight(1f))
@@ -292,7 +292,7 @@ private fun ResultHeader(
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
                 modifier = Modifier.fillMaxSize(),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                 contentDescription = null,
             )
         }

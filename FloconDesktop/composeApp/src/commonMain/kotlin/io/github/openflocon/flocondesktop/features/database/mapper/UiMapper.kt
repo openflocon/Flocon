@@ -11,6 +11,9 @@ import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBase
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_success
 
 fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): DeviceDataBaseUiModel {
     val isSelected = this.id == selected.database.id

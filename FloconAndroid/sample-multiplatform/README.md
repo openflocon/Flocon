@@ -143,9 +143,38 @@ actual fun getPlatformName() = "Android"
 actual fun getPlatformName() = "Desktop"
 ```
 
+## Fonctionnalités testables par plateforme
+
+L'écran commun (`ui/App.kt`) affiche un bouton par fonctionnalité, groupé par plugin. Un bouton **grisé** signifie
+que la fonctionnalité n'est pas disponible (ou pas branchée dans le sample) sur la plateforme, la raison est affichée dessous.
+Les fonctionnalités sont déclarées dans `ui/SampleFeatures.kt`; chaque point d'entrée (`MainActivity`, `Main.kt`,
+`MainViewController`, `main.kt` wasm) ajoute les siennes avec `SampleFeatures.on(...)` ou explique les absentes avec
+`SampleFeatures.unavailable(...)`.
+
+| Fonctionnalité | Android | Desktop (JVM) | iOS | Wasm |
+| :--- | :---: | :---: | :---: | :---: |
+| Ktor GET / POST | ✅ | ✅ | ✅ | ✅ |
+| OkHttp, OkHttp gzip, WebSocket | ✅ | ⬜ (sample en Ktor CIO) | ⬜ | ⬜ |
+| GraphQL | ✅ | ⬜ | ⬜ | ⬜ |
+| gRPC | ✅ | ⬜ | ⬜ | ⬜ |
+| Analytics (table, événements) | ✅ | ✅ | ✅ | ✅ |
+| Tables | ✅ | ✅ | ✅ | ✅ |
+| Dashboard | ✅ | ✅ | ✅ | ✅ |
+| Feature flags | ✅ | ✅ | ✅ | ✅ |
+| Deeplink enregistré après l'install | ✅ | ✅ | ✅ | ✅ |
+| Base de données Room 3 | ✅ | ✅ | ✅ | ✅ (`WebWorkerSQLiteDriver`, bases en mémoire dans le worker du sample) |
+| Base de données Room 2 | ✅ | ⬜ (module supporté, pas de base Room 2 dans le sample) | ⬜ (idem) | ⬜ (Room 2 ne supporte pas Wasm) |
+| Base de données en mémoire (Room 3) | ✅ | ⬜ | ⬜ | ⬜ |
+| Préférences (store en mémoire) | ✅ | ✅ | ✅ | ✅ |
+| DataStore | ✅ | ⬜ | ⬜ | ⬜ |
+| Fichiers | ✅ | ✅ | ✅ | ⬜ (pas de navigation de fichiers) |
+| Crash reporter | ✅ | ✅ | ✅ | ⬜ |
+
+Les plugins Device (icône, redémarrage) et Files sont pilotés depuis l'application desktop: il n'y a rien à
+déclencher côté sample, ils sont simplement installés.
+
 ## Notes
 
-- Room Database n'est disponible que sur Android
-- SharedPreferences n'est disponible que sur Android
-- L'UI Compose est 100% partagée entre Android et Desktop
-
+- Les bases Room 3 sont partagées entre Android, Desktop et iOS (`commonMain/database`); la base Room 2 (`androidMain/room2`) est propre à Android
+- Les SharedPreferences Android sont détectées automatiquement; les autres plateformes utilisent le store en mémoire `SamplePreferences`
+- L'UI Compose est 100% partagée entre toutes les plateformes

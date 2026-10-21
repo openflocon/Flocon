@@ -41,15 +41,15 @@ internal fun CrashReportDetailView(
         Column(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(vertical = FloconTheme.spacing.medium, horizontal = FloconTheme.spacing.large),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = crash.exceptionType,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.error
+                        color = FloconTheme.colors.statusError
                     )
                     Text(
                         text = crash.dateFormatted,
@@ -72,10 +72,10 @@ internal fun CrashReportDetailView(
             }
             FloconCodeBlock(
                 code = crash.stackTrace,
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(FloconTheme.spacing.medium)
             )
         }
     }
@@ -90,7 +90,7 @@ private fun Actions(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))
@@ -102,7 +102,7 @@ private fun Actions(
                 Icons.Filled.Delete,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
         Box(
@@ -115,7 +115,7 @@ private fun Actions(
                 Icons.Filled.CopyAll,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
     }

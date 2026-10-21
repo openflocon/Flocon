@@ -1,7 +1,8 @@
 package io.github.openflocon.flocon
 
-import kotlinx.coroutines.flow.StateFlow
-
-expect object Flocon : FloconApp {
-    override val isInitialized: StateFlow<Boolean>
+/**
+ * No-op version of Flocon: nothing is started, no connection is made to the desktop app.
+ */
+class Flocon private constructor() {
+    companion object
 }

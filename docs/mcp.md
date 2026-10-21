@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, crashes and databases of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events and databases, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -227,6 +227,16 @@ Yes, `postViewed` was sent 3 times since the app started:
 
 **Prompt**
 
+> Which variant of the `new_checkout` feature flag is the app using?
+
+**Response**
+
+`new_checkout` (provider `firebase`) is on the `treatment` variant, with the payload `{ "buttonColor": "#FF5722", "steps": 3 }`.
+
+---
+
+**Prompt**
+
 > Show me the slow calls in the app.
 
 **Response**
@@ -276,6 +286,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_feature_flags` | Feature flags of the app (provider, name, state on / off / custom, variant, payload preview), the providers. Filters: provider, text in the name / variant / payload. |
+| `get_feature_flag` | A feature flag with its state, variant and full payload. |
 | `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
 | `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |
 | `list_images` | Images loaded by the app (url, load time), newest first. Filters: text, start timestamp. Optionally the headers. |
@@ -287,6 +299,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_deeplinks` | Deeplinks declared by the app (link, label, description, parameters) and their variables. |
 | `list_deeplink_history` | Deeplinks recently opened from Flocon. |
 | `open_deeplink` | Opens a deeplink on the device (`adb` on Android, the booted Simulator on iOS) and adds it to the history. Not read only: it acts on the device. |
+| `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId`. |
+| `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
