@@ -115,8 +115,8 @@ fun FloconPanel(
             content = { scope.actions() }
         )
         FloconSurface(
-            color = FloconTheme.colorPalette.primary,
-            border = BorderStroke(width = 1.dp, color = FloconTheme.colorPalette.surface),
+            color = FloconTheme.colors.bg100,
+            border = BorderStroke(width = 1.dp, color = FloconTheme.colors.line),
             modifier = Modifier
                 .width(PANEL_WIDTH)
                 .fillMaxHeight()

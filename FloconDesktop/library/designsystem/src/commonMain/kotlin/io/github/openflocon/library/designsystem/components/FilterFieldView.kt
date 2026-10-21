@@ -25,12 +25,12 @@ fun DropdownFilterFieldView(
             onValueChange = onValueChanged,
             placeholder = defaultPlaceHolder(
                 placeholder,
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)
+                color = FloconTheme.colors.inkFaint
             ),
             textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSecondary,
+                color = FloconTheme.colors.inkMuted,
             ),
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.bg200,
             modifier = Modifier.weight(1f).padding(all = FloconTheme.spacing.tiny)
         )
     }

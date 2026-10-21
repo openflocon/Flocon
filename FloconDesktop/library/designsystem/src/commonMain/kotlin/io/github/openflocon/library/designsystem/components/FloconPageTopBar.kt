@@ -27,7 +27,7 @@ fun FloconPageTopBar(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
             .padding(all = FloconTheme.spacing.small)
     ) {
         if (selector != null) {

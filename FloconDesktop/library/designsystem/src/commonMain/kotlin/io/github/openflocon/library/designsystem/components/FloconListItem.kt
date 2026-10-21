@@ -34,8 +34,8 @@ data object FloconListItemDefaults {
 
     @Composable
     fun colors(
-        containerColor: Color = FloconTheme.colorPalette.primary,
-        headlineColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+        containerColor: Color = FloconTheme.colors.bg100,
+        headlineColor: Color = FloconTheme.colors.contentColorFor(containerColor),
         leadingIconColor: Color = headlineColor,
         overlineColor: Color = headlineColor,
         supportingColor: Color = headlineColor,

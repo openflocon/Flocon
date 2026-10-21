@@ -22,8 +22,8 @@ import io.github.openflocon.library.designsystem.theme.contentColorFor
 fun FloconCodeBlock(
     code: String,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     // a thin border around the block, ex: the colors of the design system
     borderColor: Color? = null,
 ) {
