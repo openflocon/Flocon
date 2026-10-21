@@ -49,6 +49,10 @@
     <string name="timeline_source_app_start">Démarrage</string>
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
+    <plurals name="network_counter_requests">
+        <item quantity="one">requête</item>
+        <item quantity="other">requêtes</item>
+    </plurals>
     <plurals name="timeline_counter_events">
         <item quantity="one">événement</item>
         <item quantity="other">événements</item>

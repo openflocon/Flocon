@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -49,7 +50,7 @@ fun NetworkItemHeaderView(
     val density = LocalDensity.current
     Row(
         modifier = modifier
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact)
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.compact)
             .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.Bottom,
