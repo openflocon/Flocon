@@ -113,6 +113,12 @@ class ExecuteDeeplinkUseCaseTest {
             openedUrls += url
             return Success("")
         }
+
+        override suspend fun takeScreenshot(filePath: String): Either<Throwable, String> = Success(filePath)
+
+        override suspend fun startRecording(filePath: String): Either<Throwable, Unit> = Success(Unit)
+
+        override suspend fun stopRecording(filePath: String): Either<Throwable, String> = Success(filePath)
     }
 
     private class FakeAdbRepository : AdbRepository {
