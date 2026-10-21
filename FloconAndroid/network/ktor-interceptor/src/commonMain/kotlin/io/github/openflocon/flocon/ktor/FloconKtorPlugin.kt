@@ -7,22 +7,21 @@ import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
-import io.github.openflocon.flocon.network.core.networkPluginOrNull
+import io.github.openflocon.flocon.network.core.networkPlugin
+import io.github.openflocon.flocon.utils.currentTimeMillis
+import io.github.openflocon.flocon.utils.currentTimeNanos
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.call.save
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequest
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.contentType
 import io.ktor.util.AttributeKey
-import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.toByteArray
-import io.github.openflocon.flocon.utils.currentTimeMillis
-import io.github.openflocon.flocon.utils.currentTimeNanos
-import io.ktor.client.call.save
-import io.ktor.client.request.HttpRequestBuilder
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -46,10 +45,10 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
 
     // Intercept requests
     client.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
-        val floconNetworkPlugin = Flocon.networkPluginOrNull
+        val floconNetworkPlugin = Flocon.networkPlugin
         val request: HttpRequestBuilder = context
 
-        if (floconNetworkPlugin == null || !shouldLogCallback(request)) {
+        if (!shouldLogCallback(request)) {
             request.attributes.put(FLOCON_SHOULD_LOG, false)
             proceed()
             return@intercept
@@ -140,7 +139,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
 
     // Intercepts responses
     client.receivePipeline.intercept(HttpReceivePipeline.After) { response ->
-        val floconNetworkPlugin = Flocon.networkPluginOrNull ?: return@intercept
+        val floconNetworkPlugin = Flocon.networkPlugin
 
         val savedCall = response.call.save()
         val savedResponse = savedCall.response
@@ -148,7 +147,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
         val request: HttpRequest = call.request
 
         val floconShouldLog = request.attributes.getOrNull(FLOCON_SHOULD_LOG) ?: true
-        if(!floconShouldLog) {
+        if (!floconShouldLog) {
             proceed()
             return@intercept
         }

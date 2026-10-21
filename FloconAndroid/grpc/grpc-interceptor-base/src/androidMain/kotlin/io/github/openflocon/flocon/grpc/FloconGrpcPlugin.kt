@@ -5,12 +5,12 @@ import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
-import io.github.openflocon.flocon.network.core.networkPluginOrNull
+import io.github.openflocon.flocon.network.core.networkPlugin
 
-internal class FloconGrpcPlugin() {
+internal class FloconGrpcPlugin {
 
     fun reportRequest(callId: String, request: FloconNetworkRequest) {
-        Flocon.networkPluginOrNull?.logRequest(
+        Flocon.networkPlugin.logRequest(
             FloconNetworkCallRequest(
                 floconCallId = callId,
                 floconNetworkType = "grpc",
@@ -28,7 +28,7 @@ internal class FloconGrpcPlugin() {
         val responseTime = System.currentTimeMillis()
         val durationMs = (responseTime - request.startTime).toDouble()
 
-        Flocon.networkPluginOrNull?.logResponse(
+        Flocon.networkPlugin.logResponse(
             FloconNetworkCallResponse(
                 floconCallId = callId,
                 floconNetworkType = "grpc",

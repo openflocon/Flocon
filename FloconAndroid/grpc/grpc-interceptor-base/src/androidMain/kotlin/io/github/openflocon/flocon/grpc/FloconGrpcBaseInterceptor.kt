@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package io.github.openflocon.flocon.grpc
 
 import io.github.openflocon.flocon.Flocon
@@ -9,7 +7,7 @@ import io.github.openflocon.flocon.grpc.model.toHeaders
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
-import io.github.openflocon.flocon.network.core.networkPluginOrNull
+import io.github.openflocon.flocon.network.core.networkPlugin
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall
@@ -20,7 +18,6 @@ import io.grpc.Metadata
 import io.grpc.MethodDescriptor
 import io.grpc.Status
 import kotlinx.coroutines.runBlocking
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 abstract class FloconGrpcBaseInterceptor(
@@ -34,11 +31,7 @@ abstract class FloconGrpcBaseInterceptor(
         callOptions: CallOptions,
         next: Channel,
     ): ClientCall<ReqT, RespT> {
-        val networkPlugin = Flocon.networkPluginOrNull
-        if (networkPlugin == null) {
-            // do not intercept if no network plugin, just call
-            return next.newCall(method, callOptions)
-        }
+        val networkPlugin = Flocon.networkPlugin
 
         val callId = Uuid.random().toString()
         return LoggingForwardingClientCall(

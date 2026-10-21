@@ -7,7 +7,7 @@ import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkResponse
-import io.github.openflocon.flocon.network.core.networkPluginOrNull
+import io.github.openflocon.flocon.network.core.networkPlugin
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request
@@ -29,9 +29,9 @@ class FloconOkhttpInterceptor(
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val floconNetworkPlugin = Flocon.networkPluginOrNull
+        val floconNetworkPlugin = Flocon.networkPlugin
 
-        if (floconNetworkPlugin == null || !shouldLog(chain)) {
+        if (!shouldLog(chain)) {
             // on no op, do not intercept the call, just execute it
             return chain.proceed(chain.request())
         }
@@ -113,7 +113,7 @@ class FloconOkhttpInterceptor(
             val responseBody = response.body
             var responseBodyString: String? = null
             var responseSize: Long? = null
-            val responseContentType: MediaType? = responseBody?.contentType()
+            val responseContentType: MediaType? = responseBody.contentType()
 
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }

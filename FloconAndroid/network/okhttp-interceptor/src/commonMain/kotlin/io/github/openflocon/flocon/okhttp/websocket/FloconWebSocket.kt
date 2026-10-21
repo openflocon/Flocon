@@ -3,7 +3,7 @@ package io.github.openflocon.flocon.okhttp.websocket
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent
 import io.github.openflocon.flocon.network.core.model.FloconWebSocketMockListener
-import io.github.openflocon.flocon.network.core.networkPluginOrNull
+import io.github.openflocon.flocon.network.core.networkPlugin
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -18,7 +18,7 @@ object FloconWebSocket {
         message: String? = null,
         error: Throwable? = null,
     ) {
-        val floconNetworkPlugin = Flocon.networkPluginOrNull ?: return
+        val floconNetworkPlugin = Flocon.networkPlugin
         val size = message?.toByteArray()?.size?.toLong()
         floconNetworkPlugin.logWebSocket(
             FloconWebSocketEvent(
@@ -31,7 +31,7 @@ object FloconWebSocket {
         )
     }
 
-    fun send(webSocket: WebSocket, text: String) : Boolean {
+    fun send(webSocket: WebSocket, text: String): Boolean {
         log(
             webSocket = webSocket,
             event = FloconWebSocketEvent.Event.SendMessage,
@@ -40,7 +40,7 @@ object FloconWebSocket {
         return webSocket.send(text = text)
     }
 
-    fun send(webSocket: WebSocket, bytes: ByteString) : Boolean {
+    fun send(webSocket: WebSocket, bytes: ByteString): Boolean {
         log(
             webSocket = webSocket,
             event = FloconWebSocketEvent.Event.SendMessage,
@@ -51,10 +51,10 @@ object FloconWebSocket {
 
     data class Listener(val listener: WebSocketListener, val id: String) : WebSocketListener() {
 
-        private var websocketRef : WeakReference<WebSocket>? = null
+        private var websocketRef: WeakReference<WebSocket>? = null
 
         init {
-            Flocon.networkPluginOrNull?.registerWebSocketMockListener(id = id, listener = object : FloconWebSocketMockListener {
+            Flocon.networkPlugin.registerWebSocketMockListener(id = id, listener = object : FloconWebSocketMockListener {
                 override fun onMessage(message: String) {
                     websocketRef?.get()?.let { websocket ->
                         onMessage(websocket, message)
