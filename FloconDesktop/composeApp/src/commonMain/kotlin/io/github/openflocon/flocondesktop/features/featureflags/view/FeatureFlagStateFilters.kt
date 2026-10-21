@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.feature_flag_state_custom
@@ -22,7 +23,6 @@ import flocondesktop.composeapp.generated.resources.feature_flag_state_on
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * One toggle per state: keeps only the flags of the selected states
