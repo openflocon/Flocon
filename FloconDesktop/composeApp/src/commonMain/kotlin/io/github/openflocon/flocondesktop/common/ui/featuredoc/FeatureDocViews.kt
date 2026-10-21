@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
@@ -17,6 +18,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.feature_doc_how_to_setup
+import flocondesktop.composeapp.generated.resources.feature_doc_no_device_description
+import flocondesktop.composeapp.generated.resources.feature_doc_no_device_title
 import flocondesktop.composeapp.generated.resources.feature_doc_open_documentation
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -53,27 +56,50 @@ fun FeatureEmptyState(
     modifier: Modifier = Modifier,
     illustrationSize: Int = 160,
 ) {
+    val illustrationModifier = Modifier.size(width = illustrationSize.dp, height = (illustrationSize * 0.75f).dp)
+    if (LocalHasDevice.current) {
+        FeatureEmptyStateView(
+            title = doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
+            description = doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
+            setupUrl = doc.setupUrl,
+            modifier = modifier,
+            illustration = { FeatureIllustration(doc = doc, modifier = illustrationModifier) },
+        )
+    } else {
+        FeatureEmptyStateView(
+            title = stringResource(Res.string.feature_doc_no_device_title),
+            description = stringResource(Res.string.feature_doc_no_device_description),
+            setupUrl = FeatureDoc.SETUP_URL,
+            modifier = modifier,
+            illustration = { NoDeviceIllustration(modifier = illustrationModifier) },
+        )
+    }
+}
+
+@Composable
+private fun FeatureEmptyStateView(
+    title: String,
+    description: String,
+    setupUrl: String,
+    modifier: Modifier = Modifier,
+    illustration: @Composable () -> Unit,
+) {
     val uriHandler = LocalUriHandler.current
     FloconEmptyState(
-        title = doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
-        description = doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
+        title = title,
+        description = description,
         modifier = modifier,
-        illustration = {
-            FeatureIllustration(
-                doc = doc,
-                modifier = Modifier.size(width = illustrationSize.dp, height = (illustrationSize * 0.75f).dp),
-            )
-        },
+        illustration = illustration,
         action = {
             FloconButton(
-                onClick = { runCatching { uriHandler.openUri(doc.setupUrl) } },
+                onClick = { runCatching { uriHandler.openUri(setupUrl) } },
                 containerColor = FloconTheme.colors.accent,
                 modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
                 ) {
                     FloconIcon(
                         imageVector = Icons.Outlined.Description,
@@ -91,5 +117,15 @@ fun FeatureEmptyState(
 private fun FeatureEmptyStatePreview() {
     FloconTheme {
         FeatureEmptyState(doc = FeatureDoc.Network)
+    }
+}
+
+@Preview
+@Composable
+private fun FeatureEmptyStateNoDevicePreview() {
+    FloconTheme {
+        CompositionLocalProvider(LocalHasDevice provides false) {
+            FeatureEmptyState(doc = FeatureDoc.Network)
+        }
     }
 }

@@ -46,6 +46,40 @@ fun FeatureIllustration(
     doc: FeatureDoc,
     modifier: Modifier = Modifier,
 ) {
+    IllustrationCanvas(modifier = modifier) { colors ->
+        when (doc) {
+            FeatureDoc.Network -> drawNetwork(colors)
+            FeatureDoc.Images -> drawImages(colors)
+            FeatureDoc.Database -> drawDatabase(colors)
+            FeatureDoc.SharedPreferences -> drawPreferences(colors)
+            FeatureDoc.Files -> drawFiles(colors)
+            FeatureDoc.Dashboard -> drawDashboard(colors)
+            FeatureDoc.Analytics -> drawAnalytics(colors)
+            FeatureDoc.Tables -> drawTables(colors)
+            FeatureDoc.Deeplinks -> drawDeeplinks(colors)
+            FeatureDoc.CrashReporter -> drawCrashReporter(colors)
+            FeatureDoc.AdbCommander -> drawAdbCommander(colors)
+        }
+    }
+}
+
+/**
+ * Illustration displayed instead of the page one when no device is connected yet.
+ */
+@Composable
+fun NoDeviceIllustration(
+    modifier: Modifier = Modifier,
+) {
+    IllustrationCanvas(modifier = modifier) { colors ->
+        drawNoDevice(colors)
+    }
+}
+
+@Composable
+private fun IllustrationCanvas(
+    modifier: Modifier = Modifier,
+    draw: DrawScope.(ArtColors) -> Unit,
+) {
     val tokens = FloconTheme.colors
     val colors = ArtColors(
         backdrop = tokens.bg300,
@@ -67,19 +101,7 @@ fun FeatureIllustration(
             scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
         }) {
             drawBackdrop(colors)
-            when (doc) {
-                FeatureDoc.Network -> drawNetwork(colors)
-                FeatureDoc.Images -> drawImages(colors)
-                FeatureDoc.Database -> drawDatabase(colors)
-                FeatureDoc.SharedPreferences -> drawPreferences(colors)
-                FeatureDoc.Files -> drawFiles(colors)
-                FeatureDoc.Dashboard -> drawDashboard(colors)
-                FeatureDoc.Analytics -> drawAnalytics(colors)
-                FeatureDoc.Tables -> drawTables(colors)
-                FeatureDoc.Deeplinks -> drawDeeplinks(colors)
-                FeatureDoc.CrashReporter -> drawCrashReporter(colors)
-                FeatureDoc.AdbCommander -> drawAdbCommander(colors)
-            }
+            draw(colors)
         }
     }
 }
@@ -374,6 +396,25 @@ private fun DrawScope.drawAdbCommander(c: ArtColors) {
     drawRect(c.accent, Offset(origin.x + 54f, promptY + 18f), Size(6f, 8f))
 }
 
+private fun DrawScope.drawNoDevice(c: ArtColors) {
+    // phone, screen off
+    drawCard(c, Offset(34f, 28f), Size(40f, 66f), radius = 8f)
+    drawTextLine(c.line, Offset(47f, 34f), 14f, thickness = 2.5f)
+    drawCircle(c.line, radius = 2.5f, center = Offset(54f, 86f))
+    // desktop
+    drawCard(c, Offset(92f, 38f), Size(46f, 34f), radius = 4f)
+    drawTextLine(c.line, Offset(99f, 48f), 24f, thickness = 3f)
+    drawTextLine(c.line, Offset(99f, 57f), 16f, thickness = 3f)
+    drawLine(c.strongLine, Offset(115f, 72f), Offset(115f, 80f), 2f)
+    drawTextLine(c.strongLine, Offset(106f, 80f), 18f, thickness = 2.5f)
+    // broken link between them
+    val dashed = PathEffect.dashPathEffect(floatArrayOf(4f, 4f))
+    drawLine(c.strongLine, Offset(78f, 58f), Offset(88f, 58f), 2f, StrokeCap.Round, pathEffect = dashed)
+    drawCircle(c.accent, radius = 7f, center = Offset(83f, 44f))
+    drawLine(c.card, Offset(80f, 41f), Offset(86f, 47f), 2f, StrokeCap.Round)
+    drawLine(c.card, Offset(86f, 41f), Offset(80f, 47f), 2f, StrokeCap.Round)
+}
+
 @Preview
 @Composable
 private fun FeatureIllustrationsPreview() {
@@ -382,6 +423,7 @@ private fun FeatureIllustrationsPreview() {
             FeatureDoc.entries.forEach {
                 FeatureIllustration(doc = it, modifier = Modifier.size(width = 160.dp, height = 120.dp))
             }
+            NoDeviceIllustration(modifier = Modifier.size(width = 160.dp, height = 120.dp))
         }
     }
 }

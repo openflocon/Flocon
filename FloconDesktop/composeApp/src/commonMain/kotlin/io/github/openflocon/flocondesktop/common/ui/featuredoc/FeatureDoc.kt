@@ -106,6 +106,11 @@ enum class FeatureDoc(
         emptyDescription = null,
     );
 
+    companion object {
+        /** Getting started guide, opened from the empty state when no device is connected. */
+        const val SETUP_URL = "${DOC_BASE_URL}setup/"
+    }
+
     /** Root of the documentation page, opened by the (i) button. */
     val url: String
         get() = "$DOC_BASE_URL$page/"
