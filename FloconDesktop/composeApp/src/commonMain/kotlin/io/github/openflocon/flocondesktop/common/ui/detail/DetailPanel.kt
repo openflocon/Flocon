@@ -53,8 +53,8 @@ internal fun DetailPanel(
         Column(
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(all = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(all = FloconTheme.spacing.large),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         ) {
             header()
             FloconHorizontalDivider(
@@ -81,7 +81,7 @@ internal fun DetailHeader(
     chips: (@Composable RowScope.() -> Unit)? = null,
 ) {
     SelectionContainer {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
             Text(
                 text = label.uppercase(),
                 style = FloconTheme.typography.labelSmall.copy(
@@ -97,7 +97,7 @@ internal fun DetailHeader(
             )
             if (chips != null) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                     verticalAlignment = Alignment.CenterVertically,
                     content = chips,
                 )
@@ -115,8 +115,8 @@ internal fun DetailChip(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colors.bg200)
-            .padding(horizontal = 10.dp, vertical = 3.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
@@ -164,9 +164,9 @@ internal fun DetailSectionCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(FloconTheme.colors.bg000)
-                .padding(start = 12.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
+                .padding(start = FloconTheme.spacing.medium, end = FloconTheme.spacing.small, top = FloconTheme.spacing.compact, bottom = FloconTheme.spacing.compact),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             Text(
                 text = title,
@@ -184,7 +184,7 @@ internal fun DetailSectionCard(
                     modifier = Modifier
                         .clip(FloconTheme.shapes.extraSmall)
                         .background(FloconTheme.colors.bg200)
-                        .padding(horizontal = 6.dp, vertical = 1.dp),
+                        .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
                 )
             }
             Spacer(Modifier.weight(1f))
@@ -207,7 +207,7 @@ internal fun DetailEmptyText(text: String) {
         text = text,
         style = FloconTheme.typography.bodySmall,
         color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-        modifier = Modifier.padding(12.dp),
+        modifier = Modifier.padding(FloconTheme.spacing.medium),
     )
 }
 
@@ -232,8 +232,8 @@ internal fun DetailKeyValueList(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
                 ) {
                     Text(
                         text = key,

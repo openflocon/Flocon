@@ -82,7 +82,7 @@ private data class BigDialogScene(
                     indication = null,
                     interactionSource = null
                 )
-                .padding(64.dp)
+                .padding(FloconTheme.spacing.doubleExtraLarge)
                 .graphicsLayer {
                     this.scaleX = scale.value
                     this.scaleY = scale.value
@@ -97,7 +97,7 @@ private data class BigDialogScene(
                 .clip(RoundedCornerShape(12.dp))
                 .background(FloconTheme.colors.bg100)
                 .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(12.dp))
-                .padding(16.dp)
+                .padding(FloconTheme.spacing.large)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -118,9 +118,9 @@ private data class BigDialogScene(
                     )
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.small))
             HorizontalDivider(color = FloconTheme.colors.line)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.small))
             Box(
                 Modifier
                     .fillMaxSize()

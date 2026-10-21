@@ -45,7 +45,7 @@ fun NetworkExceptionSelector(
                             },
                         )
                     )
-                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.extraSmall)
+                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall)
             ) {
                 Text(
                     text = exception.description,

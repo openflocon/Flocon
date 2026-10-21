@@ -287,7 +287,7 @@ private fun ResultHeader(
         Box(
             Modifier.size(30.dp).clickable {
                 onExportCsvClicked()
-            }.padding(5.dp)
+            }.padding(FloconTheme.spacing.compact)
         ) {
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,

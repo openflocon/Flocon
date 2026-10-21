@@ -195,7 +195,7 @@ fun NetworkItemView(
                                 .padding(end = FloconTheme.spacing.small)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(state.type.imageColor())
-                                .padding(3.dp)
+                                .padding(FloconTheme.spacing.extraSmall)
                         ) {
                             Image(
                                 imageVector = it,

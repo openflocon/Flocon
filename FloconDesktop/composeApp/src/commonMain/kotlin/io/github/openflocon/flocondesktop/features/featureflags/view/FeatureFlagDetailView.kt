@@ -108,7 +108,7 @@ private fun PayloadCard(
             FloconCodeBlock(
                 code = payload,
                 containerColor = FloconTheme.colors.bg100,
-                modifier = Modifier.fillMaxWidth().padding(4.dp),
+                modifier = Modifier.fillMaxWidth().padding(FloconTheme.spacing.extraSmall),
             )
         } else {
             DetailEmptyText(stringResource(Res.string.feature_flag_no_payload))
