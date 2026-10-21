@@ -3,14 +3,12 @@ package io.github.openflocon.domain.device.usecase
 import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.models.RecordingDomainModel
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import java.io.File
 
 class StopRecordingVideoUseCase(
-    private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
     private val iosSimulatorRepository: IosSimulatorRepository,
@@ -23,12 +21,11 @@ class StopRecordingVideoUseCase(
     }
 
     private suspend fun stopAndroidRecording(recording: RecordingDomainModel.Android): Either<Throwable, String> {
-        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
-
-        val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"
+        // the device the recording was started on, not the currently selected one
+        val fileName = "record_${recording.packageName}_${System.currentTimeMillis()}.mp4"
 
         executeAdbCommandUseCase(
-            target = AdbCommandTargetDomainModel.Device(current.deviceId),
+            target = AdbCommandTargetDomainModel.Device(recording.deviceId),
             command = "shell pkill -l 2 ${recording.processName}",
         )
 
@@ -43,12 +40,12 @@ class StopRecordingVideoUseCase(
         val filePath = File(parentFile, fileName).absolutePath
 
         executeAdbCommandUseCase(
-            target = AdbCommandTargetDomainModel.Device(current.deviceId),
+            target = AdbCommandTargetDomainModel.Device(recording.deviceId),
             command = "pull ${recording.onDeviceFilePath} $filePath",
         )
 
         executeAdbCommandUseCase(
-            target = AdbCommandTargetDomainModel.Device(current.deviceId),
+            target = AdbCommandTargetDomainModel.Device(recording.deviceId),
             command = "shell rm ${recording.onDeviceFilePath}",
         )
 

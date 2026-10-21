@@ -6,6 +6,8 @@ import kotlinx.coroutines.Deferred
 sealed interface RecordingDomainModel {
 
     data class Android(
+        val deviceId: String,
+        val packageName: String,
         val onDeviceFilePath: String,
         val processName: String,
         val completableDeferred: Deferred<Either<Throwable, String>>,

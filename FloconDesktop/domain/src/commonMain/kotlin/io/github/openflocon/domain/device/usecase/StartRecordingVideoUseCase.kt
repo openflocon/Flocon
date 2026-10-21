@@ -5,6 +5,7 @@ import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.success
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.models.RecordingDomainModel
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import kotlinx.coroutines.CoroutineScope
@@ -20,8 +21,8 @@ class StartRecordingVideoUseCase(
     private val applicationScope: CoroutineScope,
 ) {
 
-    suspend operator fun invoke(): Either<Throwable, RecordingDomainModel> {
-        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
+    suspend operator fun invoke(target: DeviceIdAndPackageNameDomainModel? = null): Either<Throwable, RecordingDomainModel> {
+        val current = target ?: getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "record_${current.packageName}_${System.currentTimeMillis()}.mp4"
 
@@ -49,6 +50,8 @@ class StartRecordingVideoUseCase(
         }
 
         return RecordingDomainModel.Android(
+            deviceId = current.deviceId,
+            packageName = current.packageName,
             onDeviceFilePath = onDeviceFilePath,
             processName = processName,
             completableDeferred = screenRecordAsync,
