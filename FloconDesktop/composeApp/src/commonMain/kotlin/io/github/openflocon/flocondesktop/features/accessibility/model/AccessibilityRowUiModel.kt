@@ -9,6 +9,7 @@ data class AccessibilityRowUiModel(
     val type: String,
     val text: String, // the text, else the content description, may be empty
     val className: String?,
+    val missingLabel: Boolean, // clickable but a screen reader can't name it
 )
 
 fun previewAccessibilityRowUiModel(id: String = "1") = AccessibilityRowUiModel(
@@ -17,4 +18,5 @@ fun previewAccessibilityRowUiModel(id: String = "1") = AccessibilityRowUiModel(
     type = "VIEW_FOCUSED",
     text = "Add to cart",
     className = "android.widget.Button",
+    missingLabel = false,
 )

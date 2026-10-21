@@ -138,7 +138,7 @@
     <string name="accessibility_clear">Clear the events</string>
     <string name="accessibility_all_types">All</string>
     <string name="accessibility_banner_not_supported">Automatic capture isn’t available on this platform. Events appear when the app calls Flocon.accessibilityPlugin.log().</string>
-    <string name="accessibility_banner_not_enabled">No accessibility service is running on the device. Turn on TalkBack (Android) or VoiceOver (iOS) to capture events.</string>
+    <string name="accessibility_banner_not_enabled">No accessibility service is running on the device. Clicks are still captured on Android. Turn on TalkBack (Android) or VoiceOver (iOS) to capture the other events.</string>
     <string name="accessibility_banner_services">Running: %1$s</string>
     <string name="accessibility_touch_exploration">Touch exploration</string>
     <string name="accessibility_detail_time">Time</string>
@@ -151,6 +151,7 @@
     <string name="accessibility_detail_extras">Extras</string>
     <string name="accessibility_detail_fields">Fields</string>
     <string name="accessibility_detail_copy">Copy fields</string>
+    <string name="accessibility_missing_label">Missing label</string>
     <string name="accessibility_detail_no_extras">No extras</string>
     <string name="detail_properties">Properties</string>
     <string name="detail_no_properties">No properties</string>

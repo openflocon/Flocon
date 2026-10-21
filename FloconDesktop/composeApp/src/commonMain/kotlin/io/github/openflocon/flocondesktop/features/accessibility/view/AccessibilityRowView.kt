@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.accessibility_missing_label
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,16 +56,30 @@ fun AccessibilityRowView(
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
             color = FloconTheme.colors.ink,
         )
-        Text(
-            text = model.text,
+        Row(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 12.dp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colors.ink,
-        )
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (model.missingLabel) {
+                Text(
+                    text = stringResource(Res.string.accessibility_missing_label),
+                    modifier = Modifier.padding(end = 8.dp),
+                    maxLines = 1,
+                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                    color = FloconTheme.colors.statusWarning,
+                )
+            }
+            Text(
+                text = model.text,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.ink,
+            )
+        }
         Text(
             text = model.className.orEmpty(),
             modifier = Modifier.width(ClassNameWidth),

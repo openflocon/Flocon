@@ -12,7 +12,7 @@ Flocon streams the **accessibility events** of your application to the desktop, 
 ## Overview
 
 Each event shows:
-- **Type**: what happened, e.g. `VIEW_FOCUSED`, `VIEW_CLICKED`, `WINDOW_STATE_CHANGED`, `ANNOUNCEMENT`
+- **Type**: what happened, e.g. `CLICK`, `VIEW_FOCUSED`, `VIEW_CLICKED`, `WINDOW_STATE_CHANGED`, `ANNOUNCEMENT`
 - **Text & content description**: what the screen reader reads
 - **Class & screen**: the element class and the activity it belongs to
 - **Bounds**: the position of the element on screen
@@ -43,12 +43,30 @@ startFlocon(context) {
 
 | Platform | Capture | How | Limits |
 |---|---|---|---|
-| Android | Automatic | An accessibility delegate on the decor view of each activity, plus the `AccessibilityManager` state listeners | Events are only emitted when TalkBack or another accessibility service is on. Dialogs, popups and toasts (windows without an activity) are not covered |
+| Android | Automatic | Clicks: a touch observer on the window of each activity, always on. Other events: an accessibility delegate on the decor view, plus the `AccessibilityManager` state listeners | Clicks are captured without any accessibility service. The other events are only emitted when TalkBack or another accessibility service is on. Taps only (no keyboard, long press or drag). Dialogs, popups and toasts (windows without an activity) are not covered |
 | iOS | Partial | Notifications for the focused element and the finished announcements, plus the VoiceOver and Switch Control status | Needs VoiceOver on. Notifications posted by the app itself (screen or layout changes) cannot be observed: use `log()` |
 | JVM (desktop) | Manual only | `log()` / `announce()` | The desktop shows that automatic capture is not supported |
 | Wasm (browser) | Manual only | `log()` / `announce()` | The desktop shows that automatic capture is not supported |
 
-On Android, turn on TalkBack on the device (or an emulator) and move the focus in your app: the events appear on the desktop.
+On Android, taps appear on the desktop right away. Turn on TalkBack on the device (or an emulator) and move the focus in your app to also get the focus, announcement and window events.
+
+### Clicks on Android (`CLICK`)
+
+Flocon observes the touches of each activity window (it never consumes or alters them). When a tap ends on a clickable View or Compose element, it sends a `CLICK` event describing what a screen reader would read for that element: text, content description and role. A tap on nothing clickable, a scroll or a long press sends nothing.
+
+Extras of a `CLICK` event:
+
+| Extra | Meaning |
+|---|---|
+| `source` | `view` or `compose` |
+| `viewId` | Resource entry name of the View (Views only) |
+| `testTag` | Test tag of the node (Compose only) |
+| `stateDescription` | State description of the node (Compose only) |
+| `clickLabel` | Label of the click action (Compose only) |
+| `enabled` | `true` or `false` |
+| `missingLabel` | `true` when the element is clickable but has no text and no content description: a screen reader cannot name it. The desktop shows a warning on these rows |
+
+Compose is detected at runtime, the SDK does not add it to your app. `VIEW_CLICKED` (sent by the platform) still appears when a service is on, next to `CLICK`.
 
 ---
 

@@ -18,7 +18,7 @@ Body is a **JSON array** of `AccessibilityItem`. The SDK sends one message per e
 | Key                  | Type                  | Description                                                                                          |
 |----------------------|-----------------------|------------------------------------------------------------------------------------------------------|
 | `id`                 | `String`              | Unique event id                                                                                      |
-| `type`               | `String`              | Kind of event: `VIEW_FOCUSED`, `ELEMENT_FOCUSED`, `ANNOUNCEMENT`, `VIEW_CLICKED`, `WINDOW_STATE_CHANGED`... Free string |
+| `type`               | `String`              | Kind of event: `VIEW_FOCUSED`, `ELEMENT_FOCUSED`, `ANNOUNCEMENT`, `VIEW_CLICKED`, `CLICK`, `WINDOW_STATE_CHANGED`... Free string |
 | `text`               | `String?`             | Text read by the screen reader                                                                       |
 | `contentDescription` | `String?`             | Content description (Android) or accessibility label (iOS) of the element                            |
 | `className`          | `String?`             | Class of the element                                                                                 |
@@ -26,6 +26,18 @@ Body is a **JSON array** of `AccessibilityItem`. The SDK sends one message per e
 | `bounds`             | `String?`             | Bounds of the element on screen, ex: `[0,0][100,50]`                                                 |
 | `extras`             | `Map<String, String>` | Platform specific details (hint, traits, assistive technology...). Omitted when empty                |
 | `createdAt`          | `Long`                | Event timestamp (ms)                                                                                 |
+
+### `CLICK` events
+
+Sent by Android for each tap on a clickable element, even when no accessibility service is running. `text`, `contentDescription` and `className` (View class, or Compose role such as `Button`) describe what a screen reader would read. `extras` can contain:
+
+| Key | Description |
+|---|---|
+| `source` | `view` or `compose` |
+| `viewId` | Resource entry name (Views) |
+| `testTag`, `stateDescription`, `clickLabel` | Compose semantics, when set |
+| `enabled` | `true` / `false` |
+| `missingLabel` | `"true"` when there is no text and no content description |
 
 ### Example
 

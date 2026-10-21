@@ -20,6 +20,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
         }
+        androidMain.dependencies {
+            // only used when the host app has Compose, never forced on it
+            compileOnly(dependencies.platform(libs.androidx.compose.bom))
+            compileOnly(libs.androidx.ui)
+        }
     }
 }
 

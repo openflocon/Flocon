@@ -55,6 +55,8 @@ internal actual fun startAccessibilityCapture(
             try {
                 val decorView = activity.window?.decorView ?: return
                 if (!hookedDecorViews.add(decorView)) return
+                // clicks are captured from the touches, so they work without an accessibility service
+                installClickCapture(activity, onEvent)
                 decorView.setAccessibilityDelegate(FloconAccessibilityDelegate(
                     previous = decorView.currentAccessibilityDelegate(),
                     screen = activity.javaClass.name,

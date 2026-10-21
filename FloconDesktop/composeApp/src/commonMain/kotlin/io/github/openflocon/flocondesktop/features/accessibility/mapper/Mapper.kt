@@ -14,6 +14,7 @@ internal fun AccessibilityEventDomainModel.mapToUi() = AccessibilityRowUiModel(
     type = type,
     text = text?.takeIf { it.isNotBlank() } ?: contentDescription.orEmpty(),
     className = className,
+    missingLabel = extras["missingLabel"] == "true",
 )
 
 internal fun AccessibilityEventDomainModel.mapToDetailUi() = AccessibilityDetailUiModel(
