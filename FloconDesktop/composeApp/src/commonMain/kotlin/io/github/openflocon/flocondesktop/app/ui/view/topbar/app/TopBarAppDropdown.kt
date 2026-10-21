@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -78,14 +77,7 @@ internal fun TopBarAppDropdown(
                                 .clickable {
                                     onAppSelected(app)
                                     expanded = false
-                                }
-                                .then(
-                                    if (isSelected) {
-                                        Modifier.background(color = FloconTheme.colors.bg300)
-                                    } else {
-                                        Modifier
-                                    }
-                                ),
+                                },
                         )
                     }
             }

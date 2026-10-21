@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -61,14 +60,7 @@ internal fun TopBarDeviceDropdown(
                         .clickable {
                             onDeviceSelected(device)
                             expanded = false
-                        }
-                        .then(
-                            if (isSelected) {
-                                Modifier.background(color = FloconTheme.colors.bg300)
-                            } else {
-                                Modifier
-                            }
-                        ),
+                        },
                     device = device,
                     selected = isSelected,
                     deleteClick = {
