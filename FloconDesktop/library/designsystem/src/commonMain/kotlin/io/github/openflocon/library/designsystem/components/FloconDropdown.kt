@@ -25,21 +25,26 @@ import com.composeunstyled.DropdownMenuPanel
 import com.composeunstyled.DropdownPanelAnchor
 import io.github.openflocon.library.designsystem.FloconTheme
 
-private val DropdownEnterTransition = fadeIn(tween(durationMillis = 180)) +
-    scaleIn(
-        initialScale = 0.85f,
-        transformOrigin = TransformOrigin(0.1f, 0f),
-        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium),
-    ) +
-    slideInVertically(tween(durationMillis = 220)) { -it / 8 }
+internal val DropdownEnterTransition = fadeIn(tween(durationMillis = 180))
+    .plus(
+        scaleIn(
+            initialScale = 0.85f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        )
+    )
+    .plus(slideInVertically(tween(durationMillis = 220)) { -it / 8 })
 
-private val DropdownExitTransition = fadeOut(tween(durationMillis = 120)) +
-    scaleOut(
-        targetScale = 0.9f,
-        transformOrigin = TransformOrigin(0.1f, 0f),
-        animationSpec = tween(durationMillis = 120),
-    ) +
-    slideOutVertically(tween(durationMillis = 120)) { -it / 10 }
+internal val DropdownExitTransition = fadeOut(tween(durationMillis = 120))
+    .plus(
+        scaleOut(
+            targetScale = 0.9f,
+            animationSpec = tween(durationMillis = 120),
+        )
+    )
+    .plus(slideOutVertically(tween(durationMillis = 120)) { -it / 10 })
 
 @Composable
 fun FloconDropdownMenu(
