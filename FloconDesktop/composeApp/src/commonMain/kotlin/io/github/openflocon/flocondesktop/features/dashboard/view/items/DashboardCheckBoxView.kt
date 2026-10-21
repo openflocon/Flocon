@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,7 +38,7 @@ internal fun DashboardCheckBoxView(
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             ) {
                 Text(
-                    style = MaterialTheme.typography.bodySmall.copy(
+                    style = FloconTheme.typography.bodySmall.copy(
                         color = FloconTheme.colors.ink,
                     ),
                     text = rowItem.label,
