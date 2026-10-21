@@ -77,10 +77,3 @@ private class NoOpNetworkPlugin : FloconNetworkPlugin {
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }
-
-/**
- * The network plugin, or null if [FloconNetwork] is not installed (or Flocon not started yet).
- * Used by the interceptors, which must let the calls go through in that case.
- */
-val Flocon.Companion.networkPluginOrNull: FloconNetworkPlugin?
-    get() = FloconNetworkPluginImpl.plugin
