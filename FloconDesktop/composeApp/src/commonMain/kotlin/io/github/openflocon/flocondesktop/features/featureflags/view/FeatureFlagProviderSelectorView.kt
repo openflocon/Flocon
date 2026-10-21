@@ -50,7 +50,7 @@ internal fun FeatureFlagProviderSelectorView(
                     if (providersState is FeatureFlagProvidersUiModel.WithContent)
                         expanded = true
                 },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 when (providersState) {
                     FeatureFlagProvidersUiModel.Empty ->
