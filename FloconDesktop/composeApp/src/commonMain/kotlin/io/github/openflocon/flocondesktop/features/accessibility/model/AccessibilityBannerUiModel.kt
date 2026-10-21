@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.accessibility.model
 
+import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.runtime.Immutable
 
 /**
@@ -17,7 +18,7 @@ sealed interface AccessibilityBannerUiModel {
 
     @Immutable
     data class Running(
-        val services: List<String>,
+        val services: ImmutableList<String>,
         val touchExploration: Boolean,
     ) : AccessibilityBannerUiModel
 }

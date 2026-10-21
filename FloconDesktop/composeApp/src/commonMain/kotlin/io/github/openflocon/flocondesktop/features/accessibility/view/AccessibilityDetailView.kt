@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.accessibility.view
 
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -115,7 +117,7 @@ private fun FieldsCard(
 
 @Composable
 private fun ExtrasCard(
-    extras: List<Pair<String, String>>,
+    extras: ImmutableList<Pair<String, String>>,
     onCopyExtras: () -> Unit,
 ) {
     DetailSectionCard(
@@ -147,7 +149,7 @@ private fun AccessibilityDetailPreview() {
                 className = "android.widget.Button",
                 screen = "CheckoutActivity",
                 bounds = "[0,0][100,48]",
-                extras = listOf("checked" to "false"),
+                extras = persistentListOf("checked" to "false"),
             ),
             onCopyFields = {},
             onCopyExtras = {},

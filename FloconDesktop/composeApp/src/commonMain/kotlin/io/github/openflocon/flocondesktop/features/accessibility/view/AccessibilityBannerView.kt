@@ -45,10 +45,10 @@ internal fun AccessibilityBannerView(
     Text(
         text = text,
         style = FloconTheme.typography.bodySmall,
-        color = FloconTheme.colorPalette.onPrimary,
+        color = FloconTheme.colors.ink,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
             .padding(horizontal = 12.dp, vertical = 8.dp),
     )
 }

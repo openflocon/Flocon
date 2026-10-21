@@ -65,11 +65,11 @@ private fun TypeFilter(
     Text(
         text = label,
         style = FloconTheme.typography.bodySmall,
-        color = FloconTheme.colorPalette.onSurface,
+        color = FloconTheme.colors.ink,
         modifier = Modifier
             .clip(shape)
-            .background(if (selected) FloconTheme.colorPalette.secondary else Color.Transparent)
-            .border(width = 1.dp, color = FloconTheme.colorPalette.secondary, shape = shape)
+            .background(if (selected) FloconTheme.colors.bg300 else Color.Transparent)
+            .border(width = 1.dp, color = FloconTheme.colors.bg300, shape = shape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 6.dp)
             .alpha(if (selected) 1f else 0.5f),

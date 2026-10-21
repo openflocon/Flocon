@@ -125,10 +125,10 @@ fun AccessibilityScreen(
                 .fillMaxWidth()
                 .weight(1f)
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg300,
                     shape = FloconTheme.shapes.medium
                 )
         ) {
@@ -136,7 +136,7 @@ fun AccessibilityScreen(
                 Text(
                     text = stringResource(Res.string.no_accessibility_events),
                     style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {
@@ -175,7 +175,7 @@ private fun AccessibilityScreenPreview() {
     FloconTheme {
         AccessibilityScreen(
             banner = AccessibilityBannerUiModel.Running(
-                services = listOf("TalkBack"),
+                services = persistentListOf("TalkBack"),
                 touchExploration = true,
             ),
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),

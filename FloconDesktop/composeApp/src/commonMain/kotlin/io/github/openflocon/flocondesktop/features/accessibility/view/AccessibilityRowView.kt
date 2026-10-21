@@ -41,7 +41,7 @@ fun AccessibilityRowView(
                 .padding(end = 12.dp),
             maxLines = 1,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
-            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+            color = FloconTheme.colors.ink.copy(alpha = 0.4f),
         )
         Text(
             text = model.type,
@@ -51,7 +51,7 @@ fun AccessibilityRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Text(
             text = model.text,
@@ -61,7 +61,7 @@ fun AccessibilityRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Text(
             text = model.className.orEmpty(),
@@ -69,7 +69,7 @@ fun AccessibilityRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f),
+            color = FloconTheme.colors.ink.copy(alpha = 0.5f),
         )
     }
 }
