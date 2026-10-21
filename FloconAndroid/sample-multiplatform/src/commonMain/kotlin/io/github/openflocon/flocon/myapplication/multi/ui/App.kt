@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.dashboard.initializeDashboard
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
+import io.github.openflocon.flocon.myapplication.multi.featureflags.initializeFeatureFlags
 import io.github.openflocon.flocon.plugins.analytics.floconAnalytics
 import io.github.openflocon.flocon.plugins.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.plugins.analytics.model.analyticsProperty
@@ -30,6 +31,7 @@ import kotlin.random.Random
 fun App() {
     LaunchedEffect(Unit) {
         initializeDashboard()
+        initializeFeatureFlags()
     }
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

@@ -33,6 +33,7 @@
     <string name="menu_actions">Actions</string>
     <string name="menu_data">Data</string>
     <string name="menu_item_analytics">Analytics</string>
+    <string name="menu_item_feature_flags">Feature Flags</string>
     <string name="menu_item_crashReporter">Crashes</string>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
@@ -81,6 +82,15 @@
     <string name="update_available_desktop">Update: %1$s</string>
     <string name="update_available_client">SDK update: %1$s</string>
     <string name="no_analytics">No analytics</string>
+    <string name="no_feature_flags">No feature flags</string>
+    <string name="feature_flag_provider">Provider</string>
+    <string name="feature_flag_variant">Variant</string>
+    <string name="feature_flag_state">State</string>
+    <string name="feature_flag_state_on">On</string>
+    <string name="feature_flag_state_off">Off</string>
+    <string name="feature_flag_state_custom">Custom</string>
+    <string name="feature_flag_payload">Payload</string>
+    <string name="feature_flag_no_payload">No payload</string>
     <string name="no_devices_found">No Devices Found</string>
     <string name="open_external">Open in external editor</string>
     <string name="preferences">Preferences</string>

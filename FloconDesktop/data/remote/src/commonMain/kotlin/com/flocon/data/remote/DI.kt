@@ -6,6 +6,7 @@ import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
 import com.flocon.data.remote.deeplink.deeplinkModule
 import com.flocon.data.remote.device.deviceModule
+import com.flocon.data.remote.featureflags.featureFlagsModule
 import com.flocon.data.remote.files.filesModule
 import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.network.networkModule
@@ -18,6 +19,7 @@ import org.koin.dsl.module
 val dataRemoteModule = module {
     includes(
         analyticsModule,
+        featureFlagsModule,
         dashboardModule,
         databaseModule,
         deeplinkModule,

@@ -84,6 +84,7 @@ The desktop identifies a client by the triple `deviceId` + `appPackageName` + `a
 | Database             | `database`          | [database.md](database.md)                     |
 | Deeplinks            | `Deeplink`          | [deeplinks.md](deeplinks.md)                   |
 | Device               | `device`            | [device.md](device.md)                         |
+| Feature Flags        | `featureflags`      | [feature-flags.md](feature-flags.md)           |
 | Files                | `files`             | [files.md](files.md)                           |
 | Network              | `network`           | [network.md](network.md)                       |
 | Shared Preferences   | `sharedPreferences` | [shared-preferences.md](shared-preferences.md) |
