@@ -49,7 +49,7 @@ internal fun CrashReportDetailView(
                     Text(
                         text = crash.exceptionType,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.error
+                        color = FloconTheme.colors.statusError
                     )
                     Text(
                         text = crash.dateFormatted,
