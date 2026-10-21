@@ -12,10 +12,9 @@ internal class FloconCrashReporterDataSourceAndroid(
     private val context: Context
 ) : FloconCrashReporterDataSource {
 
-    private val crashesDir = File(context.filesDir, "flocon_crashes")
-
-    init {
-        crashesDir.mkdirs()
+    // created on first use, not when the plugin is installed (this can run on the main thread)
+    private val crashesDir: File by lazy {
+        File(context.filesDir, "flocon_crashes").also { it.mkdirs() }
     }
 
     override fun saveCrash(crash: CrashReportDataModel) {
