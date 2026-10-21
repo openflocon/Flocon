@@ -88,7 +88,7 @@ fun FloconSolidPill(
 ) {
     Row(
         modifier = modifier
-            .defaultMinSize(minWidth = 52.dp)
+            .defaultMinSize(minWidth = FloconTheme.sizes.pillMinWidth)
             .clip(FloconTheme.shapes.small)
             .background(background)
             .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
