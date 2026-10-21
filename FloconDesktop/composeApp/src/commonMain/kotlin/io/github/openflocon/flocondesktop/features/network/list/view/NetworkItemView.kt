@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,6 +12,8 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,21 +39,30 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewExceptionItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewGrpcItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewImageItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewMockedItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
@@ -68,11 +82,16 @@ import flocondesktop.composeapp.generated.resources.network_copy_url
 import flocondesktop.composeapp.generated.resources.network_create_mock
 import flocondesktop.composeapp.generated.resources.network_header_domain
 import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_image_response
+import flocondesktop.composeapp.generated.resources.network_mock_tag
 import flocondesktop.composeapp.generated.resources.network_replay
 import flocondesktop.composeapp.generated.resources.network_select_item
 import flocondesktop.composeapp.generated.resources.network_share_markdown
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
+
+private val RowVerticalPadding = 6.dp
+private val ChipHeight = 28.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -86,16 +105,9 @@ fun NetworkItemView(
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
     val colors = FloconTheme.colors
-    val bodySmall = FloconTheme.typography.bodySmall
     val mono = floconMonoStyle()
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-
-    val errorColor = when (state.status.status) {
-        NetworkStatusUi.Status.ERROR -> colors.statusError
-        NetworkStatusUi.Status.EXCEPTION -> colors.catCrash
-        else -> null
-    }
 
     ContextualView(
         items = contextualActions(
@@ -114,7 +126,7 @@ fun NetworkItemView(
                     when {
                         selected || hovered -> colors.bg300
                         state.isReplayed -> colors.catNetworkSoft
-                        state.isMocked -> colors.accentSoft
+                        state.isMocked -> colors.accent.copy(alpha = 0.05f)
                         else -> Color.Transparent
                     }
                 )
@@ -137,8 +149,7 @@ fun NetworkItemView(
                         drawRect(color = colors.accent, size = Size(2.dp.toPx(), size.height))
                     }
                 }
-                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-            // Inner padding for content
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = RowVerticalPadding),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
@@ -156,17 +167,21 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.dateFormatted,
-                    style = mono,
-                    fontWeight = FontWeight.Medium,
-                    color = errorColor ?: colors.ink
+                    // same text as the domain, with digits of the same width so the times stay aligned
+                    style = FloconTheme.typography.bodySmall.copy(fontFeatureSettings = "tnum"),
+                    fontSize = 12.sp,
+                    color = colors.inkMuted,
+                    maxLines = 1,
                 )
             }
 
             // Method - Fixed width for the tag from data class
-            MethodView(
-                method = state.method,
+            Box(
                 modifier = Modifier.width(columnWidths.methodWidth),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                MethodView(method = state.method)
+            }
 
             // Route - Takes remaining space (weight)
             Row(
@@ -175,44 +190,22 @@ fun NetworkItemView(
             ) {
                 Text(
                     text = state.domain,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = bodySmall,
-                    color = errorColor ?: colors.inkMuted,
+                    style = FloconTheme.typography.bodySmall,
+                    fontSize = 12.sp,
+                    color = colors.inkFaint,
                     modifier = Modifier
                         .weight(columnWidths.domainWeight)
                         .padding(horizontal = FloconTheme.spacing.extraSmall),
                 )
-                Row(
+                RequestChip(
+                    state = state,
+                    selected = selected || hovered,
                     modifier = Modifier
-                        .weight(2f)
-                        .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    state.type.image()?.let {
-                        Box(
-                            modifier = Modifier
-                                .padding(end = FloconTheme.spacing.small)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(state.type.imageColor())
-                                .padding(FloconTheme.spacing.extraSmall)
-                        ) {
-                            Image(
-                                imageVector = it,
-                                contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    }
-                    Text(
-                        text = state.type.query,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        style = bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = errorColor ?: colors.ink,
-                    )
-                }
+                        .weight(columnWidths.queryWeight)
+                        .padding(start = FloconTheme.spacing.small),
+                )
             }
 
             // NetworkStatusUi - Fixed width for the tag from data class
@@ -224,15 +217,129 @@ fun NetworkItemView(
             // Time - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.CenterEnd,
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = floconMonoStyle(small = true),
-                    color = colors.inkFaint,
+                    style = mono,
+                    fontSize = 12.sp,
+                    color = colors.inkMuted,
+                    maxLines = 1,
                 )
             }
         }
+    }
+}
+
+// the request in a chip filling its column: tags (mock, image), the path, then the error of an exception
+@Composable
+private fun RequestChip(
+    state: NetworkItemViewState,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val isError = state.status.isFatalError()
+    val shape = FloconTheme.shapes.small
+    Row(
+        modifier = modifier
+            .height(ChipHeight)
+            .clip(shape)
+            .background(
+                when {
+                    isError -> colors.statusError.copy(alpha = 0.10f)
+                    selected -> colors.lineStrong.copy(alpha = 0.5f)
+                    else -> colors.bg300
+                }
+            )
+            .then(
+                if (isError) Modifier.border(1.dp, colors.statusError.copy(alpha = 0.25f), shape) else Modifier
+            )
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        state.type.image()?.let {
+            Box(
+                modifier = Modifier
+                    .padding(end = FloconTheme.spacing.small)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(state.type.imageColor())
+                    .padding(3.dp)
+            ) {
+                Image(
+                    imageVector = it,
+                    contentDescription = null,
+                    modifier = Modifier.size(12.dp),
+                    colorFilter = ColorFilter.tint(Color.White)
+                )
+            }
+        }
+        if (state.isMocked) {
+            Text(
+                text = stringResource(Res.string.network_mock_tag),
+                style = floconMonoStyle(small = true),
+                fontSize = 10.5.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                color = colors.accent,
+                maxLines = 1,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colors.accent.copy(alpha = 0.16f))
+                    .padding(horizontal = 6.dp, vertical = 1.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        if (state.isImage) {
+            Box(
+                modifier = Modifier
+                    .size(width = 20.dp, height = 18.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colors.catNetwork.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Image,
+                    contentDescription = stringResource(Res.string.network_image_response),
+                    tint = colors.catNetwork,
+                    modifier = Modifier.size(12.dp),
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(
+            text = requestText(text = state.type.query, queryColor = colors.inkFaint),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = FloconTheme.typography.bodySmall,
+            fontSize = 12.sp,
+            color = colors.ink,
+            // the path gives way to the error message only when both do not fit
+            modifier = Modifier.weight(1f, fill = false),
+        )
+        state.errorMessage?.let { message ->
+            Text(
+                text = message,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall,
+                fontSize = 12.sp,
+                color = colors.statusError,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(1f, fill = false),
+            )
+        }
+    }
+}
+
+// the path in the text color, the query string ('?...') in a fainter one
+private fun requestText(text: String, queryColor: Color): AnnotatedString {
+    val queryStart = text.indexOf('?')
+    if (queryStart < 0) return AnnotatedString(text)
+    return buildAnnotatedString {
+        append(text.substring(0, queryStart))
+        withStyle(SpanStyle(color = queryColor)) { append(text.substring(queryStart)) }
     }
 }
 
@@ -376,33 +483,48 @@ fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
 } ?: FloconTheme.colors.statusSuccess
 
 @Composable
-@Preview
-private fun ItemViewPreview() {
-    FloconTheme {
-        NetworkItemView(
-            modifier = Modifier.fillMaxWidth(),
-            selected = false,
-            multiSelect = false,
-            multiSelected = false,
-            state = previewNetworkItemViewState(),
-            onAction = {},
-        )
-    }
-}
-
-@Composable
-@Preview
-private fun ItemViewPreview_error() {
+private fun ItemPreview(
+    state: NetworkItemViewState,
+    selected: Boolean = false,
+) {
     FloconTheme {
         FloconSurface {
             NetworkItemView(
                 modifier = Modifier.fillMaxWidth(),
-                selected = false,
-                multiSelect = true,
+                selected = selected,
+                multiSelect = false,
                 multiSelected = false,
-                state = previewNetworkItemViewStateError(),
+                state = state,
                 onAction = {},
             )
         }
     }
 }
+
+@Composable
+@Preview
+private fun ItemViewPreview() = ItemPreview(previewNetworkItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewSelectedPreview() = ItemPreview(previewNetworkItemViewState(), selected = true)
+
+@Composable
+@Preview
+private fun ItemViewMockedPreview() = ItemPreview(previewMockedItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewImagePreview() = ItemPreview(previewImageItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewError500Preview() = ItemPreview(previewNetworkItemViewStateError())
+
+@Composable
+@Preview
+private fun ItemViewExceptionPreview() = ItemPreview(previewExceptionItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewGrpcPreview() = ItemPreview(previewGrpcItemViewState())

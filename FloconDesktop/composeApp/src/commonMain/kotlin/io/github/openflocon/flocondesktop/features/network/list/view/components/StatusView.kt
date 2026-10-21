@@ -2,6 +2,10 @@ package io.github.openflocon.flocondesktop.features.network.list.view.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
@@ -11,10 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.floconMonoStyle
@@ -36,10 +41,13 @@ internal fun NetworkStatusUi.color(): Color {
     }
 }
 
+// a server or fatal error (5xx, gRPC / GraphQL / websocket error, exception): 4xx stays a warning
+@Composable
+internal fun NetworkStatusUi.isFatalError(): Boolean = status != NetworkStatusUi.Status.LOADING && color() == FloconTheme.colors.statusError
+
 @Composable
 fun StatusView(
     status: NetworkStatusUi,
-    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -51,13 +59,27 @@ fun StatusView(
             NetworkStatusUi.Status.ERROR,
             NetworkStatusUi.Status.EXCEPTION -> {
                 val color = status.color()
-                FloconStatusPill(color = color) {
+                FloconStatusPill(
+                    color = color,
+                    leading = if (status.status == NetworkStatusUi.Status.EXCEPTION) {
+                        {
+                            Icon(
+                                imageVector = Icons.Outlined.Warning,
+                                contentDescription = null,
+                                tint = color,
+                                modifier = Modifier.size(11.dp),
+                            )
+                        }
+                    } else {
+                        { FloconDot(color = color) }
+                    },
+                ) {
                     SelectionContainer {
                         BasicText(
                             text = status.text,
                             autoSize = TextAutoSize.StepBased(
-                                maxFontSize = textSize,
-                                minFontSize = FloconTheme.typography.labelSmall.fontSize * 0.8f,
+                                maxFontSize = 12.sp,
+                                minFontSize = 8.sp,
                             ),
                             maxLines = 1,
                             style = floconMonoStyle(small = true).copy(

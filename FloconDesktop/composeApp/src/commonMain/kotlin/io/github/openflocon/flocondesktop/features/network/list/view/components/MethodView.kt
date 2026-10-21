@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconOutlinedPill
+import io.github.openflocon.library.designsystem.components.FloconTintedPill
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -33,14 +33,14 @@ private fun NetworkMethodUi.color(): Color? {
     val colors = FloconTheme.colors
     return when (this) {
         is NetworkMethodUi.Http.GET -> colors.catNetwork
-        is NetworkMethodUi.Http.POST -> colors.catAnalytics
+        is NetworkMethodUi.Http.POST -> colors.catTable
         is NetworkMethodUi.Http.PUT -> colors.accent
         is NetworkMethodUi.Http.DELETE -> colors.catCrash
         is NetworkMethodUi.Http.PATCH -> colors.catDeeplink
         is NetworkMethodUi.GraphQl.QUERY,
         is NetworkMethodUi.GraphQl.MUTATION -> colors.catDeeplink
 
-        is NetworkMethodUi.Grpc -> colors.catTable
+        is NetworkMethodUi.Grpc -> colors.catGrpc
         is NetworkMethodUi.WebSocket -> colors.catDatabase
         is NetworkMethodUi.OTHER -> null
     }
@@ -56,7 +56,7 @@ fun MethodView(
     val color = method.color()
     val icon = method.icon
 
-    FloconOutlinedPill(
+    FloconTintedPill(
         text = method.text,
         color = color,
         modifier = modifier.then(if (onClick != null) Modifier.clip(FloconTheme.shapes.small).clickable(onClick = onClick) else Modifier),
