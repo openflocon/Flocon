@@ -44,8 +44,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.crashlytics.buildtools)
-
     implementation(projects.sampleMultiplatform)
 
     implementation(projects.flocon)
