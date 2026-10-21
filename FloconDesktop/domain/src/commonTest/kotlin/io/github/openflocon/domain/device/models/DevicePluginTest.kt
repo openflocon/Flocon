@@ -27,6 +27,12 @@ class DevicePluginTest {
     }
 
     @Test
+    fun `feature flags need the feature flags plugin`() {
+        assertTrue(DevicePlugin.FeatureFlags.isInstalled(setOf("featureflags")))
+        assertFalse(DevicePlugin.FeatureFlags.isInstalled(setOf("network")))
+    }
+
+    @Test
     fun `images are available with the network plugin`() {
         assertTrue(DevicePlugin.Images.isInstalled(setOf("network")))
         assertFalse(DevicePlugin.Images.isInstalled(setOf("database")))

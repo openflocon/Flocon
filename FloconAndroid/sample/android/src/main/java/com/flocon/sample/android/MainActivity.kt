@@ -9,6 +9,7 @@ import com.flocon.sample.android.grpc.GrpcController
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.room
@@ -62,6 +63,7 @@ class MainActivity : ComponentActivity() {
             install(FloconDashboard)
             install(FloconTable)
             install(FloconAnalytics)
+            install(FloconFeatureFlags)
             install(FloconDatabase) {
                 room()
             }

@@ -21,6 +21,7 @@ kotlin {
             implementation(projects.flocon)
             implementation(projects.deeplinks)
             implementation(projects.analytics)
+            implementation(projects.featureflags)
             implementation(projects.network.ktorInterceptor)
             implementation(projects.database.room3)
 

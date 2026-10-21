@@ -78,6 +78,17 @@ class MenuStateTest {
     }
 
     @Test
+    fun `the feature flags are displayed when the plugin is installed`() {
+        val menu = buildMenu().applyPreferences(
+            installedPlugins = setOf("featureflags"),
+            pinnedIds = emptyList(),
+            collapsedSectionIds = emptySet(),
+        )
+
+        assertEquals(listOf(SubScreen.Timeline, SubScreen.FeatureFlags, SubScreen.AdbCommander), menu.screens())
+    }
+
+    @Test
     fun `the timeline is displayed whatever the installed plugins`() {
         val menu = buildMenu().applyPreferences(
             installedPlugins = emptySet(),

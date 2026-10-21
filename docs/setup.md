@@ -145,6 +145,7 @@ The available plugins:
 | `FloconTable` | `flocon-tables` | [Tables](table.md) |
 | `FloconDeeplinks` | `flocon-deeplinks` | [Deeplinks](deeplink.md) |
 | `FloconAnalytics` | `flocon-analytics` | [Analytics](analytics.md) |
+| `FloconFeatureFlags` | `flocon-feature-flags` | [Feature flags](featureflags.md) |
 | `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
 | `FloconDevice` | `flocon-device` | Shows the app icon and lets the desktop restart the app (Android) |
 

@@ -9,6 +9,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
@@ -28,6 +29,7 @@ fun main() {
         install(FloconNetwork)
         install(FloconDashboard)
         install(FloconAnalytics)
+        install(FloconFeatureFlags)
         install(FloconDeeplinks) {
             deeplink("flocon://home")
         }

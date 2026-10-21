@@ -27,6 +27,7 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | SharedPreferences / custom stores | `flocon-sharedprefs` | Android, JVM, iOS, Wasm |
 | DataStore | `flocon-datastores` | Android, JVM, iOS |
 | Analytics | `flocon-analytics` | Android, JVM, iOS, Wasm |
+| Feature flags | `flocon-feature-flags` | Android, JVM, iOS, Wasm |
 | Tables | `flocon-tables` | Android, JVM, iOS, Wasm |
 | Deeplinks | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
 | Files | `flocon-files` | Android, JVM, iOS (Wasm: no file browsing) |
@@ -96,7 +97,7 @@ Every plugin is now accessed with `Flocon.xxxPlugin`:
 | `floconLogWebSocketEvent(event)` | `Flocon.networkPlugin.logWebSocket(event)` |
 
 The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, `databasePlugin`,
-`deeplinksPlugin`, `devicePlugin`, `filesPlugin`, `networkPlugin`, `preferencesPlugin` and
+`deeplinksPlugin`, `devicePlugin`, `featureFlagsPlugin`, `filesPlugin`, `networkPlugin`, `preferencesPlugin` and
 `tablePlugin` (plus `databaseRoom` / `databaseRoom3` for the Room providers).
 
 ---

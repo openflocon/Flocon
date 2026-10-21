@@ -8,6 +8,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
+import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room3.room
 import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
@@ -30,6 +31,7 @@ fun MainViewController() = ComposeUIViewController(
             install(FloconNetwork)
             install(FloconDashboard)
             install(FloconAnalytics)
+            install(FloconFeatureFlags)
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
             }
