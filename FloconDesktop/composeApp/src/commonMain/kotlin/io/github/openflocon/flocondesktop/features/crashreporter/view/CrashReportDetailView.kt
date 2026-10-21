@@ -72,7 +72,7 @@ internal fun CrashReportDetailView(
             }
             FloconCodeBlock(
                 code = crash.stackTrace,
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(FloconTheme.spacing.medium)
@@ -102,7 +102,7 @@ private fun Actions(
                 Icons.Filled.Delete,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
         Box(
@@ -115,7 +115,7 @@ private fun Actions(
                 Icons.Filled.CopyAll,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
             )
         }
     }
