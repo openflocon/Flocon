@@ -21,6 +21,13 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
         }
+
+        // java.io.File code shared by Android and the JVM
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        androidMain.get().dependsOn(jvmAndroidMain)
+        jvmMain.get().dependsOn(jvmAndroidMain)
     }
 }
 
