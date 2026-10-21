@@ -69,7 +69,7 @@ fun CommandInputView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -95,7 +95,7 @@ fun CommandInputView(
                         .graphicsLayer(
                             alpha = if (isInputEmpty) 0.6f else 1f
                         ),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
 
@@ -116,7 +116,7 @@ fun CommandInputView(
                         .graphicsLayer(
                             alpha = if (isInputEmpty) 0.6f else 1f
                         ),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
 
@@ -142,7 +142,7 @@ fun CommandInputView(
                         Icons.Outlined.History,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
 
@@ -177,7 +177,7 @@ fun CommandInputView(
                     Icons.Filled.Delete,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                 )
             }
         }
@@ -190,7 +190,7 @@ fun CommandInputView(
             minLines = 3,
             maxLines = 6,
             textStyle = FloconTheme.typography.bodyMedium,
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.bg200,
             placeholder = defaultPlaceHolder(stringResource(Res.string.adb_commander_input_placeholder)),
             modifier = Modifier.fillMaxWidth()
                 .onKeyEvent { keyEvent ->
@@ -215,14 +215,14 @@ fun CommandInputView(
                     if (!isInputEmpty)
                         onAction(AdbCommanderAction.ExecuteCommand)
                 },
-                containerColor = FloconTheme.colorPalette.tertiary,
+                containerColor = FloconTheme.colors.ink,
                 modifier = Modifier
                     .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colorPalette.onTertiary
+                val contentColor = FloconTheme.colors.bg100
                 Row(
                     Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),

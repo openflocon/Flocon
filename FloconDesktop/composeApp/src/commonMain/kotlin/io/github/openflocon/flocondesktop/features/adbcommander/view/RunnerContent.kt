@@ -111,15 +111,15 @@ private fun ConsoleEntryView(
         Text(
             text = "$ ${entry.command}",
             style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-            color = FloconTheme.colorPalette.accent,
+            color = FloconTheme.colors.accentSoft,
         )
         Text(
             text = entry.output,
             style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             color = if (entry.isSuccess) {
-                FloconTheme.colorPalette.onPrimary
+                FloconTheme.colors.ink
             } else {
-                FloconTheme.colorPalette.error
+                FloconTheme.colors.statusError
             },
         )
     }
@@ -137,7 +137,7 @@ private fun FlowExecutionView(
         Text(
             text = "Flow: ${execution.flowName} - ${execution.status}",
             style = FloconTheme.typography.titleSmall,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         execution.steps.forEach { step ->
             Row(
@@ -175,8 +175,8 @@ private fun String.toIcon(): ImageVector = when (this) {
 
 @Composable
 private fun String.toColor(): Color = when (this) {
-    "Completed" -> FloconTheme.colorPalette.onPrimary
-    "Failed" -> FloconTheme.colorPalette.error
-    "Running", "WaitingDelay" -> FloconTheme.colorPalette.accent
-    else -> FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f)
+    "Completed" -> FloconTheme.colors.ink
+    "Failed" -> FloconTheme.colors.statusError
+    "Running", "WaitingDelay" -> FloconTheme.colors.accentSoft
+    else -> FloconTheme.colors.ink.copy(alpha = 0.5f)
 }

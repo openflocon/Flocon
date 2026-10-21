@@ -81,7 +81,7 @@ fun FlowEditorDialog(
                     Text(
                         text = stringResource(Res.string.adb_commander_steps),
                         style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                     )
                     FloconButton(onClick = { onAction(AdbCommanderAction.FlowEditorAddStep) }) {
                         FloconIcon(imageVector = Icons.Outlined.Add)
@@ -139,7 +139,7 @@ private fun StepEditorItem(
         Text(
             text = "${index + 1}.",
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier.padding(top = FloconTheme.spacing.small),
         )
         Column(
