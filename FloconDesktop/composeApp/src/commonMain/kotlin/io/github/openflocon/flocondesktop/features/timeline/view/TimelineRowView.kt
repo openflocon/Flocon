@@ -124,7 +124,7 @@ internal fun TimelineRowView(
         TimeColumn(
             time = row.time,
             delta = delta,
-            modifier = Modifier.width(96.dp * scale),
+            modifier = Modifier.width(TimeColumnWidth * scale),
         )
         Rail(
             color = color,
@@ -133,7 +133,7 @@ internal fun TimelineRowView(
             // the line goes through the padding and the gap between two rows
             overflow = spacing.tiny + spacing.tiny,
             modifier = Modifier
-                .width(22.dp * scale)
+                .width(RailWidth * scale)
                 .fillMaxHeight(),
         )
         Box(modifier = Modifier.width(104.dp * scale)) {

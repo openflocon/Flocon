@@ -165,7 +165,13 @@ internal fun TimelineContent(
                 key = rows.itemKey { it.key },
             ) { index ->
                 when (val item = rows[index]) {
-                    is TimelineItemUiModel.Row -> {
+                    is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
+                        // the app start of a session, at the time the app started
+                        SessionHeaderView(
+                            row = item.row,
+                            eventCount = summary.sessionEventCounts[item.row.timestamp],
+                        )
+                    } else {
                         val olderTimestamp = olderTimestamp(rows, index)
                         val delta = remember(item.row.timestamp, olderTimestamp) {
                             olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
@@ -188,11 +194,6 @@ internal fun TimelineContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
-                    )
-
-                    is TimelineItemUiModel.SessionHeader -> SessionHeaderView(
-                        header = item,
-                        eventCount = summary.sessionEventCounts[item.sessionStart],
                     )
 
                     null -> Unit

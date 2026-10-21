@@ -25,7 +25,8 @@ class TimelineQueryBuilderTest {
     fun `every source is merged by a union sorted from the newest`() {
         val query = build()
 
-        assertEquals(eventSources - 1, Regex("UNION ALL").findAll(query.sql).count())
+        // the events of every source and the app starts
+        assertEquals(eventSources, Regex("UNION ALL").findAll(query.sql).count())
         assertTrue(query.sql.contains("FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("FROM DatabaseQueryLogEntity"))
         assertTrue(query.sql.contains("FROM AnalyticsItemEntity"))
@@ -33,7 +34,7 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("FROM TableItemEntity JOIN TableEntity"))
         assertTrue(query.sql.contains("FROM DeeplinkEntity"))
         assertTrue(query.sql.contains("FROM AdbCommandHistoryEntity"))
-        assertTrue(query.sql.endsWith("ORDER BY u.ts DESC, u.id DESC"))
+        assertTrue(query.sql.endsWith("ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, u.id DESC"))
     }
 
     @Test
@@ -61,11 +62,22 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `the app starts are not events`() {
+    fun `the app starts are rows at their time, even without events`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart)))
 
-        assertTrue(query.sql.endsWith("WHERE 0"))
-        assertTrue(query.params.isEmpty())
+        assertFalse(query.sql.contains("request_url AS title"))
+        assertTrue(query.sql.contains("SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts"))
+        // the sessions of the CTE, then the ones of the app starts
+        assertEquals(sessionParams + sessionParams, query.params)
+    }
+
+    @Test
+    fun `the app starts are hidden when the app start source is not selected or the text is used`() {
+        val withoutSource = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash)))
+        val withText = build(TimelineFilterDomainModel(text = "login"))
+
+        assertFalse(withoutSource.sql.contains("'$KIND_APP_START' AS kind"))
+        assertFalse(withText.sql.contains("'$KIND_APP_START' AS kind"))
     }
 
     @Test
@@ -112,9 +124,9 @@ class TimelineQueryBuilderTest {
     fun `the session filter is only applied on the sources that store it`() {
         val query = build(TimelineFilterDomainModel(appInstance = 42L))
 
-        // network, database and analytics
-        assertEquals(3, Regex("appInstance = \\?").findAll(query.sql).count())
-        assertEquals(3, query.params.count { it == 42L })
+        // network, database, analytics and the app starts
+        assertEquals(4, Regex("appInstance = \\?").findAll(query.sql).count())
+        assertEquals(4, query.params.count { it == 42L })
     }
 
     @Test
@@ -167,6 +179,7 @@ class TimelineQueryBuilderTest {
         )
 
         assertTrue(query.sql.contains("GROUP BY sessionStart"))
+        assertTrue(query.sql.contains("kind <> '$KIND_APP_START'"))
         assertTrue(query.sql.contains("FROM CrashReportEntity"))
         assertFalse(query.sql.contains("request_url AS title"))
     }

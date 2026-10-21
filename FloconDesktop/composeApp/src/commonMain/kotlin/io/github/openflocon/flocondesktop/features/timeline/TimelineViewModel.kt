@@ -82,12 +82,10 @@ internal class TimelineViewModel(
 
     val items: Flow<PagingData<TimelineItemUiModel>> = filter
         .flatMapLatest { filter ->
-            // the "App start" filter shows or hides the sessions
-            val showSessions = TimelineSource.AppStart in filter.sources
             observeTimelineUseCase(filter).map { pagingData ->
                 pagingData
                     .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
-                    .insertSeparators { before, after -> separatorBetween(before, after, showSessions) }
+                    .insertSeparators { before, after -> separatorBetween(before, after) }
             }
         }
         .flowOn(dispatcherProvider.viewModel)
