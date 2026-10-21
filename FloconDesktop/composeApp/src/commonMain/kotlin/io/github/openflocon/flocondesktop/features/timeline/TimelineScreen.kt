@@ -33,7 +33,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -69,6 +68,7 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val activity by viewModel.activity.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -79,6 +79,7 @@ fun TimelineScreen(
         summary = summary,
         activity = activity,
         isLive = isLive,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -93,6 +94,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     activity: TimelineActivityUiModel,
     isLive: Boolean,
+    showEmptyState: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,12 +157,7 @@ internal fun TimelineContent(
             TimelineActivityStrip(activity = activity)
         }
 
-        if (
-            summary.sourceCounts.values.sum() == 0 &&
-            rows.itemCount == 0 &&
-            rows.loadState.refresh is LoadState.NotLoading &&
-            filterText.value.isEmpty()
-        ) {
+        if (showEmptyState) {
             FeatureEmptyState(
                 doc = FeatureDoc.Timeline,
                 modifier = Modifier.fillMaxSize(),

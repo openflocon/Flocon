@@ -34,7 +34,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -79,6 +78,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val rows = viewModel.rows.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -97,6 +97,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         onAction = viewModel::onAction,
         filterText = filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
+        showEmptyState = showEmptyState,
     )
 }
 
@@ -105,6 +106,7 @@ fun AnalyticsScreen(
     filterText: State<String>,
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
+    showEmptyState: Boolean,
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
@@ -233,10 +235,7 @@ fun AnalyticsScreen(
                     }
                 }
             }
-            if (
-                itemsState is AnalyticsStateUiModel.Empty ||
-                (rows.itemCount == 0 && rows.loadState.refresh is LoadState.NotLoading && filterText.value.isEmpty())
-            ) {
+            if (showEmptyState) {
                 FeatureEmptyState(
                     doc = FeatureDoc.Analytics,
                     modifier = Modifier.fillMaxSize(),
@@ -268,6 +267,7 @@ private fun AnalyticsScreenPreview() {
     FloconTheme {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
+            showEmptyState = false,
             onAnalyticsSelected = {},
             selectedItem = null,
             rows = rows,

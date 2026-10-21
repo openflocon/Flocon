@@ -146,7 +146,7 @@ private fun FilesScreen(
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)
                 )
-                if (state.current == null && state.files.isEmpty() && filterText.value.isEmpty()) {
+                if (state.showEmptyState) {
                     FeatureEmptyState(
                         doc = FeatureDoc.Files,
                         modifier = Modifier.fillMaxSize(),

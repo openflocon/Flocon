@@ -22,6 +22,8 @@ import flocondesktop.composeapp.generated.resources.feature_doc_no_device_descri
 import flocondesktop.composeapp.generated.resources.feature_doc_no_device_title
 import flocondesktop.composeapp.generated.resources.feature_doc_open_documentation
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.illustration.FeatureIllustration
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.illustration.NoDeviceIllustration
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconEmptyState
 import io.github.openflocon.library.designsystem.components.FloconIcon

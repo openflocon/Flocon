@@ -122,33 +122,35 @@ fun DashboardScreen(
                         .clip(FloconTheme.shapes.medium)
                         .background(FloconTheme.colors.bg100),
                 )
-            } else Row(Modifier.fillMaxSize()) {
-                DashboardSidebarView(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(340.dp),
-                    state = deviceDashboards,
-                    onDashboardSelected = onDashboardSelected,
-                    onDeleteClicked = onDeleteClicked,
-                )
-
-                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
-
-                state?.let {
-                    DashboardView(
+            } else {
+                Row(Modifier.fillMaxSize()) {
+                    DashboardSidebarView(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .padding(all = FloconTheme.spacing.small),
-                        viewState = state,
-                        onClickButton = onClickButton,
-                        submitTextField = submitTextField,
-                        submitForm = submitForm,
-                        onUpdateCheckBox = onUpdateCheckBox,
-                        arrangement = arrangement,
-                        onOpenExternalClicked = onOpenExternalClicked,
+                            .fillMaxHeight()
+                            .width(340.dp),
+                        state = deviceDashboards,
+                        onDashboardSelected = onDashboardSelected,
+                        onDeleteClicked = onDeleteClicked,
                     )
+
+                    Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                    state?.let {
+                        DashboardView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(FloconTheme.shapes.medium)
+                                .background(FloconTheme.colors.bg100)
+                                .padding(all = FloconTheme.spacing.small),
+                            viewState = state,
+                            onClickButton = onClickButton,
+                            submitTextField = submitTextField,
+                            submitForm = submitForm,
+                            onUpdateCheckBox = onUpdateCheckBox,
+                            arrangement = arrangement,
+                            onOpenExternalClicked = onOpenExternalClicked,
+                        )
+                    }
                 }
             }
         }

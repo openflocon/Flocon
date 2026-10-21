@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -85,6 +86,13 @@ internal class TimelineViewModel(
         }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSummaryUiModel.Empty)
+
+    // nothing received at all: the filters are not the reason of the empty list
+    val showEmptyState: StateFlow<Boolean> = combine(summary, _filterText) { summary, filterText ->
+        filterText.isBlank() && summary.sourceCounts.values.sum() == 0
+    }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val activity: StateFlow<TimelineActivityUiModel> = filter
         .flatMapLatest { filter ->

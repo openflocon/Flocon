@@ -14,6 +14,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FloconNetworkDao {
 
+    @Query(
+        """
+        SELECT EXISTS(
+            SELECT 1 FROM FloconNetworkCallEntity
+            WHERE deviceId = :deviceId
+            AND packageName = :packageName
+        )
+    """
+    )
+    fun observeHasAny(deviceId: DeviceId, packageName: AppPackageName): Flow<Boolean>
+
     @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
     suspend fun getRequestsRaw(query: RoomRawQuery): List<FloconNetworkCallEntity>
 

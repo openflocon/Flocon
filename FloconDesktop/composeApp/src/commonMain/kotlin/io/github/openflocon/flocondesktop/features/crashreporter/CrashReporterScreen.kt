@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.composeunstyled.Text
@@ -57,11 +56,13 @@ fun CrashReporterScreen(
     val viewModel: CrashReporterViewModel = koinViewModel()
     val crashReports = viewModel.crashReports.collectAsLazyPagingItems()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     CrashReportScreen(
         modifier = Modifier.fillMaxSize(),
         crashReports = crashReports,
         selected = selected,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -72,11 +73,12 @@ private fun CrashReportScreen(
     onAction: (CrashReporterAction) -> Unit,
     crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
+    showEmptyState: Boolean,
 ) {
     FloconFeature(
         modifier = modifier
     ) {
-        if (crashReports.itemCount == 0 && crashReports.loadState.refresh is LoadState.NotLoading) {
+        if (showEmptyState) {
             FeatureEmptyState(
                 doc = FeatureDoc.CrashReporter,
                 modifier = Modifier
@@ -84,39 +86,41 @@ private fun CrashReportScreen(
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colors.bg100),
             )
-        } else Row(Modifier.fillMaxSize()) {
-            LeftPannel(
-                modifier = Modifier.fillMaxHeight()
-                    .width(340.dp),
-                crashReports = crashReports,
-                onAction = onAction,
-                selected = selected,
-            )
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                LeftPannel(
+                    modifier = Modifier.fillMaxHeight()
+                        .width(340.dp),
+                    crashReports = crashReports,
+                    onAction = onAction,
+                    selected = selected,
+                )
 
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
-            Surface(
-                color = FloconTheme.colors.bg100,
-                modifier = Modifier.fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colors.bg200,
-                        shape = FloconTheme.shapes.medium
-                    )
-            ) {
-                selected?.let {
-                    CrashReportDetailView(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        crash = it,
-                        onCopy = {
-                            onAction(CrashReporterAction.Copy(it))
-                        },
-                        onDelete = {
-                            onAction(CrashReporterAction.Delete(it.id))
-                        }
-                    )
+                Surface(
+                    color = FloconTheme.colors.bg100,
+                    modifier = Modifier.fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colors.bg200,
+                            shape = FloconTheme.shapes.medium
+                        )
+                ) {
+                    selected?.let {
+                        CrashReportDetailView(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            crash = it,
+                            onCopy = {
+                                onAction(CrashReporterAction.Copy(it))
+                            },
+                            onDelete = {
+                                onAction(CrashReporterAction.Delete(it.id))
+                            }
+                        )
+                    }
                 }
             }
         }

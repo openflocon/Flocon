@@ -70,7 +70,6 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -142,11 +141,13 @@ fun NetworkScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     NetworkScreen(
         uiState = uiState,
         rows = items,
         filterText = filterText,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -157,6 +158,7 @@ fun NetworkScreen(
     uiState: NetworkUiState,
     rows: LazyPagingItems<NetworkItemViewState>,
     filterText: State<String>,
+    showEmptyState: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -465,11 +467,7 @@ fun NetworkScreen(
                                 }
                             }
                         }
-                        if (
-                            rows.itemCount == 0 &&
-                            rows.loadState.refresh is LoadState.NotLoading &&
-                            filterText.value.isEmpty()
-                        ) {
+                        if (showEmptyState) {
                             FeatureEmptyState(
                                 doc = FeatureDoc.Network,
                                 modifier = Modifier.fillMaxSize(),
@@ -622,6 +620,7 @@ private fun NetworkScreenPreview() {
             rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
+            showEmptyState = false,
         )
     }
 }

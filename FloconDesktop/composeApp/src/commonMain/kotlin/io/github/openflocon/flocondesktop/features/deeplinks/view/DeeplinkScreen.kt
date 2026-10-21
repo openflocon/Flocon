@@ -94,7 +94,7 @@ private fun DeeplinkScreen(
             },
         )
 
-        if (state.deepLinks.isEmpty() && state.variables.isEmpty()) {
+        if (state.showEmptyState) {
             FeatureEmptyState(
                 doc = FeatureDoc.Deeplinks,
                 modifier = Modifier
@@ -102,73 +102,76 @@ private fun DeeplinkScreen(
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colors.bg100),
             )
-        } else Column( // Main body — two rows of equal weight
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Top half: variables (left) | deeplinks (right)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxWidth()
+        } else {
+            // Main body — two rows of equal weight
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.fillMaxSize()
             ) {
-                // Left: Variables
-                DeeplinkScrollablePanel(
-                    title = stringResource(Res.string.deeplink_variables),
+                // Top half: variables (left) | deeplinks (right)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                     modifier = Modifier
-                        .weight(0.3f)
-                        .fillMaxHeight()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100),
+                        .weight(0.5f)
+                        .fillMaxWidth()
                 ) {
-                    items(state.variables) { item ->
-                        DeeplinkVariableChip(
-                            variable = item,
-                            onValueChange = { setVariable(item.name, it) },
-                        )
+                    // Left: Variables
+                    DeeplinkScrollablePanel(
+                        title = stringResource(Res.string.deeplink_variables),
+                        modifier = Modifier
+                            .weight(0.3f)
+                            .fillMaxHeight()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colors.bg100),
+                    ) {
+                        items(state.variables) { item ->
+                            DeeplinkVariableChip(
+                                variable = item,
+                                onValueChange = { setVariable(item.name, it) },
+                            )
+                        }
+                    }
+
+                    // Right: Deeplinks (non-history)
+                    DeeplinkScrollablePanel(
+                        title = stringResource(Res.string.menu_item_deeplinks),
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .fillMaxHeight()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colors.bg100),
+                    ) {
+                        items(deepLinks) { item ->
+                            DeeplinkItemView(
+                                submit = submit,
+                                removeFromHistory = removeFromHistory,
+                                item = item,
+                                variableValues = variableValues,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                 }
 
-                // Right: Deeplinks (non-history)
+                // Bottom half: History
                 DeeplinkScrollablePanel(
-                    title = stringResource(Res.string.menu_item_deeplinks),
+                    title = stringResource(Res.string.general_history),
                     modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
+                        .weight(0.5f)
+                        .fillMaxWidth()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100),
+                        .background(FloconTheme.colors.bg100)
                 ) {
-                    items(deepLinks) { item ->
-                        DeeplinkItemView(
-                            submit = submit,
-                            removeFromHistory = removeFromHistory,
-                            item = item,
-                            variableValues = variableValues,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-
-            // Bottom half: History
-            DeeplinkScrollablePanel(
-                title = stringResource(Res.string.general_history),
-                modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-            ) {
-                items(history) { item ->
-                    SelectionContainer {
-                        DeeplinkItemView(
-                            submit = submit,
-                            removeFromHistory = removeFromHistory,
-                            item = item,
-                            variableValues = variableValues,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                    items(history) { item ->
+                        SelectionContainer {
+                            DeeplinkItemView(
+                                submit = submit,
+                                removeFromHistory = removeFromHistory,
+                                item = item,
+                                variableValues = variableValues,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                 }
             }

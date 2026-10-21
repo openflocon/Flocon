@@ -76,33 +76,35 @@ fun DatabaseScreen(
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colors.bg100),
             )
-        } else Row(Modifier.fillMaxSize()) {
-            DatabasesAndTablesView(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(340.dp),
-                state = deviceDataBases,
-                favorites = favorites,
-                onAction = onAction
-            )
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                DatabaseTabsView(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
-                    tabs = tabs,
-                    selected = selectedTab,
-                    onAction = {
-                        onAction(DatabaseScreenAction.OnTabAction(it))
-                    },
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                DatabasesAndTablesView(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(340.dp),
+                    state = deviceDataBases,
+                    favorites = favorites,
+                    onAction = onAction
                 )
-                selectedTab?.let {
-                    DatabaseTabView(
-                        tab = it,
-                        favoritesTitles = remember(favorites) {
-                            favorites.map { it.title }.toImmutableSet()
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DatabaseTabsView(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
+                        tabs = tabs,
+                        selected = selectedTab,
+                        onAction = {
+                            onAction(DatabaseScreenAction.OnTabAction(it))
                         },
                     )
+                    selectedTab?.let {
+                        DatabaseTabView(
+                            tab = it,
+                            favoritesTitles = remember(favorites) {
+                                favorites.map { it.title }.toImmutableSet()
+                            },
+                        )
+                    }
                 }
             }
         }
