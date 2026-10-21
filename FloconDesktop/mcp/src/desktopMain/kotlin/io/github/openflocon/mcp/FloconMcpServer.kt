@@ -86,6 +86,8 @@ class FloconMcpServer(
               get_feature_flag the full payload.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
+              get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
             - Dashboards sent by the app: list_dashboards gives the ids, get_dashboard the containers and elements with their values.
             - Images loaded by the app: list_images gives their urls and load times.
             - Crashes reported by the app: list_crash_reports gives the exception type and message,
