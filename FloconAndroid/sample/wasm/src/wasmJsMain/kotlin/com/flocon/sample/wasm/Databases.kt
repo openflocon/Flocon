@@ -13,8 +13,8 @@ import org.w3c.dom.Worker
  * SQLite runs in a Web Worker on the web, see the `worker` folder of this module
  * (an npm package, referenced in build.gradle.kts).
  */
-fun createWorker() =
-    Worker(js("""new URL("sqlite-wasm-worker/worker.js", import.meta.url)"""))
+fun createWorker(): Worker =
+    js("""new Worker(new URL("sqlite-wasm-worker/worker.js", import.meta.url))""")
 
 object Databases {
     // one worker is enough for all the databases
