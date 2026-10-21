@@ -118,10 +118,10 @@ fun SharedPrefScreen(
                 Box(
                     modifier = modifier.fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg100)
                         .border(
                             width = 1.dp,
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = FloconTheme.shapes.medium
                         )
                 ) {

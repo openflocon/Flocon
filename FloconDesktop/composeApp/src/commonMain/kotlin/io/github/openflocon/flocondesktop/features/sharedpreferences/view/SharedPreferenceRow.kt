@@ -46,8 +46,8 @@ fun SharedPreferenceRowView(
     onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
-    val textFieldBackgroundColor = FloconTheme.colorPalette.surface
+    val borderColor = FloconTheme.colors.bg200
+    val textFieldBackgroundColor = FloconTheme.colors.bg000
 
     Row(
         modifier = modifier
@@ -62,7 +62,7 @@ fun SharedPreferenceRowView(
         Text(
             model.key,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f),
+            color = FloconTheme.colors.ink.copy(alpha = 0.7f),
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.compact),
@@ -88,7 +88,7 @@ fun SharedPreferenceRowView(
                     FloconCheckbox(
                         modifier = Modifier.height(36.dp),
                         checked = value,
-                        uncheckedColor = FloconTheme.colorPalette.secondary,
+                        uncheckedColor = FloconTheme.colors.bg200,
                         onCheckedChange = {
                             value = it
                             onValueChanged(model, it.toString())
@@ -161,7 +161,7 @@ fun SharedPreferenceRowView(
                     Text(
                         model.value.value.toString(),
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         modifier = Modifier
                             .padding(horizontal = FloconTheme.spacing.extraSmall),
                     )
@@ -216,7 +216,7 @@ private fun SharedPreferenceSendButton(
 ) {
     FloconIconTonalButton(
         onClick = onClick,
-        containerColor = FloconTheme.colorPalette.tertiary,
+        containerColor = FloconTheme.colors.ink,
         modifier = modifier
     ) {
         FloconIcon(imageVector = icon)
