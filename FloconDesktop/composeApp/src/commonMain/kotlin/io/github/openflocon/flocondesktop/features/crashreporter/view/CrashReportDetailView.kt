@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,16 +47,16 @@ internal fun CrashReportDetailView(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = crash.exceptionType,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = FloconTheme.typography.titleMedium,
                         color = FloconTheme.colors.statusError
                     )
                     Text(
                         text = crash.dateFormatted,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = FloconTheme.typography.bodyMedium
                     )
                     Text(
                         text = crash.exceptionMessage,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = FloconTheme.typography.bodyMedium
                     )
                 }
                 Actions(
