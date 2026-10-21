@@ -9,6 +9,7 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
+import io.github.openflocon.flocon.network.core.datasource.FloconNetworkDataSource
 import io.github.openflocon.flocon.network.core.datasource.buildFloconNetworkDataSource
 import io.github.openflocon.flocon.network.core.mapper.decodeBadQualityConfig
 import io.github.openflocon.flocon.network.core.mapper.decodeMocks
@@ -35,23 +36,35 @@ internal class FloconNetworkPluginImpl(
     context: FloconContext,
     private var sender: FloconMessageSender,
     private val coroutineScope: CoroutineScope,
-    private val encoder: FloconEncoder
+    private val encoder: FloconEncoder,
+    private val dataSource: FloconNetworkDataSource = buildFloconNetworkDataSource(context = context, encoder = encoder),
 ) : FloconPlugin, FloconNetworkPlugin {
     override val key: String = Protocol.ToDevice.Network.Plugin
-
-    private val dataSource = buildFloconNetworkDataSource(context = context, encoder = encoder)
 
     private val websocketListeners =
         MutableStateFlow<Map<String, FloconWebSocketMockListener>>(emptyMap())
 
-    private val _mocks = MutableStateFlow(dataSource.loadMocksFromFile())
+    private val _mocks = MutableStateFlow<List<MockNetworkResponse>>(emptyList())
     override val mocks: List<MockNetworkResponse>
         get() = _mocks.value
 
-    private val _badQualityConfig = MutableStateFlow(dataSource.loadBadNetworkConfig())
+    private val _badQualityConfig = MutableStateFlow<BadQualityConfig?>(null)
 
     override val badQualityConfig: BadQualityConfig?
         get() = _badQualityConfig.value
+
+    // persisted state is read off the calling thread (disk access), unless the server already pushed a newer value
+    private val mocksUpdatedByServer = MutableStateFlow(false)
+    private val badQualityConfigUpdatedByServer = MutableStateFlow(false)
+
+    init {
+        coroutineScope.launch {
+            val savedMocks = dataSource.loadMocksFromFile()
+            _mocks.update { if (mocksUpdatedByServer.value) it else savedMocks }
+            val savedConfig = dataSource.loadBadNetworkConfig()
+            _badQualityConfig.update { if (badQualityConfigUpdatedByServer.value) it else savedConfig }
+        }
+    }
 
     override fun logRequest(request: FloconNetworkCallRequest) {
         try {
@@ -105,12 +118,14 @@ internal class FloconNetworkPluginImpl(
         when (method) {
             Protocol.ToDevice.Network.Method.SetupMocks -> {
                 val setup = encoder.decodeMocks(body)
+                mocksUpdatedByServer.value = true
                 _mocks.update { setup }
                 dataSource.saveMocksToFile(mocks)
             }
 
             Protocol.ToDevice.Network.Method.SetupBadNetworkConfig -> {
                 val config = encoder.decodeBadQualityConfig(body)
+                badQualityConfigUpdatedByServer.value = true
                 _badQualityConfig.update { config }
                 dataSource.saveBadNetworkConfig(config)
             }
