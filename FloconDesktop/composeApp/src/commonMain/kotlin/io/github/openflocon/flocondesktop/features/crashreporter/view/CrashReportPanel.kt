@@ -25,7 +25,7 @@ internal fun CrashReportPanel(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
     ) {
         crash?.let {
             CrashReportDetailView(
