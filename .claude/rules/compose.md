@@ -28,6 +28,7 @@ Reference implementation: `composeApp/.../features/featureflags/`.
 - No business logic, mapping or formatting inside composables: do it in the ViewModel or `mapper/`.
 - `remember` derived values that are costly; use `derivedStateOf` only when an input changes more often than the output.
 - Lazy lists always give a stable `key` (`key = { _, item -> item.id }`).
+- Lazy lists pad with `contentPadding`, not with `Modifier.padding` on the list or its parent, so items scroll through the padding instead of being clipped by it. Keep `padding` on the container only for the sides the list doesn't scroll through.
 
 ## Design system
 - Use `FloconTheme.colors` (bg, ink, accent, category and status tokens), `FloconTheme.typography` and `FloconTheme.shapes`. Do not use `MaterialTheme` or hardcoded `Color(...)` values in feature code.

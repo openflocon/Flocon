@@ -143,7 +143,7 @@ internal class AppViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // the selected item can be hidden when another app is selected: go to the first available one
             menuState.collect { menu ->
-                val available = menu.pinnedItems + menu.sections.flatMap { it.items } + menu.bottomItems
+                val available = menu.topItems + menu.pinnedItems +menu.sections.flatMap { it.items } + menu.bottomItems
                 val current = contentState.value.current
                 if (available.isNotEmpty() && available.none { it.screen == current }) {
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))

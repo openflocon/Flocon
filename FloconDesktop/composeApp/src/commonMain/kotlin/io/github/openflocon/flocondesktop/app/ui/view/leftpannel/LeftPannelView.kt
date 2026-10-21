@@ -93,6 +93,17 @@ fun LeftPanelView(
                 .fillMaxHeight()
                 .verticalScroll(scrollState)
         ) {
+            if (state.topItems.isNotEmpty()) {
+                MenuItems(
+                    current = current,
+                    items = state.topItems,
+                    expanded = expanded,
+                    onClickItem = onClickItem,
+                )
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+            }
             if (state.pinnedItems.isNotEmpty()) {
                 // always visible, whatever the collapsed sections
                 MenuItems(
