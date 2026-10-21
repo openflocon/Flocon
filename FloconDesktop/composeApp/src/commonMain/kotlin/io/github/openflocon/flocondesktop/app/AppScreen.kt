@@ -114,7 +114,7 @@ private fun Content(
         ),
         modifier = Modifier
             .fillMaxSize()
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colors.bg000)
     ) {
         analyticsRoutes()
         featureFlagsRoutes()

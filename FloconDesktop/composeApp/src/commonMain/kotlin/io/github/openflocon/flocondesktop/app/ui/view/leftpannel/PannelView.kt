@@ -57,23 +57,23 @@ fun PanelView(
     val shape = FloconTheme.shapes.medium
     val color by animateColorAsState(
         targetValue = when {
-            hovered -> FloconTheme.colorPalette.secondary
-            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
+            hovered -> FloconTheme.colors.bg200
+            else -> FloconTheme.colors.bg000.copy(alpha = 0f)
         },
         label = "color",
     )
     val borderColor by animateColorAsState(
         targetValue = when {
-            isSelected -> FloconTheme.colorPalette.accent
-            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
+            isSelected -> FloconTheme.colors.accentSoft
+            else -> FloconTheme.colors.bg000.copy(alpha = 0f)
         },
         label = "border_color",
     )
     val iconColor by animateColorAsState(
         targetValue = when {
-            isSelected -> FloconTheme.colorPalette.onAccent
-            hovered -> FloconTheme.colorPalette.onSecondary
-            else -> FloconTheme.colorPalette.onPrimary
+            isSelected -> FloconTheme.colors.accent
+            hovered -> FloconTheme.colors.inkMuted
+            else -> FloconTheme.colors.ink
         }
     )
     val lineAlpha by animateFloatAsState(
@@ -110,7 +110,7 @@ fun PanelView(
         ) {
             Text(
                 text = text,
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colors.ink,
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
                 modifier = Modifier.padding(start = FloconTheme.spacing.medium),
@@ -127,7 +127,7 @@ fun PanelView(
                     .padding(FloconTheme.spacing.tiny),
                 imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
                 contentDescription = if (isPinned) "Unpin" else "Pin",
-                tint = FloconTheme.colorPalette.onPrimary,
+                tint = FloconTheme.colors.ink,
             )
         }
     }

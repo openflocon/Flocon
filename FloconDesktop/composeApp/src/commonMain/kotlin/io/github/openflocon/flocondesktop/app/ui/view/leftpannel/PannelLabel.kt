@@ -53,7 +53,7 @@ fun PannelLabel(
                         text = text,
                         style = FloconTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.Thin,
-                            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                            color = FloconTheme.colors.ink.copy(alpha = 0.5f),
                         ),
                     )
                     if (isCollapsed != null) {
@@ -61,7 +61,7 @@ fun PannelLabel(
                             modifier = Modifier.size(18.dp),
                             imageVector = if (isCollapsed) Icons.Outlined.ChevronRight else Icons.Outlined.ExpandMore,
                             contentDescription = if (isCollapsed) "Expand" else "Collapse",
-                            tint = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                            tint = FloconTheme.colors.ink.copy(alpha = 0.5f),
                         )
                     }
                 }
