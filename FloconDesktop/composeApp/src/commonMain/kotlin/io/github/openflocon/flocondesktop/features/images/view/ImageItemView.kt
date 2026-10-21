@@ -53,7 +53,7 @@ fun ImageItemView(
     Column(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .border(1.dp, FloconTheme.colorPalette.secondary, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.bg200, FloconTheme.shapes.medium)
             .clickable(onClick = { onClick(model) })
     ) {
         Box(
@@ -109,18 +109,18 @@ fun ImageItemView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colorPalette.surface)
+                .background(FloconTheme.colors.bg000)
                 .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         ) {
             Text(
                 text = model.downloadedAt,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
             Text(
                 text = model.url,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = .5f),
+                color = FloconTheme.colors.ink.copy(alpha = .5f),
             )
             size?.let {
                 Row(
@@ -130,19 +130,19 @@ fun ImageItemView(
                 ) {
                     Text(
                         modifier = Modifier.background(
-                            FloconTheme.colorPalette.tertiary,
+                            FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
                         ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
-                        color = FloconTheme.colorPalette.onTertiary,
+                        color = FloconTheme.colors.bg100,
                         text = "width:${it.width.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )
                     Text(
                         modifier = Modifier.background(
-                            FloconTheme.colorPalette.tertiary,
+                            FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
                         ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
-                        color = FloconTheme.colorPalette.onTertiary,
+                        color = FloconTheme.colors.bg100,
                         text = "height:${it.height.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )
