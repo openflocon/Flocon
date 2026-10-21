@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Tokens of the Flocon design system (bg, ink, line, one color per event category, http statuses).
- * They live next to [FloconColorPaletteNew], which the rest of the app still uses.
  */
 @Immutable
 data class FloconColors(
