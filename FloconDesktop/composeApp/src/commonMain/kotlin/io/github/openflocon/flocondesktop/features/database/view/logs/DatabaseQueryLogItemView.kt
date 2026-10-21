@@ -26,17 +26,17 @@ fun DatabaseQueryLogItemView(
             if (log.isFromOldSession) {
                 Modifier.alpha(0.8f)
             } else Modifier
-        ), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ), horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         Text(
             modifier = Modifier.width(60.dp),
             text = log.dateFormatted,
             style = FloconTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
-            color = FloconTheme.colorPalette.onSurface
+            color = FloconTheme.colors.ink
                 .copy(alpha = 0.6f)
         )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
             SelectionContainer {
                 Text(
                     text = log.sqlQuery,
@@ -49,7 +49,7 @@ fun DatabaseQueryLogItemView(
                     Text(
                         text = "Args: ${log.bindArgs}",
                         style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f)
+                        color = FloconTheme.colors.ink.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -60,11 +60,11 @@ fun DatabaseQueryLogItemView(
 @Composable
 private fun findColor(type: DatabaseQueryUiModel.Type?): Color {
     return when (type) {
-        DatabaseQueryUiModel.Type.Select -> Color(0xFF28A745)
-        DatabaseQueryUiModel.Type.Insert -> Color(0xFF007BFF)
-        DatabaseQueryUiModel.Type.Update -> Color(0xFFFFC107)
-        DatabaseQueryUiModel.Type.Delete -> Color(0xFFDC3545)
+        DatabaseQueryUiModel.Type.Select -> FloconTheme.colors.statusSuccess
+        DatabaseQueryUiModel.Type.Insert -> FloconTheme.colors.statusInfo
+        DatabaseQueryUiModel.Type.Update -> FloconTheme.colors.statusWarning
+        DatabaseQueryUiModel.Type.Delete -> FloconTheme.colors.statusError
         DatabaseQueryUiModel.Type.Transaction,
-        null -> FloconTheme.colorPalette.onSurface
+        null -> FloconTheme.colors.ink
     }
 }

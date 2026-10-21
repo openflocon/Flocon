@@ -4,24 +4,80 @@
 
 | Direction        | `method`              | Body                   |
 |------------------|-----------------------|------------------------|
+| Desktop → Mobile | `getRoots`            | `GetRootsRequest`      |
 | Desktop → Mobile | `listFiles`           | `ListFilesRequest`     |
 | Desktop → Mobile | `deleteFile`          | `DeleteFileRequest`    |
 | Desktop → Mobile | `deleteFiles`         | `DeleteFilesRequest`   |
 | Desktop → Mobile | `deleteFolderContent` | `DeleteFolderContentRequest` |
 | Desktop → Mobile | `getFile`             | `GetFileRequest`       |
+| Mobile → Desktop | `getroots`            | `RootsResult`          |
 | Mobile → Desktop | `listFiles`           | `FilesResult`          |
 | Mobile → Desktop | HTTP `POST /upload`   | multipart (`getFile` response) |
 
+### Root folders
+
+The mobile only gives access to its **root folders**: every path listed, downloaded or deleted must be a root folder or inside one
+(symbolic links are resolved, `..` cannot leave a root). A root folder itself is never deleted, only its content.
+
+The roots are the default folders of the platform, then the folders registered by the app (see [`getRoots`](#getroots-desktop-mobile)).
+
 ### Constant paths
 
-When `isConstantPath` / `isConstantParentPath` is `true`, the path is an alias resolved by the mobile:
+When `isConstantPath` / `isConstantParentPath` is `true`, the path is the `id` of a root folder. Otherwise it is an absolute path on the device.
 
-| Path     | Android         |
-|----------|-----------------|
-| `files`  | `context.filesDir` |
-| `caches` | `context.cacheDir` |
+| `id`                 | Android            | iOS                   | JVM                |
+|----------------------|--------------------|-----------------------|--------------------|
+| `files`              | `context.filesDir` | Documents             | `user.dir`         |
+| `caches`             | `context.cacheDir` | Caches                | `java.io.tmpdir`   |
+| `applicationSupport` |                    | Application Support   |                    |
+| `tmp`                |                    | `NSTemporaryDirectory()` |                 |
+| `container`          |                    | `NSHomeDirectory()`   |                    |
+| `home`               |                    |                       | `user.home`        |
 
-Otherwise the path is an absolute path on the device.
+A registered folder has its absolute path as `id`. `files` and `caches` exist on every platform with a file system,
+so a desktop that does not send `getRoots` keeps working.
+
+## `getRoots` (Desktop → Mobile)
+
+### `GetRootsRequest`
+
+| Key         | Type     | Description |
+|-------------|----------|-------------|
+| `requestId` | `String` | Request id  |
+
+```json
+{ "requestId": "a7f3…" }
+```
+
+## `getroots` (Mobile → Desktop)
+
+Response to `getRoots`. Only the roots that exist as folders are sent. An older SDK does not answer it.
+
+### `RootsResult`
+
+| Key         | Type         | Description         |
+|-------------|--------------|---------------------|
+| `requestId` | `String`     | Same as the request |
+| `roots`     | `List<Root>` | Root folders, default ones first |
+
+### `Root`
+
+| Key    | Type     | Description                                                      |
+|--------|----------|------------------------------------------------------------------|
+| `id`   | `String` | Sent back as the path when `isConstantPath` is `true`            |
+| `name` | `String` | Name shown in the desktop app                                    |
+| `path` | `String` | Absolute path of the folder                                      |
+
+```json
+{
+  "requestId": "a7f3…",
+  "roots": [
+    { "id": "files", "name": "Files", "path": "/data/user/0/com.example.app/files" },
+    { "id": "caches", "name": "Caches", "path": "/data/user/0/com.example.app/cache" },
+    { "id": "/data/user/0/com.example.app/databases", "name": "Databases", "path": "/data/user/0/com.example.app/databases" }
+  ]
+}
+```
 
 ## `listFiles` (Desktop → Mobile)
 
@@ -46,7 +102,7 @@ Otherwise the path is an absolute path on the device.
 |------------------------|-----------|------------------------------------------------|
 | `requestId`            | `String`  | Request id                                     |
 | `parentPath`           | `String`  | Folder listed again after deletion             |
-| `filePath`             | `String`  | Absolute path of the file to delete            |
+| `filePath`             | `String`  | Absolute path of the file to delete (inside a root, not a root) |
 | `isConstantParentPath` | `Boolean` | Applies to `parentPath`                        |
 
 ```json

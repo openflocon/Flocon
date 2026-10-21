@@ -1,98 +1,58 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.vanniktech.maven.publish)
     alias(libs.plugins.buildconfig)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
 }
 
 kotlin {
     android {
         namespace = "io.github.openflocon.flocon"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        androidResources {
-            enable = true
-        }
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
     }
-    
-    jvm()
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.json)
-                api(project(":flocon-base"))
-            }
-        }
-        
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+        commonMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
         }
 
-        // java.io.File code shared by Android and the JVM
-        val jvmAndroidMain by creating {
-            dependsOn(commonMain)
+        androidMain.dependencies {
+            implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.okhttp)
+
+            implementation(libs.androidx.sqlite)
+            implementation(libs.androidx.sqlite.framework)
         }
 
-        val androidMain by getting {
-            dependsOn(jvmAndroidMain)
-            dependencies {
-                implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.jakewharton.process.phoenix)
-                implementation(libs.okhttp)
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
 
-                implementation(libs.androidx.sqlite)
-                implementation(libs.androidx.sqlite.framework)
-            }
-        }
-        
-        val jvmMain by getting {
-            dependsOn(jvmAndroidMain)
-            dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
-
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
-            }
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-            dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.darwin)
+        iosMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.darwin)
 
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.serialization.kotlinx.json)
 
-                implementation(libs.androidx.sqlite.bundled)
+            // to store the device id
+            implementation(libs.multiplatform.settings)
+        }
 
-                // to store the device id
-                implementation(libs.multiplatform.settings)
-            }
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.js)
         }
     }
 }
@@ -103,13 +63,13 @@ buildConfig {
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String)
 }
 
-
 mavenPublishing {
     coordinates(
         groupId = project.property("floconGroupId") as String,
         artifactId = "flocon",
         version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
     )
+
 
     pom {
         name = "Flocon"

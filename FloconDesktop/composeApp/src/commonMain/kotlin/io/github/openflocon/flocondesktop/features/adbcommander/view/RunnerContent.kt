@@ -59,8 +59,8 @@ fun RunnerContent(
 
     Column(modifier = modifier) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.End),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (isExecuting) {
@@ -81,15 +81,15 @@ fun RunnerContent(
         if (flowExecution != null) {
             FlowExecutionView(
                 execution = flowExecution,
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(FloconTheme.spacing.small),
             )
         }
 
         // Console output
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(all = FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             modifier = Modifier.weight(1f),
         ) {
             items(consoleOutput) { entry ->
@@ -105,21 +105,21 @@ private fun ConsoleEntryView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(vertical = 2.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.tiny),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Text(
             text = "$ ${entry.command}",
             style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-            color = FloconTheme.colorPalette.accent,
+            color = FloconTheme.colors.accentSoft,
         )
         Text(
             text = entry.output,
             style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             color = if (entry.isSuccess) {
-                FloconTheme.colorPalette.onPrimary
+                FloconTheme.colors.ink
             } else {
-                FloconTheme.colorPalette.error
+                FloconTheme.colors.statusError
             },
         )
     }
@@ -132,17 +132,17 @@ private fun FlowExecutionView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
             text = "Flow: ${execution.flowName} - ${execution.status}",
             style = FloconTheme.typography.titleSmall,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         execution.steps.forEach { step ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = FloconTheme.spacing.small),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 FloconIcon(
@@ -175,8 +175,8 @@ private fun String.toIcon(): ImageVector = when (this) {
 
 @Composable
 private fun String.toColor(): Color = when (this) {
-    "Completed" -> FloconTheme.colorPalette.onPrimary
-    "Failed" -> FloconTheme.colorPalette.error
-    "Running", "WaitingDelay" -> FloconTheme.colorPalette.accent
-    else -> FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f)
+    "Completed" -> FloconTheme.colors.ink
+    "Failed" -> FloconTheme.colors.statusError
+    "Running", "WaitingDelay" -> FloconTheme.colors.accentSoft
+    else -> FloconTheme.colors.ink.copy(alpha = 0.5f)
 }

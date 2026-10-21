@@ -13,6 +13,14 @@ object Protocol {
             }
         }
 
+        object FeatureFlags {
+            const val Plugin = "featureflags"
+
+            object Method {
+                const val Register = "register"
+            }
+        }
+
         object Dashboard {
             const val Plugin = "dashboard"
 

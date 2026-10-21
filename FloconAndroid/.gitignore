@@ -23,3 +23,5 @@ kotlin-js-store/
 
 # iOS
 xcuserdata/
+# IDE (VS Code / Eclipse) build output
+bin/

@@ -8,14 +8,17 @@ import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
 import io.github.openflocon.domain.deeplink.deeplinkModule
 import io.github.openflocon.domain.device.deviceModule
+import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
+import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
+import io.github.openflocon.domain.timeline.timelineDomainModule
 import io.github.openflocon.domain.versions.versionModule
 import org.koin.dsl.module
 
@@ -24,6 +27,7 @@ val domainModule = module {
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        featureFlagsModule,
         dashboardModule,
         databaseModule,
         deeplinkModule,
@@ -38,5 +42,7 @@ val domainModule = module {
         versionModule,
         crashReporterDomainModule,
         mcpDomainModule,
+        menuModule,
+        timelineDomainModule,
     )
 }

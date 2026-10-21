@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerVi
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
+import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
@@ -28,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -86,7 +88,9 @@ private fun Content(
                         current = uiState.contentState.current,
                         state = uiState.menuState,
                         expanded = it,
-                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
+                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
+                        onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
+                        onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
                     )
                 },
                 topBarContent = {
@@ -110,9 +114,10 @@ private fun Content(
         ),
         modifier = Modifier
             .fillMaxSize()
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colors.bg000)
     ) {
         analyticsRoutes()
+        featureFlagsRoutes()
         dashboardRoutes()
         databaseRoutes()
         deeplinkRoutes()
@@ -125,5 +130,6 @@ private fun Content(
         settingsRoutes()
         releaseNotesRoutes()
         crashReporterRoutes()
+        timelineRoutes()
     }
 }

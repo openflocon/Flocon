@@ -28,10 +28,10 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberPopupPositionProviderAtPosition
 import com.composeunstyled.currentWindowContainerSize
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -122,7 +122,8 @@ private fun SubMenu(
     var rect by remember { mutableStateOf(Rect.Zero) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     var boundsInWindow by remember { mutableStateOf(Rect.Zero) }
-    var padding by remember { mutableStateOf(PaddingValues(start = 4.dp)) }
+    val spacing = FloconTheme.spacing
+    var padding by remember { mutableStateOf(PaddingValues(start = spacing.extraSmall)) }
     val window = currentWindowContainerSize()
     val density = LocalDensity.current
 
@@ -158,7 +159,7 @@ private fun SubMenu(
                 .onGloballyPositioned {
                     density.run {
                         offset = if ((boundsInWindow.topRight.x.roundToInt() + it.size.width) > window.width.roundToPx()) {
-                            padding = PaddingValues(end = 4.dp)
+                            padding = PaddingValues(end = spacing.extraSmall)
                             rect.topLeft - Offset(x = it.size.width.toFloat(), y = 0f)
                         } else {
                             rect.topRight

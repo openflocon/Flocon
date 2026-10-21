@@ -68,8 +68,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -96,7 +95,9 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
 import io.github.openflocon.library.designsystem.components.FloconFeature
-import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
@@ -109,6 +110,25 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import flocondesktop.composeapp.generated.resources.auto_scroll
+import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.invert_list
+import flocondesktop.composeapp.generated.resources.network_bad_network
+import flocondesktop.composeapp.generated.resources.network_deep_search
+import flocondesktop.composeapp.generated.resources.network_display_old_sessions
+import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_method
+import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_request_time
+import flocondesktop.composeapp.generated.resources.network_header_status
+import flocondesktop.composeapp.generated.resources.network_header_time
+import flocondesktop.composeapp.generated.resources.network_import_csv
+import flocondesktop.composeapp.generated.resources.network_mocks_title
+import flocondesktop.composeapp.generated.resources.network_pin_panel
+import flocondesktop.composeapp.generated.resources.network_request
+import flocondesktop.composeapp.generated.resources.network_response
+import flocondesktop.composeapp.generated.resources.network_select_items
 
 @Composable
 fun NetworkScreen(
@@ -204,17 +224,18 @@ fun NetworkScreen(
                         placeholderText = stringResource(Res.string.filter),
                         onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                         modifier = Modifier.fillMaxWidth(.7f),
+                        containerColor = FloconTheme.colors.bg200,
                     )
                 },
                 actions = {
                     FloconIconButton(
                         imageVector = Icons.AutoMirrored.Filled.ManageSearch,
                         onClick = { onAction(NetworkAction.OpenDeepSearch) },
-                        tooltip = "Deep Search"
+                        tooltip = stringResource(Res.string.network_deep_search)
                     )
                     FloconIconToggleButton(
                         value = uiState.filterState.hasMocks,
-                        tooltip = "Mocks",
+                        tooltip = stringResource(Res.string.network_mocks_title),
                         onValueChange = { onAction(NetworkAction.OpenMocks) }
                     ) {
                         FloconIcon(
@@ -223,7 +244,7 @@ fun NetworkScreen(
                     }
                     FloconIconToggleButton(
                         value = uiState.filterState.hasBadNetwork,
-                        tooltip = "Bad network",
+                        tooltip = stringResource(Res.string.network_bad_network),
                         onValueChange = { onAction(NetworkAction.OpenBadNetworkQuality) }
                     ) {
                         FloconIcon(
@@ -232,7 +253,7 @@ fun NetworkScreen(
                     }
                     FloconIconToggleButton(
                         value = uiState.filterState.displayOldSessions,
-                        tooltip = "Display old sessions",
+                        tooltip = stringResource(Res.string.network_display_old_sessions),
                         onValueChange = { onAction(NetworkAction.UpdateDisplayOldSessions(it)) }
                     ) {
                         FloconIcon(
@@ -257,49 +278,49 @@ fun NetworkScreen(
 //                    ) {
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Request Time",
+//                            text = stringResource(Res.string.network_header_request_time),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Method",
+//                            text = stringResource(Res.string.network_header_method),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Domain",
+//                            text = stringResource(Res.string.network_header_domain),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Query",
+//                            text = stringResource(Res.string.network_header_query),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Status",
+//                            text = stringResource(Res.string.network_header_status),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = "Time",
+//                            text = stringResource(Res.string.network_header_time),
 //                            onCheckedChange = {}
 //                        )
 //                    }
                     FloconOverflow {
                         FloconDropdownMenuItem(
-                            text = "Export CSV",
+                            text = stringResource(Res.string.export_csv),
                             leadingIcon = Icons.Outlined.Upload,
                             onClick = { onAction(NetworkAction.ExportCsv) }
                         )
                         FloconDropdownMenuItem(
-                            text = "Import From CSV",
+                            text = stringResource(Res.string.network_import_csv),
                             leadingIcon = Icons.Outlined.Download,
                             onClick = { onAction(NetworkAction.ImportFromCsv) }
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.settings.autoScroll,
-                            text = "Auto scroll",
+                            text = stringResource(Res.string.auto_scroll),
                             leadingIcon = Icons.Outlined.PlayCircle,
                             onCheckedChange = { checked ->
                                 onAction(
@@ -311,13 +332,13 @@ fun NetworkScreen(
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.settings.invertList,
-                            text = "Invert list",
+                            text = stringResource(Res.string.invert_list),
                             leadingIcon = Icons.AutoMirrored.Outlined.List,
                             onCheckedChange = { checked -> onAction(NetworkAction.InvertList(checked)) }
                         )
                         FloconDropdownMenuItem(
                             checked = uiState.settings.pinPanel,
-                            text = "Pin panel",
+                            text = stringResource(Res.string.network_pin_panel),
                             leadingIcon = Icons.Sharp.PushPin,
                             onCheckedChange = { checked ->
                                 onAction(NetworkAction.Pinned(checked))
@@ -342,7 +363,7 @@ fun NetworkScreen(
                             }
                         ) {
                             FloconDropdownMenuItem(
-                                text = "Request",
+                                text = stringResource(Res.string.network_request),
                                 leadingIcon = Icons.Outlined.Upload,
                                 trailingIcon = if (uiState.settings.defaultSelectedTab == NetworkDetailTab.Request) Icons.Outlined.Check else null,
                                 onClick = {
@@ -351,7 +372,7 @@ fun NetworkScreen(
                                 }
                             )
                             FloconDropdownMenuItem(
-                                text = "Response",
+                                text = stringResource(Res.string.network_response),
                                 leadingIcon = Icons.Outlined.Download,
                                 trailingIcon = if (uiState.settings.defaultSelectedTab == NetworkDetailTab.Response) Icons.Outlined.Check else null,
                                 onClick = {
@@ -363,13 +384,13 @@ fun NetworkScreen(
 
 
                         FloconDropdownMenuItem(
-                            text = "Select items",
+                            text = stringResource(Res.string.network_select_items),
                             leadingIcon = Icons.Sharp.SelectAll,
                             onClick = { onAction(NetworkAction.MultiSelect) }
                         )
                         FloconDropdownSeparator()
                         FloconDropdownMenuItem(
-                            text = "Clear old sessions",
+                            text = stringResource(Res.string.clear_old_sessions),
                             leadingIcon = Icons.Outlined.CleaningServices,
                             onClick = { onAction(NetworkAction.ClearOldSession) }
                         )
@@ -381,14 +402,14 @@ fun NetworkScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+                    .background(FloconTheme.colors.bg100, FloconTheme.shapes.large)
+                    .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+                    .clip(FloconTheme.shapes.large)
             ) {
                 NetworkItemHeaderView(
                     columnWidths = columnWidths,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colorPalette.primary),
+                        .fillMaxWidth(),
                     clickOnSort = { type, sort ->
                         onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
                     },
@@ -397,7 +418,12 @@ fun NetworkScreen(
                     },
                     state = uiState.headerState,
                 )
-                FloconHorizontalDivider()
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(FloconTheme.colors.line)
+                )
                 Row(
                     Modifier.fillMaxSize()
                 ) {
@@ -441,25 +467,25 @@ fun NetworkScreen(
                             modifier = Modifier.align(Alignment.BottomCenter)
                         ) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                                    .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium)
                                     .clip(FloconTheme.shapes.medium)
-                                    .background(FloconTheme.colorPalette.secondary)
-                                    .padding(8.dp)
+                                    .background(FloconTheme.colors.bg200)
+                                    .padding(FloconTheme.spacing.small)
                             ) {
                                 Text(
                                     text = "${uiState.contentState.multiSelectedIds.size} items selected",
                                     style = FloconTheme.typography.bodySmall,
-                                    color = FloconTheme.colorPalette.onSecondary,
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    color = FloconTheme.colors.inkMuted,
+                                    modifier = Modifier.padding(start = FloconTheme.spacing.small),
                                 )
                                 Spacer(Modifier.weight(1f))
                                 FloconIconTonalButton(
                                     onClick = { onAction(NetworkAction.ExportCsv) },
-                                    containerColor = FloconTheme.colorPalette.tertiary
+                                    containerColor = FloconTheme.colors.ink
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Upload
@@ -467,7 +493,7 @@ fun NetworkScreen(
                                 }
                                 FloconIconTonalButton(
                                     onClick = { onAction(NetworkAction.DeleteSelection) },
-                                    containerColor = FloconTheme.colorPalette.tertiary
+                                    containerColor = FloconTheme.colors.ink
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Delete
@@ -479,7 +505,7 @@ fun NetworkScreen(
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Close,
-                                        tint = FloconTheme.colorPalette.onSecondary
+                                        tint = FloconTheme.colors.inkMuted
                                     )
                                 }
                             }
@@ -497,7 +523,7 @@ fun NetworkScreen(
             modifier = Modifier.fillMaxHeight()
         ) {
             Row {
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(FloconTheme.spacing.small))
                 NetworkDetailContent(
                     uiState = it,
                     onAction = { action -> onAction(NetworkAction.DetailAction(action)) },
