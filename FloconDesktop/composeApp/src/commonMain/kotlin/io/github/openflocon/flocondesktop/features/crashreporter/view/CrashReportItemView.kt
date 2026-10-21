@@ -49,9 +49,9 @@ internal fun CrashReportItemView(
                 .clip(FloconTheme.shapes.medium)
                 .background(
                     if (isSelected) {
-                        FloconTheme.colorPalette.accent
+                        FloconTheme.colors.accentSoft
                     } else {
-                        FloconTheme.colorPalette.surface
+                        FloconTheme.colors.bg000
                     }
                 )
                 .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
