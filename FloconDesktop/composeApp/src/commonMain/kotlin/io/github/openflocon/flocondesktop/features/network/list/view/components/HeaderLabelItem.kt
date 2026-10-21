@@ -2,6 +2,7 @@
 
 package io.github.openflocon.flocondesktop.features.network.list.view.components
 
+import io.github.openflocon.library.designsystem.theme.FloconSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -40,7 +41,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUi
 import io.github.openflocon.library.designsystem.FloconTheme
 
 private val Height = 32.dp
-private val Spacing = 2.dp
+private val Spacing = FloconSpacing().tiny
 private val FilterIcon = (Height - Spacing) / 2
 
 private const val NOT_ENABLED_OPACITY = 0.3f

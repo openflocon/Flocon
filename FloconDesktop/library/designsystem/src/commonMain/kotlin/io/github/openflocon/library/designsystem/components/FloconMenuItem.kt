@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 private val DropdownItemHeight = 36.dp
-private val DropdownItemHorizontalPadding = 10.dp
 
 @Composable
 fun FloconMenuItem(
@@ -53,7 +52,7 @@ fun FloconMenuItem(
                 indication = null,
                 interactionSource = interaction,
             )
-            .padding(horizontal = DropdownItemHorizontalPadding)
+            .padding(horizontal = FloconTheme.spacing.small)
     ) {
         leadingIcon?.let { FloconMenuIcon(leadingIcon) } ?: run {
             Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
@@ -83,7 +82,7 @@ fun FloconMenuItem(
                 indication = null,
                 interactionSource = interaction,
             )
-            .padding(PaddingValues(horizontal = DropdownItemHorizontalPadding))
+            .padding(PaddingValues(horizontal = FloconTheme.spacing.small))
     ) {
         FloconMenuIcon(leadingIcon)
         MenuItemText(text)

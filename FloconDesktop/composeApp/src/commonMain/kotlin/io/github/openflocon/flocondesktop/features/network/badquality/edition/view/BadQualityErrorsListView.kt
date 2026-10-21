@@ -166,7 +166,7 @@ fun BadQualityErrorsListView(
                                         fontSize = FloconTheme.typography.labelSmall.fontSize,
                                     ),
                                 )
-                                Spacer(modifier = Modifier.width(28.dp))
+                                Spacer(modifier = Modifier.width(FloconTheme.spacing.extraLarge))
                                 Text(
                                     "Type",
                                     style = FloconTheme.typography.bodySmall.copy(

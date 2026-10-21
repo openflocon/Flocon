@@ -323,7 +323,7 @@ fun MockEditorScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colors.accentSoft)
-                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
+                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
@@ -346,7 +346,7 @@ fun MockEditorScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colors.statusError)
-                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
+                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
@@ -369,7 +369,7 @@ fun MockEditorScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(FloconTheme.colors.statusError)
-                                    .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
+                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Warning,

@@ -53,7 +53,7 @@ internal fun DatabaseQueryToolbarView(
     Row(
         modifier = modifier
             .height(40.dp)
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = FloconTheme.spacing.medium)
     ) {
         Box(
             modifier = Modifier.clip(RoundedCornerShape(2.dp))

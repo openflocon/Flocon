@@ -95,7 +95,7 @@ fun FilesTopBar(
                     color = FloconTheme.colors.inkMuted,
                     modifier = Modifier
                         .background(FloconTheme.colors.bg200.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
-                        .padding(vertical = 3.dp, horizontal = FloconTheme.spacing.small),
+                        .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
                 )
             }
 

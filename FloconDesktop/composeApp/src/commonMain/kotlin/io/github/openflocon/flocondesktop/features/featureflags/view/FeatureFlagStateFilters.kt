@@ -35,7 +35,7 @@ internal fun FeatureFlagStateFilters(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FeatureFlagStateUiModel.entries.forEach { state ->
@@ -63,7 +63,7 @@ private fun FeatureFlagStateFilter(
             .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onClick() })
             .padding(horizontal = 10.dp, vertical = 6.dp)
             .alpha(if (selected) 1f else 0.5f),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FeatureFlagStateDot(state = state)
@@ -88,7 +88,7 @@ private fun FeatureFlagStateFiltersPreview() {
         FeatureFlagStateFilters(
             selectedStates = setOf(FeatureFlagStateUiModel.On, FeatureFlagStateUiModel.Custom),
             onStateToggled = {},
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(FloconTheme.spacing.small),
         )
     }
 }

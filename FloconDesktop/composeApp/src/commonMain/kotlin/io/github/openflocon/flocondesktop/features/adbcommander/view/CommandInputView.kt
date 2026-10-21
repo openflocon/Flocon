@@ -80,7 +80,7 @@ fun CommandInputView(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = FloconTheme.spacing.medium)
         ) {
             // Save icon
             Box(

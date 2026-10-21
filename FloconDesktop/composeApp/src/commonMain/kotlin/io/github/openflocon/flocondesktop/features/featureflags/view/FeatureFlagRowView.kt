@@ -32,7 +32,7 @@ fun FeatureFlagRowView(
     Row(
         modifier = modifier
             .clickable(onClick = { onAction(FeatureFlagsAction.OnClick(model)) })
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FeatureFlagStateDot(

@@ -48,7 +48,7 @@ fun TableRowView(
                 modifier = modifier
                     .clip(FloconTheme.shapes.medium)
                     .clickable(onClick = { onAction(TableAction.OnClick(model)) })
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
             ) {
                 model.values.fastForEach { column ->
                     Text(

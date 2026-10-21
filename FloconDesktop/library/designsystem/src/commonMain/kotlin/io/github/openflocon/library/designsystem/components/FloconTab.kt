@@ -31,7 +31,7 @@ fun FloconSegmentedRow(
             .fillMaxWidth()
             .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
             .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
-            .padding(3.dp),
+            .padding(FloconTheme.spacing.extraSmall),
         space = FloconTheme.spacing.tiny,
         content = content,
     )

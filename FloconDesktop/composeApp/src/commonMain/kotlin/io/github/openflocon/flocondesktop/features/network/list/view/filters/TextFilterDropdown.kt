@@ -159,7 +159,7 @@ private fun FilterItemView(
             .hover {
                 isHover = it
             }
-            .padding(horizontal = FloconTheme.spacing.compact, vertical = 1.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
@@ -192,7 +192,7 @@ private fun FilterItemView(
                         clickDelete(item)
                     },
                 )
-                .padding(5.dp),
+                .padding(FloconTheme.spacing.compact),
         )
     }
 }

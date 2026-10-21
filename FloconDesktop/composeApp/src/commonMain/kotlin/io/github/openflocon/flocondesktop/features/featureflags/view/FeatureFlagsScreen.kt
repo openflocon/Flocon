@@ -141,7 +141,7 @@ fun FeatureFlagsScreen(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
                 ) {
                     itemsIndexed(
                         items = rows,

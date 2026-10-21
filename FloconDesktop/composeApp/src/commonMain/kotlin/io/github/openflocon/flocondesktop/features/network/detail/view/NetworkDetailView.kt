@@ -432,7 +432,7 @@ private fun SummaryCard(
         FloconLineDescription(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 36.dp),
+                .padding(end = FloconTheme.spacing.doubleExtraLarge),
             label = stringResource(Res.string.network_full_url),
             value = state.fullUrl,
             contentColor = FloconTheme.colors.ink,
@@ -838,7 +838,7 @@ private fun Response(
                         FloconLineDescription(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(end = 36.dp),
+                                .padding(end = FloconTheme.spacing.doubleExtraLarge),
                             label = stringResource(Res.string.network_response_size),
                             value = response.size,
                             labelWidth = 130.dp,
