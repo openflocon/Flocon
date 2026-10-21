@@ -29,6 +29,7 @@ kotlin {
             implementation(projects.featureflags)
             implementation(projects.tables)
             implementation(projects.sharedprefs)
+            implementation(projects.database.room3)
             implementation(projects.network.ktorInterceptor)
 
             implementation(compose.runtime)
@@ -43,6 +44,12 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+
+            // Room 3 on the web: SQLite runs in a Web Worker (see ./worker)
+            implementation(libs.androidx.room3.runtime)
+            implementation(libs.androidx.sqlite.web)
+            implementation(libs.kotlinx.browser)
+            implementation(npm("sqlite-wasm-worker", file("worker")))
         }
     }
 }

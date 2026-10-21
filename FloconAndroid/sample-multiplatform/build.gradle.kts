@@ -90,7 +90,8 @@ dependencies {
         "kspAndroid",
         "kspJvm",
         "kspIosSimulatorArm64",
-        "kspIosArm64"
+        "kspIosArm64",
+        "kspWasmJs"
     ).forEach {
         add(it, libs.androidx.room3.compiler)
     }

@@ -162,7 +162,7 @@ Les fonctionnalités sont déclarées dans `ui/SampleFeatures.kt`; chaque point 
 | Dashboard | ✅ | ✅ | ✅ | ✅ |
 | Feature flags | ✅ | ✅ | ✅ | ✅ |
 | Deeplink enregistré après l'install | ✅ | ✅ | ✅ | ✅ |
-| Base de données Room 3 | ✅ | ✅ | ✅ | ⬜ (supporté par le SDK, mais le sample n'a pas de driver SQLite web ni de KSP wasmJs) |
+| Base de données Room 3 | ✅ | ✅ | ✅ | ✅ (`WebWorkerSQLiteDriver`, bases en mémoire dans le worker du sample) |
 | Base de données Room 2 | ✅ | ⬜ (module supporté, pas de base Room 2 dans le sample) | ⬜ (idem) | ⬜ (Room 2 ne supporte pas Wasm) |
 | Base de données en mémoire (Room 3) | ✅ | ⬜ | ⬜ | ⬜ |
 | Préférences (store en mémoire) | ✅ | ✅ | ✅ | ✅ |

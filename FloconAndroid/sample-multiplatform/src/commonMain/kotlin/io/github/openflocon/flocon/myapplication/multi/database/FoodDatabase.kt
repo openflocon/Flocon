@@ -17,7 +17,7 @@ abstract class FoodDatabase : RoomDatabase() {
     abstract fun foodDao(): FoodDao
 }
 
-// room will generate the constructor (not on wasmJs)
+// room will generate the constructor
 @Suppress("KotlinNoActualForExpect", "NO_ACTUAL_FOR_EXPECT")
 expect object FoodDatabaseConstructor : RoomDatabaseConstructor<FoodDatabase> {
     override fun initialize(): FoodDatabase
