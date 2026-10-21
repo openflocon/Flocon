@@ -23,7 +23,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val mcpModule = module {
-    single { FloconMcpServer(toolProviders = getAll()) } bind McpServerRepository::class
+    single { FloconMcpServer(toolProviders = getAll(), logManager = get()) } bind McpServerRepository::class
     factoryOf(::McpTargetResolver)
 
     // tools, one provider per feature

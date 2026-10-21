@@ -38,14 +38,6 @@ internal sealed interface TimelineItemUiModel {
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
-
-    // displayed above the events of a session: the app was started
-    data class SessionHeader(
-        val sessionStart: Long,
-        val day: String,
-        val time: String,
-        override val key: String,
-    ) : TimelineItemUiModel
 }
 
 internal sealed interface TimelineAction {

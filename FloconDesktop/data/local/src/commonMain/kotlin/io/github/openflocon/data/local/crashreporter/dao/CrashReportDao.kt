@@ -14,6 +14,20 @@ interface CrashReportDao {
 
     @Query(
         """
+        SELECT EXISTS(
+            SELECT 1 FROM CrashReportEntity
+            WHERE deviceId = :deviceId
+            AND packageName = :packageName
+        )
+    """
+    )
+    fun observeHasAny(
+        deviceId: String,
+        packageName: String,
+    ): Flow<Boolean>
+
+    @Query(
+        """
         SELECT * 
         FROM CrashReportEntity 
         WHERE crashId = :id

@@ -145,6 +145,9 @@ private class FakeCrashReporterRepository(
     override fun observeCrashReports(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<PagingData<CrashReportDomainModel>> =
         error("not used")
 
+    override fun observeHasCrashReports(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> =
+        flowOf(crashes.isNotEmpty())
+
     override suspend fun deleteCrashReport(crashId: String) = error("not used")
 
     override suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
