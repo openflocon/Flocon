@@ -5,6 +5,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/**
+ * The spacing scale of the design system, the only source of padding and gaps.
+ * Each token matches a `--space-*` of the design: tiny = space-0 (2), extraSmall = space-1 (4),
+ * compact = space-1-5 (6), small = space-2 (8), medium = space-3 (12), large = space-4 (16),
+ * extraLarge = space-5 (24), doubleExtraLarge = space-6 (32).
+ */
 @Immutable
 data class FloconSpacing(
     val none: Dp = 0.dp,
@@ -16,8 +22,6 @@ data class FloconSpacing(
     val large: Dp = 16.dp,
     val extraLarge: Dp = 24.dp,
     val doubleExtraLarge: Dp = 32.dp,
-    val tripleExtraLarge: Dp = 48.dp,
-    val huge: Dp = 64.dp
 )
 
 fun FloconSpacing.scaledBy(multiplier: Float): FloconSpacing = if (multiplier == 1f) {
@@ -33,8 +37,6 @@ fun FloconSpacing.scaledBy(multiplier: Float): FloconSpacing = if (multiplier ==
         large = large * multiplier,
         extraLarge = extraLarge * multiplier,
         doubleExtraLarge = doubleExtraLarge * multiplier,
-        tripleExtraLarge = tripleExtraLarge * multiplier,
-        huge = huge * multiplier,
     )
 }
 

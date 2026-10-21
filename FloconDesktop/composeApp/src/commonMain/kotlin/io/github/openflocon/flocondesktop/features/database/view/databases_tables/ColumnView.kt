@@ -33,7 +33,7 @@ internal fun ColumnView(
             .clickable {
                 onClicked(model)
             }
-            .padding(start = 46.dp)
+            .padding(start = FloconTheme.spacing.doubleExtraLarge + FloconTheme.spacing.large)
             .padding(vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
@@ -53,7 +53,7 @@ internal fun ColumnView(
                         .align(Alignment.BottomEnd).size(10.dp).background(
                             FloconTheme.colors.accentSoft,
                             shape = CircleShape,
-                        ).padding(1.dp)
+                        ).padding(FloconTheme.spacing.tiny)
                 ) {
                     Image(
                         imageVector = Icons.Filled.VpnKey,

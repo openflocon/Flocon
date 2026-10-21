@@ -104,7 +104,7 @@ internal fun FeatureFlagStateDot(
 @Composable
 private fun FeatureFlagVariantChipPreview() {
     FloconTheme {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
             FeatureFlagStateUiModel.entries.forEach {
                 FeatureFlagStateDot(state = it)
                 FeatureFlagVariantChip(state = it, variant = it.name)

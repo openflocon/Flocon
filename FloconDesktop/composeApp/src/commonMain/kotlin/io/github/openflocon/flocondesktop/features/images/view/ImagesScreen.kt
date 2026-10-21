@@ -119,7 +119,7 @@ private fun ImagesScreen(
             ImagesStateUiModel.Idle -> Box(Modifier)
 
             is ImagesStateUiModel.WithImages -> {
-                val gridPadding = 8.dp
+                val gridPadding = FloconTheme.spacing.small
 
                 Box(
                     modifier = Modifier.fillMaxSize()

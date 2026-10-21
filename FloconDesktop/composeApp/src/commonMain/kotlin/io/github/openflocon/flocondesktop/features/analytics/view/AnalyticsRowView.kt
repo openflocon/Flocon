@@ -83,7 +83,7 @@ fun AnalyticsRowView(
                                 shape = FloconTheme.shapes.extraLarge,
                                 color = FloconTheme.colors.bg200
                             )
-                            .padding(horizontal = FloconTheme.spacing.small, vertical = 1.dp),
+                            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
                     ) {
                         Text(
                             text = it.name + " :",

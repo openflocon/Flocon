@@ -18,9 +18,6 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
 
-private val VerticalContentPadding = 4.dp
-private val HorizontalContentPadding = 8.dp
-
 @Composable
 fun FloconButton(
     onClick: () -> Unit,
@@ -39,7 +36,7 @@ fun FloconButton(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(PaddingValues(vertical = VerticalContentPadding, horizontal = HorizontalContentPadding)),
+                modifier = Modifier.padding(PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small)),
                 content = content
             )
         }
@@ -65,7 +62,7 @@ fun FloconOutlinedButton(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(PaddingValues(vertical = VerticalContentPadding, horizontal = HorizontalContentPadding)),
+                modifier = Modifier.padding(PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small)),
                 content = content
             )
         }

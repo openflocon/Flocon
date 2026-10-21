@@ -191,7 +191,7 @@ private fun HeaderValueText(
             },
             delayMillis = 200,
             tooltipPlacement = TooltipPlacement.ComponentRect(
-                offset = DpOffset(x = 0.dp, y = 4.dp)
+                offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.extraSmall)
             ),
             modifier = modifier
         ) {

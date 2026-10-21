@@ -38,7 +38,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 private val Size = 32.dp
-private val Padding = 8.dp
 
 /**
  * Cannot use IconButton because of the indication
@@ -146,7 +145,7 @@ fun FloconIconToggleButton(
                     onValueChange = onValueChange
                 )
                 .pointerHoverIcon(PointerIcon.Hand)
-                .padding(Padding)
+                .padding(FloconTheme.spacing.small)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {
                 content()
@@ -180,7 +179,7 @@ fun FloconIconButton(
                     onClick = onClick,
                 )
                 .pointerHoverIcon(PointerIcon.Hand)
-                .padding(Padding)
+                .padding(FloconTheme.spacing.small)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {
                 content()
@@ -193,7 +192,7 @@ fun FloconIconButton(
 fun WithTooltip(
     tooltip: String?,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
-        offset = DpOffset(x = 0.dp, y = 2.dp)
+        offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.tiny)
     ),
     content: @Composable () -> Unit
 ) {

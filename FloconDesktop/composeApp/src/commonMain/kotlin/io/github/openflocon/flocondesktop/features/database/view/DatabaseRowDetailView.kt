@@ -105,7 +105,7 @@ fun DatabaseRowDetailView(
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.tripleExtraLarge),
+                    contentPadding = PaddingValues(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.doubleExtraLarge),
                 ) {
                     itemsIndexed(columns) { index, column ->
                         DetailItemView(
@@ -246,7 +246,7 @@ private fun DetailHeaderButton(
                 color = FloconTheme.colors.ink,
             ).clickable(onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
