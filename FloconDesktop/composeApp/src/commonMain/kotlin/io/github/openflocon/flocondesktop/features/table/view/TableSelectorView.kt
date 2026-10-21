@@ -51,7 +51,7 @@ internal fun TableSelectorView(
                     if (tablesState is TablesStateUiModel.WithContent)
                         expanded = true
                 },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 when (tablesState) {
                     TablesStateUiModel.Empty -> Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
