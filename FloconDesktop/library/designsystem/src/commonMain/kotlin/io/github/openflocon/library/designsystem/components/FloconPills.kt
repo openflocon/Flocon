@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 // the mono style of the technical data: times, http codes, methods, paths
@@ -74,12 +75,47 @@ fun FloconOutlinedPill(
 }
 
 /**
+ * A tinted pill (no border) for something that has a name and a color, ex: the method of a request.
+ * [color] null: neutral.
+ */
+@Composable
+fun FloconTintedPill(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color? = null,
+    leading: (@Composable () -> Unit)? = null,
+) {
+    val colors = FloconTheme.colors
+    Row(
+        modifier = modifier
+            .defaultMinSize(minWidth = 52.dp)
+            .clip(FloconTheme.shapes.small)
+            .background(color?.copy(alpha = 0.14f) ?: colors.lineStrong.copy(alpha = 0.5f))
+            .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.CenterHorizontally),
+    ) {
+        leading?.invoke()
+        Text(
+            text = text,
+            style = floconMonoStyle(small = true),
+            fontSize = 11.5.sp,
+            fontWeight = FontWeight.Bold,
+            color = color ?: colors.inkMuted,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+        )
+    }
+}
+
+/**
  * A status (ex: an http code) with its color: a dot and the text on a soft background of the same color.
  */
 @Composable
 fun FloconStatusPill(
     color: Color,
     modifier: Modifier = Modifier,
+    leading: @Composable () -> Unit = { FloconDot(color = color) },
     content: @Composable () -> Unit,
 ) {
     Row(
@@ -90,7 +126,7 @@ fun FloconStatusPill(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
     ) {
-        FloconDot(color = color)
+        leading()
         content()
     }
 }

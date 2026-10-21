@@ -299,6 +299,8 @@
     <string name="network_pin_panel">Pin panel</string>
     <string name="network_query_name">Query name</string>
     <string name="network_replay">Replay</string>
+    <string name="network_image_response">Image response</string>
+    <string name="network_mock_tag">MOCK</string>
     <string name="network_request">Request</string>
     <string name="network_request_headers">Request Headers</string>
     <string name="network_request_size">Request Size</string>

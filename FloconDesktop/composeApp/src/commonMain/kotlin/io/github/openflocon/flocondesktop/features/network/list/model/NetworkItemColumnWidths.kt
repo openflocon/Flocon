@@ -12,7 +12,7 @@ data class NetworkItemColumnWidths(
     val methodWidth: Dp = 90.dp,
     val domainWeight: Float = 1f,
     val queryWeight: Float = 2f,
-    val statusCodeWidth: Dp = 90.dp,
+    val statusCodeWidth: Dp = 104.dp,
     val timeWidth: Dp = 90.dp,
     // The 'route' column will use Modifier.weight(1f) to take remaining space
 )
