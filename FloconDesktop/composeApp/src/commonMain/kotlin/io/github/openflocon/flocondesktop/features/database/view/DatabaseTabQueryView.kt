@@ -85,7 +85,7 @@ private fun DatabaseTabViewContent(
                 .clip(FloconTheme.shapes.medium)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 ),
         ) { contentPadding ->

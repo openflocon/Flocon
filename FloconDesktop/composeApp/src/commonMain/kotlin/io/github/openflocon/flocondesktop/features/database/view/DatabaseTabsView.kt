@@ -72,7 +72,7 @@ private fun DatabaseTabItemView(
         topStart = 6.dp,
         topEnd = 6.dp,
     )
-    val contentColor = if (state == selected) FloconTheme.colorPalette.onSecondary else FloconTheme.colorPalette.onPrimary
+    val contentColor = if (state == selected) FloconTheme.colors.inkMuted else FloconTheme.colors.ink
     // the labels are resolved here: the menu is built outside of the composition
     val close = stringResource(Res.string.close)
     val closeOthers = stringResource(Res.string.tabs_close_others)
@@ -107,7 +107,7 @@ private fun DatabaseTabItemView(
             modifier = modifier.clip(
                 shape
             ).background(
-                color = if (state == selected) FloconTheme.colorPalette.secondary else FloconTheme.colorPalette.primary
+                color = if (state == selected) FloconTheme.colors.bg200 else FloconTheme.colors.bg100
             ).clickable {
                 onAction(DatabaseTabViewAction.OnTabSelected(state))
             }.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.compact),

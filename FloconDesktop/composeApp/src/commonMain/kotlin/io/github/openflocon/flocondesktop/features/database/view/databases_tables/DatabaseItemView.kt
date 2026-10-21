@@ -93,9 +93,9 @@ private fun DatabaseView(
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
-        FloconTheme.colorPalette.accent.copy(alpha = 0.4f) to FloconTheme.colorPalette.onAccent
+        FloconTheme.colors.accent.copy(alpha = 0.4f) to FloconTheme.colors.accent
     } else {
-        Color.Transparent to FloconTheme.colorPalette.onSurface
+        Color.Transparent to FloconTheme.colors.ink
     }
 
     ContextualView(

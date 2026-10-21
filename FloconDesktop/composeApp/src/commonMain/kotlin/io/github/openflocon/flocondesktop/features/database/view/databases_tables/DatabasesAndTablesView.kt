@@ -33,10 +33,10 @@ fun DatabasesAndTablesView(
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,
 ) {
-    val borderColor = FloconTheme.colorPalette.secondary
+    val borderColor = FloconTheme.colors.bg200
 
     Surface(
-        color = FloconTheme.colorPalette.primary,
+        color = FloconTheme.colors.bg100,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(
@@ -57,7 +57,7 @@ fun DatabasesAndTablesView(
             ) {
                 Text(
                     "Databases",
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -110,7 +110,7 @@ fun DatabasesAndTablesView(
                 ) {
                     Text(
                         stringResource(Res.string.databases_favorites),
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style = FloconTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                         ),
