@@ -227,6 +227,7 @@ internal class AppViewModel(
         val route = when (action.menu) {
             SubScreen.Analytics -> AnalyticsRoutes.Main
             SubScreen.FeatureFlags -> FeatureFlagsRoutes.Main
+            SubScreen.Accessibility -> AccessibilityRoutes.Main
             SubScreen.Dashboard -> DashboardRoutes.Main
             SubScreen.Database -> DatabaseRoutes.Main
             SubScreen.Deeplinks -> DeeplinkRoutes.Main

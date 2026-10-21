@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
 import flocondesktop.composeapp.generated.resources.timeline_source_adb
+import flocondesktop.composeapp.generated.resources.timeline_source_accessibility
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
 import flocondesktop.composeapp.generated.resources.timeline_source_app_start
 import flocondesktop.composeapp.generated.resources.timeline_source_crash
@@ -60,6 +61,7 @@ internal fun TimelineSource.label(): StringResource = when (this) {
     TimelineSource.Network -> Res.string.timeline_source_network
     TimelineSource.Database -> Res.string.timeline_source_database
     TimelineSource.Analytics -> Res.string.timeline_source_analytics
+    TimelineSource.Accessibility -> Res.string.timeline_source_accessibility
     TimelineSource.Crash -> Res.string.timeline_source_crash
     TimelineSource.Table -> Res.string.timeline_source_table
     TimelineSource.Deeplink -> Res.string.timeline_source_deeplink

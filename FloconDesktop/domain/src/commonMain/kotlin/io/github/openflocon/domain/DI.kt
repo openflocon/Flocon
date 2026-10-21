@@ -1,5 +1,6 @@
 package io.github.openflocon.domain
 
+import io.github.openflocon.domain.accessibility.accessibilityModule
 import io.github.openflocon.domain.adb.adbModule
 import io.github.openflocon.domain.adbcommander.adbCommanderModule
 import io.github.openflocon.domain.analytics.analyticsModule
@@ -24,6 +25,7 @@ import org.koin.dsl.module
 
 val domainModule = module {
     includes(
+        accessibilityModule,
         adbModule,
         adbCommanderModule,
         analyticsModule,

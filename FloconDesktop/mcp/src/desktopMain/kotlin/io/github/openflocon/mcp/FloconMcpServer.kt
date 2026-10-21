@@ -89,6 +89,9 @@ class FloconMcpServer(
               list_analytics_events the events with their properties.
             - Feature flags of the app: list_feature_flags gives the provider, name and variant of each flag,
               get_feature_flag the full payload.
+            - Accessibility events of the app (what TalkBack / VoiceOver receive): list_accessibility_events gives the focused
+              elements and announcements, get_accessibility_state tells if a screen reader is running (use it when the list is empty),
+              clear_accessibility_events resets the list.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
             - Deeplinks: list_deeplinks gives the deeplinks declared by the app with their parameters, list_deeplink_history those opened from Flocon,

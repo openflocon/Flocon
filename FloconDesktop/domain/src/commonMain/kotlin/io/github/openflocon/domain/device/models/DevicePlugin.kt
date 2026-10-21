@@ -18,6 +18,7 @@ enum class DevicePlugin(val sdkNames: Set<String>) {
     CrashReporter(setOf("crashreporter")),
     Deeplinks(setOf("deeplink")),
     FeatureFlags(setOf("featureflags")),
+    Accessibility(setOf("accessibility")),
     ;
 
     /**

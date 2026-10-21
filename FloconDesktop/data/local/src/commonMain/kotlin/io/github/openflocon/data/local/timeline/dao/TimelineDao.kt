@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
+import io.github.openflocon.data.local.accessibility.models.AccessibilityEventEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbCommandHistoryEntity
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
@@ -23,6 +24,7 @@ interface TimelineDao {
         observedEntities = [
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
+            AccessibilityEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,
@@ -39,6 +41,7 @@ interface TimelineDao {
         observedEntities = [
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
+            AccessibilityEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,
@@ -55,6 +58,7 @@ interface TimelineDao {
         observedEntities = [
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
+            AccessibilityEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,
@@ -66,4 +70,21 @@ interface TimelineDao {
     fun observeSessionCounts(
         query: RoomRawQuery,
     ): Flow<List<TimelineSessionCountEntity>>
+
+    @RawQuery(
+        observedEntities = [
+            FloconNetworkCallEntity::class,
+            AnalyticsItemEntity::class,
+            AccessibilityEventEntity::class,
+            CrashReportEntity::class,
+            DatabaseQueryLogEntity::class,
+            TableEntity::class,
+            TableItemEntity::class,
+            DeeplinkEntity::class,
+            AdbCommandHistoryEntity::class,
+        ]
+    )
+    fun observeActivity(
+        query: RoomRawQuery,
+    ): Flow<List<TimelineActivityRowEntity>>
 }

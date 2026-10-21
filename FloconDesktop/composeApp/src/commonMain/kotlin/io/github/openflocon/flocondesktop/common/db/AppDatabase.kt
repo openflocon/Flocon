@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.openflocon.data.local.accessibility.dao.AccessibilityEventDao
+import io.github.openflocon.data.local.accessibility.models.AccessibilityEventEntity
 import io.github.openflocon.data.local.adb.dao.AdbDevicesDao
 import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.adbcommander.dao.AdbCommanderDao
@@ -61,7 +63,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 85,
+    version = 86,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -78,6 +80,7 @@ import kotlinx.coroutines.Dispatchers
         DeeplinkVariableEntity::class,
         AnalyticsItemEntity::class,
         FeatureFlagEntity::class,
+        AccessibilityEventEntity::class,
         NetworkFilterEntity::class,
         NetworkSettingsEntity::class,
         MockNetworkEntity::class,
@@ -112,6 +115,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val deeplinkVariableDao: FloconDeeplinkVariableDao
     abstract val analyticsDao: FloconAnalyticsDao
     abstract val featureFlagDao: FeatureFlagDao
+    abstract val accessibilityEventDao: AccessibilityEventDao
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao

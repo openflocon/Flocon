@@ -22,6 +22,7 @@ val featuresModule = module {
     includes(
         analyticsModule,
         featureFlagsModule,
+        accessibilityModule,
         databaseModule,
         filesModule,
         imagesModule,

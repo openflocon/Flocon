@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.mapper
 
+import io.github.openflocon.data.local.timeline.datasource.KIND_ACCESSIBILITY
 import io.github.openflocon.data.local.timeline.datasource.KIND_ADB
 import io.github.openflocon.data.local.timeline.datasource.KIND_ANALYTICS
 import io.github.openflocon.data.local.timeline.datasource.KIND_APP_START
@@ -20,6 +21,7 @@ private fun String.toTimelineSource(): TimelineSource = when (this) {
     KIND_NETWORK -> TimelineSource.Network
     KIND_DATABASE -> TimelineSource.Database
     KIND_ANALYTICS -> TimelineSource.Analytics
+    KIND_ACCESSIBILITY -> TimelineSource.Accessibility
     KIND_CRASH -> TimelineSource.Crash
     KIND_TABLE -> TimelineSource.Table
     KIND_DEEPLINK -> TimelineSource.Deeplink

@@ -26,6 +26,7 @@ internal fun TimelineSource.category(): EventCategory = when (this) {
     TimelineSource.Network -> EventCategory.Network
     TimelineSource.Database -> EventCategory.Database
     TimelineSource.Analytics -> EventCategory.Analytics
+    TimelineSource.Accessibility -> EventCategory.Accessibility
     TimelineSource.Crash -> EventCategory.Crash
     TimelineSource.Table -> EventCategory.Table
     TimelineSource.Deeplink -> EventCategory.Deeplink

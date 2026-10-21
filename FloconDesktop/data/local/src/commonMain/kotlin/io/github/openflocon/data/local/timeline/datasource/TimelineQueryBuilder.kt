@@ -6,6 +6,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 internal const val KIND_NETWORK = "network"
 internal const val KIND_DATABASE = "database"
 internal const val KIND_ANALYTICS = "analytics"
+internal const val KIND_ACCESSIBILITY = "accessibility"
 internal const val KIND_CRASH = "crash"
 internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
@@ -110,6 +111,17 @@ private fun buildUnion(
                     from = "AnalyticsItemEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("eventName", "analyticsTableId"),
+                )
+            )
+        }
+        if (TimelineSource.Accessibility in filter.sources) {
+            add(
+                branch(
+                    select = "'$KIND_ACCESSIBILITY' AS kind, id AS id, createdAt AS ts, " +
+                        "COALESCE(text, contentDescription, type) AS title, type AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
+                    from = "AccessibilityEventEntity",
+                    appInstanceColumn = "appInstance",
+                    textColumns = listOf("text", "contentDescription"),
                 )
             )
         }

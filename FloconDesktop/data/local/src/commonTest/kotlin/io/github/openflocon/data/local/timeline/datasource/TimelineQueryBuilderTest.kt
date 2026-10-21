@@ -30,6 +30,7 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("FROM DatabaseQueryLogEntity"))
         assertTrue(query.sql.contains("FROM AnalyticsItemEntity"))
+        assertTrue(query.sql.contains("FROM AccessibilityEventEntity"))
         assertTrue(query.sql.contains("FROM CrashReportEntity"))
         assertTrue(query.sql.contains("FROM TableItemEntity JOIN TableEntity"))
         assertTrue(query.sql.contains("FROM DeeplinkEntity"))

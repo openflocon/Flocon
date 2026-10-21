@@ -41,6 +41,9 @@ val roomModule =
             get<AppDatabase>().featureFlagDao
         }
         single {
+            get<AppDatabase>().accessibilityEventDao
+        }
+        single {
             get<AppDatabase>().networkFilterDao
         }
         single {
