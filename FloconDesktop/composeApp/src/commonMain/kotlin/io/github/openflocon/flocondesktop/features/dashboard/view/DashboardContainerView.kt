@@ -54,7 +54,7 @@ fun DashboardContainerView(
         modifier =
         modifier.border(
             width = 1.dp,
-            color = FloconTheme.colorPalette.secondary,
+            color = FloconTheme.colors.bg200,
             shape = FloconTheme.shapes.medium
         ),
     ) {
@@ -69,7 +69,7 @@ fun DashboardContainerView(
                 FloconTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                 ),
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
 
             Column(
@@ -189,7 +189,7 @@ fun DashboardContainerView(
 @Composable
 private fun DashboardContainerViewPreview() {
     FloconTheme {
-        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface).padding(all = FloconTheme.spacing.small)) {
+        Box(modifier = Modifier.background(FloconTheme.colors.bg000).padding(all = FloconTheme.spacing.small)) {
             DashboardContainerView(
                 onClickButton = {},
                 viewState = previewDashboardContainerViewState(),

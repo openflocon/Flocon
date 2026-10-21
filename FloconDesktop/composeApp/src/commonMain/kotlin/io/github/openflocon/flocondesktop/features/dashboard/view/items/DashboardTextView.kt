@@ -34,7 +34,7 @@ internal fun DashboardTextView(
             Text(
                 text = rowItem.label,
                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
@@ -49,9 +49,9 @@ internal fun DashboardTextView(
                     onValueChange = {},
                     readOnly = true,
                     singleLine = false,
-                    containerColor = FloconTheme.colorPalette.secondary,
+                    containerColor = FloconTheme.colors.bg200,
                     textStyle = FloconTheme.typography.bodySmall,
-                    contentColor = rowItem.color ?: FloconTheme.colorPalette.onSecondary,
+                    contentColor = rowItem.color ?: FloconTheme.colors.inkMuted,
                     contentPadding = PaddingValues(FloconTheme.spacing.small),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -72,7 +72,7 @@ internal fun DashboardTextViewPreview() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
         )
@@ -90,7 +90,7 @@ internal fun DashboardTextViewPreview_Red() {
     FloconTheme {
         DashboardTextView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.onPrimary,
+                FloconTheme.colors.ink,
             ),
             rowItem = rowItem,
         )

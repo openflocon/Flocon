@@ -45,7 +45,7 @@ internal fun DashboardPlainTextView(
                     modifier =
                     Modifier.padding(start = FloconTheme.spacing.extraSmall)
                         .align(Alignment.CenterStart),
-                    color = FloconTheme.colorPalette.onSurface,
+                    color = FloconTheme.colors.ink,
                     style =
                     MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Thin,
@@ -63,7 +63,7 @@ internal fun DashboardPlainTextView(
                 modifier =
                 Modifier.fillMaxWidth()
                     .background(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = RoundedCornerShape(8.dp),
                     )
                     .padding(FloconTheme.spacing.small),
@@ -71,7 +71,7 @@ internal fun DashboardPlainTextView(
                 SelectionContainer {
                     Text(
                         text = rowItem.value,
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         style =
                         FloconTheme.typography.bodySmall.copy(
                             fontFamily = FontFamily.Monospace
@@ -96,7 +96,7 @@ internal fun DashboardPlainTextViewPreview() {
         DashboardPlainTextView(
             modifier =
             Modifier.fillMaxWidth().background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             onOpenExternalClicked = {},
@@ -142,7 +142,7 @@ internal fun DashboardPlainTextViewPreview_json() {
         DashboardPlainTextView(
             modifier =
             Modifier.fillMaxWidth().background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             onOpenExternalClicked = {},

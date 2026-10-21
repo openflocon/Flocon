@@ -31,7 +31,7 @@ internal fun DashboardArrangementView(
         anchorContent = {
             FloconButton(
                 onClick = { expanded = true },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 Text(
                     text = when (arrangement) {

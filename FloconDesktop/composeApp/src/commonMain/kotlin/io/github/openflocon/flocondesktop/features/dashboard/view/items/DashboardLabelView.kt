@@ -23,7 +23,7 @@ internal fun DashboardLabelView(
         Text(
             text = rowItem.label,
             modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Thin,
             ),
@@ -41,7 +41,7 @@ internal fun DashboardLabelPreview() {
     FloconTheme {
         DashboardLabelView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
         )
@@ -58,7 +58,7 @@ internal fun DashboardLabelViewPreview_Red() {
     FloconTheme {
         DashboardLabelView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.onPrimary,
+                FloconTheme.colors.ink,
             ),
             rowItem = rowItem,
         )
