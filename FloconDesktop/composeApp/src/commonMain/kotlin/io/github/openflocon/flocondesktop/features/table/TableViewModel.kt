@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.table.model.TableColumnsUiMod
 import io.github.openflocon.flocondesktop.features.table.model.TableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,7 @@ class TableViewModel(
     private val removeTableItemUseCase: RemoveTableItemUseCase,
     private val removeTableItemsBeforeUseCase: RemoveTableItemsBeforeUseCase,
     private val exportTableToCsv: ExportTableToCsvUseCase,
+    private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
     val deviceTables: StateFlow<TablesStateUiModel> = tableSelectorDelegate.deviceTables
 
@@ -90,6 +92,7 @@ class TableViewModel(
     fun onAction(action: TableAction) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
+                is TableAction.OnClick -> navigationState.navigate(TableRoutes.Detail(action.item.id))
                 is TableAction.Remove -> removeTableItemUseCase(action.item.id)
                 is TableAction.RemoveLinesAbove -> removeTableItemsBeforeUseCase(action.item.id)
                 is TableAction.ExportCsv -> onExportCsv()
