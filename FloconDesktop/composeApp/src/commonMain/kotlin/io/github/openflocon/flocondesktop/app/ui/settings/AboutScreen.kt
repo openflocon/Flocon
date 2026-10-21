@@ -24,21 +24,21 @@ fun AboutScreen(modifier: Modifier = Modifier) {
     LibrariesContainer(
         libraries = libraries?.distinct(),
         colors = LibraryDefaults.libraryColors(
-            libraryBackgroundColor = FloconTheme.colorPalette.surface,
-            libraryContentColor = FloconTheme.colorPalette.onSurface,
+            libraryBackgroundColor = FloconTheme.colors.bg000,
+            libraryContentColor = FloconTheme.colors.ink,
             versionChipColors = LibraryDefaults.chipColors(
-                containerColor = FloconTheme.colorPalette.primary,
-                contentColor = FloconTheme.colorPalette.onPrimary
+                containerColor = FloconTheme.colors.bg100,
+                contentColor = FloconTheme.colors.ink
             ),
             licenseChipColors = LibraryDefaults.chipColors(
-                containerColor = FloconTheme.colorPalette.secondary,
-                contentColor = FloconTheme.colorPalette.onSecondary
+                containerColor = FloconTheme.colors.bg200,
+                contentColor = FloconTheme.colors.inkMuted
             ),
             fundingChipColors = LibraryDefaults.chipColors(
-                containerColor = FloconTheme.colorPalette.tertiary,
-                contentColor = FloconTheme.colorPalette.onTertiary
+                containerColor = FloconTheme.colors.ink,
+                contentColor = FloconTheme.colors.bg100
             ),
-            dialogConfirmButtonColor = FloconTheme.colorPalette.onSurface
+            dialogConfirmButtonColor = FloconTheme.colors.ink
         ),
         modifier = modifier,
     )

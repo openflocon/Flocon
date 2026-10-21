@@ -1,7 +1,9 @@
 package io.github.openflocon.flocondesktop.features
 
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesModule
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
+import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
@@ -12,12 +14,14 @@ import io.github.openflocon.flocondesktop.features.images.imagesModule
 import io.github.openflocon.flocondesktop.features.network.networkModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesModule
 import io.github.openflocon.flocondesktop.features.table.tableModule
+import io.github.openflocon.flocondesktop.features.timeline.timelineModule
 import io.github.openflocon.flocondesktop.messages.di.messagesModule
 import org.koin.dsl.module
 
 val featuresModule = module {
     includes(
         analyticsModule,
+        featureFlagsModule,
         databaseModule,
         filesModule,
         imagesModule,
@@ -29,6 +33,8 @@ val featuresModule = module {
         deeplinkModule,
         adbCommanderModule,
         settingsModule,
+        releaseNotesModule,
         crashReporterModule,
+        timelineModule,
     )
 }

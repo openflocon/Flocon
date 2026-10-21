@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon
 
-internal actual class FloconFile {
-    // TODO
-}
+
+actual class FloconFile(
+    val path: String,
+)

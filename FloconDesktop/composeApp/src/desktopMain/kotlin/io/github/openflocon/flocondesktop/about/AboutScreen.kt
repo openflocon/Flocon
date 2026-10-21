@@ -35,6 +35,9 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
 import java.net.URI
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.app_name
+import flocondesktop.composeapp.generated.resources.settings_about_title
 
 @Composable
 internal fun AboutScreen(
@@ -49,7 +52,7 @@ internal fun AboutScreen(
     )
 
     Window(
-        title = "About",
+        title = stringResource(Res.string.settings_about_title),
         onCloseRequest = onCloseRequest,
         state = windowState,
         resizable = false
@@ -57,8 +60,8 @@ internal fun AboutScreen(
         FloconSurface {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.padding(FloconTheme.spacing.large)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
@@ -66,14 +69,14 @@ internal fun AboutScreen(
                     modifier = Modifier.size(120.dp)
                 )
                 Text(
-                    text = "Flocon",
+                    text = stringResource(Res.string.app_name),
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 Text(
                     text = BuildConfig.APP_VERSION,
                     style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 FloconTextButton(
                     onClick = {
@@ -85,9 +88,9 @@ internal fun AboutScreen(
                     )
                 }
                 FlowRow(
-                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(
-                        4.dp,
+                        FloconTheme.spacing.extraSmall,
                         Alignment.CenterHorizontally
                     ),
                     modifier = Modifier

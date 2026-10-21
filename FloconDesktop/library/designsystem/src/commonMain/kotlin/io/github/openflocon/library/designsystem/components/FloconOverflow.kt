@@ -57,7 +57,7 @@ fun FloconOverflow(
         onDismissRequest = { expanded = false },
         modifier = modifier
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onPrimary) {
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colors.ink) {
             content { expanded = false }
         }
     }

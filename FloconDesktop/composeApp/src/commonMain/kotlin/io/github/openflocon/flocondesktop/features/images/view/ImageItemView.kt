@@ -39,7 +39,7 @@ import io.github.openflocon.flocondesktop.common.ui.isInPreview
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -53,7 +53,7 @@ fun ImageItemView(
     Column(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .border(1.dp, FloconTheme.colorPalette.secondary, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.bg200, FloconTheme.shapes.medium)
             .clickable(onClick = { onClick(model) })
     ) {
         Box(
@@ -109,40 +109,40 @@ fun ImageItemView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colorPalette.surface)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .background(FloconTheme.colors.bg000)
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         ) {
             Text(
                 text = model.downloadedAt,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
             Text(
                 text = model.url,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = .5f),
+                color = FloconTheme.colors.ink.copy(alpha = .5f),
             )
             size?.let {
                 Row(
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = FloconTheme.spacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         modifier = Modifier.background(
-                            FloconTheme.colorPalette.tertiary,
+                            FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
-                        ).padding(horizontal = 4.dp, vertical = 1.dp),
-                        color = FloconTheme.colorPalette.onTertiary,
+                        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
+                        color = FloconTheme.colors.bg100,
                         text = "width:${it.width.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )
                     Text(
                         modifier = Modifier.background(
-                            FloconTheme.colorPalette.tertiary,
+                            FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
-                        ).padding(horizontal = 4.dp, vertical = 1.dp),
-                        color = FloconTheme.colorPalette.onTertiary,
+                        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 1.dp),
+                        color = FloconTheme.colors.bg100,
                         text = "height:${it.height.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )

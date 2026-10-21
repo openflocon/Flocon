@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class AnalyticsDetailUiModel(
     val id: String,
+    val tableId: String,
     val dateFormatted: String,
     val eventName: String,
     val properties: List<PropertyUiModel>,
@@ -19,6 +20,7 @@ data class AnalyticsDetailUiModel(
 
 fun previewAnalyticsDetailUiModel(isFromOldAppInstance: Boolean = false) = AnalyticsDetailUiModel(
     id = "id",
+    tableId = "analytics",
     dateFormatted = "2023-01-01 00:00:00",
     eventName = "event_name",
     properties = List(5) {

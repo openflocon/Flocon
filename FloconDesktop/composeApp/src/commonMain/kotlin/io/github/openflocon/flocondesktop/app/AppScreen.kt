@@ -4,21 +4,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
+import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
+import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
@@ -27,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.images.imageRoutes
 import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -75,53 +80,62 @@ private fun Content(
         )
     }
     
-    FloconNavigation(
-        navigationState = navigationState,
-        sceneStrategies = sceneStrategies,
-        sceneDecoratorStrategies = listOf(
-            MenuSceneStrategy(
-                menuContent = {
-                    LeftPanelView(
-                        current = uiState.contentState.current,
-                        state = uiState.menuState,
-                        expanded = it,
-                        onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) }
-                    )
-                },
-                topBarContent = {
-                    MainScreenTopBar(
-                        devicesState = uiState.deviceState,
-                        appsState = uiState.appState,
-                        recordState = uiState.recordState,
-                        deleteApp = { onAction(AppAction.DeleteApp(it)) },
-                        deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
-                        onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
-                        onAppSelected = { onAction(AppAction.SelectApp(it)) },
-                        onRecordClicked = { onAction(AppAction.Record) },
-                        onRestartClicked = { onAction(AppAction.Restart) },
-                        onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
-                        onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
-                        updateChip = updateChip,
-                        onUpdateChipClicked = onUpdateChipClicked,
-                    )
-                }
-            )
-        ),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(FloconTheme.colorPalette.surface)
+    CompositionLocalProvider(
+        LocalHasDevice provides uiState.hasConnectedDevice,
     ) {
-        analyticsRoutes()
-        dashboardRoutes()
-        databaseRoutes()
-        deeplinkRoutes()
-        adbCommanderRoutes()
-        filesRoutes()
-        imageRoutes()
-        networkRoutes()
-        sharedPreferencesRoutes()
-        tableRoutes()
-        settingsRoutes()
-        crashReporterRoutes()
+        FloconNavigation(
+            navigationState = navigationState,
+            sceneStrategies = sceneStrategies,
+            sceneDecoratorStrategies = listOf(
+                MenuSceneStrategy(
+                    menuContent = {
+                        LeftPanelView(
+                            current = uiState.contentState.current,
+                            state = uiState.menuState,
+                            expanded = it,
+                            onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
+                            onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
+                            onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
+                        )
+                    },
+                    topBarContent = {
+                        MainScreenTopBar(
+                            devicesState = uiState.deviceState,
+                            appsState = uiState.appState,
+                            recordState = uiState.recordState,
+                            deleteApp = { onAction(AppAction.DeleteApp(it)) },
+                            deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
+                            onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
+                            onAppSelected = { onAction(AppAction.SelectApp(it)) },
+                            onRecordClicked = { onAction(AppAction.Record) },
+                            onRestartClicked = { onAction(AppAction.Restart) },
+                            onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                            onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
+                            updateChip = updateChip,
+                            onUpdateChipClicked = onUpdateChipClicked,
+                        )
+                    }
+                )
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(FloconTheme.colors.bg000)
+        ) {
+            analyticsRoutes()
+            featureFlagsRoutes()
+            dashboardRoutes()
+            databaseRoutes()
+            deeplinkRoutes()
+            adbCommanderRoutes()
+            filesRoutes()
+            imageRoutes()
+            networkRoutes()
+            sharedPreferencesRoutes()
+            tableRoutes()
+            settingsRoutes()
+            releaseNotesRoutes()
+            crashReporterRoutes()
+            timelineRoutes()
+        }
     }
 }

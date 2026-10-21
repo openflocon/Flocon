@@ -43,6 +43,9 @@ import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.export_csv
 import flocondesktop.composeapp.generated.resources.invert_list
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
@@ -63,7 +66,7 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.max
 
@@ -75,6 +78,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val rows = viewModel.rows.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -93,6 +97,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         onAction = viewModel::onAction,
         filterText = filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
+        showEmptyState = showEmptyState,
     )
 }
 
@@ -101,6 +106,7 @@ fun AnalyticsScreen(
     filterText: State<String>,
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
+    showEmptyState: Boolean,
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
@@ -145,6 +151,7 @@ fun AnalyticsScreen(
                 )
             },
             actions = {
+                FeatureDocButton(doc = FeatureDoc.Analytics)
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -181,10 +188,10 @@ fun AnalyticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
                 .onSizeChanged {
@@ -204,7 +211,7 @@ fun AnalyticsScreen(
                         .onSizeChanged {
                             widthPx = max(widthPx, it.width.toFloat())
                         },
-                    contentPadding = PaddingValues(vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
                 ) {
                     items(
                         count = rows.itemCount,
@@ -227,6 +234,12 @@ fun AnalyticsScreen(
                         }
                     }
                 }
+            }
+            if (showEmptyState) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Analytics,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
@@ -254,6 +267,7 @@ private fun AnalyticsScreenPreview() {
     FloconTheme {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
+            showEmptyState = false,
             onAnalyticsSelected = {},
             selectedItem = null,
             rows = rows,

@@ -5,11 +5,28 @@ object Protocol {
     object FromDevice {
         // lowercase: incoming plugin and method names are lowercased when a message is received
 
+        // first message sent by the SDK when it connects, with the installed plugins
+        object Bonjour {
+            const val Plugin = "bonjour"
+
+            object Method {
+                const val Bonjour = "bonjour"
+            }
+        }
+
         object Analytics {
             const val Plugin = "analytics"
 
             object Method {
                 const val AddItems = "additems"
+            }
+        }
+
+        object FeatureFlags {
+            const val Plugin = "featureflags"
+
+            object Method {
+                const val Register = "register"
             }
         }
 
@@ -53,6 +70,7 @@ object Protocol {
 
             object Method {
                 const val ListFiles = "listfiles"
+                const val GetRoots = "getroots"
             }
         }
 
@@ -142,6 +160,7 @@ object Protocol {
                 const val DeleteFiles = "deleteFiles"
                 const val DeleteFolderContent = "deleteFolderContent"
                 const val GetFile = "getFile"
+                const val GetRoots = "getRoots"
             }
         }
 

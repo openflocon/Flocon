@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.domain.network.models.text
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
@@ -26,9 +25,9 @@ internal fun ScopeChipsView(
     modifier: Modifier = Modifier,
 ) {
     val isSelected = remember(uiState, scope) { uiState.selectedScopes.contains(scope) }
-    val color by animateColorAsState(if (isSelected) FloconTheme.colorPalette.tertiary else Color.Transparent)
+    val color by animateColorAsState(if (isSelected) FloconTheme.colors.ink else Color.Transparent)
     val textColor by animateColorAsState(
-        if (isSelected) FloconTheme.colorPalette.onTertiary else FloconTheme.colorPalette.onSurface.copy(
+        if (isSelected) FloconTheme.colors.bg100 else FloconTheme.colors.ink.copy(
             alpha = 0.5f
         )
     )
@@ -37,7 +36,7 @@ internal fun ScopeChipsView(
             .clip(FloconTheme.shapes.large)
             .clickable { onScopeToggled(scope) }
             .background(color = color)
-            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
     ) {
         Text(
             text = scope.text(),

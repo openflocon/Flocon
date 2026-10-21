@@ -13,6 +13,14 @@ object Protocol {
             }
         }
 
+        object FeatureFlags {
+            const val Plugin = "featureflags"
+
+            object Method {
+                const val Register = "register"
+            }
+        }
+
         object Dashboard {
             const val Plugin = "dashboard"
 
@@ -53,6 +61,7 @@ object Protocol {
 
             object Method {
                 const val ListFiles = "listfiles"
+                const val GetRoots = "getroots"
             }
         }
 
@@ -146,6 +155,7 @@ object Protocol {
             const val Plugin = "files"
 
             object Method {
+                const val GetRoots = "getRoots"
                 const val ListFiles = "listFiles"
                 const val DeleteFile = "deleteFile"
                 const val DeleteFiles = "deleteFiles"

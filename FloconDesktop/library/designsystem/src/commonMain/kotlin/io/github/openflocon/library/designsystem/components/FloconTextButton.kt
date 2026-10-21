@@ -13,14 +13,14 @@ import io.github.openflocon.library.designsystem.theme.contentColorFor
 fun FloconTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors(
             containerColor = containerColor,
-            contentColor = FloconTheme.colorPalette.contentColorFor(containerColor)
+            contentColor = FloconTheme.colors.contentColorFor(containerColor)
         ),
         shape = FloconTheme.shapes.medium,
         modifier = modifier,

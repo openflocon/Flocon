@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +14,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconFeature
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -63,33 +68,43 @@ fun DatabaseScreen(
     FloconFeature(
         modifier = modifier.fillMaxSize()
     ) {
-        Row(Modifier.fillMaxSize()) {
-            DatabasesAndTablesView(
+        if (deviceDataBases is DatabasesStateUiModel.Empty) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Database,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .width(340.dp),
-                state = deviceDataBases,
-                favorites = favorites,
-                onAction = onAction
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg100),
             )
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                DatabaseTabsView(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                    tabs = tabs,
-                    selected = selectedTab,
-                    onAction = {
-                        onAction(DatabaseScreenAction.OnTabAction(it))
-                    },
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                DatabasesAndTablesView(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(340.dp),
+                    state = deviceDataBases,
+                    favorites = favorites,
+                    onAction = onAction
                 )
-                selectedTab?.let {
-                    DatabaseTabView(
-                        tab = it,
-                        favoritesTitles = remember(favorites) {
-                            favorites.map { it.title }.toImmutableSet()
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DatabaseTabsView(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
+                        tabs = tabs,
+                        selected = selectedTab,
+                        onAction = {
+                            onAction(DatabaseScreenAction.OnTabAction(it))
                         },
                     )
+                    selectedTab?.let {
+                        DatabaseTabView(
+                            tab = it,
+                            favoritesTitles = remember(favorites) {
+                                favorites.map { it.title }.toImmutableSet()
+                            },
+                        )
+                    }
                 }
             }
         }

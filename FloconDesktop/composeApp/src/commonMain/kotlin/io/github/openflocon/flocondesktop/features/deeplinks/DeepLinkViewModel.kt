@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import flocondesktop.composeapp.generated.resources.deeplink_send_error
 
 class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -74,7 +76,7 @@ class DeepLinkViewModel(
                     }
                 )
             }
-        )
+        ).let { it.copy(showEmptyState = it.deepLinks.isEmpty() && it.variables.isEmpty()) }
     }
         .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 

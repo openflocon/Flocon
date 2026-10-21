@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.with_folders_size
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
@@ -39,7 +41,8 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import flocondesktop.composeapp.generated.resources.filter
 
 @Composable
 fun FilesTopBar(
@@ -68,7 +71,7 @@ fun FilesTopBar(
             FloconIconTonalButton(
                 onClick = onBack,
                 enabled = hasParentFile,
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack
@@ -79,9 +82,9 @@ fun FilesTopBar(
                 text = current?.name.orEmpty(),
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
             )
 
             numberOfFiles?.let { nb ->
@@ -89,10 +92,10 @@ fun FilesTopBar(
                     text = "$nb files",
                     style = FloconTheme.typography.bodySmall,
                     maxLines = 1,
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.secondary.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
-                        .padding(vertical = 3.dp, horizontal = 8.dp),
+                        .background(FloconTheme.colors.bg200.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
+                        .padding(vertical = 3.dp, horizontal = FloconTheme.spacing.small),
                 )
             }
 
@@ -133,6 +136,8 @@ fun FilesTopBar(
                 enabled = isDirectory,
                 onClick = onRefresh,
             )
+
+            FeatureDocButton(doc = FeatureDoc.Files)
         }
     )
 }
@@ -155,17 +160,17 @@ private fun SelectingView(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.background(
-                    color = FloconTheme.colorPalette.accent,
+                    color = FloconTheme.colors.accentSoft,
                     shape = FloconTheme.shapes.medium,
                 ).padding(
-                    horizontal = 8.dp
+                    horizontal = FloconTheme.spacing.small
                 )
             ) {
                 Text(
                     text = "$selectedCount selected",
                     style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onAccent,
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = FloconTheme.colors.accent,
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
                 )
                 FloconIconButton(
                     imageVector = Icons.Outlined.Delete,
@@ -213,7 +218,7 @@ private fun FilesTopBarPreview() {
     val current = FileUiModel(
         name = "File Name",
         type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Constants.CachesDir,
+        path = FilePathUiModel.Root(id = "caches"),
         icon = Icons.Outlined.Folder,
         sizeFormatted = "10 KB",
         contextualActions = persistentListOf(),
@@ -227,7 +232,7 @@ private fun FilesTopBarPreview() {
             onRefresh = {},
             filterBar = {
                 Button(onClick = {}) {
-                    Text(text = "Filter")
+                    Text(text = stringResource(Res.string.filter))
                 }
             },
             modifier = Modifier.fillMaxWidth(),

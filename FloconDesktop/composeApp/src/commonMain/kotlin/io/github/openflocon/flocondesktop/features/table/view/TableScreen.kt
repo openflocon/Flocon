@@ -31,6 +31,9 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.export_csv
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
@@ -48,7 +51,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -109,6 +112,7 @@ fun TableScreen(
                 )
             },
             actions = {
+                FeatureDocButton(doc = FeatureDoc.Tables)
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -122,12 +126,12 @@ fun TableScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
         ) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             ) {
                 stickyHeader {
                     when (content) {
@@ -136,8 +140,8 @@ fun TableScreen(
                         is TableContentStateUiModel.WithContent -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth()
-                                    .background(FloconTheme.colorPalette.secondary)
-                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                    .background(FloconTheme.colors.bg200)
+                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
                             ) {
                                 content.columns.columns.fastForEach { column ->
                                     Text(
@@ -145,9 +149,9 @@ fun TableScreen(
                                         modifier =
                                         Modifier
                                             .width(columnsWidth)
-                                            .padding(horizontal = 4.dp),
+                                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = FloconTheme.colorPalette.onSecondary,
+                                        color = FloconTheme.colors.inkMuted,
                                     )
                                 }
                             }
@@ -169,12 +173,18 @@ fun TableScreen(
                                 HorizontalDivider(
                                     modifier =
                                     Modifier.fillMaxWidth()
-                                        .padding(top = 4.dp),
+                                        .padding(top = FloconTheme.spacing.extraSmall),
                                 )
                             }
                         }
                     }
                 }
+            }
+            if (deviceTables is TablesStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Tables,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,

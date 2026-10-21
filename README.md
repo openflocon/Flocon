@@ -12,32 +12,35 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
 
 ## Getting Started
 
-`This library is lightweight, contributing just 140KB to the overall app size`
-
-in your module .kts
+Since 2.0, the SDK is split into one module per feature: add the core and the plugins you need, each with its `-no-op` version for release builds.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
-```
+```kotlin
 debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
+
+// for example, the network inspector with OkHttp
+debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
+debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
 ```
 
 in your `Application.kt`
 ```kotlin
-// android initialization
-Flocon.initialize(this)
+startFlocon(FloconContext(this)) {
+    install(FloconNetwork)
+    install(FloconDatabase) { room() }
+    install(FloconAnalytics)
+}
 
-// desktop / ios
-Flocon.initialize()
+// then, anywhere in your app
+Flocon.analyticsPlugin.log(AnalyticsEvent("button_clicked", "events"))
 ```
 
-```toml
-[versions]
-flocon = "LASTEST_VERSION"
+On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
 
-[libraries]
-flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
-```
+Coming from 1.x? See the 👉 **[migration guide](https://openflocon.github.io/Flocon/migration)**.
 
 ## 📖 Documentation
 
@@ -47,6 +50,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 ### Table of Contents
 
 - 🚀 **[Getting Started](https://openflocon.github.io/Flocon/setup)**
+    - [Migrating to 2.0](https://openflocon.github.io/Flocon/migration)
     - [Installation Guide](https://openflocon.github.io/Flocon/setup#installation)
     - [Basic Usage](https://openflocon.github.io/Flocon/setup#usage)
     - [macOS Specifics](https://openflocon.github.io/Flocon/macos-install)
@@ -65,8 +69,10 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [Deeplink Launcher](https://openflocon.github.io/Flocon/deeplink)
     - [File Explorer](https://openflocon.github.io/Flocon/files)
     - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
+    - [Feature Flags Viewer](https://openflocon.github.io/Flocon/featureflags)
+    - [Crash Reporter](https://openflocon.github.io/Flocon/crashreporter)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
-- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
+- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events, feature flags and databases
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
 
 ---
@@ -80,6 +86,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 | **Preferences** | ✅ | ❌ |
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
+| **Feature Flags** | ✅ | ✅ |
 | **Deeplink & Files** | ✅ | ❌ |
 | **AI Agents (MCP)** | ✅ | ✅ |
 
@@ -88,7 +95,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 ## 🧰 Requirements
 
 - **Android**: Device/Emulator with USB debugging + ADB.
-- **KMP**: Kotlin 2.0.0+ in your app.
+- **KMP**: a recent Kotlin version in your app (the SDK is built with Kotlin 2.4).
 - **Desktop**: Flocon Desktop app (JVM-based).
 
 For detailed platform-specific requirements, see the [Setup Guide](https://openflocon.github.io/Flocon/setup).
