@@ -48,7 +48,7 @@ internal fun DetailPanel(
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
     Box(
-        modifier.background(FloconTheme.colorPalette.primary)
+        modifier.background(FloconTheme.colors.bg100)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -59,7 +59,7 @@ internal fun DetailPanel(
             header()
             FloconHorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg200,
             )
             content()
         }
@@ -88,12 +88,12 @@ internal fun DetailHeader(
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.6.sp,
                 ),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
             Text(
                 text = title,
                 style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
             if (chips != null) {
                 Row(
@@ -114,7 +114,7 @@ internal fun DetailChip(
     Row(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.secondary)
+            .background(FloconTheme.colors.bg200)
             .padding(horizontal = 10.dp, vertical = 3.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -137,7 +137,7 @@ internal fun DetailChipText(text: String) {
     Text(
         text = text,
         style = FloconTheme.typography.bodySmall,
-        color = FloconTheme.colorPalette.onSecondary,
+        color = FloconTheme.colors.inkMuted,
     )
 }
 
@@ -158,12 +158,12 @@ internal fun DetailSectionCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(width = 1.dp, color = FloconTheme.colorPalette.secondary, shape = shape),
+            .border(width = 1.dp, color = FloconTheme.colors.bg200, shape = shape),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colorPalette.surface)
+                .background(FloconTheme.colors.bg000)
                 .padding(start = 12.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -171,7 +171,7 @@ internal fun DetailSectionCard(
             Text(
                 text = title,
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colors.ink,
             )
             if (badge != null) {
                 Text(
@@ -180,10 +180,10 @@ internal fun DetailSectionCard(
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 0.4.sp,
                     ),
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier
                         .clip(FloconTheme.shapes.extraSmall)
-                        .background(FloconTheme.colorPalette.secondary)
+                        .background(FloconTheme.colors.bg200)
                         .padding(horizontal = 6.dp, vertical = 1.dp),
                 )
             }
@@ -206,7 +206,7 @@ internal fun DetailEmptyText(text: String) {
     Text(
         text = text,
         style = FloconTheme.typography.bodySmall,
-        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+        color = FloconTheme.colors.ink.copy(alpha = 0.6f),
         modifier = Modifier.padding(12.dp),
     )
 }
@@ -226,7 +226,7 @@ internal fun DetailKeyValueList(
                 if (index != 0) {
                     FloconHorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                     )
                 }
                 Row(
@@ -238,13 +238,13 @@ internal fun DetailKeyValueList(
                     Text(
                         text = key,
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+                        color = FloconTheme.colors.ink.copy(alpha = 0.7f),
                         modifier = Modifier.width(keyWidth),
                     )
                     Text(
                         text = value,
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                         modifier = Modifier.weight(1f),
                     )
                 }
