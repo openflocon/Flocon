@@ -146,7 +146,7 @@ fun DatabaseQueryView(
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colorPalette.primary,
+                color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -166,7 +166,7 @@ fun DatabaseQueryView(
             maxLines = 10,
             textStyle = FloconTheme.typography.bodyMedium,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.bg200,
             visualTransformation = remember { ColorsTransformation() },
             modifier = Modifier.fillMaxWidth()
                 .onKeyEvent { keyEvent ->
@@ -193,14 +193,14 @@ fun DatabaseQueryView(
                     if (isEnabled)
                         onAction(DatabaseTabAction.ExecuteQuery(query))
                 },
-                containerColor = FloconTheme.colorPalette.tertiary,
+                containerColor = FloconTheme.colors.ink,
                 modifier = Modifier
                     .padding(all = FloconTheme.spacing.small)
                     .graphicsLayer {
                         if (!isEnabled) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colorPalette.onTertiary
+                val contentColor = FloconTheme.colors.bg100
                 Row(
                     Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
@@ -227,13 +227,13 @@ fun DatabaseQueryView(
                         onAction(DatabaseTabAction.UpdateAutoUpdate(it))
                     },
                     colors = CheckboxDefaults.colors(
-                        uncheckedColor = FloconTheme.colorPalette.secondary,
-                        checkedColor = FloconTheme.colorPalette.secondary,
+                        uncheckedColor = FloconTheme.colors.bg200,
+                        checkedColor = FloconTheme.colors.bg200,
                     )
                 )
                 Text(
                     stringResource(Res.string.auto_update),
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                     style = FloconTheme.typography.bodySmall
                 )
             }

@@ -79,13 +79,13 @@ fun DatabaseResultView(
             is QueryResultUiModel.Text -> {
                 Text(
                     text = result.text,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                     modifier = Modifier.padding(FloconTheme.spacing.small),
                 )
             }
 
             is QueryResultUiModel.Values -> {
-                val color = FloconTheme.colorPalette.secondary
+                val color = FloconTheme.colors.bg200
 
                 var selectedItem by remember(result) {
                     mutableStateOf<DetailResultItem?>(null)
@@ -95,7 +95,7 @@ fun DatabaseResultView(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg100)
                         .border(
                             width = 1.dp,
                             color = color,
@@ -161,7 +161,7 @@ fun DatabaseResultView(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(FloconTheme.colorPalette.primary)
+                                    .background(FloconTheme.colors.bg100)
                                     .height(32.dp)
                                     .padding(horizontal = FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically
@@ -173,7 +173,7 @@ fun DatabaseResultView(
                                             style = FloconTheme.typography.bodySmall.copy(
                                                 fontWeight = FontWeight.Bold
                                             ),
-                                            color = FloconTheme.colorPalette.onPrimary,
+                                            color = FloconTheme.colors.ink,
                                             modifier = Modifier
                                                 .width(columnsWidth)
                                                 .padding(all = FloconTheme.spacing.extraSmall),
@@ -226,7 +226,7 @@ private fun DatabaseResultRowView(
                 if (selected) {
                     Modifier.border(
                         width = 1.dp,
-                        color = FloconTheme.colorPalette.accent,
+                        color = FloconTheme.colors.accentSoft,
                         shape = FloconTheme.shapes.medium
                     )
                 } else {
@@ -249,7 +249,7 @@ private fun DatabaseResultRowView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier
                     .width(columnsWidth)
                     .graphicsLayer {
@@ -270,14 +270,14 @@ private fun ResultHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colors.bg000)
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             stringResource(Res.string.nb_lines, result.rows.size),
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier
                 .padding(all = FloconTheme.spacing.extraSmall),
         )
@@ -292,7 +292,7 @@ private fun ResultHeader(
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
                 modifier = Modifier.fillMaxSize(),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                 contentDescription = null,
             )
         }

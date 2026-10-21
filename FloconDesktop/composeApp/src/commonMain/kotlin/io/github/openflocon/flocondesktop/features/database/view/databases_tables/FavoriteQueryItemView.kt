@@ -39,7 +39,7 @@ internal fun FavoriteQueryItemView(
     onDelete: (DatabaseFavoriteQueryUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val (background, textColor) = Color.Transparent to FloconTheme.colorPalette.onSurface
+    val (background, textColor) = Color.Transparent to FloconTheme.colors.ink
 
     var isHover by remember { mutableStateOf(false) }
     Row(

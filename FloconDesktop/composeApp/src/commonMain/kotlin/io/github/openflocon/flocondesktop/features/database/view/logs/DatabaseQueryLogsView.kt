@@ -103,7 +103,7 @@ fun DatabaseQueryLogsView(
         DatabaseLogsHeader(
             modifier = Modifier.fillMaxWidth().border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             ),
             searchQuery = searchQuery,
@@ -130,11 +130,11 @@ fun DatabaseQueryLogsView(
                 .clip(FloconTheme.shapes.medium)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
                 .background(
-                    color = FloconTheme.colorPalette.primary,
+                    color = FloconTheme.colors.bg100,
                     shape = FloconTheme.shapes.medium
                 )
         ) {
@@ -178,7 +178,7 @@ fun DatabaseQueryLogsView(
                                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
                         )
                     }
-                    HorizontalDivider(color = FloconTheme.colorPalette.secondary)
+                    HorizontalDivider(color = FloconTheme.colors.bg200)
                 }
             }
             FloconVerticalScrollbar(
@@ -228,7 +228,7 @@ private fun DatabaseLogsHeader(
                         onValueChange = onSearchQueryChanged,
                         modifier = Modifier.weight(1f),
                         placeholder = { defaultPlaceHolder(stringResource(Res.string.settings_filter_logs)) },
-                        containerColor = FloconTheme.colorPalette.secondary,
+                        containerColor = FloconTheme.colors.bg200,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
@@ -338,7 +338,7 @@ private fun PageSelectorView(
         Text(
             text = paginationLabel,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onPrimary
+            color = FloconTheme.colors.ink
         )
 
         IconButton(
@@ -361,7 +361,7 @@ private fun FilterChips(
     toggleFilterType: (FilterChipUiModel) -> Unit,
     removeFilterChip: (FilterChipUiModel) -> Unit
 ) {
-    val itemsColor = FloconTheme.colorPalette.onSecondary
+    val itemsColor = FloconTheme.colors.inkMuted
     if (filterChips.isNotEmpty()) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
