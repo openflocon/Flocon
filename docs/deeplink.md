@@ -63,3 +63,19 @@ startFlocon(FloconContext(context)) {
     }
 }
 ```
+
+### Register deeplinks later
+
+Some values are only known after `startFlocon` (a user id after login, a feature enabled remotely...).
+Register more deeplinks and variables at any time. A deeplink with the same link, or a variable with
+the same name, replaces the previous one; the desktop is updated immediately and after each reconnection:
+
+```kotlin
+Flocon.deeplinksPlugin.register {
+    variable("userId")
+
+    deeplink("myapp://user/[userId]") {
+        "userId" withVariable "userId"
+    }
+}
+```

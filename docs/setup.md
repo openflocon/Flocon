@@ -98,7 +98,7 @@ Call `startFlocon` as early as possible in your application lifecycle and `insta
         override fun onCreate() {
             super.onCreate()
 
-            startFlocon(FloconContext(this)) {
+            startFlocon(this) {
                 install(FloconNetwork)
                 install(FloconAnalytics)
             }

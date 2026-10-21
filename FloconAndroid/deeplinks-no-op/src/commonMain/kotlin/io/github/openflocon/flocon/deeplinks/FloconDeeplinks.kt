@@ -31,7 +31,9 @@ internal class FloconDeeplinksConfigImpl : FloconDeeplinksConfig() {
     override fun deeplink(link: String, block: DeeplinkLinkBuilder.() -> Unit) {}
 }
 
-interface FloconDeeplinksPlugin : FloconPlugin
+interface FloconDeeplinksPlugin : FloconPlugin {
+    fun register(block: FloconDeeplinksConfig.() -> Unit)
+}
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
@@ -52,6 +54,7 @@ internal object FloconDeeplinksPluginNoOp : FloconDeeplinksPlugin {
     override val key: String = "deeplink"
     override suspend fun onMessageReceived(method: String, body: String) {}
     override suspend fun onConnectedToServer() {}
+    override fun register(block: FloconDeeplinksConfig.() -> Unit) {}
 }
 
 val Flocon.Companion.deeplinksPlugin: FloconDeeplinksPlugin

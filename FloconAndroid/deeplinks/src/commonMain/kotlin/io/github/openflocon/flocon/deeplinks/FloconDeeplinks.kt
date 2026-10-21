@@ -13,6 +13,11 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
 import io.github.openflocon.flocon.error.pluginNotInitialized
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
@@ -40,12 +45,29 @@ object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeepli
 }
 
 internal class FloconDeeplinksPluginImpl(
-    private val deeplinks: List<DeeplinkModel>,
-    private val variables: List<DeeplinkVariable>,
+    deeplinks: List<DeeplinkModel>,
+    variables: List<DeeplinkVariable>,
     private val sender: FloconMessageSender,
-    private val encoder: FloconEncoder
+    private val encoder: FloconEncoder,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1),
 ) : FloconPlugin, FloconDeeplinksPlugin {
     override val key: String = Protocol.FromDevice.Deeplink.Plugin
+
+    // only touched from [scope], which runs on a single thread
+    private val scope = CoroutineScope(dispatcher + SupervisorJob())
+    private var deeplinks: List<DeeplinkModel> = deeplinks
+    private var variables: List<DeeplinkVariable> = variables
+
+    override fun register(block: FloconDeeplinksConfig.() -> Unit) {
+        val config = FloconDeeplinksConfigImpl().apply(block)
+        scope.launch {
+            val newDeeplinks = config.deeplinks()
+            val newVariables = config.variables()
+            deeplinks = deeplinks.filterNot { old -> newDeeplinks.any { it.link == old.link } } + newDeeplinks
+            variables = variables.filterNot { old -> newVariables.any { it.name == old.name } } + newVariables
+            registerDeeplinks(deeplinks = deeplinks, variables = variables)
+        }
+    }
 
     override suspend fun onMessageReceived(
         method: String,
@@ -55,10 +77,12 @@ internal class FloconDeeplinksPluginImpl(
     }
 
     override suspend fun onConnectedToServer() {
-        registerDeeplinks(
-            deeplinks = deeplinks,
-            variables = variables
-        )
+        scope.launch {
+            registerDeeplinks(
+                deeplinks = deeplinks,
+                variables = variables
+            )
+        }.join()
     }
 
     fun registerDeeplinks(
@@ -89,4 +113,5 @@ private class NoOpDeeplinksPlugin : FloconDeeplinksPlugin {
     override val key: String = ""
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
+    override fun register(block: FloconDeeplinksConfig.() -> Unit) = Unit
 }

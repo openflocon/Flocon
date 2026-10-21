@@ -69,4 +69,11 @@ internal data class DeeplinkVariable(
 
 }
 
-interface FloconDeeplinksPlugin : FloconPlugin
+interface FloconDeeplinksPlugin : FloconPlugin {
+    /**
+     * Registers more deeplinks and variables after [startFlocon], e.g. once the user is logged in.
+     * A deeplink with an already registered link, or a variable with an already registered name,
+     * replaces the previous one. The desktop is updated right away and after each reconnection.
+     */
+    fun register(block: FloconDeeplinksConfig.() -> Unit)
+}

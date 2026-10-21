@@ -126,3 +126,15 @@ Flocon can display all SQL queries executed by your app in real-time — great f
         bindArgs = listOf(42)
     )
     ```
+
+    Room only accepts one query callback per database. If your app already sets its own
+    `setQueryCallback`, call `logQuery` from it to forward the queries to Flocon:
+
+    ```kotlin
+    Room.databaseBuilder(context, DogDatabase::class.java, "dogs_database")
+        .setQueryCallback({ sqlQuery, bindArgs ->
+            Flocon.databasePlugin.logQuery("dogs_database", sqlQuery, bindArgs)
+            myOwnLogger.log(sqlQuery)
+        }, Executors.newSingleThreadExecutor())
+        .build()
+    ```

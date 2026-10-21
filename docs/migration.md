@@ -60,6 +60,11 @@ gRPC interceptors. See [Release builds](setup.md#4-release-builds-no-op).
             deeplink("myapp://home")
         }
     }
+
+    // later, e.g. once the user is logged in
+    Flocon.deeplinksPlugin.register {
+        deeplink("myapp://user/[userId]")
+    }
     ```
 
 === "1.x"
@@ -86,7 +91,7 @@ Every plugin is now accessed with `Flocon.xxxPlugin`:
 
 | 1.x | 2.0 |
 | :--- | :--- |
-| `Flocon.initialize(context)` | `startFlocon(FloconContext(context)) { install(...) }` |
+| `Flocon.initialize(context)` | `startFlocon(context) { install(...) }` (Android) / `startFlocon(FloconContext(...)) { install(...) }` |
 | `Flocon.deeplinks { ... }` | `install(FloconDeeplinks) { ... }` |
 | `floconAnalytics("stream").logEvents(event)` | `Flocon.analyticsPlugin.log(AnalyticsEvent("name", "stream", ...))` |
 | `floconTable("name").log("key" toParam "value")` | `Flocon.tablePlugin.table("name") { column("key", "value") }` |
