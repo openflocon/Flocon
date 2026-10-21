@@ -41,7 +41,7 @@ internal fun DeeplinkVariableChip(
 
     Row(
         modifier = modifier.background(
-            color = FloconTheme.colorPalette.surface,
+            color = FloconTheme.colors.bg000,
             shape = RoundedCornerShape(4.dp),
         )
             .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
@@ -51,7 +51,7 @@ internal fun DeeplinkVariableChip(
         Text(
             text = "${variable.name}:",
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
 
         when (val mode = variable.mode) {
@@ -128,14 +128,14 @@ private fun VariableInputField(
 
     Box(
         modifier = modifier.background(
-            color = FloconTheme.colorPalette.primary,
+            color = FloconTheme.colors.bg100,
             shape = RoundedCornerShape(2.dp),
         ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
     ) {
         Text(
             text = placeholder,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.4f),
+            color = FloconTheme.colors.ink.copy(alpha = 0.4f),
             modifier = Modifier.graphicsLayer { alpha = if (isValueEmpty) 1f else 0f },
         )
         BasicTextField(
@@ -143,11 +143,11 @@ private fun VariableInputField(
             value = value,
             onValueChange = onValueChange,
             textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colors.ink,
                 fontWeight = FontWeight.Bold,
             ),
             readOnly = readOnly,
-            cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+            cursorBrush = SolidColor(FloconTheme.colors.ink),
         )
     }
 }
@@ -157,7 +157,7 @@ private fun VariableInputField(
 private fun DeeplinkVariablesPanelViewPreview() {
     FloconTheme {
         Column(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary)
+            modifier = Modifier.background(FloconTheme.colors.bg100)
                 .fillMaxWidth()
                 .padding(FloconTheme.spacing.small)
         ) {
