@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
-import io.github.openflocon.domain.timeline.models.TimelineActivityDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
@@ -66,37 +65,5 @@ class SummaryMapperTest {
     @Test
     fun `the session counts are kept`() {
         assertEquals(mapOf(3_000L to 6), summary.toUi(selected = TimelineSource.entries.toSet()).sessionEventCounts)
-    }
-
-    // --- activity
-
-    private val activity = TimelineActivityDomainModel(
-        bucketCount = 10,
-        sourceBuckets = mapOf(
-            TimelineSource.Network to mapOf(0 to 1, 7 to 2),
-            TimelineSource.Crash to mapOf(8 to 1),
-        ),
-        sessionBuckets = setOf(6),
-    )
-
-    @Test
-    fun `the activity has one row per displayed source, in the order of the filters`() {
-        val ui = activity.toUi(selected = setOf(TimelineSource.Crash, TimelineSource.Network, TimelineSource.Adb))
-
-        assertEquals(listOf(TimelineSource.Network, TimelineSource.Crash, TimelineSource.Adb), ui.rows.map { it.source })
-        assertEquals(mapOf(0 to 1, 7 to 2), ui.rows.first().buckets)
-        assertEquals(emptyMap(), ui.rows.last().buckets)
-    }
-
-    @Test
-    fun `the sessions are drawn only when the app start filter is selected`() {
-        assertEquals(setOf(6), activity.toUi(selected = TimelineSource.entries.toSet()).sessionBuckets)
-        assertEquals(emptySet(), activity.toUi(selected = setOf(TimelineSource.Network)).sessionBuckets)
-    }
-
-    @Test
-    fun `an activity without events is empty`() {
-        assertEquals(true, TimelineActivityDomainModel.empty(240).toUi(selected = TimelineSource.entries.toSet()).isEmpty)
-        assertEquals(false, activity.toUi(selected = TimelineSource.entries.toSet()).isEmpty)
     }
 }

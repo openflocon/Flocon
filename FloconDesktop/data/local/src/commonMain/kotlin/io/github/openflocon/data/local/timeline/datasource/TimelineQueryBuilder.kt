@@ -186,6 +186,8 @@ private const val EMPTY_ROWS =
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
  * (the latest app start before it), to group the events by session.
+ * The app starts are rows of their own kind, at the time the app started, whether the session holds events or not.
+ * They have no text, so they are hidden while the text filter is used.
  */
 internal fun buildTimelineQuery(
     deviceId: String,
@@ -193,17 +195,37 @@ internal fun buildTimelineQuery(
     filter: TimelineFilterDomainModel,
 ): TimelineQuery {
     val union = buildUnion(deviceId, packageName, filter)
-    val unionSql = union.sql ?: return TimelineQuery(sql = EMPTY_ROWS, params = emptyList())
+    val showAppStarts = TimelineSource.AppStart in filter.sources && filter.text.isNullOrBlank()
+    if (union.sql == null && !showAppStarts) return TimelineQuery(sql = EMPTY_ROWS, params = emptyList())
 
     val params = ArrayList<Any>()
     val sessions = sessionsSql(deviceId, packageName, params)
-    params.addAll(union.params)
+    val members = ArrayList<String>()
+    union.sql?.let {
+        members.add(it)
+        params.addAll(union.params)
+    }
+    if (showAppStarts) {
+        val appStartSessions = sessionsSql(deviceId, packageName, params)
+        val appInstance = filter.appInstance
+        val where = StringBuilder("WHERE appInstance IS NOT NULL")
+        if (appInstance != null) {
+            where.append(" AND appInstance = ?")
+            params.add(appInstance)
+        }
+        members.add(
+            "SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts, '' AS title, " +
+                "NULL AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS FROM ($appStartSessions) $where"
+        )
+    }
 
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
             "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
-            "FROM ($unionSql) u ORDER BY u.ts DESC, u.id DESC",
+            "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
+            // an app start is below the events that happened at the same time
+            "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, u.id DESC",
         params = params,
     )
 }
@@ -241,38 +263,6 @@ internal fun buildTimelineSummaryQuery(
 }
 
 /**
- * When the selected events happened: the time range of the events is cut in [bucketCount] slices and the
- * events of each kind are counted in each slice. The app starts are rows of their own kind, one per slice.
- * Counting in the query keeps the result small whatever the number of events.
- */
-internal fun buildTimelineActivityQuery(
-    deviceId: String,
-    packageName: String,
-    filter: TimelineFilterDomainModel,
-    bucketCount: Int,
-): TimelineQuery {
-    val union = buildUnion(deviceId, packageName, filter)
-    val unionSql = union.sql ?: return TimelineQuery(
-        sql = "SELECT '' AS kind, 0 AS bucket, 0 AS count WHERE 0",
-        params = emptyList(),
-    )
-
-    val params = ArrayList<Any>(union.params)
-    val sessions = sessionsSql(deviceId, packageName, params)
-    // the last slice is bucketCount - 1: (ts - first) is at most (last - first), below (last - first + 1)
-    fun bucket(column: String) = "CAST(($column - firstTs) * $bucketCount / (lastTs - firstTs + 1) AS INTEGER)"
-
-    return TimelineQuery(
-        sql = "WITH events AS ($unionSql), bounds AS (SELECT MIN(ts) AS firstTs, MAX(ts) AS lastTs FROM events) " +
-            "SELECT kind, ${bucket("ts")} AS bucket, COUNT(*) AS count FROM events, bounds GROUP BY kind, bucket " +
-            "UNION ALL " +
-            "SELECT '$KIND_APP_START' AS kind, ${bucket("appInstance")} AS bucket, COUNT(*) AS count " +
-            "FROM ($sessions), bounds WHERE appInstance BETWEEN firstTs AND lastTs GROUP BY bucket",
-        params = params,
-    )
-}
-
-/**
  * How many of the selected events each session holds.
  */
 internal fun buildTimelineSessionCountsQuery(
@@ -283,7 +273,8 @@ internal fun buildTimelineSessionCountsQuery(
     val events = buildTimelineQuery(deviceId, packageName, filter)
     return TimelineQuery(
         sql = "SELECT sessionStart, COUNT(*) AS count FROM (${events.sql}) " +
-            "WHERE sessionStart IS NOT NULL GROUP BY sessionStart",
+            // a session doesn't count its own app start
+            "WHERE sessionStart IS NOT NULL AND kind <> '$KIND_APP_START' GROUP BY sessionStart",
         params = events.params,
     )
 }
