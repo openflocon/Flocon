@@ -1,6 +1,9 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
-import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.font.FontFamily
+import io.github.openflocon.flocondesktop.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -60,10 +63,21 @@ fun MainScreenTopBar(
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
+    val lineColor = FloconTheme.colors.line
+
     Row(
         modifier = modifier
             .background(FloconTheme.colors.bg000)
-            .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
+            .drawBehind {
+                // bottom border of the top bar
+                drawLine(
+                    color = lineColor,
+                    start = Offset(0f, size.height - 0.5.dp.toPx()),
+                    end = Offset(size.width, size.height - 0.5.dp.toPx()),
+                    strokeWidth = 1.dp.toPx(),
+                )
+            }
+            .padding(vertical = TopBarVerticalPadding, horizontal = FloconTheme.spacing.large),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
@@ -134,16 +148,10 @@ private fun Title(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(Res.drawable.app_icon_small),
-            contentDescription = stringResource(Res.string.app_logo_content_description),
-        )
+        FloconLogoMark(contentDescription = stringResource(Res.string.app_logo_content_description))
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -152,18 +160,31 @@ private fun Title(
                 text = stringResource(Res.string.app_name),
                 style = FloconTheme.typography.titleMedium.copy(
                     color = FloconTheme.colors.ink,
-                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.01).em,
                 ),
             )
+            Text(
+                text = "v${BuildConfig.APP_VERSION}",
+                style = FloconTheme.typography.labelSmall.copy(
+                    color = FloconTheme.colors.inkFaint,
+                    fontSize = 11.sp,
+                    lineHeight = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily.Monospace,
+                ),
+            )
+        }
 
-            if (updateChip != null) {
-                Spacer(modifier = Modifier.height(FloconTheme.spacing.tiny))
-                TopBarUpdateChip(
-                    uiModel = updateChip,
-                    onClick = { onUpdateChipClicked(updateChip) },
-                )
-            }
+        if (updateChip != null) {
+            TopBarUpdateChip(
+                uiModel = updateChip,
+                onClick = { onUpdateChipClicked(updateChip) },
+            )
         }
     }
 }
+
+private val TopBarVerticalPadding = 10.dp

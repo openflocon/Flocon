@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -68,12 +67,11 @@ data class MenuScene(
                         windowSize = it.size // TODO Add windowsize lib
                     }
             ) { padding ->
+                // the sidebar is flush with the window edge, the content keeps its own margin
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .padding(FloconTheme.spacing.small)
                 ) {
                     Box(
                         modifier = Modifier
@@ -82,7 +80,9 @@ data class MenuScene(
                     ) {
                         menuContent(expanded)
                     }
-                    scene.content()
+                    Row(modifier = Modifier.weight(1f).fillMaxHeight().padding(FloconTheme.spacing.small)) {
+                        scene.content()
+                    }
                 }
             }
             Box(

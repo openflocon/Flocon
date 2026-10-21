@@ -22,7 +22,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -39,9 +40,9 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
 
-val PanelMaxWidth = 275.dp
+val PanelMaxWidth = 232.dp
 val PanelMinWidth = 64.dp
-val PanelContentMinSize = 48.dp
+val PanelContentMinSize = 34.dp
 
 @Composable
 fun LeftPanelView(
@@ -54,11 +55,24 @@ fun LeftPanelView(
     onToggleSection: (MenuSection) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
+    val lineColor = FloconTheme.colors.line
     Box(
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colors.bg100)
-            .padding(FloconTheme.spacing.small),
+            .drawBehind {
+                // right border of the sidebar
+                drawLine(
+                    color = lineColor,
+                    start = Offset(size.width - 0.5.dp.toPx(), 0f),
+                    end = Offset(size.width - 0.5.dp.toPx(), size.height),
+                    strokeWidth = 1.dp.toPx(),
+                )
+            }
+            .padding(
+                start = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
+                end = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
+                top = FloconTheme.spacing.medium,
+                bottom = FloconTheme.spacing.large,
+            ),
     ) {
         Column(
             modifier = Modifier
@@ -165,7 +179,7 @@ private fun ColumnScope.MenuItems(
             onTogglePin = { onTogglePin(item) },
         )
         if (index != items.lastIndex)
-            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
+            Spacer(Modifier.height(FloconTheme.spacing.tiny))
     }
 }
 
