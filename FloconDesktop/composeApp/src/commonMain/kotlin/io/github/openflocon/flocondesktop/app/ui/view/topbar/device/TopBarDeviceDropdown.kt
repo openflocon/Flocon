@@ -98,6 +98,7 @@ internal fun TopBarDeviceDropdown(
 private fun Empty() {
     TopBarSelector(
         onClick = {},
+        modifier = Modifier.width(220.dp * FloconTheme.scale),
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
@@ -115,6 +116,7 @@ private fun Empty() {
 private fun Loading() {
     TopBarSelector(
         onClick = {},
+        modifier = Modifier.width(220.dp * FloconTheme.scale),
     ) {
         FloconCircularProgressIndicator()
     }
