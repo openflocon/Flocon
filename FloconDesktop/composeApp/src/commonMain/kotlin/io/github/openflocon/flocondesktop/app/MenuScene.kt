@@ -20,7 +20,6 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.navigation.FloconRoute
 
@@ -29,10 +28,8 @@ data class MenuScene(
     val scene: Scene<FloconRoute>,
     val menuContent: @Composable ((expanded: Boolean, onToggleExpanded: () -> Unit) -> Unit),
     val topBarContent: @Composable (() -> Unit)?
-) : Scene<FloconRoute> {
-    override val key: Any = Unit
-    override val entries: List<NavEntry<FloconRoute>> = scene.entries
-    override val previousEntries: List<NavEntry<FloconRoute>> = scene.previousEntries
+) : Scene<FloconRoute> by scene {
+    override val key: Any = MenuScene::class.qualifiedName!!
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
@@ -42,7 +39,6 @@ data class MenuScene(
             topBar = { topBarContent?.invoke() },
             modifier = Modifier.fillMaxSize()
         ) { padding ->
-            // the sidebar is flush with the window edge, the content keeps its own margin
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -51,11 +47,15 @@ data class MenuScene(
                 Box(
                     modifier = Modifier
                         .width(width)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
                 ) {
                     menuContent(expanded) { expanded = !expanded }
                 }
-                Row(modifier = Modifier.weight(1f).fillMaxHeight().padding(FloconTheme.spacing.small)) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
                     scene.content()
                 }
             }
