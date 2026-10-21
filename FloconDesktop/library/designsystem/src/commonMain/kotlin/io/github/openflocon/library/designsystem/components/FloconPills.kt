@@ -75,22 +75,22 @@ fun FloconOutlinedPill(
 }
 
 /**
- * A tinted pill (no border) for something that has a name and a color, ex: the method of a request.
- * [color] null: neutral.
+ * A solid pill (no border) for something that has a name and a color, ex: the method of a request.
+ * [background] and [contentColor] are chosen together to keep the text readable.
  */
 @Composable
-fun FloconTintedPill(
+fun FloconSolidPill(
     text: String,
+    background: Color,
+    contentColor: Color,
     modifier: Modifier = Modifier,
-    color: Color? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    val colors = FloconTheme.colors
     Row(
         modifier = modifier
             .defaultMinSize(minWidth = 52.dp)
             .clip(FloconTheme.shapes.small)
-            .background(color?.copy(alpha = 0.14f) ?: colors.lineStrong.copy(alpha = 0.5f))
+            .background(background)
             .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.CenterHorizontally),
@@ -101,7 +101,7 @@ fun FloconTintedPill(
             style = floconMonoStyle(small = true),
             fontSize = 11.5.sp,
             fontWeight = FontWeight.Bold,
-            color = color ?: colors.inkMuted,
+            color = contentColor,
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
