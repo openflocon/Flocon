@@ -76,6 +76,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
@@ -138,11 +141,13 @@ fun NetworkScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     NetworkScreen(
         uiState = uiState,
         rows = items,
         filterText = filterText,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -153,6 +158,7 @@ fun NetworkScreen(
     uiState: NetworkUiState,
     rows: LazyPagingItems<NetworkItemViewState>,
     filterText: State<String>,
+    showEmptyState: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -307,6 +313,7 @@ fun NetworkScreen(
 //                            onCheckedChange = {}
 //                        )
 //                    }
+                    FeatureDocButton(doc = FeatureDoc.Network)
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = stringResource(Res.string.export_csv),
@@ -460,6 +467,12 @@ fun NetworkScreen(
                                 }
                             }
                         }
+                        if (showEmptyState) {
+                            FeatureEmptyState(
+                                doc = FeatureDoc.Network,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
                         this@Row.AnimatedVisibility(
                             visible = uiState.contentState.selecting,
                             enter = slideInVertically { it },
@@ -607,6 +620,7 @@ private fun NetworkScreenPreview() {
             rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
+            showEmptyState = false,
         )
     }
 }

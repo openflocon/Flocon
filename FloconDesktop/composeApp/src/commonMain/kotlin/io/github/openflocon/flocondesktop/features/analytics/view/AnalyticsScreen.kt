@@ -43,6 +43,9 @@ import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.export_csv
 import flocondesktop.composeapp.generated.resources.invert_list
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsAction
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
@@ -75,6 +78,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val rows = viewModel.rows.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -93,6 +97,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         onAction = viewModel::onAction,
         filterText = filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
+        showEmptyState = showEmptyState,
     )
 }
 
@@ -101,6 +106,7 @@ fun AnalyticsScreen(
     filterText: State<String>,
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
+    showEmptyState: Boolean,
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
@@ -145,6 +151,7 @@ fun AnalyticsScreen(
                 )
             },
             actions = {
+                FeatureDocButton(doc = FeatureDoc.Analytics)
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -228,6 +235,12 @@ fun AnalyticsScreen(
                     }
                 }
             }
+            if (showEmptyState) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Analytics,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,
                 modifier = Modifier.fillMaxHeight()
@@ -254,6 +267,7 @@ private fun AnalyticsScreenPreview() {
     FloconTheme {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
+            showEmptyState = false,
             onAnalyticsSelected = {},
             selectedItem = null,
             rows = rows,

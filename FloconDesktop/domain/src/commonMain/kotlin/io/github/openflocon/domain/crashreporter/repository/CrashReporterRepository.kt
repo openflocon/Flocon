@@ -9,6 +9,9 @@ interface CrashReporterRepository {
     fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<PagingData<CrashReportDomainModel>>
+    fun observeHasCrashReports(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Boolean>
     suspend fun searchCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sinceTimestamp: Long?,
