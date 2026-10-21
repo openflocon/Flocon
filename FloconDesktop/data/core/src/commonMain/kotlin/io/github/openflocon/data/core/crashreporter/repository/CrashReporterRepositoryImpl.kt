@@ -66,6 +66,12 @@ class CrashReporterRepositoryImpl(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
+    override fun observeHasCrashReports(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Boolean> = localDataSource.observeHasAny(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    ).flowOn(dispatcherProvider.data)
+
     override suspend fun searchCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sinceTimestamp: Long?,

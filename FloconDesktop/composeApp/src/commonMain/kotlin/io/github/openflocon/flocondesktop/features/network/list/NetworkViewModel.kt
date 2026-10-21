@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list
 
+import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
@@ -75,6 +76,7 @@ import kotlin.uuid.Uuid
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
+    observeCurrentDeviceHasNetworkRequestsUseCase: ObserveCurrentDeviceHasNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
@@ -175,6 +177,12 @@ class NetworkViewModel(
     // true while the reset is running: the paging list can take a few seconds to reflect
     // the delete, so we display an empty list immediately instead of waiting for Room
     private val isClearing = MutableStateFlow(false)
+
+    // no call at all for the app, whatever the filters
+    val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasNetworkRequestsUseCase()
+        .map { hasRequests -> !hasRequests }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val items: Flow<PagingData<NetworkItemViewState>> =
         combine(

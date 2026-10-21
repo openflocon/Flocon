@@ -14,6 +14,8 @@ data class FilesStateUiModel(
     val isSelecting: Boolean,
     val selectingAll: Boolean,
     val multiSelectedPaths: Set<String>,
+    // on the root, when the app announced no folder
+    val showEmptyState: Boolean = false,
 ) {
     @Immutable
     data class Options(

@@ -3,6 +3,9 @@ package io.github.openflocon.flocondesktop.features.featureflags.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -100,6 +103,9 @@ fun FeatureFlagsScreen(
                     modifier = Modifier.weight(1f),
                 )
             },
+            actions = {
+                FeatureDocButton(doc = FeatureDoc.FeatureFlags)
+            },
         )
 
         FeatureFlagStateFilters(
@@ -119,7 +125,12 @@ fun FeatureFlagsScreen(
                     shape = FloconTheme.shapes.medium
                 )
         ) {
-            if (rows.isEmpty()) {
+            if (providersState is FeatureFlagProvidersUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.FeatureFlags,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else if (rows.isEmpty()) {
                 Text(
                     text = stringResource(Res.string.no_feature_flags),
                     style = FloconTheme.typography.bodyMedium,

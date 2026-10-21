@@ -7,7 +7,7 @@ import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolProvider
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.JsonArray
@@ -24,7 +24,7 @@ internal class SharedPreferencesMcpToolProvider(
     // not a constructor parameter: koin would try to inject it, it's only changed by the tests
     internal var answerTimeoutMs: Long = SHARED_PREFERENCES_TIMEOUT_MS
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_shared_preferences",
             title = "List shared preferences",

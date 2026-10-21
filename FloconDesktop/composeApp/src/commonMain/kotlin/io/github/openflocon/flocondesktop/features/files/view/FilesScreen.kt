@@ -3,6 +3,8 @@ package io.github.openflocon.flocondesktop.features.files.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -145,6 +147,12 @@ private fun FilesScreen(
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)
                 )
+                if (state.showEmptyState) {
+                    FeatureEmptyState(
+                        doc = FeatureDoc.Files,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }

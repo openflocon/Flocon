@@ -62,6 +62,12 @@ class NetworkRepositoryImpl(
         }
     }
 
+    override fun observeHasRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Boolean> = networkLocalDataSource
+        .observeHasRequests(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
+
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,

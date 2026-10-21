@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterAction
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
@@ -51,11 +55,13 @@ fun CrashReporterScreen(
     val viewModel: CrashReporterViewModel = koinViewModel()
     val crashReports = viewModel.crashReports.collectAsLazyPagingItems()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     CrashReportScreen(
         modifier = Modifier.fillMaxSize(),
         crashReports = crashReports,
         selected = selected,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -66,44 +72,55 @@ private fun CrashReportScreen(
     onAction: (CrashReporterAction) -> Unit,
     crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
+    showEmptyState: Boolean,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
-        Row(Modifier.fillMaxSize()) {
-            LeftPannel(
-                modifier = Modifier.fillMaxHeight()
-                    .width(340.dp),
-                crashReports = crashReports,
-                onAction = onAction,
-                selected = selected,
-            )
-
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
-
-            Surface(
-                color = FloconTheme.colors.bg100,
-                modifier = Modifier.fillMaxSize()
+        if (showEmptyState) {
+            FeatureEmptyState(
+                doc = FeatureDoc.CrashReporter,
+                modifier = Modifier
+                    .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .border(
-                        width = 1.dp,
-                        color = FloconTheme.colors.bg200,
-                        shape = FloconTheme.shapes.medium
-                    )
-            ) {
-                selected?.let {
-                    CrashReportDetailView(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        crash = it,
-                        onCopy = {
-                            onAction(CrashReporterAction.Copy(it))
-                        },
-                        onDelete = {
-                            onAction(CrashReporterAction.Delete(it.id))
-                        }
-                    )
+                    .background(FloconTheme.colors.bg100),
+            )
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                LeftPannel(
+                    modifier = Modifier.fillMaxHeight()
+                        .width(340.dp),
+                    crashReports = crashReports,
+                    onAction = onAction,
+                    selected = selected,
+                )
+
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+
+                Surface(
+                    color = FloconTheme.colors.bg100,
+                    modifier = Modifier.fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colors.bg200,
+                            shape = FloconTheme.shapes.medium
+                        )
+                ) {
+                    selected?.let {
+                        CrashReportDetailView(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            crash = it,
+                            onCopy = {
+                                onAction(CrashReporterAction.Copy(it))
+                            },
+                            onDelete = {
+                                onAction(CrashReporterAction.Delete(it.id))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -146,6 +163,7 @@ fun LeftPannel(
                         .padding(top = FloconTheme.spacing.small)
                         .padding(horizontal = FloconTheme.spacing.medium)
                 )
+                FeatureDocButton(doc = FeatureDoc.CrashReporter)
                 Box(
                     modifier = Modifier.size(36.dp).clip(RoundedCornerShape(2.dp))
                         .clickable {

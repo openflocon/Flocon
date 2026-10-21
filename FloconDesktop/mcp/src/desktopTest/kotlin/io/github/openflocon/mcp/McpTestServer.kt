@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 internal class McpTestServer(toolProviders: List<McpToolProvider>) {
 
     private val port = ServerSocket(0).use { it.localPort }
-    private val server = FloconMcpServer(toolProviders = toolProviders, port = port)
+    private val server = FloconMcpServer(toolProviders = toolProviders, port = port, logManager = NoOpLogManager)
     private val httpClient = HttpClient(CIO) { install(SSE) }
     private lateinit var client: Client
 

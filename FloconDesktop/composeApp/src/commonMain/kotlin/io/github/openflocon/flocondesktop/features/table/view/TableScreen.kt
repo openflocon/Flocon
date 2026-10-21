@@ -33,6 +33,9 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.export_csv
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
@@ -110,6 +113,7 @@ fun TableScreen(
                 )
             },
             actions = {
+                FeatureDocButton(doc = FeatureDoc.Tables)
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -176,6 +180,12 @@ fun TableScreen(
                         }
                     }
                 }
+            }
+            if (deviceTables is TablesStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Tables,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
             FloconVerticalScrollbar(
                 adapter = scrollAdapter,

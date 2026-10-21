@@ -37,6 +37,9 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
@@ -92,6 +95,7 @@ private fun ImagesScreen(
 ) {
     val lazyListState = rememberLazyGridState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+    var currentFilter by remember { mutableStateOf("") }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -103,7 +107,10 @@ private fun ImagesScreen(
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),
-                    onTextChange = { onFilterChanged(it) },
+                    onTextChange = {
+                        currentFilter = it
+                        onFilterChanged(it)
+                    },
                     modifier = Modifier.weight(1f),
                 )
             },
@@ -112,11 +119,21 @@ private fun ImagesScreen(
                     imageVector = Icons.Outlined.Delete,
                     onClick = onReset,
                 )
+                FeatureDocButton(doc = FeatureDoc.Images)
             }
         )
         when (state) {
-            ImagesStateUiModel.Empty,
             ImagesStateUiModel.Idle -> Box(Modifier)
+
+            ImagesStateUiModel.Empty -> if (currentFilter.isEmpty()) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Images,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100),
+                )
+            }
 
             is ImagesStateUiModel.WithImages -> {
                 val gridPadding = 8.dp
