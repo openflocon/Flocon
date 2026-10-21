@@ -16,7 +16,15 @@ data class AppUiState(
     val deviceState: DevicesStateUiModel,
     val appState: AppsStateUiModel,
     val recordState: RecordVideoStateUiModel
-)
+) {
+    // the selected device is connected right now; true while loading so the pages don't flash
+    val hasConnectedDevice: Boolean
+        get() = when (deviceState) {
+            DevicesStateUiModel.Loading -> true
+            DevicesStateUiModel.Empty -> false
+            is DevicesStateUiModel.WithDevices -> deviceState.deviceSelected.isActive
+        }
+}
 
 fun previewAppUiState() = AppUiState(
     contentState = previewContentUiState(),

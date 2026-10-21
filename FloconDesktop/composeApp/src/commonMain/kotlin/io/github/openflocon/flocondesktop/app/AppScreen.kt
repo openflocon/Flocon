@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
-import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
@@ -82,7 +81,7 @@ private fun Content(
     }
     
     CompositionLocalProvider(
-        LocalHasDevice provides (uiState.deviceState !is DevicesStateUiModel.Empty),
+        LocalHasDevice provides uiState.hasConnectedDevice,
     ) {
         FloconNavigation(
             navigationState = navigationState,
