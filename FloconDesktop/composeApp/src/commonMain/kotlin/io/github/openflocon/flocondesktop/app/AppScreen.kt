@@ -83,11 +83,12 @@ private fun Content(
         sceneStrategies = sceneStrategies,
         sceneDecoratorStrategies = listOf(
             MenuSceneStrategy(
-                menuContent = {
+                menuContent = { expanded, onToggleExpanded ->
                     LeftPanelView(
                         current = uiState.contentState.current,
                         state = uiState.menuState,
-                        expanded = it,
+                        expanded = expanded,
+                        onToggleExpanded = onToggleExpanded,
                         onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
                         onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
                         onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },

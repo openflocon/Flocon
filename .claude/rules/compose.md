@@ -31,7 +31,7 @@ Reference implementation: `composeApp/.../features/featureflags/`.
 
 ## Design system
 - Use `FloconTheme.colors` (bg, ink, accent, category and status tokens), `FloconTheme.typography` and `FloconTheme.shapes`. Do not use `MaterialTheme` or hardcoded `Color(...)` values in feature code.
-- Reach for `library/designsystem/components` first (`FloconFeature`, `FloconPageTopBar`, `FloconButton`, `FloconTextField`, `FloconDialog`, `FloconVerticalScrollbar`, …). If a component is needed in more than one feature, add it there with a `Flocon` prefix rather than duplicating it.
+- Reach for `library/designsystem/components` first (`FloconPageTopBar`, `FloconButton`, `FloconTextField`, `FloconDialog`, `FloconVerticalScrollbar`, …). If a component is needed in more than one feature, add it there with a `Flocon` prefix rather than duplicating it.
 - Fixed sizes used more than once in a file go in `private val` constants at file top (`private val NameWidth = 260.dp`).
 
 ## Resources
