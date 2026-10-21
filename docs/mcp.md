@@ -296,6 +296,9 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
+| `list_deeplinks` | Deeplinks declared by the app (link, label, description, parameters) and their variables. |
+| `list_deeplink_history` | Deeplinks recently opened from Flocon. |
+| `open_deeplink` | Opens a deeplink on the device (`adb` on Android, the booted Simulator on iOS) and adds it to the history. Not read only: it acts on the device. |
 | `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId`. |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |

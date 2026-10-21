@@ -86,6 +86,8 @@ class FloconMcpServer(
               get_feature_flag the full payload.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - Deeplinks: list_deeplinks gives the deeplinks declared by the app with their parameters, list_deeplink_history those opened from Flocon,
+              open_deeplink opens a deeplink on the device (this one acts on the device, the other ones are read only).
             - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
               get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
             - Dashboards sent by the app: list_dashboards gives the ids, get_dashboard the containers and elements with their values.
