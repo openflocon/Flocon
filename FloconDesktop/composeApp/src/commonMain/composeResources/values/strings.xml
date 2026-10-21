@@ -183,7 +183,8 @@
     <string name="feature_doc_timeline_empty_title">No event yet</string>
     <string name="feature_doc_timeline_empty_description">Network calls, analytics, database queries and crashes received from your app will show up here, in order.</string>
     <string name="feature_doc_no_device_title">No device connected</string>
-    <string name="feature_doc_no_device_description">Add the Flocon SDK to your app and launch it on a device or an emulator: it will show up in the top bar.</string>
+    <string name="feature_doc_no_device_description">Launch your app with the Flocon SDK on a device or an emulator.</string>
+    <string name="feature_doc_getting_started">Getting started</string>
     <string name="app_logo_content_description">Flocon logo</string>
     <string name="badquality_add_exception">Add Exception</string>
     <string name="badquality_add_http_error">Add http error</string>

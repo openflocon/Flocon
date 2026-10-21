@@ -37,18 +37,6 @@ fun FeatureIllustration(
     }
 }
 
-/**
- * Illustration displayed instead of the page one when no device is connected yet.
- */
-@Composable
-fun NoDeviceIllustration(
-    modifier: Modifier = Modifier,
-) {
-    IllustrationCanvas(modifier = modifier) { colors ->
-        drawNoDevice(colors)
-    }
-}
-
 @Preview
 @Composable
 private fun FeatureIllustrationsPreview() {
@@ -57,7 +45,6 @@ private fun FeatureIllustrationsPreview() {
             FeatureDoc.entries.forEach {
                 FeatureIllustration(doc = it, modifier = Modifier.size(width = 160.dp, height = 120.dp))
             }
-            NoDeviceIllustration(modifier = Modifier.size(width = 160.dp, height = 120.dp))
         }
     }
 }
