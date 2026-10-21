@@ -34,7 +34,6 @@ sqlite-jdbc = "3.53.4.0"
 
 android-minSdk = "23"
 android-compileSdk = "37"
-firebaseCrashlyticsBuildtools = "3.0.8"
 
 [libraries]
 # AndroidX
@@ -124,7 +123,6 @@ jakewharton-process-phoenix = { group = "com.jakewharton", name = "process-phoen
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 vanniktech-mavenPublish-gradlePlugin = { group = "com.vanniktech", name = "gradle-maven-publish-plugin", version.ref = "maven-publish" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
