@@ -14,6 +14,7 @@
     <string name="dashboard_empty">Aucun tableau de bord</string>
     <string name="dashboard_removed">Tableau de bord supprimé</string>
     <string name="database_run_query">Exécuter la requête</string>
+    <string name="databases_title">Bases de données</string>
     <string name="databases_favorites">Favoris</string>
     <string name="date">Date</string>
     <string name="deeplink_removed">Deeplink retiré de l’historique</string>

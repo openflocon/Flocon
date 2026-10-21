@@ -22,7 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
@@ -39,6 +43,8 @@ import flocondesktop.composeapp.generated.resources.tabs_close_left
 import flocondesktop.composeapp.generated.resources.tabs_close_others
 import flocondesktop.composeapp.generated.resources.tabs_close_right
 
+private val TabIndicatorHeight = 2.dp
+
 @Composable
 fun DatabaseTabsView(
     modifier: Modifier = Modifier,
@@ -46,8 +52,15 @@ fun DatabaseTabsView(
     selected: DatabaseTabState?,
     onAction: (DatabaseTabViewAction) -> Unit,
 ) {
+    val lineColor = FloconTheme.colors.line
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.drawBehind {
+            drawRect(
+                color = lineColor,
+                topLeft = Offset(0f, size.height - 1.dp.toPx()),
+                size = Size(size.width, 1.dp.toPx()),
+            )
+        },
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.Bottom
     ) {
@@ -72,7 +85,7 @@ private fun DatabaseTabItemView(
         topStart = 6.dp,
         topEnd = 6.dp,
     )
-    val contentColor = if (state == selected) FloconTheme.colors.inkMuted else FloconTheme.colors.ink
+    val contentColor = if (state == selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
     // the labels are resolved here: the menu is built outside of the composition
     val close = stringResource(Res.string.close)
     val closeOthers = stringResource(Res.string.tabs_close_others)
@@ -103,19 +116,30 @@ private fun DatabaseTabItemView(
             }
         }
     ) {
+        val indicatorColor = FloconTheme.colors.accent
         Row(
-            modifier = modifier.clip(
-                shape
-            ).background(
-                color = if (state == selected) FloconTheme.colors.bg200 else FloconTheme.colors.bg100
-            ).clickable {
-                onAction(DatabaseTabViewAction.OnTabSelected(state))
-            }.padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.compact),
+            modifier = modifier
+                .clip(shape)
+                .clickable {
+                    onAction(DatabaseTabViewAction.OnTabSelected(state))
+                }
+                .drawBehind {
+                    if (state == selected) {
+                        drawRect(
+                            color = indicatorColor,
+                            topLeft = Offset(0f, size.height - TabIndicatorHeight.toPx()),
+                            size = Size(size.width, TabIndicatorHeight.toPx()),
+                        )
+                    }
+                }
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.medium),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
             Text(
-                state.displayName, style = FloconTheme.typography.bodyMedium,
+                state.displayName,
+                style = FloconTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
                 color = contentColor,
             )
             Box(

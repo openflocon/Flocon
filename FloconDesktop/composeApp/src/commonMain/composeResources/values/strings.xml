@@ -14,6 +14,7 @@
     <string name="dashboard_empty">No dashboard</string>
     <string name="dashboard_removed">Dashboard removed</string>
     <string name="database_run_query">Run Query</string>
+    <string name="databases_title">Databases</string>
     <string name="databases_favorites">Favorites</string>
     <string name="date">Date</string>
     <string name="deeplink_removed">Deeplink removed from history</string>
