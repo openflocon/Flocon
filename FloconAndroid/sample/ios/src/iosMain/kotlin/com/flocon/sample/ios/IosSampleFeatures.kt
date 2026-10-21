@@ -18,7 +18,7 @@ import platform.Foundation.writeToFile
 fun registerIosSampleFeatures(dogDatabase: DogDatabase) {
     SampleFeatures.platformName = "iOS"
 
-    SampleFeatures.on(SampleFeature.Database) {
+    SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         val now = (NSDate().timeIntervalSince1970 * 1000).toLong()
         dogDatabase.dogDao().insertDog(
             DogEntity(
@@ -45,6 +45,7 @@ fun registerIosSampleFeatures(dogDatabase: DogDatabase) {
     SampleFeatures.unavailable(SampleFeature.WebSocket, "The OkHttp WebSocket logging is Android and JVM only")
     SampleFeatures.unavailable(SampleFeature.GraphQl, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.Grpc, "The gRPC interceptor is Android only")
+    SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 is only set up on Android in this sample (the Flocon Room 2 module also supports JVM and iOS)")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not set up in the iOS sample")
 }

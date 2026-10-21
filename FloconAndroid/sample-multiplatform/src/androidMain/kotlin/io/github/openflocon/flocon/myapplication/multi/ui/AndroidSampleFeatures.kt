@@ -5,6 +5,8 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 import android.content.Context
 import io.github.openflocon.flocon.myapplication.multi.Databases
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
+import io.github.openflocon.flocon.myapplication.multi.room2.CatDatabase
+import io.github.openflocon.flocon.myapplication.multi.room2.CatEntity
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.updateDatastoreAge
 import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.tester.FloconOkHttpTester
@@ -26,8 +28,13 @@ fun registerAndroidSampleFeatures(context: Context) {
     }
     SampleFeatures.on(SampleFeature.GraphQl) { AndroidTestContext.graphQlTester.fetchViewerInfo() }
     SampleFeatures.on(SampleFeature.Grpc) { AndroidTestContext.grpcSayHello() }
-    SampleFeatures.on(SampleFeature.Database) {
+    SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         Databases.getDogDatabase(context).dogDao().insertDog(newDog("Flocon"))
+    }
+    SampleFeatures.on(SampleFeature.DatabaseRoom2) {
+        CatDatabase.get(context).catDao().insertCat(
+            CatEntity(id = System.currentTimeMillis(), name = "Flocon cat", age = Random.nextInt(1, 15))
+        )
     }
     SampleFeatures.on(SampleFeature.DatabaseInMemory) {
         AndroidTestContext.inMemoryDb.dogDao().insertDog(newDog("InMemory Flocon"))

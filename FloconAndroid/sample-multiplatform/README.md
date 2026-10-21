@@ -162,8 +162,9 @@ Les fonctionnalités sont déclarées dans `ui/SampleFeatures.kt`; chaque point 
 | Dashboard | ✅ | ✅ | ✅ | ✅ |
 | Feature flags | ✅ | ✅ | ✅ | ✅ |
 | Deeplink enregistré après l'install | ✅ | ✅ | ✅ | ✅ |
-| Base de données (Room 3) | ✅ | ✅ | ✅ | ⬜ (pas de SQLite) |
-| Base de données en mémoire | ✅ | ⬜ | ⬜ | ⬜ |
+| Base de données Room 3 | ✅ | ✅ | ✅ | ⬜ (supporté par le SDK, mais le sample n'a pas de driver SQLite web ni de KSP wasmJs) |
+| Base de données Room 2 | ✅ | ⬜ (module supporté, pas de base Room 2 dans le sample) | ⬜ (idem) | ⬜ (Room 2 ne supporte pas Wasm) |
+| Base de données en mémoire (Room 3) | ✅ | ⬜ | ⬜ | ⬜ |
 | Préférences (store en mémoire) | ✅ | ✅ | ✅ | ✅ |
 | DataStore | ✅ | ⬜ | ⬜ | ⬜ |
 | Fichiers | ✅ | ✅ | ✅ | ⬜ (pas de navigation de fichiers) |
@@ -174,6 +175,6 @@ déclencher côté sample, ils sont simplement installés.
 
 ## Notes
 
-- Les bases Room 3 sont partagées entre Android, Desktop et iOS (`commonMain/database`)
+- Les bases Room 3 sont partagées entre Android, Desktop et iOS (`commonMain/database`); la base Room 2 (`androidMain/room2`) est propre à Android
 - Les SharedPreferences Android sont détectées automatiquement; les autres plateformes utilisent le store en mémoire `SamplePreferences`
 - L'UI Compose est 100% partagée entre toutes les plateformes
