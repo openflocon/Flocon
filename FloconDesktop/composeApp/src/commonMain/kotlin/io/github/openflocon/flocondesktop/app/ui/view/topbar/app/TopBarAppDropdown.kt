@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
@@ -73,6 +74,7 @@ internal fun TopBarAppDropdown(
                             },
                             modifier = Modifier
                                 .width(MenuWidth * FloconTheme.scale)
+                                .clip(FloconTheme.shapes.medium)
                                 .clickable {
                                     onAppSelected(app)
                                     expanded = false
