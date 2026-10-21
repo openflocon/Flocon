@@ -36,7 +36,7 @@ internal fun ContributorView(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val borderColor = if (hovered) FloconTheme.colorPalette.onSurface else Color.Transparent
+    val borderColor = if (hovered) FloconTheme.colors.ink else Color.Transparent
     val shape = RoundedCornerShape(10.dp)
 
     Column(
@@ -70,7 +70,7 @@ internal fun ContributorView(
         Text(
             text = contributor.firstName,
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -78,7 +78,7 @@ internal fun ContributorView(
         Text(
             text = contributor.lastName,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
