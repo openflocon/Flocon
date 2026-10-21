@@ -18,6 +18,7 @@ import io.github.openflocon.flocon.plugins.dashboard.FloconDashboardPluginImpl
 import io.github.openflocon.flocon.plugins.database.FloconDatabasePluginImpl
 import io.github.openflocon.flocon.plugins.deeplinks.FloconDeeplinksPluginImpl
 import io.github.openflocon.flocon.plugins.device.FloconDevicePluginImpl
+import io.github.openflocon.flocon.plugins.featureflags.FloconFeatureFlagsPluginImpl
 import io.github.openflocon.flocon.plugins.files.FloconFilesPluginImpl
 import io.github.openflocon.flocon.plugins.network.FloconNetworkPluginImpl
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferencesPluginImpl
@@ -72,6 +73,7 @@ internal class FloconClientImpl(
     override val tablePlugin = FloconTablePluginImpl(sender = this)
     override val deeplinksPlugin = FloconDeeplinksPluginImpl(sender = this)
     override val analyticsPlugin = FloconAnalyticsPluginImpl(sender = this)
+    override val featureFlagsPlugin = FloconFeatureFlagsPluginImpl(sender = this)
     override val devicePlugin = FloconDevicePluginImpl(sender = this, context = appContext)
     override val networkPlugin = FloconNetworkPluginImpl(
         context = appContext,
@@ -92,6 +94,7 @@ internal class FloconClientImpl(
         tablePlugin,
         deeplinksPlugin,
         analyticsPlugin,
+        featureFlagsPlugin,
         networkPlugin,
         devicePlugin,
         crashReporterPlugin,
