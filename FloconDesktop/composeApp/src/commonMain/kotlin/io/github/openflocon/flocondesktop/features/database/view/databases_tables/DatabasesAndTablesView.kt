@@ -25,6 +25,8 @@ import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.databases_favorites
 import flocondesktop.composeapp.generated.resources.databases_title
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
@@ -62,31 +64,37 @@ fun DatabasesAndTablesView(
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(
-                        stringResource(Res.string.databases_title),
-                        color = FloconTheme.colors.ink,
-                        style = FloconTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (state is DatabasesStateUiModel.WithContent) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Text(
-                            state.databases.size.toString(),
-                            color = FloconTheme.colors.inkMuted,
-                            style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                            modifier = Modifier
-                                .background(FloconTheme.colors.bg300, CircleShape)
-                                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+                            stringResource(Res.string.databases_title),
+                            color = FloconTheme.colors.ink,
+                            style = FloconTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
+                        if (state is DatabasesStateUiModel.WithContent) {
+                            Text(
+                                state.databases.size.toString(),
+                                color = FloconTheme.colors.inkMuted,
+                                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                modifier = Modifier
+                                    .background(FloconTheme.colors.bg300, CircleShape)
+                                    .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+                            )
+                        }
                     }
+                    FeatureDocButton(doc = FeatureDoc.Database)
                 }
                 when (state) {
                     DatabasesStateUiModel.Empty -> Unit

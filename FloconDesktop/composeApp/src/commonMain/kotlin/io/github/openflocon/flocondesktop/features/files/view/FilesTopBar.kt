@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.with_folders_size
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
@@ -134,6 +136,8 @@ fun FilesTopBar(
                 enabled = isDirectory,
                 onClick = onRefresh,
             )
+
+            FeatureDocButton(doc = FeatureDoc.Files)
         }
     )
 }
@@ -214,7 +218,7 @@ private fun FilesTopBarPreview() {
     val current = FileUiModel(
         name = "File Name",
         type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Constants.CachesDir,
+        path = FilePathUiModel.Root(id = "caches"),
         icon = Icons.Outlined.Folder,
         sizeFormatted = "10 KB",
         contextualActions = persistentListOf(),

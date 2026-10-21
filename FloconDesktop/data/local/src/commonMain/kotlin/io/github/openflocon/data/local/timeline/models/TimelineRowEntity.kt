@@ -23,13 +23,6 @@ data class TimelineSummaryRowEntity(
     val lastTs: Long?,
 )
 
-// result row of the activity query: the events of a kind in a slice of the time range
-data class TimelineActivityRowEntity(
-    val kind: String,
-    val bucket: Int,
-    val count: Int,
-)
-
 // result row of the session counts query
 data class TimelineSessionCountEntity(
     val sessionStart: Long,

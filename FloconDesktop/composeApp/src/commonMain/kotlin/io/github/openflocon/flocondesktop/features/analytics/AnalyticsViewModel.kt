@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
@@ -72,6 +73,12 @@ class AnalyticsViewModel(
     )
     val screenState = _screenState.asStateFlow()
     val itemsState: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
+
+    // an analytics table is created by the first event: no table, no event
+    val showEmptyState: StateFlow<Boolean> = itemsState
+        .map { it is AnalyticsStateUiModel.Empty }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val selectedItemId = MutableStateFlow<String?>(null)
     val selectedItem: StateFlow<AnalyticsDetailUiModel?> = combines(

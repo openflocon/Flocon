@@ -32,7 +32,7 @@ class MenuStateTest {
         )
 
         assertEquals(
-            listOf(SubScreen.Network, SubScreen.Images, SubScreen.Database, SubScreen.Timeline, SubScreen.AdbCommander),
+            listOf(SubScreen.Network, SubScreen.Images, SubScreen.Database, SubScreen.AdbCommander),
             menu.screens(),
         )
         // always displayed
@@ -72,8 +72,8 @@ class MenuStateTest {
             collapsedSectionIds = setOf("network"),
         )
 
-        // storage has no installed plugin, data only keeps the timeline that merges every plugin
-        assertEquals(listOf("network", "data", "actions"), menu.sections.map { it.id })
+        // storage and data have no installed plugin
+        assertEquals(listOf("network", "actions"), menu.sections.map { it.id })
         assertTrue(menu.sections.first { it.id == "network" }.isCollapsed)
     }
 
@@ -85,17 +85,21 @@ class MenuStateTest {
             collapsedSectionIds = emptySet(),
         )
 
-        assertEquals(listOf(SubScreen.Timeline, SubScreen.FeatureFlags, SubScreen.AdbCommander), menu.screens())
+        assertEquals(listOf(SubScreen.FeatureFlags, SubScreen.AdbCommander), menu.screens())
     }
 
     @Test
-    fun `the timeline is displayed whatever the installed plugins`() {
+    fun `the timeline is at the top, outside of any section, whatever the installed plugins`() {
         val menu = buildMenu().applyPreferences(
             installedPlugins = emptySet(),
-            pinnedIds = emptyList(),
+            pinnedIds = listOf("Timeline"),
             collapsedSectionIds = emptySet(),
         )
 
-        assertEquals(listOf(SubScreen.Timeline, SubScreen.AdbCommander), menu.screens())
+        assertEquals(listOf(SubScreen.Timeline), menu.topItems.map { it.screen })
+        assertTrue(menu.topItems.none { it.isPinnable })
+        // it can't be pinned, so it is never duplicated
+        assertTrue(menu.pinnedItems.isEmpty())
+        assertEquals(listOf(SubScreen.AdbCommander), menu.screens())
     }
 }

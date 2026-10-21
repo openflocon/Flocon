@@ -4,9 +4,18 @@ import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
 import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
 import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
+import io.github.openflocon.mcp.capture.CaptureMcpToolProvider
+import io.github.openflocon.mcp.capture.ScreenCapturer
+import io.github.openflocon.mcp.capture.UseCaseScreenCapturer
 import io.github.openflocon.mcp.crashreporter.CrashReporterMcpToolProvider
 import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
+import io.github.openflocon.mcp.deeplink.DeeplinkMcpToolProvider
+import io.github.openflocon.mcp.deeplink.DeeplinkOpener
+import io.github.openflocon.mcp.deeplink.ExecuteDeeplinkOpener
 import io.github.openflocon.mcp.devices.DevicesMcpToolProvider
+import io.github.openflocon.mcp.documents.DesktopFolderOpener
+import io.github.openflocon.mcp.documents.FloconFolderMcpToolProvider
+import io.github.openflocon.mcp.documents.FolderOpener
 import io.github.openflocon.mcp.featureflags.FeatureFlagsMcpToolProvider
 import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.images.ImagesMcpToolProvider
@@ -20,7 +29,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val mcpModule = module {
-    single { FloconMcpServer(toolProviders = getAll()) } bind McpServerRepository::class
+    single { FloconMcpServer(toolProviders = getAll(), logManager = get()) } bind McpServerRepository::class
     factoryOf(::McpTargetResolver)
 
     // tools, one provider per feature
@@ -32,6 +41,12 @@ val mcpModule = module {
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::FeatureFlagsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
+    singleOf(::ExecuteDeeplinkOpener) bind DeeplinkOpener::class
+    singleOf(::DeeplinkMcpToolProvider) bind McpToolProvider::class
+    singleOf(::UseCaseScreenCapturer) bind ScreenCapturer::class
+    singleOf(::CaptureMcpToolProvider) bind McpToolProvider::class
+    singleOf(::DesktopFolderOpener) bind FolderOpener::class
+    singleOf(::FloconFolderMcpToolProvider) bind McpToolProvider::class
     singleOf(::SharedPreferencesMcpToolProvider) bind McpToolProvider::class
     singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class

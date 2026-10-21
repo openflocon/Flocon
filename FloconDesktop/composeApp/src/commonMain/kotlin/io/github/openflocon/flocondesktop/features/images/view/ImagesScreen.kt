@@ -1,9 +1,10 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,13 +37,14 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -93,8 +95,10 @@ private fun ImagesScreen(
 ) {
     val lazyListState = rememberLazyGridState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+    var currentFilter by remember { mutableStateOf("") }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
         FloconPageTopBar(
@@ -103,7 +107,10 @@ private fun ImagesScreen(
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),
-                    onTextChange = { onFilterChanged(it) },
+                    onTextChange = {
+                        currentFilter = it
+                        onFilterChanged(it)
+                    },
                     modifier = Modifier.weight(1f),
                 )
             },
@@ -112,11 +119,21 @@ private fun ImagesScreen(
                     imageVector = Icons.Outlined.Delete,
                     onClick = onReset,
                 )
+                FeatureDocButton(doc = FeatureDoc.Images)
             }
         )
         when (state) {
-            ImagesStateUiModel.Empty,
             ImagesStateUiModel.Idle -> Box(Modifier)
+
+            ImagesStateUiModel.Empty -> if (currentFilter.isEmpty()) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Images,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100),
+                )
+            }
 
             is ImagesStateUiModel.WithImages -> {
                 val gridPadding = FloconTheme.spacing.small

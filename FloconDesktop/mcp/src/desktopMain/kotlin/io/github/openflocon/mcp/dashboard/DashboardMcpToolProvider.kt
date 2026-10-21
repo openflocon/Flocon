@@ -10,7 +10,7 @@ import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 
 internal class DashboardMcpToolProvider(
@@ -18,7 +18,7 @@ internal class DashboardMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_dashboards",
             title = "List dashboards",

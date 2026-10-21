@@ -43,30 +43,16 @@ internal fun splitUrl(url: String): Pair<String?, String> {
 }
 
 /**
- * The events are sorted from the newest, so the header of a group goes above its first event.
+ * The events are sorted from the newest, so the header of a day goes above its first event.
  * [before] is the item displayed above, [after] the one below.
- *
- * - a session header (when [showSessions]) above the first event of each session: it is the app start,
- *   chronologically below its events but displayed above them;
- * - else a day header above the first event of each day. A session header already holds its day.
  */
 internal fun separatorBetween(
     before: TimelineItemUiModel?,
     after: TimelineItemUiModel?,
-    showSessions: Boolean,
 ): TimelineItemUiModel? {
     val next = (after as? TimelineItemUiModel.Row)?.row ?: return null
     val previous = (before as? TimelineItemUiModel.Row)?.row
 
-    val sessionStart = next.sessionStart
-    if (showSessions && sessionStart != null && sessionStart != previous?.sessionStart) {
-        return TimelineItemUiModel.SessionHeader(
-            sessionStart = sessionStart,
-            day = formatDate(sessionStart).substringBefore(' '),
-            time = formatTimestamp(sessionStart),
-            key = "session:$sessionStart:${next.key}",
-        )
-    }
     return if (previous?.day != next.day) {
         TimelineItemUiModel.DayHeader(day = next.day, key = "day:${next.day}:${next.key}")
     } else {

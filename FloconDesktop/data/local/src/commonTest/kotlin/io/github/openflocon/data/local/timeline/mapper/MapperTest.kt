@@ -1,6 +1,5 @@
 package io.github.openflocon.data.local.timeline.mapper
 
-import io.github.openflocon.data.local.timeline.models.TimelineActivityRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
@@ -67,24 +66,5 @@ class MapperTest {
         assertEquals(2, summary.sources.getValue(TimelineSource.Network).httpErrorCount)
         assertEquals(2, summary.sources.getValue(TimelineSource.AppStart).count)
         assertEquals(mapOf(3000L to 6), summary.sessionEventCounts)
-    }
-
-    @Test
-    fun `the activity separates the events of each source from the app starts`() {
-        val activity = toActivityDomain(
-            rows = listOf(
-                TimelineActivityRowEntity(kind = "network", bucket = 0, count = 1),
-                TimelineActivityRowEntity(kind = "network", bucket = 7, count = 2),
-                TimelineActivityRowEntity(kind = "crash", bucket = 8, count = 1),
-                TimelineActivityRowEntity(kind = "appstart", bucket = 6, count = 1),
-            ),
-            bucketCount = 10,
-        )
-
-        assertEquals(10, activity.bucketCount)
-        assertEquals(mapOf(0 to 1, 7 to 2), activity.sourceBuckets.getValue(TimelineSource.Network))
-        assertEquals(mapOf(8 to 1), activity.sourceBuckets.getValue(TimelineSource.Crash))
-        assertEquals(setOf(6), activity.sessionBuckets)
-        assertEquals(false, TimelineSource.AppStart in activity.sourceBuckets)
     }
 }

@@ -1,5 +1,11 @@
 package io.github.openflocon.flocondesktop.features.featureflags.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -33,8 +39,6 @@ import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFla
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -78,7 +82,8 @@ fun FeatureFlagsScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier,
     ) {
         FloconPageTopBar(
@@ -97,6 +102,9 @@ fun FeatureFlagsScreen(
                     onTextChange = onFilterTextChanged,
                     modifier = Modifier.weight(1f),
                 )
+            },
+            actions = {
+                FeatureDocButton(doc = FeatureDoc.FeatureFlags)
             },
         )
 
@@ -117,7 +125,12 @@ fun FeatureFlagsScreen(
                     shape = FloconTheme.shapes.medium
                 )
         ) {
-            if (rows.isEmpty()) {
+            if (providersState is FeatureFlagProvidersUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.FeatureFlags,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else if (rows.isEmpty()) {
                 Text(
                     text = stringResource(Res.string.no_feature_flags),
                     style = FloconTheme.typography.bodyMedium,

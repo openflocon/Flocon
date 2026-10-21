@@ -1,11 +1,16 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,16 +46,12 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineActivityUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
-import io.github.openflocon.flocondesktop.features.timeline.view.TimelineActivityStrip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeaderView
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -65,7 +66,7 @@ fun TimelineScreen(
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
-    val activity by viewModel.activity.collectAsStateWithLifecycle()
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -74,8 +75,8 @@ fun TimelineScreen(
         selectedSources = selectedSources,
         selectedKey = selectedKey,
         summary = summary,
-        activity = activity,
         isLive = isLive,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
 }
@@ -88,8 +89,8 @@ internal fun TimelineContent(
     selectedSources: Set<TimelineSource>,
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
-    activity: TimelineActivityUiModel,
     isLive: Boolean,
+    showEmptyState: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -103,11 +104,13 @@ internal fun TimelineContent(
         runCatching { screenFocus.requestFocus() }
     }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .background(colors.bg100, panelShape)
             .border(1.dp, colors.line, panelShape)
-            .padding(FloconTheme.spacing.large)
+            // no bottom padding: the list scrolls through it with its content padding
+            .padding(start = FloconTheme.spacing.large, top = FloconTheme.spacing.large, end = FloconTheme.spacing.large)
             .focusRequester(screenFocus)
             .focusable()
             .onPreviewKeyEvent { event ->
@@ -148,11 +151,12 @@ internal fun TimelineContent(
             }
         }
 
-        if (!activity.isEmpty) {
-            TimelineActivityStrip(activity = activity)
-        }
-
-        if (rows.itemCount == 0) {
+        if (showEmptyState) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Timeline,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else if (rows.itemCount == 0) {
             Text(
                 text = stringResource(Res.string.timeline_empty),
                 style = FloconTheme.typography.bodyMedium,
@@ -164,6 +168,7 @@ internal fun TimelineContent(
         LazyColumn(
             state = rememberLazyListState(),
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             items(
@@ -171,7 +176,13 @@ internal fun TimelineContent(
                 key = rows.itemKey { it.key },
             ) { index ->
                 when (val item = rows[index]) {
-                    is TimelineItemUiModel.Row -> {
+                    is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
+                        // the app start of a session, at the time the app started
+                        SessionHeaderView(
+                            row = item.row,
+                            eventCount = summary.sessionEventCounts[item.row.timestamp],
+                        )
+                    } else {
                         val olderTimestamp = olderTimestamp(rows, index)
                         val delta = remember(item.row.timestamp, olderTimestamp) {
                             olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
@@ -194,11 +205,6 @@ internal fun TimelineContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
-                    )
-
-                    is TimelineItemUiModel.SessionHeader -> SessionHeaderView(
-                        header = item,
-                        eventCount = summary.sessionEventCounts[item.sessionStart],
                     )
 
                     null -> Unit
