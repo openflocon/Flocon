@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,10 +59,8 @@ import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyti
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -124,7 +125,8 @@ fun AnalyticsScreen(
         }
     }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .clickable(
                 interactionSource = null,

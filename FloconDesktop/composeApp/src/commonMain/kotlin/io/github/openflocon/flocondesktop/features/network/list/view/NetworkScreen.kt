@@ -1,13 +1,14 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -92,12 +93,10 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
@@ -177,7 +176,8 @@ fun NetworkScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        FloconFeature(
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = modifier
                 .fillMaxHeight()
                 .weight(1f)

@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -30,9 +32,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArra
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import org.jetbrains.compose.resources.stringResource
@@ -84,7 +84,8 @@ fun DashboardScreen(
     onOpenExternalClicked: (content: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
         Column(Modifier.fillMaxSize()) {

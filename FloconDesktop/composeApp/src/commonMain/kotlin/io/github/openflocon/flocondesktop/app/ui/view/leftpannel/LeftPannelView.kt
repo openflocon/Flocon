@@ -22,7 +22,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_collapse
+import flocondesktop.composeapp.generated.resources.menu_expand
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -39,9 +53,9 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
 
-val PanelMaxWidth = 275.dp
+val PanelMaxWidth = 232.dp
 val PanelMinWidth = 64.dp
-val PanelContentMinSize = 48.dp
+val PanelContentMinSize = 34.dp
 
 @Composable
 fun LeftPanelView(
@@ -49,16 +63,30 @@ fun LeftPanelView(
     current: SubScreen,
     expanded: Boolean,
     onClickItem: (MenuItem) -> Unit,
+    onToggleExpanded: () -> Unit,
     modifier: Modifier = Modifier,
     onTogglePin: (MenuItem) -> Unit = {},
     onToggleSection: (MenuSection) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
+    val lineColor = FloconTheme.colors.line
     Box(
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colors.bg100)
-            .padding(FloconTheme.spacing.small),
+            .drawBehind {
+                // right border of the sidebar
+                drawLine(
+                    color = lineColor,
+                    start = Offset(size.width - 0.5.dp.toPx(), 0f),
+                    end = Offset(size.width - 0.5.dp.toPx(), size.height),
+                    strokeWidth = 1.dp.toPx(),
+                )
+            }
+            .padding(
+                start = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
+                end = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
+                top = FloconTheme.spacing.medium,
+                bottom = FloconTheme.spacing.large,
+            ),
     ) {
         Column(
             modifier = Modifier
@@ -99,12 +127,36 @@ fun LeftPanelView(
             )
             Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             Spacer(Modifier.weight(1f))
-            MenuItems(
-                current = current,
-                items = state.bottomItems,
-                expanded = expanded,
-                onClickItem = onClickItem,
-            )
+            // the settings item and the button folding the menu share the same footer
+            if (expanded) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        MenuItems(
+                            current = current,
+                            items = state.bottomItems,
+                            expanded = true,
+                            onClickItem = onClickItem,
+                        )
+                    }
+                    ToggleExpandedButton(expanded = true, onClick = onToggleExpanded)
+                }
+            } else {
+                MenuItems(
+                    current = current,
+                    items = state.bottomItems,
+                    expanded = false,
+                    onClickItem = onClickItem,
+                )
+                Spacer(Modifier.height(FloconTheme.spacing.tiny))
+                ToggleExpandedButton(
+                    expanded = false,
+                    onClick = onToggleExpanded,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
+            }
         }
 
         if(expanded) {
@@ -117,6 +169,27 @@ fun LeftPanelView(
                 adapter = rememberFloconScrollbarAdapter(scrollState),
             )
         }
+    }
+}
+
+@Composable
+private fun ToggleExpandedButton(
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val description = stringResource(if (expanded) Res.string.menu_collapse else Res.string.menu_expand)
+
+    FloconIconButton(
+        onClick = onClick,
+        modifier = modifier.semantics { contentDescription = description },
+    ) {
+        FloconIcon(
+            imageVector = Icons.Outlined.ChevronRight,
+            tint = FloconTheme.colors.inkMuted,
+            // points to the left to fold the menu, to the right to unfold it
+            modifier = Modifier.fillMaxSize().rotate(if (expanded) 180f else 0f),
+        )
     }
 }
 
@@ -176,7 +249,7 @@ private fun ColumnScope.MenuItems(
             onTogglePin = { onTogglePin(item) },
         )
         if (index != items.lastIndex)
-            Spacer(Modifier.height(FloconTheme.spacing.extraSmall))
+            Spacer(Modifier.height(FloconTheme.spacing.tiny))
     }
 }
 
@@ -191,6 +264,7 @@ private fun LeftPanelViewPreview() {
             current = selectedItem.value,
             state = previewMenuState(),
             onClickItem = { selectedItem.value = it.screen },
+            onToggleExpanded = {},
             modifier = Modifier.wrapContentHeight(),
             expanded = false,
         )

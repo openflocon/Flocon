@@ -1,9 +1,10 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,8 +45,6 @@ import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiMod
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -98,7 +97,8 @@ private fun ImagesScreen(
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     var currentFilter by remember { mutableStateOf("") }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
         FloconPageTopBar(
