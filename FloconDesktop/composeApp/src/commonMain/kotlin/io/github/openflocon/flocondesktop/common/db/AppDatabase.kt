@@ -13,6 +13,8 @@ import io.github.openflocon.data.local.adbcommander.models.AdbSavedCommandEntity
 import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
+import io.github.openflocon.data.local.featureflags.dao.FeatureFlagDao
+import io.github.openflocon.data.local.featureflags.models.FeatureFlagEntity
 import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
 import io.github.openflocon.data.local.crashreporter.models.CrashReportEntity
 import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
@@ -75,6 +77,7 @@ import kotlinx.coroutines.Dispatchers
         DeeplinkEntity::class,
         DeeplinkVariableEntity::class,
         AnalyticsItemEntity::class,
+        FeatureFlagEntity::class,
         NetworkFilterEntity::class,
         NetworkSettingsEntity::class,
         MockNetworkEntity::class,
@@ -108,6 +111,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val deeplinkDao: FloconDeeplinkDao
     abstract val deeplinkVariableDao: FloconDeeplinkVariableDao
     abstract val analyticsDao: FloconAnalyticsDao
+    abstract val featureFlagDao: FeatureFlagDao
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao

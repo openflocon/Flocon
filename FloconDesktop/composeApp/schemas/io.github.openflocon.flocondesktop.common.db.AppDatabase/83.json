@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 83,
-    "identityHash": "b6d6393d50f960486e275d0ce4554d65",
+    "identityHash": "ae1b12caec0c29a318045c62835cbaa0",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -1240,6 +1240,77 @@
         ]
       },
       {
+        "tableName": "FeatureFlagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `provider` TEXT NOT NULL, `name` TEXT NOT NULL, `variant` TEXT NOT NULL, `payload` TEXT, `appInstance` INTEGER NOT NULL, PRIMARY KEY(`deviceId`, `packageName`, `provider`, `name`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "provider",
+            "columnName": "provider",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "variant",
+            "columnName": "variant",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "appInstance",
+            "columnName": "appInstance",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "deviceId",
+            "packageName",
+            "provider",
+            "name"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "DeviceAppEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId",
+              "packageName"
+            ],
+            "referencedColumns": [
+              "deviceId",
+              "packageName"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "NetworkFilterEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `columnName` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `itemsAsJson` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `columnName`), FOREIGN KEY(`deviceId`, `packageName`) REFERENCES `DeviceAppEntity`(`deviceId`, `packageName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
@@ -1602,7 +1673,7 @@
       },
       {
         "tableName": "DeviceAppEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, `floconVersionOnDevice` TEXT NOT NULL, `installedPlugins` TEXT, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `name` TEXT NOT NULL, `packageName` TEXT NOT NULL, `iconEncoded` TEXT, `lastAppInstance` INTEGER NOT NULL, `floconVersionOnDevice` TEXT NOT NULL, PRIMARY KEY(`deviceId`, `packageName`), FOREIGN KEY(`deviceId`) REFERENCES `DeviceEntity`(`deviceId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -1638,11 +1709,6 @@
             "columnName": "floconVersionOnDevice",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "installedPlugins",
-            "columnName": "installedPlugins",
-            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -2140,7 +2206,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b6d6393d50f960486e275d0ce4554d65')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ae1b12caec0c29a318045c62835cbaa0')"
     ]
   }
 }

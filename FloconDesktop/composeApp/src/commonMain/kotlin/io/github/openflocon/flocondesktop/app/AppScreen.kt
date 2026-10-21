@@ -20,6 +20,7 @@ import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerVi
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
+import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
@@ -116,6 +117,7 @@ private fun Content(
             .background(FloconTheme.colorPalette.surface)
     ) {
         analyticsRoutes()
+        featureFlagsRoutes()
         dashboardRoutes()
         databaseRoutes()
         deeplinkRoutes()

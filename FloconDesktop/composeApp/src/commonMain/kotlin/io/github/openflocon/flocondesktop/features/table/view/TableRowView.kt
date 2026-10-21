@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -46,7 +47,8 @@ fun TableRowView(
             Row(
                 modifier = modifier
                     .clip(FloconTheme.shapes.medium)
-                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                    .clickable(onClick = { onAction(TableAction.OnClick(model)) })
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 model.values.fastForEach { column ->
                     Text(

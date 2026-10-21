@@ -8,6 +8,7 @@ import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
 import io.github.openflocon.domain.deeplink.deeplinkModule
 import io.github.openflocon.domain.device.deviceModule
+import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
@@ -26,6 +27,7 @@ val domainModule = module {
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        featureFlagsModule,
         dashboardModule,
         databaseModule,
         deeplinkModule,

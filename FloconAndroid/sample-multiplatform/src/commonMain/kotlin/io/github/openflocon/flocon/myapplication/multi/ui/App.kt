@@ -25,6 +25,7 @@ import kotlin.random.Random
 fun App() {
     LaunchedEffect(Unit) {
         initializeDashboard()
+        initializeFeatureFlags()
     }
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

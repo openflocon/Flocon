@@ -103,6 +103,7 @@ nav:
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md
       - Analytics Viewer: analytics.md
+      - Feature Flags Viewer: featureflags.md
       - Crash Reporter: crashreporter.md
     - AI Agents (MCP): mcp.md
   - About:
