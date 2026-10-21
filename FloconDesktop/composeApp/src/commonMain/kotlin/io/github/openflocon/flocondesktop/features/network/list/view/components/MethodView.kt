@@ -33,7 +33,7 @@ private fun NetworkMethodUi.color(): Color? {
     val colors = FloconTheme.colors
     return when (this) {
         is NetworkMethodUi.Http.GET -> colors.catNetwork
-        is NetworkMethodUi.Http.POST -> colors.catAnalytics
+        is NetworkMethodUi.Http.POST -> colors.catTable
         is NetworkMethodUi.Http.PUT -> colors.accent
         is NetworkMethodUi.Http.DELETE -> colors.catCrash
         is NetworkMethodUi.Http.PATCH -> colors.catDeeplink
