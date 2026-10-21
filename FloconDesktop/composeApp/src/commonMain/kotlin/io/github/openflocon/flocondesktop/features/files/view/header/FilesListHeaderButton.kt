@@ -44,7 +44,7 @@ internal fun FilesListHeaderButton(
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = RoundedCornerShape(4.dp)
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-    val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
+    val textColor = FloconTheme.colors.ink.copy(alpha = 0.7f)
 
     Row(
         modifier = modifier
@@ -58,7 +58,7 @@ internal fun FilesListHeaderButton(
             modifier = Modifier.weight(1f)
                 .clip(shape)
                 .background(
-                    if (sortedBy != SortedByUiModel.None) FloconTheme.colorPalette.accent.copy(
+                    if (sortedBy != SortedByUiModel.None) FloconTheme.colors.accent.copy(
                         alpha = 0.3f
                     ) else Color.Transparent
                 )
@@ -73,7 +73,7 @@ internal fun FilesListHeaderButton(
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
                 textAlign = textAlign,
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
             )
 
             subtitle?.let {
@@ -83,7 +83,7 @@ internal fun FilesListHeaderButton(
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     textAlign = textAlign,
-                    color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                    color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 )
             }
         }

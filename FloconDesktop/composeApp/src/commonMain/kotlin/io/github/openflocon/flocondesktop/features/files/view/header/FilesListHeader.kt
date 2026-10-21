@@ -38,7 +38,7 @@ internal fun FilesListHeader(
     clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
 ) {
     Row(
-        modifier = modifier.background(FloconTheme.colorPalette.secondary)
+        modifier = modifier.background(FloconTheme.colors.bg200)
             .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -122,7 +122,7 @@ fun FileItemRow(
                                 onSelectFile(path, selected, index, shiftPressed.value)
                             }
                         },
-                        uncheckedColor = FloconTheme.colorPalette.secondary
+                        uncheckedColor = FloconTheme.colors.bg200
                     )
                     Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
                 }
@@ -149,7 +149,7 @@ fun FileItemRow(
                 maxLines = 1,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(150.dp),
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )
 
@@ -159,7 +159,7 @@ fun FileItemRow(
                 style = FloconTheme.typography.bodySmall,
                 maxLines = 1,
                 modifier = Modifier.width(100.dp),
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )
 
@@ -168,7 +168,7 @@ fun FileItemRow(
                 Icon(
                     imageVector = Icons.Outlined.ChevronRight,
                     modifier = Modifier.size(24.dp),
-                    tint = FloconTheme.colorPalette.onPrimary,
+                    tint = FloconTheme.colors.ink,
                     contentDescription = null,
                 )
             } else {
