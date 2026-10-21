@@ -19,6 +19,7 @@ import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.dashboard.initializeDashboard
+import io.github.openflocon.flocon.myapplication.multi.featureflags.initializeFeatureFlags
 import kotlin.random.Random
 
 @Composable
