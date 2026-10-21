@@ -105,9 +105,9 @@
     <string name="menu_storage">Storage</string>
     <string name="name">Name</string>
     <string name="nb_lines">%1$s rows</string>
-    <string name="network_header_domain">Domain</string>
+    <string name="network_header_host">Host</string>
     <string name="network_header_method">Method</string>
-    <string name="network_header_query">Query</string>
+    <string name="network_header_request">Request</string>
     <string name="network_header_request_time">Request Time</string>
     <string name="network_header_status">Status</string>
     <string name="network_header_time">Time</string>

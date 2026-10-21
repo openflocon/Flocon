@@ -119,9 +119,9 @@ import flocondesktop.composeapp.generated.resources.invert_list
 import flocondesktop.composeapp.generated.resources.network_bad_network
 import flocondesktop.composeapp.generated.resources.network_deep_search
 import flocondesktop.composeapp.generated.resources.network_display_old_sessions
-import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_method
-import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_request
 import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_status
 import flocondesktop.composeapp.generated.resources.network_header_time
@@ -294,12 +294,12 @@ fun NetworkScreen(
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = stringResource(Res.string.network_header_domain),
+//                            text = stringResource(Res.string.network_header_host),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = stringResource(Res.string.network_header_query),
+//                            text = stringResource(Res.string.network_header_request),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(

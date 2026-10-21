@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_method
-import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_request
 import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_status
 import flocondesktop.composeapp.generated.resources.network_header_time
@@ -71,7 +71,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = stringResource(Res.string.network_header_domain),
+            label = stringResource(Res.string.network_header_host),
             filtered = state.domain.isFiltered(),
             sortedBy = state.domain.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Domain, it) },
@@ -84,7 +84,7 @@ fun NetworkItemHeaderView(
             )
         }
         HeaderDropdown(
-            label = stringResource(Res.string.network_header_query),
+            label = stringResource(Res.string.network_header_request),
             filtered = state.query.isFiltered(),
             sortedBy = state.query.sortedBy,
             onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Query, it) },
