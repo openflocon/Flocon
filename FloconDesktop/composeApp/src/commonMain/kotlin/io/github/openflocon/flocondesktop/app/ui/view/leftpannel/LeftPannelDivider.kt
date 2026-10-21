@@ -12,6 +12,6 @@ fun LeftPannelDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
         thickness = 1.dp,
-        color = FloconTheme.colorPalette.secondary,
+        color = FloconTheme.colors.bg200,
     )
 }

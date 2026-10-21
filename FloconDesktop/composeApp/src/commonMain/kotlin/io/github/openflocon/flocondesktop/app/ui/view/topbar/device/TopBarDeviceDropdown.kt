@@ -107,7 +107,7 @@ private fun Empty() {
                 horizontal = FloconTheme.spacing.medium
             ),
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
     }
 }

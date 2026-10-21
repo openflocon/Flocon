@@ -88,7 +88,7 @@ private fun ReleaseNotesContent(
             itemsIndexed(state.notes, key = { _, note -> note.version }) { index, note ->
                 if (index > 0) {
                     FloconHorizontalDivider(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         modifier = Modifier.padding(bottom = FloconTheme.spacing.large),
                     )
                 }
@@ -119,26 +119,26 @@ private fun ReleaseNoteItem(
                     text = note.title,
                     style = FloconTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
                 )
                 note.date?.let {
                     Text(
                         text = it,
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+                        color = FloconTheme.colors.ink.copy(alpha = 0.7f),
                     )
                 }
             }
             FloconButton(
                 onClick = { uriHandler.openUri(note.link) },
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
             ) {
                 Text(stringResource(Res.string.release_notes_view_on_github))
             }
         }
         Markdown(
             content = note.body,
-            colors = markdownColor(text = FloconTheme.colorPalette.onPrimary),
+            colors = markdownColor(text = FloconTheme.colors.ink),
         )
     }
 }
@@ -159,18 +159,18 @@ private fun ReleaseNotesError(
         Text(
             text = stringResource(Res.string.release_notes_error),
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
             FloconOutlinedButton(
                 onClick = onRetry,
-                borderColor = FloconTheme.colorPalette.onPrimary,
+                borderColor = FloconTheme.colors.ink,
             ) {
-                Text(stringResource(Res.string.release_notes_retry), color = FloconTheme.colorPalette.onPrimary)
+                Text(stringResource(Res.string.release_notes_retry), color = FloconTheme.colors.ink)
             }
             FloconButton(
                 onClick = { uriHandler.openUri(link) },
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
             ) {
                 Text(stringResource(Res.string.release_notes_view_on_github))
             }
