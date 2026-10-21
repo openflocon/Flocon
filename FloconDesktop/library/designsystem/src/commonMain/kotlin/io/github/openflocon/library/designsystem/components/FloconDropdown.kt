@@ -2,6 +2,15 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -10,10 +19,32 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.composeunstyled.DropdownMenuPanel
 import com.composeunstyled.DropdownPanelAnchor
 import io.github.openflocon.library.designsystem.FloconTheme
+
+internal val DropdownEnterTransition = fadeIn(tween(durationMillis = 180))
+    .plus(
+        scaleIn(
+            initialScale = 0.85f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        )
+    )
+    .plus(slideInVertically(tween(durationMillis = 220)) { -it / 8 })
+
+internal val DropdownExitTransition = fadeOut(tween(durationMillis = 120))
+    .plus(
+        scaleOut(
+            targetScale = 0.9f,
+            animationSpec = tween(durationMillis = 120),
+        )
+    )
+    .plus(slideOutVertically(tween(durationMillis = 120)) { -it / 10 })
 
 @Composable
 fun FloconDropdownMenu(
@@ -55,6 +86,8 @@ fun FloconDropdownMenu(
             contentColor = FloconTheme.colors.ink,
             contentPadding = PaddingValues(FloconTheme.spacing.compact),
             anchor = anchor,
+            enter = DropdownEnterTransition,
+            exit = DropdownExitTransition,
             modifier = Modifier
                 .padding(top = FloconTheme.spacing.small)
                 .menuBackground()
