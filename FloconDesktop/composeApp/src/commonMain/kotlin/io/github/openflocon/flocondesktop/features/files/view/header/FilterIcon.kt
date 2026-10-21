@@ -1,6 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.view.header
 
-import io.github.openflocon.library.designsystem.theme.FloconSpacing
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -15,10 +15,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-internal val FilterIcon_Height = 32.dp
-internal val FilterIcon_Spacing = FloconSpacing().tiny
-private val FilterIcon = (FilterIcon_Height - FilterIcon_Spacing) / 2
-
 @Composable
 internal fun FilterIcon(
     icon: ImageVector,
@@ -30,9 +26,10 @@ internal fun FilterIcon(
     alignment: Alignment,
     modifier: Modifier = Modifier,
 ) {
+    val filterIconSize = (FloconTheme.sizes.headerHeight - FloconTheme.spacing.tiny) / 2
     Box(
         modifier = modifier
-            .size(FilterIcon)
+            .size(filterIconSize)
             .graphicsLayer {
                 alpha = if (hovered || sorted) 1f else 0f
             }
@@ -44,7 +41,7 @@ internal fun FilterIcon(
             imageVector = icon,
             contentDescription = null,
             tint = textColor,
-            modifier = Modifier.size(FilterIcon),
+            modifier = Modifier.size(filterIconSize),
         )
     }
 }

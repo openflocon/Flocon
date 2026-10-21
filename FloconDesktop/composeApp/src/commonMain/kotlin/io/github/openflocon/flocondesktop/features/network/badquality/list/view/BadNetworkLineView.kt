@@ -38,15 +38,6 @@ import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import androidx.compose.desktop.ui.tooling.preview.Preview
 
 // the columns of the list of profiles, shared by its header and its lines
-internal object BadQualityColumns {
-    val enabled: Dp = 56.dp
-    val trigger: Dp = 72.dp
-    val latency: Dp = 130.dp
-    val errorRate: Dp = 84.dp
-    val errors: Dp = 190.dp
-    val actions: Dp = 40.dp
-}
-
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun BadNetworkLineView(
@@ -57,7 +48,6 @@ fun BadNetworkLineView(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val scale = FloconTheme.scale
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     // a disabled profile is dimmed, but it stays readable
@@ -80,7 +70,7 @@ fun BadNetworkLineView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
-        Box(Modifier.width(BadQualityColumns.enabled * scale)) {
+        Box(Modifier.width(FloconTheme.sizes.columnToggle)) {
             FloconSwitch(
                 checked = item.isEnabled,
                 onCheckedChange = { enableClicked(item.id, it) }
@@ -97,11 +87,11 @@ fun BadNetworkLineView(
                 .weight(1f)
                 .alpha(dimmed),
         )
-        MonoCell(item.trigger, BadQualityColumns.trigger * scale, dimmed)
-        MonoCell(item.latency, BadQualityColumns.latency * scale, dimmed)
-        MonoCell(item.errorRate, BadQualityColumns.errorRate * scale, dimmed)
+        MonoCell(item.trigger, FloconTheme.sizes.columnSmall, dimmed)
+        MonoCell(item.latency, FloconTheme.sizes.columnLarge, dimmed)
+        MonoCell(item.errorRate, FloconTheme.sizes.columnMedium, dimmed)
         FlowRow(
-            modifier = Modifier.width(BadQualityColumns.errors * scale),
+            modifier = Modifier.width(FloconTheme.sizes.columnExtraLarge),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
         ) {
@@ -120,7 +110,7 @@ fun BadNetworkLineView(
                 )
             }
         }
-        Box(Modifier.width(BadQualityColumns.actions * scale)) {
+        Box(Modifier.width(FloconTheme.sizes.columnActions)) {
             FloconIconButton(
                 imageVector = Icons.Filled.Delete,
                 onClick = {

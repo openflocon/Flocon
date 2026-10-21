@@ -41,7 +41,6 @@ internal fun SessionHeaderView(
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
-    val scale = FloconTheme.scale
 
     Row(
         modifier = modifier
@@ -57,12 +56,12 @@ internal fun SessionHeaderView(
             fontWeight = FontWeight.SemiBold,
             color = colors.inkFaint,
             maxLines = 1,
-            modifier = Modifier.width(96.dp * scale),
+            modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
         val line = colors.line
         Box(
             modifier = Modifier
-                .width(22.dp * scale)
+                .width(FloconTheme.sizes.markerColumn)
                 .fillMaxHeight()
                 .drawBehind {
                     val x = size.width / 2

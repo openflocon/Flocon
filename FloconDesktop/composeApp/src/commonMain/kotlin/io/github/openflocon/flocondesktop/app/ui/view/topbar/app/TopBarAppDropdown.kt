@@ -48,7 +48,7 @@ internal fun TopBarAppDropdown(
             appsState.appSelected?.let {
                 TopBarSelector(
                     onClick = { expanded = true },
-                    modifier = Modifier.width(300.dp * FloconTheme.scale),
+                    modifier = Modifier.width(FloconTheme.sizes.appDropdownWidth),
                 ) {
                     TopBarAppView(
                         deviceApp = it,

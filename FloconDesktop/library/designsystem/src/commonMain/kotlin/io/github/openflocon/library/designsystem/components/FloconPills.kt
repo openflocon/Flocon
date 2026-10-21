@@ -55,7 +55,7 @@ fun FloconOutlinedPill(
     val colors = FloconTheme.colors
     Row(
         modifier = modifier
-            .defaultMinSize(minWidth = 38.dp * FloconTheme.scale)
+            .defaultMinSize(minWidth = FloconTheme.sizes.pillMinWidth)
             .border(1.dp, color?.copy(alpha = 0.4f) ?: colors.lineStrong, FloconTheme.shapes.small)
             .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,

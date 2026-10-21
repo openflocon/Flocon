@@ -51,7 +51,7 @@ internal fun TopBarDeviceDropdown(
                 onClick = {
                     expanded = true
                 },
-                modifier = modifier.width(220.dp * FloconTheme.scale),
+                modifier = modifier.width(FloconTheme.sizes.deviceDropdownWidth),
             ) {
                 TopBarDeviceView(
                     device = state.deviceSelected,
@@ -98,7 +98,7 @@ internal fun TopBarDeviceDropdown(
 private fun Empty() {
     TopBarSelector(
         onClick = {},
-        modifier = Modifier.width(220.dp * FloconTheme.scale),
+        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
@@ -116,7 +116,7 @@ private fun Empty() {
 private fun Loading() {
     TopBarSelector(
         onClick = {},
-        modifier = Modifier.width(220.dp * FloconTheme.scale),
+        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
     ) {
         FloconCircularProgressIndicator()
     }

@@ -22,17 +22,9 @@ import androidx.compose.ui.unit.em
 import io.github.openflocon.library.designsystem.FloconTheme
 
 // the columns of the list of mocks, shared by its header and its lines
-internal object MockColumns {
-    val enabled: Dp = 56.dp
-    val method: Dp = 72.dp
-    val shared: Dp = 72.dp
-    val actions: Dp = 40.dp
-}
-
 @Composable
 fun MocksHeaderView(modifier: Modifier = Modifier) {
     val colors = FloconTheme.colors
-    val scale = FloconTheme.scale
     // small capitals, like the titles of the groups of the design system
     val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
 
@@ -40,16 +32,16 @@ fun MocksHeaderView(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp * scale)
+                .height(FloconTheme.sizes.headerHeight)
                 .padding(horizontal = FloconTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         ) {
-            HeaderText("Enabled", typo, Modifier.width(MockColumns.enabled * scale))
-            HeaderText("Method", typo, Modifier.width(MockColumns.method * scale))
+            HeaderText("Enabled", typo, Modifier.width(FloconTheme.sizes.columnToggle))
+            HeaderText("Method", typo, Modifier.width(FloconTheme.sizes.columnSmall))
             HeaderText("Name / Pattern", typo, Modifier.weight(1f))
-            HeaderText("Shared", typo, Modifier.width(MockColumns.shared * scale))
-            Box(Modifier.width(MockColumns.actions * scale))
+            HeaderText("Shared", typo, Modifier.width(FloconTheme.sizes.columnSmall))
+            Box(Modifier.width(FloconTheme.sizes.columnActions))
         }
         Box(
             Modifier

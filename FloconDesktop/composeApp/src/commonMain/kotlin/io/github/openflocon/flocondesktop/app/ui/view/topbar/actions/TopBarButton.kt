@@ -44,7 +44,7 @@ internal fun TopBarButton(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(36.dp * FloconTheme.scale)
+                .size(FloconTheme.sizes.topBarButton)
                 .alpha(if (isEnabled) 1f else 0.4f)
                 .clip(FloconTheme.shapes.medium)
                 .background(if (hovered && isEnabled) colors.bg300 else Color.Transparent)

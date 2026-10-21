@@ -8,12 +8,13 @@ import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
-import io.github.openflocon.domain.settings.usecase.ObserveFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
-import io.github.openflocon.domain.settings.usecase.SetFontSizeMultiplierUseCase
+import io.github.openflocon.domain.settings.usecase.SetAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
@@ -38,8 +39,8 @@ import flocondesktop.composeapp.generated.resources.settings_select_documents_fo
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val testAdbUseCase: TestAdbUseCase,
-    fontSizeMultiplierUseCase: ObserveFontSizeMultiplierUseCase,
-    private val setFontSizeMultiplierUseCase: SetFontSizeMultiplierUseCase,
+    observeAppScaleUseCase: ObserveAppScaleUseCase,
+    private val setAppScaleUseCase: SetAppScaleUseCase,
     observeThemeUseCase: ObserveThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
@@ -58,13 +59,13 @@ class SettingsViewModel(
     val floconDocumentsPathInput = _floconDocumentsPathInput.asStateFlow()
 
     val uiState = combine(
-        fontSizeMultiplierUseCase(),
+        observeAppScaleUseCase(),
         observeThemeUseCase(),
         logManager.logs,
         settingsRepository.adbForwardStatus,
-    ) { multiplier, theme, logs, forwardStatus ->
+    ) { appScale, theme, logs, forwardStatus ->
         SettingsUiState(
-            fontSizeMultiplier = multiplier,
+            appScale = appScale,
             theme = theme,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
@@ -74,7 +75,7 @@ class SettingsViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState(
-                fontSizeMultiplier = 1f,
+                appScale = AppScaleSetting.DEFAULT,
                 theme = ThemeSetting.DEFAULT,
                 logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN
@@ -97,14 +98,14 @@ class SettingsViewModel(
 
     fun onAction(action: SettingsAction) {
         when (action) {
-            is SettingsAction.FontSizeMultiplierChange -> onFontSizeMultiplierChange(action)
+            is SettingsAction.AppScaleChange -> onAppScaleChange(action)
             is SettingsAction.ThemeChange -> onThemeChange(action)
         }
     }
 
-    private fun onFontSizeMultiplierChange(action: SettingsAction.FontSizeMultiplierChange) {
+    private fun onAppScaleChange(action: SettingsAction.AppScaleChange) {
         viewModelScope.launch {
-            setFontSizeMultiplierUseCase(action.value)
+            setAppScaleUseCase(action.value)
         }
     }
 

@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
-private val DropdownItemHeight = 36.dp
 
 @Composable
 fun FloconMenuItem(
@@ -141,7 +140,7 @@ private fun FloconDropdownMenuItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .height(DropdownItemHeight * FloconTheme.scale)
+            .height(FloconTheme.sizes.menuItemHeight)
             .clip(FloconTheme.shapes.medium)
             .background(if (hovered) FloconTheme.colors.bg300 else Color.Transparent)
             .hoverable(interactionSource)

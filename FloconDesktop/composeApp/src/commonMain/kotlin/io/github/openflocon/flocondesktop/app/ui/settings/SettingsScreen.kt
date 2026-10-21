@@ -74,6 +74,7 @@ import flocondesktop.composeapp.generated.resources.settings_theme
 import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
@@ -231,7 +232,7 @@ private fun SettingsScreen(
                 )
 
                 SettingsTab.Appearance -> AppearancePane(
-                    fontSizeMultiplier = uiState.fontSizeMultiplier,
+                    appScale = uiState.appScale,
                     currentTheme = uiState.theme,
                     onAction = onAction,
                 )
@@ -618,7 +619,7 @@ private fun AdbForwardStatusBadge(
 
 @Composable
 private fun AppearancePane(
-    fontSizeMultiplier: Float,
+    appScale: AppScaleSetting,
     currentTheme: ThemeSetting,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -653,8 +654,8 @@ private fun AppearancePane(
             description = stringResource(Res.string.settings_scale_description)
         ) {
             ScaleDropdown(
-                selected = AppScale.closestTo(fontSizeMultiplier),
-                onSelect = { onAction(SettingsAction.FontSizeMultiplierChange(it.multiplier)) },
+                selected = appScale.toAppScale(),
+                onSelect = { onAction(SettingsAction.AppScaleChange(it.toSetting())) },
             )
         }
     }
