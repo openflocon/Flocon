@@ -85,10 +85,11 @@ fun FloconTheme(
         isDarkTheme -> darkPalette
         else -> lightPalette
     }
-    val ripple = ripple(color = colorPalette.accent)
+    val colors = if (isDarkTheme) FloconDarkColors else FloconLightColors
+    val ripple = ripple(color = colors.accent)
     val selectionTextColor = TextSelectionColors(
-        handleColor = colorPalette.accent,
-        backgroundColor = colorPalette.accent,
+        handleColor = colors.accent,
+        backgroundColor = colors.accent.copy(alpha = 0.35f),
     )
 
     val materialTypo = MaterialTheme.typography
@@ -122,7 +123,7 @@ fun FloconTheme(
             LocalIndication provides ripple,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColorPalette provides colorPalette,
-            LocalFloconColors provides if (isDarkTheme) FloconDarkColors else FloconLightColors,
+            LocalFloconColors provides colors,
             LocalFloconSpacing provides remember(scale) { FloconSpacing().scaledBy(scale) },
             LocalFloconScale provides scale,
             LocalTextSelectionColors provides selectionTextColor,
