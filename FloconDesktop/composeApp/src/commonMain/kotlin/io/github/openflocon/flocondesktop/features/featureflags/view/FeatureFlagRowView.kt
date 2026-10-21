@@ -47,7 +47,7 @@ fun FeatureFlagRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
         )
         Box(
             modifier = Modifier
@@ -66,7 +66,7 @@ fun FeatureFlagRowView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.5f),
             )
         }
     }

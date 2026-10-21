@@ -110,10 +110,10 @@ fun FeatureFlagsScreen(
                 .fillMaxWidth()
                 .weight(1f)
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .border(
                     width = 1.dp,
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
         ) {
@@ -121,7 +121,7 @@ fun FeatureFlagsScreen(
                 Text(
                     text = stringResource(Res.string.no_feature_flags),
                     style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.6f),
+                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {

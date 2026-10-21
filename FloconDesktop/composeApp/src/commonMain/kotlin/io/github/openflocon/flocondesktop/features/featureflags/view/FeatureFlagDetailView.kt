@@ -107,7 +107,7 @@ private fun PayloadCard(
         if (payload != null) {
             FloconCodeBlock(
                 code = payload,
-                containerColor = FloconTheme.colorPalette.primary,
+                containerColor = FloconTheme.colors.bg100,
                 modifier = Modifier.fillMaxWidth().padding(4.dp),
             )
         } else {
