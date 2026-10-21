@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,15 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.database.DatabaseTabViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import org.koin.compose.viewmodel.koinViewModel
@@ -80,26 +76,15 @@ private fun DatabaseTabViewContent(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        FloconPageTopBar(
+        DatabaseQueryView(
+            query = query,
+            updateQuery = updateQuery,
+            autoUpdate = autoUpdate,
+            onAction = onAction,
+            favoritesTitles = favoritesTitles,
+            lastQueries = lastQueries,
             modifier = Modifier.fillMaxWidth()
-                .clip(FloconTheme.shapes.medium)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg200,
-                    shape = FloconTheme.shapes.medium
-                ),
-        ) { contentPadding ->
-            DatabaseQueryView(
-                query = query,
-                updateQuery = updateQuery,
-                autoUpdate = autoUpdate,
-                onAction = onAction,
-                favoritesTitles = favoritesTitles,
-                lastQueries = lastQueries,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+        )
 
         DatabaseContentView(
             state = state,

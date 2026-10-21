@@ -93,7 +93,7 @@ private fun DatabaseView(
     modifier: Modifier = Modifier,
 ) {
     val (background, textColor) = if (state.isSelected) {
-        FloconTheme.colors.accent.copy(alpha = 0.4f) to FloconTheme.colors.accent
+        FloconTheme.colors.accentSoft to FloconTheme.colors.accent
     } else {
         Color.Transparent to FloconTheme.colors.ink
     }

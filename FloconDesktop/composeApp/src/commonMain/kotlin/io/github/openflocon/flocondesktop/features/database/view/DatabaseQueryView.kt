@@ -2,20 +2,22 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -44,13 +47,17 @@ import flocondesktop.composeapp.generated.resources.database_run_query
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.theme.FloconColors
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
+
+private val QueryCardShape = RoundedCornerShape(12.dp)
 
 interface SqlColorPalette {
     val keywordColor: Color
@@ -61,18 +68,20 @@ interface SqlColorPalette {
     val comments: Color
 }
 
-object DefaultSqlPalette : SqlColorPalette {
-    override val keywordColor = Color(0xFFfcaf28)
-    override val stringColor = Color(0xFF4CAF50)
-    override val numberColor = Color(0xFF03A9F4)
-    override val functionColor = Color(0xFF82AAFF)
-    override val textColor = Color(0xFFD0D0D0)
-    override val comments = Color(0xFF888888)
+// the colors of the design system: keywords in accent, numbers in the network color, strings in the table one
+@Immutable
+class FloconSqlPalette(colors: FloconColors) : SqlColorPalette {
+    override val keywordColor = colors.accent
+    override val stringColor = colors.catTable
+    override val numberColor = colors.catNetwork
+    override val functionColor = colors.catNetwork
+    override val textColor = colors.inkMuted
+    override val comments = colors.inkFaint
 }
 
-class ColorsTransformation : VisualTransformation {
-
-    val colorPalette: SqlColorPalette = DefaultSqlPalette
+class ColorsTransformation(
+    val colorPalette: SqlColorPalette,
+) : VisualTransformation {
 
     private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString = buildAnnotatedString {
         val sqlKeywords = listOf(
@@ -143,12 +152,16 @@ fun DatabaseQueryView(
     onAction: (action: DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = FloconTheme.colors
     Column(
         modifier = modifier
             .background(
-                color = FloconTheme.colors.bg100,
-                shape = FloconTheme.shapes.medium
+                color = colors.bg100,
+                shape = QueryCardShape
             )
+            .border(1.dp, colors.line, QueryCardShape)
+            .padding(FloconTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         DatabaseQueryToolbarView(
             favoritesTitles = favoritesTitles,
@@ -164,11 +177,12 @@ fun DatabaseQueryView(
             singleLine = false,
             minLines = 5,
             maxLines = 10,
-            textStyle = FloconTheme.typography.bodyMedium,
+            textStyle = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            containerColor = FloconTheme.colors.bg200,
-            visualTransformation = remember { ColorsTransformation() },
+            containerColor = colors.bg200,
+            visualTransformation = remember(colors) { ColorsTransformation(FloconSqlPalette(colors)) },
             modifier = Modifier.fillMaxWidth()
+                .border(1.dp, colors.line, FloconTheme.shapes.medium)
                 .onKeyEvent { keyEvent ->
                     // detect CMD + Enter
                     if (keyEvent.type == KeyEventType.KeyDown &&
@@ -181,10 +195,11 @@ fun DatabaseQueryView(
                         return@onKeyEvent true
                     }
                     return@onKeyEvent false
-                }.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
+                },
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val isEnabled = query.isNotBlank()
@@ -193,48 +208,47 @@ fun DatabaseQueryView(
                     if (isEnabled)
                         onAction(DatabaseTabAction.ExecuteQuery(query))
                 },
-                containerColor = FloconTheme.colors.ink,
+                containerColor = colors.accent,
                 modifier = Modifier
-                    .padding(all = FloconTheme.spacing.small)
+                    .height(FloconTheme.sizes.controlHeight)
                     .graphicsLayer {
-                        if (!isEnabled) alpha = 0.6f
+                        if (!isEnabled) alpha = 0.45f
                     }
             ) {
-                val contentColor = FloconTheme.colors.bg100
+                val contentColor = colors.accentInk
                 Row(
-                    Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                    Modifier.padding(horizontal = FloconTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
                         Icons.Filled.PlayArrow,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(16.dp),
                         colorFilter = ColorFilter.tint(contentColor)
                     )
-                    Text(stringResource(Res.string.database_run_query), color = contentColor)
+                    Text(
+                        stringResource(Res.string.database_run_query),
+                        color = contentColor,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
 
             Row(
-                Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(
+                FloconCheckbox(
                     checked = autoUpdate,
                     onCheckedChange = {
                         onAction(DatabaseTabAction.UpdateAutoUpdate(it))
                     },
-                    colors = CheckboxDefaults.colors(
-                        uncheckedColor = FloconTheme.colors.bg200,
-                        checkedColor = FloconTheme.colors.bg200,
-                    )
                 )
                 Text(
                     stringResource(Res.string.auto_update),
-                    color = FloconTheme.colors.ink,
-                    style = FloconTheme.typography.bodySmall
+                    color = colors.inkMuted,
+                    style = FloconTheme.typography.bodyMedium
                 )
             }
 
