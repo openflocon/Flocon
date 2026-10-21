@@ -22,27 +22,29 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconTintedPill
+import io.github.openflocon.library.designsystem.components.FloconSolidPill
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
 
-// the color of the method in the design system, null: neutral
+// the solid background and the readable text color of the method, from the fixed method palette
+private data class MethodColors(val background: Color, val content: Color)
+
 @Composable
-private fun NetworkMethodUi.color(): Color? {
+private fun NetworkMethodUi.colors(): MethodColors {
     val colors = FloconTheme.colors
     return when (this) {
-        is NetworkMethodUi.Http.GET -> colors.catNetwork
-        is NetworkMethodUi.Http.POST -> colors.catTable
-        is NetworkMethodUi.Http.PUT -> colors.accent
-        is NetworkMethodUi.Http.DELETE -> colors.catCrash
-        is NetworkMethodUi.Http.PATCH -> colors.catDeeplink
+        is NetworkMethodUi.Http.GET -> MethodColors(colors.methodGet, colors.onMethodDark)
+        is NetworkMethodUi.Http.POST -> MethodColors(colors.methodPost, colors.onMethodLight)
+        is NetworkMethodUi.Http.PUT -> MethodColors(colors.methodPut, colors.onMethodLight)
+        is NetworkMethodUi.Http.DELETE -> MethodColors(colors.methodDelete, colors.onMethodDark)
+        is NetworkMethodUi.Http.PATCH -> MethodColors(colors.methodPatch, colors.onMethodLight)
         is NetworkMethodUi.GraphQl.QUERY,
-        is NetworkMethodUi.GraphQl.MUTATION -> colors.catDeeplink
+        is NetworkMethodUi.GraphQl.MUTATION -> MethodColors(colors.methodGraphQl, colors.onMethodLight)
 
-        is NetworkMethodUi.Grpc -> colors.catGrpc
-        is NetworkMethodUi.WebSocket -> colors.catDatabase
-        is NetworkMethodUi.OTHER -> null
+        is NetworkMethodUi.Grpc -> MethodColors(colors.methodGrpc, colors.onMethodLight)
+        is NetworkMethodUi.WebSocket -> MethodColors(colors.methodWebSocket, colors.onMethodDark)
+        is NetworkMethodUi.OTHER -> MethodColors(colors.methodOther, colors.onMethodDark)
     }
 }
 
@@ -53,12 +55,13 @@ fun MethodView(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val color = method.color()
+    val colors = method.colors()
     val icon = method.icon
 
-    FloconTintedPill(
+    FloconSolidPill(
         text = method.text,
-        color = color,
+        background = colors.background,
+        contentColor = colors.content,
         modifier = modifier.then(if (onClick != null) Modifier.clip(FloconTheme.shapes.small).clickable(onClick = onClick) else Modifier),
         leading = icon?.let {
             {
@@ -66,7 +69,7 @@ fun MethodView(
                     painter = painterResource(it),
                     contentDescription = null,
                     modifier = Modifier.size(10.dp),
-                    colorFilter = ColorFilter.tint(color ?: FloconTheme.colors.inkMuted),
+                    colorFilter = ColorFilter.tint(colors.content),
                 )
             }
         },
@@ -143,5 +146,45 @@ private fun MethodView_GraphQlQuery_Preview() {
 private fun MethodView_Ggrpc_Preview() {
     FloconTheme {
         MethodView(method = NetworkMethodUi.Grpc)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_POST_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.Http.POST)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_PUT_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.Http.PUT)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_PATCH_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.Http.PATCH)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_DELETE_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.Http.DELETE)
+    }
+}
+
+@Composable
+@Preview
+private fun MethodView_WebSocket_Preview() {
+    FloconTheme {
+        MethodView(method = NetworkMethodUi.WebSocket)
     }
 }
