@@ -28,11 +28,12 @@ Reference implementation: `composeApp/.../features/featureflags/`.
 - No business logic, mapping or formatting inside composables: do it in the ViewModel or `mapper/`.
 - `remember` derived values that are costly; use `derivedStateOf` only when an input changes more often than the output.
 - Lazy lists always give a stable `key` (`key = { _, item -> item.id }`).
+- Lazy lists pad with `contentPadding`, not with `Modifier.padding` on the list or its parent, so items scroll through the padding instead of being clipped by it. Keep `padding` on the container only for the sides the list doesn't scroll through.
 
 ## Design system
 - Use `FloconTheme.colors` (bg, ink, accent, category and status tokens), `FloconTheme.typography` and `FloconTheme.shapes`. Do not use `MaterialTheme` or hardcoded `Color(...)` values in feature code.
-- Reach for `library/designsystem/components` first (`FloconFeature`, `FloconPageTopBar`, `FloconButton`, `FloconTextField`, `FloconDialog`, `FloconVerticalScrollbar`, …). If a component is needed in more than one feature, add it there with a `Flocon` prefix rather than duplicating it.
 - Padding, gaps and spacers only use `FloconTheme.spacing` (no `N.dp` literals). Row/header/control heights, column widths and dropdown/panel widths come from `FloconTheme.sizes`. Both change with the user's app scale preset (`AppScale`), so never multiply a size by a scale. Icons, radii and borders are not scaled and can stay `dp` values.
+- Reach for `library/designsystem/components` first (`FloconPageTopBar`, `FloconButton`, `FloconTextField`, `FloconDialog`, `FloconVerticalScrollbar`, …). If a component is needed in more than one feature, add it there with a `Flocon` prefix rather than duplicating it.
 - Fixed sizes used more than once in a file go in `private val` constants at file top (`private val NameWidth = 260.dp`).
 
 ## Resources

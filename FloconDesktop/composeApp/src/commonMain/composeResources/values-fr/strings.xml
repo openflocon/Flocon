@@ -31,6 +31,8 @@
     <string name="general_success">Succès</string>
     <string name="invert_list">Inverser la liste</string>
     <string name="menu_actions">Actions</string>
+    <string name="menu_collapse">Réduire le menu</string>
+    <string name="menu_expand">Déplier le menu</string>
     <string name="menu_data">Données</string>
     <string name="menu_item_analytics">Analytics</string>
     <string name="menu_item_crashReporter">Crashs</string>

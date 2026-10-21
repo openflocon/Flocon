@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,16 +58,16 @@ internal fun CrashReportItemView(
         ) {
             Text(
                 text = crash.exceptionType,
-                style = MaterialTheme.typography.bodyMedium,
+                style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colors.statusError
             )
             Text(
                 text = crash.dateFormatted,
-                style = MaterialTheme.typography.bodySmall
+                style = FloconTheme.typography.bodySmall
             )
             Text(
                 text = crash.exceptionMessage,
-                style = MaterialTheme.typography.bodySmall
+                style = FloconTheme.typography.bodySmall
             )
         }
     }

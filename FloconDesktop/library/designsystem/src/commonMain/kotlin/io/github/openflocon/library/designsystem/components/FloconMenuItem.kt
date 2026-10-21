@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
-
 @Composable
 fun FloconMenuItem(
     text: String,

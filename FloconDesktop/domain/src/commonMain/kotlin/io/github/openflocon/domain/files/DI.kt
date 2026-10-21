@@ -4,8 +4,10 @@ import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFilesUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
+import io.github.openflocon.domain.files.usecase.ObserveFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.ObserveWithFoldersSizeUseCase
+import io.github.openflocon.domain.files.usecase.RefreshFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.UpdateWithFoldersSizeUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -20,4 +22,6 @@ internal val filesModule = module {
     factoryOf(::DownloadFileUseCase)
     factoryOf(::UpdateWithFoldersSizeUseCase)
     factoryOf(::ObserveWithFoldersSizeUseCase)
+    factoryOf(::RefreshFileRootsUseCase)
+    factoryOf(::ObserveFileRootsUseCase)
 }

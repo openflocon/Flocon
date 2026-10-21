@@ -1,13 +1,14 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -76,6 +77,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
@@ -89,12 +93,10 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
@@ -138,11 +140,13 @@ fun NetworkScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
+    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     NetworkScreen(
         uiState = uiState,
         rows = items,
         filterText = filterText,
+        showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -153,6 +157,7 @@ fun NetworkScreen(
     uiState: NetworkUiState,
     rows: LazyPagingItems<NetworkItemViewState>,
     filterText: State<String>,
+    showEmptyState: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -171,7 +176,8 @@ fun NetworkScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        FloconFeature(
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = modifier
                 .fillMaxHeight()
                 .weight(1f)
@@ -307,6 +313,7 @@ fun NetworkScreen(
 //                            onCheckedChange = {}
 //                        )
 //                    }
+                    FeatureDocButton(doc = FeatureDoc.Network)
                     FloconOverflow {
                         FloconDropdownMenuItem(
                             text = stringResource(Res.string.export_csv),
@@ -460,6 +467,12 @@ fun NetworkScreen(
                                 }
                             }
                         }
+                        if (showEmptyState) {
+                            FeatureEmptyState(
+                                doc = FeatureDoc.Network,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
                         this@Row.AnimatedVisibility(
                             visible = uiState.contentState.selecting,
                             enter = slideInVertically { it },
@@ -607,6 +620,7 @@ private fun NetworkScreenPreview() {
             rows = rows,
             onAction = {},
             filterText = mutableStateOf(""),
+            showEmptyState = false,
         )
     }
 }

@@ -7,14 +7,22 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.model.FloconFileInfo
+import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileRootDataModel
 import kotlinx.coroutines.test.runTest
+import java.io.File
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class FloconFilesPluginTest {
 
     private class FakeFloconFileSender : FloconFileSender {
-        override fun send(file: FloconFile, infos: FloconFileInfo) {}
+        val sent = mutableListOf<FloconFileInfo>()
+        override fun send(file: FloconFile, infos: FloconFileInfo) {
+            sent += infos
+        }
     }
 
     private class FakeFloconMessageSender : FloconMessageSender {
@@ -25,13 +33,27 @@ class FloconFilesPluginTest {
         override fun sendPendingMessages() {}
     }
 
+    // the root folder "files", and a folder outside of it
+    private val root = kotlin.io.path.createTempDirectory("flocon-files").toFile().canonicalFile
+    private val outside = kotlin.io.path.createTempDirectory("flocon-outside").toFile().canonicalFile
+
     private val sender = FakeFloconMessageSender()
+    private val fileSender = FakeFloconFileSender()
     private val plugin = FloconFilesPluginImpl(
         context = FloconContext(appName = "app", packageName = "app.package"),
-        floconFileSender = FakeFloconFileSender(),
+        floconFileSender = fileSender,
         sender = sender,
         encoder = FloconEncoder(),
+        fileDataSource = JavaIoFileDataSource(
+            defaultRoots = { listOf(FileRootDataModel(id = "files", name = "Files", path = root.absolutePath)) }
+        ),
     )
+
+    @AfterTest
+    fun tearDown() {
+        root.deleteRecursively()
+        outside.deleteRecursively()
+    }
 
     @Test
     fun `listFiles answers with the request id`() = runTest {
@@ -47,38 +69,106 @@ class FloconFilesPluginTest {
     }
 
     @Test
-    fun `listFiles lists the content of a folder`() = runTest {
-        val dir = kotlin.io.path.createTempDirectory("flocon-files").toFile()
-        try {
-            java.io.File(dir, "a.txt").writeText("abc")
-            java.io.File(dir, "sub").mkdir()
+    fun `listFiles lists the content of a root folder`() = runTest {
+        File(root, "a.txt").writeText("abc")
+        File(root, "sub").mkdir()
 
-            val files = FileDataSourceJvm().getFolderContent(dir.absolutePath, isConstantPath = false, withFoldersSize = true)
+        val files = JavaIoFileDataSource(defaultRoots = { emptyList() })
+            .getFolderContent(root.absolutePath, withFoldersSize = true)
 
-            assertEquals(setOf("a.txt", "sub"), files.map { it.name }.toSet())
-            assertEquals(3L, files.single { it.name == "a.txt" }.size)
-            assertEquals(true, files.single { it.name == "sub" }.isDirectory)
-        } finally {
-            dir.deleteRecursively()
-        }
+        assertEquals(setOf("a.txt", "sub"), files.map { it.name }.toSet())
+        assertEquals(3L, files.single { it.name == "a.txt" }.size)
+        assertEquals(true, files.single { it.name == "sub" }.isDirectory)
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.ListFiles,
+            body = "{\"requestId\":\"1\",\"path\":\"files\",\"isConstantPath\":true}",
+        )
+        assertTrue(sender.messages.single().third.contains("a.txt"))
     }
 
     @Test
-    fun `deleteFile removes files and folders`() {
-        val dir = kotlin.io.path.createTempDirectory("flocon-files").toFile()
-        try {
-            val file = java.io.File(dir, "a.txt").apply { writeText("abc") }
-            val dataSource = FileDataSourceJvm()
+    fun `getRoots sends the default and the registered folders`() = runTest {
+        plugin.register(displayName = "Outside", absolutePath = outside.absolutePath)
 
-            dataSource.deleteFile(file.absolutePath)
-            assertEquals(false, file.exists())
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.GetRoots,
+            body = "{\"requestId\":\"7\"}",
+        )
 
-            java.io.File(dir, "b.txt").writeText("b")
-            dataSource.deleteFolderContent(dataSource.getFile(dir.absolutePath, isConstantPath = false)!!)
-            assertEquals(0, dir.listFiles()!!.size)
-        } finally {
-            dir.deleteRecursively()
-        }
+        val (pluginName, method, body) = sender.messages.single()
+        assertEquals(Protocol.FromDevice.Files.Plugin, pluginName)
+        assertEquals(Protocol.FromDevice.Files.Method.GetRoots, method)
+        assertEquals(
+            "{\"requestId\":\"7\",\"roots\":[" +
+                "{\"id\":\"files\",\"name\":\"Files\",\"path\":\"${root.absolutePath}\"}," +
+                "{\"id\":\"${outside.absolutePath}\",\"name\":\"Outside\",\"path\":\"${outside.absolutePath}\"}" +
+                "]}",
+            body,
+        )
+    }
+
+    @Test
+    fun `getRoots skips a registered folder that does not exist`() = runTest {
+        plugin.register(displayName = "Missing", absolutePath = "${outside.absolutePath}/missing")
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.GetRoots,
+            body = "{\"requestId\":\"7\"}",
+        )
+
+        assertFalse(sender.messages.single().third.contains("Missing"))
+    }
+
+    @Test
+    fun `deleteFile removes files and folders inside a root, never the root`() = runTest {
+        val file = File(root, "a.txt").apply { writeText("abc") }
+        val folder = File(root, "sub").apply { mkdir() }
+        File(folder, "b.txt").writeText("b")
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.DeleteFiles,
+            body = "{\"requestId\":\"1\",\"parentPath\":\"files\",\"filePaths\":[\"${file.absolutePath}\",\"${folder.absolutePath}\",\"${root.absolutePath}\"],\"isConstantParentPath\":true}",
+        )
+
+        assertFalse(file.exists())
+        assertFalse(folder.exists())
+        assertTrue(root.exists())
+    }
+
+    @Test
+    fun `nothing outside the roots is deleted or sent`() = runTest {
+        val secret = File(outside, "secret.txt").apply { writeText("secret") }
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.DeleteFile,
+            body = "{\"requestId\":\"1\",\"parentPath\":\"files\",\"filePath\":\"${secret.absolutePath}\",\"isConstantParentPath\":true}",
+        )
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.DeleteFile,
+            body = "{\"requestId\":\"2\",\"parentPath\":\"files\",\"filePath\":\"${root.absolutePath}/../${outside.name}/secret.txt\",\"isConstantParentPath\":true}",
+        )
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.GetFile,
+            body = "{\"requestId\":\"3\",\"path\":\"${secret.absolutePath}\"}",
+        )
+
+        assertTrue(secret.exists())
+        assertTrue(fileSender.sent.isEmpty())
+    }
+
+    @Test
+    fun `deleteFolderContent empties a root folder`() = runTest {
+        File(root, "a.txt").writeText("a")
+        File(root, "sub").mkdir()
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.Files.Method.DeleteFolderContent,
+            body = "{\"requestId\":\"1\",\"path\":\"files\",\"isConstantPath\":true}",
+        )
+
+        assertTrue(root.exists())
+        assertEquals(0, root.listFiles()!!.size)
     }
 
     @Test

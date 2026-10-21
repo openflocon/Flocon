@@ -7,11 +7,9 @@ import androidx.paging.map
 import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.timeline.datasources.TimelineLocalDataSource
 import io.github.openflocon.data.local.timeline.dao.TimelineDao
-import io.github.openflocon.data.local.timeline.mapper.toActivityDomain
 import io.github.openflocon.data.local.timeline.mapper.toDomain
 import io.github.openflocon.data.local.timeline.mapper.toSummaryDomain
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.timeline.models.TimelineActivityDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
@@ -38,21 +36,6 @@ internal class TimelineLocalDataSourceRoom(
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain() }
         }
-    }
-
-    override fun observeActivity(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        filter: TimelineFilterDomainModel,
-        bucketCount: Int,
-    ): Flow<TimelineActivityDomainModel> {
-        val query = buildTimelineActivityQuery(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            filter = filter,
-            bucketCount = bucketCount,
-        )
-        return timelineDao.observeActivity(query.toRoomRawQuery())
-            .map { toActivityDomain(rows = it, bucketCount = bucketCount) }
     }
 
     override fun observeSummary(

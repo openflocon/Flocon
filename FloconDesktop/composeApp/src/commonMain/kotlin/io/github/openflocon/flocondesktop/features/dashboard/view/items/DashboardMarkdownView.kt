@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,7 +28,7 @@ internal fun DashboardMarkdownView(
                 text = rowItem.label,
                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall),
                 color = FloconTheme.colors.ink,
-                style = MaterialTheme.typography.bodyMedium.copy(
+                style = FloconTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Thin,
                 ),
             )

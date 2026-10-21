@@ -99,12 +99,14 @@ nav:
       - Preferences & DataStore: sharedpref.md
       - File Explorer: files.md
     - Custom Debugging:
+      - Timeline: timeline.md
       - Reactive Dashboards: dashboard.md
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md
       - Analytics Viewer: analytics.md
       - Feature Flags Viewer: featureflags.md
       - Crash Reporter: crashreporter.md
+      - ADB Commander: adb-commander.md
     - AI Agents (MCP): mcp.md
   - About:
     - The Story: about.md

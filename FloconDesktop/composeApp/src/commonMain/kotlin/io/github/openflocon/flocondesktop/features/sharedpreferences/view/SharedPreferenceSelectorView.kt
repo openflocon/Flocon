@@ -33,6 +33,8 @@ import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.preferences
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
@@ -67,16 +69,24 @@ fun SharedPreferenceSelectorView(
                     .padding(all = FloconTheme.spacing.extraSmall),
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
-                Text(
-                    stringResource(Res.string.preferences),
-                    color = FloconTheme.colors.ink,
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        stringResource(Res.string.preferences),
+                        color = FloconTheme.colors.ink,
+                        style = FloconTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
+                    )
+                    FeatureDocButton(doc = FeatureDoc.SharedPreferences)
+                }
                 when (state) {
                     SharedPrefsStateUiModel.Empty -> Unit
                     SharedPrefsStateUiModel.Loading -> Unit
