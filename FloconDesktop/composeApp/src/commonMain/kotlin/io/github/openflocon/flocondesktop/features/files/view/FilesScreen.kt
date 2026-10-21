@@ -100,7 +100,7 @@ private fun FilesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary),
+                .background(FloconTheme.colors.bg100),
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),

@@ -69,7 +69,7 @@ fun FilesTopBar(
             FloconIconTonalButton(
                 onClick = onBack,
                 enabled = hasParentFile,
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack
@@ -80,7 +80,7 @@ fun FilesTopBar(
                 text = current?.name.orEmpty(),
                 style = FloconTheme.typography.bodyMedium,
                 maxLines = 1,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier
                     .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
             )
@@ -90,9 +90,9 @@ fun FilesTopBar(
                     text = "$nb files",
                     style = FloconTheme.typography.bodySmall,
                     maxLines = 1,
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier
-                        .background(FloconTheme.colorPalette.secondary.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg200.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
                         .padding(vertical = 3.dp, horizontal = FloconTheme.spacing.small),
                 )
             }
@@ -156,7 +156,7 @@ private fun SelectingView(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.background(
-                    color = FloconTheme.colorPalette.accent,
+                    color = FloconTheme.colors.accentSoft,
                     shape = FloconTheme.shapes.medium,
                 ).padding(
                     horizontal = FloconTheme.spacing.small
@@ -165,7 +165,7 @@ private fun SelectingView(
                 Text(
                     text = "$selectedCount selected",
                     style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colorPalette.onAccent,
+                    color = FloconTheme.colors.accent,
                     modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
                 )
                 FloconIconButton(
