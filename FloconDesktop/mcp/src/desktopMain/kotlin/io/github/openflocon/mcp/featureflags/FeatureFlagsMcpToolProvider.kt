@@ -7,7 +7,7 @@ import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.github.openflocon.mcp.McpToolServer
 
 private const val LIST_PAYLOAD_MAX_LENGTH = 200
 
@@ -16,7 +16,7 @@ internal class FeatureFlagsMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_feature_flags",
             title = "List feature flags",

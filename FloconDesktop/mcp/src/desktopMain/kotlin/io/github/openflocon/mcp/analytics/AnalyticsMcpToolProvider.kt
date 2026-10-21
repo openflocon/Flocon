@@ -8,7 +8,7 @@ import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolProvider
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 import kotlin.time.Instant
 
@@ -17,7 +17,7 @@ internal class AnalyticsMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_analytics_tables",
             title = "List analytics tables",
