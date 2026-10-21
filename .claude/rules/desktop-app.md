@@ -23,9 +23,7 @@ Features are split across modules, one package per feature (e.g. `featureflags`)
 - Register every new class in the layer's `DI.kt` (Koin) and include that module from the parent `DI.kt`.
 
 ## UI
-- Compose Multiplatform; reuse components from `library:designsystem` before writing new ones.
-- User-visible strings go in `composeResources/values/strings.xml`, never hardcoded.
-- ViewModels expose state as `StateFlow` of UI models; screens are stateless and receive state + actions.
+See `compose.md`.
 
 ## Room database
 - Adding/altering an entity requires bumping `version` in `AppDatabase` and committing the generated schema JSON under `composeApp/schemas/`. Never edit or delete an existing schema file.

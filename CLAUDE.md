@@ -12,7 +12,8 @@ When delegating to subagents, apply the same split: planning/exploration-for-des
 Project rules live in `.claude/rules/` and are loaded automatically (path-scoped ones only when working in that folder):
 
 - `android-sdk.md`: KMP SDK conventions, plugin / no-op parity (`FloconAndroid/`)
-- `desktop-app.md`: desktop layering, DI, UI and Room rules (`FloconDesktop/`)
+- `desktop-app.md`: desktop layering, DI and Room rules (`FloconDesktop/`)
+- `compose.md`: Compose UI conventions: screen structure, state, design system, previews (`FloconDesktop/`)
 - `git-workflow.md`: commit message format, branches, PRs
 - `build-verification.md`: Gradle / MkDocs checks to run before a task is done
 - `docs-protocol-sync.md`: keep `protocol/`, `docs/`, MCP docs and README in sync with code
