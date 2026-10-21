@@ -8,14 +8,19 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import io.github.openflocon.domain.messages.repository.FileReceiverRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 class FilesRepositoryImpl(
@@ -28,6 +33,9 @@ class FilesRepositoryImpl(
 
     override val pluginName = listOf(Protocol.FromDevice.Files.Plugin)
 
+    // roots announced by each device, kept in memory
+    private val roots = MutableStateFlow<Map<DeviceIdAndPackageNameDomainModel, List<FileRootDomainModel>>>(emptyMap())
+
     override suspend fun onMessageReceived(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel,
@@ -36,6 +44,9 @@ class FilesRepositoryImpl(
             when (message.method) {
                 Protocol.FromDevice.Files.Method.ListFiles -> remoteFilesDataSource.getItems(message)
                     ?.let(remoteFilesDataSource::onGetFilesResultReceived)
+
+                Protocol.FromDevice.Files.Method.GetRoots -> remoteFilesDataSource.getRoots(message)
+                    ?.let(remoteFilesDataSource::onGetRootsResultReceived)
             }
         }
     }
@@ -52,6 +63,20 @@ class FilesRepositoryImpl(
         isNewDevice: Boolean,
     ) {
         // no op
+    }
+
+    override fun observeRoots(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<FileRootDomainModel>> = roots
+        .map { it[deviceIdAndPackageName].orEmpty() }
+        .distinctUntilChanged()
+
+    override suspend fun refreshRoots(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Either<Throwable, Unit> = withContext(dispatcherProvider.data) {
+        remoteFilesDataSource
+            .executeGetRoots(deviceIdAndPackageName = deviceIdAndPackageName)
+            .alsoSuccess { received ->
+                roots.update { it + (deviceIdAndPackageName to received) }
+            }.mapSuccess { }
     }
 
     override fun observeFolderContent(
