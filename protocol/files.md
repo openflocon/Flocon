@@ -29,6 +29,7 @@ When `isConstantPath` / `isConstantParentPath` is `true`, the path is the `id` o
 |----------------------|--------------------|-----------------------|--------------------|
 | `files`              | `context.filesDir` | Documents             | `user.dir`         |
 | `caches`             | `context.cacheDir` | Caches                | `java.io.tmpdir`   |
+| `databases`          | databases folder   |                       |                    |
 | `applicationSupport` |                    | Application Support   |                    |
 | `tmp`                |                    | `NSTemporaryDirectory()` |                 |
 | `container`          |                    | `NSHomeDirectory()`   |                    |
@@ -74,7 +75,8 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
   "roots": [
     { "id": "files", "name": "Files", "path": "/data/user/0/com.example.app/files" },
     { "id": "caches", "name": "Caches", "path": "/data/user/0/com.example.app/cache" },
-    { "id": "/data/user/0/com.example.app/databases", "name": "Databases", "path": "/data/user/0/com.example.app/databases" }
+    { "id": "databases", "name": "Databases", "path": "/data/user/0/com.example.app/databases" },
+    { "id": "/data/user/0/com.example.app/shared_prefs", "name": "Shared preferences", "path": "/data/user/0/com.example.app/shared_prefs" }
   ]
 }
 ```

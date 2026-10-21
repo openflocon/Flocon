@@ -70,10 +70,10 @@ class MainActivity : ComponentActivity() {
             }
             install(FloconPreferences)
             install(FloconFiles) {
-                // shown in the Files section of the desktop app, next to Files and Caches
+                // shown in the Files section of the desktop app, next to Files, Caches and Databases
                 folder(
-                    displayName = "Databases",
-                    absolutePath = getDatabasePath("dummy").parentFile!!.absolutePath,
+                    displayName = "Shared preferences",
+                    absolutePath = "${filesDir.parentFile!!.absolutePath}/shared_prefs",
                 )
             }
             install(FloconDevice)

@@ -47,7 +47,7 @@ The desktop shows the default folders of the platform:
 
 | Platform | Folders |
 |----------|---------|
-| Android  | Files (`filesDir`), Caches (`cacheDir`) |
+| Android  | Files (`filesDir`), Caches (`cacheDir`), Databases |
 | iOS      | Documents, Application Support, Caches, tmp, App container |
 | JVM      | Working directory, Temp, Home |
 
@@ -60,8 +60,8 @@ Show another folder at install time:
 startFlocon(FloconContext(context)) {
     install(FloconFiles) {
         folder(
-            displayName = "Databases",
-            absolutePath = context.getDatabasePath("dummy").parentFile!!.absolutePath,
+            displayName = "Shared preferences",
+            absolutePath = "${context.filesDir.parentFile!!.absolutePath}/shared_prefs",
         )
     }
 }
