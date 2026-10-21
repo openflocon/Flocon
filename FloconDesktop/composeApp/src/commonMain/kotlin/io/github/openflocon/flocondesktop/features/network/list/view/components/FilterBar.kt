@@ -51,7 +51,7 @@ fun FilterBar(
     filterText: State<String>,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.secondary,
+    containerColor: Color = FloconTheme.colors.bg200,
 ) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
     val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
@@ -89,7 +89,7 @@ fun FilterBar(
                 )
             }
         },
-        textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
+        textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.ink),
         modifier = modifier
     )
 }

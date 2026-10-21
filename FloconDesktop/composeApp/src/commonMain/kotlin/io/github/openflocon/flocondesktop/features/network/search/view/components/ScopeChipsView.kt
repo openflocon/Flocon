@@ -25,9 +25,9 @@ internal fun ScopeChipsView(
     modifier: Modifier = Modifier,
 ) {
     val isSelected = remember(uiState, scope) { uiState.selectedScopes.contains(scope) }
-    val color by animateColorAsState(if (isSelected) FloconTheme.colorPalette.tertiary else Color.Transparent)
+    val color by animateColorAsState(if (isSelected) FloconTheme.colors.ink else Color.Transparent)
     val textColor by animateColorAsState(
-        if (isSelected) FloconTheme.colorPalette.onTertiary else FloconTheme.colorPalette.onSurface.copy(
+        if (isSelected) FloconTheme.colors.bg100 else FloconTheme.colors.ink.copy(
             alpha = 0.5f
         )
     )

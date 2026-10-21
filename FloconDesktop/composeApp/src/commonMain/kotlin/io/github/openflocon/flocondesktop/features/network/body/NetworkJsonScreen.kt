@@ -170,7 +170,7 @@ private fun SearchBar(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colorPalette.primary)
+                .background(FloconTheme.colors.bg100)
                 .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
         ) {
             FloconTextFieldWithoutM3(
@@ -178,13 +178,13 @@ private fun SearchBar(
                 onValueChange = { queryChanged(it) },
                 placeholder = defaultPlaceHolder(
                     stringResource(Res.string.search),
-                    color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)
+                    color = FloconTheme.colors.inkMuted.copy(alpha = 0.5f)
                 ),
                 leadingComponent = {
                     FloconIcon(
                         imageVector = Icons.Outlined.Search,
                         modifier = Modifier.size(16.dp),
-                        tint = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.7f),
+                        tint = FloconTheme.colors.inkMuted.copy(alpha = 0.7f),
                     )
                 },
                 trailingComponent = {
@@ -214,15 +214,15 @@ private fun SearchBar(
                         }
                     }
                 },
-                containerColor = FloconTheme.colorPalette.secondary,
-                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSecondary),
+                containerColor = FloconTheme.colors.bg200,
+                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.inkMuted),
                 contentPadding = PaddingValues(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
                 modifier = Modifier
                     .width(280.dp)
                     .height(30.dp)
                     .border(
                         width = 1.dp,
-                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.2f),
+                        color = FloconTheme.colors.ink.copy(alpha = 0.2f),
                         shape = FloconTheme.shapes.medium
                     )
                     .focusRequester(focusRequester)
@@ -260,11 +260,11 @@ private fun SearchBar(
                         .height(30.dp)
                         .border(
                             width = 1.dp,
-                            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.2f),
+                            color = FloconTheme.colors.ink.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(6.dp)
                         )
                         .background(
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(6.dp)
                         )
                         .padding(start = FloconTheme.spacing.small, end = FloconTheme.spacing.tiny),
@@ -273,7 +273,7 @@ private fun SearchBar(
                     Text(
                         text = "${selectedResultIndex?.inc() ?: 0}/$totalResults",
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
+                        color = FloconTheme.colors.inkMuted,
                     )
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowUpward,
@@ -286,7 +286,7 @@ private fun SearchBar(
                         modifier = Modifier
                             .fillMaxHeight(0.6f)
                             .width(1.dp),
-                        color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.2f)
+                        color = FloconTheme.colors.inkMuted.copy(alpha = 0.2f)
                     )
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowDownward,
@@ -301,7 +301,7 @@ private fun SearchBar(
 
         FloconHorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            color = FloconTheme.colorPalette.secondary
+            color = FloconTheme.colors.bg200
         )
     }
 }

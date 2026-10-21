@@ -54,7 +54,7 @@ fun BadQuaityErrorExceptionEditor(
                         weight = it
                     }
                 },
-                containerColor = FloconTheme.colorPalette.primary
+                containerColor = FloconTheme.colors.bg100
             )
 
             DefaultLabel(stringResource(Res.string.badquality_select_exception))

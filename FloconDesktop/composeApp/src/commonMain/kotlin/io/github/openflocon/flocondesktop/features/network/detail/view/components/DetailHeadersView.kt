@@ -154,7 +154,7 @@ private fun HeaderItemRow(
             FloconButton(
                 onClick = { onAuthorizationClicked(item.value) }
             ) {
-                Text(stringResource(Res.string.network_decode_jwt), textAlign = TextAlign.Center, color = FloconTheme.colorPalette.onPrimary)
+                Text(stringResource(Res.string.network_decode_jwt), textAlign = TextAlign.Center, color = FloconTheme.colors.ink)
             }
         }
     }
@@ -174,10 +174,10 @@ private fun HeaderValueText(
                     modifier = Modifier
                         .widthIn(max = 600.dp)
                         .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.secondary)
+                        .background(FloconTheme.colors.bg200)
                         .border(
                             width = 1.dp,
-                            color = FloconTheme.colorPalette.accent.copy(alpha = 0.5f),
+                            color = FloconTheme.colors.accent.copy(alpha = 0.5f),
                             shape = FloconTheme.shapes.small
                         )
                         .padding(FloconTheme.spacing.small)
@@ -185,7 +185,7 @@ private fun HeaderValueText(
                     Text(
                         text = value,
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
+                        color = FloconTheme.colors.inkMuted,
                     )
                 }
             },

@@ -28,7 +28,7 @@ fun NetworkHeaderButton(
     Row(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colors.bg000)
             .clickable(onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
@@ -38,13 +38,13 @@ fun NetworkHeaderButton(
             imageVector = imageVector,
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+            colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
         )
         Text(
             title,
             style = FloconTheme.typography.labelLarge.copy(
                 fontWeight = FontWeight.Normal,
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colors.ink,
             ),
         )
     }

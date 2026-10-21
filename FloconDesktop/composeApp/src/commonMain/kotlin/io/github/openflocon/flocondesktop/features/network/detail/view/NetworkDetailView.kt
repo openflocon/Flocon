@@ -428,14 +428,14 @@ private fun SummaryCard(
                 .padding(end = 36.dp),
             label = stringResource(Res.string.network_full_url),
             value = state.fullUrl,
-            contentColor = FloconTheme.colorPalette.onPrimary,
+            contentColor = FloconTheme.colors.ink,
             labelWidth = linesLabelWidth,
         )
 
         FloconLineDescription(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(Res.string.network_header_method),
-            contentColor = FloconTheme.colorPalette.onPrimary,
+            contentColor = FloconTheme.colors.ink,
             labelWidth = linesLabelWidth,
         ) {
             when (val m = state.method) {
@@ -445,10 +445,10 @@ private fun SummaryCard(
                         Text(
                             text = m.name,
                             style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
+                                    color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
@@ -460,7 +460,7 @@ private fun SummaryCard(
         FloconLineDescription(
             modifier = Modifier.fillMaxWidth(),
             label = state.statusLabel,
-            contentColor = FloconTheme.colorPalette.onPrimary,
+            contentColor = FloconTheme.colors.ink,
             labelWidth = linesLabelWidth,
         ) {
             StatusView(
@@ -472,7 +472,7 @@ private fun SummaryCard(
             label = stringResource(Res.string.network_header_request_time),
             value = state.requestTimeFormatted,
             labelWidth = linesLabelWidth,
-            contentColor = FloconTheme.colorPalette.onPrimary
+            contentColor = FloconTheme.colors.ink
         )
         state.durationFormatted?.let {
             FloconLineDescription(
@@ -480,7 +480,7 @@ private fun SummaryCard(
                 label = stringResource(Res.string.network_header_time),
                 value = it,
                 labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colorPalette.onPrimary
+                contentColor = FloconTheme.colors.ink
             )
         }
 
@@ -489,7 +489,7 @@ private fun SummaryCard(
             label = stringResource(Res.string.network_request_size),
             value = state.requestSize,
             labelWidth = linesLabelWidth,
-            contentColor = FloconTheme.colorPalette.onPrimary
+            contentColor = FloconTheme.colors.ink
         )
     }
 }
@@ -565,7 +565,7 @@ private fun Request(
                             drawLayer(graphQlGraphicsLayer)
                         }
                         .background(
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(12.dp),
                         )
                         .padding(FloconTheme.spacing.medium)
@@ -574,14 +574,14 @@ private fun Request(
                         modifier = Modifier.fillMaxWidth(),
                         label = stringResource(Res.string.network_query_name),
                         value = it.queryName,
-                        contentColor = FloconTheme.colorPalette.onSecondary,
+                        contentColor = FloconTheme.colors.inkMuted,
                         labelWidth = linesLabelWidth,
                     )
                     FloconLineDescription(
                         modifier = Modifier.fillMaxWidth(),
                         label = stringResource(Res.string.general_type),
                         labelWidth = linesLabelWidth,
-                        contentColor = FloconTheme.colorPalette.onSecondary
+                        contentColor = FloconTheme.colors.inkMuted
                     ) {
                         MethodView(method = it.method)
                     }
@@ -706,7 +706,7 @@ private fun Request(
                             .fillMaxWidth()
                             .padding(FloconTheme.spacing.medium)
                             .background(
-                                FloconTheme.colorPalette.secondary,
+                                FloconTheme.colors.bg200,
                                 shape = FloconTheme.shapes.medium,
                             )
                             .padding(FloconTheme.spacing.medium),
@@ -714,7 +714,7 @@ private fun Request(
                     ) {
                         Text(
                             text = "Response body too large (${state.requestSize} bytes)",
-                            color = FloconTheme.colorPalette.onPrimary,
+                            color = FloconTheme.colors.ink,
                             style = FloconTheme.typography.bodySmall,
                         )
                         Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
@@ -722,7 +722,7 @@ private fun Request(
                             onClick = {
                                 displayBody = true
                             },
-                            containerColor = FloconTheme.colorPalette.tertiary,
+                            containerColor = FloconTheme.colors.ink,
                         ) {
                             Text(stringResource(Res.string.network_display_anyway))
                         }
@@ -761,7 +761,7 @@ private fun Response(
             Text(
                 text = stringResource(Res.string.network_waiting_response),
                 style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.5f)
+                color = FloconTheme.colors.ink.copy(alpha = 0.5f)
             )
         }
         return
@@ -823,7 +823,7 @@ private fun Response(
                                 drawLayer(resSummaryGraphicsLayer)
                             }
                             .background(
-                                color = FloconTheme.colorPalette.secondary,
+                                color = FloconTheme.colors.bg200,
                                 shape = RoundedCornerShape(12.dp),
                             )
                             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
@@ -835,7 +835,7 @@ private fun Response(
                             label = stringResource(Res.string.network_response_size),
                             value = response.size,
                             labelWidth = 130.dp,
-                            contentColor = FloconTheme.colorPalette.onPrimary
+                            contentColor = FloconTheme.colors.ink
                         )
                     }
 
@@ -953,7 +953,7 @@ private fun Response(
                                     .height(600.dp)
                                     .padding(FloconTheme.spacing.medium)
                                     .background(
-                                        FloconTheme.colorPalette.secondary,
+                                        FloconTheme.colors.bg200,
                                         shape = FloconTheme.shapes.medium,
                                     )
                                     .padding(FloconTheme.spacing.medium),
@@ -976,7 +976,7 @@ private fun Response(
                                         .fillMaxWidth()
                                         .padding(FloconTheme.spacing.medium)
                                         .background(
-                                            FloconTheme.colorPalette.secondary,
+                                            FloconTheme.colors.bg200,
                                             shape = FloconTheme.shapes.medium,
                                         )
                                         .padding(FloconTheme.spacing.medium),
@@ -984,7 +984,7 @@ private fun Response(
                                 ) {
                                     Text(
                                         text = "Response body too large (${response.size} bytes)",
-                                        color = FloconTheme.colorPalette.onPrimary,
+                                        color = FloconTheme.colors.ink,
                                         style = FloconTheme.typography.bodySmall,
                                     )
                                     Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
@@ -992,7 +992,7 @@ private fun Response(
                                         onClick = {
                                             displayBody = true
                                         },
-                                        containerColor = FloconTheme.colorPalette.tertiary,
+                                        containerColor = FloconTheme.colors.ink,
                                     ) {
                                         Text(stringResource(Res.string.network_display_anyway))
                                     }
@@ -1025,7 +1025,7 @@ private fun FullLogExportView(
 ) {
     Column(
         modifier = modifier
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
             .padding(FloconTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
@@ -1034,7 +1034,7 @@ private fun FullLogExportView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = FloconTheme.colorPalette.secondary,
+                    color = FloconTheme.colors.bg200,
                     shape = RoundedCornerShape(12.dp),
                 )
                 .padding(FloconTheme.spacing.medium)
@@ -1042,7 +1042,7 @@ private fun FullLogExportView(
             Text(
                 text = stringResource(Res.string.network_log_title),
                 style = FloconTheme.typography.titleMedium,
-                color = FloconTheme.colorPalette.onSecondary,
+                color = FloconTheme.colors.inkMuted,
                 modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
             )
 
@@ -1050,14 +1050,14 @@ private fun FullLogExportView(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(Res.string.network_full_url),
                 value = state.fullUrl,
-                contentColor = FloconTheme.colorPalette.onPrimary,
+                contentColor = FloconTheme.colors.ink,
                 labelWidth = linesLabelWidth,
             )
 
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(Res.string.network_header_method),
-                contentColor = FloconTheme.colorPalette.onPrimary,
+                contentColor = FloconTheme.colors.ink,
                 labelWidth = linesLabelWidth,
             ) {
                 when (val m = state.method) {
@@ -1066,10 +1066,10 @@ private fun FullLogExportView(
                         Text(
                             text = m.name,
                             style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                             modifier = Modifier
                                 .background(
-                                    color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
+                                    color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
@@ -1081,7 +1081,7 @@ private fun FullLogExportView(
             FloconLineDescription(
                 modifier = Modifier.fillMaxWidth(),
                 label = state.statusLabel,
-                contentColor = FloconTheme.colorPalette.onPrimary,
+                contentColor = FloconTheme.colors.ink,
                 labelWidth = linesLabelWidth,
             ) {
                 StatusView(status = state.status)
@@ -1092,7 +1092,7 @@ private fun FullLogExportView(
                 label = stringResource(Res.string.network_header_request_time),
                 value = state.requestTimeFormatted,
                 labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colorPalette.onPrimary
+                contentColor = FloconTheme.colors.ink
             )
 
             state.durationFormatted?.let {
@@ -1101,7 +1101,7 @@ private fun FullLogExportView(
                     label = stringResource(Res.string.network_header_time),
                     value = it,
                     labelWidth = linesLabelWidth,
-                    contentColor = FloconTheme.colorPalette.onPrimary
+                    contentColor = FloconTheme.colors.ink
                 )
             }
 
@@ -1110,7 +1110,7 @@ private fun FullLogExportView(
                 label = stringResource(Res.string.network_request_size),
                 value = state.requestSize,
                 labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colorPalette.onPrimary
+                contentColor = FloconTheme.colors.ink
             )
         }
 
@@ -1120,7 +1120,7 @@ private fun FullLogExportView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(FloconTheme.spacing.medium)
@@ -1128,21 +1128,21 @@ private fun FullLogExportView(
                 Text(
                     text = "GraphQL",
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                 )
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.network_query_name),
                     value = it.queryName,
-                    contentColor = FloconTheme.colorPalette.onSecondary,
+                    contentColor = FloconTheme.colors.inkMuted,
                     labelWidth = linesLabelWidth,
                 )
                 FloconLineDescription(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.general_type),
                     labelWidth = linesLabelWidth,
-                    contentColor = FloconTheme.colorPalette.onSecondary
+                    contentColor = FloconTheme.colors.inkMuted
                 ) {
                     MethodView(method = it.method)
                 }
@@ -1155,7 +1155,7 @@ private fun FullLogExportView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(FloconTheme.spacing.medium)
@@ -1163,7 +1163,7 @@ private fun FullLogExportView(
                 Text(
                     text = stringResource(Res.string.network_request_headers),
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                 )
                 DetailHeadersView(
@@ -1181,7 +1181,7 @@ private fun FullLogExportView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = FloconTheme.colorPalette.secondary,
+                        color = FloconTheme.colors.bg200,
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(FloconTheme.spacing.medium)
@@ -1189,12 +1189,12 @@ private fun FullLogExportView(
                 Text(
                     text = state.requestBodyTitle,
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSecondary,
+                    color = FloconTheme.colors.inkMuted,
                     modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                 )
                 FloconCodeBlock(
                     code = formatBodyForExport(state.requestBody),
-                    containerColor = FloconTheme.colorPalette.primary,
+                    containerColor = FloconTheme.colors.bg100,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -1207,7 +1207,7 @@ private fun FullLogExportView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(12.dp),
                         )
                         .padding(FloconTheme.spacing.medium)
@@ -1215,7 +1215,7 @@ private fun FullLogExportView(
                     Text(
                         text = "Response (${res.size})",
                         style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.onSecondary,
+                        color = FloconTheme.colors.inkMuted,
                         modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                     )
                     FloconLineDescription(
@@ -1223,7 +1223,7 @@ private fun FullLogExportView(
                         label = stringResource(Res.string.network_response_size),
                         value = res.size,
                         labelWidth = linesLabelWidth,
-                        contentColor = FloconTheme.colorPalette.onPrimary
+                        contentColor = FloconTheme.colors.ink
                     )
                 }
 
@@ -1232,7 +1232,7 @@ private fun FullLogExportView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = FloconTheme.colorPalette.secondary,
+                                color = FloconTheme.colors.bg200,
                                 shape = RoundedCornerShape(12.dp),
                             )
                             .padding(FloconTheme.spacing.medium)
@@ -1240,7 +1240,7 @@ private fun FullLogExportView(
                         Text(
                             text = stringResource(Res.string.network_response_headers),
                             style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                             modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                         )
                         DetailHeadersView(
@@ -1257,7 +1257,7 @@ private fun FullLogExportView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = FloconTheme.colorPalette.secondary,
+                                color = FloconTheme.colors.bg200,
                                 shape = RoundedCornerShape(12.dp),
                             )
                             .padding(FloconTheme.spacing.medium)
@@ -1265,12 +1265,12 @@ private fun FullLogExportView(
                         Text(
                             text = stringResource(Res.string.network_response_body),
                             style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                             modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                         )
                         FloconCodeBlock(
                             code = formatBodyForExport(res.body),
-                            containerColor = FloconTheme.colorPalette.primary,
+                            containerColor = FloconTheme.colors.bg100,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -1282,7 +1282,7 @@ private fun FullLogExportView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(12.dp),
                         )
                         .padding(FloconTheme.spacing.medium)
@@ -1290,12 +1290,12 @@ private fun FullLogExportView(
                     Text(
                         text = stringResource(Res.string.network_response_error),
                         style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colorPalette.error,
+                        color = FloconTheme.colors.statusError,
                         modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                     )
                     FloconCodeBlock(
                         code = formatBodyForExport(res.issue),
-                        containerColor = FloconTheme.colorPalette.primary,
+                        containerColor = FloconTheme.colors.bg100,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

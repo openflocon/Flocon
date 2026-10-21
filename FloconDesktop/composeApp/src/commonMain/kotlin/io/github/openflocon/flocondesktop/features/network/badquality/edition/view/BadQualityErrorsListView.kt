@@ -264,7 +264,7 @@ private fun BadQualityErrorItemView(
                 Text(
                     "exception",
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         fontWeight = FontWeight.Bold,
                     ),
                     color = FloconTheme.colors.statusError
@@ -295,7 +295,7 @@ private fun BadQualityErrorItemView(
                         error,
                     )
                 },
-            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+            colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
         )
     }
 }

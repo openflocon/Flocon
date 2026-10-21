@@ -207,12 +207,12 @@ fun MockEditorScreen(
                     .fillMaxWidth()
                     .padding(horizontal = FloconTheme.spacing.large)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(FloconTheme.colorPalette.error)
+                    .background(FloconTheme.colors.statusError)
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
             ) {
                 Text(
                     text = it,
-                    color = FloconTheme.colorPalette.onError,
+                    color = FloconTheme.colors.accentInk,
                     style = FloconTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -266,7 +266,7 @@ fun MockEditorScreen(
                 if (urlPatternError != null) {
                     Text(
                         text = urlPatternError,
-                        color = FloconTheme.colorPalette.error,
+                        color = FloconTheme.colors.statusError,
                         style = FloconTheme.typography.labelSmall,
                         modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                     )
@@ -304,7 +304,7 @@ fun MockEditorScreen(
                             Text(
                                 text = stringResource(Res.string.mock_test_pattern_hint),
                                 style = FloconTheme.typography.labelSmall,
-                                color = FloconTheme.colorPalette.onSurface,
+                                color = FloconTheme.colors.ink,
                                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
@@ -312,7 +312,7 @@ fun MockEditorScreen(
                             Text(
                                 text = stringResource(Res.string.mock_test_pattern_no_pattern),
                                 style = FloconTheme.typography.labelSmall,
-                                color = FloconTheme.colorPalette.onSurface,
+                                color = FloconTheme.colors.ink,
                                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
@@ -322,20 +322,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(FloconTheme.colorPalette.accent)
+                                    .background(FloconTheme.colors.accentSoft)
                                     .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = FloconTheme.colorPalette.onAccent,
+                                    tint = FloconTheme.colors.accent,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = stringResource(Res.string.mock_pattern_matches),
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = FloconTheme.colorPalette.onAccent,
+                                    color = FloconTheme.colors.accent,
                                 )
                             }
                         }
@@ -345,20 +345,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(FloconTheme.colorPalette.error)
+                                    .background(FloconTheme.colors.statusError)
                                     .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = null,
-                                    tint = FloconTheme.colorPalette.onError,
+                                    tint = FloconTheme.colors.accentInk,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = stringResource(Res.string.mock_pattern_no_match),
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = FloconTheme.colorPalette.onError,
+                                    color = FloconTheme.colors.accentInk,
                                 )
                             }
                         }
@@ -368,20 +368,20 @@ fun MockEditorScreen(
                                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(FloconTheme.colorPalette.error)
+                                    .background(FloconTheme.colors.statusError)
                                     .padding(horizontal = 10.dp, vertical = FloconTheme.spacing.compact)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = FloconTheme.colorPalette.onError,
+                                    tint = FloconTheme.colors.accentInk,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = stringResource(Res.string.mock_invalid_regex),
                                     style = FloconTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = FloconTheme.colorPalette.onError,
+                                    color = FloconTheme.colors.accentInk,
                                 )
                             }
                         }
@@ -553,7 +553,7 @@ fun MockEditorScreen(
                                 Image(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = stringResource(Res.string.mock_add_header),
-                                    colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+                                    colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                                 )
                             }
                         }
@@ -658,7 +658,7 @@ fun MockEditorScreen(
                                     Text(
                                         text = throwable.localizedMessage,
                                         style = FloconTheme.typography.bodySmall,
-                                        color = FloconTheme.colorPalette.error,
+                                        color = FloconTheme.colors.statusError,
                                     )
                                 }
                             }
@@ -778,7 +778,7 @@ private fun HeaderInputField(
             Image(
                 imageVector = Icons.Default.Delete,
                 contentDescription = stringResource(Res.string.mock_remove_header),
-                colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
             )
         }
     }

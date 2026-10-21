@@ -121,7 +121,7 @@ private fun NetworkWebsocketMockContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
+                        .background(FloconTheme.colors.bg100)
                         .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small).clickable {
                             selectionExpanded = true
                         },
@@ -136,7 +136,7 @@ private fun NetworkWebsocketMockContent(
                         imageVector = Icons.Outlined.KeyboardArrowDown,
                         contentDescription = "",
                         modifier = Modifier.width(16.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
 
@@ -203,7 +203,7 @@ private fun NetworkWebsocketMockContent(
                 Box(
                     modifier = Modifier.size(30.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(FloconTheme.colorPalette.tertiary)
+                        .background(FloconTheme.colors.ink)
                         .clickable {
                             onSend(message)
                         },
@@ -212,7 +212,7 @@ private fun NetworkWebsocketMockContent(
                     FloconIcon(
                         modifier = Modifier.size(14.dp),
                         imageVector = Icons.Filled.Send,
-                        tint = FloconTheme.colorPalette.onTertiary,
+                        tint = FloconTheme.colors.bg100,
                     )
                 }
             }

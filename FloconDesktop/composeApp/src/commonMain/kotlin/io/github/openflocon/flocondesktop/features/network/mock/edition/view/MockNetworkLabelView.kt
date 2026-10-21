@@ -13,7 +13,7 @@ internal fun MockNetworkLabelView(label: String) {
     Text(
         label,
         modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
-        color = FloconTheme.colorPalette.onSurface,
+        color = FloconTheme.colors.ink,
         style = FloconTheme.typography.bodyMedium.copy(
             fontWeight = FontWeight.Thin,
         ),
