@@ -60,7 +60,7 @@ fun DeeplinkFreeformItemView(
                 onValueChange = { value = it },
                 placeholder = defaultPlaceHolder(stringResource(Res.string.freeform_link)),
                 textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
                 modifier = Modifier.weight(1f),
                 leadingComponent = {
                     Spacer(
@@ -77,7 +77,7 @@ fun DeeplinkFreeformItemView(
                         ),
                     )
                 },
-                containerColor = FloconTheme.colorPalette.tertiary
+                containerColor = FloconTheme.colors.ink
             ) {
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
@@ -93,7 +93,7 @@ private fun DeeplinkFreeformItemViewPreview() {
     FloconTheme {
         DeeplinkFreeformItemView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             submit = { _, _ -> },
         )

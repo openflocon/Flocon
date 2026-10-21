@@ -107,7 +107,7 @@ private fun DeeplinkScreen(
                         .weight(0.3f)
                         .fillMaxHeight()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary),
+                        .background(FloconTheme.colors.bg100),
                 ) {
                     items(state.variables) { item ->
                         DeeplinkVariableChip(
@@ -124,7 +124,7 @@ private fun DeeplinkScreen(
                         .weight(0.7f)
                         .fillMaxHeight()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary),
+                        .background(FloconTheme.colors.bg100),
                 ) {
                     items(deepLinks) { item ->
                         DeeplinkItemView(
@@ -145,7 +145,7 @@ private fun DeeplinkScreen(
                     .weight(0.5f)
                     .fillMaxWidth()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+                    .background(FloconTheme.colors.bg100)
             ) {
                 items(history) { item ->
                     SelectionContainer {
@@ -209,13 +209,13 @@ private fun DeeplinkPanelHeader(title: String) {
     Text(
         text = title,
         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-        color = FloconTheme.colorPalette.onPrimary,
+        color = FloconTheme.colors.ink,
         modifier = Modifier
             .fillMaxWidth()
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
     )
-    HorizontalDivider(color = FloconTheme.colorPalette.surface)
+    HorizontalDivider(color = FloconTheme.colors.bg000)
 }
 
 @Composable
