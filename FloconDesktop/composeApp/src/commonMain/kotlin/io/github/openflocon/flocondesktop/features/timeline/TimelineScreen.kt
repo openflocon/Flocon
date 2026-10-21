@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
@@ -31,6 +33,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -152,7 +155,17 @@ internal fun TimelineContent(
             TimelineActivityStrip(activity = activity)
         }
 
-        if (rows.itemCount == 0) {
+        if (
+            summary.sourceCounts.values.sum() == 0 &&
+            rows.itemCount == 0 &&
+            rows.loadState.refresh is LoadState.NotLoading &&
+            filterText.value.isEmpty()
+        ) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Timeline,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else if (rows.itemCount == 0) {
             Text(
                 text = stringResource(Res.string.timeline_empty),
                 style = FloconTheme.typography.bodyMedium,

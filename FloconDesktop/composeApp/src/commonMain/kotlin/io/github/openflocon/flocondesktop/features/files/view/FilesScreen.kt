@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -144,6 +146,12 @@ private fun FilesScreen(
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)
                 )
+                if (state.current == null && state.files.isEmpty() && filterText.value.isEmpty()) {
+                    FeatureEmptyState(
+                        doc = FeatureDoc.Files,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }

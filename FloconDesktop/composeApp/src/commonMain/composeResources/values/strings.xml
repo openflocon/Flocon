@@ -176,6 +176,12 @@
     <string name="feature_doc_deeplinks_empty_description">Declare your app deeplinks and their variables in Kotlin to launch them in one click.</string>
     <string name="feature_doc_crashreporter_empty_title">No crash reported</string>
     <string name="feature_doc_crashreporter_empty_description">Install the crash reporter plugin: uncaught crashes are saved on the device, then sent the next time your app connects.</string>
+    <string name="feature_doc_files_empty_title">No folder announced</string>
+    <string name="feature_doc_files_empty_description">Install the files plugin: your app announces its default folders and the ones you register, then you can browse them here.</string>
+    <string name="feature_doc_featureflags_empty_title">No feature flags yet</string>
+    <string name="feature_doc_featureflags_empty_description">Forward the flags your app evaluated (Firebase, Statsig, in-house...) to check their variant and payload.</string>
+    <string name="feature_doc_timeline_empty_title">No event yet</string>
+    <string name="feature_doc_timeline_empty_description">Network calls, analytics, database queries and crashes received from your app will show up here, in order.</string>
     <string name="feature_doc_no_device_title">No device connected</string>
     <string name="feature_doc_no_device_description">Add the Flocon SDK to your app and launch it on a device or an emulator: it will show up in the top bar.</string>
     <string name="app_logo_content_description">Flocon logo</string>

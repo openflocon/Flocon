@@ -99,6 +99,7 @@ nav:
       - Preferences & DataStore: sharedpref.md
       - File Explorer: files.md
     - Custom Debugging:
+      - Timeline: timeline.md
       - Reactive Dashboards: dashboard.md
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md

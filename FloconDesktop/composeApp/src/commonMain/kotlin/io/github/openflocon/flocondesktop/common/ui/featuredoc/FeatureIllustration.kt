@@ -57,6 +57,8 @@ fun FeatureIllustration(
             FeatureDoc.Analytics -> drawAnalytics(colors)
             FeatureDoc.Tables -> drawTables(colors)
             FeatureDoc.Deeplinks -> drawDeeplinks(colors)
+            FeatureDoc.FeatureFlags -> drawFeatureFlags(colors)
+            FeatureDoc.Timeline -> drawTimeline(colors)
             FeatureDoc.CrashReporter -> drawCrashReporter(colors)
             FeatureDoc.AdbCommander -> drawAdbCommander(colors)
         }
@@ -394,6 +396,48 @@ private fun DrawScope.drawAdbCommander(c: ArtColors) {
     drawTextLine(c.line, Offset(origin.x + 10f, promptY + 22f), 40f, thickness = 3f)
     // cursor
     drawRect(c.accent, Offset(origin.x + 54f, promptY + 18f), Size(6f, 8f))
+}
+
+private fun DrawScope.drawFeatureFlags(c: ArtColors) {
+    drawCard(c, Offset(34f, 26f), Size(92f, 70f))
+    // three flags with their switch, the middle one on
+    for (i in 0..2) {
+        val y = 40f + i * 20f
+        drawTextLine(if (i == 1) c.strongLine else c.line, Offset(44f, y), 34f, thickness = 3.5f)
+        val on = i == 1
+        val track = Offset(96f, y - 5f)
+        drawRoundRect(
+            color = if (on) c.accent else c.line,
+            topLeft = track,
+            size = Size(20f, 10f),
+            cornerRadius = CornerRadius(5f),
+        )
+        drawCircle(c.card, radius = 3.5f, center = Offset(if (on) track.x + 15f else track.x + 5f, y))
+    }
+    // flag on the corner
+    drawLine(c.strongLine, Offset(126f, 18f), Offset(126f, 42f), 2f, StrokeCap.Round)
+    val flag = Path().apply {
+        moveTo(127f, 18f)
+        lineTo(142f, 23f)
+        lineTo(127f, 28f)
+        close()
+    }
+    drawPath(flag, c.accent)
+}
+
+private fun DrawScope.drawTimeline(c: ArtColors) {
+    // vertical axis with events on it
+    drawLine(c.strongLine, Offset(52f, 22f), Offset(52f, 100f), 2f, StrokeCap.Round)
+    listOf(30f, 52f, 74f, 94f).forEachIndexed { index, y ->
+        val highlight = index == 2
+        drawCircle(if (highlight) c.accent else c.card, radius = 5f, center = Offset(52f, y))
+        drawCircle(if (highlight) c.accent else c.strongLine, radius = 5f, center = Offset(52f, y), style = Stroke(width = 1.5f))
+        drawCard(c, Offset(64f, y - 8f), Size(if (highlight) 70f else 58f, 16f), radius = 4f)
+        drawTextLine(if (highlight) c.accentSoft else c.line, Offset(71f, y), if (highlight) 48f else 36f, thickness = 4f)
+    }
+    // time marks
+    drawTextLine(c.line, Offset(26f, 30f), 14f, thickness = 2.5f)
+    drawTextLine(c.line, Offset(26f, 74f), 14f, thickness = 2.5f)
 }
 
 private fun DrawScope.drawNoDevice(c: ArtColors) {

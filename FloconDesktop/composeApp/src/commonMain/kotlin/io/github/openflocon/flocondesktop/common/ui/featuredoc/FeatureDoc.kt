@@ -11,6 +11,10 @@ import flocondesktop.composeapp.generated.resources.feature_doc_database_empty_d
 import flocondesktop.composeapp.generated.resources.feature_doc_database_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_deeplinks_empty_description
 import flocondesktop.composeapp.generated.resources.feature_doc_deeplinks_empty_title
+import flocondesktop.composeapp.generated.resources.feature_doc_featureflags_empty_description
+import flocondesktop.composeapp.generated.resources.feature_doc_featureflags_empty_title
+import flocondesktop.composeapp.generated.resources.feature_doc_files_empty_description
+import flocondesktop.composeapp.generated.resources.feature_doc_files_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_images_empty_description
 import flocondesktop.composeapp.generated.resources.feature_doc_images_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_network_empty_description
@@ -19,6 +23,8 @@ import flocondesktop.composeapp.generated.resources.feature_doc_sharedpreference
 import flocondesktop.composeapp.generated.resources.feature_doc_sharedpreferences_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_tables_empty_description
 import flocondesktop.composeapp.generated.resources.feature_doc_tables_empty_title
+import flocondesktop.composeapp.generated.resources.feature_doc_timeline_empty_description
+import flocondesktop.composeapp.generated.resources.feature_doc_timeline_empty_title
 import org.jetbrains.compose.resources.StringResource
 
 private const val DOC_BASE_URL = "https://openflocon.github.io/Flocon/"
@@ -60,12 +66,12 @@ enum class FeatureDoc(
         emptyTitle = Res.string.feature_doc_sharedpreferences_empty_title,
         emptyDescription = Res.string.feature_doc_sharedpreferences_empty_description,
     ),
-    // The root always lists the cache & files folders, an empty folder is a legit state: no empty state
+    // Empty state only on the root: no folder announced by the app. An empty folder is a legit state
     Files(
         page = "files",
         setupAnchor = "setup",
-        emptyTitle = null,
-        emptyDescription = null,
+        emptyTitle = Res.string.feature_doc_files_empty_title,
+        emptyDescription = Res.string.feature_doc_files_empty_description,
     ),
     Dashboard(
         page = "dashboard",
@@ -90,6 +96,18 @@ enum class FeatureDoc(
         setupAnchor = "defining-deeplinks-in-kotlin",
         emptyTitle = Res.string.feature_doc_deeplinks_empty_title,
         emptyDescription = Res.string.feature_doc_deeplinks_empty_description,
+    ),
+    FeatureFlags(
+        page = "featureflags",
+        setupAnchor = "setup",
+        emptyTitle = Res.string.feature_doc_featureflags_empty_title,
+        emptyDescription = Res.string.feature_doc_featureflags_empty_description,
+    ),
+    Timeline(
+        page = "timeline",
+        setupAnchor = "setup",
+        emptyTitle = Res.string.feature_doc_timeline_empty_title,
+        emptyDescription = Res.string.feature_doc_timeline_empty_description,
     ),
     CrashReporter(
         page = "crashreporter",

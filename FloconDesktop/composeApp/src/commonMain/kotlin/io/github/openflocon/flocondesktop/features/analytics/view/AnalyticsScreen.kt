@@ -234,9 +234,8 @@ fun AnalyticsScreen(
                 }
             }
             if (
-                rows.itemCount == 0 &&
-                rows.loadState.refresh is LoadState.NotLoading &&
-                filterText.value.isEmpty()
+                itemsState is AnalyticsStateUiModel.Empty ||
+                (rows.itemCount == 0 && rows.loadState.refresh is LoadState.NotLoading && filterText.value.isEmpty())
             ) {
                 FeatureEmptyState(
                     doc = FeatureDoc.Analytics,
