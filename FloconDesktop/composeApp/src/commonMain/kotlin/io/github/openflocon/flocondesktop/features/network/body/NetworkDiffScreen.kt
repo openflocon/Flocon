@@ -87,7 +87,7 @@ private fun NetworkDiffContent(
                 revisedJson = diff.clipboardJson,
                 paddingValues = PaddingValues(FloconTheme.spacing.small),
                 colors = defaultDarkDiffColors.copy(
-                    regularBackgroundColor = FloconTheme.colorPalette.surface
+                    regularBackgroundColor = FloconTheme.colors.bg000
                 ),
                 onSuccess = { jsonTreeDiffInfo = it.info },
                 onLoading = {

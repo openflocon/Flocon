@@ -473,19 +473,19 @@ fun NetworkScreen(
                                     .fillMaxWidth()
                                     .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium)
                                     .clip(FloconTheme.shapes.medium)
-                                    .background(FloconTheme.colorPalette.secondary)
+                                    .background(FloconTheme.colors.bg200)
                                     .padding(FloconTheme.spacing.small)
                             ) {
                                 Text(
                                     text = "${uiState.contentState.multiSelectedIds.size} items selected",
                                     style = FloconTheme.typography.bodySmall,
-                                    color = FloconTheme.colorPalette.onSecondary,
+                                    color = FloconTheme.colors.inkMuted,
                                     modifier = Modifier.padding(start = FloconTheme.spacing.small),
                                 )
                                 Spacer(Modifier.weight(1f))
                                 FloconIconTonalButton(
                                     onClick = { onAction(NetworkAction.ExportCsv) },
-                                    containerColor = FloconTheme.colorPalette.tertiary
+                                    containerColor = FloconTheme.colors.ink
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Upload
@@ -493,7 +493,7 @@ fun NetworkScreen(
                                 }
                                 FloconIconTonalButton(
                                     onClick = { onAction(NetworkAction.DeleteSelection) },
-                                    containerColor = FloconTheme.colorPalette.tertiary
+                                    containerColor = FloconTheme.colors.ink
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Delete
@@ -505,7 +505,7 @@ fun NetworkScreen(
                                 ) {
                                     FloconIcon(
                                         Icons.Sharp.Close,
-                                        tint = FloconTheme.colorPalette.onSecondary
+                                        tint = FloconTheme.colors.inkMuted
                                     )
                                 }
                             }

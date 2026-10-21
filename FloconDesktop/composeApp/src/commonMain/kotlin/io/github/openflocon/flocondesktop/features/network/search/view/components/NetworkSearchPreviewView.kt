@@ -70,7 +70,7 @@ internal fun NetworkSearchPreviewView(
     }
     Column(
         modifier = modifier
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
     ) {
         // Divider
         FloconHorizontalDivider(Modifier.fillMaxWidth())
@@ -85,7 +85,7 @@ internal fun NetworkSearchPreviewView(
             Text(
                 text = "${matches.size} matches",
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary
+                color = FloconTheme.colors.ink
             )
 
             Spacer(Modifier.width(FloconTheme.spacing.large))
@@ -94,7 +94,7 @@ internal fun NetworkSearchPreviewView(
                 Text(
                     text = "${currentMatchIndex + 1} / ${matches.size}",
                     style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary
+                    color = FloconTheme.colors.ink
                 )
                 Spacer(Modifier.width(FloconTheme.spacing.small))
                 FloconIcon(
@@ -113,7 +113,7 @@ internal fun NetworkSearchPreviewView(
             Text(
                 text = locationLabel,
                 style = FloconTheme.typography.titleSmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
                 modifier = Modifier.padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.extraSmall)
             )
 
@@ -187,13 +187,13 @@ internal fun NetworkSearchPreviewView(
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                     .padding(bottom = FloconTheme.spacing.small)
                     .clip(shape = RoundedCornerShape(8.dp))
-                    .background(FloconTheme.colorPalette.secondary)
+                    .background(FloconTheme.colors.bg200)
             ) {
                 SelectionContainer {
                     Text(
                         text = annotatedString,
                         style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(scrollState)
@@ -206,8 +206,8 @@ internal fun NetworkSearchPreviewView(
                 FloconVerticalScrollbar(
                     adapter = scrollAdapter,
                     style = LocalScrollbarStyle.current.copy(
-                        unhoverColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.2f),
-                        hoverColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.8f),
+                        unhoverColor = FloconTheme.colors.ink.copy(alpha = 0.2f),
+                        hoverColor = FloconTheme.colors.ink.copy(alpha = 0.8f),
                     ),
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)

@@ -74,8 +74,6 @@ import flocondesktop.composeapp.generated.resources.network_share_markdown
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
 
-private val replayColor = Color(0xFF242D44)
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkItemView(
@@ -148,7 +146,7 @@ fun NetworkItemView(
                 FloconCheckbox(
                     checked = multiSelected,
                     onCheckedChange = { onAction(NetworkAction.SelectLine(state.uuid, it)) },
-                    uncheckedColor = FloconTheme.colorPalette.secondary
+                    uncheckedColor = FloconTheme.colors.bg200
                 )
             }
             // Date - Fixed width from data class
@@ -363,6 +361,7 @@ fun NetworkItemViewState.NetworkTypeUi.image(): ImageVector? = when (this) {
         }
 }
 
+@Composable
 fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
     is NetworkItemViewState.NetworkTypeUi.GraphQl,
     is NetworkItemViewState.NetworkTypeUi.Grpc,
@@ -370,11 +369,11 @@ fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
 
     is NetworkItemViewState.NetworkTypeUi.WebSocket ->
         when (this.icon) {
-            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Up -> Color(0xFF007BFF)
-            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Down -> Color(0xFF28A745)
+            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Up -> FloconTheme.colors.catNetwork
+            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Down -> FloconTheme.colors.statusSuccess
             null -> null
         }
-} ?: Color.Green
+} ?: FloconTheme.colors.statusSuccess
 
 @Composable
 @Preview

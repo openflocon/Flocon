@@ -154,7 +154,7 @@ private fun NetworkSearchScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(FloconTheme.colorPalette.primary)
+                    .background(FloconTheme.colors.bg100)
                     .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium)
             ) {
                 FloconTextFieldWithoutM3(
@@ -169,8 +169,8 @@ private fun NetworkSearchScreen(
                             modifier = Modifier.size(16.dp)
                         )
                     },
-                    containerColor = FloconTheme.colorPalette.secondary,
-                    textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
+                    containerColor = FloconTheme.colors.bg200,
+                    textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.ink),
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .fillMaxWidth()

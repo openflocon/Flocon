@@ -27,30 +27,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
 
-val getMethodBackground = Color(0xFF007BFF).copy(alpha = 0.3f) // Muted blue for GET
-val getMethodText = Color(0xFF007BFF)
-
-val postMethodBackground = Color(0xFF28A745).copy(alpha = 0.3f) // Muted green for POST
-val postMethodText = Color(0xFF28A745)
-
-val putMethodBackground = Color(0xFFFFC107).copy(alpha = 0.3f) // Muted yellow for PUT
-val putMethodText = Color(0xFFFFC107)
-
-val deleteMethodBackground = Color(0xFFDC3545).copy(alpha = 0.3f) // Muted red for DELETE
-val deleteMethodText = Color(0xFFDC3545)
-
-val otherMethodBackground = Color(0xFF6C757D).copy(alpha = 0.3f) // Muted gray for OTHER
-val otherMethodText = Color(0xFF6C757D)
-
-val patchMethodBackground = Color(0xFF6f42c1).copy(alpha = 0.3f) // Muted purple for PATCH
-val patchMethodText = Color(0xFF6f42c1)
-
-val websocketMethodBackground = Color(0xFF17A2B8).copy(alpha = 0.3f) // Muted cyan for WEBSOCKET
-val websocketMethodText = Color(0xFF17A2B8)
-
-val grpcMethodBackground = Color(0xff71CCCB)
-val grpcMethodText = Color(0xff244B5A)
-
 // the color of the method in the design system, null: neutral
 @Composable
 private fun NetworkMethodUi.color(): Color? {
