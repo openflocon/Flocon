@@ -39,7 +39,7 @@ fun previewFileUiModel(
 ) = FileUiModel(
     name = name,
     type = type,
-    path = FilePathUiModel.Constants.CachesDir,
+    path = FilePathUiModel.Root(id = "caches"),
     sizeFormatted = "100 MB",
     icon = Icons.Outlined.Folder,
     contextualActions = persistentListOf(),

@@ -7,12 +7,23 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.plugins.files.model.FloconFolderModel
 
 class FloconFilesConfig : FloconPluginConfig {
     val roots = mutableListOf<String>()
+
+    fun folder(displayName: String, absolutePath: String) {
+        // no op
+    }
 }
 
-interface FloconFilesPlugin : FloconPlugin
+interface FloconFilesPlugin : FloconPlugin {
+    fun register(folder: FloconFolderModel)
+
+    fun register(displayName: String, absolutePath: String) {
+        register(FloconFolderModel(displayName = displayName, absolutePath = absolutePath))
+    }
+}
 
 object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
     override val name: String = "Files"
@@ -29,6 +40,10 @@ object FloconFiles : FloconPluginFactory<FloconFilesConfig, FloconFilesPlugin> {
 
 internal object FloconFilesPluginNoOpImpl : FloconPlugin, FloconFilesPlugin {
     override val key: String = "files"
+
+    override fun register(folder: FloconFolderModel) {
+        // no op
+    }
 
     override suspend fun onMessageReceived(
         method: String,
