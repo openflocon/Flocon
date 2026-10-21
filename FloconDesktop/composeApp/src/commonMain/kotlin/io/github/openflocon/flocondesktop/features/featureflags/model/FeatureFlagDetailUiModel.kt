@@ -8,5 +8,7 @@ data class FeatureFlagDetailUiModel(
     val name: String,
     val state: FeatureFlagStateUiModel,
     val variant: String,
-    val payload: String?,
+    val payload: String?, // formatted when json
+    val rawPayload: String?,
+    val isJsonPayload: Boolean,
 )
