@@ -58,7 +58,7 @@ fun TableRowView(
                             .width(columnsWidth)
                             .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Thin),
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                     )
                 }
             }
