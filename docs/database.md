@@ -81,6 +81,22 @@ Flocon.databasePlugin.register(
 
 `register(displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
 
+### Room 3 on the web (Wasm)
+
+Room 3 runs on Wasm with `WebWorkerSQLiteDriver` (`androidx.sqlite:sqlite-web`), which talks to a SQLite
+Web Worker. There is no file system, so the databases are not discovered: register each Room database
+with `register(displayName, database)` (the plugin still has to be installed with `install(FloconDatabase) { room() }`):
+
+```kotlin
+val dogDatabase = Room.databaseBuilder<DogDatabase>(name = "dogs.db")
+    .setDriver(WebWorkerSQLiteDriver(createWorker()))
+    .build()
+
+Flocon.databasePlugin.register(displayName = "dogs", database = dogDatabase)
+```
+
+See `FloconAndroid/sample/wasm` for a complete setup (worker, npm package and KSP for wasmJs).
+
 ### SQLite Files (Kotlin Multiplatform)
 
 Any SQLite file can be registered with its absolute path:

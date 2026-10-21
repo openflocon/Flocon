@@ -27,6 +27,7 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
         AndroidTestContext.graphQlTester = GraphQlTester(okHttpClient, githubToken = BuildConfig.GITHUB_TOKEN)
         AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
         AndroidTestContext.grpcSayHello = { GrpcController.sayHello() }
+        registerAndroidSampleFeatures(applicationContext)
 
         initializeImages(context = this, okHttpClient = okHttpClient)
 

@@ -23,7 +23,7 @@ abstract class DogDatabase : RoomDatabase() {
     abstract fun dogDao(): DogDao
 }
 
-// room will generate the constructor (not on wasmJs)
+// room will generate the constructor
 @Suppress("KotlinNoActualForExpect", "NO_ACTUAL_FOR_EXPECT")
 expect object DogDatabaseConstructor : RoomDatabaseConstructor<DogDatabase> {
     override fun initialize(): DogDatabase

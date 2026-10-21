@@ -24,6 +24,8 @@ kotlin {
             implementation(projects.deeplinks)
             implementation(projects.analytics)
             implementation(projects.featureflags)
+            implementation(projects.tables)
+            implementation(projects.sharedprefs)
             implementation(projects.network.ktorInterceptor)
             implementation(projects.database.room3)
 
@@ -72,6 +74,7 @@ kotlin {
             implementation(projects.network.okhttpInterceptor)
             implementation(projects.database.room3)
             implementation(projects.database.room)
+            implementation(libs.androidx.room.runtime)
             implementation(projects.sharedprefs)
             implementation(projects.datastores)
             implementation(projects.analytics)
@@ -87,10 +90,13 @@ dependencies {
         "kspAndroid",
         "kspJvm",
         "kspIosSimulatorArm64",
-        "kspIosArm64"
+        "kspIosArm64",
+        "kspWasmJs"
     ).forEach {
         add(it, libs.androidx.room3.compiler)
     }
+    // Room 2, used by an Android only database to test the Room 2 module
+    add("kspAndroid", libs.androidx.room.compiler)
 
 }
 
