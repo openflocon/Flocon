@@ -46,3 +46,9 @@ class Datastores(private val context: Context) {
         }
     }
 }
+
+suspend fun updateDatastoreAge(context: Context, age: Int) {
+    context.dataStore.edit { prefs ->
+        prefs[USER_AGE] = age
+    }
+}

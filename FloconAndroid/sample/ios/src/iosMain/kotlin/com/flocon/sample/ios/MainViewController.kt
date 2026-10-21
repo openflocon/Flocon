@@ -16,8 +16,15 @@ import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.network.core.FloconNetwork
+import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
+import io.github.openflocon.flocon.plugins.device.FloconDevice
+import io.github.openflocon.flocon.plugins.files.FloconFiles
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
+import io.github.openflocon.flocon.tables.FloconTable
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
@@ -30,8 +37,13 @@ fun MainViewController() = ComposeUIViewController(
         startFlocon(FloconContext()) {
             install(FloconNetwork)
             install(FloconDashboard)
+            install(FloconTable)
             install(FloconAnalytics)
             install(FloconFeatureFlags)
+            install(FloconPreferences)
+            install(FloconFiles)
+            install(FloconDevice)
+            install(FloconCrashReporter)
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
             }
@@ -60,10 +72,13 @@ fun MainViewController() = ComposeUIViewController(
         // Initialize the HTTP caller
         DummyHttpKtorCaller.initialize(ktorClient)
 
+        val dogDatabase = Databases.getDogDatabase()
         initializeDatabases(
-            dogDatabase = Databases.getDogDatabase(),
+            dogDatabase = dogDatabase,
             foodDatabase = Databases.getFoodDatabase(),
         )
+
+        registerIosSampleFeatures(dogDatabase)
     }
 ) {
     App()

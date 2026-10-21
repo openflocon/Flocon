@@ -6,7 +6,7 @@ import io.github.openflocon.flocon.myapplication.multi.graphql.GraphQlTester
 import okhttp3.OkHttpClient
 
 /**
- * Objects created by the Android app, used by [io.github.openflocon.flocon.myapplication.multi.ui.PlatformSpecificTests]
+ * Objects created by the Android app, used by [io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures]
  */
 object AndroidTestContext {
     lateinit var okHttpClient: OkHttpClient

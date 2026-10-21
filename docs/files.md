@@ -37,5 +37,5 @@ startFlocon(FloconContext(context)) {
 ```
 
 !!! info "Platforms"
-    File browsing is available on Android. On other platforms the plugin can be installed but lists no files yet.
+    File browsing is available on Android, JVM and iOS. On Wasm there is no file system, so the plugin lists no files.
 

@@ -44,7 +44,7 @@ object Databases {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun documentDirectory(): String {
+internal fun documentDirectory(): String {
     val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSDocumentDirectory,
         inDomain = NSUserDomainMask,

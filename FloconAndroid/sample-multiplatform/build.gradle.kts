@@ -24,6 +24,8 @@ kotlin {
             implementation(projects.deeplinks)
             implementation(projects.analytics)
             implementation(projects.featureflags)
+            implementation(projects.tables)
+            implementation(projects.sharedprefs)
             implementation(projects.network.ktorInterceptor)
             implementation(projects.database.room3)
 

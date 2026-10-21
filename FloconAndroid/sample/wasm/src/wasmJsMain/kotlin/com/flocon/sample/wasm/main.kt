@@ -14,8 +14,12 @@ import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
+import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
+import io.github.openflocon.flocon.tables.FloconTable
 import io.github.openflocon.flocon.startFlocon
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
@@ -28,8 +32,10 @@ fun main() {
     startFlocon(FloconContext()) {
         install(FloconNetwork)
         install(FloconDashboard)
+        install(FloconTable)
         install(FloconAnalytics)
         install(FloconFeatureFlags)
+        install(FloconPreferences)
         install(FloconDeeplinks) {
             deeplink("flocon://home")
         }
@@ -55,7 +61,24 @@ fun main() {
     // Initialize the HTTP caller
     DummyHttpKtorCaller.initialize(ktorClient)
 
+    registerWasmSampleFeatures()
+
     ComposeViewport(viewportContainerId = "composeTarget") {
         App()
     }
+}
+
+private fun registerWasmSampleFeatures() {
+    SampleFeatures.platformName = "Wasm"
+
+    SampleFeatures.unavailable(SampleFeature.OkHttp, "The OkHttp interceptor is Android and JVM only")
+    SampleFeatures.unavailable(SampleFeature.OkHttpGzip, "The OkHttp interceptor is Android and JVM only")
+    SampleFeatures.unavailable(SampleFeature.WebSocket, "The OkHttp WebSocket logging is Android and JVM only")
+    SampleFeatures.unavailable(SampleFeature.GraphQl, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.Grpc, "The gRPC interceptor is Android only")
+    SampleFeatures.unavailable(SampleFeature.Database, "No SQLite in the browser")
+    SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "No SQLite in the browser")
+    SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not available on Wasm")
+    SampleFeatures.unavailable(SampleFeature.Files, "No file browsing in the browser")
+    SampleFeatures.unavailable(SampleFeature.CrashReporter, "Crashes are not captured nor stored in the browser")
 }
