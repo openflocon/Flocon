@@ -57,7 +57,7 @@ fun LeftPanelView(
     Box(
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.bg100)
             .padding(FloconTheme.spacing.small),
     ) {
         Column(
@@ -175,7 +175,7 @@ private fun LeftPanelViewPreview() {
     val selectedItem = remember { mutableStateOf<SubScreen>(SubScreen.Network) }
 
     FloconTheme {
-        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface))
+        Box(modifier = Modifier.background(FloconTheme.colors.bg000))
         LeftPanelView(
             current = selectedItem.value,
             state = previewMenuState(),

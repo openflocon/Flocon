@@ -84,7 +84,7 @@ private fun VersionCheckerDialog(
                     // intercept click behind
                 }
             ).background(
-                color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
+                color = FloconTheme.colors.ink, shape = FloconTheme.shapes.medium
             ).padding(horizontal = FloconTheme.spacing.medium, 10.dp)
     ) {
         Column(
@@ -92,14 +92,14 @@ private fun VersionCheckerDialog(
         ) {
             Text(
                 text = version.title,
-                color = FloconTheme.colorPalette.onTertiary,
+                color = FloconTheme.colors.bg100,
                 style = FloconTheme.typography.titleSmall,
             )
 
             version.subtitle?.let {
                 Text(
                     text = it,
-                    color = FloconTheme.colorPalette.onTertiary,
+                    color = FloconTheme.colors.bg100,
                     style = FloconTheme.typography.bodySmall,
                 )
             }
@@ -111,19 +111,19 @@ private fun VersionCheckerDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(
-                    containerColor = FloconTheme.colorPalette.primary, onClick = {
+                    containerColor = FloconTheme.colors.bg100, onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
                     }
                 ) {
-                    Text(stringResource(Res.string.download), color = FloconTheme.colorPalette.onPrimary)
+                    Text(stringResource(Res.string.download), color = FloconTheme.colors.ink)
                 }
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
-                    }, borderColor = FloconTheme.colorPalette.primary
+                    }, borderColor = FloconTheme.colors.bg100
                 ) {
-                    Text(stringResource(Res.string.close), color = FloconTheme.colorPalette.primary)
+                    Text(stringResource(Res.string.close), color = FloconTheme.colors.bg100)
                 }
             }
         }

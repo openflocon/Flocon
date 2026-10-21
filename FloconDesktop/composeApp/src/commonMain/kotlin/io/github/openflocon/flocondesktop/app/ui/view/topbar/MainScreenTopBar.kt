@@ -62,7 +62,7 @@ fun MainScreenTopBar(
 ) {
     Row(
         modifier = modifier
-            .background(FloconTheme.colorPalette.surface)
+            .background(FloconTheme.colors.bg000)
             .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),

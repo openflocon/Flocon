@@ -95,12 +95,12 @@ data class MenuScene(
                         translationY = (windowSize.height / 4f).times(3f) + (size.height / 2f)
                     }
                     .clip(RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
-                    .background(FloconTheme.colorPalette.secondary)
+                    .background(FloconTheme.colors.bg200)
                     .clickable(onClick = { expanded = !expanded }),
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.ChevronRight,
-                    tint = FloconTheme.colorPalette.onSecondary,
+                    tint = FloconTheme.colors.inkMuted,
                     modifier = Modifier.rotate(rotate),
                 )
             }
