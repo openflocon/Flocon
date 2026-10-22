@@ -17,14 +17,18 @@ enum class FloconMascotMode { Sit, Walk, Sleep, Happy }
  *
  * @param stopDistance how close the mascot gets to the pointer before sitting down
  * @param wakeDistance how far the pointer must be for a seated or sleeping mascot to get up
+ * @param runDistance how far the pointer must be for the mascot to run instead of walk
  */
 class FloconMascotConfig(
     val stopDistance: Float,
     val wakeDistance: Float,
     val speedPerSecond: Float,
+    val runDistance: Float,
+    val runSpeedPerSecond: Float,
     val minSitMs: Long = 3_000,
     val sleepAfterMs: Long = 8_000,
     val stepMs: Long = 250,
+    val runStepMs: Long = 130,
     val minTurnIntervalMs: Long = 600,
 )
 
@@ -49,6 +53,10 @@ class FloconMascotState(
     var alternateLegs by mutableStateOf(false)
         private set
     var tailUp by mutableStateOf(false)
+        private set
+
+    /** True while it hurries after a far pointer: faster legs and speed. */
+    var running by mutableStateOf(false)
         private set
     var blinking by mutableStateOf(false)
         private set
@@ -100,9 +108,13 @@ class FloconMascotState(
         if (!chasing && !happy && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
         if (chasing && distance <= config.stopDistance) chasing = false
 
+        // it runs while the pointer is far, and keeps running until it has gotten much closer
+        running = chasing && distance > if (running) config.runDistance * RUN_RELEASE else config.runDistance
+
         var step = 0f
         if (chasing) {
-            step = min(distance - config.stopDistance, config.speedPerSecond * deltaMs / 1_000f)
+            val speed = if (running) config.runSpeedPerSecond else config.speedPerSecond
+            step = min(distance - config.stopDistance, speed * deltaMs / 1_000f)
             x += dx.sign * step
         }
         val moving = step > 0f
@@ -123,7 +135,7 @@ class FloconMascotState(
         }
 
         if (moving) walkMs += deltaMs
-        alternateLegs = (walkMs / config.stepMs) % 2 == 1L
+        alternateLegs = (walkMs / (if (running) config.runStepMs else config.stepMs)) % 2 == 1L
         tailUp = (timeMs / TAIL_MS) % 2 == 1L
         blinking = timeMs % BLINK_PERIOD_MS < BLINK_MS
         hopUp = happy && (happyMs / HOP_MS) % 2 == 0L
@@ -137,6 +149,7 @@ class FloconMascotState(
         const val BLINK_PERIOD_MS = 3_600L
         const val BLINK_MS = 160L
         const val Z_MS = 700L
+        const val RUN_RELEASE = 0.5f
         const val HAPPY_MS = 1_600L
         const val HOP_MS = 160L
         const val HEART_MS = 320L

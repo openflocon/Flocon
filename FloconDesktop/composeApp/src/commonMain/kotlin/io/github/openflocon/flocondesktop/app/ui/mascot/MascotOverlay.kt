@@ -23,6 +23,8 @@ import kotlin.math.roundToInt
 private val StopDistance = 26.dp
 private val WakeDistance = 90.dp
 private val Speed = 70.dp
+private val RunDistance = 320.dp
+private val RunSpeed = 200.dp
 
 private const val MaxFrameMs = 50L
 private const val NanosPerMilli = 1_000_000L
@@ -48,6 +50,8 @@ fun MascotOverlay(
                     stopDistance = StopDistance.toPx(),
                     wakeDistance = WakeDistance.toPx(),
                     speedPerSecond = Speed.toPx(),
+                    runDistance = RunDistance.toPx(),
+                    runSpeedPerSecond = RunSpeed.toPx(),
                 )
             },
         )

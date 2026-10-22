@@ -11,6 +11,8 @@ class FloconMascotStateTest {
         stopDistance = 30f,
         wakeDistance = 100f,
         speedPerSecond = 100f,
+        runDistance = 400f,
+        runSpeedPerSecond = 300f,
     )
 
     private fun state(startX: Float = 500f) = FloconMascotState(startX, config)
@@ -149,5 +151,25 @@ class FloconMascotStateTest {
             t += 16
         }
         assertEquals(setOf(true, false), seen)
+    }
+
+    @Test
+    fun runsFasterWhenThePointerIsVeryFar() {
+        val near = state(startX = 100f)
+        val far = state(startX = 100f)
+        near.run(targetX = 400f, durationMs = 500)
+        far.run(targetX = 900f, durationMs = 500)
+
+        assertFalse(near.running)
+        assertTrue(far.running)
+        assertTrue(far.x - 100f > (near.x - 100f) * 2)
+    }
+
+    @Test
+    fun walksAgainOnceTheRunBroughtItCloseEnough() {
+        val mascot = state(startX = 100f)
+        mascot.run(targetX = 900f, durationMs = 2_600)
+        assertFalse(mascot.running)
+        assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
 }

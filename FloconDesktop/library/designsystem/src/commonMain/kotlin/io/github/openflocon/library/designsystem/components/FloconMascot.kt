@@ -87,8 +87,9 @@ private fun DrawScope.pixels(
 
 private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
     val lifted = state.alternateLegs
-    val legA = if (lifted) -2 else 0
-    val legB = if (lifted) 0 else -2
+    val stride = if (state.running) 3 else 2
+    val legA = if (lifted) -stride else 0
+    val legB = if (lifted) 0 else -stride
     val bob = if (lifted) -1 else 0
     val tail = if (lifted) -1 else 1
     val ear = if (lifted) 1 else 0
