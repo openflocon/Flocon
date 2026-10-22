@@ -115,7 +115,8 @@ private fun DatabaseView(
                 .combinedClickable(
                     onClick = {
                         onSelect(state.id)
-                    }, onDoubleClick = {
+                    },
+                    onDoubleClick = {
                         onDatabaseDoubleClicked(state)
                     }
                 ).padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
