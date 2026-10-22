@@ -28,8 +28,8 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
-import flocondesktop.composeapp.generated.resources.app_name
 import flocondesktop.composeapp.generated.resources.app_icon_window
+import flocondesktop.composeapp.generated.resources.app_name
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
