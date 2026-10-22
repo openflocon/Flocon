@@ -15,6 +15,7 @@ import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.usecase.GetLocalNetworkAddressesUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -28,6 +29,7 @@ import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +46,7 @@ import java.io.File
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val testAdbUseCase: TestAdbUseCase,
+    getLocalNetworkAddressesUseCase: GetLocalNetworkAddressesUseCase,
     observeAppScaleUseCase: ObserveAppScaleUseCase,
     private val setAppScaleUseCase: SetAppScaleUseCase,
     observeThemeUseCase: ObserveThemeUseCase,
@@ -68,6 +71,8 @@ class SettingsViewModel(
     private val selectedLogDomains = MutableStateFlow(LogDomain.entries.toSet())
     private val selectedLogLevels = MutableStateFlow(LogLevel.entries.toSet())
 
+    private val localAddresses = getLocalNetworkAddressesUseCase().toImmutableList()
+
     private val filteredLogs = combine(
         logManager.logs,
         selectedLogDomains,
@@ -89,6 +94,7 @@ class SettingsViewModel(
             mascotEnabled = mascotEnabled,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
+            localAddresses = localAddresses,
             selectedLogDomains = domains,
             selectedLogLevels = levels,
         )
@@ -102,6 +108,7 @@ class SettingsViewModel(
                 mascotEnabled = true,
                 logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN,
+                localAddresses = localAddresses,
                 selectedLogDomains = LogDomain.entries.toSet(),
                 selectedLogLevels = LogLevel.entries.toSet(),
             )
@@ -126,6 +133,7 @@ class SettingsViewModel(
             is SettingsAction.AppScaleChange -> onAppScaleChange(action)
             is SettingsAction.ThemeChange -> onThemeChange(action)
             is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
+            is SettingsAction.CopyLocalUrl -> copyToClipboard(action.url)
         }
     }
 
