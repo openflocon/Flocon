@@ -45,6 +45,7 @@ class FloconMascotConfig(
     val minTurnIntervalMs: Long = 600,
     val jumpMs: Long = 600,
     val backflipMs: Long = 900,
+    val wakeUpMs: Long = 1_000,
 )
 
 /**
@@ -117,6 +118,7 @@ class FloconMascotState(
     )
 
     private var jump: Jump? = null
+    private var wakingMs = 0L
     private var backflipElapsedMs = NOT_FLIPPING
     private var platformIndex = -1
     private var chasing = false
@@ -251,7 +253,23 @@ class FloconMascotState(
         sitMs = if (chasing || still) 0 else sitMs + deltaMs
         val rested = mode != FloconMascotMode.Lie || lieMs >= config.minLieMs
         val farEnough = crossing || distance > config.wakeDistance
-        if (!chasing && !still && rested && farEnough && sitMs >= config.minSitMs) chasing = true
+        val wantsToGo = !chasing && !still && rested && farEnough && sitMs >= config.minSitMs
+        if (wantsToGo) {
+            val asleep = mode == FloconMascotMode.Sleep || mode == FloconMascotMode.Lie
+            if (asleep || wakingMs > 0) {
+                // a sleeping mascot first takes wakeUpMs to wake up, seated, before going anywhere
+                wakingMs += deltaMs
+                idleMs = 0
+                if (wakingMs >= config.wakeUpMs) {
+                    chasing = true
+                    wakingMs = 0
+                }
+            } else {
+                chasing = true
+            }
+        } else {
+            wakingMs = 0
+        }
         // when crossing it keeps going until the edge, where it jumps
         if (chasing && !crossing && distance <= stopDistance) chasing = false
 
@@ -283,7 +301,9 @@ class FloconMascotState(
         // it can't turn around more often than every minTurnIntervalMs, so a pointer moving quickly
         // from side to side doesn't make it flip back and forth
         sinceTurnMs += deltaMs
-        if (distance > FACING_THRESHOLD && (dx > 0) != facingRight && sinceTurnMs >= config.minTurnIntervalMs) {
+        // and it doesn't turn around in its sleep
+        val asleepNow = mode == FloconMascotMode.Sleep || mode == FloconMascotMode.Lie
+        if (!asleepNow && distance > FACING_THRESHOLD && (dx > 0) != facingRight && sinceTurnMs >= config.minTurnIntervalMs) {
             facingRight = dx > 0
             sinceTurnMs = 0
         }
@@ -324,6 +344,7 @@ class FloconMascotState(
         sitMs = 0
         idleMs = 0
         lieMs = 0
+        wakingMs = 0
         happyMs = 0
         pettedMs = 0
         petClockMs = 0

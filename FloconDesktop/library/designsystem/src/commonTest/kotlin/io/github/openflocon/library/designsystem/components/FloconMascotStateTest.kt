@@ -77,7 +77,7 @@ class FloconMascotStateTest {
     fun wakesUpWhenThePointerGoesFarAway() {
         val mascot = state()
         mascot.run(targetX = 500f, durationMs = 5_000)
-        mascot.update(16, 5_000, 900f, 0f, 1_000f)
+        mascot.run(targetX = 900f, durationMs = 1_200, startMs = 5_000)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
 
@@ -190,7 +190,7 @@ class FloconMascotStateTest {
         mascot.run(targetX = 900f, durationMs = 4_000, startMs = 9_000)
         assertEquals(FloconMascotMode.Lie, mascot.mode)
 
-        mascot.run(targetX = 900f, durationMs = 2_500, startMs = 13_000)
+        mascot.run(targetX = 900f, durationMs = 3_000, startMs = 13_000)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
 
@@ -435,5 +435,42 @@ class FloconMascotStateTest {
         mascot.pet()
         mascot.update(16, 16, 500f, 0f, 1_000f)
         assertEquals(FloconMascotMode.Backflip, mascot.mode)
+    }
+
+    @Test
+    fun takesAMomentToWakeUpBeforeWalking() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 5_000)
+        assertEquals(FloconMascotMode.Sleep, mascot.mode)
+
+        mascot.run(targetX = 900f, durationMs = 800, startMs = 5_000)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+        assertEquals(500f, mascot.x)
+
+        mascot.run(targetX = 900f, durationMs = 400, startMs = 5_800)
+        assertEquals(FloconMascotMode.Walk, mascot.mode)
+    }
+
+    @Test
+    fun doesNotTurnAroundInItsSleep() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 5_000)
+        assertEquals(FloconMascotMode.Sleep, mascot.mode)
+        assertTrue(mascot.facingRight)
+
+        // the pointer is on the left but not far enough to wake it up
+        mascot.run(targetX = 440f, durationMs = 2_000, startMs = 5_000)
+        assertEquals(FloconMascotMode.Sleep, mascot.mode)
+        assertTrue(mascot.facingRight)
+    }
+
+    @Test
+    fun doesNotTurnAroundWhileLying() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 9_000)
+        assertEquals(FloconMascotMode.Lie, mascot.mode)
+
+        mascot.run(targetX = 440f, durationMs = 2_000, startMs = 9_000)
+        assertTrue(mascot.facingRight)
     }
 }
