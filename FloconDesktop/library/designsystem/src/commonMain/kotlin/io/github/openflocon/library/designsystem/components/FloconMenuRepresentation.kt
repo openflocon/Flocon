@@ -11,6 +11,7 @@ import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -157,37 +158,39 @@ private fun SubMenu(
         }
     }
 
-    FloconMenuItem(
-        text = item.label,
-        onClick = {},
-        trailingIcon = Icons.Outlined.ChevronRight,
-        modifier = Modifier
-            .hoverable(interactionSource)
-            .onGloballyPositioned {
-                rect = it.boundsInParent()
-                boundsInWindow = it.boundsInWindow()
-            }
-    )
-
-    if (hovered) {
-        Menu(
-            offset = offset,
-            items = item.items.toImmutableList(),
-            hide = hide,
-            interactionSource = interactionSource,
+    Box {
+        FloconMenuItem(
+            text = item.label,
+            onClick = {},
+            trailingIcon = Icons.Outlined.ChevronRight,
             modifier = Modifier
                 .hoverable(interactionSource)
-                .padding(paddingValues = padding)
                 .onGloballyPositioned {
-                    density.run {
-                        offset = if ((boundsInWindow.topRight.x.roundToInt() + it.size.width) > window.width.roundToPx()) {
-                            padding = PaddingValues(end = spacing.extraSmall)
-                            rect.topLeft - Offset(x = it.size.width.toFloat(), y = 0f)
-                        } else {
-                            rect.topRight
-                        }
-                    }
+                    rect = it.boundsInParent()
+                    boundsInWindow = it.boundsInWindow()
                 }
         )
+
+        if (hovered) {
+            Menu(
+                offset = offset,
+                items = item.items.toImmutableList(),
+                hide = hide,
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .hoverable(interactionSource)
+                    .padding(paddingValues = padding)
+                    .onGloballyPositioned {
+                        density.run {
+                            offset = if ((boundsInWindow.topRight.x.roundToInt() + it.size.width) > window.width.roundToPx()) {
+                                padding = PaddingValues(end = spacing.extraSmall)
+                                rect.topLeft - Offset(x = it.size.width.toFloat(), y = 0f)
+                            } else {
+                                rect.topRight
+                            }
+                        }
+                    }
+            )
+        }
     }
 }

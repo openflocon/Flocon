@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -41,9 +42,10 @@ private fun BadNetworkQualityContent(
     val items by viewModel.items.collectAsStateWithLifecycle()
 
     val viewModelEvent by viewModel.events.collectAsStateWithLifecycle(null)
+    val currentOnCloseRequest by rememberUpdatedState(onCloseRequest)
     LaunchedEffect(viewModelEvent) {
         when (viewModelEvent) {
-            BadQualityNetworkViewModel.Event.Close -> onCloseRequest()
+            BadQualityNetworkViewModel.Event.Close -> currentOnCloseRequest()
             null -> {}
         }
     }

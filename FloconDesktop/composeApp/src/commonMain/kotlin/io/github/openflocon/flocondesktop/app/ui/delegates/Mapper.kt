@@ -33,7 +33,7 @@ internal fun DeviceDomainModel.mapToUi(
 private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform = when (platform) {
     "android" -> DeviceItemUiModel.Platform.Android
     "desktop" -> DeviceItemUiModel.Platform.Desktop
-    "ios" -> DeviceItemUiModel.Platform.ios
+    "ios" -> DeviceItemUiModel.Platform.Ios
     else -> DeviceItemUiModel.Platform.Unknown
 }
 

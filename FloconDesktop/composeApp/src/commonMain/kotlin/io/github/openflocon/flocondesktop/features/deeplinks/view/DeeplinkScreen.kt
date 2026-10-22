@@ -224,16 +224,18 @@ private fun DeeplinkScrollablePanel(
 
 @Composable
 private fun DeeplinkPanelHeader(title: String) {
-    Text(
-        text = title,
-        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-        color = FloconTheme.colors.ink,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(FloconTheme.colors.bg100)
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
-    )
-    HorizontalDivider(color = FloconTheme.colors.bg000)
+    Column {
+        Text(
+            text = title,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = FloconTheme.colors.ink,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colors.bg100)
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
+        )
+        HorizontalDivider(color = FloconTheme.colors.bg000)
+    }
 }
 
 @Composable

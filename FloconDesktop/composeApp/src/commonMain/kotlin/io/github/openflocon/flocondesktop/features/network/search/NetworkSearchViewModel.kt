@@ -63,7 +63,8 @@ class NetworkSearchViewModel(
             emit(
                 NetworkSearchUiState(
                     selectedScopes = scopes,
-                    results = results.map { it.toUi(null /* don't check old instance here*/) },
+                    // don't check old instance here
+                    results = results.map { it.toUi(null) },
                     loading = false
                 )
             )

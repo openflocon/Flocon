@@ -27,6 +27,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -182,7 +183,7 @@ fun AnalyticsScreen(
             }
         )
 
-        var widthPx by remember { mutableStateOf(0f) }
+        var widthPx by remember { mutableFloatStateOf(0f) }
         val density = LocalDensity.current.density
         val dpWidth = (widthPx / density).dp
 
