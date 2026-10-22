@@ -8,6 +8,8 @@ fun startFlocon(
 }
 
 class FloconConfiguration internal constructor() {
+    var connectionMode: FloconConnectionMode = FloconConnectionMode.Adb
+
     fun <Config : FloconPluginConfig, Plugin : FloconPlugin> install(
         factory: FloconPluginFactory<Config, Plugin>,
         configure: Config.() -> Unit = {}
