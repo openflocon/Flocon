@@ -14,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
@@ -22,6 +24,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
+import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
@@ -39,10 +42,21 @@ data class MenuScene(
         val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
 
         FloconScaffold(
-            topBar = { topBarContent?.invoke() },
+            containerColor = Color.Transparent,
+            topBar = {
+                Box(
+                    modifier = Modifier.padding(
+                        start = FloconTheme.spacing.medium,
+                        top = FloconTheme.spacing.medium,
+                        end = FloconTheme.spacing.medium,
+                    ),
+                ) {
+                    topBarContent?.invoke()
+                }
+            },
             modifier = Modifier.fillMaxSize()
         ) { padding ->
-            // the sidebar is flush with the window edge, the content keeps its own margin
+            // the sidebar and the content float as islands over the page background
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -51,11 +65,23 @@ data class MenuScene(
                 Box(
                     modifier = Modifier
                         .width(width)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .padding(
+                            start = FloconTheme.spacing.medium,
+                            top = FloconTheme.spacing.medium,
+                            bottom = FloconTheme.spacing.medium,
+                        ),
                 ) {
                     menuContent(expanded) { expanded = !expanded }
                 }
-                Row(modifier = Modifier.weight(1f).fillMaxHeight().padding(FloconTheme.spacing.small)) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(FloconTheme.spacing.medium)
+                        .floconIsland(lerp(FloconTheme.colors.chrome, Color.Black, 0.35f).copy(alpha = 0.62f))
+                        .padding(FloconTheme.spacing.small),
+                ) {
                     scene.content()
                 }
             }

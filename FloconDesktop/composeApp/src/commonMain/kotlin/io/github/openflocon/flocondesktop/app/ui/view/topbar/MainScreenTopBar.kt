@@ -43,10 +43,13 @@ import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.floconIsland
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import flocondesktop.composeapp.generated.resources.app_name
+
+private const val IslandAlpha = 0.86f
 
 @Composable
 fun MainScreenTopBar(
@@ -65,25 +68,14 @@ fun MainScreenTopBar(
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
-    val lineColor = FloconTheme.colors.line
-
     Row(
         modifier = modifier
-            .background(
+            .floconIsland(
                 Brush.horizontalGradient(
-                    0.4f to FloconTheme.colors.chrome,
-                    1f to FloconTheme.colors.chromeTint,
+                    0.4f to FloconTheme.colors.chrome.copy(alpha = IslandAlpha),
+                    1f to FloconTheme.colors.chromeTint.copy(alpha = IslandAlpha),
                 ),
             )
-            .drawBehind {
-                // bottom border of the top bar
-                drawLine(
-                    color = lineColor,
-                    start = Offset(0f, size.height - 0.5.dp.toPx()),
-                    end = Offset(size.width, size.height - 0.5.dp.toPx()),
-                    strokeWidth = 1.dp.toPx(),
-                )
-            }
             .padding(vertical = TopBarVerticalPadding, horizontal = FloconTheme.spacing.large),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),

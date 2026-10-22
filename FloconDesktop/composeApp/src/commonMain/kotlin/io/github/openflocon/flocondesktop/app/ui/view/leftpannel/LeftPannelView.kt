@@ -47,6 +47,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.floconIsland
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
@@ -69,19 +70,9 @@ fun LeftPanelView(
     onToggleSection: (MenuSection) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
-    val lineColor = FloconTheme.colors.line
     Box(
         modifier = modifier
-            .background(FloconTheme.colors.chrome)
-            .drawBehind {
-                // right border of the sidebar
-                drawLine(
-                    color = lineColor,
-                    start = Offset(size.width - 0.5.dp.toPx(), 0f),
-                    end = Offset(size.width - 0.5.dp.toPx(), size.height),
-                    strokeWidth = 1.dp.toPx(),
-                )
-            }
+            .floconIsland(FloconTheme.colors.chrome.copy(alpha = 0.78f))
             .padding(
                 start = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
                 end = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,

@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import kotlin.math.hypot
 
 /**
  * Glassmorphic variant of the palette: the surfaces are translucent and let the
@@ -37,7 +38,7 @@ val FloconGlassLightColors = FloconLightColors.copy(
     accentSoft = Color(0x4DFCE3B0),
 )
 
-/** Soft colored blobs on a gradient: the "scenery" that the glass surfaces blur out. */
+/** Soft colored glows gathered in the top right corner of a dark gradient: the "scenery" behind the glass surfaces. */
 @Composable
 fun FloconGlassBackground(
     isDarkTheme: Boolean,
@@ -49,12 +50,13 @@ fun FloconGlassBackground(
     } else {
         listOf(Color(0xFFB8C8EC), Color(0xFFCDBBEA), Color(0xFFEBC6B0))
     }
+    // amber in the corner, violet and blue glows along the top right edge
     val blobs = if (isDarkTheme) {
-        listOf(Color(0xFF3B6CFF), Color(0xFFB04BFF), Color(0xFFF5B440))
+        listOf(Color(0xFFF5B440), Color(0xFFB04BFF), Color(0xFF3B6CFF))
     } else {
-        listOf(Color(0xFF7FB2FF), Color(0xFFD59BFF), Color(0xFFFFC88A))
+        listOf(Color(0xFFFFC88A), Color(0xFFD59BFF), Color(0xFF7FB2FF))
     }
-    val blobAlpha = if (isDarkTheme) 0.38f else 0.55f
+    val blobAlphas = if (isDarkTheme) listOf(0.30f, 0.34f, 0.32f) else listOf(0.50f, 0.50f, 0.50f)
 
     Box(
         modifier = modifier
@@ -63,25 +65,28 @@ fun FloconGlassBackground(
                 // dark in the bottom left corner, the colors gather in the top right one
                 drawRect(
                     Brush.linearGradient(
-                        colors = base,
+                        0f to base[0],
+                        0.55f to base[1],
+                        1f to base[2],
                         start = Offset(0f, size.height),
                         end = Offset(size.width, 0f),
                     ),
                 )
-                val r = size.maxDimension * 0.55f
+                val diagonal = hypot(size.width, size.height)
                 val centers = listOf(
-                    Offset(size.width * 0.70f, size.height * 0.00f),
-                    Offset(size.width * 1.00f, size.height * 0.05f),
-                    Offset(size.width * 0.88f, size.height * 0.30f),
+                    Offset(size.width * 0.98f, 0f),
+                    Offset(size.width * 0.80f, 0f),
+                    Offset(size.width, size.height * 0.30f),
                 )
+                val radii = listOf(diagonal * 0.40f, diagonal * 0.48f, diagonal * 0.42f)
                 centers.forEachIndexed { i, c ->
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colors = listOf(blobs[i].copy(alpha = blobAlpha), Color.Transparent),
+                            colors = listOf(blobs[i].copy(alpha = blobAlphas[i]), Color.Transparent),
                             center = c,
-                            radius = r,
+                            radius = radii[i],
                         ),
-                        radius = r,
+                        radius = radii[i],
                         center = c,
                     )
                 }
