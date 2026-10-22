@@ -47,6 +47,7 @@ internal data class InnerWindowScene<T : Any>(
         ) {
             val closeButtonOffset = FloconTheme.spacing.large
             FloconSurface(
+                color = FloconTheme.colors.floating,
                 shape = FloconTheme.shapes.small,
                 modifier = Modifier.fillMaxSize(0.9f)
             ) {

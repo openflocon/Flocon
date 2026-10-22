@@ -92,9 +92,9 @@ fun FilesTopBar(
                     text = "$nb files",
                     style = FloconTheme.typography.bodySmall,
                     maxLines = 1,
-                    color = FloconTheme.colors.inkMuted,
+                    color = FloconTheme.colors.ink,
                     modifier = Modifier
-                        .background(FloconTheme.colors.bg200.copy(alpha = 0.6f), shape = FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg300, shape = FloconTheme.shapes.medium)
                         .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
                 )
             }

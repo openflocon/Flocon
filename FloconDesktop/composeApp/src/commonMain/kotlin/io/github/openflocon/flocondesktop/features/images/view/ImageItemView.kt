@@ -133,7 +133,7 @@ fun ImageItemView(
                             FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
                         ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
-                        color = FloconTheme.colors.bg100,
+                        color = FloconTheme.colors.floating,
                         text = "width:${it.width.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )
@@ -142,7 +142,7 @@ fun ImageItemView(
                             FloconTheme.colors.ink,
                             shape = FloconTheme.shapes.extraLarge
                         ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
-                        color = FloconTheme.colors.bg100,
+                        color = FloconTheme.colors.floating,
                         text = "height:${it.height.toInt()}px",
                         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                     )

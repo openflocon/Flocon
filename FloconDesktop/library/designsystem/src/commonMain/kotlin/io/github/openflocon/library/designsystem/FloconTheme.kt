@@ -9,6 +9,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.ripple
@@ -111,6 +112,7 @@ fun FloconTheme(
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
+            LocalContentColor provides colors.ink,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColors provides colors,
             LocalFloconSpacing provides appScale.spacing,

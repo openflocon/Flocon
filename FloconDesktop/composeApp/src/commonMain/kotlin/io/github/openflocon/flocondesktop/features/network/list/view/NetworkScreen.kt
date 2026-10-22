@@ -162,6 +162,9 @@ fun NetworkScreen(
             modifier = modifier
                 .fillMaxHeight()
                 .weight(1f)
+                .clip(FloconTheme.shapes.large)
+                .background(FloconTheme.colors.bg100)
+                .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
                 .clickable(
                     interactionSource = null,
                     indication = null,
