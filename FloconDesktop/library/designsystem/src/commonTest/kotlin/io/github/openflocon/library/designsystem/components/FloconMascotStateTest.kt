@@ -51,6 +51,20 @@ class FloconMascotStateTest {
     }
 
     @Test
+    fun doesNotTurnAroundMoreOftenThanTheMinimumInterval() {
+        val mascot = state()
+        mascot.update(16, 0, 100f, 0f, 1_000f)
+        assertFalse(mascot.facingRight)
+
+        // the pointer jumps to the other side right away: it keeps its direction for now
+        mascot.update(16, 16, 900f, 0f, 1_000f)
+        assertFalse(mascot.facingRight)
+
+        mascot.run(targetX = 900f, durationMs = 700, startMs = 32)
+        assertTrue(mascot.facingRight)
+    }
+
+    @Test
     fun fallsAsleepAfterBeingIdle() {
         val mascot = state()
         mascot.run(targetX = 500f, durationMs = 9_000)

@@ -25,6 +25,7 @@ class FloconMascotConfig(
     val minSitMs: Long = 3_000,
     val sleepAfterMs: Long = 8_000,
     val stepMs: Long = 250,
+    val minTurnIntervalMs: Long = 600,
 )
 
 /**
@@ -69,6 +70,7 @@ class FloconMascotState(
     private var idleMs = 0L
     private var walkMs = 0L
     private var happyMs = 0L
+    private var sinceTurnMs = config.minTurnIntervalMs
 
     /** The mascot has been clicked: it gets happy for a moment and stays where it is. */
     fun pet() {
@@ -112,7 +114,13 @@ class FloconMascotState(
             idleMs > config.sleepAfterMs -> FloconMascotMode.Sleep
             else -> FloconMascotMode.Sit
         }
-        if (distance > FACING_THRESHOLD) facingRight = dx > 0
+        // it can't turn around more often than every minTurnIntervalMs, so a pointer moving quickly
+        // from side to side doesn't make it flip back and forth
+        sinceTurnMs += deltaMs
+        if (distance > FACING_THRESHOLD && (dx > 0) != facingRight && sinceTurnMs >= config.minTurnIntervalMs) {
+            facingRight = dx > 0
+            sinceTurnMs = 0
+        }
 
         if (moving) walkMs += deltaMs
         alternateLegs = (walkMs / config.stepMs) % 2 == 1L
