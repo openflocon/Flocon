@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -22,15 +24,17 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.openflocon.library.designsystem.FloconTheme
-import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.floor
+import kotlin.math.roundToInt
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The dog logo. It looks toward the mouse: the lottie is one 360° look
- * (left, top, right, bottom, left), so its progress is the angle between the logo and the mouse.
+ * The dog logo. Its eyes and head follow the mouse.
+ *
+ * The lottie is a [LookGridSize] x [LookGridSize] grid of looking directions, one frame per cell:
+ * `frame = row * LookGridSize + col`, col = horizontal direction (0 = left), row = vertical direction (0 = up).
  *
  * @param mouseWindowPosition mouse position in window coordinates, read lazily to avoid recomposing on every move.
  */
@@ -43,18 +47,20 @@ fun LookAroundDogLogo(
         LottieCompositionSpec.JsonString(Res.readBytes("files/dog_lookaround.json").decodeToString())
     }
     var center by remember { mutableStateOf<Offset?>(null) }
-    // unwrapped progress: keeps turning the shortest way instead of sweeping back across the left seam
-    val progress = remember { Animatable(LookLeftProgress) }
+    // look direction, each axis in -1..1, animated so the eyes glide instead of jumping
+    val lookX = remember { Animatable(0f) }
+    val lookY = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
         snapshotFlow {
             val mouse = mouseWindowPosition()
             val c = center
-            if (mouse != null && c != null) lookAroundProgress(mouse.x - c.x, mouse.y - c.y) else null
+            if (mouse != null && c != null) lookDirection(mouse.x - c.x, mouse.y - c.y) else Offset.Zero
         }.collectLatest { target ->
-            if (target == null) return@collectLatest
-            val current = progress.value
-            progress.animateTo(current + shortestDelta(from = current.wrapProgress(), to = target))
+            coroutineScope {
+                launch { lookX.animateTo(target.x, LookSpring) }
+                launch { lookY.animateTo(target.y, LookSpring) }
+            }
         }
     }
 
@@ -63,34 +69,36 @@ fun LookAroundDogLogo(
             .onGloballyPositioned { center = it.boundsInWindow().center },
         painter = rememberLottiePainter(
             composition = composition,
-            progress = { progress.value.wrapProgress() },
+            progress = { lookProgress(lookX.value, lookY.value) },
         ),
         contentDescription = stringResource(Res.string.app_logo_content_description),
     )
 }
 
-private const val LookLeftProgress = 0f
+internal const val LookGridSize = 15
 
-/**
- * Lottie progress (0 = left, 0.25 = top, 0.5 = right, 0.75 = bottom) for a mouse offset in screen coordinates (y down)
- * relative to the logo center.
- */
-internal fun lookAroundProgress(dx: Float, dy: Float): Float {
-    if (dx == 0f && dy == 0f) return LookLeftProgress
-    val degrees = atan2(dy, dx) * 180f / PI.toFloat() // right = 0, down = 90, left = ±180, up = -90
-    return ((degrees + 180f) / 360f).wrapProgress()
+/** Distance (px) from the logo at which the dog looks fully in that direction. */
+private const val LookReachPx = 450f
+
+private val LookSpring = spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMediumLow)
+
+/** Mouse offset from the logo center (screen coordinates, y down) -> look direction, each axis clamped to -1..1. */
+internal fun lookDirection(dx: Float, dy: Float): Offset = Offset(
+    x = (dx / LookReachPx).coerceIn(-1f, 1f),
+    y = (dy / LookReachPx).coerceIn(-1f, 1f),
+)
+
+/** Look direction (-1..1 per axis) -> frame index in the grid. */
+internal fun lookFrame(x: Float, y: Float): Int {
+    val last = LookGridSize - 1
+    val col = ((x.coerceIn(-1f, 1f) + 1f) / 2f * last).roundToInt()
+    val row = ((y.coerceIn(-1f, 1f) + 1f) / 2f * last).roundToInt()
+    return row * LookGridSize + col
 }
 
-internal fun shortestDelta(from: Float, to: Float): Float {
-    val delta = to - from
-    return when {
-        delta > 0.5f -> delta - 1f
-        delta < -0.5f -> delta + 1f
-        else -> delta
-    }
-}
-
-internal fun Float.wrapProgress(): Float = this - floor(this)
+/** Lottie progress landing in the middle of the frame, so rounding never spills into the next grid cell. */
+internal fun lookProgress(x: Float, y: Float): Float =
+    (lookFrame(x, y) + 0.5f) / (LookGridSize * LookGridSize)
 
 @Preview
 @Composable
