@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun BoxScope.VersionCheckerView() {
+internal fun BoxScope.VersionChecker() {
     val viewmodel = koinViewModel<VersionCheckerViewModel>()
     val state by viewmodel.state.collectAsStateWithLifecycle()
     state?.let {

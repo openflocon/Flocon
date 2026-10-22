@@ -86,7 +86,7 @@ private fun DeeplinkScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             filterBar = {
-                DeeplinkFreeformItemView(
+                DeeplinkFreeformItem(
                     submit = submit,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -144,7 +144,7 @@ private fun DeeplinkScreen(
                             .background(FloconTheme.colors.bg100),
                     ) {
                         items(deepLinks) { item ->
-                            DeeplinkItemView(
+                            DeeplinkRow(
                                 submit = submit,
                                 removeFromHistory = removeFromHistory,
                                 item = item,
@@ -166,7 +166,7 @@ private fun DeeplinkScreen(
                 ) {
                     items(history) { item ->
                         SelectionContainer {
-                            DeeplinkItemView(
+                            DeeplinkRow(
                                 submit = submit,
                                 removeFromHistory = removeFromHistory,
                                 item = item,

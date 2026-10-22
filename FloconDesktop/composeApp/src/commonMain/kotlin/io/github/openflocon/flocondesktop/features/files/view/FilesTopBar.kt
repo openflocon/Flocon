@@ -102,7 +102,7 @@ fun FilesTopBar(
             Spacer(modifier = Modifier.weight(1f))
 
             AnimatedVisibility(canSelect) {
-                SelectingView(
+                Selecting(
                     selecting = selecting,
                     selectedCount = selectedCount,
                     onDeleteSelection = onDeleteSelection,
@@ -143,7 +143,7 @@ fun FilesTopBar(
 }
 
 @Composable
-private fun SelectingView(
+private fun Selecting(
     selecting: Boolean,
     selectedCount: Int,
     modifier: Modifier = Modifier,

@@ -115,7 +115,7 @@ fun SharedPrefScreen(
             )
         } else {
             Row(Modifier.fillMaxSize()) {
-                SharedPreferenceSelectorView(
+                SharedPreferenceSelector(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(340.dp),
@@ -173,7 +173,7 @@ fun SharedPrefScreen(
 
                                     is SharedPreferencesRowsStateUiModel.WithContent -> {
                                         items(sharedPrefRows) {
-                                            SharedPreferenceRowView(
+                                            SharedPreferenceRow(
                                                 model = it,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 onValueChanged = changeValue,

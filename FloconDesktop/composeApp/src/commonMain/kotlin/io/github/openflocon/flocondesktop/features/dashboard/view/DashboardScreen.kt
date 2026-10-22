@@ -96,7 +96,7 @@ fun DashboardScreen(
                     Box(modifier = Modifier.weight(1f)) // to have actions on the right
                 },
                 actions = {
-                    DashboardArrangementView(
+                    DashboardArrangementContent(
                         onArrangementClicked = onArrangementClicked,
                         arrangement = arrangement
                     )
@@ -125,7 +125,7 @@ fun DashboardScreen(
                 )
             } else {
                 Row(Modifier.fillMaxSize()) {
-                    DashboardSidebarView(
+                    DashboardSidebar(
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(340.dp),
@@ -137,7 +137,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
                     state?.let {
-                        DashboardView(
+                        DashboardContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(FloconTheme.shapes.medium)

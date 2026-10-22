@@ -11,7 +11,7 @@ private val MinColumnWidth = 48.dp
 private val MinRequestWidth = 160.dp
 
 /**
- * Widths of the resizable columns in NetworkItemView and its header, shared by all the items of the
+ * Widths of the resizable columns in NetworkItem and its header, shared by all the items of the
  * LazyColumn. The request (path) column is not listed: it takes the remaining space.
  */
 @Stable

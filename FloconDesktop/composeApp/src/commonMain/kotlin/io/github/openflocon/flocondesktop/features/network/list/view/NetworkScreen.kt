@@ -92,8 +92,8 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewGra
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
-import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeaderView
-import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeader
+import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeader
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -205,7 +205,7 @@ fun NetworkScreen(
                     }
                 }
         ) {
-            NetworkPageHeaderView(
+            NetworkPageHeader(
                 requestCount = rows.itemCount,
                 modifier = Modifier.padding(
                     top = FloconTheme.spacing.small,
@@ -398,7 +398,7 @@ fun NetworkScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                NetworkItemHeaderView(
+                NetworkItemHeader(
                     columnWidths = columnWidths,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -436,7 +436,7 @@ fun NetworkScreen(
                         ) { index ->
                             val item = rows[index]
                             if (item != null) {
-                                NetworkItemView(
+                                NetworkItem(
                                     state = item,
                                     selected = item.uuid == uiState.contentState.selectedRequestId,
                                     columnWidths = columnWidths,
