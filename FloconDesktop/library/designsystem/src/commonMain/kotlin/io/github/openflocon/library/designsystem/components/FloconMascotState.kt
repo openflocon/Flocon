@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlin.math.abs
@@ -68,8 +69,8 @@ class FloconMascotState(
     var hopUp by mutableStateOf(false)
         private set
 
-    /** Toggles quickly while [FloconMascotMode.Petted]: the mascot leans into the hand. */
-    var nuzzle by mutableStateOf(false)
+    /** Time spent being petted without a break, drives the hearts floating up. */
+    var petClockMs by mutableLongStateOf(0L)
         private set
 
     /** 0 or 1 while happy or petted: hearts floating up. */
@@ -183,7 +184,7 @@ class FloconMascotState(
         tailUp = (timeMs / TAIL_MS) % 2 == 1L
         blinking = timeMs % BLINK_PERIOD_MS < BLINK_MS
         hopUp = happy && (happyMs / HOP_MS) % 2 == 0L
-        nuzzle = petted && (pettedMs / NUZZLE_MS) % 2 == 0L
+        petClockMs = if (petted) petClockMs + deltaMs else 0L
         heartFrame = ((maxOf(happyMs, pettedMs) / HEART_MS) % 2).toInt()
         sleepZCount = ((timeMs / Z_MS) % 2).toInt() + 1
     }
@@ -198,7 +199,6 @@ class FloconMascotState(
         const val STROKES_TO_PET = 4
         const val STROKE_WINDOW_MS = 800L
         const val PETTED_HOLD_MS = 900L
-        const val NUZZLE_MS = 140L
         const val HAPPY_MS = 1_600L
         const val HOP_MS = 160L
         const val HEART_MS = 320L

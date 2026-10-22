@@ -28,6 +28,9 @@ val FloconMascotHeight: Dp = 39.dp
 val FloconMascotFeetY: Dp = 36.dp
 
 private const val GridWidth = 34f
+private const val HeartLifeMs = 1_500L
+private const val HeartSpacingMs = 500L
+private const val HeartRiseMs = 170L
 
 /** Shortest swing of the pointer that counts as a stroke. */
 private val MinStroke = 6.dp
@@ -251,8 +254,8 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
     val happy = mode == FloconMascotMode.Happy
     val petted = mode == FloconMascotMode.Petted
     val lift = if (happy && state.hopUp) -3 else 0
-    val headDy = if (petted && state.nuzzle) 1 else 0
-    val tail = if (!asleep && (state.tailUp || happy || (petted && state.nuzzle))) -1 else 0
+    val headDy = 0
+    val tail = if (!asleep && (state.tailUp || happy)) -1 else 0
     val eyesClosed = asleep || petted || state.blinking
 
     pixels(unit, 5, 24, 20, 1, Shadow)
@@ -274,7 +277,7 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
     pixels(unit, 25, 8 + lift + headDy, 6, 5, GoldenLight)
     pixels(unit, 29, 8 + lift + headDy, 2, 2, Ink)
     pixels(unit, 21, 10 + lift + headDy, 2, 1, Blush)
-    if (petted) pixels(unit, 20, 10 + headDy, 4, 2, Blush)
+    if (petted) pixels(unit, 20, 10, 4, 2, Blush)
     if (happy) {
         // ^ ^ eyes and the tongue out
         pixels(unit, 22, 7 + lift + headDy, 1, 1, Ink)
@@ -304,17 +307,28 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
         }
     }
 
-    if (petted) drawHeart(unit, 30, -2 - state.heartFrame)
+    if (petted) drawFloatingHearts(unit, state.petClockMs)
     if (happy) {
         drawHeart(unit, 30, -2 - state.heartFrame)
         drawHeart(unit, 24, -6 - state.heartFrame)
     }
 }
 
-private fun DrawScope.drawHeart(unit: Float, x: Int, y: Int) {
-    pixels(unit, x + 1, y, 1, 1, EarPink)
-    pixels(unit, x + 3, y, 1, 1, EarPink)
-    pixels(unit, x, y + 1, 5, 1, EarPink)
-    pixels(unit, x + 1, y + 2, 3, 1, EarPink)
-    pixels(unit, x + 2, y + 3, 1, 1, EarPink)
+/** Hearts rising one after the other above the head, fading out as they go up. */
+private fun DrawScope.drawFloatingHearts(unit: Float, clockMs: Long) {
+    val columns = intArrayOf(29, 23, 26)
+    for (index in columns.indices) {
+        val age = (clockMs + index * HeartSpacingMs) % HeartLifeMs
+        val progress = age.toFloat() / HeartLifeMs
+        val fade = if (progress > 0.6f) (1f - progress) / 0.4f else 1f
+        drawHeart(unit, columns[index], -1 - (age / HeartRiseMs).toInt(), fade)
+    }
+}
+
+private fun DrawScope.drawHeart(unit: Float, x: Int, y: Int, alpha: Float = 1f) {
+    pixels(unit, x + 1, y, 1, 1, EarPink.copy(alpha = alpha))
+    pixels(unit, x + 3, y, 1, 1, EarPink.copy(alpha = alpha))
+    pixels(unit, x, y + 1, 5, 1, EarPink.copy(alpha = alpha))
+    pixels(unit, x + 1, y + 2, 3, 1, EarPink.copy(alpha = alpha))
+    pixels(unit, x + 2, y + 3, 1, 1, EarPink.copy(alpha = alpha))
 }
