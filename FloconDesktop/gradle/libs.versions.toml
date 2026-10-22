@@ -4,6 +4,7 @@ agp = "9.2.0"
 androidx-lifecycle = "2.11.0"
 buildconfig = "6.0.10"
 coil = "3.5.0"
+compottie = "2.3.3"
 compose-multiplatform = "1.12.2"
 junit = "4.13.2"
 filekit = "0.16.0"
@@ -51,6 +52,9 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+
+# Compottie (Lottie)
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 
 # Compose
 compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }

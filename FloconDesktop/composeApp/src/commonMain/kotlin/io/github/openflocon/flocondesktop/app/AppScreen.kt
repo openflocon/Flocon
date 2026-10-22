@@ -6,8 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
@@ -49,8 +54,18 @@ fun AppScreen() {
     val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    // read lazily by the logo only, so moving the mouse doesn't recompose the screen
+    val mouseWindowPosition = remember { mutableStateOf<Offset?>(null) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onPointerEvent(PointerEventType.Move, PointerEventPass.Initial) {
+                mouseWindowPosition.value = it.changes.firstOrNull()?.position
+            },
+    ) {
         Content(
+            mouseWindowPosition = { mouseWindowPosition.value },
             uiState = uiState,
             navigationState = viewModel.navigationState,
             onAction = viewModel::onAction,
@@ -64,6 +79,7 @@ fun AppScreen() {
 
 @Composable
 private fun Content(
+    mouseWindowPosition: () -> Offset?,
     uiState: AppUiState,
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit,
@@ -114,6 +130,7 @@ private fun Content(
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
                             updateChip = updateChip,
                             onUpdateChipClicked = onUpdateChipClicked,
+                            mouseWindowPosition = mouseWindowPosition,
                         )
                     }
                 )
