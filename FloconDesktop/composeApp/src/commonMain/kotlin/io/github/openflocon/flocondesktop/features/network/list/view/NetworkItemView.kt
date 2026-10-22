@@ -200,14 +200,16 @@ fun NetworkItemView(
                     .padding(horizontal = FloconTheme.spacing.extraSmall),
             )
 
-            // Request - Takes remaining space (weight)
-            RequestChip(
+            RequestView(
                 state = state,
-                selected = selected || hovered,
                 modifier = Modifier.weight(1f),
             )
 
-            // Time - Fixed width from data class
+            StatusView(
+                status = state.status,
+                modifier = Modifier.width(columnWidths.statusCodeWidth)
+            )
+
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
                 contentAlignment = Alignment.CenterEnd,
