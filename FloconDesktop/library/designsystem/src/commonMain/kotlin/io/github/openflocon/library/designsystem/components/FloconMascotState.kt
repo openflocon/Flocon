@@ -11,7 +11,14 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted }
+enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted, Jump }
+
+/** A line the mascot can walk on, from [minX] to [maxX] (px) at the height [y] (px). */
+class FloconMascotPlatform(
+    val minX: Float,
+    val maxX: Float,
+    val y: Float,
+)
 
 /**
  * Distances and speed are in the same unit as the x passed to [FloconMascotState.update] (px).
@@ -19,6 +26,7 @@ enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted }
  * @param stopDistance how close the mascot gets to the pointer before sitting down
  * @param wakeDistance how far the pointer must be for a seated or sleeping mascot to get up
  * @param runDistance how far the pointer must be for the mascot to run instead of walk
+ * @param jumpHeight how high above the straight line between two platforms the mascot jumps
  */
 class FloconMascotConfig(
     val stopDistance: Float,
@@ -26,6 +34,7 @@ class FloconMascotConfig(
     val speedPerSecond: Float,
     val runDistance: Float,
     val runSpeedPerSecond: Float,
+    val jumpHeight: Float = 0f,
     val minSitMs: Long = 3_000,
     val sleepAfterMs: Long = 4_000,
     val lieAfterMs: Long = 8_000,
@@ -33,13 +42,17 @@ class FloconMascotConfig(
     val stepMs: Long = 250,
     val runStepMs: Long = 130,
     val minTurnIntervalMs: Long = 600,
+    val jumpMs: Long = 600,
 )
 
 /**
  * Behavior of the mascot: it stays still while the pointer is near, wakes up when the pointer gets
  * too far, walks next to it, sits for at least [FloconMascotConfig.minSitMs], then falls asleep and,
  * after a long time, lies down with its head on the ground for at least [FloconMascotConfig.minLieMs].
- * It only moves horizontally, the caller owns the vertical position.
+ *
+ * It walks on [FloconMascotPlatform]s. When the pointer is over another platform it walks to the
+ * edge of its own and jumps. A jump is committed: it can't be interrupted and always ends, after
+ * [FloconMascotConfig.jumpMs], on the destination platform.
  */
 @Stable
 class FloconMascotState(
@@ -47,6 +60,10 @@ class FloconMascotState(
     private val config: FloconMascotConfig,
 ) {
     var x by mutableFloatStateOf(startX)
+        private set
+
+    /** Height of the soles of the paws (px), follows the platform and the arc of a jump. */
+    var y by mutableFloatStateOf(0f)
         private set
     var mode by mutableStateOf(FloconMascotMode.Sit)
         private set
@@ -69,6 +86,10 @@ class FloconMascotState(
     var hopUp by mutableStateOf(false)
         private set
 
+    /** 0..1 while [FloconMascotMode.Jump], 0 otherwise. */
+    var jumpProgress by mutableFloatStateOf(0f)
+        private set
+
     /** Time spent being petted without a break, drives the hearts floating up. */
     var petClockMs by mutableLongStateOf(0L)
         private set
@@ -81,6 +102,16 @@ class FloconMascotState(
     var sleepZCount by mutableIntStateOf(1)
         private set
 
+    private class Jump(
+        val fromX: Float,
+        val fromY: Float,
+        val toX: Float,
+        val toIndex: Int,
+        var elapsedMs: Long = 0,
+    )
+
+    private var jump: Jump? = null
+    private var platformIndex = -1
     private var chasing = false
     private var sitMs = config.minSitMs
     private var idleMs = 0L
@@ -101,7 +132,7 @@ class FloconMascotState(
     fun onHover(x: Float, timeMs: Long, minStroke: Float) {
         val dx = x - hoverX
         hoverX = x
-        if (dx == 0f) return
+        if (dx == 0f || jump != null) return
         if (hoverTravel != 0f && dx.sign != hoverTravel.sign) {
             if (abs(hoverTravel) >= minStroke) {
                 strokes = if (timeMs - lastStrokeMs > STROKE_WINDOW_MS) 1 else strokes + 1
@@ -122,18 +153,57 @@ class FloconMascotState(
 
     /** The mascot has been clicked: it gets happy for a moment and stays where it is. */
     fun pet() {
-        happyMs = HAPPY_MS
+        if (jump == null) happyMs = HAPPY_MS
     }
 
+    /** [update] with a single platform at the height 0. */
     fun update(
         deltaMs: Long,
         timeMs: Long,
         targetX: Float,
         minX: Float,
         maxX: Float,
+    ) = update(deltaMs, timeMs, targetX, listOf(FloconMascotPlatform(minX, maxX, y = 0f)))
+
+    /**
+     * @param targetX where the pointer is, the platform it is over (or the nearest one) is where
+     * the mascot wants to be
+     * @param platforms the platforms, in a stable order
+     */
+    fun update(
+        deltaMs: Long,
+        timeMs: Long,
+        targetX: Float,
+        platforms: List<FloconMascotPlatform>,
     ) {
-        val target = targetX.coerceIn(minX, maxX)
-        x = x.coerceIn(minX, maxX)
+        if (platforms.isEmpty()) return
+        if (platformIndex !in platforms.indices) platformIndex = nearestPlatform(platforms, x)
+
+        tailUp = (timeMs / TAIL_MS) % 2 == 1L
+        blinking = timeMs % BLINK_PERIOD_MS < BLINK_MS
+        sleepZCount = ((timeMs / Z_MS) % 2).toInt() + 1
+
+        val currentJump = jump
+        if (currentJump != null) {
+            advanceJump(currentJump, deltaMs, platforms)
+            return
+        }
+
+        val platform = platforms[platformIndex]
+        y = platform.y
+        x = x.coerceIn(platform.minX, platform.maxX)
+
+        val targetIndex = nearestPlatform(platforms, targetX)
+        val crossing = targetIndex != platformIndex
+        val destination = platforms[targetIndex]
+        // to go to another platform, first reach the edge of this one that faces it
+        val goToRight = destination.minX >= platform.maxX
+        val target = when {
+            !crossing -> targetX.coerceIn(platform.minX, platform.maxX)
+            goToRight -> platform.maxX
+            else -> platform.minX
+        }
+        val stopDistance = if (crossing) 0f else config.stopDistance
 
         val dx = target - x
         val distance = abs(dx)
@@ -147,8 +217,10 @@ class FloconMascotState(
 
         sitMs = if (chasing || still) 0 else sitMs + deltaMs
         val rested = mode != FloconMascotMode.Lie || lieMs >= config.minLieMs
-        if (!chasing && !still && rested && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
-        if (chasing && distance <= config.stopDistance) chasing = false
+        val farEnough = crossing || distance > config.wakeDistance
+        if (!chasing && !still && rested && farEnough && sitMs >= config.minSitMs) chasing = true
+        // when crossing it keeps going until the edge, where it jumps
+        if (chasing && !crossing && distance <= stopDistance) chasing = false
 
         // it runs while the pointer is far, and keeps running until it has gotten much closer
         running = chasing && distance > if (running) config.runDistance * RUN_RELEASE else config.runDistance
@@ -156,11 +228,16 @@ class FloconMascotState(
         var step = 0f
         if (chasing) {
             val speed = if (running) config.runSpeedPerSecond else config.speedPerSecond
-            step = min(distance - config.stopDistance, speed * deltaMs / 1_000f)
+            step = min(distance - stopDistance, speed * deltaMs / 1_000f).coerceAtLeast(0f)
             x += dx.sign * step
         }
-        val moving = step > 0f
 
+        if (crossing && chasing && abs(target - x) <= EDGE_EPSILON) {
+            startJump(platform, destination, targetIndex, goToRight)
+            return
+        }
+
+        val moving = step > 0f
         idleMs = if (moving || still) 0 else idleMs + deltaMs
         mode = when {
             happy -> FloconMascotMode.Happy
@@ -181,16 +258,79 @@ class FloconMascotState(
         lieMs = if (mode == FloconMascotMode.Lie) lieMs + deltaMs else 0
         if (moving) walkMs += deltaMs
         alternateLegs = (walkMs / (if (running) config.runStepMs else config.stepMs)) % 2 == 1L
-        tailUp = (timeMs / TAIL_MS) % 2 == 1L
-        blinking = timeMs % BLINK_PERIOD_MS < BLINK_MS
         hopUp = happy && (happyMs / HOP_MS) % 2 == 0L
         petClockMs = if (petted) petClockMs + deltaMs else 0L
         heartFrame = ((maxOf(happyMs, pettedMs) / HEART_MS) % 2).toInt()
-        sleepZCount = ((timeMs / Z_MS) % 2).toInt() + 1
+    }
+
+    private fun startJump(
+        from: FloconMascotPlatform,
+        to: FloconMascotPlatform,
+        toIndex: Int,
+        goToRight: Boolean,
+    ) {
+        // lands on the near edge of the other platform, then walks on if the pointer is farther
+        val toX = if (goToRight) to.minX else to.maxX
+        jump = Jump(fromX = x, fromY = from.y, toX = toX, toIndex = toIndex)
+        chasing = false
+        running = false
+        sitMs = 0
+        idleMs = 0
+        lieMs = 0
+        happyMs = 0
+        pettedMs = 0
+        petClockMs = 0
+        hopUp = false
+        facingRight = toX > x
+        sinceTurnMs = 0
+        mode = FloconMascotMode.Jump
+        jumpProgress = 0f
+    }
+
+    private fun advanceJump(current: Jump, deltaMs: Long, platforms: List<FloconMascotPlatform>) {
+        current.elapsedMs += deltaMs
+        val destination = platforms.getOrNull(current.toIndex) ?: platforms[nearestPlatform(platforms, current.toX)]
+        val progress = (current.elapsedMs.toFloat() / config.jumpMs).coerceIn(0f, 1f)
+
+        if (progress >= 1f) {
+            // the landing is always on a platform, wherever they are by now
+            platformIndex = platforms.indexOf(destination)
+            x = current.toX.coerceIn(destination.minX, destination.maxX)
+            y = destination.y
+            jump = null
+            jumpProgress = 0f
+            mode = FloconMascotMode.Sit
+            sitMs = config.minSitMs
+            idleMs = 0
+            return
+        }
+
+        mode = FloconMascotMode.Jump
+        jumpProgress = progress
+        x = current.fromX + (current.toX - current.fromX) * progress
+        y = current.fromY + (destination.y - current.fromY) * progress - 4f * config.jumpHeight * progress * (1f - progress)
+    }
+
+    private fun nearestPlatform(platforms: List<FloconMascotPlatform>, atX: Float): Int {
+        var best = 0
+        var bestDistance = Float.MAX_VALUE
+        platforms.forEachIndexed { index, platform ->
+            val distance = when {
+                atX < platform.minX -> platform.minX - atX
+                atX > platform.maxX -> atX - platform.maxX
+                else -> 0f
+            }
+            if (distance < bestDistance) {
+                best = index
+                bestDistance = distance
+            }
+        }
+        return best
     }
 
     private companion object {
         const val FACING_THRESHOLD = 6f
+        const val EDGE_EPSILON = 0.5f
         const val TAIL_MS = 300L
         const val BLINK_PERIOD_MS = 3_600L
         const val BLINK_MS = 160L

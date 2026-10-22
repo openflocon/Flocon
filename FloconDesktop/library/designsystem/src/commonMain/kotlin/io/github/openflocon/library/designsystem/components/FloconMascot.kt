@@ -28,6 +28,9 @@ val FloconMascotHeight: Dp = 39.dp
 val FloconMascotFeetY: Dp = 36.dp
 
 private const val GridWidth = 34f
+
+/** Part of a jump spent with the legs stretched out: the rise and the apex, then it gathers to land. */
+private val JumpStretch = 0f..0.6f
 private const val HeartLifeMs = 1_500L
 private const val HeartSpacingMs = 500L
 private const val HeartRiseMs = 170L
@@ -81,12 +84,13 @@ fun FloconMascot(
             if (!state.facingRight) scale(scaleX = -1f, scaleY = 1f, pivot = Offset(size.width / 2f, 0f))
         }) {
             when (state.mode) {
-                FloconMascotMode.Walk -> if (state.running) drawRunning(unit, state) else drawWalking(unit, state)
+                FloconMascotMode.Walk -> if (state.running) drawRunning(unit, state.alternateLegs, dust = true) else drawWalking(unit, state)
                 FloconMascotMode.Sit -> drawSitting(unit, state, FloconMascotMode.Sit)
                 FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
                 FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
                 FloconMascotMode.Lie -> drawLying(unit, state)
                 FloconMascotMode.Petted -> drawSitting(unit, state, FloconMascotMode.Petted)
+                FloconMascotMode.Jump -> drawRunning(unit, stretched = state.jumpProgress in JumpStretch, dust = false)
             }
         }
     }
@@ -155,8 +159,7 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
 }
 
 /** Gallop: stretched out in the air, then gathered when landing, with ears and tail streaming back. */
-private fun DrawScope.drawRunning(unit: Float, state: FloconMascotState) {
-    val stretched = state.alternateLegs
+private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean) {
     val air = if (stretched) -2 else 0
     val dy = air + if (stretched) 1 else -1
 
@@ -164,8 +167,10 @@ private fun DrawScope.drawRunning(unit: Float, state: FloconMascotState) {
         pixels(unit, 9, 24, 14, 1, Shadow)
     } else {
         pixels(unit, 6, 24, 20, 1, Shadow)
-        pixels(unit, 0, 22, 3, 2, Dust)
-        pixels(unit, 3, 23, 2, 1, Dust)
+        if (dust) {
+            pixels(unit, 0, 22, 3, 2, Dust)
+            pixels(unit, 3, 23, 2, 1, Dust)
+        }
     }
 
     // tail streaming back

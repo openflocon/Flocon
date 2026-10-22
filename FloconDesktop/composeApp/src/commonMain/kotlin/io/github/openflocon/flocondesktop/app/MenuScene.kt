@@ -32,12 +32,14 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotOverlay
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
+import io.github.openflocon.flocondesktop.app.ui.mascot.mascotPlatform
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
@@ -55,6 +57,7 @@ data class MenuScene(
         val mascotEnabled by koinViewModel<MascotViewModel>().isEnabled.collectAsStateWithLifecycle()
         var origin by remember { mutableStateOf(Offset.Zero) }
         var island by remember { mutableStateOf<Rect?>(null) }
+        var sidebar by remember { mutableStateOf<Rect?>(null) }
         var pointer by remember { mutableStateOf<Offset?>(null) }
         val mascotMargin = with(LocalDensity.current) { FloconTheme.spacing.medium.toPx() }
 
@@ -97,6 +100,7 @@ data class MenuScene(
                         modifier = Modifier
                             .width(width)
                             .fillMaxHeight()
+                            .onGloballyPositioned { sidebar = it.boundsInRoot() }
                             .padding(
                                 start = FloconTheme.spacing.medium,
                                 top = FloconTheme.spacing.medium,
@@ -116,14 +120,28 @@ data class MenuScene(
                     }
                 }
             }
-            val bounds = island
-            if (mascotEnabled && bounds != null) {
-                // walks on the top edge of the content island, under the top bar
+            val contentBounds = island
+            val sidebarBounds = sidebar
+            if (mascotEnabled && contentBounds != null && sidebarBounds != null) {
+                // the mascot walks on the top edge of the sidebar and of the content islands, and
+                // jumps over the gap between them
+                val platforms = persistentListOf(
+                    mascotPlatform(
+                        left = sidebarBounds.left - origin.x + mascotMargin,
+                        right = sidebarBounds.right - origin.x,
+                        top = sidebarBounds.top - origin.y + mascotMargin,
+                        inset = mascotMargin * 2,
+                    ),
+                    mascotPlatform(
+                        left = contentBounds.left - origin.x + mascotMargin,
+                        right = contentBounds.right - origin.x - mascotMargin,
+                        top = contentBounds.top - origin.y + mascotMargin,
+                        inset = mascotMargin * 2,
+                    ),
+                )
                 MascotOverlay(
                     pointerX = pointer?.x,
-                    lineY = bounds.top - origin.y + mascotMargin,
-                    minX = bounds.left - origin.x + mascotMargin * 2,
-                    maxX = bounds.right - origin.x - mascotMargin * 2,
+                    platforms = platforms,
                 )
             }
         }

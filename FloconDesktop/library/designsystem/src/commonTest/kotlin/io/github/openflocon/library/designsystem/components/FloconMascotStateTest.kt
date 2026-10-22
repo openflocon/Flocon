@@ -247,4 +247,131 @@ class FloconMascotStateTest {
         mascot.run(targetX = 500f, durationMs = 1_200, startMs = 616)
         assertEquals(FloconMascotMode.Sit, mascot.mode)
     }
+
+    // two islands side by side, with a gap of 60 between them
+    private val sidebar = FloconMascotPlatform(minX = 0f, maxX = 100f, y = 0f)
+    private val content = FloconMascotPlatform(minX = 160f, maxX = 500f, y = 10f)
+    private val islands = listOf(sidebar, content)
+    private val frameMs = 16L
+
+    private fun FloconMascotState.runOn(
+        platforms: List<FloconMascotPlatform>,
+        targetX: Float,
+        durationMs: Long,
+        startMs: Long = 0,
+        onFrame: (timeMs: Long) -> Unit = {},
+    ) {
+        var t = 0L
+        while (t < durationMs) {
+            update(frameMs, startMs + t, targetX, platforms)
+            onFrame(startMs + t)
+            t += frameMs
+        }
+    }
+
+    private fun FloconMascotState.isOnAPlatform(platforms: List<FloconMascotPlatform>) = platforms.any { x >= it.minX - 0.01f && x <= it.maxX + 0.01f }
+
+    @Test
+    fun jumpsToTheOtherPlatformWhenThePointerIsOverIt() {
+        val mascot = state(startX = 300f)
+        mascot.runOn(islands, targetX = 50f, durationMs = 8_000)
+
+        assertTrue(mascot.mode != FloconMascotMode.Jump)
+        assertTrue(mascot.x in sidebar.minX..sidebar.maxX)
+        assertEquals(sidebar.y, mascot.y)
+    }
+
+    @Test
+    fun jumpsBackAndForthBetweenPlatforms() {
+        val mascot = state(startX = 300f)
+        mascot.runOn(islands, targetX = 50f, durationMs = 8_000)
+        assertEquals(sidebar.y, mascot.y)
+
+        mascot.runOn(islands, targetX = 400f, durationMs = 8_000, startMs = 8_000)
+        assertTrue(mascot.x in content.minX..content.maxX)
+        assertEquals(content.y, mascot.y)
+    }
+
+    @Test
+    fun neverStaysInTheGapNorInTheAir() {
+        val mascot = state(startX = 300f)
+        var jumpingMs = 0L
+        var longestJumpMs = 0L
+        var time = 0L
+        repeat(30) { round ->
+            val target = if (round % 2 == 0) 40f else 450f
+            mascot.runOn(islands, targetX = target, durationMs = 1_700, startMs = time) { t ->
+                if (mascot.mode == FloconMascotMode.Jump) {
+                    jumpingMs += frameMs
+                    longestJumpMs = maxOf(longestJumpMs, jumpingMs)
+                } else {
+                    jumpingMs = 0
+                    assertTrue(mascot.isOnAPlatform(islands), "in the gap at $t: x=${mascot.x}")
+                }
+            }
+            time += 1_700
+        }
+        assertTrue(longestJumpMs <= config.jumpMs + 2 * frameMs, "a jump lasted $longestJumpMs ms")
+    }
+
+    @Test
+    fun aJumpAlwaysEndsEvenIfThePointerComesBack() {
+        val mascot = state(startX = 300f)
+        var time = 0L
+        // walks to the edge and takes off
+        while (mascot.mode != FloconMascotMode.Jump && time < 10_000) {
+            mascot.update(frameMs, time, 50f, islands)
+            time += frameMs
+        }
+        assertEquals(FloconMascotMode.Jump, mascot.mode)
+
+        // the pointer goes back to where it was: the jump still goes on to its landing
+        var jumpMs = 0L
+        while (mascot.mode == FloconMascotMode.Jump && jumpMs < 5_000) {
+            mascot.update(frameMs, time, 450f, islands)
+            time += frameMs
+            jumpMs += frameMs
+        }
+        assertTrue(jumpMs <= config.jumpMs + 2 * frameMs, "the jump never ended: $jumpMs ms")
+        assertTrue(mascot.isOnAPlatform(islands))
+    }
+
+    @Test
+    fun landsOnAPlatformEvenIfThePlatformsChangeDuringTheJump() {
+        val mascot = state(startX = 300f)
+        var time = 0L
+        while (mascot.mode != FloconMascotMode.Jump && time < 10_000) {
+            mascot.update(frameMs, time, 50f, islands)
+            time += frameMs
+        }
+        assertEquals(FloconMascotMode.Jump, mascot.mode)
+
+        // the sidebar collapses to a single spot while it is in the air
+        val collapsed = listOf(FloconMascotPlatform(minX = 20f, maxX = 20f, y = 0f), content)
+        mascot.runOn(collapsed, targetX = 50f, durationMs = 1_000, startMs = time)
+        assertTrue(mascot.isOnAPlatform(collapsed))
+        assertTrue(mascot.mode != FloconMascotMode.Jump)
+    }
+
+    @Test
+    fun clickingDuringAJumpDoesNotInterruptIt() {
+        val mascot = state(startX = 300f)
+        var time = 0L
+        while (mascot.mode != FloconMascotMode.Jump && time < 10_000) {
+            mascot.update(frameMs, time, 50f, islands)
+            time += frameMs
+        }
+        mascot.pet()
+        mascot.update(frameMs, time, 50f, islands)
+        assertEquals(FloconMascotMode.Jump, mascot.mode)
+    }
+
+    @Test
+    fun staysOnItsPlatformWhenThePointerIsInTheGapNextToIt() {
+        val mascot = state(startX = 300f)
+        // 140 is in the gap, nearer to the content than to the sidebar
+        mascot.runOn(islands, targetX = 140f, durationMs = 6_000)
+        assertTrue(mascot.x in content.minX..content.maxX)
+        assertFalse(mascot.mode == FloconMascotMode.Jump)
+    }
 }
