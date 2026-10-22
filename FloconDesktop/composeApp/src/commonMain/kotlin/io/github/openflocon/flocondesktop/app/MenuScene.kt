@@ -78,9 +78,7 @@ data class MenuScene(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(FloconTheme.spacing.medium)
-                        .floconIsland(lerp(FloconTheme.colors.chrome, Color.Black, 0.35f).copy(alpha = 0.62f))
-                        .padding(FloconTheme.spacing.small),
+                        .padding(FloconTheme.spacing.medium),
                 ) {
                     scene.content()
                 }

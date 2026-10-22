@@ -46,7 +46,7 @@ fun FloconGlassBackground(
     content: @Composable () -> Unit,
 ) {
     val base = if (isDarkTheme) {
-        listOf(Color(0xFF080A1E), Color(0xFF100A28), Color(0xFF1A0C24))
+        listOf(Color(0xFF0E1230), Color(0xFF0C0820), Color(0xFF0A0614))
     } else {
         listOf(Color(0xFFB8C8EC), Color(0xFFCDBBEA), Color(0xFFEBC6B0))
     }
@@ -56,7 +56,7 @@ fun FloconGlassBackground(
     } else {
         listOf(Color(0xFFFFC88A), Color(0xFFD59BFF), Color(0xFF7FB2FF))
     }
-    val blobAlphas = if (isDarkTheme) listOf(0.30f, 0.34f, 0.32f) else listOf(0.50f, 0.50f, 0.50f)
+    val blobAlphas = if (isDarkTheme) listOf(0.14f, 0.16f, 0.14f) else listOf(0.50f, 0.50f, 0.50f)
 
     Box(
         modifier = modifier
