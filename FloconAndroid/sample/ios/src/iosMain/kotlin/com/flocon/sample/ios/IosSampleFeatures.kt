@@ -3,6 +3,8 @@
 package com.flocon.sample.ios
 
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
@@ -15,7 +17,7 @@ import platform.Foundation.create
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 
-fun registerIosSampleFeatures(dogDatabase: DogDatabase) {
+fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
     SampleFeatures.platformName = "iOS"
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
@@ -29,6 +31,9 @@ fun registerIosSampleFeatures(dogDatabase: DogDatabase) {
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseFood) {
+        foodDatabase.foodDao().insertFood(newFood())
     }
     SampleFeatures.on(SampleFeature.Files) {
         NSString.create(string = "Written by the sample at ${NSDate().timeIntervalSince1970}")

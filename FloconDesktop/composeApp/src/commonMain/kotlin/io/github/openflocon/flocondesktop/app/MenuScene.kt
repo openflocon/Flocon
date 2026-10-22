@@ -15,8 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.MetadataScope
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.get
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
@@ -32,10 +33,8 @@ data class MenuScene(
     val scene: Scene<FloconRoute>,
     val menuContent: @Composable ((expanded: Boolean, onToggleExpanded: () -> Unit) -> Unit),
     val topBarContent: @Composable (() -> Unit)?
-) : Scene<FloconRoute> {
-    override val key: Any = Unit
-    override val entries: List<NavEntry<FloconRoute>> = scene.entries
-    override val previousEntries: List<NavEntry<FloconRoute>> = scene.previousEntries
+) : Scene<FloconRoute> by scene {
+    override val key: Any = MenuScene::class.qualifiedName!!
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
@@ -93,7 +92,7 @@ class MenuSceneStrategy(
 ) : SceneDecoratorStrategy<FloconRoute> {
 
     override fun SceneDecoratorStrategyScope<FloconRoute>.decorateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
-        if (scene.metadata.containsKey(MENU_KEY)) {
+        if (scene.metadata[MenuKey] == true || scene.metadata[KeepMenuKey] == true) {
             return MenuScene(
                 scene = scene,
                 menuContent = menuContent,
@@ -104,9 +103,15 @@ class MenuSceneStrategy(
         return scene
     }
 
-    companion object {
-        private const val MENU_KEY = "menu_key"
+}
 
-        fun menu() = mapOf(MENU_KEY to MENU_KEY)
-    }
+data object MenuKey : NavMetadataKey<Boolean>
+data object KeepMenuKey : NavMetadataKey<Boolean>
+
+fun MetadataScope.menu() {
+    put(MenuKey, true)
+}
+
+fun MetadataScope.keepMenu() {
+    put(KeepMenuKey, true)
 }

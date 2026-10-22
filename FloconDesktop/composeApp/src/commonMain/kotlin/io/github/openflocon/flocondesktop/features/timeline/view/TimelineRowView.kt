@@ -176,10 +176,10 @@ private fun TimeColumn(
 
 // the vertical line of the timeline, with the dot of the category on it
 @Composable
-private fun Rail(
+internal fun Rail(
     color: Color,
     haloColor: Color,
-    outerHaloColor: Color?,
+    outerHaloColor: Color? = null,
     overflow: Dp,
     modifier: Modifier = Modifier,
 ) {

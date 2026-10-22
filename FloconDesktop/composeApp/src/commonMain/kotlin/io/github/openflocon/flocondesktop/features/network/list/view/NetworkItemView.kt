@@ -11,6 +11,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -33,9 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -63,6 +63,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
+import io.github.openflocon.flocondesktop.features.timeline.view.Rail
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
@@ -90,9 +91,6 @@ import flocondesktop.composeapp.generated.resources.network_share_markdown
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
 
-private val RowVerticalPadding = 6.dp
-private val ChipHeight = 28.dp
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkItemView(
@@ -115,6 +113,9 @@ fun NetworkItemView(
             state = state,
         ),
     ) {
+        val shape = FloconTheme.shapes.medium
+        val isError = state.status.isFatalError()
+        val highlighted = selected || hovered
         Row(
             modifier = modifier
                 .then(
@@ -122,14 +123,18 @@ fun NetworkItemView(
                         Modifier.alpha(0.4f)
                     } else Modifier
                 )
+                .height(IntrinsicSize.Min)
                 .background(
                     when {
-                        selected || hovered -> colors.bg300
+                        highlighted -> colors.bg300
+                        isError -> colors.statusError.copy(alpha = 0.10f)
                         state.isReplayed -> colors.catNetworkSoft
                         state.isMocked -> colors.accent.copy(alpha = 0.05f)
                         else -> Color.Transparent
-                    }
+                    },
+                    shape,
                 )
+                .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
                 .hoverable(interactionSource)
                 .combinedClickable(
                     interactionSource = interactionSource,
@@ -137,19 +142,7 @@ fun NetworkItemView(
                     onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) },
                     onDoubleClick = { onAction(NetworkAction.DoubleClicked(state)) }
                 )
-                .drawBehind {
-                    // the separator of the rows, and the bar of the selected one
-                    drawLine(
-                        color = colors.line,
-                        start = Offset(0f, size.height - 0.5.dp.toPx()),
-                        end = Offset(size.width, size.height - 0.5.dp.toPx()),
-                        strokeWidth = 1.dp.toPx(),
-                    )
-                    if (selected) {
-                        drawRect(color = colors.accent, size = Size(2.dp.toPx(), size.height))
-                    }
-                }
-                .padding(horizontal = FloconTheme.spacing.medium, vertical = RowVerticalPadding),
+                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
@@ -163,17 +156,28 @@ fun NetworkItemView(
             // Date - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.dateWidth),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     state.dateFormatted,
-                    // same text as the domain, with digits of the same width so the times stay aligned
-                    style = FloconTheme.typography.bodySmall.copy(fontFeatureSettings = "tnum"),
+                    // digits of the same width so the times stay aligned
+                    style = mono.copy(fontFeatureSettings = "tnum"),
+                    fontWeight = FontWeight.Medium,
                     fontSize = 12.sp,
-                    color = colors.inkMuted,
+                    color = colors.ink,
                     maxLines = 1,
                 )
             }
+
+            Rail(
+                color = if (isError) colors.statusError else colors.catNetwork,
+                haloColor = if (highlighted) colors.bg300 else colors.bg100,
+                // the line goes through the padding of the row
+                overflow = FloconTheme.spacing.tiny,
+                modifier = Modifier
+                    .width(FloconTheme.sizes.markerColumn)
+                    .fillMaxHeight(),
+            )
 
             // Method - Fixed width for the tag from data class
             Box(
@@ -196,20 +200,16 @@ fun NetworkItemView(
                     .padding(horizontal = FloconTheme.spacing.extraSmall),
             )
 
-            // Request - Takes remaining space (weight)
-            RequestChip(
+            RequestView(
                 state = state,
-                selected = selected || hovered,
                 modifier = Modifier.weight(1f),
             )
 
-            // NetworkStatusUi - Fixed width for the tag from data class
             StatusView(
                 status = state.status,
-                modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
+                modifier = Modifier.width(columnWidths.statusCodeWidth)
             )
 
-            // Time - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
                 contentAlignment = Alignment.CenterEnd,
@@ -218,39 +218,29 @@ fun NetworkItemView(
                     state.timeFormatted ?: "",
                     style = mono,
                     fontSize = 12.sp,
-                    color = colors.inkMuted,
+                    color = colors.inkFaint,
                     maxLines = 1,
                 )
             }
+
+            // NetworkStatusUi - Fixed width for the tag from data class
+            StatusView(
+                status = state.status,
+                modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
+            )
         }
     }
 }
 
-// the request in a chip filling its column: tags (mock, image), the path, then the error of an exception
+// the request filling its column: tags (mock, image), the path, then the error of an exception
 @Composable
-private fun RequestChip(
+private fun RequestView(
     state: NetworkItemViewState,
-    selected: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val isError = state.status.isFatalError()
-    val shape = FloconTheme.shapes.small
     Row(
-        modifier = modifier
-            .height(ChipHeight)
-            .clip(shape)
-            .background(
-                when {
-                    isError -> colors.statusError.copy(alpha = 0.10f)
-                    selected -> colors.lineStrong.copy(alpha = 0.5f)
-                    else -> colors.bg300
-                }
-            )
-            .then(
-                if (isError) Modifier.border(1.dp, colors.statusError.copy(alpha = 0.25f), shape) else Modifier
-            )
-            .padding(horizontal = 10.dp),
+        modifier = modifier.heightIn(min = FloconTheme.sizes.rowHeight),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         state.type.image()?.let {
