@@ -20,7 +20,7 @@ fun Modifier.menuBackground() = composed {
         .widthIn(min = MenuWidth)
         .width(IntrinsicSize.Max)
         .clip(FloconTheme.shapes.large)
-        .background(FloconTheme.colors.bg100)
+        .background(FloconTheme.colors.floating)
         .border(
             width = 1.dp,
             color = FloconTheme.colors.line,

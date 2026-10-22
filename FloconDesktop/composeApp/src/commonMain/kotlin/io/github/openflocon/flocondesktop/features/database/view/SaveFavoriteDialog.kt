@@ -42,7 +42,7 @@ fun SaveFavoriteDialog(
         Column(modifier = Modifier) {
             Text(
                 "Save as favorite",
-                modifier = Modifier.fillMaxWidth().background(FloconTheme.colors.bg100)
+                modifier = Modifier.fillMaxWidth().background(FloconTheme.colors.floating)
                     .padding(
                         horizontal = FloconTheme.spacing.large,
                         vertical = FloconTheme.spacing.medium
@@ -61,7 +61,7 @@ fun SaveFavoriteDialog(
                 maxLines = 1,
                 textStyle = FloconTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                containerColor = FloconTheme.colors.bg200,
+                containerColor = FloconTheme.colors.floating,
                 modifier = Modifier.fillMaxWidth()
                     .focusRequester(focusRequester)
                     .padding(
