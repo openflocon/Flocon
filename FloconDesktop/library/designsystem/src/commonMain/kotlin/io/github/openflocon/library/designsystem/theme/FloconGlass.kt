@@ -1,6 +1,5 @@
 package io.github.openflocon.library.designsystem.theme
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -58,13 +57,20 @@ fun FloconGlassBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(base, start = Offset.Zero, end = Offset.Infinite))
             .drawBehind {
+                // dark in the bottom left corner, the colors gather in the top right one
+                drawRect(
+                    Brush.linearGradient(
+                        colors = base,
+                        start = Offset(0f, size.height),
+                        end = Offset(size.width, 0f),
+                    ),
+                )
                 val r = size.maxDimension * 0.55f
                 val centers = listOf(
-                    Offset(size.width * 0.12f, size.height * 0.10f),
-                    Offset(size.width * 0.88f, size.height * 0.35f),
-                    Offset(size.width * 0.40f, size.height * 0.95f),
+                    Offset(size.width * 0.70f, size.height * 0.00f),
+                    Offset(size.width * 1.00f, size.height * 0.05f),
+                    Offset(size.width * 0.88f, size.height * 0.30f),
                 )
                 centers.forEachIndexed { i, c ->
                     drawCircle(
