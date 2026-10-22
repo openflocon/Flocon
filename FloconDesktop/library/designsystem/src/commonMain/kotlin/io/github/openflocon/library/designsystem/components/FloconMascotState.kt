@@ -11,7 +11,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted, Jump }
+enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted, Jump, Backflip }
 
 /** A line the mascot can walk on, from [minX] to [maxX] (px) at the height [y] (px). */
 class FloconMascotPlatform(
@@ -26,7 +26,8 @@ class FloconMascotPlatform(
  * @param stopDistance how close the mascot gets to the pointer before sitting down
  * @param wakeDistance how far the pointer must be for a seated or sleeping mascot to get up
  * @param runDistance how far the pointer must be for the mascot to run instead of walk
- * @param jumpHeight how high above the straight line between two platforms the mascot jumps
+ * @param jumpHeight how high above the straight line between two platforms the mascot jumps, a
+ * backflip goes four fifths as high
  */
 class FloconMascotConfig(
     val stopDistance: Float,
@@ -43,6 +44,7 @@ class FloconMascotConfig(
     val runStepMs: Long = 130,
     val minTurnIntervalMs: Long = 600,
     val jumpMs: Long = 600,
+    val backflipMs: Long = 900,
 )
 
 /**
@@ -90,6 +92,10 @@ class FloconMascotState(
     var jumpProgress by mutableFloatStateOf(0f)
         private set
 
+    /** 0..1 while [FloconMascotMode.Backflip], 0 otherwise. */
+    var backflipProgress by mutableFloatStateOf(0f)
+        private set
+
     /** Time spent being petted without a break, drives the hearts floating up. */
     var petClockMs by mutableLongStateOf(0L)
         private set
@@ -111,6 +117,7 @@ class FloconMascotState(
     )
 
     private var jump: Jump? = null
+    private var backflipElapsedMs = NOT_FLIPPING
     private var platformIndex = -1
     private var chasing = false
     private var sitMs = config.minSitMs
@@ -132,7 +139,7 @@ class FloconMascotState(
     fun onHover(x: Float, timeMs: Long, minStroke: Float) {
         val dx = x - hoverX
         hoverX = x
-        if (dx == 0f || jump != null) return
+        if (dx == 0f || busy) return
         if (hoverTravel != 0f && dx.sign != hoverTravel.sign) {
             if (abs(hoverTravel) >= minStroke) {
                 strokes = if (timeMs - lastStrokeMs > STROKE_WINDOW_MS) 1 else strokes + 1
@@ -153,8 +160,29 @@ class FloconMascotState(
 
     /** The mascot has been clicked: it gets happy for a moment and stays where it is. */
     fun pet() {
-        if (jump == null) happyMs = HAPPY_MS
+        if (!busy) happyMs = HAPPY_MS
     }
+
+    /** The mascot has been right-clicked: a backflip, on the spot, that can't be interrupted. */
+    fun backflip() {
+        if (busy) return
+        backflipElapsedMs = 0
+        chasing = false
+        running = false
+        happyMs = 0
+        pettedMs = 0
+        petClockMs = 0
+        hopUp = false
+        sitMs = 0
+        idleMs = 0
+        lieMs = 0
+        mode = FloconMascotMode.Backflip
+        backflipProgress = 0f
+    }
+
+    /** Jumping or flipping: nothing else can happen until it is over. */
+    private val busy: Boolean
+        get() = jump != null || backflipElapsedMs != NOT_FLIPPING
 
     /** [update] with a single platform at the height 0. */
     fun update(
@@ -192,6 +220,11 @@ class FloconMascotState(
         val platform = platforms[platformIndex]
         y = platform.y
         x = x.coerceIn(platform.minX, platform.maxX)
+
+        if (backflipElapsedMs != NOT_FLIPPING) {
+            advanceBackflip(deltaMs, platform)
+            return
+        }
 
         val targetIndex = nearestPlatform(platforms, targetX)
         val crossing = targetIndex != platformIndex
@@ -263,6 +296,20 @@ class FloconMascotState(
         heartFrame = ((maxOf(happyMs, pettedMs) / HEART_MS) % 2).toInt()
     }
 
+    private fun advanceBackflip(deltaMs: Long, platform: FloconMascotPlatform) {
+        backflipElapsedMs += deltaMs
+        val progress = (backflipElapsedMs.toFloat() / config.backflipMs).coerceIn(0f, 1f)
+        if (progress >= 1f) {
+            backflipElapsedMs = NOT_FLIPPING
+            backflipProgress = 0f
+            mode = FloconMascotMode.Sit
+            return
+        }
+        mode = FloconMascotMode.Backflip
+        backflipProgress = progress
+        y = platform.y - 4f * config.jumpHeight * BACKFLIP_HEIGHT_RATIO * progress * (1f - progress)
+    }
+
     private fun startJump(
         from: FloconMascotPlatform,
         to: FloconMascotPlatform,
@@ -329,6 +376,8 @@ class FloconMascotState(
     }
 
     private companion object {
+        const val NOT_FLIPPING = -1L
+        const val BACKFLIP_HEIGHT_RATIO = 0.8f
         const val FACING_THRESHOLD = 6f
         const val EDGE_EPSILON = 0.5f
         const val TAIL_MS = 300L

@@ -374,4 +374,66 @@ class FloconMascotStateTest {
         assertTrue(mascot.x in content.minX..content.maxX)
         assertFalse(mascot.mode == FloconMascotMode.Jump)
     }
+
+    @Test
+    fun backflipsOnTheSpotAndThenSitsAgain() {
+        val mascot = state()
+        mascot.backflip()
+        mascot.update(16, 0, 900f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Backflip, mascot.mode)
+
+        // the pointer is far away but it does not move during the flip
+        mascot.runOn(listOf(FloconMascotPlatform(0f, 1_000f, 0f)), targetX = 900f, durationMs = 800, startMs = 16)
+        assertEquals(500f, mascot.x)
+        assertEquals(FloconMascotMode.Backflip, mascot.mode)
+
+        mascot.update(100, 1_000, 900f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
+
+    @Test
+    fun goesUpInTheAirDuringABackflip() {
+        val flipping = FloconMascotState(
+            startX = 500f,
+            config = FloconMascotConfig(
+                stopDistance = 30f,
+                wakeDistance = 100f,
+                speedPerSecond = 100f,
+                runDistance = 400f,
+                runSpeedPerSecond = 300f,
+                jumpHeight = 20f,
+            ),
+        )
+        val platforms = listOf(FloconMascotPlatform(0f, 1_000f, y = 100f))
+        flipping.update(16, 0, 500f, platforms)
+        flipping.backflip()
+        flipping.runOn(platforms, targetX = 500f, durationMs = 450, startMs = 16)
+        assertTrue(flipping.y < 100f - 10f, "y=${flipping.y}")
+
+        flipping.runOn(platforms, targetX = 500f, durationMs = 600, startMs = 466)
+        assertEquals(100f, flipping.y)
+    }
+
+    @Test
+    fun backflipCanNotStartInTheMiddleOfAJump() {
+        val mascot = state(startX = 300f)
+        var time = 0L
+        while (mascot.mode != FloconMascotMode.Jump && time < 10_000) {
+            mascot.update(frameMs, time, 50f, islands)
+            time += frameMs
+        }
+        mascot.backflip()
+        mascot.update(frameMs, time, 50f, islands)
+        assertEquals(FloconMascotMode.Jump, mascot.mode)
+    }
+
+    @Test
+    fun clickingDuringABackflipDoesNotInterruptIt() {
+        val mascot = state()
+        mascot.backflip()
+        mascot.update(16, 0, 500f, 0f, 1_000f)
+        mascot.pet()
+        mascot.update(16, 16, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Backflip, mascot.mode)
+    }
 }

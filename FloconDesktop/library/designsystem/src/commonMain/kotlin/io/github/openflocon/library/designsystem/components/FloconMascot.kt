@@ -9,9 +9,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -28,6 +30,10 @@ val FloconMascotHeight: Dp = 39.dp
 val FloconMascotFeetY: Dp = 36.dp
 
 private const val GridWidth = 34f
+
+/** Where the body is, as a fraction of the height: the mascot spins around it. */
+private const val BodyCenterY = 0.5f
+private const val BackflipLanding = 0.9f
 
 /** Part of a jump spent with the legs stretched out: the rise and the apex, then it gathers to land. */
 private val JumpStretch = 0f..0.6f
@@ -53,7 +59,8 @@ private val Dust = Color(0x66FFFFFF)
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
- * Clicking it makes it happy ([FloconMascotState.pet]), stroking it with the pointer makes it purr.
+ * Clicking it makes it happy ([FloconMascotState.pet]), stroking it with the pointer makes it purr,
+ * right-clicking it makes it do a backflip.
  */
 @Composable
 fun FloconMascot(
@@ -73,6 +80,12 @@ fun FloconMascot(
                         val change = event.changes.firstOrNull() ?: continue
                         when (event.type) {
                             PointerEventType.Move -> state.onHover(change.position.x, change.uptimeMillis, minStroke)
+
+                            PointerEventType.Press -> if (event.buttons.isSecondaryPressed) {
+                                state.backflip()
+                                change.consume()
+                            }
+
                             PointerEventType.Exit -> state.onHoverEnd()
                         }
                     }
@@ -85,12 +98,27 @@ fun FloconMascot(
         }) {
             when (state.mode) {
                 FloconMascotMode.Walk -> if (state.running) drawRunning(unit, state.alternateLegs, dust = true) else drawWalking(unit, state)
+
                 FloconMascotMode.Sit -> drawSitting(unit, state, FloconMascotMode.Sit)
+
                 FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
+
                 FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
+
                 FloconMascotMode.Lie -> drawLying(unit, state)
+
                 FloconMascotMode.Petted -> drawSitting(unit, state, FloconMascotMode.Petted)
+
                 FloconMascotMode.Jump -> drawRunning(unit, stretched = state.jumpProgress in JumpStretch, dust = false)
+
+                FloconMascotMode.Backflip -> {
+                    val progress = state.backflipProgress
+                    val eased = progress * progress * (3f - 2f * progress)
+                    // counter-clockwise in the sprite's own space, so it is a backflip on both sides
+                    rotate(degrees = -360f * eased, pivot = Offset(size.width / 2f, size.height * BodyCenterY)) {
+                        drawRunning(unit, stretched = false, dust = progress > BackflipLanding)
+                    }
+                }
             }
         }
     }
