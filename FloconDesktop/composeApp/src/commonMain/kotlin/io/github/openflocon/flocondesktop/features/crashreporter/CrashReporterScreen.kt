@@ -100,6 +100,7 @@ private fun CrashReportScreen(
 
                 Surface(
                     color = FloconTheme.colors.bg100,
+                    contentColor = FloconTheme.colors.ink,
                     modifier = Modifier.fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
                         .border(
@@ -136,6 +137,7 @@ fun LeftPannel(
 ) {
     Surface(
         color = FloconTheme.colors.bg100,
+        contentColor = FloconTheme.colors.ink,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
             .border(

@@ -76,7 +76,7 @@ private data class BigDialogScene(
                 .graphicsLayer {
                     this.alpha = this@BigDialogScene.alpha.value
                 }
-                .background(FloconTheme.colors.bg000.copy(alpha = 0.7f))
+                .background(Color.Black.copy(alpha = 0.5f))
                 .clickable(
                     onClick = onBack,
                     indication = null,
@@ -95,8 +95,8 @@ private data class BigDialogScene(
                     )
                 )
                 .clip(RoundedCornerShape(12.dp))
-                .background(FloconTheme.colors.bg100)
-                .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(12.dp))
+                .background(FloconTheme.colors.floating)
+                .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(12.dp))
                 .padding(FloconTheme.spacing.large)
         ) {
             Row(
