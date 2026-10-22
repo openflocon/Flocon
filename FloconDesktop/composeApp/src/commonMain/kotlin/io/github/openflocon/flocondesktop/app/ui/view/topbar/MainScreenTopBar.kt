@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleUp
 import androidx.compose.material3.Icon
@@ -33,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon_small
-import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import flocondesktop.composeapp.generated.resources.app_name
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
@@ -46,7 +42,6 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconIsland
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -65,6 +60,7 @@ fun MainScreenTopBar(
     onOpenFolderClicked: () -> Unit,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
+    mouseWindowPosition: () -> Offset? = { null },
 ) {
     Row(
         modifier = modifier
@@ -79,6 +75,7 @@ fun MainScreenTopBar(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Title(
+            mouseWindowPosition = mouseWindowPosition,
             updateChip = updateChip,
             onUpdateChipClicked = onUpdateChipClicked,
             modifier = Modifier.padding(end = FloconTheme.spacing.medium),
@@ -139,6 +136,7 @@ private fun TopBarUpdateChip(
 
 @Composable
 private fun Title(
+    mouseWindowPosition: () -> Offset?,
     modifier: Modifier = Modifier,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
@@ -148,12 +146,9 @@ private fun Title(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(Res.drawable.app_icon_small),
-            contentDescription = stringResource(Res.string.app_logo_content_description),
+        LookAroundDogLogo(
+            mouseWindowPosition = mouseWindowPosition,
+            modifier = Modifier.size(40.dp),
         )
 
         Column(

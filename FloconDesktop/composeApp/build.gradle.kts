@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+            implementation(libs.compottie)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.sqlite.bundled)
