@@ -17,10 +17,9 @@ internal class LocalAdbCommanderDataSourceRoom(
     private val dao: AdbCommanderDao,
 ) : AdbCommanderLocalDataSource {
 
-    override fun observeSavedCommands(deviceId: String): Flow<List<AdbCommandDomainModel>> =
-        dao.observeSavedCommands(deviceId)
-            .map { entities -> entities.map { it.toDomainModel() } }
-            .distinctUntilChanged()
+    override fun observeSavedCommands(deviceId: String): Flow<List<AdbCommandDomainModel>> = dao.observeSavedCommands(deviceId)
+        .map { entities -> entities.map { it.toDomainModel() } }
+        .distinctUntilChanged()
 
     override suspend fun saveCommand(deviceId: String, command: AdbCommandDomainModel) {
         dao.insertSavedCommand(command.toEntity(deviceId))
@@ -39,10 +38,9 @@ internal class LocalAdbCommanderDataSourceRoom(
         )
     }
 
-    override fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryDomainModel>> =
-        dao.observeHistory(deviceId)
-            .map { entities -> entities.map { it.toDomainModel() } }
-            .distinctUntilChanged()
+    override fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryDomainModel>> = dao.observeHistory(deviceId)
+        .map { entities -> entities.map { it.toDomainModel() } }
+        .distinctUntilChanged()
 
     override suspend fun addToHistory(
         deviceId: String,
@@ -65,10 +63,9 @@ internal class LocalAdbCommanderDataSourceRoom(
         dao.clearHistory(deviceId)
     }
 
-    override fun observeFlows(deviceId: String): Flow<List<AdbFlowDomainModel>> =
-        dao.observeFlowsWithSteps(deviceId)
-            .map { entities -> entities.map { it.toDomainModel() } }
-            .distinctUntilChanged()
+    override fun observeFlows(deviceId: String): Flow<List<AdbFlowDomainModel>> = dao.observeFlowsWithSteps(deviceId)
+        .map { entities -> entities.map { it.toDomainModel() } }
+        .distinctUntilChanged()
 
     override suspend fun getFlowWithSteps(flowId: Long): AdbFlowDomainModel? {
         val flow = dao.getFlowById(flowId) ?: return null

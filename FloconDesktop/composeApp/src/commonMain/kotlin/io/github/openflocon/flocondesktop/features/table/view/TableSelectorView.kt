@@ -55,7 +55,9 @@ internal fun TableSelectorView(
             ) {
                 when (tablesState) {
                     TablesStateUiModel.Empty -> Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
+
                     TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
+
                     is TablesStateUiModel.WithContent -> {
                         Text(text = tablesState.selected.name, style = FloconTheme.typography.bodySmall)
                         FloconIcon(

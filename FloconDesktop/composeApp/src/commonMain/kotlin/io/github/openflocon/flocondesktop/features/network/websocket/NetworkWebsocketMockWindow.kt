@@ -38,6 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.network_websocket_mock_title
 import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
@@ -47,10 +49,8 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import kotlinx.collections.immutable.ImmutableList
-import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.network_websocket_mock_title
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NetworkWebsocketMockWindow(

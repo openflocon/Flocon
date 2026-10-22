@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_see_all_queries
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
@@ -38,8 +40,6 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.database_see_all_queries
 
 @Composable
 internal fun DatabaseItemView(

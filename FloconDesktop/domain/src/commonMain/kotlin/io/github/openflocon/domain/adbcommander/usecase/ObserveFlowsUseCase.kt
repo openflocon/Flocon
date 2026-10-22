@@ -10,10 +10,9 @@ class ObserveFlowsUseCase(
     private val adbCommanderRepository: AdbCommanderRepository,
     private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
 ) {
-    operator fun invoke(): Flow<List<AdbFlowDomainModel>> =
-        observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
-            adbCommanderRepository.observeFlows(
-                deviceId ?: ExecuteAdbCommanderCommandUseCase.DEFAULT_DEVICE_ID
-            )
-        }
+    operator fun invoke(): Flow<List<AdbFlowDomainModel>> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
+        adbCommanderRepository.observeFlows(
+            deviceId ?: ExecuteAdbCommanderCommandUseCase.DEFAULT_DEVICE_ID
+        )
+    }
 }

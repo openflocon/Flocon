@@ -63,7 +63,9 @@ class McpTargetResolver(
         val apps = devicesRepository.observeDeviceApps(deviceId).first()
         return when (apps.size) {
             0 -> throw McpToolException("Device '$deviceId' not found or has no app. ${availableTargetsHint()}")
+
             1 -> apps.first().toTarget(deviceId)
+
             else -> throw McpToolException(
                 "Device '$deviceId' has several apps, please specify '$ARG_PACKAGE_NAME' among: ${apps.joinToString { it.packageName }}",
             )
@@ -87,7 +89,6 @@ internal fun DeviceAppDomainModel.toTarget(deviceId: String) = DeviceIdAndPackag
     appInstance = lastAppInstance,
 )
 
-internal fun DeviceIdAndPackageNameDomainModel.isSameApp(other: DeviceIdAndPackageNameDomainModel): Boolean =
-    deviceId == other.deviceId && packageName == other.packageName
+internal fun DeviceIdAndPackageNameDomainModel.isSameApp(other: DeviceIdAndPackageNameDomainModel): Boolean = deviceId == other.deviceId && packageName == other.packageName
 
 internal fun McpTargetArguments.hasExplicitTarget(): Boolean = !deviceId.isNullOrBlank() || !packageName.isNullOrBlank()

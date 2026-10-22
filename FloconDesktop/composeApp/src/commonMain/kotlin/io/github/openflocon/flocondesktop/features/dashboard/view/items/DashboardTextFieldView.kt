@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardTextFieldView(

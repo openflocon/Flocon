@@ -28,18 +28,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_cancel_flow
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.ConsoleOutputEntry
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowExecutionUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import kotlinx.collections.immutable.ImmutableList
-import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.adb_commander_cancel_flow
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextButton
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RunnerContent(

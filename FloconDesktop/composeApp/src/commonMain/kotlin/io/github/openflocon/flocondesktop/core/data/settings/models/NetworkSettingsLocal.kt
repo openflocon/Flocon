@@ -40,4 +40,3 @@ internal fun NetworkSettings.toLocal() = NetworkSettingsLocal(
     invertList = invertList,
     defaultSelectedTab = defaultSelectedTab,
 )
-

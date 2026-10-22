@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardContainerView(

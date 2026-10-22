@@ -26,13 +26,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_insert_new_values
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_insert_new_values
 
 @Composable
 internal fun TableItemView(

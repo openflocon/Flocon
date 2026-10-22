@@ -28,16 +28,16 @@ import androidx.compose.ui.window.v2.WindowSizeProvider
 import androidx.compose.ui.window.v2.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
+import flocondesktop.composeapp.generated.resources.app_name
+import flocondesktop.composeapp.generated.resources.settings_about_title
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.utils.openInBrowser
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
-import java.net.URI
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.app_name
-import flocondesktop.composeapp.generated.resources.settings_about_title
+import java.net.URI
 
 @Composable
 internal fun AboutScreen(

@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.app
 
-import io.github.openflocon.domain.log.LogDomain
-import io.github.openflocon.domain.log.LogManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
@@ -12,6 +10,8 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledP
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
@@ -34,11 +34,11 @@ import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
-import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
+import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
@@ -144,7 +144,7 @@ internal class AppViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // the selected item can be hidden when another app is selected: go to the first available one
             menuState.collect { menu ->
-                val available = menu.topItems + menu.pinnedItems +menu.sections.flatMap { it.items } + menu.bottomItems
+                val available = menu.topItems + menu.pinnedItems + menu.sections.flatMap { it.items } + menu.bottomItems
                 val current = contentState.value.current
                 if (available.isNotEmpty() && available.none { it.screen == current }) {
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))
@@ -192,6 +192,7 @@ internal class AppViewModel(
     fun onAction(action: AppAction) {
         when (action) {
             is AppAction.SelectMenu -> onSelectMenu(action)
+
             is AppAction.TogglePin -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 togglePinnedMenuItemUseCase(action.menu.id)
             }
@@ -201,12 +202,19 @@ internal class AppViewModel(
             }
 
             is AppAction.DeleteApp -> deleteApp(action)
+
             is AppAction.DeleteDevice -> deleteDevice(action)
+
             AppAction.Record -> onRecord()
+
             AppAction.Restart -> onRestart()
+
             AppAction.Screenshoot -> onTakeScreenshot()
+
             AppAction.OpenFloconFolder -> onOpenFloconFolder()
+
             is AppAction.SelectApp -> onAppSelected(action)
+
             is AppAction.SelectDevice -> onDeviceSelected(action)
         }
     }

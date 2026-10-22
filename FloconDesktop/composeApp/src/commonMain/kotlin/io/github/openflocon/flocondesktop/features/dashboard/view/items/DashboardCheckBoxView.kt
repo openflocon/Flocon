@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,6 @@ import androidx.compose.ui.Modifier
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardCheckBoxView(

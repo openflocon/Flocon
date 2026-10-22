@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view
 
-
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -348,7 +347,6 @@ private fun NetworkDetailContent(
                 }
             }
 
-
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -456,6 +454,7 @@ private fun SummaryCard(
         ) {
             when (val m = state.method) {
                 is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+
                 is NetworkDetailViewState.Method.MethodName -> {
                     SelectionContainer {
                         Text(
@@ -1096,6 +1095,7 @@ private fun FullLogExportView(
             ) {
                 when (val m = state.method) {
                     is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+
                     is NetworkDetailViewState.Method.MethodName -> {
                         Text(
                             text = m.name,
@@ -1354,10 +1354,8 @@ private fun formatBodyForExport(body: String, maxLines: Int = 30): String {
 }
 
 @androidx.compose.ui.tooling.preview.Preview
-
 @Composable
 private fun NetworkDetailViewPreview() {
-
     FloconTheme {
         NetworkDetailContent(
             uiState = NetworkDetailViewState(
@@ -1366,19 +1364,19 @@ private fun NetworkDetailViewPreview() {
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 statusLabel = "Status",
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        status = NetworkStatusUi.Status.SUCCESS,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
                 requestHeaders =
-                    persistentListOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                persistentListOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBodyTitle = "Body",
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -1396,7 +1394,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response.Success(
                     body =
-                        """
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -1410,13 +1408,13 @@ private fun NetworkDetailViewPreview() {
                     canOpenResponseBody = true,
                     responseBodyIsNotBlank = true,
                     headers =
-                        persistentListOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
+                    persistentListOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 ),
                 graphQlSection = null,
                 imageUrl = null,

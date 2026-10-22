@@ -33,8 +33,5 @@ internal data class DeeplinkReceivedDataModel(
             override val name: String,
             val variableName: String
         ) : Parameter
-
     }
-
-
 }

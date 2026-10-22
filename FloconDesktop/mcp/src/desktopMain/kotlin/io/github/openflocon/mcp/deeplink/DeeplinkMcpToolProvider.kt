@@ -6,10 +6,10 @@ import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 
 internal class DeeplinkMcpToolProvider(
@@ -101,6 +101,7 @@ internal class DeeplinkMcpToolProvider(
                     type = DeeplinkParameterType.AutoComplete,
                     suggestions = parameter.autoComplete,
                 )
+
                 is DeeplinkDomainModel.Parameter.Variable -> DeeplinkParameterMcpModel(
                     name = parameter.name,
                     type = DeeplinkParameterType.Variable,
@@ -112,6 +113,7 @@ internal class DeeplinkMcpToolProvider(
 
     private fun DeeplinkVariableDomainModel.toMcp() = when (val mode = mode) {
         is DeeplinkVariableDomainModel.Mode.Input -> DeeplinkVariableMcpModel(name = name, description = description, mode = DeeplinkVariableMode.Input)
+
         is DeeplinkVariableDomainModel.Mode.AutoComplete -> DeeplinkVariableMcpModel(
             name = name,
             description = description,

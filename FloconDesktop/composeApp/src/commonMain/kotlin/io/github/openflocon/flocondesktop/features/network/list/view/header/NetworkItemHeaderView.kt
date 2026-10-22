@@ -1,19 +1,20 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.header
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_method
@@ -36,7 +37,6 @@ import io.github.openflocon.flocondesktop.features.network.list.view.filters.Met
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun NetworkItemHeaderView(

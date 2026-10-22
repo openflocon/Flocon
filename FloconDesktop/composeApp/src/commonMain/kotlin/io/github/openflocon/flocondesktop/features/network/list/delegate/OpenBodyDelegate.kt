@@ -56,11 +56,13 @@ class OpenBodyDelegate {
 
         return when {
             trimmed.startsWith("{") || trimmed.startsWith("[") -> "json"
+
             trimmed.startsWith("<") &&
                 trimmed.contains("</") &&
                 !trimmed.contains("<html", ignoreCase = true) -> "xml"
 
             trimmed.contains("<html", ignoreCase = true) -> "html"
+
             else -> "txt"
         }
     }

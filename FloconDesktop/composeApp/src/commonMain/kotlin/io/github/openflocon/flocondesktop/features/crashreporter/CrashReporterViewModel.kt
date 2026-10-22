@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
-import io.github.openflocon.domain.crashreporter.usecase.ObserveCurrentDeviceHasCrashReportsUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -13,6 +12,7 @@ import io.github.openflocon.domain.crashreporter.usecase.ClearAllCrashReportUseC
 import io.github.openflocon.domain.crashreporter.usecase.DeleteCrashReportUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsByIdUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsUseCase
+import io.github.openflocon.domain.crashreporter.usecase.ObserveCurrentDeviceHasCrashReportsUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToUi
@@ -79,10 +79,12 @@ internal class CrashReporterViewModel(
                 is CrashReporterAction.Clean -> {
                     clearAllCrashReportUseCase()
                 }
+
                 is CrashReporterAction.Copy -> {
                     copyToClipboard(action.crash.stackTrace)
                     feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
                 }
+
                 is CrashReporterAction.Delete -> deleteCrashReportUseCase(action.crashId)
             }
         }

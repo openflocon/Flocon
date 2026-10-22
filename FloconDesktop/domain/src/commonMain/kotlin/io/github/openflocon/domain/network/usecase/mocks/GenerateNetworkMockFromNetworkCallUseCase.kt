@@ -30,7 +30,9 @@ class GenerateNetworkMockFromNetworkCallUseCase(
             displayName = "",
             response = request.response?.let {
                 when (it) {
-                    is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case
+                    is FloconNetworkCallDomainModel.Response.Failure -> null
+
+                    // maybe generate error response in this case
                     is FloconNetworkCallDomainModel.Response.Success -> MockNetworkDomainModel.Response.Body(
                         httpCode = request.httpCode() ?: 200,
                         body = it.body ?: "",

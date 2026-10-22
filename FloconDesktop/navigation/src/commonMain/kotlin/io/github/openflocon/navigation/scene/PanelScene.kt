@@ -109,7 +109,6 @@ private data class PanelScene(
             true
         }
 
-
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -257,7 +256,6 @@ interface OnPin {
     val isPinned: StateFlow<Boolean>
 
     fun onPin(pinned: Boolean)
-
 }
 
 private data class PaneProperties(

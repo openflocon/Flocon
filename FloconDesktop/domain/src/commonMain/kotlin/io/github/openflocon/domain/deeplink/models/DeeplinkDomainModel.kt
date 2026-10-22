@@ -19,6 +19,5 @@ data class DeeplinkDomainModel(
             override val name: String,
             val variableName: String
         ) : Parameter
-
     }
 }

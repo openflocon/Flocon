@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,6 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun TableRowView(

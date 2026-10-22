@@ -28,6 +28,7 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
     methodFormatted = request.methodFormatted,
     specificInfos = when (type) {
         FloconNetworkCallType.HTTP -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
+
         FloconNetworkCallType.GRAPHQL -> {
             request.graphql?.let { requestGraphQl ->
                 FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
@@ -38,6 +39,7 @@ private fun FloconNetworkCallEntity.toRequestDomainModel(): FloconNetworkCallDom
         }
 
         FloconNetworkCallType.GRPC -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+
         FloconNetworkCallType.WEBSOCKET -> FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket(
             event = request.websocket?.event ?: "unknown",
         )

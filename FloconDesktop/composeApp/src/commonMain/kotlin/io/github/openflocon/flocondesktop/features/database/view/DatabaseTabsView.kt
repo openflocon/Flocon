@@ -28,13 +28,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
-import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.common.buildMenu
-import kotlinx.collections.immutable.ImmutableList
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.close
 import flocondesktop.composeapp.generated.resources.general_rename
@@ -42,6 +35,13 @@ import flocondesktop.composeapp.generated.resources.tabs_close_all
 import flocondesktop.composeapp.generated.resources.tabs_close_left
 import flocondesktop.composeapp.generated.resources.tabs_close_others
 import flocondesktop.composeapp.generated.resources.tabs_close_right
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.buildMenu
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 private val TabIndicatorHeight = 2.dp
 

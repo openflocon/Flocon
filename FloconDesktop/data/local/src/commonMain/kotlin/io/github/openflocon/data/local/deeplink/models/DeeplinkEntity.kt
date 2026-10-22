@@ -57,7 +57,5 @@ data class DeeplinkEntity(
             override val name: String,
             val variableName: String
         ) : Parameter
-
     }
 }
-

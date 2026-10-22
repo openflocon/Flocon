@@ -17,7 +17,6 @@ class GetFloconDocumentPathUseCase(
     }
 
     companion object {
-        fun defaultPath(): File =
-            Paths.get(System.getProperty("user.home"), "Documents", "Flocon").toFile()
+        fun defaultPath(): File = Paths.get(System.getProperty("user.home"), "Documents", "Flocon").toFile()
     }
 }

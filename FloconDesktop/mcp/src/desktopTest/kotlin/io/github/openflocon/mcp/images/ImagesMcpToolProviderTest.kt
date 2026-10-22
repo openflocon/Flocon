@@ -80,8 +80,7 @@ class ImagesMcpToolProviderTest {
         assertTrue("headers" in limited["images"]!!.jsonArray.first().jsonObject)
     }
 
-    private fun JsonObject.urls(): List<String> =
-        this["images"]!!.jsonArray.map { it.jsonObject["url"]!!.jsonPrimitive.content.substringAfterLast('/') }
+    private fun JsonObject.urls(): List<String> = this["images"]!!.jsonArray.map { it.jsonObject["url"]!!.jsonPrimitive.content.substringAfterLast('/') }
 }
 
 private class FakeImagesRepository(private val images: List<DeviceImageDomainModel>) : ImagesRepository {

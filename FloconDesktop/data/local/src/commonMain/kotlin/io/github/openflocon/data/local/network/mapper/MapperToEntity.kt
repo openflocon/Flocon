@@ -74,6 +74,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                     statusFormatted = networkResponse.statusFormatted,
                 )
             }
+
             is FloconNetworkCallDomainModel.Response.Success -> {
                 FloconNetworkResponseEmbedded(
                     durationMs = networkResponse.durationMs,
@@ -105,6 +106,7 @@ fun FloconNetworkCallDomainModel.toEntity(
                         is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> NetworkCallGrpcResponseEmbedded(
                             responseStatus = s.grpcStatus,
                         )
+
                         else -> null
                     }
                 )

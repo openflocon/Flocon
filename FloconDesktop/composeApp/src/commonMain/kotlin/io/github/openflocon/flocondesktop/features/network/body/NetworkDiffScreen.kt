@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.body
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,17 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffInfo
 import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.diff_clipboard
+import flocondesktop.composeapp.generated.resources.diff_original
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkDiffUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconJsonTreeDiff
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.diff_clipboard
-import flocondesktop.composeapp.generated.resources.diff_original
 
 @Composable
 fun NetworkDiffWindow(
@@ -52,7 +52,7 @@ private fun NetworkDiffContent(
         Column {
             val diffInfo = jsonTreeDiffInfo
 
-            if(diffInfo != null) {
+            if (diffInfo != null) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -99,13 +99,14 @@ private fun NetworkDiffContent(
                     }
                 },
                 onError = {
-                    when(it.error) {
+                    when (it.error) {
                         is OriginalJsonError -> {
                             Text(
                                 text = "Error in original Json:\n${it.error.throwable.localizedMessage}",
                                 style = FloconTheme.typography.bodyMedium
                             )
                         }
+
                         is RevisedJsonError -> {
                             Text(
                                 text = "Error in clipboard Json:\n${it.error.throwable.localizedMessage}",

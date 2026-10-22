@@ -66,6 +66,7 @@ enum class FeatureDoc(
         emptyTitle = Res.string.feature_doc_sharedpreferences_empty_title,
         emptyDescription = Res.string.feature_doc_sharedpreferences_empty_description,
     ),
+
     // Empty state only on the root: no folder announced by the app. An empty folder is a legit state
     Files(
         page = "files",

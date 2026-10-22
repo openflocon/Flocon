@@ -65,8 +65,6 @@ internal object ImageOptimizer {
         return bufferedImage
     }
 
-
-
     fun toPngByteArray(image: BufferedImage): ByteArray {
         val baos = ByteArrayOutputStream()
         val writers = ImageIO.getImageWritersByFormatName("png")
@@ -88,28 +86,26 @@ internal object ImageOptimizer {
         return baos.toByteArray()
     }
 
-    fun saveToFile(image: BufferedImage, targetFile: File): Boolean {
-        return try {
-            val writers = ImageIO.getImageWritersByFormatName("png")
-            if (writers.hasNext()) {
-                val writer = writers.next()
-                val param = writer.defaultWriteParam
-                if (param.canWriteCompressed()) {
-                    param.compressionMode = ImageWriteParam.MODE_EXPLICIT
-                    param.compressionQuality = 0.85f
-                }
-                val ios = ImageIO.createImageOutputStream(targetFile)
-                writer.output = ios
-                writer.write(null, IIOImage(image, null, null), param)
-                writer.dispose()
-                ios.close()
-            } else {
-                ImageIO.write(image, "png", targetFile)
+    fun saveToFile(image: BufferedImage, targetFile: File): Boolean = try {
+        val writers = ImageIO.getImageWritersByFormatName("png")
+        if (writers.hasNext()) {
+            val writer = writers.next()
+            val param = writer.defaultWriteParam
+            if (param.canWriteCompressed()) {
+                param.compressionMode = ImageWriteParam.MODE_EXPLICIT
+                param.compressionQuality = 0.85f
             }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
+            val ios = ImageIO.createImageOutputStream(targetFile)
+            writer.output = ios
+            writer.write(null, IIOImage(image, null, null), param)
+            writer.dispose()
+            ios.close()
+        } else {
+            ImageIO.write(image, "png", targetFile)
         }
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
     }
 }
