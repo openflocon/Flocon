@@ -23,7 +23,6 @@ ktlint_compose_modifier-missing-check = disabled
 ktlint_compose_param-order-check = disabled
 ktlint_compose_modifier-reused-check = disabled
 ktlint_compose_compositionlocal-allowlist = disabled
-ktlint_compose_modifier-not-used-at-root = disabled
 ktlint_compose_preview-public-check = enabled
 ktlint_compose_naming-check = disabled
 ktlint_compose_parameter-naming = disabled

@@ -128,7 +128,7 @@ fun SharedPrefScreen(
                     val lazyListState = rememberLazyListState()
                     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
                     Box(
-                        modifier = modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                             .clip(FloconTheme.shapes.medium)
                             .background(FloconTheme.colors.bg100)
                             .border(
@@ -142,7 +142,7 @@ fun SharedPrefScreen(
                                 .fillMaxWidth()
                         ) {
                             Row(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {

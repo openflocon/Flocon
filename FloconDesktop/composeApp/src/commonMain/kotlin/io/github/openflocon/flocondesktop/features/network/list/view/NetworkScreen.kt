@@ -153,12 +153,12 @@ fun NetworkScreen(
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
                 .clip(FloconTheme.shapes.large)
