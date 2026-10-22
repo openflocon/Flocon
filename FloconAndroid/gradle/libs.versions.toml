@@ -23,6 +23,7 @@ ktor = "3.6.0"
 lifecycle-runtime-ktx = "2.11.0"
 maven-publish = "0.37.0"
 multiplatform-settings = "1.3.0"
+navigation3 = "1.2.0-rc01"
 okhttp-bom = "5.5.0"
 process-phoenix = "3.0.0"
 protobuf = "4.36.2"
@@ -68,7 +69,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 
 # Compose Multiplatform
-compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose" }
+compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
