@@ -38,6 +38,7 @@ private val Blush = Color(0xFFFF8FB1)
 private val Tongue = Color(0xFFFF7A9C)
 private val Sleep = Color(0xFFF5D68B)
 private val Shadow = Color(0x40000000)
+private val Dust = Color(0x66FFFFFF)
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
@@ -59,7 +60,7 @@ fun FloconMascot(
             if (!state.facingRight) scale(scaleX = -1f, scaleY = 1f, pivot = Offset(size.width / 2f, 0f))
         }) {
             when (state.mode) {
-                FloconMascotMode.Walk -> drawWalking(unit, state)
+                FloconMascotMode.Walk -> if (state.running) drawRunning(unit, state) else drawWalking(unit, state)
                 FloconMascotMode.Sit -> drawSitting(unit, state, FloconMascotMode.Sit)
                 FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
                 FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
@@ -87,9 +88,8 @@ private fun DrawScope.pixels(
 
 private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
     val lifted = state.alternateLegs
-    val stride = if (state.running) 3 else 2
-    val legA = if (lifted) -stride else 0
-    val legB = if (lifted) 0 else -stride
+    val legA = if (lifted) -2 else 0
+    val legB = if (lifted) 0 else -2
     val bob = if (lifted) -1 else 0
     val tail = if (lifted) -1 else 1
     val ear = if (lifted) 1 else 0
@@ -129,6 +129,61 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
     // near ear
     pixels(unit, 16, 5 + bob + ear, 3, 7, Golden)
     pixels(unit, 16, 10 + bob + ear, 3, 2, EarPink)
+}
+
+/** Gallop: stretched out in the air, then gathered when landing, with ears and tail streaming back. */
+private fun DrawScope.drawRunning(unit: Float, state: FloconMascotState) {
+    val stretched = state.alternateLegs
+    val air = if (stretched) -2 else 0
+    val dy = air + if (stretched) 1 else -1
+
+    if (stretched) {
+        pixels(unit, 9, 24, 14, 1, Shadow)
+    } else {
+        pixels(unit, 6, 24, 20, 1, Shadow)
+        pixels(unit, 0, 22, 3, 2, Dust)
+        pixels(unit, 3, 23, 2, 1, Dust)
+    }
+
+    // tail streaming back
+    pixels(unit, 0, (if (stretched) 10 else 8) + air, 6, 2, GoldenDark)
+    if (stretched) {
+        // far legs reaching out, back and front
+        pixels(unit, 1, 16 + air, 6, 3, GoldenDark)
+        pixels(unit, 22, 16 + air, 6, 3, GoldenDark)
+        // body, flat
+        pixels(unit, 6, 10 + air, 18, 8, Golden)
+        pixels(unit, 8, 16 + air, 14, 2, GoldenLight)
+        // near legs reaching out
+        pixels(unit, 3, 18 + air, 6, 3, Golden)
+        pixels(unit, 2, 18 + air, 1, 3, GoldenLight)
+        pixels(unit, 24, 18 + air, 6, 3, Golden)
+        pixels(unit, 29, 18 + air, 1, 3, GoldenLight)
+    } else {
+        // legs gathered under the body
+        pixels(unit, 12, 19, 3, 3, GoldenDark)
+        pixels(unit, 20, 19, 3, 3, GoldenDark)
+        pixels(unit, 6, 8, 18, 9, Golden)
+        pixels(unit, 8, 15, 14, 2, GoldenLight)
+        pixels(unit, 9, 17, 4, 5, Golden)
+        pixels(unit, 9, 21, 4, 1, GoldenLight)
+        pixels(unit, 17, 17, 4, 5, Golden)
+        pixels(unit, 17, 21, 4, 1, GoldenLight)
+    }
+    // far ear streaming back
+    pixels(unit, 22, 1 + dy, 5, 2, GoldenDark)
+    pixels(unit, 22, 1 + dy, 2, 2, EarBlue)
+    // head
+    pixels(unit, 18, 3 + dy, 12, 11, Golden)
+    pixels(unit, 26, 9 + dy, 6, 5, GoldenLight)
+    pixels(unit, 30, 9 + dy, 2, 2, Ink)
+    pixels(unit, 27, 14 + dy, 2, 2, Tongue)
+    pixels(unit, 22, 11 + dy, 2, 1, Blush)
+    pixels(unit, 23, 6 + dy, 2, 2, Ink)
+    pixels(unit, 23, 6 + dy, 1, 1, Color.White)
+    // near ear streaming back
+    pixels(unit, 13, 5 + dy, 6, 3, Golden)
+    pixels(unit, 13, 5 + dy, 2, 3, EarPink)
 }
 
 private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: FloconMascotMode) {
