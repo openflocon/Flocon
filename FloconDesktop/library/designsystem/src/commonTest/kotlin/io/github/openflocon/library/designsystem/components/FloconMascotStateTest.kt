@@ -69,15 +69,15 @@ class FloconMascotStateTest {
     @Test
     fun fallsAsleepAfterBeingIdle() {
         val mascot = state()
-        mascot.run(targetX = 500f, durationMs = 9_000)
+        mascot.run(targetX = 500f, durationMs = 5_000)
         assertEquals(FloconMascotMode.Sleep, mascot.mode)
     }
 
     @Test
     fun wakesUpWhenThePointerGoesFarAway() {
         val mascot = state()
-        mascot.run(targetX = 500f, durationMs = 9_000)
-        mascot.update(16, 9_000, 900f, 0f, 1_000f)
+        mascot.run(targetX = 500f, durationMs = 5_000)
+        mascot.update(16, 5_000, 900f, 0f, 1_000f)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
 
@@ -130,11 +130,11 @@ class FloconMascotStateTest {
     @Test
     fun beingPettedWakesItUpAndKeepsItInPlace() {
         val mascot = state()
-        mascot.run(targetX = 500f, durationMs = 9_000)
+        mascot.run(targetX = 500f, durationMs = 5_000)
         assertEquals(FloconMascotMode.Sleep, mascot.mode)
 
         mascot.pet()
-        mascot.update(16, 9_000, 900f, 0f, 1_000f)
+        mascot.update(16, 5_000, 900f, 0f, 1_000f)
         assertEquals(FloconMascotMode.Happy, mascot.mode)
         assertEquals(500f, mascot.x)
     }
@@ -176,21 +176,21 @@ class FloconMascotStateTest {
     @Test
     fun liesDownAfterALongTime() {
         val mascot = state()
-        mascot.run(targetX = 500f, durationMs = 17_000)
+        mascot.run(targetX = 500f, durationMs = 9_000)
         assertEquals(FloconMascotMode.Lie, mascot.mode)
     }
 
     @Test
     fun staysLyingForAtLeastTheMinimumDurationBeforeWakingUp() {
         val mascot = state()
-        mascot.run(targetX = 500f, durationMs = 17_000)
+        mascot.run(targetX = 500f, durationMs = 9_000)
         assertEquals(FloconMascotMode.Lie, mascot.mode)
 
         // it has been lying for about a second: a far pointer doesn't wake it yet
-        mascot.run(targetX = 900f, durationMs = 4_000, startMs = 17_000)
+        mascot.run(targetX = 900f, durationMs = 4_000, startMs = 9_000)
         assertEquals(FloconMascotMode.Lie, mascot.mode)
 
-        mascot.run(targetX = 900f, durationMs = 2_500, startMs = 21_000)
+        mascot.run(targetX = 900f, durationMs = 2_500, startMs = 13_000)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
 }
