@@ -72,6 +72,7 @@ fun LeftPanelView(
     val lineColor = FloconTheme.colors.line
     Box(
         modifier = modifier
+            .background(FloconTheme.colors.chrome)
             .drawBehind {
                 // right border of the sidebar
                 drawLine(

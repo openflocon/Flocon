@@ -68,7 +68,7 @@ fun MainScreenTopBar(
 
     Row(
         modifier = modifier
-            .background(FloconTheme.colors.bg000)
+            .background(FloconTheme.colors.chrome)
             .drawBehind {
                 // bottom border of the top bar
                 drawLine(

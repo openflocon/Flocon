@@ -23,6 +23,7 @@ val FloconGlassDarkColors = FloconDarkColors.copy(
     ink = Color(0xFFF5F5FA),
     inkMuted = Color(0xFFC4C4D2),
     inkFaint = Color(0xFF9A9AAE),
+    chrome = Color(0xFF241F30),
 )
 
 val FloconGlassLightColors = FloconLightColors.copy(
