@@ -8,10 +8,11 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun DatabaseDetails(
     state: DetailResultItem,
-    columns: List<String>
+    columns: List<String>,
+    modifier: Modifier = Modifier,
 ) {
     DatabaseRowDetail(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         state = state,
         columns = columns,
     )

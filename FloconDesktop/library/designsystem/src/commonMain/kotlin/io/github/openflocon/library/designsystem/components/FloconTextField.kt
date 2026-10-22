@@ -313,9 +313,13 @@ fun defaultLabel(text: String): @Composable () -> Unit = {
 }
 
 @Composable
-fun DefaultLabel(text: String) {
+fun DefaultLabel(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = text,
+        modifier = modifier,
         style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
         color = FloconTheme.colors.inkMuted,
     )

@@ -11,16 +11,18 @@ import kotlinx.collections.immutable.ImmutableSet
 fun DatabaseTab(
     tab: DatabaseTabState,
     favoritesTitles: ImmutableSet<String>,
+    modifier: Modifier = Modifier,
 ) {
     if (tab.isQueryLogs) {
         DatabaseQueryLogs(
             dbName = tab.databaseName,
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         )
     } else {
         DatabaseTabQuery(
             tab = tab,
             favoritesTitles = favoritesTitles,
+            modifier = modifier,
         )
     }
 }
