@@ -222,12 +222,6 @@ fun NetworkItemView(
                     maxLines = 1,
                 )
             }
-
-            // NetworkStatusUi - Fixed width for the tag from data class
-            StatusView(
-                status = state.status,
-                modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
-            )
         }
     }
 }
