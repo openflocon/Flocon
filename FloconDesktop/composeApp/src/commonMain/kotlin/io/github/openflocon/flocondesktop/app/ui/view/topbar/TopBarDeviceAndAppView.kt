@@ -4,12 +4,20 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
@@ -29,24 +37,41 @@ internal fun TopBarDeviceAndAppView(
     deleteApp: (DeviceAppUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TopBarDeviceDropdown(
-            state = devicesState,
-            onDeviceSelected = onDeviceSelected,
-            deleteDevice = deleteDevice,
-        )
+    val colors = FloconTheme.colors
+    val shape = FloconTheme.shapes.medium
 
-        AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
-            TopBarAppDropdown(
-                devicesState = devicesState,
-                appsState = appsState,
-                onAppSelected = onAppSelected,
-                deleteApp = deleteApp,
+    // device and app are one segmented control
+    CompositionLocalProvider(LocalTopBarSelectorJoined provides true) {
+        Row(
+            modifier = modifier
+                .height(IntrinsicSize.Min)
+                .clip(shape)
+                .background(colors.bg100)
+                .border(1.dp, colors.line, shape),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TopBarDeviceDropdown(
+                state = devicesState,
+                onDeviceSelected = onDeviceSelected,
+                deleteDevice = deleteDevice,
             )
+
+            AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
+                Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .background(colors.line)
+                    )
+                    TopBarAppDropdown(
+                        devicesState = devicesState,
+                        appsState = appsState,
+                        onAppSelected = onAppSelected,
+                        deleteApp = deleteApp,
+                    )
+                }
+            }
         }
     }
 }

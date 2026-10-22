@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontFamily
 import io.github.openflocon.flocondesktop.BuildConfig
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,7 +69,12 @@ fun MainScreenTopBar(
 
     Row(
         modifier = modifier
-            .background(FloconTheme.colors.chrome)
+            .background(
+                Brush.horizontalGradient(
+                    0.4f to FloconTheme.colors.chrome,
+                    1f to FloconTheme.colors.chromeTint,
+                ),
+            )
             .drawBehind {
                 // bottom border of the top bar
                 drawLine(
