@@ -46,7 +46,9 @@ internal fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
             val durationMs = (call.response?.durationMs?.roundToInt()) ?: 0
             val status = when (call.response) {
                 is FloconNetworkCallDomainModel.Response.Success -> "Success"
+
                 is FloconNetworkCallDomainModel.Response.Failure -> "Failure"
+
                 null -> when (val s = call.request.specificInfos) {
                     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> s.event
                     else -> "Pending"
@@ -57,6 +59,7 @@ internal fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
                     .toString()
 
                 is FloconNetworkCallDomainModel.Response.Failure -> null
+
                 null -> null
             }
             val issue =
@@ -81,6 +84,7 @@ internal fun List<FloconNetworkCallDomainModel>.exportToCsv(file: File) {
                 }
 
                 is FloconNetworkCallDomainModel.Response.Failure -> null
+
                 null -> null
             } ?: ""
 

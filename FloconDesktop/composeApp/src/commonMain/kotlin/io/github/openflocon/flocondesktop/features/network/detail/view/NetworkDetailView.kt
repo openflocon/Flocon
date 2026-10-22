@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.detail.view
 
-
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -104,11 +103,11 @@ import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailA
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
+import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeaders
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusCell
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
@@ -257,7 +256,7 @@ private fun NetworkDetailContent(
                     fontScale = 1f
                 )
             ) {
-                FullLogExportView(
+                FullLogExport(
                     state = uiState,
                     linesLabelWidth = linesLabelWidth,
                     headersLabelWidth = headersLabelWidth,
@@ -347,7 +346,6 @@ private fun NetworkDetailContent(
                     )
                 }
             }
-
 
             Box(
                 Modifier
@@ -455,7 +453,8 @@ private fun SummaryCard(
             labelWidth = linesLabelWidth,
         ) {
             when (val m = state.method) {
-                is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+                is NetworkDetailViewState.Method.Http -> MethodTag(method = m.method)
+
                 is NetworkDetailViewState.Method.MethodName -> {
                     SelectionContainer {
                         Text(
@@ -482,7 +481,7 @@ private fun SummaryCard(
             contentColor = FloconTheme.colors.ink,
             labelWidth = linesLabelWidth,
         ) {
-            StatusView(
+            StatusCell(
                 status = state.status,
             )
         }
@@ -608,7 +607,7 @@ private fun Request(
                         labelWidth = linesLabelWidth,
                         contentColor = FloconTheme.colors.inkMuted
                     ) {
-                        MethodView(method = it.method)
+                        MethodTag(method = it.method)
                     }
                 }
             }
@@ -653,7 +652,7 @@ private fun Request(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                DetailHeadersView(
+                DetailHeaders(
                     headers = requestHeaders,
                     labelWidth = headersLabelWidth,
                     onAuthorizationClicked = { token ->
@@ -897,7 +896,7 @@ private fun Response(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        DetailHeadersView(
+                        DetailHeaders(
                             headers = response.headers,
                             labelWidth = headersLabelWidth,
                             onAuthorizationClicked = { token ->
@@ -1051,7 +1050,7 @@ private fun Response(
 }
 
 @Composable
-private fun FullLogExportView(
+private fun FullLogExport(
     state: NetworkDetailViewState,
     linesLabelWidth: Dp = 130.dp,
     headersLabelWidth: Dp = 150.dp,
@@ -1095,7 +1094,8 @@ private fun FullLogExportView(
                 labelWidth = linesLabelWidth,
             ) {
                 when (val m = state.method) {
-                    is NetworkDetailViewState.Method.Http -> MethodView(method = m.method)
+                    is NetworkDetailViewState.Method.Http -> MethodTag(method = m.method)
+
                     is NetworkDetailViewState.Method.MethodName -> {
                         Text(
                             text = m.name,
@@ -1121,7 +1121,7 @@ private fun FullLogExportView(
                 contentColor = FloconTheme.colors.ink,
                 labelWidth = linesLabelWidth,
             ) {
-                StatusView(status = state.status)
+                StatusCell(status = state.status)
             }
 
             FloconLineDescription(
@@ -1181,7 +1181,7 @@ private fun FullLogExportView(
                     labelWidth = linesLabelWidth,
                     contentColor = FloconTheme.colors.inkMuted
                 ) {
-                    MethodView(method = it.method)
+                    MethodTag(method = it.method)
                 }
             }
         }
@@ -1203,7 +1203,7 @@ private fun FullLogExportView(
                     color = FloconTheme.colors.inkMuted,
                     modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                 )
-                DetailHeadersView(
+                DetailHeaders(
                     headers = headers,
                     labelWidth = headersLabelWidth,
                     onAuthorizationClicked = {},
@@ -1280,7 +1280,7 @@ private fun FullLogExportView(
                             color = FloconTheme.colors.inkMuted,
                             modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
                         )
-                        DetailHeadersView(
+                        DetailHeaders(
                             headers = headers,
                             labelWidth = headersLabelWidth,
                             onAuthorizationClicked = {},
@@ -1354,10 +1354,8 @@ private fun formatBodyForExport(body: String, maxLines: Int = 30): String {
 }
 
 @androidx.compose.ui.tooling.preview.Preview
-
 @Composable
-private fun NetworkDetailViewPreview() {
-
+private fun NetworkDetailPreview() {
     FloconTheme {
         NetworkDetailContent(
             uiState = NetworkDetailViewState(
@@ -1366,19 +1364,19 @@ private fun NetworkDetailViewPreview() {
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 statusLabel = "Status",
                 status =
-                    NetworkStatusUi(
-                        text = "200",
-                        status = NetworkStatusUi.Status.SUCCESS,
-                    ),
+                NetworkStatusUi(
+                    text = "200",
+                    status = NetworkStatusUi.Status.SUCCESS,
+                ),
                 requestHeaders =
-                    persistentListOf(
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                        previewNetworkDetailHeaderUi(),
-                    ),
+                persistentListOf(
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                    previewNetworkDetailHeaderUi(),
+                ),
                 requestBodyTitle = "Body",
                 requestBody =
-                    """
+                """
                         {
                             "id": "123",
                             "name": "Flocon App",
@@ -1396,7 +1394,7 @@ private fun NetworkDetailViewPreview() {
                 requestSize = "0kb",
                 response = NetworkDetailViewState.Response.Success(
                     body =
-                        """
+                    """
                         {
                             "networkStatusUi": "success",
                             "message": "Data received and processed.",
@@ -1410,13 +1408,13 @@ private fun NetworkDetailViewPreview() {
                     canOpenResponseBody = true,
                     responseBodyIsNotBlank = true,
                     headers =
-                        persistentListOf(
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                            previewNetworkDetailHeaderUi(),
-                        ),
+                    persistentListOf(
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                        previewNetworkDetailHeaderUi(),
+                    ),
                 ),
                 graphQlSection = null,
                 imageUrl = null,

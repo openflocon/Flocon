@@ -1,13 +1,10 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,15 +40,18 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
-import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeaderView
+import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
-import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeaderView
-import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowView
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
+import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -122,7 +122,7 @@ internal fun TimelineContent(
                 }
             },
     ) {
-        TimelineHeaderView(
+        TimelineHeader(
             summary = summary,
             isLive = isLive,
         )
@@ -178,7 +178,7 @@ internal fun TimelineContent(
                 when (val item = rows[index]) {
                     is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
                         // the app start of a session, at the time the app started
-                        SessionHeaderView(
+                        SessionHeader(
                             row = item.row,
                             eventCount = summary.sessionEventCounts[item.row.timestamp],
                         )
@@ -187,7 +187,7 @@ internal fun TimelineContent(
                         val delta = remember(item.row.timestamp, olderTimestamp) {
                             olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
                         }
-                        TimelineRowView(
+                        TimelineRow(
                             row = item.row,
                             delta = delta,
                             selected = item.row.key == selectedKey,

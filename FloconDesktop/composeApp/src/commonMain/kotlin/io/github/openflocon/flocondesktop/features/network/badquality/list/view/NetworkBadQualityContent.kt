@@ -22,16 +22,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconActionButton
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
-import kotlinx.collections.immutable.ImmutableList
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.badquality_subtitle
 import flocondesktop.composeapp.generated.resources.badquality_title
 import flocondesktop.composeapp.generated.resources.general_create
+import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconActionButton
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NetworkBadQualityContent(
@@ -67,7 +66,7 @@ fun NetworkBadQualityContent(
                     )
                     Text(
                         text = lines.size.toString(),
-                        style = floconMonoStyle(small = true),
+                        style = FloconTheme.typography.monoSmall,
                         color = colors.inkMuted,
                         modifier = Modifier
                             .background(colors.bg300, CircleShape)
@@ -98,14 +97,14 @@ fun NetworkBadQualityContent(
                 .fillMaxWidth()
                 .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
         ) {
-            BadQualityHeaderView(Modifier.fillMaxWidth())
+            BadQualityHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(400.dp),
             ) {
                 items(lines) {
-                    BadNetworkLineView(
+                    BadNetworkLine(
                         item = it,
                         onClicked = onItemClicked,
                         onDeleteClicked = onDeleteClicked,
@@ -125,7 +124,7 @@ fun NetworkBadQualityContent(
 }
 
 @Composable
-private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
+private fun BadQualityHeader(modifier: Modifier = Modifier) {
     val colors = FloconTheme.colors
     // small capitals, like the titles of the groups of the design system
     val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
@@ -160,7 +159,7 @@ private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
 private fun HeaderText(
     text: String,
     style: TextStyle,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = text.uppercase(),

@@ -111,11 +111,9 @@ class TableMcpToolProviderTest {
 }
 
 private class FakeTableRepository(private val table: TableDomainModel) : TableRepository {
-    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> =
-        flowOf(table.takeIf { tableId == 7L })
+    override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = flowOf(table.takeIf { tableId == 7L })
 
-    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> =
-        flowOf(listOf(TableIdentifierDomainModel(id = 7, name = table.name)))
+    override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = flowOf(listOf(TableIdentifierDomainModel(id = 7, name = table.name)))
 
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) = error("not used")
     override suspend fun selectDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId) = error("not used")

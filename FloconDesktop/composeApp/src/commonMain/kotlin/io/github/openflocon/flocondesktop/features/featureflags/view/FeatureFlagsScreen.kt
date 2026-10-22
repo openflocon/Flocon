@@ -1,14 +1,10 @@
 package io.github.openflocon.flocondesktop.features.featureflags.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +27,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.no_feature_flags
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsViewModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
@@ -39,6 +38,7 @@ import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFla
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -89,7 +89,7 @@ fun FeatureFlagsScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             selector = {
-                FeatureFlagProviderSelectorView(
+                FeatureFlagProviderSelector(
                     providersState = providersState,
                     onProviderSelected = onProviderSelected,
                     modifier = Modifier.fillMaxWidth(),
@@ -147,7 +147,7 @@ fun FeatureFlagsScreen(
                         items = rows,
                         key = { _, item -> item.id },
                     ) { index, item ->
-                        FeatureFlagRowView(
+                        FeatureFlagRow(
                             model = item,
                             onAction = onAction,
                             modifier = Modifier.fillMaxWidth(),

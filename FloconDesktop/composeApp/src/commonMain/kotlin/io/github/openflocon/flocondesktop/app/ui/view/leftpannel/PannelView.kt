@@ -9,12 +9,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -33,19 +33,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.library.designsystem.FloconTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_logo_content_description
+import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 private val NavItemHorizontalPadding = 10.dp
 private val NavItemGap = 10.dp
 private val NavIconSize = 16.dp
 
 @Composable
-fun PanelView(
+fun SidePanel(
     icon: ImageVector,
     text: String,
     isSelected: Boolean,
@@ -134,9 +134,9 @@ fun PanelView(
 
 @Composable
 @Preview
-private fun PannelViewPreview() {
+private fun PannelPreview() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,
@@ -151,7 +151,7 @@ private fun PannelViewPreview() {
 @Preview
 private fun PannelViewPreview_Selected() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = true,
@@ -166,7 +166,7 @@ private fun PannelViewPreview_Selected() {
 @Preview
 private fun PannelViewPreview_Disabled() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,

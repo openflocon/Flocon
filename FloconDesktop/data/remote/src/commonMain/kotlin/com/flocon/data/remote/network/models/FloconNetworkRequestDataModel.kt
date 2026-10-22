@@ -70,6 +70,7 @@ internal fun FloconNetworkResponseDataModel.toDomain(): FloconNetworkResponseOnl
                 "grpc" -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc(
                     grpcStatus = responseGrpcStatus!!,
                 )
+
                 // otherwise tread like http
                 else -> FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http(
                     httpCode = responseHttpCode!!,

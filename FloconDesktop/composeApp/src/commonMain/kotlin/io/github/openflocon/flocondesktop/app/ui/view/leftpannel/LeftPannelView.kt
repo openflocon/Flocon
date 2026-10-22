@@ -3,12 +3,16 @@
 package io.github.openflocon.flocondesktop.app.ui.view.leftpannel
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,30 +20,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.menu_collapse
 import flocondesktop.composeapp.generated.resources.menu_expand
-import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconIconButton
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuItem
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuSection
@@ -47,11 +45,13 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.floconIsland
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
 
 val PanelMaxWidth = 232.dp
@@ -59,7 +59,7 @@ val PanelMinWidth = 64.dp
 val PanelContentMinSize = 34.dp
 
 @Composable
-fun LeftPanelView(
+fun LeftPanel(
     state: MenuState,
     current: SubScreen,
     expanded: Boolean,
@@ -151,7 +151,7 @@ fun LeftPanelView(
             }
         }
 
-        if(expanded) {
+        if (expanded) {
             Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
 
             FloconVerticalScrollbar(
@@ -226,7 +226,7 @@ private fun ColumnScope.MenuItems(
     onTogglePin: (MenuItem) -> Unit = {},
 ) {
     items.fastForEachIndexed { index, item ->
-        PanelView(
+        SidePanel(
             modifier = Modifier
                 .height(PanelContentMinSize)
                 .fillMaxWidth(),
@@ -247,12 +247,12 @@ private fun ColumnScope.MenuItems(
 
 @Composable
 @Preview
-private fun LeftPanelViewPreview() {
+private fun LeftPanelPreview() {
     val selectedItem = remember { mutableStateOf<SubScreen>(SubScreen.Network) }
 
     FloconTheme {
         Box(modifier = Modifier.background(FloconTheme.colors.bg000))
-        LeftPanelView(
+        LeftPanel(
             current = selectedItem.value,
             state = previewMenuState(),
             onClickItem = { selectedItem.value = it.screen },

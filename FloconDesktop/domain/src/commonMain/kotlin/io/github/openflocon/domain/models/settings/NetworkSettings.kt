@@ -12,4 +12,3 @@ data class NetworkSettings(
     val invertList: Boolean,
     val defaultSelectedTab: NetworkDetailTab = NetworkDetailTab.Request,
 )
-

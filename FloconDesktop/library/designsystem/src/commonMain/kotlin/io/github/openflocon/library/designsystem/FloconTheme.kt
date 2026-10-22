@@ -8,10 +8,9 @@ import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,21 +22,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
+import io.github.openflocon.library.designsystem.theme.AppScale
 import io.github.openflocon.library.designsystem.theme.FloconColors
 import io.github.openflocon.library.designsystem.theme.FloconGlassBackground
 import io.github.openflocon.library.designsystem.theme.FloconGlassDarkColors
 import io.github.openflocon.library.designsystem.theme.FloconGlassLightColors
-import io.github.openflocon.library.designsystem.theme.LocalFloconColors
-import io.github.openflocon.library.designsystem.theme.AppScale
-import io.github.openflocon.library.designsystem.theme.FloconSizes
-import io.github.openflocon.library.designsystem.theme.LocalFloconSizes
 import io.github.openflocon.library.designsystem.theme.FloconShape
+import io.github.openflocon.library.designsystem.theme.FloconSizes
 import io.github.openflocon.library.designsystem.theme.FloconSpacing
+import io.github.openflocon.library.designsystem.theme.FloconTypography
+import io.github.openflocon.library.designsystem.theme.LocalFloconColors
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
+import io.github.openflocon.library.designsystem.theme.LocalFloconSizes
 import io.github.openflocon.library.designsystem.theme.LocalFloconSpacing
+import io.github.openflocon.library.designsystem.theme.LocalFloconTypography
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
 import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
+import io.github.openflocon.library.designsystem.theme.toFloconTypography
 
 object FloconTheme {
 
@@ -46,9 +48,9 @@ object FloconTheme {
         @Composable @ReadOnlyComposable
         get() = LocalFloconColors.current
 
-    val typography: Typography
+    val typography: FloconTypography
         @Composable @ReadOnlyComposable
-        get() = MaterialTheme.typography
+        get() = LocalFloconTypography.current
 
     val shapes: FloconShape
         @Composable @ReadOnlyComposable
@@ -102,8 +104,11 @@ fun FloconTheme(
         hoverColor = colors.inkMuted
     )
 
+    val scaledTypography = typography.multiplyFontSizeBy(appScale.fontScale)
+    val floconTypography = remember(scaledTypography) { scaledTypography.toFloconTypography() }
+
     MaterialTheme(
-        typography = typography.multiplyFontSizeBy(appScale.fontScale),
+        typography = scaledTypography,
         colorScheme = if (isDarkTheme) {
             materialDarkScheme(colors)
         } else {
@@ -115,6 +120,7 @@ fun FloconTheme(
             LocalContentColor provides colors.ink,
             LocalIsDarkTheme provides isDarkTheme,
             LocalFloconColors provides colors,
+            LocalFloconTypography provides floconTypography,
             LocalFloconSpacing provides appScale.spacing,
             LocalFloconSizes provides appScale.sizes,
             LocalTextSelectionColors provides selectionTextColor,

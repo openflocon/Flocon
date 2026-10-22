@@ -11,17 +11,16 @@ class AnalyticsRemoteDataSourceImpl(
     private val json: Json
 ) : AnalyticsRemoteDataSource {
 
-    override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> =
-        decodeAddItems(message).takeIf { it.isNotEmpty() }
-            ?.let { list ->
-                list.map {
-                    it.toDomain(
-                        appInstance = message.appInstance,
-                    )
-                }
+    override fun getItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDomainModel> = decodeAddItems(message).takeIf { it.isNotEmpty() }
+        ?.let { list ->
+            list.map {
+                it.toDomain(
+                    appInstance = message.appInstance,
+                )
             }
-            ?.takeIf { it.isNotEmpty() }
-            .orEmpty()
+        }
+        ?.takeIf { it.isNotEmpty() }
+        .orEmpty()
 
     private fun decodeAddItems(message: FloconIncomingMessageDomainModel): List<AnalyticsItemDataModel> = try {
         json.decodeFromString<List<AnalyticsItemDataModel>>(message.body)

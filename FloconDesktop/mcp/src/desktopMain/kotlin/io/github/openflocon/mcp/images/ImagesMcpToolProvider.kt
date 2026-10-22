@@ -4,9 +4,9 @@ import io.github.openflocon.domain.images.repository.ImagesRepository
 import io.github.openflocon.mcp.McpOrder
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlin.time.Instant
 
 internal class ImagesMcpToolProvider(

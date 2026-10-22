@@ -1,13 +1,17 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
@@ -16,11 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
@@ -32,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArra
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardsStateUiModel
 import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboardUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
@@ -96,7 +96,7 @@ fun DashboardScreen(
                     Box(modifier = Modifier.weight(1f)) // to have actions on the right
                 },
                 actions = {
-                    DashboardArrangementView(
+                    DashboardArrangementContent(
                         onArrangementClicked = onArrangementClicked,
                         arrangement = arrangement
                     )
@@ -112,7 +112,7 @@ fun DashboardScreen(
                     }
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             if (deviceDashboards is DashboardsStateUiModel.Empty) {
@@ -125,7 +125,7 @@ fun DashboardScreen(
                 )
             } else {
                 Row(Modifier.fillMaxSize()) {
-                    DashboardSidebarView(
+                    DashboardSidebar(
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(340.dp),
@@ -137,7 +137,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
                     state?.let {
-                        DashboardView(
+                        DashboardContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(FloconTheme.shapes.medium)

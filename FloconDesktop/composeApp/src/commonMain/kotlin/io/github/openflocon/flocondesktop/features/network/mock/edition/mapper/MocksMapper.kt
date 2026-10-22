@@ -30,6 +30,7 @@ fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainMod
             delay = response.delay,
             headers = response.headers,
         )
+
         is MockNetworkUiModel.Response.Exception -> MockNetworkDomainModel.Response.Exception(
             delay = response.delay,
             classPath = response.classPath,
@@ -54,6 +55,7 @@ fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
             delay = r.delay,
             headers = r.headers,
         )
+
         is MockNetworkDomainModel.Response.Exception -> MockNetworkUiModel.Response.Exception(
             delay = r.delay,
             classPath = r.classPath,
@@ -125,6 +127,7 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
                     it.key to it.value
                 }.filterNot { it.key.isEmpty() },
             )
+
             ResponseType.EXCEPTION -> MockNetworkUiModel.Response.Exception(
                 delay = editable.delay,
                 classPath = editable.exceptionResponse.classPath,

@@ -140,8 +140,7 @@ private class FakeDeeplinkRepository(
 ) : DeeplinkRepository {
     override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks> = flowOf(deeplinks)
 
-    override suspend fun getDeeplinkById(deeplinkId: Long, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): DeeplinkDomainModel? =
-        error("not used")
+    override suspend fun getDeeplinkById(deeplinkId: Long, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): DeeplinkDomainModel? = error("not used")
 
     override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = flowOf(history)
 

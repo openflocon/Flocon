@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_create
+import flocondesktop.composeapp.generated.resources.general_export
+import flocondesktop.composeapp.generated.resources.general_import
+import flocondesktop.composeapp.generated.resources.mocks_subtitle
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkEditionWindow
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
@@ -33,16 +38,10 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_create
-import flocondesktop.composeapp.generated.resources.general_export
-import flocondesktop.composeapp.generated.resources.general_import
-import flocondesktop.composeapp.generated.resources.mocks_subtitle
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +105,7 @@ internal fun NetworkMocksContent(
             ) {
                 Text(
                     text = mocks.size.toString(),
-                    style = floconMonoStyle(small = true),
+                    style = FloconTheme.typography.monoSmall,
                     color = colors.inkMuted,
                     modifier = Modifier
                         .background(colors.bg300, CircleShape)
@@ -143,7 +142,7 @@ internal fun NetworkMocksContent(
                 .background(colors.bg100, FloconTheme.shapes.large)
                 .border(1.dp, colors.line, FloconTheme.shapes.large)
         ) {
-            MocksHeaderView(Modifier.fillMaxWidth())
+            MocksHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,7 +152,7 @@ internal fun NetworkMocksContent(
                     items = mocks,
                     key = MockNetworkLineUiModel::id
                 ) {
-                    MockLineView(
+                    MockLine(
                         item = it,
                         onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
                         onDeleteClicked = { id -> onAction(NetworkMockAction.OnDeleteClicked(id)) },

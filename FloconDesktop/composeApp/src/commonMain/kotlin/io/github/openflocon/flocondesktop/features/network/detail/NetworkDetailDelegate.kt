@@ -4,9 +4,9 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
 import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
@@ -145,7 +145,6 @@ class NetworkDetailDelegate(
         }
     }
 
-
     private fun onJsonDetail(action: NetworkDetailAction.JsonDetail) {
         navigationState.navigate(NetworkRoutes.JsonDetail(action.json))
     }
@@ -186,4 +185,3 @@ class NetworkDetailDelegate(
         }
     }
 }
-

@@ -2,8 +2,8 @@ package io.github.openflocon.domain.versions
 
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
-import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.AppScaleSetting
+import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository

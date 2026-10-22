@@ -46,9 +46,8 @@ class DeeplinkRepositoryImpl(
         // no op
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks> =
-        localDeeplinkDataSource.observe(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun getDeeplinkById(
         deeplinkId: Long,
@@ -57,9 +56,8 @@ class DeeplinkRepositoryImpl(
         localDeeplinkDataSource.getDeeplinkById(deeplinkId, deviceIdAndPackageName)
     }
 
-    override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)
-            .flowOn(dispatcherProvider.data)
+    override fun observeHistory(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observeHistory(deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
 
     override suspend fun addToHistory(
         item: DeeplinkDomainModel,

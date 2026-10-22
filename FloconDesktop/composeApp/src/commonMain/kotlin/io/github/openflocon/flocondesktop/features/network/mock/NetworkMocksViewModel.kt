@@ -79,14 +79,20 @@ class NetworkMocksViewModel(
                 id = action.id,
                 enabled = action.enabled
             )
+
             is NetworkMockAction.ChangeIsShared -> changeIsShared(
                 id = action.id,
                 isShared = action.isShared
             )
+
             is NetworkMockAction.OnAddItemClicked -> createNewMock()
+
             is NetworkMockAction.OnDeleteClicked -> deleteMock(id = action.id)
+
             is NetworkMockAction.OnItemClicked -> clickOnMock(id = action.id)
+
             is NetworkMockAction.OnExportClicked -> exportMocks()
+
             is NetworkMockAction.OnImportClicked -> importMocks()
         }
     }
@@ -111,7 +117,9 @@ class NetworkMocksViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (val result = importMocksProcessor()) {
                 is ImportResult.Cancelled -> { /* no op */ }
+
                 is ImportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
+
                 is ImportResult.Success -> {
                     result.mocks.forEach {
                         addNetworkMocksUseCase(it)

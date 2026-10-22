@@ -1,11 +1,11 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -37,9 +37,9 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPrefsStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -115,7 +115,7 @@ fun SharedPrefScreen(
             )
         } else {
             Row(Modifier.fillMaxSize()) {
-                SharedPreferenceSelectorView(
+                SharedPreferenceSelector(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(340.dp),
@@ -168,10 +168,12 @@ fun SharedPrefScreen(
                             ) {
                                 when (rows) {
                                     SharedPreferencesRowsStateUiModel.Empty -> {}
+
                                     SharedPreferencesRowsStateUiModel.Loading -> {}
+
                                     is SharedPreferencesRowsStateUiModel.WithContent -> {
                                         items(sharedPrefRows) {
-                                            SharedPreferenceRowView(
+                                            SharedPreferenceRow(
                                                 model = it,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 onValueChanged = changeValue,

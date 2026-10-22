@@ -1,14 +1,16 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
-import io.github.openflocon.domain.log.LogDomain
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
+import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -22,22 +24,20 @@ import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
+import io.github.openflocon.flocondesktop.common.utils.FolderPicker
+import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
-import io.github.openflocon.flocondesktop.common.utils.FolderPicker
-import io.github.openflocon.flocondesktop.common.utils.OpenFile
-import java.io.File
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
+import java.io.File
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,

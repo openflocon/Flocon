@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.filters
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -12,9 +13,8 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewMethodFilterState
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.library.designsystem.FloconTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun MethodFilterDropdownContent(
@@ -28,7 +28,7 @@ fun MethodFilterDropdownContent(
         filterState.items.fastForEach { item ->
             val alpha by animateFloatAsState(if (item.isSelected) 1f else 0.3f)
             Box(modifier = Modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall)) {
-                MethodView(
+                MethodTag(
                     method = item.method,
                     modifier = Modifier.alpha(alpha),
                     onClick = {

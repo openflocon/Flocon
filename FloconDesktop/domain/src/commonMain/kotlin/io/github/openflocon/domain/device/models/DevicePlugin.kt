@@ -6,6 +6,7 @@ package io.github.openflocon.domain.device.models
  */
 enum class DevicePlugin(val sdkNames: Set<String>) {
     Network(setOf("network")),
+
     // the images come from the network calls
     Images(setOf("network", "images")),
     Database(setOf("database")),
@@ -22,6 +23,5 @@ enum class DevicePlugin(val sdkNames: Set<String>) {
     /**
      * @param installedPlugins the plugins reported by the SDK, null when unknown: everything is considered installed
      */
-    fun isInstalled(installedPlugins: Set<String>?): Boolean =
-        installedPlugins == null || sdkNames.any { it in installedPlugins }
+    fun isInstalled(installedPlugins: Set<String>?): Boolean = installedPlugins == null || sdkNames.any { it in installedPlugins }
 }

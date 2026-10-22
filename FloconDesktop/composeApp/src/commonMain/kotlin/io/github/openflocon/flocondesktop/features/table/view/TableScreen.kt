@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.table.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,13 +45,13 @@ import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiMode
 import io.github.openflocon.flocondesktop.features.table.model.items
 import io.github.openflocon.flocondesktop.features.table.model.previewTableContentStateUiModel
 import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -99,7 +99,7 @@ fun TableScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             selector = {
-                TableSelectorView(
+                TableSelector(
                     tablesState = deviceTables,
                     onTableSelected = onTableSelected,
                     modifier = Modifier.fillMaxWidth(),
@@ -137,7 +137,9 @@ fun TableScreen(
                 stickyHeader {
                     when (content) {
                         is TableContentStateUiModel.Empty -> {}
+
                         is TableContentStateUiModel.Loading -> {}
+
                         is TableContentStateUiModel.WithContent -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth()
@@ -161,10 +163,12 @@ fun TableScreen(
                 }
                 when (content) {
                     is TableContentStateUiModel.Empty -> {}
+
                     is TableContentStateUiModel.Loading -> {}
+
                     is TableContentStateUiModel.WithContent -> {
                         itemsIndexed(tableItems) { index, item ->
-                            TableRowView(
+                            TableRow(
                                 model = item,
                                 columnsWidth = columnsWidth,
                                 modifier = Modifier.fillMaxWidth(),

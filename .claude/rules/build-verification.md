@@ -9,7 +9,7 @@ Run the tests of the module(s) you changed, not the full build:
 | Touched | Command (examples) |
 |---|---|
 | An SDK plugin in `FloconAndroid/` | `./gradlew :featureflags:jvmTest` (add `:<plugin>-no-op:compileKotlinJvm` when the no-op changes) |
-| A desktop module in `FloconDesktop/` | `./gradlew :mcp:allTests`, `./gradlew :data:core:allTests` |
+| A desktop module in `FloconDesktop/` | `./gradlew :mcp:allTests`, `./gradlew :data:core:allTests`, `./gradlew ktlintFormat` (CI runs `ktlintCheck`; staged `.kt` files are also formatted by the commit hook) |
 | `docs/**` or `mkdocs.yml` | `mkdocs build --strict` |
 
 ## Before opening a PR

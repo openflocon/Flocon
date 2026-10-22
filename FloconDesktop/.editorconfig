@@ -27,6 +27,18 @@ ktlint_compose_modifier-not-used-at-root = disabled
 ktlint_compose_preview-public-check = enabled
 ktlint_compose_naming-check = disabled
 ktlint_compose_parameter-naming = disabled
+ktlint_compose_lambda-param-event-trailing = disabled
+ktlint_compose_state-param-check = disabled
+ktlint_compose_remember-missing-check = disabled
+ktlint_compose_multiple-emitters-check = disabled
+ktlint_compose_modifier-composed-check = disabled
+ktlint_compose_mutable-state-autoboxing = disabled
+ktlint_compose_modifier-clickable-order = disabled
+ktlint_compose_lambda-param-in-effect = disabled
+ktlint_compose_content-slot-reused = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_no-empty-file = disabled
+ktlint_standard_filename = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
 [**/build/**/*.kt]

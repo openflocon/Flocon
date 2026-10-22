@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.mapper
 
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_success
 import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
@@ -12,8 +14,6 @@ import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiM
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_success
 
 fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): DeviceDataBaseUiModel {
     val isSelected = this.id == selected.database.id
@@ -47,8 +47,11 @@ fun DatabaseTableDomainModel.toUi(): TableUiModel = TableUiModel(
 
 fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (this) {
     is DatabaseExecuteSqlResponseDomainModel.Error -> QueryResultUiModel.Text(this.message)
+
     is DatabaseExecuteSqlResponseDomainModel.Insert -> QueryResultUiModel.Text("Inserted (insertedId=$insertedId)")
+
     DatabaseExecuteSqlResponseDomainModel.RawSuccess -> QueryResultUiModel.Text("Success")
+
     is DatabaseExecuteSqlResponseDomainModel.Select ->
         QueryResultUiModel.Values(
             columns = this.columns,

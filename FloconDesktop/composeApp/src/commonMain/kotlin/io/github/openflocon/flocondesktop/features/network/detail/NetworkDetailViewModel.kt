@@ -17,5 +17,4 @@ class NetworkDetailViewModel(
     fun onAction(action: NetworkDetailAction) {
         delegate.onAction(action)
     }
-
 }

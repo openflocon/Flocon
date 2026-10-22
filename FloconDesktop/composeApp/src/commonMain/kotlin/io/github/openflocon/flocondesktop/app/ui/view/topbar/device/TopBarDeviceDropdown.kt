@@ -32,7 +32,9 @@ internal fun TopBarDeviceDropdown(
 
     when (state) {
         DevicesStateUiModel.Empty -> Empty()
+
         DevicesStateUiModel.Loading -> Loading()
+
         is DevicesStateUiModel.WithDevices -> FloconDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
@@ -43,14 +45,14 @@ internal fun TopBarDeviceDropdown(
                     onClick = { expanded = true },
                     modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
                 ) {
-                    TopBarDeviceView(device = state.deviceSelected)
+                    TopBarDevice(device = state.deviceSelected)
                 }
             },
         ) {
             state.devices.forEach { device ->
                 val isSelected = state.deviceSelected.id == device.id
 
-                TopBarDeviceView(
+                TopBarDevice(
                     modifier = Modifier
                         .width(FloconTheme.sizes.deviceDropdownWidth)
                         .clip(FloconTheme.shapes.medium)

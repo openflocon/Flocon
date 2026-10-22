@@ -15,18 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.FloconTheme
-
-// the mono style of the technical data: times, http codes, methods, paths
-@Composable
-fun floconMonoStyle(small: Boolean = false): TextStyle =
-    (if (small) FloconTheme.typography.labelSmall else FloconTheme.typography.labelMedium).copy(fontFamily = FontFamily.Monospace)
 
 // a small colored dot: the color is never alone, a label always goes with it
 @Composable
@@ -65,7 +58,7 @@ fun FloconOutlinedPill(
         leading?.invoke()
         Text(
             text = text,
-            style = floconMonoStyle(small = true),
+            style = FloconTheme.typography.monoSmall,
             fontWeight = FontWeight.SemiBold,
             color = color ?: colors.inkMuted,
             textAlign = TextAlign.Center,
@@ -98,7 +91,7 @@ fun FloconSolidPill(
         leading?.invoke()
         Text(
             text = text,
-            style = floconMonoStyle(small = true),
+            style = FloconTheme.typography.monoSmall,
             fontSize = 11.5.sp,
             fontWeight = FontWeight.Bold,
             color = contentColor,
@@ -140,7 +133,7 @@ fun FloconStatusPill(
     FloconStatusPill(color = color, modifier = modifier) {
         Text(
             text = text,
-            style = floconMonoStyle(small = true),
+            style = FloconTheme.typography.monoSmall,
             fontWeight = FontWeight.SemiBold,
             color = color,
             maxLines = 1,

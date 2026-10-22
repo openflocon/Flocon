@@ -3,14 +3,14 @@ package io.github.openflocon.data.local.database.datasource
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
+import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
 import io.github.openflocon.data.local.database.mapper.toDomain
 import io.github.openflocon.data.local.database.mapper.toEntity
-import androidx.paging.map
-import androidx.room.RoomRawQuery
 import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
@@ -407,22 +407,20 @@ internal class LocalDatabaseDataSourceRoom(
         return whereClause to queryParams
     }
 
-    private fun createRawQuery(sql: String, params: List<Any>): RoomRawQuery {
-        return RoomRawQuery(
-            sql = sql,
-            onBindStatement = { statement ->
-                params.forEachIndexed { index, arg ->
-                    when (arg) {
-                        is String -> statement.bindText(index + 1, arg)
-                        is Long -> statement.bindLong(index + 1, arg)
-                        is Int -> statement.bindLong(index + 1, arg.toLong())
-                        is Boolean -> statement.bindLong(index + 1, if (arg) 1L else 0L)
-                        is Double -> statement.bindDouble(index + 1, arg)
-                        is Float -> statement.bindDouble(index + 1, arg.toDouble())
-                        else -> statement.bindText(index + 1, arg.toString())
-                    }
+    private fun createRawQuery(sql: String, params: List<Any>): RoomRawQuery = RoomRawQuery(
+        sql = sql,
+        onBindStatement = { statement ->
+            params.forEachIndexed { index, arg ->
+                when (arg) {
+                    is String -> statement.bindText(index + 1, arg)
+                    is Long -> statement.bindLong(index + 1, arg)
+                    is Int -> statement.bindLong(index + 1, arg.toLong())
+                    is Boolean -> statement.bindLong(index + 1, if (arg) 1L else 0L)
+                    is Double -> statement.bindDouble(index + 1, arg)
+                    is Float -> statement.bindDouble(index + 1, arg.toDouble())
+                    else -> statement.bindText(index + 1, arg.toString())
                 }
             }
-        )
-    }
+        }
+    )
 }

@@ -33,15 +33,17 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.search_placeholder
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItemView
+import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItem
 import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
-import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreviewView
-import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChipsView
+import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreview
+import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChips
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -50,10 +52,8 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
-import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.search_placeholder
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -182,7 +182,7 @@ private fun NetworkSearchScreen(
                     modifier = Modifier.padding(top = FloconTheme.spacing.small),
                 ) {
                     SearchScope.entries.forEach { scope ->
-                        ScopeChipsView(
+                        ScopeChips(
                             uiState = uiState,
                             scope = scope,
                             onScopeToggled = onScopeToggled
@@ -205,7 +205,7 @@ private fun NetworkSearchScreen(
                         contentPadding = PaddingValues(vertical = FloconTheme.spacing.medium),
                     ) {
                         items(uiState.results) { item ->
-                            NetworkItemView(
+                            NetworkItem(
                                 state = item,
                                 selected = item.uuid == selectedRequestId,
                                 multiSelect = false,
@@ -228,7 +228,7 @@ private fun NetworkSearchScreen(
                 }
 
                 if (selectedRequestId != null && selectedRequest != null) {
-                    NetworkSearchPreviewView(
+                    NetworkSearchPreview(
                         request = selectedRequest,
                         matches = matches,
                         currentMatchIndex = currentMatchIndex,

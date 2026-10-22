@@ -50,6 +50,7 @@ fun PreferenceAutoUpdate(
     ) {
         when (state) {
             is PreferenceAutoUpdate.Disabled -> {}
+
             is PreferenceAutoUpdate.Enabled -> {
                 AutoUpdateTextField(
                     modifier = Modifier.width(100.dp),

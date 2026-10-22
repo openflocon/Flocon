@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.filters
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter_excludes
+import flocondesktop.composeapp.generated.resources.filter_includes
+import flocondesktop.composeapp.generated.resources.general_by_value
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
@@ -44,12 +49,7 @@ import io.github.openflocon.library.designsystem.components.FloconSmallIconButto
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.filter_excludes
-import flocondesktop.composeapp.generated.resources.filter_includes
-import flocondesktop.composeapp.generated.resources.general_by_value
 
 @Composable
 fun TextFilterDropdownContent(
@@ -60,7 +60,7 @@ fun TextFilterDropdownContent(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        TextFilterFieldView(
+        TextFilterField(
             submitTextField = { text, toInclude ->
                 if (toInclude) {
                     textFilterAction.invoke(TextFilterAction.Include(text))
@@ -91,7 +91,7 @@ fun TextFilterDropdownContent(
                     )
 
                     filterState.includedFilters.fastForEach {
-                        FilterItemView(
+                        FilterEntry(
                             item = it,
                             modifier = Modifier.fillMaxWidth(),
                             clickDelete = {
@@ -124,7 +124,7 @@ fun TextFilterDropdownContent(
                     )
 
                     filterState.excludedFilters.fastForEach {
-                        FilterItemView(
+                        FilterEntry(
                             item = it,
                             modifier = Modifier.fillMaxWidth(),
                             clickDelete = {
@@ -147,7 +147,7 @@ fun TextFilterDropdownContent(
 }
 
 @Composable
-private fun FilterItemView(
+private fun FilterEntry(
     item: TextFilterStateUiModel.FilterItem,
     modifier: Modifier = Modifier,
     changeIsActive: (item: TextFilterStateUiModel.FilterItem, newValue: Boolean) -> Unit,
@@ -198,7 +198,7 @@ private fun FilterItemView(
 }
 
 @Composable
-private fun TextFilterFieldView(
+private fun TextFilterField(
     submitTextField: (value: String, toInclude: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {

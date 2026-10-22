@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,12 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_copy_path
+import flocondesktop.composeapp.generated.resources.general_delete
+import flocondesktop.composeapp.generated.resources.general_delete_content
+import flocondesktop.composeapp.generated.resources.general_open
+import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
@@ -40,13 +46,7 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_open
-import flocondesktop.composeapp.generated.resources.general_copy_path
-import flocondesktop.composeapp.generated.resources.general_delete_content
-import flocondesktop.composeapp.generated.resources.general_delete
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -68,7 +68,7 @@ fun FileItemRow(
     val deleteContentLabel = stringResource(Res.string.general_delete_content)
     val deleteLabel = stringResource(Res.string.general_delete)
 
-    ContextualView(
+    ContextualMenu(
         items = remember(file, openLabel, copyPathLabel, deleteContentLabel, deleteLabel) {
             file.contextualActions.map { action ->
                 FloconContextMenuItem.Item(
@@ -127,7 +127,7 @@ fun FileItemRow(
                     Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
                 }
             }
-            
+
             FloconIcon(
                 imageVector = file.icon,
                 modifier = Modifier.size(24.dp)
@@ -272,4 +272,3 @@ private fun FileItemRowPreview() {
         }
     }
 }
-

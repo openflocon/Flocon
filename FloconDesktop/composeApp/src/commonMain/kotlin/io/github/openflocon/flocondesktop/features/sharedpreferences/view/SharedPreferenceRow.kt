@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,10 +38,9 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
-fun SharedPreferenceRowView(
+fun SharedPreferenceRow(
     model: SharedPreferencesRowUiModel,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
@@ -227,7 +227,7 @@ private fun SharedPreferenceSendButton(
 @Composable
 private fun SharedPreferenceRowPreview() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesStringRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -240,7 +240,7 @@ private fun SharedPreferenceRowPreview() {
 @Composable
 private fun SharedPreferenceRowPreview_int() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesIntRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -253,7 +253,7 @@ private fun SharedPreferenceRowPreview_int() {
 @Composable
 private fun SharedPreferenceRowPreview_float() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesFloatRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -266,7 +266,7 @@ private fun SharedPreferenceRowPreview_float() {
 @Composable
 private fun SharedPreferenceRowPreview_boolean() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesBooleanRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -279,7 +279,7 @@ private fun SharedPreferenceRowPreview_boolean() {
 @Composable
 private fun SharedPreferenceRowPreview_long() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesLongRowUiModel(),
             onValueChanged = { _, _ -> },

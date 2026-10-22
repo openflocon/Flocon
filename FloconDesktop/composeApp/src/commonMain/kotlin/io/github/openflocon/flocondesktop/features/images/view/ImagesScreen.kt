@@ -1,10 +1,10 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +37,8 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_filter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -45,17 +47,15 @@ import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiMod
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import androidx.compose.desktop.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.collections.component1
 import kotlin.collections.component2
-import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.images_filter
 
 @Composable
 fun ImagesScreen(
@@ -153,7 +153,7 @@ private fun ImagesScreen(
                             .background(FloconTheme.colors.bg100)
                     ) {
                         items(state.images) {
-                            ImageItemView(
+                            ImageItem(
                                 model = it,
                                 onClick = onClickImage,
                                 modifier = Modifier
