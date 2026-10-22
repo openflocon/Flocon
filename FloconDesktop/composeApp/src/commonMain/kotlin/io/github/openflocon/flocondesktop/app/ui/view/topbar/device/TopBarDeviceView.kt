@@ -81,7 +81,7 @@ internal fun TopBarDeviceView(
                         Icons.Filled.DesktopWindows
                     }
 
-                    DeviceItemUiModel.Platform.ios -> if (device.isActive.not()) {
+                    DeviceItemUiModel.Platform.Ios -> if (device.isActive.not()) {
                         Icons.Outlined.MobileOff
                     } else {
                         Icons.Filled.PhoneIphone
@@ -209,7 +209,7 @@ private fun TopBarDeviceViewPreview_iphone() {
             TopBarDeviceView(
                 device = DeviceItemUiModel(
                     deviceName = "Desktop",
-                    platform = DeviceItemUiModel.Platform.ios,
+                    platform = DeviceItemUiModel.Platform.Ios,
                     isActive = true,
                     id = "123",
                     canScreenshot = true,
@@ -231,7 +231,7 @@ private fun TopBarDeviceViewPreview_iphone_disabled() {
             TopBarDeviceView(
                 device = DeviceItemUiModel(
                     deviceName = "Desktop",
-                    platform = DeviceItemUiModel.Platform.ios,
+                    platform = DeviceItemUiModel.Platform.Ios,
                     isActive = false,
                     id = "123",
                     canScreenshot = true,

@@ -42,9 +42,6 @@ internal fun CrashReportItemView(
     ) {
         Column(
             modifier = modifier
-                .clickable {
-                    onClick(crash)
-                }
                 .clip(FloconTheme.shapes.medium)
                 .background(
                     if (isSelected) {
@@ -53,6 +50,9 @@ internal fun CrashReportItemView(
                         FloconTheme.colors.bg000
                     }
                 )
+                .clickable {
+                    onClick(crash)
+                }
                 .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {

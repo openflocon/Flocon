@@ -15,7 +15,7 @@ data class DeviceItemUiModel(
     enum class Platform {
         Android,
         Desktop,
-        ios,
+        Ios,
         Unknown,
     }
 }

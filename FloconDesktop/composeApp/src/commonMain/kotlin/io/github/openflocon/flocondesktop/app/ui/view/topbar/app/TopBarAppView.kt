@@ -145,7 +145,7 @@ private fun AppImage(
                     )
                 }
 
-                DeviceItemUiModel.Platform.ios,
+                DeviceItemUiModel.Platform.Ios,
                 DeviceItemUiModel.Platform.Android,
                 DeviceItemUiModel.Platform.Unknown -> {
                     Image(
