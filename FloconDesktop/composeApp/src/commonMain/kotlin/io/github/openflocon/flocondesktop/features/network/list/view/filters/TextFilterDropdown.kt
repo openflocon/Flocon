@@ -223,7 +223,7 @@ private fun TextFilterFieldView(
             textStyle = FloconTheme.typography.bodySmall.copy(
                 color = FloconTheme.colors.inkMuted,
             ),
-            containerColor = FloconTheme.colors.bg200,
+            containerColor = FloconTheme.colors.floating,
             modifier = Modifier
                 .weight(1f)
                 .padding(all = FloconTheme.spacing.tiny)
@@ -261,7 +261,7 @@ private fun TextFilterButton(
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
             .graphicsLayer { alpha = if (enabled) 1f else 0.5f }
-            .background(FloconTheme.colors.bg100)
+            .background(FloconTheme.colors.floating)
             .clickable(onClick = onClick, enabled = enabled)
             .padding(all = FloconTheme.spacing.small),
     ) {

@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.MetadataScope
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.get
@@ -22,7 +23,9 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
+import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
 
 @Immutable
@@ -38,9 +41,21 @@ data class MenuScene(
         val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
 
         FloconScaffold(
-            topBar = { topBarContent?.invoke() },
+            containerColor = Color.Transparent,
+            topBar = {
+                Box(
+                    modifier = Modifier.padding(
+                        start = FloconTheme.spacing.medium,
+                        top = FloconTheme.spacing.medium,
+                        end = FloconTheme.spacing.medium,
+                    ),
+                ) {
+                    topBarContent?.invoke()
+                }
+            },
             modifier = Modifier.fillMaxSize()
         ) { padding ->
+            // the sidebar and the content float as islands over the page background
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -50,6 +65,11 @@ data class MenuScene(
                     modifier = Modifier
                         .width(width)
                         .fillMaxHeight()
+                        .padding(
+                            start = FloconTheme.spacing.medium,
+                            top = FloconTheme.spacing.medium,
+                            bottom = FloconTheme.spacing.medium,
+                        ),
                 ) {
                     menuContent(expanded) { expanded = !expanded }
                 }
@@ -57,6 +77,7 @@ data class MenuScene(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
+                        .padding(FloconTheme.spacing.medium),
                 ) {
                     scene.content()
                 }

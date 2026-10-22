@@ -201,7 +201,7 @@ private data class PanelScene(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(PANEL_WIDTH)
-                                .background(FloconTheme.colors.bg100)
+                                .background(FloconTheme.colors.floating)
                         ) { target ->
                             target.Content()
                         }

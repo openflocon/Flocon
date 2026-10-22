@@ -51,7 +51,7 @@ fun FloconDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colors.bg200,
+    containerColor: Color = FloconTheme.colors.floating,
     content: @Composable ColumnScope.() -> Unit
 ) {
     DropdownMenu(
@@ -82,7 +82,7 @@ fun FloconDropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
             shape = FloconTheme.shapes.large,
-            backgroundColor = FloconTheme.colors.bg100,
+            backgroundColor = FloconTheme.colors.floating,
             contentColor = FloconTheme.colors.ink,
             contentPadding = PaddingValues(FloconTheme.spacing.compact),
             anchor = anchor,

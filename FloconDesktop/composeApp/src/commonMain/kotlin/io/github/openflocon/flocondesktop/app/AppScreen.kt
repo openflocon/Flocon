@@ -118,9 +118,8 @@ private fun Content(
                     }
                 )
             ),
-            modifier = Modifier
-                .fillMaxSize()
-                .background(FloconTheme.colors.bg000)
+            // no background here: the themed page background shows through the islands
+            modifier = Modifier.fillMaxSize()
         ) {
             analyticsRoutes()
             featureFlagsRoutes()

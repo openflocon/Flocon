@@ -58,6 +58,12 @@ data class FloconColors(
     val statusInfo: Color,
     val statusWarning: Color,
     val statusError: Color,
+    // opaque surface for what floats above the content (panels, dialogs, menus)
+    val floating: Color,
+    // background of the app chrome islands (left panel, top bar, content)
+    val chrome: Color,
+    // tint the top bar fades to on its right side, same as chrome = flat
+    val chromeTint: Color,
 ) {
     /** Color of the category of an event and its soft background. */
     fun category(c: EventCategory): Pair<Color, Color> = when (c) {
@@ -133,6 +139,9 @@ val FloconDarkColors = FloconColors(
     statusInfo = Color(0xFF5EAAF7),
     statusWarning = Color(0xFFF7A531),
     statusError = Color(0xFFFF6D6D),
+    floating = Color(0xFF1C1C28),
+    chrome = Color(0xFF1F1F1F),
+    chromeTint = Color(0xFF1F1F1F),
 )
 
 val FloconLightColors = FloconColors(
@@ -185,6 +194,9 @@ val FloconLightColors = FloconColors(
     statusInfo = Color(0xFF1D6BBF),
     statusWarning = Color(0xFFA35A00),
     statusError = Color(0xFFC62F2F),
+    floating = Color(0xFFF3F3F8),
+    chrome = Color(0xFFFFFFFF),
+    chromeTint = Color(0xFFFFFFFF),
 )
 
 val LocalFloconColors = staticCompositionLocalOf { FloconDarkColors }

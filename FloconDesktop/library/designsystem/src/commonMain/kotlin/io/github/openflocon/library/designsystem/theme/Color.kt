@@ -59,7 +59,7 @@ internal fun materialLightScheme(colors: FloconColors): ColorScheme = lightColor
 
 @Stable
 fun FloconColors.contentColorFor(backgroundColor: Color) = when (backgroundColor) {
-    bg000, bg100, bg200, bg300 -> ink
+    bg000, bg100, bg200, bg300, floating -> ink
     accentSoft -> accent
     accent -> accentInk
     ink -> bg100
