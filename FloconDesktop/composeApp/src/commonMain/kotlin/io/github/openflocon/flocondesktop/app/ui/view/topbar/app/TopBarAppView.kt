@@ -30,7 +30,6 @@ import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.skia.Image
 import kotlin.io.encoding.Base64
@@ -74,7 +73,7 @@ internal fun TopBarAppView(
             // the package is technical data
             Text(
                 text = deviceApp.packageName,
-                style = floconMonoStyle(small = true),
+                style = FloconTheme.typography.monoSmall,
                 color = colors.inkMuted,
                 maxLines = 1,
             )

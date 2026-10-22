@@ -61,7 +61,6 @@ import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.TabType
@@ -725,7 +724,7 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
     Text(
         text = text,
         color = FloconTheme.colors.inkMuted,
-        style = floconMonoStyle(),
+        style = FloconTheme.typography.monoMedium,
         modifier = Modifier
             .clip(CircleShape)
             .background(FloconTheme.colors.bg200)

@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.em
 import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
@@ -67,7 +66,7 @@ fun NetworkBadQualityContent(
                     )
                     Text(
                         text = lines.size.toString(),
-                        style = floconMonoStyle(small = true),
+                        style = FloconTheme.typography.monoSmall,
                         color = colors.inkMuted,
                         modifier = Modifier
                             .background(colors.bg300, CircleShape)

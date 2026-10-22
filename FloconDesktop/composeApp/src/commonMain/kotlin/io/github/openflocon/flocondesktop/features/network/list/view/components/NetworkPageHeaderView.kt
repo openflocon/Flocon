@@ -18,7 +18,6 @@ import flocondesktop.composeapp.generated.resources.network_counter_requests
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -46,7 +45,7 @@ fun NetworkPageHeaderView(
             )
             Text(
                 text = "$requestCount ${pluralStringResource(Res.plurals.network_counter_requests, requestCount)}",
-                style = floconMonoStyle(),
+                style = FloconTheme.typography.monoMedium,
                 color = colors.inkFaint,
                 maxLines = 1,
             )

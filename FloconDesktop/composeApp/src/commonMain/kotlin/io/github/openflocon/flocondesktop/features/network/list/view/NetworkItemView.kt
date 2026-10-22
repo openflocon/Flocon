@@ -69,7 +69,6 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
@@ -103,7 +102,6 @@ fun NetworkItemView(
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
     val colors = FloconTheme.colors
-    val mono = floconMonoStyle()
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
 
@@ -160,10 +158,8 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.dateFormatted,
-                    // digits of the same width so the times stay aligned
-                    style = mono.copy(fontFeatureSettings = "tnum"),
+                    style = FloconTheme.typography.monoMedium,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
                     color = colors.ink,
                     maxLines = 1,
                 )
@@ -216,8 +212,7 @@ fun NetworkItemView(
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = mono,
-                    fontSize = 12.sp,
+                    style = FloconTheme.typography.monoMedium,
                     color = colors.inkFaint,
                     maxLines = 1,
                 )
@@ -256,10 +251,8 @@ private fun RequestView(
         if (state.isMocked) {
             Text(
                 text = stringResource(Res.string.network_mock_tag),
-                style = floconMonoStyle(small = true),
-                fontSize = 10.5.sp,
+                style = FloconTheme.typography.monoSmall,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp,
                 color = colors.accent,
                 maxLines = 1,
                 modifier = Modifier

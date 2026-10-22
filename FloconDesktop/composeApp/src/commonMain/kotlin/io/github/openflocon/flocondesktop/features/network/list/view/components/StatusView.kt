@@ -22,7 +22,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import androidx.compose.desktop.ui.tooling.preview.Preview
 
 /**
@@ -82,7 +81,7 @@ fun StatusView(
                                 minFontSize = 8.sp,
                             ),
                             maxLines = 1,
-                            style = floconMonoStyle(small = true).copy(
+                            style = FloconTheme.typography.monoSmall.copy(
                                 color = color,
                                 fontWeight = FontWeight.SemiBold,
                             ),
