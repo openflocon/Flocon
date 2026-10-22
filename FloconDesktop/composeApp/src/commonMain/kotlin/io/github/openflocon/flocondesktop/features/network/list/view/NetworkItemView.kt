@@ -81,8 +81,8 @@ import flocondesktop.composeapp.generated.resources.filter_include
 import flocondesktop.composeapp.generated.resources.network_copy_curl
 import flocondesktop.composeapp.generated.resources.network_copy_url
 import flocondesktop.composeapp.generated.resources.network_create_mock
-import flocondesktop.composeapp.generated.resources.network_header_domain
-import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_host
+import flocondesktop.composeapp.generated.resources.network_header_request
 import flocondesktop.composeapp.generated.resources.network_image_response
 import flocondesktop.composeapp.generated.resources.network_mock_tag
 import flocondesktop.composeapp.generated.resources.network_replay
@@ -344,8 +344,8 @@ private fun contextualActions(
     val filter = stringResource(Res.string.filter)
     val include = stringResource(Res.string.filter_include)
     val exclude = stringResource(Res.string.filter_exclude)
-    val domain = stringResource(Res.string.network_header_domain)
-    val query = stringResource(Res.string.network_header_query)
+    val domain = stringResource(Res.string.network_header_host)
+    val query = stringResource(Res.string.network_header_request)
     val remove = stringResource(Res.string.remove)
     val removeLinesAbove = stringResource(Res.string.remove_lines_above)
     val clearOldSessions = stringResource(Res.string.clear_old_sessions)

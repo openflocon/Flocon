@@ -285,12 +285,12 @@ fun NetworkScreen(
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = stringResource(Res.string.network_header_domain),
+//                            text = stringResource(Res.string.network_header_host),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(
 //                            checked = true,
-//                            text = stringResource(Res.string.network_header_query),
+//                            text = stringResource(Res.string.network_header_request),
 //                            onCheckedChange = {}
 //                        )
 //                        FloconDropdownMenuItem(

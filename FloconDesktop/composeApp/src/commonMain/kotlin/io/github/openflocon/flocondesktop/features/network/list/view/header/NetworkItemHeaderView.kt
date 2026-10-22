@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.network_header_domain
+import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_method
-import flocondesktop.composeapp.generated.resources.network_header_query
+import flocondesktop.composeapp.generated.resources.network_header_request
 import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_status
 import flocondesktop.composeapp.generated.resources.network_header_time
@@ -94,7 +94,7 @@ fun NetworkItemHeaderView(
             onResize = { columnWidths.resize(ResizableColumn.Domain, it) },
         ) {
             HeaderDropdown(
-                label = stringResource(Res.string.network_header_domain),
+                label = stringResource(Res.string.network_header_host),
                 filtered = state.domain.isFiltered(),
                 sortedBy = state.domain.sortedBy,
                 onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Domain, it) },
@@ -115,7 +115,7 @@ fun NetworkItemHeaderView(
             onResize = { columnWidths.resize(ResizableColumn.Status, -it) },
         ) {
             HeaderDropdown(
-                label = stringResource(Res.string.network_header_query),
+                label = stringResource(Res.string.network_header_request),
                 filtered = state.query.isFiltered(),
                 sortedBy = state.query.sortedBy,
                 onClickSort = { clickOnSort(NetworkColumnsTypeUiModel.Query, it) },
