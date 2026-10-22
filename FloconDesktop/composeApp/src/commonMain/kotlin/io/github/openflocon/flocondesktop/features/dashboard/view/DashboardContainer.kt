@@ -28,8 +28,8 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardLabel
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardMarkdown
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardPlainText
-import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextField
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardText
+import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextField
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable

@@ -33,6 +33,9 @@ internal interface SettingsDataSource {
     fun getLastSeenReleaseNotesVersion(): String?
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 
+    val mascotEnabled: Flow<Boolean>
+    suspend fun setMascotEnabled(enabled: Boolean)
+
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
