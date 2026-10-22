@@ -77,7 +77,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val itemsState by viewModel.itemsState.collectAsStateWithLifecycle()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val rows = viewModel.rows.collectAsLazyPagingItems()
-    val filterText = viewModel.filterText
+    val filterText by viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
@@ -104,7 +104,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun AnalyticsScreen(
-    filterText: State<String>,
+    filterText: String,
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
     showEmptyState: Boolean,
@@ -278,7 +278,7 @@ private fun AnalyticsScreenPreview() {
             screenState = previewAnalyticsScreenUiState(),
             onFilterTextChanged = {},
             onResetClicked = {},
-            filterText = mutableStateOf(""),
+            filterText = "",
         )
     }
 }

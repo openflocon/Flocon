@@ -61,7 +61,7 @@ fun TimelineScreen(
 ) {
     val viewModel: TimelineViewModel = koinViewModel()
     val rows = viewModel.items.collectAsLazyPagingItems()
-    val filterText = viewModel.filterText.collectAsStateWithLifecycle()
+    val filterText by viewModel.filterText.collectAsStateWithLifecycle()
     val selectedSources by viewModel.selectedSources.collectAsStateWithLifecycle()
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
@@ -85,7 +85,7 @@ fun TimelineScreen(
 @Composable
 internal fun TimelineContent(
     rows: LazyPagingItems<TimelineItemUiModel>,
-    filterText: State<String>,
+    filterText: String,
     selectedSources: Set<TimelineSource>,
     selectedKey: String?,
     summary: TimelineSummaryUiModel,

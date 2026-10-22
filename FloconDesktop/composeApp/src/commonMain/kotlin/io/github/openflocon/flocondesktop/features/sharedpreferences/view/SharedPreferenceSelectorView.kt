@@ -106,7 +106,7 @@ fun SharedPreferenceSelectorView(
                             }
                         }
                         FilterBar(
-                            filterText = filterText,
+                            filterText = filterText.value,
                             placeholderText = stringResource(Res.string.filter),
                             onTextChange = {
                                 filterText.value = it

@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AnalyticsFilterBar(
-    filterText: State<String>,
+    filterText: String,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,

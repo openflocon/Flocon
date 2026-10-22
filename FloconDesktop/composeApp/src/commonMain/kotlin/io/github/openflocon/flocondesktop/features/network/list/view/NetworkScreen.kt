@@ -120,7 +120,7 @@ fun NetworkScreen(
     val viewModel: NetworkViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
-    val filterText = viewModel.filterText
+    val filterText by viewModel.filterText
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     NetworkScreen(
@@ -137,7 +137,7 @@ fun NetworkScreen(
 fun NetworkScreen(
     uiState: NetworkUiState,
     rows: LazyPagingItems<NetworkItemViewState>,
-    filterText: State<String>,
+    filterText: String,
     showEmptyState: Boolean,
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -593,7 +593,7 @@ private fun NetworkScreenPreview() {
             uiState = uiState,
             rows = rows,
             onAction = {},
-            filterText = mutableStateOf(""),
+            filterText = "",
             showEmptyState = false,
         )
     }

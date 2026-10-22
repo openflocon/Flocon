@@ -45,7 +45,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FilesScreen(modifier: Modifier = Modifier) {
     val viewModel: FilesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val filterText = viewModel.filterText
+    val filterText by viewModel.filterText
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -64,7 +64,7 @@ fun FilesScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun FilesScreen(
     state: FilesStateUiModel,
-    filterText: State<String>,
+    filterText: String,
     onAction: (FilesAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -164,7 +164,7 @@ private fun FilesScreenPreview() {
     FloconTheme {
         FilesScreen(
             state = previewFilesStateUiModel(),
-            filterText = mutableStateOf(""),
+            filterText = "",
             onAction = {},
         )
     }

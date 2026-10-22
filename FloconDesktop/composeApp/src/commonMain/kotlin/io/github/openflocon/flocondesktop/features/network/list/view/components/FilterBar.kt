@@ -35,7 +35,7 @@ fun FilterBar(
 ) {
     val filterText = remember { mutableStateOf("") }
     FilterBar(
-        filterText = filterText,
+        filterText = filterText.value,
         onTextChange = {
             filterText.value = it
             onTextChange(it)
@@ -48,16 +48,16 @@ fun FilterBar(
 @Composable
 fun FilterBar(
     placeholderText: String,
-    filterText: State<String>,
+    filterText: String,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = FloconTheme.colors.bg200,
 ) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
-    val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
+    val displayClearButton by remember { derivedStateOf { filterText.isNotEmpty() } }
 
     FloconTextFieldWithoutM3(
-        value = filterText.value,
+        value = filterText,
         onValueChange = {
             onTextChangedCallback(it)
         },
