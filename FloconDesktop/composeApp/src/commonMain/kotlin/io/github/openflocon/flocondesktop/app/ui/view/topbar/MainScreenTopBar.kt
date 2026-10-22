@@ -49,8 +49,6 @@ import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import flocondesktop.composeapp.generated.resources.app_name
 
-private const val IslandAlpha = 0.86f
-
 @Composable
 fun MainScreenTopBar(
     modifier: Modifier = Modifier,
@@ -72,8 +70,8 @@ fun MainScreenTopBar(
         modifier = modifier
             .floconIsland(
                 Brush.horizontalGradient(
-                    0.4f to FloconTheme.colors.chrome.copy(alpha = IslandAlpha),
-                    1f to FloconTheme.colors.chromeTint.copy(alpha = IslandAlpha),
+                    0.4f to FloconTheme.colors.islandTopBar,
+                    1f to FloconTheme.colors.islandTopBarTint,
                 ),
             )
             .padding(vertical = TopBarVerticalPadding, horizontal = FloconTheme.spacing.large),

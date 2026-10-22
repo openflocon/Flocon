@@ -72,7 +72,7 @@ fun LeftPanelView(
     val scrollState = rememberScrollState()
     Box(
         modifier = modifier
-            .floconIsland(FloconTheme.colors.chrome.copy(alpha = 0.78f))
+            .floconIsland(FloconTheme.colors.islandSidebar)
             .padding(
                 start = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
                 end = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
