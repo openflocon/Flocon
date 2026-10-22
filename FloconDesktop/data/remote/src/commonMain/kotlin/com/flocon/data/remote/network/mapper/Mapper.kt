@@ -63,6 +63,7 @@ fun toDomain(
                 query = graphQl.requestBody.query,
                 operationType = graphQl.operationType,
             )
+
             is GraphQlExtracted.PersistedQuery -> FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl(
                 query = graphQl.queryName,
                 operationType = graphQl.operationType,
@@ -70,6 +71,7 @@ fun toDomain(
         }
 
         decoded.floconNetworkType == "grpc" -> FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc
+
         else -> FloconNetworkCallDomainModel.Request.SpecificInfos.Http
     }
 

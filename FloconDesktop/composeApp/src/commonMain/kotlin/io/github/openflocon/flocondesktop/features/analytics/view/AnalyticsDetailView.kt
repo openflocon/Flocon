@@ -99,7 +99,7 @@ private fun PropertiesCard(
 
 @Preview
 @Composable
-fun AnalyticsDetailLineView(
+private fun AnalyticsDetailLineView(
     label: String,
     labelWidth: Dp,
     modifier: Modifier = Modifier,

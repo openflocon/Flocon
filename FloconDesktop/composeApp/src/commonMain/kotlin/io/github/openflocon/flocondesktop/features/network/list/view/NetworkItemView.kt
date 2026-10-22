@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,12 +13,12 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,31 +48,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
-import io.github.openflocon.flocondesktop.common.ui.ContextualView
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
-import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
-import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.previewExceptionItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.previewGrpcItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.previewImageItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.previewMockedItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
-import io.github.openflocon.flocondesktop.features.timeline.view.Rail
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
-import io.github.openflocon.library.designsystem.common.buildMenu
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
-import io.github.openflocon.library.designsystem.components.FloconSurface
-import kotlinx.collections.immutable.ImmutableList
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.filter
@@ -89,6 +65,30 @@ import flocondesktop.composeapp.generated.resources.network_select_item
 import flocondesktop.composeapp.generated.resources.network_share_markdown
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
+import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
+import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
+import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
+import io.github.openflocon.flocondesktop.features.network.list.model.previewExceptionItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewGrpcItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewImageItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewMockedItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
+import io.github.openflocon.flocondesktop.features.timeline.view.Rail
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.common.buildMenu
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconSurface
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

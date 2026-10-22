@@ -2,9 +2,9 @@ package io.github.openflocon.mcp.devices
 
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.jsonResult
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
 import kotlinx.coroutines.flow.first
 

@@ -144,6 +144,7 @@ class DatabaseTabViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 is DatabaseTabAction.ClearQuery -> clearQuery()
+
                 is DatabaseTabAction.ExecuteQuery -> {
                     updateQuery(action.query)
                     executeQuery(
@@ -153,6 +154,7 @@ class DatabaseTabViewModel(
                 }
 
                 is DatabaseTabAction.UpdateAutoUpdate -> updateAutoUpdate(action.value)
+
                 DatabaseTabAction.Copy -> {
                     copyToClipboard(query.value)
                     feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))

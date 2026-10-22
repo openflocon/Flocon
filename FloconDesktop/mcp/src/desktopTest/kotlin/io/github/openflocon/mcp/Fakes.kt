@@ -88,14 +88,11 @@ internal class FakeDevicesRepository(
     override suspend fun getCurrentDeviceId(): DeviceId? = currentDeviceIdValue
     override suspend fun getCurrentDevice(): DeviceDomainModel? = devicesWithApps.keys.firstOrNull { it.deviceId == currentDeviceIdValue }
     override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> = flowOf(appsOf(deviceId))
-    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> =
-        flowOf(Unit).map { getDeviceSelectedApp(deviceId) }
+    override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> = flowOf(Unit).map { getDeviceSelectedApp(deviceId) }
 
-    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? =
-        selectedApps[deviceId]?.let { getDeviceAppByPackage(deviceId, it) }
+    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? = selectedApps[deviceId]?.let { getDeviceAppByPackage(deviceId, it) }
 
-    override suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String): DeviceAppDomainModel? =
-        appsOf(deviceId).firstOrNull { it.packageName == appPackageName }
+    override suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String): DeviceAppDomainModel? = appsOf(deviceId).firstOrNull { it.packageName == appPackageName }
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = flowOf(null)
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
@@ -121,8 +118,7 @@ internal class FakeNetworkRepository(
 
     private fun callsOf(target: DeviceIdAndPackageNameDomainModel) = calls[target.deviceId to target.packageName].orEmpty()
 
-    override fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) =
-        flowOf(callsOf(deviceIdAndPackageName).isNotEmpty())
+    override fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = flowOf(callsOf(deviceIdAndPackageName).isNotEmpty())
 
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

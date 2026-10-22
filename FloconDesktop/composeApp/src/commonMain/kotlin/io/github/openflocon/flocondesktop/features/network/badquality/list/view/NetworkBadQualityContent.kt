@@ -22,15 +22,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_subtitle
+import flocondesktop.composeapp.generated.resources.badquality_title
+import flocondesktop.composeapp.generated.resources.general_create
 import io.github.openflocon.flocondesktop.features.network.badquality.list.model.NetworkBadQualityLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.badquality_subtitle
-import flocondesktop.composeapp.generated.resources.badquality_title
-import flocondesktop.composeapp.generated.resources.general_create
 
 @Composable
 fun NetworkBadQualityContent(
@@ -159,7 +159,7 @@ private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
 private fun HeaderText(
     text: String,
     style: TextStyle,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = text.uppercase(),

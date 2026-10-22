@@ -29,18 +29,18 @@ class ExportNetworkLogsAsJsonUseCase internal constructor(
                 sortedBy = null,
                 filter = filter,
             )
-            
+
             val filtered = calls.filter { call ->
                 val matchesStartTime = startTimestamp == null || call.request.startTime >= startTimestamp
                 val matchesEndTime = endTimestamp == null || call.request.startTime <= endTimestamp
-                
+
                 matchesStartTime && matchesEndTime
             }
-            
+
             if (filtered.isEmpty()) {
                 return Failure(Throwable("No network logs found matching the criteria"))
             }
-            
+
             Success(filtered)
         } catch (e: Exception) {
             Failure(e)

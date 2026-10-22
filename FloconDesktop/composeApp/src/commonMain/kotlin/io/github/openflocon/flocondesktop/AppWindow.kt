@@ -16,11 +16,11 @@ import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
-import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
+import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule

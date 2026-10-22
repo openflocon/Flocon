@@ -7,8 +7,7 @@ import androidx.compose.ui.window.v2.WindowPositionProvider
 import java.awt.Toolkit
 import kotlin.math.min
 
-fun WindowStateData?.windowPositionProvider(): WindowPositionProvider =
-    this?.let { WindowPositionProvider.Absolute(x.dp, y.dp) } ?: WindowPositionProvider.Default
+fun WindowStateData?.windowPositionProvider(): WindowPositionProvider = this?.let { WindowPositionProvider.Absolute(x.dp, y.dp) } ?: WindowPositionProvider.Default
 
 fun WindowStateData?.size(): DpSize {
     val screenSize = Toolkit.getDefaultToolkit().screenSize
@@ -27,8 +26,7 @@ fun WindowStateData?.size(): DpSize {
     )
 }
 
-fun WindowStateData?.windowBoundsProvider(): WindowBoundsProvider =
-    WindowBoundsProvider(
-        positionProvider = windowPositionProvider(),
-        sizeProvider = { size() },
-    )
+fun WindowStateData?.windowBoundsProvider(): WindowBoundsProvider = WindowBoundsProvider(
+    positionProvider = windowPositionProvider(),
+    sizeProvider = { size() },
+)

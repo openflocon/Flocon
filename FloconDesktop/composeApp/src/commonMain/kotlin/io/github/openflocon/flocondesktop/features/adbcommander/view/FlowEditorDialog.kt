@@ -14,6 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_add_step
+import flocondesktop.composeapp.generated.resources.adb_commander_edit_flow
+import flocondesktop.composeapp.generated.resources.adb_commander_flow_description
+import flocondesktop.composeapp.generated.resources.adb_commander_flow_name
+import flocondesktop.composeapp.generated.resources.adb_commander_new_flow
+import flocondesktop.composeapp.generated.resources.adb_commander_step_command
+import flocondesktop.composeapp.generated.resources.adb_commander_step_delay
+import flocondesktop.composeapp.generated.resources.adb_commander_step_label
+import flocondesktop.composeapp.generated.resources.adb_commander_steps
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -26,16 +36,6 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.adb_commander_edit_flow
-import flocondesktop.composeapp.generated.resources.adb_commander_new_flow
-import flocondesktop.composeapp.generated.resources.adb_commander_flow_name
-import flocondesktop.composeapp.generated.resources.adb_commander_flow_description
-import flocondesktop.composeapp.generated.resources.adb_commander_steps
-import flocondesktop.composeapp.generated.resources.adb_commander_add_step
-import flocondesktop.composeapp.generated.resources.adb_commander_step_command
-import flocondesktop.composeapp.generated.resources.adb_commander_step_label
-import flocondesktop.composeapp.generated.resources.adb_commander_step_delay
 
 @Composable
 fun FlowEditorDialog(

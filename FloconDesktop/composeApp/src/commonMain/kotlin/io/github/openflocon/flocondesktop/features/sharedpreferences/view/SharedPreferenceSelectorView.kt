@@ -89,7 +89,9 @@ fun SharedPreferenceSelectorView(
                 }
                 when (state) {
                     SharedPrefsStateUiModel.Empty -> Unit
+
                     SharedPrefsStateUiModel.Loading -> Unit
+
                     is SharedPrefsStateUiModel.WithContent -> {
                         val filterText = remember { mutableStateOf("") }
                         val filtered = remember(filterText.value, state) {

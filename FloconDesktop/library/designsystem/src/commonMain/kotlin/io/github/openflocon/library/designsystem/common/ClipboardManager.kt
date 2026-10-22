@@ -7,4 +7,3 @@ expect fun copyToClipboard(text: String)
 expect fun copyToClipboard(bitmap: ImageBitmap)
 
 expect fun readFromClipboard(): String?
-

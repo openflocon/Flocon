@@ -88,7 +88,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
                         override val isPinned: StateFlow<Boolean> = viewModel.isPinned
 
                         override fun onPin(pinned: Boolean) {
-                           viewModel.onAction(NetworkAction.Pinned(pinned))
+                            viewModel.onAction(NetworkAction.Pinned(pinned))
                         }
                     }
                 }

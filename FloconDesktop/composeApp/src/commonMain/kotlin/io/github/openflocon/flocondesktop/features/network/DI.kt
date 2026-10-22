@@ -23,7 +23,6 @@ internal val networkModule = module {
     viewModelOf(::NetworkDetailViewModel)
     viewModelOf(::NetworkJsonViewModel)
 
-
     factoryOf(::MessagesServerDelegate)
     factoryOf(::HeaderDelegate)
     factoryOf(::OpenBodyDelegate)

@@ -3,11 +3,11 @@ package io.github.openflocon.mcp
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
 import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
-import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
 import io.github.openflocon.mcp.capture.CaptureMcpToolProvider
 import io.github.openflocon.mcp.capture.ScreenCapturer
 import io.github.openflocon.mcp.capture.UseCaseScreenCapturer
 import io.github.openflocon.mcp.crashreporter.CrashReporterMcpToolProvider
+import io.github.openflocon.mcp.dashboard.DashboardMcpToolProvider
 import io.github.openflocon.mcp.database.DatabaseMcpToolProvider
 import io.github.openflocon.mcp.deeplink.DeeplinkMcpToolProvider
 import io.github.openflocon.mcp.deeplink.DeeplinkOpener

@@ -89,26 +89,23 @@ class QueryDatabaseRemoteDataSourceImpl(
 
     override fun getQueryLogs(
         message: FloconIncomingMessageDomainModel,
-    ): DatabaseQueryLogDomainModel? {
-        return json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
+    ): DatabaseQueryLogDomainModel? = json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
+        val upperQuery = it.sqlQuery.trim().uppercase()
+        val isTransaction = upperQuery == "BEGIN TRANSACTION" ||
+            upperQuery == "COMMIT" ||
+            upperQuery == "ROLLBACK" ||
+            upperQuery == "END TRANSACTION" ||
+            upperQuery == "TRANSACTION SUCCESSFUL" ||
+            upperQuery == "BEGIN IMMEDIATE TRANSACTION"
 
-            val upperQuery = it.sqlQuery.trim().uppercase()
-            val isTransaction = upperQuery == "BEGIN TRANSACTION" ||
-                    upperQuery == "COMMIT" ||
-                    upperQuery == "ROLLBACK" ||
-                    upperQuery == "END TRANSACTION" ||
-                    upperQuery == "TRANSACTION SUCCESSFUL" ||
-                    upperQuery == "BEGIN IMMEDIATE TRANSACTION"
-
-            DatabaseQueryLogDomainModel(
-                dbName = it.dbName,
-                sqlQuery = it.sqlQuery,
-                bindArgs = it.bindArgs.orEmpty(),
-                timestamp = it.timestamp,
-                isTransaction = isTransaction,
-                appInstance = message.appInstance,
-            )
-        }
+        DatabaseQueryLogDomainModel(
+            dbName = it.dbName,
+            sqlQuery = it.sqlQuery,
+            bindArgs = it.bindArgs.orEmpty(),
+            timestamp = it.timestamp,
+            isTransaction = isTransaction,
+            appInstance = message.appInstance,
+        )
     }
 }
 
@@ -131,6 +128,7 @@ fun DatabaseExecuteSqlResponseDataModel.toDomain(): DatabaseExecuteSqlResponseDo
         )
 
     DatabaseExecuteSqlResponseDataModel.RawSuccess -> DatabaseExecuteSqlResponseDomainModel.RawSuccess
+
     is DatabaseExecuteSqlResponseDataModel.Select ->
         DatabaseExecuteSqlResponseDomainModel.Select(
             columns = columns,

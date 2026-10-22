@@ -5,7 +5,6 @@ import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailA
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 
-
 sealed interface NetworkAction {
 
     data class SelectRequest(val id: String) : NetworkAction
@@ -51,7 +50,6 @@ sealed interface NetworkAction {
     data object ClearOldSession : NetworkAction
 
     data class DetailAction(val action: NetworkDetailAction) : NetworkAction
-
 
     data class SelectLine(val id: String, val selected: Boolean) : NetworkAction
 

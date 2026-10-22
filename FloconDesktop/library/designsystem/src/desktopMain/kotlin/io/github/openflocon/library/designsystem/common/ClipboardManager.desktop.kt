@@ -7,8 +7,6 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
-
-
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -50,12 +48,10 @@ actual fun copyToClipboard(bitmap: ImageBitmap) {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val imageSelection = ImageSelection(bufferedImage)
         clipboard.setContents(imageSelection, null)
-
     } catch (e: Exception) {
         e.printStackTrace()
     }
 }
-
 
 private class ImageSelection(
     private val image: Image,
@@ -73,7 +69,6 @@ private class ImageSelection(
     }
 }
 
-
 actual fun readFromClipboard(): String? {
     val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     return try {
@@ -82,6 +77,3 @@ actual fun readFromClipboard(): String? {
         null
     }
 }
-
-
-

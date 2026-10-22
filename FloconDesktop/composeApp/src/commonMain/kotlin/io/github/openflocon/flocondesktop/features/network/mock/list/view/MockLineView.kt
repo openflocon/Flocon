@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -35,7 +36,6 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun MockLineView(

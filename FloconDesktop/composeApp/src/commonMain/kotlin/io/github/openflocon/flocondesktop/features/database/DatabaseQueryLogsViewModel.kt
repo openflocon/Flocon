@@ -12,6 +12,7 @@ import io.github.openflocon.domain.database.usecase.ClearDatabaseQueryLogsUseCas
 import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
+import io.github.openflocon.domain.database.utils.injectSqlArgs
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -27,6 +28,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -39,9 +41,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-import io.github.openflocon.domain.database.utils.injectSqlArgs
-import kotlinx.coroutines.flow.StateFlow
 
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
@@ -149,7 +148,7 @@ class DatabaseQueryLogsViewModel(
             _page.value = 0
         }
     }
-    
+
     fun addExcludeFilter() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
@@ -158,7 +157,7 @@ class DatabaseQueryLogsViewModel(
             _page.value = 0
         }
     }
-    
+
     fun toggleFilterType(chip: FilterChipUiModel) {
         _filterChips.update { list ->
             list.mutate { chips ->
@@ -179,9 +178,9 @@ class DatabaseQueryLogsViewModel(
         }
         _page.value = 0
     }
-    
+
     fun addFilter(text: String, type: FilterChipUiModel.FilterType) {
-         if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
+        if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
             _filterChips.update { it.adding(FilterChipUiModel(text, type)) }
             _page.value = 0
         }
@@ -261,19 +260,16 @@ private fun DatabaseQueryLogDomainModel.toUi(currentDeviceAndPackage: DeviceIdAn
     type = findType(this),
 )
 
-
-private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? {
-    return if(model.isTransaction) {
-        DatabaseQueryUiModel.Type.Transaction
-    } else if(model.sqlQuery.startsWith("SELECT")) {
-        DatabaseQueryUiModel.Type.Select
-    } else if(model.sqlQuery.startsWith("INSERT")) {
-        DatabaseQueryUiModel.Type.Insert
-    } else if(model.sqlQuery.startsWith("UPDATE")) {
-        DatabaseQueryUiModel.Type.Update
-    } else if(model.sqlQuery.startsWith("DELETE")) {
-        DatabaseQueryUiModel.Type.Delete
-    } else {
-        null
-    }
+private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? = if (model.isTransaction) {
+    DatabaseQueryUiModel.Type.Transaction
+} else if (model.sqlQuery.startsWith("SELECT")) {
+    DatabaseQueryUiModel.Type.Select
+} else if (model.sqlQuery.startsWith("INSERT")) {
+    DatabaseQueryUiModel.Type.Insert
+} else if (model.sqlQuery.startsWith("UPDATE")) {
+    DatabaseQueryUiModel.Type.Update
+} else if (model.sqlQuery.startsWith("DELETE")) {
+    DatabaseQueryUiModel.Type.Delete
+} else {
+    null
 }

@@ -103,6 +103,7 @@ private fun Menu(
                 items.forEach { item ->
                     when (item) {
                         is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
+
                         is FloconContextMenuItem.SubMenu -> SubMenu(
                             item = item,
                             hide = hide,

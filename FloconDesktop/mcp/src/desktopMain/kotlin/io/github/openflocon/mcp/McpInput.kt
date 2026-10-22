@@ -152,5 +152,6 @@ private fun JsonElement.withoutNullTypes(): JsonElement = when (this) {
     )
 
     is JsonArray -> JsonArray(map { it.withoutNullTypes() })
+
     is JsonPrimitive -> this
 }

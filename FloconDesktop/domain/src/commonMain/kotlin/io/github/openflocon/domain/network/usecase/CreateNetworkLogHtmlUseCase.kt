@@ -135,8 +135,7 @@ class CreateNetworkLogHtmlUseCase(
         }
     }
 
-    private fun headersToRawText(headers: Map<String, String>): String =
-        headers.entries.joinToString("\n") { (key, value) -> "$key: $value" }
+    private fun headersToRawText(headers: Map<String, String>): String = headers.entries.joinToString("\n") { (key, value) -> "$key: $value" }
 
     private fun headersTable(headers: Map<String, String>): String = buildString {
         appendLine("<table class=\"headers\">")
@@ -152,11 +151,9 @@ class CreateNetworkLogHtmlUseCase(
         appendLine("</table>")
     }
 
-    private fun codeBlock(content: String): String =
-        "<pre class=\"code\"><code>${escapeHtml(content)}</code></pre>"
+    private fun codeBlock(content: String): String = "<pre class=\"code\"><code>${escapeHtml(content)}</code></pre>"
 
-    private fun copyButton(targetId: String, label: String = "Copy"): String =
-        "<button class=\"copy-btn\" onclick=\"copyToClipboard('$targetId', this)\">$label</button>"
+    private fun copyButton(targetId: String, label: String = "Copy"): String = "<button class=\"copy-btn\" onclick=\"copyToClipboard('$targetId', this)\">$label</button>"
 
     private fun sectionWithCopy(
         title: String,
@@ -345,5 +342,3 @@ class CreateNetworkLogHtmlUseCase(
         }
     """.trimIndent()
 }
-
-

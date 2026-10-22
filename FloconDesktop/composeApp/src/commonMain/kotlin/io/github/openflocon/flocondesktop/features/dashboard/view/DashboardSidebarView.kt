@@ -86,7 +86,9 @@ fun DashboardSidebarView(
                 )
                 when (state) {
                     DashboardsStateUiModel.Empty -> Unit
+
                     DashboardsStateUiModel.Loading -> Unit
+
                     is DashboardsStateUiModel.WithContent -> {
                         var filterText = remember { mutableStateOf("") }
                         val filteredDashboards = remember(filterText.value, state.dashboards) {

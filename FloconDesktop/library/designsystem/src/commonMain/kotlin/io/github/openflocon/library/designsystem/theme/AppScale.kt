@@ -200,5 +200,4 @@ enum class AppScale(
             columnExtraLarge = 380.dp,
         ),
     ),
-    ;
 }

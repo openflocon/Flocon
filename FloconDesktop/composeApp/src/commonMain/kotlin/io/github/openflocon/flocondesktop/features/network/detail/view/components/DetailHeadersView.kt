@@ -2,12 +2,12 @@
 
 package io.github.openflocon.flocondesktop.features.network.detail.view.components
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +40,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_copy_value
+import flocondesktop.composeapp.generated.resources.network_decode_jwt
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -48,11 +51,7 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_copy_value
-import flocondesktop.composeapp.generated.resources.network_decode_jwt
 
 @Composable
 fun DetailHeadersView(
@@ -217,7 +216,6 @@ private fun HeaderValueText(
     }
 }
 
-
 @Preview
 @Composable
 private fun DetailHeadersViewPreview() {
@@ -233,4 +231,3 @@ private fun DetailHeadersViewPreview() {
         )
     }
 }
-

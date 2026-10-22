@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.list
 
-import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +26,7 @@ import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
+import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
@@ -254,23 +254,37 @@ class NetworkViewModel(
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
+
             is NetworkAction.ClosePanel -> onClosePanel()
+
             is NetworkAction.Reset -> onReset()
+
             is NetworkAction.OpenMocks -> openMocks(callId = null)
+
             is NetworkAction.CreateMock -> {
                 openMocks(callId = action.item.uuid)
             }
 
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
+
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
+
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
+
             is NetworkAction.Replay -> onReplay(action)
+
             is NetworkAction.CopyUrl -> onCopyUrl(action)
+
             is NetworkAction.Remove -> onRemove(action)
+
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
+
             is NetworkAction.FilterQuery -> onFilterQuery(action)
+
             is NetworkAction.ExportCsv -> onExportCsv()
+
             is NetworkAction.ImportFromCsv -> onImportFromCsv()
+
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
                 sort = action.sort,
@@ -281,12 +295,19 @@ class NetworkViewModel(
             )
 
             is NetworkAction.InvertList -> toggleInvertList(action)
+
             is NetworkAction.ToggleAutoScroll -> toggleAutoScroll(action)
+
             NetworkAction.ClearOldSession -> onClearSession()
+
             is NetworkAction.Down -> selectRequest(action.itemIdToSelect)
+
             is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
+
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
+
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
+
             NetworkAction.CloseWebsocketMocks -> contentState.update {
                 it.copy(
                     websocketMocksDisplayed = false
@@ -294,18 +315,26 @@ class NetworkViewModel(
             }
 
             is NetworkAction.Pinned -> onPinned(action)
+
             is NetworkAction.SetDefaultSelectedTab -> setDefaultSelectedTab(action)
+
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
+
             is NetworkAction.SelectLine -> onSelectLine(action)
+
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
+
             NetworkAction.MultiSelect -> onMultiSelect()
+
             NetworkAction.DeleteSelection -> onDeleteSelection()
+
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
+
             NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
+
             is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
         }
     }
-
 
     private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -406,7 +435,6 @@ class NetworkViewModel(
             )
         }
     }
-
 
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
         selectRequest(action.id)

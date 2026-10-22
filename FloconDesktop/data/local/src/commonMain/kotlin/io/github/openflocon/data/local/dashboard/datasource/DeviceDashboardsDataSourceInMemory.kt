@@ -68,14 +68,10 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
 
     private fun getSelectedDashboardKey(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): String {
-        return deviceIdAndPackageName.packageName
-    }
+    ): String = deviceIdAndPackageName.packageName
 
     private fun getDashboardArrangementKey(
         dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    ): String {
-        return "${deviceIdAndPackageName.packageName}_$dashboardId"
-    }
+    ): String = "${deviceIdAndPackageName.packageName}_$dashboardId"
 }

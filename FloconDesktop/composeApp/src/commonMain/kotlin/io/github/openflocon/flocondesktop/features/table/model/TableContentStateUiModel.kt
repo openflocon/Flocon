@@ -23,6 +23,7 @@ fun TableContentStateUiModel.items(): ImmutableList<TableRowUiModel> = when (thi
     is TableContentStateUiModel.Empty,
     is TableContentStateUiModel.Loading,
     -> persistentListOf()
+
     is TableContentStateUiModel.WithContent -> rows
 }
 

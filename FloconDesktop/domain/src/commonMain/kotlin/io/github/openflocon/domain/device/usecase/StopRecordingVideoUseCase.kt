@@ -17,6 +17,7 @@ class StopRecordingVideoUseCase(
     suspend operator fun invoke(recording: RecordingDomainModel): Either<Throwable, String> = when (recording) {
         // the simulator records on this computer, it does not depend on the selected device
         is RecordingDomainModel.IosSimulator -> iosSimulatorRepository.stopRecording(filePath = recording.filePath)
+
         is RecordingDomainModel.Android -> stopAndroidRecording(recording)
     }
 

@@ -62,12 +62,14 @@ class VersionCheckerViewModel(
                         link = update.link,
                     )
                 }
+
                 is ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.ClientUpdate -> {
                     UpdateChipUiModel(
                         text = getString(Res.string.update_available_client, update.version),
                         link = update.link,
                     )
                 }
+
                 ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.None -> null
             }
         }

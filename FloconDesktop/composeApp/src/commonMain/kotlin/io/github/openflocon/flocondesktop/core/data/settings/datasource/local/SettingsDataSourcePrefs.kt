@@ -11,8 +11,8 @@ import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSetti
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -46,6 +46,7 @@ internal class SettingsDataSourcePrefs(
     override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
 
     override val adbPath: Flow<String?> = flowSettings.getStringOrNullFlow(ADB_PATH)
+
     // falls back on the former float multiplier (FONT_SIZE_MULTIPLIER) until a preset is chosen
     override val appScale: StateFlow<AppScaleSetting> = combine(
         flowSettings.getStringOrNullFlow(APP_SCALE),

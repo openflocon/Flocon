@@ -46,6 +46,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.filter_exclude
+import flocondesktop.composeapp.generated.resources.filter_include
+import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.general_export_markdown
+import flocondesktop.composeapp.generated.resources.general_hide_transactions
+import flocondesktop.composeapp.generated.resources.general_next_page
+import flocondesktop.composeapp.generated.resources.general_previous_page
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.settings_filter_logs
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.DatabaseQueryLogsViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
@@ -63,20 +74,9 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.export_csv
-import flocondesktop.composeapp.generated.resources.filter_exclude
-import flocondesktop.composeapp.generated.resources.filter_include
-import flocondesktop.composeapp.generated.resources.general_clear
-import flocondesktop.composeapp.generated.resources.general_export_markdown
-import flocondesktop.composeapp.generated.resources.general_hide_transactions
-import flocondesktop.composeapp.generated.resources.general_next_page
-import flocondesktop.composeapp.generated.resources.general_previous_page
-import flocondesktop.composeapp.generated.resources.remove
-import flocondesktop.composeapp.generated.resources.settings_filter_logs
 
 @Composable
 fun DatabaseQueryLogsView(
@@ -279,25 +279,24 @@ private fun DatabaseLogsHeader(
                     modifier = Modifier.padding(start = FloconTheme.spacing.large),
                 )
 
-                    FloconOverflow {
-                        FloconDropdownMenuItem(
-                            text = stringResource(Res.string.export_csv),
-                            leadingIcon = Icons.Outlined.Upload,
-                            onClick = { exportToCsv() }
-                        )
-                        FloconDropdownMenuItem(
-                            text = stringResource(Res.string.general_export_markdown),
-                            leadingIcon = Icons.Outlined.UploadFile,
-                            onClick = { exportToMarkdown() }
-                        )
-                        FloconDropdownSeparator()
-                        FloconDropdownMenuItem(
-                            text = stringResource(Res.string.general_clear),
-                            leadingIcon = Icons.Outlined.Delete,
-                            onClick = { clearLogs() }
-                        )
-                    }
-
+                FloconOverflow {
+                    FloconDropdownMenuItem(
+                        text = stringResource(Res.string.export_csv),
+                        leadingIcon = Icons.Outlined.Upload,
+                        onClick = { exportToCsv() }
+                    )
+                    FloconDropdownMenuItem(
+                        text = stringResource(Res.string.general_export_markdown),
+                        leadingIcon = Icons.Outlined.UploadFile,
+                        onClick = { exportToMarkdown() }
+                    )
+                    FloconDropdownSeparator()
+                    FloconDropdownMenuItem(
+                        text = stringResource(Res.string.general_clear),
+                        leadingIcon = Icons.Outlined.Delete,
+                        onClick = { clearLogs() }
+                    )
+                }
             }
             FilterChips(
                 modifier = Modifier.fillMaxWidth()

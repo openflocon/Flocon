@@ -60,8 +60,6 @@ fun DatabaseTabQueryView(
     )
 }
 
-
-
 @Composable
 private fun DatabaseTabViewContent(
     query: String,

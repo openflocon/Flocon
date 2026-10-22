@@ -30,5 +30,4 @@ interface DeeplinkLocalDataSource {
         deeplinkId: Long,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): DeeplinkDomainModel?
-
 }

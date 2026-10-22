@@ -60,6 +60,7 @@ internal fun FeatureFlagProviderSelectorView(
                         )
 
                     FeatureFlagProvidersUiModel.Loading -> FloconLinearProgressIndicator()
+
                     is FeatureFlagProvidersUiModel.WithContent -> {
                         Text(text = providersState.selected, style = FloconTheme.typography.bodySmall)
                         FloconIcon(

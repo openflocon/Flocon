@@ -20,7 +20,6 @@ class GetNetworkCallAsMarkdownUseCase(
             requestId = callId
         ).firstOrNull() ?: return null
 
-
         return buildString {
             appendLine("### ${call.request.method} ${call.request.url}")
             appendLine()
@@ -58,9 +57,11 @@ class GetNetworkCallAsMarkdownUseCase(
                 if (!call.responseBody().isNullOrBlank()) {
                     appendLine("#### Response Body")
                     appendLine("```json")
-                    appendLine(call.responseBody()?.let {
-                        jsonFormatter.toPrettyJson(it)
-                    } )
+                    appendLine(
+                        call.responseBody()?.let {
+                            jsonFormatter.toPrettyJson(it)
+                        }
+                    )
                     appendLine("```")
                 } else if (call.response is io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel.Response.Failure) {
                     appendLine("#### Error")

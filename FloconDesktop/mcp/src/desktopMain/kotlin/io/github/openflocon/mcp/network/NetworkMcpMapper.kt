@@ -49,6 +49,7 @@ internal fun FloconNetworkCallDomainModel.state(): NetworkCallState = when (val 
     }
 
     is Response.Failure -> NetworkCallState.Exception
+
     is Response.Success -> {
         val isSuccess = when (val infos = response.specificInfos) {
             is Response.Success.SpecificInfos.GraphQl -> infos.isSuccess
@@ -109,6 +110,7 @@ internal fun FloconNetworkCallDomainModel.toDetailMcpModel(
     ),
     response = when (val response = response) {
         null -> null
+
         is Response.Failure -> NetworkResponseMcpModel(
             contentType = null,
             headers = null,

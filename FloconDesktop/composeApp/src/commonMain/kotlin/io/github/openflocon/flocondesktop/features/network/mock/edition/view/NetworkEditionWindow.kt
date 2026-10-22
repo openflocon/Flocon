@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.mock.edition.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,31 +42,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.sebastianneubauer.jsontree.TreeState
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
-import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
-import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
-import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
-import io.github.openflocon.flocondesktop.features.network.mock.edition.model.EditableMockNetworkUiModel
-import io.github.openflocon.flocondesktop.features.network.mock.edition.model.HeaderUiModel
-import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
-import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.DefaultLabel
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
-import io.github.openflocon.library.designsystem.components.FloconDialogButtons
-import io.github.openflocon.library.designsystem.components.FloconDialogHeader
-import io.github.openflocon.library.designsystem.components.FloconJsonTree
-import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.FloconActionButton
-import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
-import io.github.openflocon.library.designsystem.components.FloconTab
-import io.github.openflocon.library.designsystem.components.FloconTextField
-import io.github.openflocon.library.designsystem.components.TabType
-import io.github.openflocon.library.designsystem.components.defaultLabel
-import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_cancel
 import flocondesktop.composeapp.generated.resources.general_edit
@@ -99,6 +74,31 @@ import flocondesktop.composeapp.generated.resources.network_body
 import flocondesktop.composeapp.generated.resources.network_header_method
 import flocondesktop.composeapp.generated.resources.network_headers
 import flocondesktop.composeapp.generated.resources.network_response
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
+import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
+import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
+import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
+import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
+import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.EditableMockNetworkUiModel
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.HeaderUiModel
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkUiModel
+import io.github.openflocon.flocondesktop.features.network.mock.edition.model.SelectedMockUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.DefaultLabel
+import io.github.openflocon.library.designsystem.components.FloconActionButton
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconDialogButtons
+import io.github.openflocon.library.designsystem.components.FloconDialogHeader
+import io.github.openflocon.library.designsystem.components.FloconJsonTree
+import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
+import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconTab
+import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.TabType
+import io.github.openflocon.library.designsystem.components.defaultLabel
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import org.jetbrains.compose.resources.stringResource
 
 private enum class TestPatternStatus {
     Empty,
@@ -307,6 +307,7 @@ fun MockEditorScreen(
                                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
+
                         TestPatternStatus.NoPattern -> {
                             Text(
                                 text = stringResource(Res.string.mock_test_pattern_no_pattern),
@@ -315,6 +316,7 @@ fun MockEditorScreen(
                                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
                             )
                         }
+
                         TestPatternStatus.Matches -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -338,6 +340,7 @@ fun MockEditorScreen(
                                 )
                             }
                         }
+
                         TestPatternStatus.NoMatch -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -361,6 +364,7 @@ fun MockEditorScreen(
                                 )
                             }
                         }
+
                         TestPatternStatus.InvalidRegex -> {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -782,4 +786,3 @@ private fun HeaderInputField(
         }
     }
 }
-

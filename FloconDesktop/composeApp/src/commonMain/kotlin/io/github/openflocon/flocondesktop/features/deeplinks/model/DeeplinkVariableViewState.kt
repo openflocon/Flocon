@@ -4,10 +4,10 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class DeeplinkVariableViewState(
-        val name: String,
-        val description: String?,
-        val value: String,
-        val mode: Mode = Mode.Input,
+    val name: String,
+    val description: String?,
+    val value: String,
+    val mode: Mode = Mode.Input,
 ) {
     @Immutable
     sealed interface Mode {

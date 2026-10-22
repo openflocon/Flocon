@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
-import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -18,10 +17,10 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDesti
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
-import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -102,9 +102,11 @@ internal class TimelineViewModel(
     fun onAction(action: TimelineAction) {
         when (action) {
             is TimelineAction.FilterTextChanged -> _filterText.update { action.text }
+
             is TimelineAction.ToggleSource -> _selectedSources.update { current ->
                 if (action.source in current) current - action.source else current + action.source
             }
+
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()
                 if (destination != null) {

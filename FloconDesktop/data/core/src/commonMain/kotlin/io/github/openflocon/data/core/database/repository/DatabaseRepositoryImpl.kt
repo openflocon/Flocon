@@ -213,44 +213,38 @@ class DatabaseRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         limit: Int,
         offset: Int,
-    ): Flow<List<DatabaseQueryLogDomainModel>> {
-        return localDatabaseDataSource.observeQueryLogs(
-            dbName = dbName,
-            showTransactions = showTransactions,
-            filters = filters,
-            deviceIdAndPackageName = deviceIdAndPackageName,
-            limit = limit,
-            offset = offset,
-        )
-    }
+    ): Flow<List<DatabaseQueryLogDomainModel>> = localDatabaseDataSource.observeQueryLogs(
+        dbName = dbName,
+        showTransactions = showTransactions,
+        filters = filters,
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        limit = limit,
+        offset = offset,
+    )
 
     override fun countQueryLogs(
         dbName: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): Flow<Int> {
-        return localDatabaseDataSource.countQueryLogs(
-            dbName = dbName,
-            showTransactions = showTransactions,
-            filters = filters,
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
-    }
+    ): Flow<Int> = localDatabaseDataSource.countQueryLogs(
+        dbName = dbName,
+        showTransactions = showTransactions,
+        filters = filters,
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 
     override suspend fun getQueryLogs(
         dbName: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ): List<DatabaseQueryLogDomainModel> {
-        return localDatabaseDataSource.getQueryLogs(
-            dbName = dbName,
-            showTransactions = showTransactions,
-            filters = filters,
-            deviceIdAndPackageName = deviceIdAndPackageName,
-        )
-    }
+    ): List<DatabaseQueryLogDomainModel> = localDatabaseDataSource.getQueryLogs(
+        dbName = dbName,
+        showTransactions = showTransactions,
+        filters = filters,
+        deviceIdAndPackageName = deviceIdAndPackageName,
+    )
 
     override suspend fun getLatestQueryLogs(
         dbName: String,

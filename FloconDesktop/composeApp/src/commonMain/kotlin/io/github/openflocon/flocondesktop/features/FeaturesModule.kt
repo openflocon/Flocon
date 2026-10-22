@@ -2,13 +2,13 @@ package io.github.openflocon.flocondesktop.features
 
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesModule
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
+import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
-import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
-import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderModule
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkModule
+import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsModule
 import io.github.openflocon.flocondesktop.features.files.filesModule
 import io.github.openflocon.flocondesktop.features.images.imagesModule
 import io.github.openflocon.flocondesktop.features.network.networkModule
