@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
-import io.github.openflocon.domain.log.LogDomain
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -33,4 +33,3 @@ fun previewSettingsUiState() = SettingsUiState(
     selectedLogDomains = LogDomain.entries.toSet(),
     selectedLogLevels = LogLevel.entries.toSet(),
 )
-

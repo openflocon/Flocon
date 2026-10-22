@@ -153,11 +153,9 @@ private class FakeSharedPreferencesRepository(
         sharedPreferenceId: DeviceSharedPreferenceId,
     ): Flow<List<SharedPreferenceRowDomainModel>> = knownValues.map { it[sharedPreferenceId] ?: emptyList() }
 
-    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> =
-        flowOf(null)
+    override fun observeSelectedDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DeviceSharedPreferenceDomainModel?> = flowOf(null)
 
-    override fun selectDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, sharedPreferenceId: DeviceSharedPreferenceId) =
-        error("not used")
+    override fun selectDeviceSharedPreference(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, sharedPreferenceId: DeviceSharedPreferenceId) = error("not used")
 
     override suspend fun registerDeviceSharedPreferences(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

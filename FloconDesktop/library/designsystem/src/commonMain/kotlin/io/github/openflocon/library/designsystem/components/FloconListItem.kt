@@ -54,5 +54,4 @@ data object FloconListItemDefaults {
         disabledLeadingIconColor = disabledLeadingIconColor,
         disabledTrailingIconColor = disabledTrailingIconColor,
     )
-
 }

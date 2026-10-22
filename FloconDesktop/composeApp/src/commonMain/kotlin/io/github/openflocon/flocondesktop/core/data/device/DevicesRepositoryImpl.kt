@@ -231,6 +231,7 @@ class DevicesRepositoryImpl(
                     installedPlugins = remoteDeviceDataSource.getInstalledPlugins(message),
                 )
             }
+
             Protocol.FromDevice.Device.Method.RegisterDevice -> {
                 remoteDeviceDataSource.getDeviceSerial(message)?.let { serial ->
                     adbRepository.saveAdbSerial(
@@ -239,6 +240,7 @@ class DevicesRepositoryImpl(
                     )
                 }
             }
+
             Protocol.FromDevice.Device.Method.AppIcon -> {
                 localDevicesDataSource.saveAppIcon(
                     deviceId = message.deviceId,

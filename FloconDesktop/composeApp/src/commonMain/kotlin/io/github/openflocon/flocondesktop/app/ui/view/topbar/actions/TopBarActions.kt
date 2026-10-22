@@ -18,15 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
-import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.topbar_open_folder
 import flocondesktop.composeapp.generated.resources.topbar_record
 import flocondesktop.composeapp.generated.resources.topbar_restart
 import flocondesktop.composeapp.generated.resources.topbar_screenshot
+import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
+import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TopBarActions(

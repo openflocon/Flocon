@@ -10,6 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_select_exception
+import flocondesktop.composeapp.generated.resources.badquality_weight
+import flocondesktop.composeapp.generated.resources.general_exception
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.DefaultLabel
@@ -19,10 +23,6 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.badquality_select_exception
-import flocondesktop.composeapp.generated.resources.badquality_weight
-import flocondesktop.composeapp.generated.resources.general_exception
 
 @Composable
 fun BadQuaityErrorExceptionEditor(

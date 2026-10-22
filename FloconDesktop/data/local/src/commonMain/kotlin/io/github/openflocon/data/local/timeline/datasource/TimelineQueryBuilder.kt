@@ -172,12 +172,11 @@ private fun buildUnion(
 /**
  * The sessions are the app start times found in the tables that store them: there is no connection history.
  */
-private fun sessionsSql(deviceId: String, packageName: String, params: MutableList<Any>): String =
-    SESSION_TABLES.joinToString(separator = " UNION ") { table ->
-        params.add(deviceId)
-        params.add(packageName)
-        "SELECT appInstance FROM $table WHERE deviceId = ? AND packageName = ?"
-    }
+private fun sessionsSql(deviceId: String, packageName: String, params: MutableList<Any>): String = SESSION_TABLES.joinToString(separator = " UNION ") { table ->
+    params.add(deviceId)
+    params.add(packageName)
+    "SELECT appInstance FROM $table WHERE deviceId = ? AND packageName = ?"
+}
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +

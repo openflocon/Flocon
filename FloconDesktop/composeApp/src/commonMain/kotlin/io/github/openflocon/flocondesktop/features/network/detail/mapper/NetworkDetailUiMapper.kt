@@ -67,6 +67,7 @@ fun FloconNetworkCallDomainModel.toDetailUi(
 
 private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String = when (request.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Event"
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
     FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Status"
@@ -74,11 +75,11 @@ private fun toDetailStatusLabel(request: FloconNetworkCallDomainModel): String =
 
 private fun requestBodyTitle(request: FloconNetworkCallDomainModel): String = when (request.request.specificInfos) {
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> "Content"
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
     FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> "Body"
 }
-
 
 private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when (response) {
@@ -94,6 +95,7 @@ private fun toDetailHttpStatusUi(networkCall: FloconNetworkCallDomainModel): Net
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> toGrpcNetworkStatusUi(
                 networkCall
             )
+
             // here for grphql we want the http code, the graphql status will be displayed on the specific graphql section
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toNetworkStatusUi(
                 code = s.httpCode

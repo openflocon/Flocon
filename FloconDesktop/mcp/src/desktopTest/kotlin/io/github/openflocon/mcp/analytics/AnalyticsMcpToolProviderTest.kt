@@ -197,8 +197,7 @@ private class FakeAnalyticsRepository(
         .map { AnalyticsEventCountDomainModel(eventName = it.key, count = it.value) }
         .sortedWith(compareByDescending<AnalyticsEventCountDomainModel> { it.count }.thenBy { it.eventName })
 
-    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> =
-        flowOf(events.map { it.analyticsTableId }.distinct().map { AnalyticsIdentifierDomainModel(id = it, name = it) })
+    override fun observeDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<AnalyticsIdentifierDomainModel>> = flowOf(events.map { it.analyticsTableId }.distinct().map { AnalyticsIdentifierDomainModel(id = it, name = it) })
 
     override fun observeAnalytics(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -212,17 +211,13 @@ private class FakeAnalyticsRepository(
         filter: String?,
     ): List<AnalyticsItemDomainModel> = error("not used")
 
-    override suspend fun deleteAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) =
-        error("not used")
+    override suspend fun deleteAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsId: AnalyticsIdentifierDomainModel) = error("not used")
 
-    override fun observeAnalyticsById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsItemDomainModel?> =
-        error("not used")
+    override fun observeAnalyticsById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsItemDomainModel?> = error("not used")
 
-    override suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId) =
-        error("not used")
+    override suspend fun selectDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsTableId: AnalyticsTableId) = error("not used")
 
-    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> =
-        error("not used")
+    override fun observeSelectedDeviceAnalytics(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<AnalyticsIdentifierDomainModel?> = error("not used")
 
     override suspend fun deleteAnalyticsItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, analyticsItemId: String) = error("not used")
 

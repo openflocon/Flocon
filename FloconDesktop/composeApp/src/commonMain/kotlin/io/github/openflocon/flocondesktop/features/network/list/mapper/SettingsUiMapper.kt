@@ -10,4 +10,3 @@ fun NetworkSettings.toUi() = NetworkSettingsUiModel(
     invertList = invertList,
     defaultSelectedTab = defaultSelectedTab,
 )
-

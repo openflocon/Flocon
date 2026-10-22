@@ -21,8 +21,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 // the mono style of the data: times, http codes, methods, paths
 @Composable
-internal fun monoStyle(small: Boolean = false) =
-    (if (small) FloconTheme.typography.labelSmall else FloconTheme.typography.labelMedium).copy(fontFamily = FontFamily.Monospace)
+internal fun monoStyle(small: Boolean = false) = (if (small) FloconTheme.typography.labelSmall else FloconTheme.typography.labelMedium).copy(fontFamily = FontFamily.Monospace)
 
 @Composable
 internal fun MethodPill(

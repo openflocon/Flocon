@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +38,6 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @Composable
 fun SharedPreferenceRowView(

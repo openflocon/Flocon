@@ -322,6 +322,7 @@ class FilesViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 FileUiModel.ContextualAction.Action.Open -> onFileClicked(file)
+
                 FileUiModel.ContextualAction.Action.Delete -> {
                     val parent = selectedFile.value?.current?.path ?: return@launch
                     deleteFileUseCase(path = file.path.toDomain(), parentPath = parent)
@@ -381,7 +382,7 @@ class FilesViewModel(
 
     private fun onSelectFile(path: String, selected: Boolean, index: Int, shiftHeld: Boolean) {
         val currentFiles = state.value.files
-        
+
         if (shiftHeld && lastSelectedIndex != null) {
             // Shift+Click: select range
             val startIndex = minOf(lastSelectedIndex!!, index)
@@ -407,7 +408,7 @@ class FilesViewModel(
     }
 
     private fun onSelectAll(selectAll: Boolean) {
-        if(selectAll) {
+        if (selectAll) {
             multiSelectedPaths.update {
                 state.value.files
                     .mapNotNull { (it.path as? FilePathUiModel.Real)?.absolutePath }
@@ -425,15 +426,15 @@ class FilesViewModel(
             val parent = selectedFile.value?.current?.path ?: return@launch
             val selectedPaths = multiSelectedPaths.value
                 .map { FilePathDomainModel.Real(it) }
-            
+
             deleteFilesUseCase(
                 paths = selectedPaths,
                 parentPath = parent
             )
-            
+
             // Clear selection after deletion
             onClearMultiSelect()
-            
+
             // Refresh the folder content
             onRefresh()
         }

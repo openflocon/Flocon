@@ -1,12 +1,10 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.files_filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
@@ -33,13 +35,11 @@ import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHeader
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.files_filter
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FilesScreen(modifier: Modifier = Modifier) {
@@ -133,8 +133,8 @@ private fun FilesScreen(
                             onClick = { onAction(FilesAction.FileClicked(it)) },
                             modifier = Modifier.fillMaxWidth(),
                             onContextualAction = { file, action -> onAction(FilesAction.ContextualAction(file, action)) },
-                            onSelectFile = { p, selected, i, shiftHeld -> 
-                                onAction(FilesAction.SelectFile(p, selected, i, shiftHeld)) 
+                            onSelectFile = { p, selected, i, shiftHeld ->
+                                onAction(FilesAction.SelectFile(p, selected, i, shiftHeld))
                             },
                         )
                         if (index != state.files.lastIndex) {

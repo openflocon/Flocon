@@ -98,7 +98,9 @@ fun DatabasesAndTablesView(
                 }
                 when (state) {
                     DatabasesStateUiModel.Empty -> Unit
+
                     DatabasesStateUiModel.Loading -> Unit
+
                     is DatabasesStateUiModel.WithContent -> {
                         state.databases.forEach {
                             DatabaseItemView(

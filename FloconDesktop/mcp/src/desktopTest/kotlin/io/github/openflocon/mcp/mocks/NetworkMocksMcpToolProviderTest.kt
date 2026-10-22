@@ -258,8 +258,7 @@ private class FakeNetworkMocksRepository : NetworkMocksRepository {
     private val mocks = MutableStateFlow<Map<String, Pair<Pair<String, String>?, MockNetworkDomainModel>>>(emptyMap())
     val sentToDevice = mutableMapOf<DeviceIdAndPackageNameDomainModel, List<MockNetworkDomainModel>>()
 
-    private fun List<Pair<Pair<String, String>?, MockNetworkDomainModel>>.of(target: DeviceIdAndPackageNameDomainModel) =
-        filter { (app, _) -> app == null || app == (target.deviceId to target.packageName) }.map { it.second }
+    private fun List<Pair<Pair<String, String>?, MockNetworkDomainModel>>.of(target: DeviceIdAndPackageNameDomainModel) = filter { (app, _) -> app == null || app == (target.deviceId to target.packageName) }.map { it.second }
 
     fun mocksOf(target: DeviceIdAndPackageNameDomainModel): List<MockNetworkDomainModel> = mocks.value.values.toList().of(target)
 
@@ -270,11 +269,9 @@ private class FakeNetworkMocksRepository : NetworkMocksRepository {
 
     override suspend fun getMock(id: String): MockNetworkDomainModel? = mocks.value[id]?.second
 
-    override suspend fun getAllEnabledMocks(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<MockNetworkDomainModel> =
-        mocksOf(deviceIdAndPackageName).filter { it.isEnabled }
+    override suspend fun getAllEnabledMocks(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<MockNetworkDomainModel> = mocksOf(deviceIdAndPackageName).filter { it.isEnabled }
 
-    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> =
-        mocks.map { it.values.toList().of(deviceIdAndPackageName) }
+    override suspend fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<MockNetworkDomainModel>> = mocks.map { it.values.toList().of(deviceIdAndPackageName) }
 
     override suspend fun setupMocks(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, mocks: List<MockNetworkDomainModel>) {
         sentToDevice[deviceIdAndPackageName] = mocks
@@ -286,9 +283,7 @@ private class FakeNetworkMocksRepository : NetworkMocksRepository {
 
     override suspend fun updateMockIsEnabled(id: String, isEnabled: Boolean) = error("not used")
     override suspend fun updateMockDevice(mockId: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?) = error("not used")
-    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> =
-        error("not used")
+    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> = error("not used")
 
-    override suspend fun sendWebsocketMock(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, websocketId: NetworkWebsocketId, message: String) =
-        error("not used")
+    override suspend fun sendWebsocketMock(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, websocketId: NetworkWebsocketId, message: String) = error("not used")
 }

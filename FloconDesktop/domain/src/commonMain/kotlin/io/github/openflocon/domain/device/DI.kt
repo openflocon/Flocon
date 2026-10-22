@@ -12,10 +12,10 @@ import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCase

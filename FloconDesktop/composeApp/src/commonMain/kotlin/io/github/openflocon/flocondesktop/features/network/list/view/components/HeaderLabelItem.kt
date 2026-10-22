@@ -96,6 +96,7 @@ fun HeaderLabelItem(
                 alignment = Alignment.BottomCenter,
                 textColor = when (sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> textColor
+
                     SortedByUiModel.Enabled.Descending,
                     SortedByUiModel.None,
                     -> textColor.copy(alpha = NOT_ENABLED_OPACITY)

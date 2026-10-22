@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
-import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.featureflags.usecase.ObserveCurrentDeviceFeatureFlagUseCase
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.featureflags.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagDetailUiModel

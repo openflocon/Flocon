@@ -61,6 +61,7 @@ fun MockNetworkDomainModel.Response.toExportedModel(): MockNetworkExportedModel.
         delay = this.delay,
         headers = this.headers
     )
+
     is MockNetworkDomainModel.Response.Exception -> MockNetworkExportedModel.Response.Exception(
         delay = this.delay,
         classPath = this.classPath
@@ -89,6 +90,7 @@ fun MockNetworkExportedModel.Response.toDomainModel(): MockNetworkDomainModel.Re
         delay = this.delay,
         headers = this.headers
     )
+
     is MockNetworkExportedModel.Response.Exception -> MockNetworkDomainModel.Response.Exception(
         delay = this.delay,
         classPath = this.classPath

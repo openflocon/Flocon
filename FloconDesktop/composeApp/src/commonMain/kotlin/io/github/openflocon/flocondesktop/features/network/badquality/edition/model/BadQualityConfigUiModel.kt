@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.edition.model
 
-import java.util.UUID
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import java.util.UUID
 
 data class BadQualityConfigUiModel(
     val id: String,

@@ -61,6 +61,7 @@ internal fun AnalyticsSelectorView(
                         )
 
                     AnalyticsStateUiModel.Loading -> FloconLinearProgressIndicator()
+
                     is AnalyticsStateUiModel.WithContent -> {
                         Text(text = analyticsState.selected.name, style = FloconTheme.typography.bodySmall)
                         FloconIcon(

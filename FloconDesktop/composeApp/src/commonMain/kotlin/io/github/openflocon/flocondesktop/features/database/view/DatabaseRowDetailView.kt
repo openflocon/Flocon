@@ -39,6 +39,8 @@ import coil3.compose.AsyncImage
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
+import flocondesktop.composeapp.generated.resources.general_copy_all_content
+import flocondesktop.composeapp.generated.resources.images_preview
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.copyToClipboard
@@ -49,10 +51,8 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.koin.compose.koinInject
 import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.general_copy_all_content
-import flocondesktop.composeapp.generated.resources.images_preview
+import org.koin.compose.koinInject
 
 @Composable
 fun DatabaseRowDetailView(

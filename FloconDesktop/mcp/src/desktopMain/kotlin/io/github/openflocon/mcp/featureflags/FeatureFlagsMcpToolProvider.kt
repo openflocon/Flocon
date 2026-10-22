@@ -5,9 +5,9 @@ import io.github.openflocon.domain.featureflags.repository.FeatureFlagsRepositor
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 
 private const val LIST_PAYLOAD_MAX_LENGTH = 200
 

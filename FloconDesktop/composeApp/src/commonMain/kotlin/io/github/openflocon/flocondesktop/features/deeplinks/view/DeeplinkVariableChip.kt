@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,14 +171,14 @@ private fun DeeplinkVariablesPanelViewPreview() {
                 onValueChange = {}
             )
             DeeplinkVariableChip(
-                variable =  DeeplinkVariableViewState(
+                variable = DeeplinkVariableViewState(
                     name = "env",
                     description = null,
                     value = "staging",
                     mode =
-                        DeeplinkVariableViewState.Mode.AutoComplete(
-                            listOf("dev", "staging", "prod")
-                        ),
+                    DeeplinkVariableViewState.Mode.AutoComplete(
+                        listOf("dev", "staging", "prod")
+                    ),
                 ),
                 onValueChange = {}
             )

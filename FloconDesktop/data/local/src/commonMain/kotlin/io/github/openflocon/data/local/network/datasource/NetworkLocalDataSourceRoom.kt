@@ -35,11 +35,10 @@ class NetworkLocalDataSourceRoom(
         )
     ).mapNotNull(FloconNetworkCallEntity::toDomainModel)
 
-    override fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> =
-        floconNetworkDao.observeHasAny(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        )
+    override fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> = floconNetworkDao.observeHasAny(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
 
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

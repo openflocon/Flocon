@@ -18,6 +18,7 @@ class UpdateNetworkMocksDeviceUseCase(
     ): Either<Throwable, Unit> {
         val deviceIdAndPackageName = when (target) {
             MockDeviceTarget.AllDevicesAndApps -> null
+
             MockDeviceTarget.SpecificToCurrentDeviceAndApp -> {
                 getCurrentDeviceIdAndPackageNameUseCase()
                     ?: return Failure(Throwable("No device selected"))

@@ -8,9 +8,9 @@ import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 
 internal class DashboardMcpToolProvider(
@@ -81,8 +81,11 @@ internal class DashboardMcpToolProvider(
 
     private fun DashboardElementDomainModel.toMcp(): DashboardElementMcpModel = when (this) {
         is DashboardElementDomainModel.Button -> DashboardElementMcpModel(type = "button", label = text, id = id)
+
         is DashboardElementDomainModel.Text -> DashboardElementMcpModel(type = "text", label = label, value = value, color = color)
+
         is DashboardElementDomainModel.Label -> DashboardElementMcpModel(type = "label", label = label, color = color)
+
         is DashboardElementDomainModel.PlainText -> DashboardElementMcpModel(
             type = when (type) {
                 DashboardElementDomainModel.PlainText.Type.Text -> "plain_text"
@@ -91,6 +94,7 @@ internal class DashboardMcpToolProvider(
             label = label,
             value = value,
         )
+
         is DashboardElementDomainModel.TextField -> DashboardElementMcpModel(
             type = "text_field",
             label = label,
@@ -98,8 +102,11 @@ internal class DashboardMcpToolProvider(
             placeHolder = placeHolder,
             id = id,
         )
+
         is DashboardElementDomainModel.CheckBox -> DashboardElementMcpModel(type = "check_box", label = label, checked = value, id = id)
+
         is DashboardElementDomainModel.Markdown -> DashboardElementMcpModel(type = "markdown", label = label, value = value)
+
         is DashboardElementDomainModel.Html -> DashboardElementMcpModel(type = "html", label = label, value = value)
     }
 }

@@ -39,10 +39,6 @@ object JsonPrettyPrinter {
     }
 }
 
-
 class JsonFormatterImpl : JsonFormatter {
-    override fun toPrettyJson(text: String) : String {
-        return JsonPrettyPrinter.prettyPrint(text)
-    }
-
+    override fun toPrettyJson(text: String): String = JsonPrettyPrinter.prettyPrint(text)
 }

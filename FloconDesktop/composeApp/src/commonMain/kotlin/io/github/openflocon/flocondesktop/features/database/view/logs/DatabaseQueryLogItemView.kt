@@ -26,7 +26,8 @@ fun DatabaseQueryLogItemView(
             if (log.isFromOldSession) {
                 Modifier.alpha(0.8f)
             } else Modifier
-        ), horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
+        ),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         Text(
             modifier = Modifier.width(60.dp),
@@ -58,13 +59,15 @@ fun DatabaseQueryLogItemView(
 }
 
 @Composable
-private fun findColor(type: DatabaseQueryUiModel.Type?): Color {
-    return when (type) {
-        DatabaseQueryUiModel.Type.Select -> FloconTheme.colors.statusSuccess
-        DatabaseQueryUiModel.Type.Insert -> FloconTheme.colors.statusInfo
-        DatabaseQueryUiModel.Type.Update -> FloconTheme.colors.statusWarning
-        DatabaseQueryUiModel.Type.Delete -> FloconTheme.colors.statusError
-        DatabaseQueryUiModel.Type.Transaction,
-        null -> FloconTheme.colors.ink
-    }
+private fun findColor(type: DatabaseQueryUiModel.Type?): Color = when (type) {
+    DatabaseQueryUiModel.Type.Select -> FloconTheme.colors.statusSuccess
+
+    DatabaseQueryUiModel.Type.Insert -> FloconTheme.colors.statusInfo
+
+    DatabaseQueryUiModel.Type.Update -> FloconTheme.colors.statusWarning
+
+    DatabaseQueryUiModel.Type.Delete -> FloconTheme.colors.statusError
+
+    DatabaseQueryUiModel.Type.Transaction,
+    null -> FloconTheme.colors.ink
 }

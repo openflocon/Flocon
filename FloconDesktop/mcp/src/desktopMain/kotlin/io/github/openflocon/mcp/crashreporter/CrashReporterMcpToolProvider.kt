@@ -5,9 +5,9 @@ import io.github.openflocon.mcp.McpOrder
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 import kotlin.time.Instant
 

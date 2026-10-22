@@ -69,6 +69,7 @@ private suspend fun ApplicationCall.respondJson(
                             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> info.httpCode
                             else -> null
                         }
+
                     else -> null
                 },
                 durationMs = networkCall.response?.durationMs,

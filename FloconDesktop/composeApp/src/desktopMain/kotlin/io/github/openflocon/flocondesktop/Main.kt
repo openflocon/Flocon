@@ -28,6 +28,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import flocondesktop.composeapp.generated.resources.app_name
 import flocondesktop.composeapp.generated.resources.app_icon_window
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
@@ -39,11 +40,10 @@ import io.github.openflocon.flocondesktop.window.WindowStateSaver
 import io.github.openflocon.flocondesktop.window.windowBoundsProvider
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
-import org.jetbrains.compose.resources.stringResource
-import flocondesktop.composeapp.generated.resources.app_name
 
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
@@ -99,7 +99,6 @@ fun main() {
             onPreviewKeyEvent = {
                 when (it.key) {
                     Key.Escape if it.type == KeyEventType.KeyDown -> handlers.lastOrNull()?.invoke() ?: false
-
                     else -> false
                 }
             },
