@@ -200,10 +200,10 @@ fun BadQualityErrorsList(
 
 @Composable
 private fun BadQualityErrorItem(
-    modifier: Modifier = Modifier,
     error: BadQualityConfigUiModel.Error,
     contentPadding: PaddingValues,
     clickedError: (BadQualityConfigUiModel.Error) -> Unit,
+    modifier: Modifier = Modifier,
     deleteError: (BadQualityConfigUiModel.Error) -> Unit
 ) {
     Row(

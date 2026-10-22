@@ -43,8 +43,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SharedPreferenceSelector(
-    modifier: Modifier = Modifier,
     state: SharedPrefsStateUiModel,
+    modifier: Modifier = Modifier,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
 ) {
     val borderColor = FloconTheme.colors.bg200

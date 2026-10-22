@@ -44,11 +44,11 @@ private const val NOT_ENABLED_OPACITY = 0.3f
 @Composable
 fun HeaderLabelItem(
     text: String,
-    modifier: Modifier = Modifier,
     sortedBy: SortedByUiModel,
     filtered: Boolean,
     clickOnSort: (SortedByUiModel.Enabled) -> Unit,
     clickOnFilter: () -> Unit,
+    modifier: Modifier = Modifier,
     labelAlignment: Alignment = Alignment.Center,
 ) {
     val interactionSource = remember { MutableInteractionSource() }

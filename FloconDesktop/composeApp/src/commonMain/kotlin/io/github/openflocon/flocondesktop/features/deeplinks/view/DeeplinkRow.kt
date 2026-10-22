@@ -53,8 +53,8 @@ fun DeeplinkRow(
     item: DeeplinkViewState,
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     removeFromHistory: (DeeplinkViewState) -> Unit,
-    variableValues: ImmutableMap<String, String> = persistentMapOf(),
     modifier: Modifier = Modifier,
+    variableValues: ImmutableMap<String, String> = persistentMapOf(),
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
 
@@ -225,9 +225,9 @@ private fun TextFieldPart(
 
 @Composable
 private fun DeeplinkTextField(
-    modifier: Modifier = Modifier,
     label: String,
     value: String,
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     val isValueEmpty = value.isEmpty()

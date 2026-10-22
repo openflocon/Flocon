@@ -58,8 +58,8 @@ private fun NetworkMethodUi.colors(): MethodColors {
 @Composable
 fun MethodTag(
     method: NetworkMethodUi,
-    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     modifier: Modifier = Modifier,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     onClick: (() -> Unit)? = null,
 ) {
     val colors = method.colors()
@@ -88,9 +88,9 @@ fun NetworkTag(
     text: String,
     backgroundColor: Color,
     textColor: Color,
-    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
-    modifier: Modifier = Modifier,
     icon: DrawableResource?,
+    modifier: Modifier = Modifier,
+    textSize: TextUnit = FloconTheme.typography.labelMedium.fontSize,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onClick: (() -> Unit)? = null,
 ) {

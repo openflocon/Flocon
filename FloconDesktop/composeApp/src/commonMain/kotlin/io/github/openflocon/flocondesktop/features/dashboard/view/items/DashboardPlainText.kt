@@ -27,8 +27,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DashboardPlainText(
-    modifier: Modifier = Modifier,
     rowItem: DashboardContainerViewState.RowItem.PlainText,
+    modifier: Modifier = Modifier,
     onOpenExternalClicked: (content: String) -> Unit,
 ) {
     SelectionContainer(

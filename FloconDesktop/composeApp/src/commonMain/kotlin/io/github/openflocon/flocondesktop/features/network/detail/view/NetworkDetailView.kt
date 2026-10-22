@@ -1052,9 +1052,9 @@ private fun Response(
 @Composable
 private fun FullLogExport(
     state: NetworkDetailViewState,
+    modifier: Modifier = Modifier,
     linesLabelWidth: Dp = 130.dp,
     headersLabelWidth: Dp = 150.dp,
-    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier

@@ -30,11 +30,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FilesListHeader(
-    modifier: Modifier = Modifier,
     state: FilesHeaderStateUiModel,
     isSelecting: Boolean,
     selectingAll: Boolean,
     onSelectAll: (selectingAll: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
 ) {
     Row(
