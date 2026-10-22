@@ -142,7 +142,7 @@ internal fun NetworkMocksContent(
                 .background(colors.bg100, FloconTheme.shapes.large)
                 .border(1.dp, colors.line, FloconTheme.shapes.large)
         ) {
-            MocksHeaderView(Modifier.fillMaxWidth())
+            MocksHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,7 +152,7 @@ internal fun NetworkMocksContent(
                     items = mocks,
                     key = MockNetworkLineUiModel::id
                 ) {
-                    MockLineView(
+                    MockLine(
                         item = it,
                         onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
                         onDeleteClicked = { id -> onAction(NetworkMockAction.OnDeleteClicked(id)) },

@@ -99,7 +99,7 @@ fun TableScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             selector = {
-                TableSelectorView(
+                TableSelector(
                     tablesState = deviceTables,
                     onTableSelected = onTableSelected,
                     modifier = Modifier.fillMaxWidth(),
@@ -168,7 +168,7 @@ fun TableScreen(
 
                     is TableContentStateUiModel.WithContent -> {
                         itemsIndexed(tableItems) { index, item ->
-                            TableRowView(
+                            TableRow(
                                 model = item,
                                 columnsWidth = columnsWidth,
                                 modifier = Modifier.fillMaxWidth(),
