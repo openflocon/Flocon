@@ -28,6 +28,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import flocondesktop.composeapp.generated.resources.app_icon_window
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
@@ -103,7 +104,7 @@ fun main() {
                 }
             },
             title = stringResource(Res.string.app_name),
-            icon = painterResource(Res.drawable.app_icon_small), // Remove black behind icon
+            icon = painterResource(Res.drawable.app_icon_window), // macOS-style margin so the dock icon matches other apps
         ) {
             CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
                 window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
