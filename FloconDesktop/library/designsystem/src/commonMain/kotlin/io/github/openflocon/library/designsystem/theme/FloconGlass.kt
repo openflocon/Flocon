@@ -24,8 +24,16 @@ val FloconGlassDarkColors = FloconDarkColors.copy(
     ink = Color(0xFFF5F5FA),
     inkMuted = Color(0xFFC4C4D2),
     inkFaint = Color(0xFF9A9AAE),
-    chrome = Color(0xFF241F30),
-    chromeTint = Color(0xFF3A2C5C),
+    islandSidebar = Color(0xC7241F30),
+    islandTopBar = Color(0xDB241F30),
+    islandTopBarTint = Color(0xDB3A2C5C),
+    pageFrom = Color(0xFF0E1230),
+    pageMid = Color(0xFF0C0820),
+    pageTo = Color(0xFF0A0614),
+    // amber in the corner, violet and blue glows along the top right edge
+    pageGlowCorner = Color(0x24F5B440),
+    pageGlowTop = Color(0x29B04BFF),
+    pageGlowSide = Color(0x243B6CFF),
 )
 
 val FloconGlassLightColors = FloconLightColors.copy(
@@ -36,27 +44,25 @@ val FloconGlassLightColors = FloconLightColors.copy(
     line = Color(0x99FFFFFF),
     lineStrong = Color(0x33000000),
     accentSoft = Color(0x4DFCE3B0),
+    islandSidebar = Color(0xC7FFFFFF),
+    islandTopBar = Color(0xDBFFFFFF),
+    islandTopBarTint = Color(0xDBFFFFFF),
+    pageFrom = Color(0xFFB8C8EC),
+    pageMid = Color(0xFFCDBBEA),
+    pageTo = Color(0xFFEBC6B0),
+    pageGlowCorner = Color(0x80FFC88A),
+    pageGlowTop = Color(0x80D59BFF),
+    pageGlowSide = Color(0x807FB2FF),
 )
 
-/** Soft colored glows gathered in the top right corner of a dark gradient: the "scenery" behind the glass surfaces. */
+/** The page gradient and its glows (see the `page*` tokens of [FloconColors]): the "scenery" behind the glass surfaces. */
 @Composable
 fun FloconGlassBackground(
-    isDarkTheme: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val base = if (isDarkTheme) {
-        listOf(Color(0xFF0E1230), Color(0xFF0C0820), Color(0xFF0A0614))
-    } else {
-        listOf(Color(0xFFB8C8EC), Color(0xFFCDBBEA), Color(0xFFEBC6B0))
-    }
-    // amber in the corner, violet and blue glows along the top right edge
-    val blobs = if (isDarkTheme) {
-        listOf(Color(0xFFF5B440), Color(0xFFB04BFF), Color(0xFF3B6CFF))
-    } else {
-        listOf(Color(0xFFFFC88A), Color(0xFFD59BFF), Color(0xFF7FB2FF))
-    }
-    val blobAlphas = if (isDarkTheme) listOf(0.14f, 0.16f, 0.14f) else listOf(0.50f, 0.50f, 0.50f)
+    val colors = LocalFloconColors.current
+    val glows = listOf(colors.pageGlowCorner, colors.pageGlowTop, colors.pageGlowSide)
 
     Box(
         modifier = modifier
@@ -65,9 +71,9 @@ fun FloconGlassBackground(
                 // dark in the bottom left corner, the colors gather in the top right one
                 drawRect(
                     Brush.linearGradient(
-                        0f to base[0],
-                        0.55f to base[1],
-                        1f to base[2],
+                        0f to colors.pageFrom,
+                        0.55f to colors.pageMid,
+                        1f to colors.pageTo,
                         start = Offset(0f, size.height),
                         end = Offset(size.width, 0f),
                     ),
@@ -82,7 +88,7 @@ fun FloconGlassBackground(
                 centers.forEachIndexed { i, c ->
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colors = listOf(blobs[i].copy(alpha = blobAlphas[i]), Color.Transparent),
+                            colors = listOf(glows[i], Color.Transparent),
                             center = c,
                             radius = radii[i],
                         ),

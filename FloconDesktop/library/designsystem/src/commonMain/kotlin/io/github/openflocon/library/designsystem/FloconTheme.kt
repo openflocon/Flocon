@@ -122,7 +122,7 @@ fun FloconTheme(
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
             LocalContextMenuRepresentation provides FloconMenuRepresentation(),
             content = {
-                FloconGlassBackground(isDarkTheme = isDarkTheme, content = content)
+                FloconGlassBackground(content = content)
             }
         )
     }
