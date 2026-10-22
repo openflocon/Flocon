@@ -14,7 +14,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 private val IslandShape = RoundedCornerShape(20.dp)
 
-/** A rounded block floating above the page background, used for the app chrome (top bar, left panel, content). */
+/** A rounded block floating above the page background, used for the app chrome (top bar, left panel). */
 @Composable
 fun Modifier.floconIsland(background: Brush): Modifier = this
     .clip(IslandShape)
