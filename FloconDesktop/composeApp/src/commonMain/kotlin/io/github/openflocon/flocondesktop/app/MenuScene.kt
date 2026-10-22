@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,11 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
@@ -30,7 +29,9 @@ import androidx.navigation3.runtime.get
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
+import io.github.openflocon.flocondesktop.app.ui.mascot.LocalMascot
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotOverlay
+import io.github.openflocon.flocondesktop.app.ui.mascot.MascotPlatforms
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
 import io.github.openflocon.flocondesktop.app.ui.mascot.mascotPlatform
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
@@ -39,7 +40,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
@@ -56,9 +57,8 @@ data class MenuScene(
 
         val mascotEnabled by koinViewModel<MascotViewModel>().isEnabled.collectAsStateWithLifecycle()
         var origin by remember { mutableStateOf(Offset.Zero) }
-        var island by remember { mutableStateOf<Rect?>(null) }
-        var sidebar by remember { mutableStateOf<Rect?>(null) }
         var pointer by remember { mutableStateOf<Offset?>(null) }
+        val mascotPlatforms = remember { MascotPlatforms() }
         val mascotMargin = with(LocalDensity.current) { FloconTheme.spacing.medium.toPx() }
 
         Box(
@@ -100,12 +100,12 @@ data class MenuScene(
                         modifier = Modifier
                             .width(width)
                             .fillMaxHeight()
-                            .onGloballyPositioned { sidebar = it.boundsInRoot() }
                             .padding(
                                 start = FloconTheme.spacing.medium,
                                 top = FloconTheme.spacing.medium,
                                 bottom = FloconTheme.spacing.medium,
-                            ),
+                            )
+                            .mascotPlatform(platforms = mascotPlatforms),
                     ) {
                         menuContent(expanded) { expanded = !expanded }
                     }
@@ -113,32 +113,30 @@ data class MenuScene(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .onGloballyPositioned { island = it.boundsInRoot() }
-                            .padding(FloconTheme.spacing.medium),
+                            .padding(FloconTheme.spacing.medium)
+                            .mascotPlatform(platforms = mascotPlatforms),
                     ) {
-                        scene.content()
+                        CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
+                            scene.content()
+                        }
                     }
                 }
             }
-            val contentBounds = island
-            val sidebarBounds = sidebar
-            if (mascotEnabled && contentBounds != null && sidebarBounds != null) {
-                // the mascot walks on the top edge of the sidebar and of the content islands, and
-                // jumps over the gap between them
-                val platforms = persistentListOf(
-                    mascotPlatform(
-                        left = sidebarBounds.left - origin.x + mascotMargin,
-                        right = sidebarBounds.right - origin.x,
-                        top = sidebarBounds.top - origin.y + mascotMargin,
-                        inset = mascotMargin * 2,
-                    ),
-                    mascotPlatform(
-                        left = contentBounds.left - origin.x + mascotMargin,
-                        right = contentBounds.right - origin.x - mascotMargin,
-                        top = contentBounds.top - origin.y + mascotMargin,
-                        inset = mascotMargin * 2,
-                    ),
-                )
+            val registered = mascotPlatforms.bounds.values
+            if (mascotEnabled && registered.isNotEmpty()) {
+                // the mascot walks on the top edge of every element marked with `mascotPlatform`
+                // (the sidebar and the content island first, then the ones the screens add), and
+                // jumps over the gaps between them
+                val platforms = registered
+                    .map {
+                        mascotPlatform(
+                            left = it.left - origin.x,
+                            right = it.right - origin.x,
+                            top = it.top - origin.y,
+                            inset = mascotMargin * 2,
+                        )
+                    }
+                    .toImmutableList()
                 MascotOverlay(
                     pointerX = pointer?.x,
                     platforms = platforms,
