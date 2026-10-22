@@ -40,6 +40,8 @@ Flocon.analyticsPlugin.log(AnalyticsEvent("button_clicked", "events"))
 
 On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
 
+No adb? Add `connectionMode = FloconConnectionMode.Url(host = "<desktop ip>")` in the `startFlocon` block, see [Connection modes](docs2/connection-modes.md).
+
 Coming from 1.x? See the 👉 **[migration guide](https://openflocon.github.io/Flocon/migration)**.
 
 ## 📖 Documentation
