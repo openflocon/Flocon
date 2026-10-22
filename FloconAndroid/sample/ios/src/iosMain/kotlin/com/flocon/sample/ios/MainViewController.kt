@@ -73,12 +73,13 @@ fun MainViewController() = ComposeUIViewController(
         DummyHttpKtorCaller.initialize(ktorClient)
 
         val dogDatabase = Databases.getDogDatabase()
+        val foodDatabase = Databases.getFoodDatabase()
         initializeDatabases(
             dogDatabase = dogDatabase,
-            foodDatabase = Databases.getFoodDatabase(),
+            foodDatabase = foodDatabase,
         )
 
-        registerIosSampleFeatures(dogDatabase)
+        registerIosSampleFeatures(dogDatabase, foodDatabase)
     }
 ) {
     App()

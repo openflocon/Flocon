@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.myapplication.multi.ui
 
+import androidx.compose.runtime.mutableStateMapOf
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.analytics.analyticsPlugin
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
@@ -8,58 +9,86 @@ import io.github.openflocon.flocon.deeplinks.deeplinksPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.dashboard.user.userFlow
 import io.github.openflocon.flocon.myapplication.multi.featureflags.initializeFeatureFlags
-import io.github.openflocon.flocon.myapplication.multi.preferences.SamplePreferences
-import io.github.openflocon.flocon.plugins.sharedprefs.preferencesPlugin
 import io.github.openflocon.flocon.tables.dsl.table
 import io.github.openflocon.flocon.tables.tablePlugin
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.update
 import kotlin.random.Random
+import kotlin.time.TimeSource
 
 /**
- * Every feature of the SDK that can be triggered from the sample app, grouped by plugin.
+ * Every feature of the SDK that can be triggered from the sample app. Each one is displayed on the
+ * screen of its plugin ([screen]).
+ *
+ * @param crashes the action is expected to crash the app, so its failure is not caught.
  */
-enum class SampleFeature(val group: String, val title: String) {
-    KtorGet("Network", "Ktor GET"),
-    KtorPost("Network", "Ktor POST"),
-    OkHttp("Network", "OkHttp"),
-    OkHttpGzip("Network", "OkHttp gzip"),
-    WebSocket("Network", "WebSocket"),
-    GraphQl("Network", "GraphQL"),
-    Grpc("Network", "gRPC"),
-    AnalyticsTable("Analytics", "Table event"),
-    AnalyticsEvents("Analytics", "Analytics events"),
-    Table("Tables", "Add table row"),
-    Dashboard("Dashboard", "Change user"),
-    FeatureFlags("Feature flags", "Register flags"),
-    Deeplink("Deeplinks", "Register deeplink later"),
-    DatabaseRoom3("Database", "Insert dog (Room 3)"),
-    DatabaseRoom2("Database", "Insert cat (Room 2)"),
-    DatabaseInMemory("Database", "Insert dog in-memory (Room 3)"),
-    Preferences("Preferences", "Update custom preference"),
-    DataStore("Preferences", "Update DataStore"),
-    Files("Files", "Write a file"),
-    CrashReporter("Crash reporter", "Crash"),
+enum class SampleFeature(
+    val screen: SampleScreen,
+    val title: String,
+    val description: String,
+    val buttonLabel: String = "Run",
+    val crashes: Boolean = false,
+) {
+    KtorGet(SampleScreen.Network, "Ktor GET", "Simple JSON request"),
+    KtorPost(SampleScreen.Network, "Ktor POST", "JSON body and response"),
+    KtorNotFound(SampleScreen.Network, "Ktor 404", "A failing request"),
+    OkHttp(SampleScreen.Network, "OkHttp", "Interceptor on an OkHttp client"),
+    OkHttpGzip(SampleScreen.Network, "OkHttp gzip", "Compressed response body"),
+    WebSocket(SampleScreen.Network, "WebSocket", "Send a message on the open socket", buttonLabel = "Send"),
+    GraphQl(SampleScreen.Network, "GraphQL", "Apollo query on the GitHub API"),
+    Grpc(SampleScreen.Network, "gRPC", "SayHello unary call"),
+
+    DatabaseRoom3(SampleScreen.Database, "Dog, Room 3", "Insert a dog in the dogs database", buttonLabel = "Insert"),
+    DatabaseRoom2(SampleScreen.Database, "Cat, Room 2", "Insert a cat in the Room 2 database", buttonLabel = "Insert"),
+    DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert"),
+    DatabaseFood(SampleScreen.Database, "Food, Room 3", "Insert food in the second database", buttonLabel = "Insert"),
+
+    AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),
+    AnalyticsEvents(SampleScreen.Analytics, "Firebase-style events", "Two events from one sender", buttonLabel = "Send"),
+
+    FeatureFlags(SampleScreen.FeatureFlags, "Register flags", "Firebase and Statsig flags, with variants and payloads", buttonLabel = "Register"),
+
+    DataStore(SampleScreen.Preferences, "DataStore", "Update the age stored in a DataStore", buttonLabel = "Update"),
+
+    Files(SampleScreen.Files, "Write a file", "Creates flocon_sample.txt, then browse it in Flocon", buttonLabel = "Write"),
+
+    Dashboard(SampleScreen.Dashboard, "Change user", "Updates the live \"User\" section", buttonLabel = "Change"),
+    Table(SampleScreen.Dashboard, "Add table row", "Adds a row to the table \"active_sessions\"", buttonLabel = "Add"),
+
+    Deeplink(SampleScreen.Deeplinks, "Register a deeplink", "Registers flocon://runtime/[id] after the install", buttonLabel = "Register"),
+
+    CrashReporter(SampleScreen.Crash, "Crash the app", "Throws an IllegalStateException", buttonLabel = "Crash", crashes = true),
 }
 
 sealed interface SampleFeatureStatus {
-    class Available(val action: suspend () -> Unit) : SampleFeatureStatus
+    class Available(val action: suspend () -> Any?) : SampleFeatureStatus
     class Unavailable(val reason: String) : SampleFeatureStatus
+}
+
+/** What happened the last time a feature was triggered. */
+sealed interface ActionResult {
+    data object Running : ActionResult
+    class Success(val millis: Long, val detail: String?) : ActionResult
+    class Failure(val message: String) : ActionResult
 }
 
 /**
  * What the sample can do on the current platform. The shared features are registered here, each
  * platform entry point adds its own with [on] and explains the missing ones with [unavailable].
- * A feature without action is displayed as a gray button.
+ * An action can return a String, it is displayed next to the duration.
  */
 object SampleFeatures {
     var platformName: String = "this platform"
 
-    private val actions = mutableMapOf<SampleFeature, suspend () -> Unit>()
+    val results = mutableStateMapOf<SampleFeature, ActionResult>()
+
+    private val actions = mutableMapOf<SampleFeature, suspend () -> Any?>()
     private val reasons = mutableMapOf<SampleFeature, String>()
 
     init {
         on(SampleFeature.KtorGet) { DummyHttpKtorCaller.callGet() }
         on(SampleFeature.KtorPost) { DummyHttpKtorCaller.callPost() }
+        on(SampleFeature.KtorNotFound) { DummyHttpKtorCaller.callNotFound() }
         on(SampleFeature.AnalyticsTable) {
             Flocon.analyticsPlugin.log(
                 AnalyticsEvent(
@@ -106,20 +135,12 @@ object SampleFeatures {
                 }
             }
         }
-        on(SampleFeature.Preferences) {
-            SamplePreferences.counter++
-        }
         on(SampleFeature.CrashReporter) {
             throw IllegalStateException("my custom crash")
         }
     }
 
-    /** Must be called once Flocon is started. */
-    fun registerPreferences() {
-        Flocon.preferencesPlugin.register(SamplePreferences)
-    }
-
-    fun on(feature: SampleFeature, action: suspend () -> Unit) {
+    fun on(feature: SampleFeature, action: suspend () -> Any?) {
         actions[feature] = action
         reasons.remove(feature)
     }
@@ -135,6 +156,28 @@ object SampleFeatures {
             SampleFeatureStatus.Available(action)
         } else {
             SampleFeatureStatus.Unavailable(reasons[feature] ?: "Not available on $platformName")
+        }
+    }
+
+    fun isAnyUnavailable(screen: SampleScreen): Boolean =
+        SampleFeature.entries.any { it.screen == screen && status(it) is SampleFeatureStatus.Unavailable }
+
+    /** Runs the action and records its result, shown on the row of the feature. */
+    suspend fun run(feature: SampleFeature) {
+        val action = (status(feature) as? SampleFeatureStatus.Available)?.action ?: return
+        if (feature.crashes) {
+            action()
+            return
+        }
+        results[feature] = ActionResult.Running
+        val start = TimeSource.Monotonic.markNow()
+        results[feature] = try {
+            val detail = action() as? String
+            ActionResult.Success(start.elapsedNow().inWholeMilliseconds, detail)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            ActionResult.Failure(t.message ?: t::class.simpleName ?: "Unknown error")
         }
     }
 }
