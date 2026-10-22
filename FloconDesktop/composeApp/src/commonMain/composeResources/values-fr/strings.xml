@@ -286,7 +286,12 @@
     <string name="settings_adb_configuration">Configuration ADB</string>
     <string name="settings_adb_description">Flocon communique avec les appareils Android via Android Debug Bridge (ADB). Indiquez ci-dessous le chemin de votre binaire adb.</string>
     <string name="settings_adb_executable_path">Chemin de l’exécutable ADB</string>
-    <string name="settings_adb_reverse_forwarding">Redirection de port ADB inversée</string>
+    <string name="settings_connection_title">Connexion</string>
+    <string name="settings_connection_adb_title">Adb</string>
+    <string name="settings_connection_url_title">Url</string>
+    <string name="settings_connection_url_description">Les apps peuvent aussi joindre Flocon directement par le réseau, sans adb : téléphones en Wi-Fi seul, appareils iOS, autres machines. Flocon accepte les deux modes en même temps.</string>
+    <string name="settings_connection_url_hint">Dans l’app, utilisez FloconConnectionMode.Url(host = "&lt;ip&gt;"). L’appareil doit être sur le même réseau (ou joindre cette machine via un VPN), et les ports 9023 et 9024 doivent être autorisés dans le pare-feu.</string>
+    <string name="settings_connection_url_empty">Aucune adresse réseau locale trouvée. Connectez cette machine à un réseau pour utiliser le mode Url.</string>
     <string name="settings_documents_description">Dossier où sont enregistrés les captures d’écran, les enregistrements vidéo et les fichiers exportés. Par défaut : ~/Documents/Flocon.</string>
     <string name="settings_documents_folder_path">Chemin du dossier de documents</string>
     <string name="settings_filter_logs">Filtrer les logs…</string>

@@ -15,6 +15,7 @@ data class SettingsUiState(
     val appScale: AppScaleSetting,
     val logs: ImmutableList<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
+    val localAddresses: ImmutableList<String>,
     val theme: ThemeSetting,
     val mascotEnabled: Boolean,
     val selectedLogDomains: Set<LogDomain>,
@@ -24,6 +25,7 @@ data class SettingsUiState(
 fun previewSettingsUiState() = SettingsUiState(
     appScale = AppScaleSetting.DEFAULT,
     adbForwardStatus = AdbForwardStatus.OK,
+    localAddresses = persistentListOf("192.168.1.20", "10.8.0.4"),
     logs = persistentListOf(
         LogEntryUiModel(LogLevel.DEBUG, "ADB path saved: /usr/local/bin/adb", "12:00:00", LogDomain.Default),
         LogEntryUiModel(LogLevel.ERROR, "ADB test failed: No such file or directory", "12:00:01", LogDomain.Default),

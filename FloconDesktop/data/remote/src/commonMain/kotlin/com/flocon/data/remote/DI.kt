@@ -10,6 +10,7 @@ import com.flocon.data.remote.featureflags.featureFlagsModule
 import com.flocon.data.remote.files.filesModule
 import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.network.networkModule
+import com.flocon.data.remote.settings.settingsModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
 import com.flocon.data.remote.table.tableModule
 import com.flocon.data.remote.version.versionModule
@@ -26,6 +27,7 @@ val dataRemoteModule = module {
         filesModule,
         messagesModule,
         networkModule,
+        settingsModule,
         sharedPreferencesModule,
         tableModule,
         deviceModule,

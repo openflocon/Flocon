@@ -10,4 +10,6 @@ sealed interface SettingsAction {
     data class ThemeChange(val value: ThemeSetting) : SettingsAction
 
     data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
+
+    data class CopyLocalUrl(val url: String) : SettingsAction
 }

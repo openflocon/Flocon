@@ -130,6 +130,8 @@ Call `startFlocon` as early as possible in your application lifecycle and `insta
     }
     ```
 
+By default the app reaches the desktop through `adb reverse`. To connect without adb (Wi-Fi only phone, iOS device, other machine), set `connectionMode = FloconConnectionMode.Url(host = "192.168.1.20")` in the same block. See [Connection modes](connection-modes.md).
+
 Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analyticsPlugin.log(...)`).
 A plugin that is not installed does nothing instead of crashing.
 
