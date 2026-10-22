@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- To be able to connect to the desktop websocket without ssl verification -->
 <network-security-config>
+    <!-- Sample only: allows FloconConnectionMode.Url(host = "<lan ip>") over ws://. Scope it to your own host in a real app. -->
+    <base-config cleartextTrafficPermitted="true" />
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">10.0.2.2</domain>
         <domain includeSubdomains="false">localhost</domain>
