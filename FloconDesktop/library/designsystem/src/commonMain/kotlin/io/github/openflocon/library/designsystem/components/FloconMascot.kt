@@ -10,9 +10,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.ceil
@@ -26,6 +28,9 @@ val FloconMascotHeight: Dp = 39.dp
 val FloconMascotFeetY: Dp = 36.dp
 
 private const val GridWidth = 34f
+
+/** Shortest swing of the pointer that counts as a stroke. */
+private val MinStroke = 6.dp
 
 private val Golden = Color(0xFFF2B544)
 private val GoldenDark = Color(0xFFD99522)
@@ -42,18 +47,31 @@ private val Dust = Color(0x66FFFFFF)
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
- * Clicking it makes it happy ([FloconMascotState.pet]).
+ * Clicking it makes it happy ([FloconMascotState.pet]), stroking it with the pointer makes it purr.
  */
 @Composable
 fun FloconMascot(
     state: FloconMascotState,
     modifier: Modifier = Modifier,
 ) {
+    val minStroke = with(LocalDensity.current) { MinStroke.toPx() }
     Canvas(
         modifier = modifier
             .size(width = FloconMascotWidth, height = FloconMascotHeight)
             .pointerHoverIcon(PointerIcon.Hand)
-            .pointerInput(state) { detectTapGestures { state.pet() } },
+            .pointerInput(state) { detectTapGestures { state.pet() } }
+            .pointerInput(state, minStroke) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull() ?: continue
+                        when (event.type) {
+                            PointerEventType.Move -> state.onHover(change.position.x, change.uptimeMillis, minStroke)
+                            PointerEventType.Exit -> state.onHoverEnd()
+                        }
+                    }
+                }
+            },
     ) {
         val unit = size.width / GridWidth
         withTransform({
@@ -65,6 +83,7 @@ fun FloconMascot(
                 FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
                 FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
                 FloconMascotMode.Lie -> drawLying(unit, state)
+                FloconMascotMode.Petted -> drawSitting(unit, state, FloconMascotMode.Petted)
             }
         }
     }
@@ -230,9 +249,11 @@ private fun DrawScope.drawLying(unit: Float, state: FloconMascotState) {
 private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: FloconMascotMode) {
     val asleep = mode == FloconMascotMode.Sleep
     val happy = mode == FloconMascotMode.Happy
+    val petted = mode == FloconMascotMode.Petted
     val lift = if (happy && state.hopUp) -3 else 0
-    val tail = if (!asleep && (state.tailUp || happy)) -1 else 0
-    val eyesClosed = asleep || state.blinking
+    val headDy = if (petted && state.nuzzle) 1 else 0
+    val tail = if (!asleep && (state.tailUp || happy || (petted && state.nuzzle))) -1 else 0
+    val eyesClosed = asleep || petted || state.blinking
 
     pixels(unit, 5, 24, 20, 1, Shadow)
 
@@ -246,29 +267,30 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
     pixels(unit, 5, 23 + lift, 8, 2, GoldenLight)
     pixels(unit, 20, 23 + lift, 5, 2, GoldenLight)
     // far ear
-    pixels(unit, 27, 0 + lift, 3, 3, EarBlue)
-    pixels(unit, 27, 2 + lift, 3, 1, GoldenDark)
+    pixels(unit, 27, 0 + lift + headDy, 3, 3, EarBlue)
+    pixels(unit, 27, 2 + lift + headDy, 3, 1, GoldenDark)
     // head
-    pixels(unit, 17, 2 + lift, 12, 11, Golden)
-    pixels(unit, 25, 8 + lift, 6, 5, GoldenLight)
-    pixels(unit, 29, 8 + lift, 2, 2, Ink)
-    pixels(unit, 21, 10 + lift, 2, 1, Blush)
+    pixels(unit, 17, 2 + lift + headDy, 12, 11, Golden)
+    pixels(unit, 25, 8 + lift + headDy, 6, 5, GoldenLight)
+    pixels(unit, 29, 8 + lift + headDy, 2, 2, Ink)
+    pixels(unit, 21, 10 + lift + headDy, 2, 1, Blush)
+    if (petted) pixels(unit, 20, 10 + headDy, 4, 2, Blush)
     if (happy) {
         // ^ ^ eyes and the tongue out
-        pixels(unit, 22, 7 + lift, 1, 1, Ink)
-        pixels(unit, 23, 6 + lift, 1, 1, Ink)
-        pixels(unit, 24, 7 + lift, 1, 1, Ink)
-        pixels(unit, 27, 13 + lift, 2, 1, Tongue)
+        pixels(unit, 22, 7 + lift + headDy, 1, 1, Ink)
+        pixels(unit, 23, 6 + lift + headDy, 1, 1, Ink)
+        pixels(unit, 24, 7 + lift + headDy, 1, 1, Ink)
+        pixels(unit, 27, 13 + lift + headDy, 2, 1, Tongue)
     } else if (eyesClosed) {
-        pixels(unit, 21, 7 + lift, 3, 1, Ink)
+        pixels(unit, 21, 7 + lift + headDy, 3, 1, Ink)
     } else {
-        pixels(unit, 22, 5 + lift, 2, 3, Ink)
-        pixels(unit, 22, 5 + lift, 1, 1, Color.White)
-        pixels(unit, 27, 13 + lift, 2, 1, Tongue)
+        pixels(unit, 22, 5 + lift + headDy, 2, 3, Ink)
+        pixels(unit, 22, 5 + lift + headDy, 1, 1, Color.White)
+        pixels(unit, 27, 13 + lift + headDy, 2, 1, Tongue)
     }
     // near ear
-    pixels(unit, 15, 4 + lift, 3, 7, Golden)
-    pixels(unit, 15, 9 + lift, 3, 2, EarPink)
+    pixels(unit, 15, 4 + lift + headDy, 3, 7, Golden)
+    pixels(unit, 15, 9 + lift + headDy, 3, 2, EarPink)
 
     if (asleep) {
         pixels(unit, 31, 3 + lift, 3, 1, Sleep)
@@ -282,6 +304,7 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
         }
     }
 
+    if (petted) drawHeart(unit, 30, -2 - state.heartFrame)
     if (happy) {
         drawHeart(unit, 30, -2 - state.heartFrame)
         drawHeart(unit, 24, -6 - state.heartFrame)

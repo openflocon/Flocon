@@ -193,4 +193,58 @@ class FloconMascotStateTest {
         mascot.run(targetX = 900f, durationMs = 2_500, startMs = 13_000)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
+
+    private fun FloconMascotState.stroke(swings: Int, swingMs: Long, startMs: Long = 0, length: Float = 20f) {
+        var t = startMs
+        var x = 0f
+        onHover(x, t, minStroke = 6f)
+        repeat(swings) { index ->
+            t += swingMs
+            x += if (index % 2 == 0) length else -length
+            onHover(x, t, minStroke = 6f)
+        }
+    }
+
+    @Test
+    fun strokingItBackAndForthMakesItPurr() {
+        val mascot = state()
+        mascot.stroke(swings = 6, swingMs = 100)
+        mascot.update(16, 600, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Petted, mascot.mode)
+    }
+
+    @Test
+    fun aSingleSwingIsNotACaress() {
+        val mascot = state()
+        mascot.stroke(swings = 2, swingMs = 100)
+        mascot.update(16, 200, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
+
+    @Test
+    fun slowSwingsAreNotACaress() {
+        val mascot = state()
+        mascot.stroke(swings = 8, swingMs = 1_000)
+        mascot.update(16, 8_000, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
+
+    @Test
+    fun tinyWigglesAreNotACaress() {
+        val mascot = state()
+        mascot.stroke(swings = 8, swingMs = 100, length = 2f)
+        mascot.update(16, 800, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
+
+    @Test
+    fun stopsPurringShortlyAfterTheCaressEnds() {
+        val mascot = state()
+        mascot.stroke(swings = 6, swingMs = 100)
+        mascot.update(16, 600, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Petted, mascot.mode)
+
+        mascot.run(targetX = 500f, durationMs = 1_200, startMs = 616)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
 }
