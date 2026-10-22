@@ -99,7 +99,7 @@ internal fun AboutScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     contributors.fastForEach {
-                        ContributorView(it)
+                        ContributorItem(it)
                     }
                 }
             }

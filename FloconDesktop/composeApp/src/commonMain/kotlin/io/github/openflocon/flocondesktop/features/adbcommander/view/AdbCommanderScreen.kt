@@ -53,7 +53,7 @@ private fun AdbCommanderScreen(
             Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                CommandInputView(
+                CommandInput(
                     commandInput = uiState.commandInput,
                     history = uiState.history,
                     onAction = onAction,

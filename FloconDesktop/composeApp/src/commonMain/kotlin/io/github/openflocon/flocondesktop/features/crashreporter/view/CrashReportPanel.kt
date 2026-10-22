@@ -28,7 +28,7 @@ internal fun CrashReportPanel(
             .background(FloconTheme.colors.bg100)
     ) {
         crash?.let {
-            CrashReportDetailView(
+            CrashReportDetail(
                 modifier = Modifier.fillMaxSize(),
                 crash = it,
                 onCopy = viewModel::copy,

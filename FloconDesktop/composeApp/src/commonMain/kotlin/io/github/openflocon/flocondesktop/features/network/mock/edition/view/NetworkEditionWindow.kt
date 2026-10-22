@@ -536,7 +536,7 @@ fun MockEditorScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MockNetworkLabelView(stringResource(Res.string.network_headers))
+                            MockNetworkLabel(stringResource(Res.string.network_headers))
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)

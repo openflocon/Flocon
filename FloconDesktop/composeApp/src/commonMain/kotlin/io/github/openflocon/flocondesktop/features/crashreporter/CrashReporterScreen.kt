@@ -42,8 +42,8 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterAction
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
-import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportDetailView
-import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItemView
+import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportDetail
+import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -110,7 +110,7 @@ private fun CrashReportScreen(
                         )
                 ) {
                     selected?.let {
-                        CrashReportDetailView(
+                        CrashReportDetail(
                             modifier = Modifier
                                 .fillMaxSize(),
                             crash = it,
@@ -188,7 +188,7 @@ fun LeftPannel(
             ) {
                 items(count = crashReports.itemCount) { index ->
                     crashReports[index]?.let { crash ->
-                        CrashReportItemView(
+                        CrashReportItem(
                             crash = crash,
                             isSelected = crash.id == selected?.id,
                             modifier = Modifier.fillMaxWidth(),

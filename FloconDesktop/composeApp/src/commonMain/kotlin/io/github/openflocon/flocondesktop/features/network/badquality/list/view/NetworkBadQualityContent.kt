@@ -97,14 +97,14 @@ fun NetworkBadQualityContent(
                 .fillMaxWidth()
                 .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
         ) {
-            BadQualityHeaderView(Modifier.fillMaxWidth())
+            BadQualityHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(400.dp),
             ) {
                 items(lines) {
-                    BadNetworkLineView(
+                    BadNetworkLine(
                         item = it,
                         onClicked = onItemClicked,
                         onDeleteClicked = onDeleteClicked,
@@ -124,7 +124,7 @@ fun NetworkBadQualityContent(
 }
 
 @Composable
-private fun BadQualityHeaderView(modifier: Modifier = Modifier) {
+private fun BadQualityHeader(modifier: Modifier = Modifier) {
     val colors = FloconTheme.colors
     // small capitals, like the titles of the groups of the design system
     val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)

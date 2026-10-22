@@ -40,7 +40,7 @@ private val freeformItem = DeeplinkViewState(
 )
 
 @Composable
-fun DeeplinkFreeformItemView(
+fun DeeplinkFreeformItem(
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -89,9 +89,9 @@ fun DeeplinkFreeformItemView(
 
 @Composable
 @Preview
-private fun DeeplinkFreeformItemViewPreview() {
+private fun DeeplinkFreeformItemPreview() {
     FloconTheme {
-        DeeplinkFreeformItemView(
+        DeeplinkFreeformItem(
             modifier = Modifier.background(
                 FloconTheme.colors.bg100,
             ),

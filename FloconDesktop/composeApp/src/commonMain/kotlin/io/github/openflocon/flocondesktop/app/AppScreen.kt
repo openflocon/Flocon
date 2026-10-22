@@ -13,12 +13,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
-import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
+import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
-import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
+import io.github.openflocon.flocondesktop.app.version.VersionChecker
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
@@ -57,8 +57,8 @@ fun AppScreen() {
             updateChip = updateChip,
             onUpdateChipClicked = { uriHandler.openUri(it.link) },
         )
-        FeedbackDisplayerView()
-        VersionCheckerView()
+        FeedbackHost()
+        VersionChecker()
     }
 }
 
@@ -89,7 +89,7 @@ private fun Content(
             sceneDecoratorStrategies = listOf(
                 MenuSceneStrategy(
                     menuContent = { expanded, onToggleExpanded ->
-                        LeftPanelView(
+                        LeftPanel(
                             current = uiState.contentState.current,
                             state = uiState.menuState,
                             expanded = expanded,

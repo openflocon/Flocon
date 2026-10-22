@@ -41,7 +41,7 @@ internal fun TopBarAppDropdown(
                         onClick = { expanded = true },
                         modifier = Modifier.width(FloconTheme.sizes.appDropdownWidth),
                     ) {
-                        TopBarAppView(
+                        TopBarApp(
                             deviceApp = it,
                             platform = devicesState.deviceSelected.platform,
                         )
@@ -60,7 +60,7 @@ internal fun TopBarAppDropdown(
                     .fastForEach { app ->
                         val isSelected = appsState.appSelected?.packageName == app.packageName
 
-                        TopBarAppView(
+                        TopBarApp(
                             deviceApp = app,
                             platform = devicesState.deviceSelected.platform,
                             selected = isSelected,
