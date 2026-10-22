@@ -66,6 +66,16 @@ Everything else (network, databases, preferences, dashboards, analytics, ...) wo
 
 TLS tunnels (ngrok, cloudflared, ...) terminate on `wss://` / `https://`, which the SDK does not support yet: its schemes are fixed to `ws` and `http`.
 
+## Over Bluetooth
+
+No USB and no usable Wi-Fi? Use Bluetooth PAN tethering with the `Url` mode, no extra code:
+
+1. On the phone, enable Settings > Hotspot & tethering > Bluetooth tethering.
+2. Pair the desktop with the phone and join its Bluetooth network (PAN). The desktop gets an ip such as `192.168.44.x`, which appears in Settings > Connection.
+3. Use that ip as `FloconConnectionMode.Url(host = "<desktop PAN ip>")`, with the cleartext network config described above.
+
+Throughput is about 1-2 Mbit/s. See [Bluetooth connection (exploration)](bluetooth-exploration.md) for the limits and the other options (RFCOMM, BLE).
+
 ## Open questions / next steps
 
 This mode is a prototype. Things to discuss before making it a first-class feature:
