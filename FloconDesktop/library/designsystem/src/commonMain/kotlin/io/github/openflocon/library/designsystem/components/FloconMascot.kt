@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.ceil
 import kotlin.math.floor
 
-/** Size of the sprite: a 34 x 26 pixel grid, 2 dp per pixel. */
-val FloconMascotWidth: Dp = 68.dp
-val FloconMascotHeight: Dp = 52.dp
+/** Size of the sprite: a 34 x 26 pixel grid, 1.5 dp per pixel. */
+val FloconMascotWidth: Dp = 51.dp
+val FloconMascotHeight: Dp = 39.dp
 
 /** Distance from the top of the sprite to the soles of its paws. */
-val FloconMascotFeetY: Dp = 48.dp
+val FloconMascotFeetY: Dp = 36.dp
 
 private const val GridWidth = 34f
 

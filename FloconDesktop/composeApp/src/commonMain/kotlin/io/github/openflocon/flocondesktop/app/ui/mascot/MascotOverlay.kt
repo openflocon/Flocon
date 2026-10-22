@@ -20,8 +20,8 @@ import io.github.openflocon.library.designsystem.components.FloconMascotState
 import io.github.openflocon.library.designsystem.components.FloconMascotWidth
 import kotlin.math.roundToInt
 
-private val StopDistance = 34.dp
-private val WakeDistance = 120.dp
+private val StopDistance = 26.dp
+private val WakeDistance = 90.dp
 private val Speed = 70.dp
 
 private const val MaxFrameMs = 50L
