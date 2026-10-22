@@ -6,14 +6,14 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
-import io.github.openflocon.domain.settings.repository.SettingsRepository
-import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.NetworkJsonScreen
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
+import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
@@ -22,11 +22,13 @@ import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
+import io.github.openflocon.navigation.scene.OnPin
 import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import io.github.openflocon.navigation.scene.WindowProperties
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
-import org.koin.mp.KoinPlatform
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -79,11 +81,16 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         metadata = metadata {
             panel(
                 closable = true,
-                onPin = { // TODO: Change to composable or something so we can do koinViewModel() and have the same
-                    val repository = KoinPlatform.getKoin().get<SettingsRepository>()
+                onPinHandler = {
+                    val viewModel = koinViewModel<NetworkViewModel>()
 
-                    repository.networkSettings =
-                        repository.networkSettings.copy(pinnedDetails = true)
+                    object : OnPin {
+                        override val isPinned: StateFlow<Boolean> = viewModel.isPinned
+
+                        override fun onPin(pinned: Boolean) {
+                           viewModel.onAction(NetworkAction.Pinned(pinned))
+                        }
+                    }
                 }
             )
             keepMenu()

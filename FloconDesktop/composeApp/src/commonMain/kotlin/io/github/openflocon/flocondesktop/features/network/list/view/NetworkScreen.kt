@@ -6,7 +6,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -85,7 +83,6 @@ import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityWindow
-import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailContent
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
@@ -99,7 +96,6 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconAnimateVisibility
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
@@ -112,7 +108,6 @@ import io.github.openflocon.library.designsystem.components.FloconMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.panel.PANEL_WIDTH
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
@@ -523,21 +518,6 @@ fun NetworkScreen(
                 }
             }
         }
-        FloconAnimateVisibility(
-            state = uiState.detailState,
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            Row {
-                Spacer(Modifier.width(FloconTheme.spacing.small))
-                NetworkDetailContent(
-                    uiState = it,
-                    onAction = { action -> onAction(NetworkAction.DetailAction(action)) },
-                    modifier = Modifier
-                        .width(PANEL_WIDTH)
-                        .clip(FloconTheme.shapes.medium)
-                )
-            }
-        }
     }
 
     if (uiState.contentState.badNetworkQualityDisplayed) {
@@ -590,7 +570,7 @@ private fun selectNextRow(
         }
 
 @Composable
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 private fun NetworkScreenPreview() {
     FloconTheme {
         val uiState = previewNetworkUiState()

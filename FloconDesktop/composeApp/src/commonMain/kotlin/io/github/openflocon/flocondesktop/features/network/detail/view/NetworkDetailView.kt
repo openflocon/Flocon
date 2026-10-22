@@ -5,6 +5,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,11 +48,10 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.foundation.border
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -61,36 +61,6 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import com.composeunstyled.DropdownPanelAnchor
 import com.sebastianneubauer.jsontree.TreeState
-import io.github.openflocon.domain.models.settings.NetworkDetailTab
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
-import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
-import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
-import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
-import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
-import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconCodeBlock
-import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
-import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
-import io.github.openflocon.library.designsystem.components.FloconIconButton
-import io.github.openflocon.library.designsystem.components.FloconJsonTree
-import io.github.openflocon.library.designsystem.components.FloconLineDescription
-import io.github.openflocon.library.designsystem.components.FloconSection
-import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
-import io.github.openflocon.library.designsystem.components.FloconTab
-import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.TabType
-import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
-import org.jetbrains.compose.resources.stringResource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.diff_compare_clipboard
 import flocondesktop.composeapp.generated.resources.general_copy
@@ -129,6 +99,36 @@ import flocondesktop.composeapp.generated.resources.network_view_body_in_app
 import flocondesktop.composeapp.generated.resources.network_view_in_app
 import flocondesktop.composeapp.generated.resources.network_waiting_response
 import flocondesktop.composeapp.generated.resources.open_external
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
+import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
+import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
+import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
+import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeadersView
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconCodeBlock
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconJsonTree
+import io.github.openflocon.library.designsystem.components.FloconLineDescription
+import io.github.openflocon.library.designsystem.components.FloconSection
+import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
+import io.github.openflocon.library.designsystem.components.FloconTab
+import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.TabType
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private const val LARGE_BODY_LENGTH = 1_000_000
 
@@ -207,10 +207,9 @@ private fun ExportImageDropdown(
 }
 
 @Composable
-fun NetworkDetailContent(
+private fun NetworkDetailContent(
     uiState: NetworkDetailViewState,
-    onAction: (NetworkDetailAction) -> Unit,
-    modifier: Modifier = Modifier
+    onAction: (NetworkDetailAction) -> Unit
 ) {
     var selectedTab by remember(uiState.callId) { mutableStateOf(uiState.defaultSelectedTab) }
 
@@ -230,54 +229,60 @@ fun NetworkDetailContent(
             .background(FloconTheme.colors.bg100)
     ) {
         // Hidden off-screen full log view for Save full log as Image
-//        Box(
-//            modifier = Modifier
-//                .layout { measurable, _ ->
-//                    val widthPx = 700.dp.roundToPx()
-//                    val placeable = measurable.measure(
-//                        Constraints(
-//                            minWidth = widthPx,
-//                            maxWidth = widthPx,
-//                            minHeight = 0,
-//                            maxHeight = Constraints.Infinity
-//                        )
-//                    )
-//                    layout(0, 0) {
-//                        placeable.place(0, 0)
-//                    }
-//                }
-//                .drawWithContent {
-//                    fullLogGraphicsLayer.record {
-//                        this@drawWithContent.drawContent()
-//                    }
-//                }
-//        ) {
-//            CompositionLocalProvider(
-//                LocalDensity provides Density(
-//                    density = maxOf(2f, LocalDensity.current.density),
-//                    fontScale = 1f
-//                )
-//            ) {
-//                FullLogExportView(
-//                    state = uiState,
-//                    linesLabelWidth = linesLabelWidth,
-//                    headersLabelWidth = headersLabelWidth,
-//                    modifier = Modifier.width(700.dp)
-//                )
-//            }
-//        }
+        Box(
+            modifier = Modifier
+                .layout { measurable, _ ->
+                    val widthPx = 700.dp.roundToPx()
+                    val placeable = measurable.measure(
+                        Constraints(
+                            minWidth = widthPx,
+                            maxWidth = widthPx,
+                            minHeight = 0,
+                            maxHeight = Constraints.Infinity
+                        )
+                    )
+                    layout(0, 0) {
+                        placeable.place(0, 0)
+                    }
+                }
+                .drawWithContent {
+                    fullLogGraphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+                }
+        ) {
+            CompositionLocalProvider(
+                LocalDensity provides Density(
+                    density = maxOf(2f, LocalDensity.current.density),
+                    fontScale = 1f
+                )
+            ) {
+                FullLogExportView(
+                    state = uiState,
+                    linesLabelWidth = linesLabelWidth,
+                    headersLabelWidth = headersLabelWidth,
+                    modifier = Modifier.width(700.dp)
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.extraSmall),
+                .padding(
+                    vertical = FloconTheme.spacing.small,
+                    horizontal = FloconTheme.spacing.extraSmall
+                ),
         ) {
             // Top action bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall),
+                    .padding(
+                        horizontal = FloconTheme.spacing.medium,
+                        vertical = FloconTheme.spacing.extraSmall
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -355,7 +360,10 @@ fun NetworkDetailContent(
             // Tab bar
             FloconSegmentedRow(
                 modifier = Modifier
-                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
+                    .padding(
+                        horizontal = FloconTheme.spacing.medium,
+                        vertical = FloconTheme.spacing.extraSmall
+                    )
             ) {
                 FloconTab(
                     text = "Request (${uiState.requestSize})",
@@ -459,7 +467,10 @@ private fun SummaryCard(
                                     color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
                                 )
-                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
+                                .padding(
+                                    horizontal = FloconTheme.spacing.small,
+                                    vertical = FloconTheme.spacing.compact
+                                ),
                         )
                     }
                 }
@@ -517,7 +528,10 @@ private fun Request(
 
     Column(
         modifier = modifier
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
+            .padding(
+                horizontal = FloconTheme.spacing.medium,
+                vertical = FloconTheme.spacing.extraSmall
+            )
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -545,7 +559,10 @@ private fun Request(
                 tooltip = stringResource(Res.string.network_export_summary_image),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = FloconTheme.spacing.extraSmall, end = FloconTheme.spacing.extraSmall)
+                    .padding(
+                        top = FloconTheme.spacing.extraSmall,
+                        end = FloconTheme.spacing.extraSmall
+                    )
             )
         }
 
@@ -783,7 +800,10 @@ private fun Response(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
+            .padding(
+                horizontal = FloconTheme.spacing.medium,
+                vertical = FloconTheme.spacing.extraSmall
+            )
     ) {
         when (response) {
             is NetworkDetailViewState.Response.Error -> {
@@ -834,7 +854,10 @@ private fun Response(
                                 color = FloconTheme.colors.bg200,
                                 shape = RoundedCornerShape(12.dp),
                             )
-                            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                            .padding(
+                                horizontal = FloconTheme.spacing.small,
+                                vertical = FloconTheme.spacing.small
+                            ),
                     ) {
                         FloconLineDescription(
                             modifier = Modifier
@@ -853,7 +876,10 @@ private fun Response(
                         tooltip = stringResource(Res.string.network_export_response_summary_image),
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = FloconTheme.spacing.extraSmall, end = FloconTheme.spacing.extraSmall)
+                            .padding(
+                                top = FloconTheme.spacing.extraSmall,
+                                end = FloconTheme.spacing.extraSmall
+                            )
                     )
                 }
 
@@ -1009,8 +1035,8 @@ private fun Response(
                                 FloconCodeBlock(
                                     code = response.body,
                                     containerColor = FloconTheme.colors.bg000,
-                        contentColor = FloconTheme.colors.inkMuted,
-                        borderColor = FloconTheme.colors.line,
+                                    contentColor = FloconTheme.colors.inkMuted,
+                                    borderColor = FloconTheme.colors.line,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(FloconTheme.spacing.medium)
@@ -1080,7 +1106,10 @@ private fun FullLogExportView(
                                     color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(4.dp),
                                 )
-                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
+                                .padding(
+                                    horizontal = FloconTheme.spacing.small,
+                                    vertical = FloconTheme.spacing.compact
+                                ),
                         )
                     }
                 }
