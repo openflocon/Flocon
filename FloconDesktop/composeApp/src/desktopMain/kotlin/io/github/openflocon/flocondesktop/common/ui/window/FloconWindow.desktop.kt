@@ -15,7 +15,7 @@ import androidx.compose.ui.window.v2.WindowBoundsProvider
 import androidx.compose.ui.window.v2.WindowPositionProvider
 import androidx.compose.ui.window.v2.WindowState
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon
+import flocondesktop.composeapp.generated.resources.app_icon_window
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 
@@ -46,7 +46,7 @@ actual fun FloconWindow(
 
     Window(
         title = title,
-        icon = painterResource(Res.drawable.app_icon),
+        icon = painterResource(Res.drawable.app_icon_window),
         state = (state as FloconWindowStateDesktop).windowState,
         alwaysOnTop = alwaysOnTop,
         onPreviewKeyEvent = {
