@@ -1,13 +1,16 @@
 package io.github.openflocon.flocondesktop.features.database
 
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
+import io.github.openflocon.flocondesktop.app.keepMenu
+import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseDetails
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.database.view.DetailResultItem
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
-import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import kotlinx.serialization.Serializable
 
 sealed interface DatabaseRoutes : FloconRoute {
@@ -25,15 +28,17 @@ sealed interface DatabaseRoutes : FloconRoute {
 
 fun EntryProviderScope<FloconRoute>.databaseRoutes() {
     entry<DatabaseRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
+        metadata = metadata {
+            menu()
+        }
     ) {
         DatabaseScreen()
     }
     entry<DatabaseRoutes.Detail>(
-        metadata = PanelSceneStrategy.panel(
-            pinnable = false,
-            closable = true
-        )
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
     ) {
         DatabaseDetails(
             state = it.result,

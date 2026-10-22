@@ -39,7 +39,8 @@ val PANEL_WIDTH = 500.dp
 @Stable
 class FloconPanelState internal constructor(initialValue: Boolean) {
 
-    internal var expanded by mutableStateOf(initialValue)
+    var expanded by mutableStateOf(initialValue)
+        private set
 
     val translationX = AnimationState(typeConverter = Dp.VectorConverter, PANEL_WIDTH)
 
@@ -49,7 +50,10 @@ class FloconPanelState internal constructor(initialValue: Boolean) {
     }
 
     suspend fun hide() {
-        translationX.animateTo(PANEL_WIDTH, animationSpec = tween(ANIM_DURATION, easing = EaseOutExpo))
+        translationX.animateTo(
+            PANEL_WIDTH,
+            animationSpec = tween(ANIM_DURATION, easing = EaseOutExpo)
+        )
         expanded = false
     }
 }
@@ -80,6 +84,7 @@ private class FloconPanelScopeImpl(
 fun FloconPanel(
     state: FloconPanelState,
     onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
     actions: @Composable FloconPanelScope.() -> Unit = {},
     content: @Composable FloconPanelScope.() -> Unit
 ) {
@@ -106,8 +111,7 @@ fun FloconPanel(
     }
 
     Row(
-        modifier = Modifier
-            .fillMaxHeight()
+        modifier = modifier.fillMaxHeight()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),

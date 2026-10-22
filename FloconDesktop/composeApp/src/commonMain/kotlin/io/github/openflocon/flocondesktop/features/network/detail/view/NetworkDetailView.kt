@@ -225,46 +225,47 @@ fun NetworkDetailContent(
     var openFilePicker by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxSize()
             .background(FloconTheme.colors.bg100)
     ) {
         // Hidden off-screen full log view for Save full log as Image
-        Box(
-            modifier = Modifier
-                .layout { measurable, _ ->
-                    val widthPx = 700.dp.roundToPx()
-                    val placeable = measurable.measure(
-                        Constraints(
-                            minWidth = widthPx,
-                            maxWidth = widthPx,
-                            minHeight = 0,
-                            maxHeight = Constraints.Infinity
-                        )
-                    )
-                    layout(0, 0) {
-                        placeable.place(0, 0)
-                    }
-                }
-                .drawWithContent {
-                    fullLogGraphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-                }
-        ) {
-            CompositionLocalProvider(
-                LocalDensity provides Density(
-                    density = maxOf(2f, LocalDensity.current.density),
-                    fontScale = 1f
-                )
-            ) {
-                FullLogExportView(
-                    state = uiState,
-                    linesLabelWidth = linesLabelWidth,
-                    headersLabelWidth = headersLabelWidth,
-                    modifier = Modifier.width(700.dp)
-                )
-            }
-        }
+//        Box(
+//            modifier = Modifier
+//                .layout { measurable, _ ->
+//                    val widthPx = 700.dp.roundToPx()
+//                    val placeable = measurable.measure(
+//                        Constraints(
+//                            minWidth = widthPx,
+//                            maxWidth = widthPx,
+//                            minHeight = 0,
+//                            maxHeight = Constraints.Infinity
+//                        )
+//                    )
+//                    layout(0, 0) {
+//                        placeable.place(0, 0)
+//                    }
+//                }
+//                .drawWithContent {
+//                    fullLogGraphicsLayer.record {
+//                        this@drawWithContent.drawContent()
+//                    }
+//                }
+//        ) {
+//            CompositionLocalProvider(
+//                LocalDensity provides Density(
+//                    density = maxOf(2f, LocalDensity.current.density),
+//                    fontScale = 1f
+//                )
+//            ) {
+//                FullLogExportView(
+//                    state = uiState,
+//                    linesLabelWidth = linesLabelWidth,
+//                    headersLabelWidth = headersLabelWidth,
+//                    modifier = Modifier.width(700.dp)
+//                )
+//            }
+//        }
 
         Column(
             modifier = Modifier

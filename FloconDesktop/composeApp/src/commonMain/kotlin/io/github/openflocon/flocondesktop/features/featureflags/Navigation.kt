@@ -1,12 +1,15 @@
 package io.github.openflocon.flocondesktop.features.featureflags
 
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
+import io.github.openflocon.flocondesktop.app.keepMenu
+import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.featureflags.view.FeatureFlagDetailView
 import io.github.openflocon.flocondesktop.features.featureflags.view.FeatureFlagsScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
-import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import kotlinx.serialization.Serializable
 
 sealed interface FeatureFlagsRoutes : FloconRoute {
@@ -24,15 +27,17 @@ sealed interface FeatureFlagsRoutes : FloconRoute {
 
 fun EntryProviderScope<FloconRoute>.featureFlagsRoutes() {
     entry<FeatureFlagsRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
+        metadata = metadata {
+            menu()
+        }
     ) {
         FeatureFlagsScreen()
     }
     entry<FeatureFlagsRoutes.Detail>(
-        metadata = PanelSceneStrategy.panel(
-            pinnable = false,
-            closable = true
-        )
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
     ) {
         FeatureFlagDetailView(
             provider = it.provider,

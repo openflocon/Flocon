@@ -12,18 +12,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+fun <T> AnimatedContentTransitionScope<T>.enterEnd() = fadeIn(
+    animationSpec = tween(220, delayMillis = 90)
+)
+    .plus(
+        slideIntoContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = tween(220, delayMillis = 90)
+        )
+    )
+
+fun <T> AnimatedContentTransitionScope<T>.exitEnd() = fadeOut(
+    animationSpec = tween(220, delayMillis = 90)
+)
+    .plus(
+        slideOutOfContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.End,
+            animationSpec = tween(220, delayMillis = 90)
+        )
+    )
+
 @Composable
 fun <T> FloconAnimateVisibility(
     state: T?,
     modifier: Modifier = Modifier,
     transitionSpec: AnimatedContentTransitionScope<T?>.() -> ContentTransform = {
-        (
-            fadeIn(animationSpec = tween(220, delayMillis = 90)) + slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                animationSpec = tween(220, delayMillis = 90)
-            )
-            )
-            .togetherWith(fadeOut(animationSpec = tween(90)))
+        enterEnd().togetherWith(fadeOut(animationSpec = tween(90)))
     },
     content: @Composable AnimatedContentScope.(T & Any) -> Unit
 ) {
