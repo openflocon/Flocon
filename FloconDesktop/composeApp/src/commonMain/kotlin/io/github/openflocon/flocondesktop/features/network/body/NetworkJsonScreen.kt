@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.body
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,9 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianneubauer.jsontree.search.rememberSearchState
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_clear
 import flocondesktop.composeapp.generated.resources.match_case_disabled
 import flocondesktop.composeapp.generated.resources.match_case_enabled
 import flocondesktop.composeapp.generated.resources.search
+import flocondesktop.composeapp.generated.resources.search_match_case
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -63,11 +66,8 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import flocondesktop.composeapp.generated.resources.general_clear
-import flocondesktop.composeapp.generated.resources.search_match_case
 
 @Composable
 fun NetworkJsonScreen(
@@ -98,7 +98,7 @@ private fun NetworkBodyContent(
 
     val resultIndex = searchState.selectedResultListIndex
     LaunchedEffect(resultIndex) {
-        if(resultIndex != null && !listState.isScrollInProgress) {
+        if (resultIndex != null && !listState.isScrollInProgress) {
             listState.animateScrollToItem(resultIndex)
         }
     }
@@ -192,7 +192,7 @@ private fun SearchBar(
                         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                     ) {
                         FloconSmallIconButton(
-                            imageVector = if(matchCase) {
+                            imageVector = if (matchCase) {
                                 vectorResource(Res.drawable.match_case_enabled)
                             } else {
                                 vectorResource(Res.drawable.match_case_disabled)
@@ -237,14 +237,17 @@ private fun SearchBar(
                                     }
                                     true
                                 }
+
                                 Key.DirectionDown -> {
                                     nextClicked()
                                     true
                                 }
+
                                 Key.DirectionUp -> {
                                     previousClicked()
                                     true
                                 }
+
                                 else -> false
                             }
                         } else {
@@ -305,7 +308,6 @@ private fun SearchBar(
         )
     }
 }
-
 
 @Preview
 @Composable

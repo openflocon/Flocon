@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +21,8 @@ import flocondesktop.composeapp.generated.resources.timeline_counter_events
 import flocondesktop.composeapp.generated.resources.timeline_counter_http_errors
 import flocondesktop.composeapp.generated.resources.timeline_counter_sessions
 import flocondesktop.composeapp.generated.resources.timeline_live
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.pluralStringResource

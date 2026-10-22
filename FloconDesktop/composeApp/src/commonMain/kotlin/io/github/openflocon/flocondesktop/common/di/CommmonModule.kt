@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.common.di
 
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.common.JsonFormatter
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.common.coroutines.dispatcherprovider.DispatcherProviderImpl
 import io.github.openflocon.flocondesktop.common.db.roomModule
 import io.github.openflocon.flocondesktop.common.ui.JsonFormatterImpl
-import io.github.openflocon.domain.common.JsonFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.bind

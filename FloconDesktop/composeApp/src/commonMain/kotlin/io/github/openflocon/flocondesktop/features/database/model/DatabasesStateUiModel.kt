@@ -27,6 +27,7 @@ fun previewDatabasesStateUiModel(): DatabasesStateUiModel = DatabasesStateUiMode
 fun DatabasesStateUiModel.selectedDatabase(): DeviceDataBaseUiModel? = when (this) {
     DatabasesStateUiModel.Empty,
     DatabasesStateUiModel.Loading -> null
+
     is DatabasesStateUiModel.WithContent -> {
         this.databases.firstOrNull { it.isSelected }
     }

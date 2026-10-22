@@ -8,9 +8,9 @@ import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainMod
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -181,7 +181,9 @@ internal class DatabaseMcpToolProvider(
 
         return when (response) {
             is DatabaseExecuteSqlResponseDomainModel.Select -> response
+
             is DatabaseExecuteSqlResponseDomainModel.Error -> throw McpToolException("SQL error: ${response.message}")
+
             // only read only queries are sent, they return rows
             else -> DatabaseExecuteSqlResponseDomainModel.Select(columns = emptyList(), values = emptyList())
         }

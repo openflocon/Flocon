@@ -17,11 +17,10 @@ internal class CrashReporterLocalDataSourceRoom(
     private val crashReportDao: CrashReportDao,
 ) : CrashReporterLocalDataSource {
 
-    override fun observeHasAny(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> =
-        crashReportDao.observeHasAny(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-        )
+    override fun observeHasAny(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> = crashReportDao.observeHasAny(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+    )
 
     override suspend fun insertAll(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

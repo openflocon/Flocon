@@ -40,6 +40,7 @@ private fun MockNetworkDomainModel.Response.toEntity(): MockNetworkResponseEmbed
             mediaType = mediaType,
             headers = headers,
         )
+
         is MockNetworkDomainModel.Response.Exception -> MockNetworkResponseEmbedded.Type.Exception(
             classPath = classPath,
         )
@@ -76,6 +77,7 @@ private fun MockNetworkResponseEmbedded.toDomain(): MockNetworkDomainModel.Respo
         headers = this.type.headers,
         delay = this.delay,
     )
+
     is MockNetworkResponseEmbedded.Type.Exception -> MockNetworkDomainModel.Response.Exception(
         delay = this.delay,
         classPath = this.type.classPath,

@@ -213,16 +213,14 @@ private class FakeBadQualityRepository : NetworkBadQualityRepository {
         sentToDevice[deviceIdAndPackageName] = config
     }
 
-    override suspend fun saveBadNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, config: BadQualityConfigDomainModel) =
-        put(deviceIdAndPackageName, config)
+    override suspend fun saveBadNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, config: BadQualityConfigDomainModel) = put(deviceIdAndPackageName, config)
 
     override suspend fun getNetworkQuality(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         configId: BadQualityConfigId,
     ): BadQualityConfigDomainModel? = configsOf(deviceIdAndPackageName).firstOrNull { it.id == configId }
 
-    override suspend fun getTheOnlyEnabledNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) =
-        configsOf(deviceIdAndPackageName).firstOrNull { it.isEnabled }
+    override suspend fun getTheOnlyEnabledNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = configsOf(deviceIdAndPackageName).firstOrNull { it.isEnabled }
 
     override suspend fun deleteNetworkQuality(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, configId: BadQualityConfigId) {
         configs.value = configs.value.filterNot { it.first == deviceIdAndPackageName.key() && it.second.id == configId }
@@ -233,8 +231,7 @@ private class FakeBadQualityRepository : NetworkBadQualityRepository {
         configId: BadQualityConfigId,
     ): Flow<BadQualityConfigDomainModel?> = configs.map { configsOf(deviceIdAndPackageName).firstOrNull { it.id == configId } }
 
-    override fun observeAllNetworkQualities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<BadQualityConfigDomainModel>> =
-        configs.map { configsOf(deviceIdAndPackageName) }
+    override fun observeAllNetworkQualities(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<BadQualityConfigDomainModel>> = configs.map { configsOf(deviceIdAndPackageName) }
 
     override suspend fun setEnabledConfig(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, configId: BadQualityConfigId?) {
         configs.value = configs.value.map { (key, config) ->

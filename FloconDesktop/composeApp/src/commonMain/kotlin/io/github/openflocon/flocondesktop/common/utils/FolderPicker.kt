@@ -14,22 +14,20 @@ object FolderPicker {
     suspend fun pickFolder(
         title: String = "Select Folder",
         initialPath: String? = null,
-    ): File? {
-        return try {
-            val initialDirectory = initialPath?.takeIf { it.isNotBlank() }?.let { PlatformFile(File(it)) }
-            val directory = FileKit.openDirectoryPicker(
-                directory = initialDirectory,
-            )
-            if (directory != null) {
-                Logger.d(TAG) { "Folder picked via FileKit: ${directory.path}" }
-                File(directory.path)
-            } else {
-                Logger.d(TAG) { "Folder picking cancelled" }
-                null
-            }
-        } catch (t: Throwable) {
-            Logger.e(TAG, t) { "Error while picking folder via FileKit" }
+    ): File? = try {
+        val initialDirectory = initialPath?.takeIf { it.isNotBlank() }?.let { PlatformFile(File(it)) }
+        val directory = FileKit.openDirectoryPicker(
+            directory = initialDirectory,
+        )
+        if (directory != null) {
+            Logger.d(TAG) { "Folder picked via FileKit: ${directory.path}" }
+            File(directory.path)
+        } else {
+            Logger.d(TAG) { "Folder picking cancelled" }
             null
         }
+    } catch (t: Throwable) {
+        Logger.e(TAG, t) { "Error while picking folder via FileKit" }
+        null
     }
 }

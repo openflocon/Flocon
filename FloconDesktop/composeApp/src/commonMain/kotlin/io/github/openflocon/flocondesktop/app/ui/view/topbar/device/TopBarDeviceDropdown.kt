@@ -32,7 +32,9 @@ internal fun TopBarDeviceDropdown(
 
     when (state) {
         DevicesStateUiModel.Empty -> Empty()
+
         DevicesStateUiModel.Loading -> Loading()
+
         is DevicesStateUiModel.WithDevices -> FloconDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },

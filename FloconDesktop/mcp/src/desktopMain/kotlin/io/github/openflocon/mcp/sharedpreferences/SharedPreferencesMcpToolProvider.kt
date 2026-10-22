@@ -5,9 +5,9 @@ import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDo
 import io.github.openflocon.domain.sharedpreference.repository.SharedPreferencesRepository
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.github.openflocon.mcp.McpToolServer
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.JsonArray

@@ -16,5 +16,4 @@ class ModeConverter : KoinComponent {
 
     @TypeConverter
     fun toContainerConfig(value: String): DeeplinkVariableEntity.Mode = json.decodeFromString(value)
-
 }

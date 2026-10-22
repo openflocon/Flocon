@@ -36,13 +36,11 @@ private val stopRecordingsOnExit by lazy {
     )
 }
 
-actual fun localOpenUrlInIosSimulator(url: String): Either<Throwable, String> =
-    // arguments are passed as a list, so the url does not need to be quoted / escaped
+actual fun localOpenUrlInIosSimulator(url: String): Either<Throwable, String> = // arguments are passed as a list, so the url does not need to be quoted / escaped
     runSimctl("openurl", "booted", url)
 
-actual fun localTakeIosSimulatorScreenshot(filePath: String): Either<Throwable, String> =
-    runSimctl("io", "booted", "screenshot", "--type=png", filePath)
-        .mapSuccess { filePath }
+actual fun localTakeIosSimulatorScreenshot(filePath: String): Either<Throwable, String> = runSimctl("io", "booted", "screenshot", "--type=png", filePath)
+    .mapSuccess { filePath }
 
 actual fun localStartIosSimulatorRecording(filePath: String): Either<Throwable, Unit> = try {
     stopRecordingsOnExit

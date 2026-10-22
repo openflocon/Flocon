@@ -45,7 +45,7 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
                 val sql = log.sqlQuery.replace("|", "\\|").replace("\n", " ")
                 val args = (log.bindArgs?.toString() ?: "[]").replace("|", "\\|")
                 val fullSql = log.toFullSql().replace("|", "\\|").replace("\n", " ")
-                
+
                 appendLine("# $date")
                 appendLine()
                 appendLine("### query")
@@ -61,7 +61,7 @@ class ExportDatabaseQueryLogsToMarkdownProcessor {
                 appendLine()
             }
         }
-        
+
         file.writeText(markdown)
     }
 }

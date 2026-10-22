@@ -3,12 +3,12 @@ package io.github.openflocon.flocondesktop.features.featureflags.mapper
 import io.github.openflocon.domain.featureflags.models.FeatureFlagDomainModel
 import io.github.openflocon.domain.featureflags.models.FeatureFlagStateDomainModel
 import io.github.openflocon.flocondesktop.common.ui.JsonPrettyPrinter
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagDetailUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 
 internal fun FeatureFlagDomainModel.mapToUi() = FeatureFlagRowUiModel(
     id = "$provider/$name",

@@ -10,7 +10,9 @@ private const val MINUTE = 60_000.0
  */
 internal fun formatElapsed(ms: Double): String = when {
     ms < SECOND -> "${ms.roundToLong()} ms"
+
     ms < MINUTE -> "${(ms / SECOND).twoDecimals()} s"
+
     else -> {
         val totalSeconds = (ms / SECOND).roundToLong()
         "${totalSeconds / 60} min ${(totalSeconds % 60).toString().padStart(2, '0')} s"

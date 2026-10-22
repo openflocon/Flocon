@@ -43,7 +43,7 @@ internal fun FilesListHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.width(40.dp), contentAlignment = Alignment.Center) {
-            if(isSelecting) {
+            if (isSelecting) {
                 FloconCheckbox(
                     checked = selectingAll,
                     onCheckedChange = {

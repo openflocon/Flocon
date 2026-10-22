@@ -33,6 +33,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
+      - name: Check code style
+        working-directory: FloconDesktop
+        run: ./gradlew ktlintCheck
+
       - name: Run tests and assemble
         working-directory: FloconDesktop
         run: ./gradlew allTests assemble

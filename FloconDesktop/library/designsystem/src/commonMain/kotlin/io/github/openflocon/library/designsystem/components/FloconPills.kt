@@ -25,8 +25,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 // the mono style of the technical data: times, http codes, methods, paths
 @Composable
-fun floconMonoStyle(small: Boolean = false): TextStyle =
-    (if (small) FloconTheme.typography.labelSmall else FloconTheme.typography.labelMedium).copy(fontFamily = FontFamily.Monospace)
+fun floconMonoStyle(small: Boolean = false): TextStyle = (if (small) FloconTheme.typography.labelSmall else FloconTheme.typography.labelMedium).copy(fontFamily = FontFamily.Monospace)
 
 // a small colored dot: the color is never alone, a label always goes with it
 @Composable

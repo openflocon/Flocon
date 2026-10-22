@@ -35,7 +35,9 @@ fun FloconNetworkCallDomainModel.matches(
         ?.contains(query, ignoreCase = true) == true
 
     SearchScope.Url -> request.url.contains(query, ignoreCase = true)
+
     SearchScope.Method -> request.method.contains(query, ignoreCase = true)
+
     SearchScope.Status -> response?.statusFormatted?.contains(
         query,
         ignoreCase = true

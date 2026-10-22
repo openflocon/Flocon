@@ -56,7 +56,7 @@ fun MocksHeaderView(modifier: Modifier = Modifier) {
 private fun HeaderText(
     text: String,
     style: TextStyle,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = text.uppercase(),

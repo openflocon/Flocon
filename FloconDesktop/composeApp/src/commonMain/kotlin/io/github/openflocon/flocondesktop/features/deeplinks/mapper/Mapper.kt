@@ -123,9 +123,8 @@ internal fun parseDeeplinkString(
     return result
 }
 
-private fun List<DeeplinkVariableDomainModel>.firstSuggestionOf(variableName: String): String? =
-    firstOrNull { it.name == variableName }
-        ?.mode
-        ?.let { it as? DeeplinkVariableDomainModel.Mode.AutoComplete }
-        ?.suggestions
-        ?.firstOrNull()
+private fun List<DeeplinkVariableDomainModel>.firstSuggestionOf(variableName: String): String? = firstOrNull { it.name == variableName }
+    ?.mode
+    ?.let { it as? DeeplinkVariableDomainModel.Mode.AutoComplete }
+    ?.suggestions
+    ?.firstOrNull()

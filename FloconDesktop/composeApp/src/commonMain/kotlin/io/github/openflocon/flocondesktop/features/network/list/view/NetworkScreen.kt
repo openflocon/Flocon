@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -382,7 +381,6 @@ fun NetworkScreen(
                             )
                         }
 
-
                         FloconDropdownMenuItem(
                             text = stringResource(Res.string.network_select_items),
                             leadingIcon = Icons.Sharp.SelectAll,
@@ -544,34 +542,32 @@ fun NetworkScreen(
 private fun selectPreviousRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList)
-                selectedIndex + 1
-            else
-                selectedIndex - 1
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
-        }
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList)
+            selectedIndex + 1
+        else
+            selectedIndex - 1
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }
 
 private fun selectNextRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList)
-                selectedIndex - 1
-            else
-                selectedIndex + 1
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
-        }
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList)
+            selectedIndex - 1
+        else
+            selectedIndex + 1
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }
 
 @Composable
 @androidx.compose.ui.tooling.preview.Preview

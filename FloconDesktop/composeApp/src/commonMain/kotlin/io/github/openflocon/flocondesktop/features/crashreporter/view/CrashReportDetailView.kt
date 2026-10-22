@@ -31,7 +31,7 @@ import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 
 @Composable
 internal fun CrashReportDetailView(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onCopy: (CrashReporterSelectedUiModel) -> Unit,
     onDelete: (CrashReporterSelectedUiModel) -> Unit,
     crash: CrashReporterSelectedUiModel

@@ -276,17 +276,13 @@ private class FakeDatabaseRepository(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): List<DatabaseQueryLogDomainModel> = error("not used")
 
-    override suspend fun registerDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databases: List<DeviceDataBaseDomainModel>) =
-        error("not used")
+    override suspend fun registerDeviceDatabases(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databases: List<DeviceDataBaseDomainModel>) = error("not used")
 
-    override suspend fun saveSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId, query: String) =
-        error("not used")
+    override suspend fun saveSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId, query: String) = error("not used")
 
-    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>> =
-        error("not used")
+    override fun observeLastSuccessQuery(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<String>> = error("not used")
 
-    override suspend fun saveTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId, table: DatabaseTableDomainModel) =
-        error("not used")
+    override suspend fun saveTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId, table: DatabaseTableDomainModel) = error("not used")
 
     override suspend fun removeTablesNotPresentAnymore(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -294,8 +290,7 @@ private class FakeDatabaseRepository(
         tablesNames: List<String>,
     ) = error("not used")
 
-    override suspend fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<DatabaseTableDomainModel>> =
-        error("not used")
+    override suspend fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: DeviceDataBaseId): Flow<List<DatabaseTableDomainModel>> = error("not used")
 
     override suspend fun saveAsFavorite(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -304,13 +299,11 @@ private class FakeDatabaseRepository(
         query: String,
     ): Either<Throwable, Unit> = error("not used")
 
-    override suspend fun deleteFavorite(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: String, id: Long): Either<Throwable, Unit> =
-        error("not used")
+    override suspend fun deleteFavorite(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: String, id: Long): Either<Throwable, Unit> = error("not used")
 
     override fun observeFavorites(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DatabaseFavoriteQueryDomainModel>> = flowOf(emptyList())
 
-    override suspend fun getFavorite(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: String, id: Long): DatabaseFavoriteQueryDomainModel? =
-        error("not used")
+    override suspend fun getFavorite(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: String, id: Long): DatabaseFavoriteQueryDomainModel? = error("not used")
 
     override fun observeQueryLogs(
         dbName: String,

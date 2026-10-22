@@ -17,8 +17,6 @@ sealed interface NetworkDetailAction {
 
     data class DiffWithClipboard(val text: String) : NetworkDetailAction
 
-
-
     sealed interface OpenBodyExternally : NetworkDetailAction {
         data class Request(val item: NetworkDetailViewState) : OpenBodyExternally
         data class Response(val item: NetworkDetailViewState.Response.Success) : OpenBodyExternally
@@ -30,4 +28,3 @@ sealed interface NetworkDetailAction {
 
     data object CopyCurl : NetworkDetailAction
 }
-

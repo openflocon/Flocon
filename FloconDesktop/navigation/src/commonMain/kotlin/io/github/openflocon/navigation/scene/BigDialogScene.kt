@@ -166,8 +166,6 @@ class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {
     companion object {
         const val BIG_DIALOG = "BIG_DIALOG"
 
-        fun bigDialog(properties: BigDialogProperties): Map<String, Any> =
-            mapOf(BIG_DIALOG to properties)
+        fun bigDialog(properties: BigDialogProperties): Map<String, Any> = mapOf(BIG_DIALOG to properties)
     }
-
 }

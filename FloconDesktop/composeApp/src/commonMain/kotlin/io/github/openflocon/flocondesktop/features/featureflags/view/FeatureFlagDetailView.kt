@@ -30,7 +30,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-
 @Composable
 fun FeatureFlagDetailView(
     provider: String,

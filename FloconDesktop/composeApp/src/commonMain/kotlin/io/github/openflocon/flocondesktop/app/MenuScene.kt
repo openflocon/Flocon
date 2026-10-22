@@ -102,7 +102,6 @@ class MenuSceneStrategy(
 
         return scene
     }
-
 }
 
 data object MenuKey : NavMetadataKey<Boolean>

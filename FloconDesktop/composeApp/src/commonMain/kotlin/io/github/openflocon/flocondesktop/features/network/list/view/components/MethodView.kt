@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.components
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +26,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSolidPill
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import androidx.compose.desktop.ui.tooling.preview.Preview
 
 // each method has its own pair: deep fill + light text in dark theme, pale fill + dark text in light theme
 private data class MethodColors(val background: Color, val content: Color)
@@ -35,15 +35,22 @@ private fun NetworkMethodUi.colors(): MethodColors {
     val colors = FloconTheme.colors
     return when (this) {
         is NetworkMethodUi.Http.GET -> MethodColors(colors.methodGet, colors.onMethodGet)
+
         is NetworkMethodUi.Http.POST -> MethodColors(colors.methodPost, colors.onMethodPost)
+
         is NetworkMethodUi.Http.PUT -> MethodColors(colors.methodPut, colors.onMethodPut)
+
         is NetworkMethodUi.Http.DELETE -> MethodColors(colors.methodDelete, colors.onMethodDelete)
+
         is NetworkMethodUi.Http.PATCH -> MethodColors(colors.methodPatch, colors.onMethodPatch)
+
         is NetworkMethodUi.GraphQl.QUERY,
         is NetworkMethodUi.GraphQl.MUTATION -> MethodColors(colors.methodGraphQl, colors.onMethodGraphQl)
 
         is NetworkMethodUi.Grpc -> MethodColors(colors.methodGrpc, colors.onMethodGrpc)
+
         is NetworkMethodUi.WebSocket -> MethodColors(colors.methodWebSocket, colors.onMethodWebSocket)
+
         is NetworkMethodUi.OTHER -> MethodColors(colors.methodOther, colors.onMethodOther)
     }
 }

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files.view.header
 
-import io.github.openflocon.library.designsystem.FloconTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -14,6 +13,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun FilterIcon(

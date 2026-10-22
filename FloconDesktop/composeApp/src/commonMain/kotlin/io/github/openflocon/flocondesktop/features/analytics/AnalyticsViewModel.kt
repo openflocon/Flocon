@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
-import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -154,10 +154,15 @@ class AnalyticsViewModel(
                 }
 
                 is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)
+
                 is AnalyticsAction.RemoveLinesAbove -> removeAnalyticsItemsBeforeUseCase(action.item.id)
+
                 is AnalyticsAction.ToggleAutoScroll -> _screenState.update { it.copy(autoScroll = !it.autoScroll) }
+
                 is AnalyticsAction.InvertList -> _screenState.update { it.copy(invertList = action.value) }
+
                 is AnalyticsAction.ClearOldSession -> removeOldSessionsAnalyticsUseCase()
+
                 is AnalyticsAction.ExportCsv -> onExportCsv()
             }
         }

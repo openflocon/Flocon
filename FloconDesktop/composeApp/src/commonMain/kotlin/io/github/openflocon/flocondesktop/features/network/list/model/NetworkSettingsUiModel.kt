@@ -19,4 +19,3 @@ fun previewNetworkSettingsUiModel() = NetworkSettingsUiModel(
     pinPanel = false,
     defaultSelectedTab = NetworkDetailTab.Request,
 )
-

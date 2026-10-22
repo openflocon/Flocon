@@ -52,7 +52,6 @@ actual fun FloconWindow(
         onPreviewKeyEvent = {
             when (it.key) {
                 Key.Escape if (it.type == KeyEventType.KeyDown) -> handlers.lastOrNull()?.invoke() ?: false
-
                 else -> false
             }
         },
