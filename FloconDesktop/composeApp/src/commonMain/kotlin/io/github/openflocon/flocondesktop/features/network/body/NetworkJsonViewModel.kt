@@ -12,5 +12,4 @@ class NetworkJsonViewModel(
 
     private val _uiState = MutableStateFlow(NetworkBodyDetailUi(text = json))
     val uiState: StateFlow<NetworkBodyDetailUi> = _uiState.asStateFlow()
-
 }

@@ -16,6 +16,8 @@ interface NetworkLocalDataSource {
         filter: NetworkFilterDomainModel,
     ): List<FloconNetworkCallDomainModel>
 
+    fun observeHasRequests(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
+
     fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,

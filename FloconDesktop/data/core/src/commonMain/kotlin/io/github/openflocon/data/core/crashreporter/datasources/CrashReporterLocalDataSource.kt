@@ -11,6 +11,7 @@ interface CrashReporterLocalDataSource {
         crashes: List<CrashReportDomainModel>
     )
     fun observeAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<PagingData<CrashReportDomainModel>>
+    fun observeHasAny(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean>
     suspend fun search(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sinceTimestamp: Long?,

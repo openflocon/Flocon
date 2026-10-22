@@ -21,24 +21,37 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.badquality_add_exception
+import flocondesktop.composeapp.generated.resources.badquality_add_http_error
+import flocondesktop.composeapp.generated.resources.badquality_delete_error
+import flocondesktop.composeapp.generated.resources.badquality_no_error
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BadQualityErrorsListView(
@@ -52,11 +65,17 @@ fun BadQualityErrorsListView(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
         ) {
-            Text("Errors", style = FloconTheme.typography.titleMedium)
-            FloconButton(
+            Text(
+                "Errors",
+                style = FloconTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = FloconTheme.colors.inkMuted,
+                modifier = Modifier.weight(1f),
+            )
+            FloconActionButton(
                 onClick = {
                     onErrorslicked(
                         BadQualityConfigUiModel.Error(
@@ -71,11 +90,12 @@ fun BadQualityErrorsListView(
                     )
                 },
             ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
-                    text = "Add http error",
+                    text = stringResource(Res.string.badquality_add_http_error),
                 )
             }
-            FloconButton(
+            FloconActionButton(
                 onClick = {
                     onErrorslicked(
                         BadQualityConfigUiModel.Error(
@@ -88,8 +108,36 @@ fun BadQualityErrorsListView(
                     )
                 },
             ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
                 Text(
-                    text = "Add Exception",
+                    text = stringResource(Res.string.badquality_add_exception),
+                )
+            }
+        }
+
+        if (errors.isEmpty()) {
+            val dash = FloconTheme.colors.lineStrong
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = FloconTheme.spacing.medium)
+                    .padding(top = FloconTheme.spacing.medium)
+                    .height(160.dp)
+                    .drawBehind {
+                        drawRoundRect(
+                            color = dash,
+                            cornerRadius = CornerRadius(8.dp.toPx()),
+                            style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 4.dp.toPx()))),
+                        )
+                    }
+                    .padding(FloconTheme.spacing.medium),
+            ) {
+                Text(
+                    text = stringResource(Res.string.badquality_no_error),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colors.inkFaint,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -98,32 +146,32 @@ fun BadQualityErrorsListView(
             val lazyListState = rememberLazyListState()
             val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
             Box(modifier = Modifier.height(160.dp)) {
-                val contentPadding = PaddingValues(horizontal = 12.dp)
+                val contentPadding = PaddingValues(horizontal = FloconTheme.spacing.medium)
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 ) {
                     if (errors.isNotEmpty()) {
                         item {
                             Row(
                                 modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 6.dp)
+                                    .padding(horizontal = FloconTheme.spacing.compact)
                             ) {
                                 Text(
                                     "Weight",
                                     style = FloconTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.Thin,
-                                        fontSize = 10.sp,
+                                        fontSize = FloconTheme.typography.labelSmall.fontSize,
                                     ),
                                 )
-                                Spacer(modifier = Modifier.width(28.dp))
+                                Spacer(modifier = Modifier.width(FloconTheme.spacing.extraLarge))
                                 Text(
                                     "Type",
                                     style = FloconTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.Thin,
-                                        fontSize = 10.sp,
+                                        fontSize = FloconTheme.typography.labelSmall.fontSize,
                                     ),
                                 )
                             }
@@ -163,12 +211,12 @@ private fun BadQualityErrorItemView(
             clickedError(error)
         }.padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Box(
             modifier = Modifier.size(24.dp)
                 .clip(RoundedCornerShape(2.dp))
-                .background(FloconTheme.colorPalette.onSurface),
+                .background(FloconTheme.colors.bg300),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -181,9 +229,8 @@ private fun BadQualityErrorItemView(
                 },
                 style = FloconTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp,
                 ),
-                color = FloconTheme.colorPalette.surface,
+                color = FloconTheme.colors.ink,
             )
         }
         when (val t = error.type) {
@@ -194,22 +241,22 @@ private fun BadQualityErrorItemView(
                     style = FloconTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = FloconTheme.colorPalette.error,
+                    color = FloconTheme.colors.statusWarning,
                 )
                 Text(
                     t.body.take(20),
                     maxLines = 1,
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.primary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                        .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
                 )
             }
 
@@ -217,30 +264,30 @@ private fun BadQualityErrorItemView(
                 Text(
                     "exception",
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                         fontWeight = FontWeight.Bold,
                     ),
-                    color = FloconTheme.colorPalette.exceptions
+                    color = FloconTheme.colors.statusError
                 )
                 Text(
                     text = t.classPath,
                     style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colorPalette.onSurface,
+                        color = FloconTheme.colors.ink,
                     ),
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = FloconTheme.colorPalette.primary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(4.dp),
                         )
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                        .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.extraSmall),
                 )
             }
         }
 
         Image(
             imageVector = Icons.Default.Delete,
-            contentDescription = "Delete error",
+            contentDescription = stringResource(Res.string.badquality_delete_error),
             modifier = Modifier
                 .size(24.dp)
                 .clickable {
@@ -248,7 +295,7 @@ private fun BadQualityErrorItemView(
                         error,
                     )
                 },
-            colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onSurface),
+            colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
         )
     }
 }

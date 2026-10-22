@@ -90,6 +90,7 @@ class DatabaseViewModel(
                 is DatabaseScreenAction.DeleteFavorite -> deleteFavorite(
                     favorite = action.favoriteQuery,
                 )
+
                 is DatabaseScreenAction.OnDatabaseDoubleClicked -> databaseSelectorDelegate.onDatabaseSelected(
                     action.database.id
                 )?.let {
@@ -108,12 +109,17 @@ class DatabaseViewModel(
                     is DatabaseTabViewAction.OnTabSelected -> onTabSelected(
                         tab = a.tab
                     )
+
                     is DatabaseTabViewAction.OnCloseClicked -> removeTab(
                         tab = a.tab
                     )
+
                     is DatabaseTabViewAction.OnCloseAllClicked -> removeAllTab()
+
                     is DatabaseTabViewAction.OnCloseOnLeftClicked -> removeTabOnLeft(a.tab)
+
                     is DatabaseTabViewAction.OnCloseOnRightClicked -> removeTabOnRight(a.tab)
+
                     is DatabaseTabViewAction.OnCloseOtherClicked -> removeTabsExcept(a.tab)
                 }
 

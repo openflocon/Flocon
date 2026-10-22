@@ -11,6 +11,4 @@ data class DatabaseQueryLogDomainModel(
     val appInstance: Long,
 )
 
-fun DatabaseQueryLogDomainModel.toFullSql(): String {
-    return injectSqlArgs(sqlQuery, bindArgs)
-}
+fun DatabaseQueryLogDomainModel.toFullSql(): String = injectSqlArgs(sqlQuery, bindArgs)

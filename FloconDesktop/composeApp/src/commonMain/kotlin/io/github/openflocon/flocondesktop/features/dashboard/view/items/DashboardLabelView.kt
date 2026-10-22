@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -8,10 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DashboardLabelView(
@@ -23,8 +22,8 @@ internal fun DashboardLabelView(
     ) {
         Text(
             text = rowItem.label,
-            modifier = Modifier.padding(horizontal = 4.dp),
-            color = FloconTheme.colorPalette.onPrimary,
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Thin,
             ),
@@ -42,7 +41,7 @@ internal fun DashboardLabelPreview() {
     FloconTheme {
         DashboardLabelView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
         )
@@ -59,7 +58,7 @@ internal fun DashboardLabelViewPreview_Red() {
     FloconTheme {
         DashboardLabelView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.onPrimary,
+                FloconTheme.colors.ink,
             ),
             rowItem = rowItem,
         )

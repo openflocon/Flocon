@@ -1,6 +1,10 @@
 package io.github.openflocon.flocondesktop.features.table.model
 
 sealed interface TableAction {
+    data class OnClick(
+        val item: TableRowUiModel
+    ) : TableAction
+
     data class Remove(
         val item: TableRowUiModel
     ) : TableAction

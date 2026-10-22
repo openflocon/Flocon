@@ -5,9 +5,9 @@ import io.github.openflocon.mcp.McpOrder
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 import kotlinx.coroutines.flow.first
 import kotlin.time.Instant
 
@@ -16,7 +16,7 @@ internal class CrashReporterMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_crash_reports",
             title = "List crash reports",

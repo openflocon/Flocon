@@ -6,6 +6,15 @@ import io.github.openflocon.flocon.myapplication.multi.database.model.HumanEntit
 import io.github.openflocon.flocon.myapplication.multi.database.model.HumanWithDogEntity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.random.Random
+
+/** A random food, to insert from the Database screen. */
+fun newFood() = FoodEntity(
+    id = Random.nextLong(),
+    name = listOf("Cheese Burger", "Pizza", "Ramen", "Falafel").random(),
+    type = listOf("Sandwitch", "Italian", "Japanese", "Street food").random(),
+    calories = Random.nextInt(100, 1500),
+)
 
 fun initializeDatabases(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
     GlobalScope.launch {

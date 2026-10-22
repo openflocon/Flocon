@@ -25,15 +25,19 @@ internal fun Json.decodeReceivedQuery(body: String): ResponseAndRequestIdDataMod
             val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
             decodeFromString<DatabaseExecuteSqlResponseDataModel.Error>(bodyWrapper.body)
         }
+
         "Insert" -> {
             val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
             decodeFromString<DatabaseExecuteSqlResponseDataModel.Insert>(bodyWrapper.body)
         }
+
         "RawSuccess" -> DatabaseExecuteSqlResponseDataModel.RawSuccess
+
         "Select" -> {
             val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
             decodeFromString<DatabaseExecuteSqlResponseDataModel.Select>(bodyWrapper.body)
         }
+
         "UpdateDelete" -> {
             val bodyWrapper = decodeFromString<ReceivedQueryBodyWrapper>(result.result)
             decodeFromString<DatabaseExecuteSqlResponseDataModel.UpdateDelete>(bodyWrapper.body)

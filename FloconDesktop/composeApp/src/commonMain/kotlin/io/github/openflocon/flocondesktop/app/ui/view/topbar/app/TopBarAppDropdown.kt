@@ -1,12 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MenuAnchorType
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,14 +9,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_select
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenu
-import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TopBarAppDropdown(
@@ -33,74 +31,52 @@ internal fun TopBarAppDropdown(
     var expanded by remember { mutableStateOf(false) }
 
     if (devicesState is DevicesStateUiModel.WithDevices) {
-        FloconExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = false },
-        ) {
-            val modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
-
-            appsState.appSelected?.let {
-                TopBarSelector(
-                    onClick = { expanded = true },
-                ) {
-                    TopBarAppView(
-                        deviceApp = it,
-                        modifier = modifier,
-                        platform = devicesState.deviceSelected.platform,
-                    )
-                }
-            } ?: run {
-                TopBarSelector(
-                    onClick = { expanded = true },
-                ) {
-                    Text(
-                        text = "Select",
-                        modifier = modifier,
-                    )
-                }
-            }
-
-            when (appsState) {
-                AppsStateUiModel.Empty,
-                AppsStateUiModel.Loading -> {
-                    // no op
-                }
-
-                is AppsStateUiModel.WithApps -> {
-                    FloconExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.exposedDropdownSize(matchAnchorWidth = false)
+        FloconDropdownMenu(
+            expanded = expanded && appsState is AppsStateUiModel.WithApps,
+            onDismissRequest = { expanded = false },
+            onExpandRequest = { expanded = true },
+            anchorContent = {
+                appsState.appSelected?.let {
+                    TopBarSelector(
+                        onClick = { expanded = true },
+                        modifier = Modifier.width(FloconTheme.sizes.appDropdownWidth),
                     ) {
-                        appsState.apps
-                            .fastForEach { app ->
-                                val isSelected = appsState.appSelected?.packageName == app.packageName
-
-                                TopBarAppView(
-                                    deviceApp = app,
-                                    platform = devicesState.deviceSelected.platform,
-                                    selected = isSelected,
-                                    deleteClick = {
-                                        deleteApp(app)
-                                        expanded = false
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            onAppSelected(app)
-                                            expanded = false
-                                        }
-                                        .then (
-                                            if(isSelected) {
-                                                Modifier.background(color = FloconTheme.colorPalette.onTertiary)
-                                            } else {
-                                                Modifier
-                                            }
-                                        ),
-                                )
-                            }
+                        TopBarAppView(
+                            deviceApp = it,
+                            platform = devicesState.deviceSelected.platform,
+                        )
+                    }
+                } ?: run {
+                    TopBarSelector(
+                        onClick = { expanded = true },
+                    ) {
+                        Text(text = stringResource(Res.string.general_select))
                     }
                 }
+            },
+        ) {
+            if (appsState is AppsStateUiModel.WithApps) {
+                appsState.apps
+                    .fastForEach { app ->
+                        val isSelected = appsState.appSelected?.packageName == app.packageName
+
+                        TopBarAppView(
+                            deviceApp = app,
+                            platform = devicesState.deviceSelected.platform,
+                            selected = isSelected,
+                            deleteClick = {
+                                deleteApp(app)
+                                expanded = false
+                            },
+                            modifier = Modifier
+                                .width(FloconTheme.sizes.appDropdownWidth)
+                                .clip(FloconTheme.shapes.medium)
+                                .clickable {
+                                    onAppSelected(app)
+                                    expanded = false
+                                },
+                        )
+                    }
             }
         }
     }

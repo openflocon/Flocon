@@ -38,6 +38,9 @@ val roomModule =
             get<AppDatabase>().analyticsDao
         }
         single {
+            get<AppDatabase>().featureFlagDao
+        }
+        single {
             get<AppDatabase>().networkFilterDao
         }
         single {
@@ -63,5 +66,8 @@ val roomModule =
         }
         single {
             get<AppDatabase>().adbCommanderDao
+        }
+        single {
+            get<AppDatabase>().timelineDao
         }
     }

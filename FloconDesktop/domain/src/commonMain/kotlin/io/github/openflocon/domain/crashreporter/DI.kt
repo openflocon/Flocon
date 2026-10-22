@@ -4,11 +4,13 @@ import io.github.openflocon.domain.crashreporter.usecase.ClearAllCrashReportUseC
 import io.github.openflocon.domain.crashreporter.usecase.DeleteCrashReportUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsByIdUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsUseCase
+import io.github.openflocon.domain.crashreporter.usecase.ObserveCurrentDeviceHasCrashReportsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val crashReporterDomainModule = module {
     factoryOf(::ObserveCrashReportsUseCase)
+    factoryOf(::ObserveCurrentDeviceHasCrashReportsUseCase)
     factoryOf(::ObserveCrashReportsByIdUseCase)
     factoryOf(::DeleteCrashReportUseCase)
     factoryOf(::ClearAllCrashReportUseCase)

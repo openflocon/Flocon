@@ -20,8 +20,13 @@ class ExecuteDeeplinkUseCase(
     private val devicesRepository: DevicesRepository,
     private val iosSimulatorRepository: IosSimulatorRepository,
 ) {
-    suspend operator fun invoke(deeplink: String, deeplinkId: Long, saveIntoHistory: Boolean): Either<Throwable, String> {
-        val current = getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(IllegalStateException("No device"))
+    suspend operator fun invoke(
+        deeplink: String,
+        deeplinkId: Long,
+        saveIntoHistory: Boolean,
+        target: DeviceIdAndPackageNameDomainModel? = null,
+    ): Either<Throwable, String> {
+        val current = target ?: getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(IllegalStateException("No device"))
 
         // must been done before executing the deeplink, because the new launch overrides the list of deeplinks in the DB
         val originalModel = if (deeplinkId == -1L) {

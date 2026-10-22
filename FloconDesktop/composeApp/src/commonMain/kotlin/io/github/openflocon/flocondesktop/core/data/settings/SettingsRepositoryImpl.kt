@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.core.data.settings
 
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -18,7 +19,7 @@ internal class SettingsRepositoryImpl(
 
     // TODO: Consider moving all settings into one StateFlow
     override val adbPath: Flow<String?> = localSettingsDataSource.adbPath
-    override val fontSizeMultiplier: StateFlow<Float> = localSettingsDataSource.fontSizeMultiplier
+    override val appScale: StateFlow<AppScaleSetting> = localSettingsDataSource.appScale
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme
 
     private val _adbForwardStatus = MutableStateFlow(AdbForwardStatus.UNKNOWN)
@@ -42,8 +43,8 @@ internal class SettingsRepositoryImpl(
         localSettingsDataSource.setAdbPath(path)
     }
 
-    override suspend fun setFontSizeMultiplier(value: Float) {
-        localSettingsDataSource.setFontSizeMultiplier(value)
+    override suspend fun setAppScale(value: AppScaleSetting) {
+        localSettingsDataSource.setAppScale(value)
     }
 
     override suspend fun setTheme(value: ThemeSetting) {

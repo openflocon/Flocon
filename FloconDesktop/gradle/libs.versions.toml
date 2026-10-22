@@ -4,7 +4,8 @@ agp = "9.2.0"
 androidx-lifecycle = "2.11.0"
 buildconfig = "6.0.10"
 coil = "3.5.0"
-compose-multiplatform = "1.12.1"
+compose-multiplatform = "1.12.2"
+compose-rules = "0.5.9"
 junit = "4.13.2"
 filekit = "0.16.0"
 kermit = "2.1.0"
@@ -17,12 +18,14 @@ kotlinx-schema = "0.6.0"
 kotlinx-immutable = "0.5.2"
 ksp = "2.3.9"
 ktlint = "14.0.1"
+ktlint-engine = "1.8.0"
 ktor = "3.5.1"
 logback = "1.5.18"
 mcp-sdk = "0.15.0"
-material3-adaptive = "1.3.0-beta02"
+material3-core = "1.12.0-alpha03"
+material3-adaptive = "1.3.0"
 multiplatform-settings = "1.3.0"
-navigation3 = "1.1.1"
+navigation3 = "1.2.0-rc01"
 opencsv = "5.12.0"
 other-jsontree = "2.8.0"
 paging = "3.5.0"
@@ -105,6 +108,9 @@ mcp-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version
 # Logback
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
+# Material3
+material3-core = { module = "androidx.compose.material3:material3", version.ref = "material3-core" }
+
 # Multiplatform Settings
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
@@ -114,6 +120,9 @@ markdown-renderer = { module = "com.mikepenz:multiplatform-markdown-renderer-m3"
 opencsv = { module = "com.opencsv:opencsv", version.ref = "opencsv" }
 other-jsontree = { module = "com.sebastianneubauer.jsontree:jsontree", version.ref = "other-jsontree" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+# Lint
+compose-rules-ktlint = { module = "io.nlopez.compose.rules:ktlint", version.ref = "compose-rules" }
 
 [plugins]
 about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "about-libraries" }
@@ -125,6 +134,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 room = { id = "androidx.room", version.ref = "room" }
 

@@ -15,9 +15,9 @@ import io.github.openflocon.domain.messages.repository.MessagesReceiverRepositor
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.BadQualityConfigId
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
-import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.FloconNetworkResponseOnlyDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
+import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkWebsocketId
@@ -62,6 +62,12 @@ class NetworkRepositoryImpl(
         }
     }
 
+    override fun observeHasRequests(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<Boolean> = networkLocalDataSource
+        .observeHasRequests(deviceIdAndPackageName = deviceIdAndPackageName)
+        .flowOn(dispatcherProvider.data)
+
     override fun observeRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         sortedBy: NetworkSortDomainModel?,
@@ -103,10 +109,9 @@ class NetworkRepositoryImpl(
         deviceId: String?,
         startTimestamp: Long?,
         endTimestamp: Long?,
-    ): List<NetworkCallWithDeviceId> =
-        withContext(dispatcherProvider.data) {
-            networkLocalDataSource.getAllRequests(deviceId, startTimestamp, endTimestamp)
-        }
+    ): List<NetworkCallWithDeviceId> = withContext(dispatcherProvider.data) {
+        networkLocalDataSource.getAllRequests(deviceId, startTimestamp, endTimestamp)
+    }
 
     override suspend fun getRequests(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

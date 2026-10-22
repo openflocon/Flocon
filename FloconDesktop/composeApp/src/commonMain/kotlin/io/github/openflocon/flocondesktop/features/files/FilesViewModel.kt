@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
@@ -10,19 +8,22 @@ import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.usecase.DeleteFileUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFilesUseCase
 import io.github.openflocon.domain.files.usecase.DeleteFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.DownloadFileUseCase
+import io.github.openflocon.domain.files.usecase.ObserveFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.ObserveFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.ObserveWithFoldersSizeUseCase
+import io.github.openflocon.domain.files.usecase.RefreshFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.UpdateWithFoldersSizeUseCase
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
-import io.github.openflocon.flocondesktop.features.files.mapper.buildContextualActions
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
 import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
@@ -37,6 +38,7 @@ import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -56,6 +58,9 @@ class FilesViewModel(
     private val refreshFolderContentUseCase: RefreshFolderContentUseCase,
     private val updateWithFoldersSizeUseCase: UpdateWithFoldersSizeUseCase,
     private val observeWithFoldersSizeUseCase: ObserveWithFoldersSizeUseCase,
+    private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    private val refreshFileRootsUseCase: RefreshFileRootsUseCase,
+    observeFileRootsUseCase: ObserveFileRootsUseCase,
 ) : ViewModel() {
 
     private val _filterText = mutableStateOf("")
@@ -79,36 +84,22 @@ class FilesViewModel(
         )
     )
 
-    private fun defaultValue() = FilesStateUiModel(
+    private val roots = observeFileRootsUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    init {
+        // the roots are announced by the device: ask for them when the screen opens and when the device changes
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            observeCurrentDeviceIdAndPackageNameUseCase()
+                .distinctUntilChanged()
+                .collect { refreshFileRootsUseCase() }
+        }
+    }
+
+    private fun defaultValue(roots: List<FileRootDomainModel> = this.roots.value) = FilesStateUiModel(
         current = null,
         backStack = emptyList(),
-        files =
-        listOf(
-            FileUiModel(
-                name = "Caches",
-                type = FileTypeUiModel.Folder,
-                path = FilePathUiModel.Constants.CachesDir,
-                sizeFormatted = null,
-                icon = Icons.Outlined.Folder,
-                dateFormatted = null,
-                contextualActions = buildContextualActions(
-                    isConstant = true,
-                    isFolder = true,
-                ),
-            ),
-            FileUiModel(
-                name = "Files",
-                type = FileTypeUiModel.Folder,
-                path = FilePathUiModel.Constants.FilesDir,
-                sizeFormatted = null,
-                icon = Icons.Outlined.Folder,
-                dateFormatted = null,
-                contextualActions = buildContextualActions(
-                    isConstant = true,
-                    isFolder = true,
-                ),
-            ),
-        ),
+        files = roots.map { it.toUi() },
         headerState = FilesHeaderStateUiModel(
             sortedBy = sortedBy.value,
             totalSizeFormatted = null,
@@ -119,6 +110,7 @@ class FilesViewModel(
         selectingAll = false,
         numberOfFiles = null,
         canSelect = false,
+        showEmptyState = roots.isEmpty(),
     )
 
     private data class SelectedFile(
@@ -134,10 +126,11 @@ class FilesViewModel(
             options,
             selecting,
             multiSelectedPaths,
+            roots,
         )
-            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths) ->
+            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths, roots) ->
                 if (selectedFile == null) {
-                    flowOf(defaultValue().copy(isSelecting = selecting, multiSelectedPaths = multiSelectedPaths))
+                    flowOf(defaultValue(roots).copy(isSelecting = selecting, multiSelectedPaths = multiSelectedPaths))
                 } else {
                     combines(
                         observeFolderContentUseCase(
@@ -294,8 +287,12 @@ class FilesViewModel(
 
     private fun onRefresh() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            val current = selectedFile.value?.current?.path ?: return@launch
-            refreshFolderContentUseCase(path = current)
+            val current = selectedFile.value?.current?.path
+            if (current == null) {
+                refreshFileRootsUseCase()
+            } else {
+                refreshFolderContentUseCase(path = current)
+            }
         }
     }
 
@@ -325,6 +322,7 @@ class FilesViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 FileUiModel.ContextualAction.Action.Open -> onFileClicked(file)
+
                 FileUiModel.ContextualAction.Action.Delete -> {
                     val parent = selectedFile.value?.current?.path ?: return@launch
                     deleteFileUseCase(path = file.path.toDomain(), parentPath = parent)
@@ -384,7 +382,7 @@ class FilesViewModel(
 
     private fun onSelectFile(path: String, selected: Boolean, index: Int, shiftHeld: Boolean) {
         val currentFiles = state.value.files
-        
+
         if (shiftHeld && lastSelectedIndex != null) {
             // Shift+Click: select range
             val startIndex = minOf(lastSelectedIndex!!, index)
@@ -410,7 +408,7 @@ class FilesViewModel(
     }
 
     private fun onSelectAll(selectAll: Boolean) {
-        if(selectAll) {
+        if (selectAll) {
             multiSelectedPaths.update {
                 state.value.files
                     .mapNotNull { (it.path as? FilePathUiModel.Real)?.absolutePath }
@@ -428,15 +426,15 @@ class FilesViewModel(
             val parent = selectedFile.value?.current?.path ?: return@launch
             val selectedPaths = multiSelectedPaths.value
                 .map { FilePathDomainModel.Real(it) }
-            
+
             deleteFilesUseCase(
                 paths = selectedPaths,
                 parentPath = parent
             )
-            
+
             // Clear selection after deletion
             onClearMultiSelect()
-            
+
             // Refresh the folder content
             onRefresh()
         }

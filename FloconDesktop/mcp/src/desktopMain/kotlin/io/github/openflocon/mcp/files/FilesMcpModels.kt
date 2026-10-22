@@ -13,6 +13,22 @@ internal data class FilesMcpResult(
 )
 
 @Serializable
+internal data class FileRootsMcpResult(
+    val deviceId: String,
+    val packageName: String,
+    val fromCache: Boolean,
+    val warning: String? = null,
+    val roots: List<FileRootMcpModel>,
+)
+
+@Serializable
+internal data class FileRootMcpModel(
+    val id: String,
+    val name: String,
+    val path: String,
+)
+
+@Serializable
 internal data class FileMcpModel(
     val name: String,
     val path: String,

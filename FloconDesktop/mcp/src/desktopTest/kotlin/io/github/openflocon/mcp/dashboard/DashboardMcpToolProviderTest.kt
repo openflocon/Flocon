@@ -126,13 +126,11 @@ private class FakeDashboardRepository(
     private val dashboards: List<DashboardDomainModel>,
 ) : DashboardRepository {
 
-    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> =
-        flowOf(dashboards.firstOrNull { it.dashboardId == dashboardId })
+    override fun observeDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId): Flow<DashboardDomainModel?> = flowOf(dashboards.firstOrNull { it.dashboardId == dashboardId })
 
     override fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?> = flowOf(selected)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> =
-        flowOf(dashboards.map { it.dashboardId })
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = flowOf(dashboards.map { it.dashboardId })
 
     override suspend fun selectDeviceDashboard(dashboardId: DashboardId, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
 
@@ -147,8 +145,7 @@ private class FakeDashboardRepository(
         arrangement: DashboardArrangementDomainModel,
     ) = error("not used")
 
-    override suspend fun sendClickEvent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId, buttonId: String) =
-        error("not used")
+    override suspend fun sendClickEvent(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, dashboardId: DashboardId, buttonId: String) = error("not used")
 
     override suspend fun submitFormEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

@@ -37,7 +37,7 @@ fun FloconJsonTree(
             icon = Icons.Outlined.ChevronRight,
             searchState = searchState,
             lazyListState = lazyListState,
-            colors = if(FloconTheme.isDarkTheme) defaultDarkColors else defaultLightColors,
+            colors = if (FloconTheme.isDarkTheme) defaultDarkColors else defaultLightColors,
             textStyle = textStyle,
             onError = onError,
             modifier = Modifier.fillMaxSize()

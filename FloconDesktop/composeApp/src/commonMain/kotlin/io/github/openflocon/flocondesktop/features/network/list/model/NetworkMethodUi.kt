@@ -2,8 +2,10 @@ package io.github.openflocon.flocondesktop.features.network.list.model
 
 import androidx.compose.runtime.Immutable
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_other
 import flocondesktop.composeapp.generated.resources.graphql
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.stringResource
 
 @Immutable
 sealed interface NetworkMethodUi {

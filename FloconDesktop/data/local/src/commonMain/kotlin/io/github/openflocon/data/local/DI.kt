@@ -10,11 +10,13 @@ import io.github.openflocon.data.local.deeplink.deeplinkModule
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
 import io.github.openflocon.data.local.deeplink.models.DeeplinkVariableEntity
 import io.github.openflocon.data.local.device.deviceModule
+import io.github.openflocon.data.local.featureflags.featureFlagsLocalModule
 import io.github.openflocon.data.local.files.filesModule
 import io.github.openflocon.data.local.images.imagesModule
 import io.github.openflocon.data.local.network.networkModule
 import io.github.openflocon.data.local.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.local.table.tableModule
+import io.github.openflocon.data.local.timeline.timelineLocalModule
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -49,6 +51,7 @@ val dataLocalModule = module {
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        featureFlagsLocalModule,
         dashboardModule,
         databaseModule,
         deeplinkModule,
@@ -59,5 +62,6 @@ val dataLocalModule = module {
         sharedPreferenceModule,
         tableModule,
         crashReporterLocalModule,
+        timelineLocalModule,
     )
 }

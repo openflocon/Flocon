@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ internal interface SettingsDataSource {
     fun getAdbPath(): String?
 
     suspend fun setAdbPath(path: String)
-    suspend fun setFontSizeMultiplier(value: Float)
+    suspend fun setAppScale(value: AppScaleSetting)
     suspend fun setTheme(value: ThemeSetting)
 
     fun getFloconDocumentsPath(): String?
@@ -24,12 +25,17 @@ internal interface SettingsDataSource {
     fun getDismissedClientVersion(): String?
     suspend fun setDismissedClientVersion(version: String)
 
+    val pinnedMenuItems: Flow<List<String>>
+    val collapsedMenuSections: Flow<Set<String>>
+    suspend fun setPinnedMenuItems(items: List<String>)
+    suspend fun setCollapsedMenuSections(sections: Set<String>)
+
     fun getLastSeenReleaseNotesVersion(): String?
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
-    val fontSizeMultiplier: StateFlow<Float>
+    val appScale: StateFlow<AppScaleSetting>
     val theme: StateFlow<ThemeSetting>
     val dismissedClientVersionFlow: Flow<String?>
 }

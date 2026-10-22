@@ -1,15 +1,24 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,30 +40,56 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.filter_exclude
+import flocondesktop.composeapp.generated.resources.filter_include
+import flocondesktop.composeapp.generated.resources.network_copy_curl
+import flocondesktop.composeapp.generated.resources.network_copy_url
+import flocondesktop.composeapp.generated.resources.network_create_mock
+import flocondesktop.composeapp.generated.resources.network_header_host
+import flocondesktop.composeapp.generated.resources.network_header_request
+import flocondesktop.composeapp.generated.resources.network_image_response
+import flocondesktop.composeapp.generated.resources.network_mock_tag
+import flocondesktop.composeapp.generated.resources.network_replay
+import flocondesktop.composeapp.generated.resources.network_select_item
+import flocondesktop.composeapp.generated.resources.network_share_markdown
+import flocondesktop.composeapp.generated.resources.remove
+import flocondesktop.composeapp.generated.resources.remove_lines_above
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
+import io.github.openflocon.flocondesktop.features.network.list.model.previewExceptionItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewGrpcItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewImageItemViewState
+import io.github.openflocon.flocondesktop.features.network.list.model.previewMockedItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
+import io.github.openflocon.flocondesktop.features.timeline.view.Rail
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
-private val replayColor = Color(0xFF242D44)
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -65,13 +102,10 @@ fun NetworkItemView(
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
 ) {
-    val bodySmall = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp)
-
-    val errorColor = when (state.status.status) {
-        NetworkStatusUi.Status.ERROR -> FloconTheme.colorPalette.error
-        NetworkStatusUi.Status.EXCEPTION -> FloconTheme.colorPalette.exceptions
-        else -> null
-    }
+    val colors = FloconTheme.colors
+    val mono = floconMonoStyle()
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
 
     ContextualView(
         items = contextualActions(
@@ -79,135 +113,212 @@ fun NetworkItemView(
             state = state,
         ),
     ) {
+        val shape = FloconTheme.shapes.medium
+        val isError = state.status.isFatalError()
+        val highlighted = selected || hovered
         Row(
             modifier = modifier
-                .clip(shape = RoundedCornerShape(8.dp))
                 .then(
                     if (state.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
                     } else Modifier
                 )
-                .then(
-                    if (state.isReplayed) {
-                        Modifier.background(replayColor)
-                    } else if (state.isMocked) {
-                        Modifier.background(FloconTheme.colorPalette.accent)
-                    } else Modifier,
+                .height(IntrinsicSize.Min)
+                .background(
+                    when {
+                        highlighted -> colors.bg300
+                        isError -> colors.statusError.copy(alpha = 0.10f)
+                        state.isReplayed -> colors.catNetworkSoft
+                        state.isMocked -> colors.accent.copy(alpha = 0.05f)
+                        else -> Color.Transparent
+                    },
+                    shape,
                 )
+                .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
+                .hoverable(interactionSource)
                 .combinedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
                     onClick = { onAction(NetworkAction.SelectRequest(state.uuid)) },
                     onDoubleClick = { onAction(NetworkAction.DoubleClicked(state)) }
                 )
-                .then(
-                    if (selected) {
-                        Modifier.border(
-                            width = 1.dp,
-                            color = FloconTheme.colorPalette.accent,
-                            shape = FloconTheme.shapes.medium
-                        )
-                    } else {
-                        Modifier
-                    }
-                )
-                .padding(horizontal = 4.dp, vertical = 4.dp),
-            // Inner padding for content
+                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             AnimatedVisibility(multiSelect) {
                 FloconCheckbox(
                     checked = multiSelected,
                     onCheckedChange = { onAction(NetworkAction.SelectLine(state.uuid, it)) },
-                    uncheckedColor = FloconTheme.colorPalette.secondary
+                    uncheckedColor = FloconTheme.colors.bg200
                 )
             }
             // Date - Fixed width from data class
             Box(
                 modifier = Modifier.width(columnWidths.dateWidth),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     state.dateFormatted,
-                    style = bodySmall,
-                    color = errorColor ?: FloconTheme.colorPalette.onPrimary
+                    // digits of the same width so the times stay aligned
+                    style = mono.copy(fontFeatureSettings = "tnum"),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp,
+                    color = colors.ink,
+                    maxLines = 1,
                 )
             }
+
+            Rail(
+                color = if (isError) colors.statusError else colors.catNetwork,
+                haloColor = if (highlighted) colors.bg300 else colors.bg100,
+                // the line goes through the padding of the row
+                overflow = FloconTheme.spacing.tiny,
+                modifier = Modifier
+                    .width(FloconTheme.sizes.markerColumn)
+                    .fillMaxHeight(),
+            )
 
             // Method - Fixed width for the tag from data class
-            MethodView(
-                method = state.method,
+            Box(
                 modifier = Modifier.width(columnWidths.methodWidth),
-            )
-
-            // Route - Takes remaining space (weight)
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
+                contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = state.domain,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = bodySmall,
-                    color = errorColor ?: FloconTheme.colorPalette.onPrimary,
-                    modifier = Modifier
-                        .weight(columnWidths.domainWeight)
-                        .padding(horizontal = 4.dp),
-                )
-                Row(
-                    modifier = Modifier
-                        .weight(2f)
-                        .background(
-                            color = FloconTheme.colorPalette.secondary,
-                            shape = RoundedCornerShape(4.dp),
-                        )
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    state.type.image()?.let {
-                        Box(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(state.type.imageColor())
-                                .padding(3.dp)
-                        ) {
-                            Image(
-                                imageVector = it,
-                                contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    }
-                    Text(
-                        text = state.type.query,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        style = bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
-                    )
-                }
+                MethodView(method = state.method)
             }
 
-            // NetworkStatusUi - Fixed width for the tag from data class
-            StatusView(
-                status = state.status,
-                modifier = Modifier.width(columnWidths.statusCodeWidth), // Apply fixed width to the StatusView composable
+            // Domain - Width from data class
+            Text(
+                text = state.domain,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall,
+                fontSize = 12.sp,
+                color = colors.inkFaint,
+                modifier = Modifier
+                    .width(columnWidths.domainWidth)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
             )
 
-            // Time - Fixed width from data class
+            RequestView(
+                state = state,
+                modifier = Modifier.weight(1f),
+            )
+
+            StatusView(
+                status = state.status,
+                modifier = Modifier.width(columnWidths.statusCodeWidth)
+            )
+
             Box(
                 modifier = Modifier.width(columnWidths.timeWidth),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.CenterEnd,
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = bodySmall,
-                    color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.7f),
+                    style = mono,
+                    fontSize = 12.sp,
+                    color = colors.inkFaint,
+                    maxLines = 1,
                 )
             }
         }
+    }
+}
+
+// the request filling its column: tags (mock, image), the path, then the error of an exception
+@Composable
+private fun RequestView(
+    state: NetworkItemViewState,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    Row(
+        modifier = modifier.heightIn(min = FloconTheme.sizes.rowHeight),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        state.type.image()?.let {
+            Box(
+                modifier = Modifier
+                    .padding(end = FloconTheme.spacing.small)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(state.type.imageColor())
+                    .padding(3.dp)
+            ) {
+                Image(
+                    imageVector = it,
+                    contentDescription = null,
+                    modifier = Modifier.size(12.dp),
+                    colorFilter = ColorFilter.tint(Color.White)
+                )
+            }
+        }
+        if (state.isMocked) {
+            Text(
+                text = stringResource(Res.string.network_mock_tag),
+                style = floconMonoStyle(small = true),
+                fontSize = 10.5.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                color = colors.accent,
+                maxLines = 1,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colors.accent.copy(alpha = 0.16f))
+                    .padding(horizontal = 6.dp, vertical = 1.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        if (state.isImage) {
+            Box(
+                modifier = Modifier
+                    .size(width = 20.dp, height = 18.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colors.catNetwork.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Image,
+                    contentDescription = stringResource(Res.string.network_image_response),
+                    tint = colors.catNetwork,
+                    modifier = Modifier.size(12.dp),
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(
+            text = requestText(text = state.type.query, queryColor = colors.inkFaint),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = FloconTheme.typography.bodySmall,
+            fontSize = 12.sp,
+            color = colors.ink,
+            // the path gives way to the error message only when both do not fit
+            modifier = Modifier.weight(1f, fill = false),
+        )
+        state.errorMessage?.let { message ->
+            Text(
+                text = message,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall,
+                fontSize = 12.sp,
+                color = colors.statusError,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(1f, fill = false),
+            )
+        }
+    }
+}
+
+// the path in the text color, the query string ('?...') in a fainter one
+private fun requestText(text: String, queryColor: Color): AnnotatedString {
+    val queryStart = text.indexOf('?')
+    if (queryStart < 0) return AnnotatedString(text)
+    return buildAnnotatedString {
+        append(text.substring(0, queryStart))
+        withStyle(SpanStyle(color = queryColor)) { append(text.substring(queryStart)) }
     }
 }
 
@@ -217,32 +328,47 @@ private fun contextualActions(
     state: NetworkItemViewState
 ): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
-    return remember(state) {
+    // labels are resolved here: the menu is built outside of the composition
+    val copyUrl = stringResource(Res.string.network_copy_url)
+    val copyCurl = stringResource(Res.string.network_copy_curl)
+    val createMock = stringResource(Res.string.network_create_mock)
+    val replay = stringResource(Res.string.network_replay)
+    val shareMarkdown = stringResource(Res.string.network_share_markdown)
+    val selectItem = stringResource(Res.string.network_select_item)
+    val filter = stringResource(Res.string.filter)
+    val include = stringResource(Res.string.filter_include)
+    val exclude = stringResource(Res.string.filter_exclude)
+    val domain = stringResource(Res.string.network_header_host)
+    val query = stringResource(Res.string.network_header_request)
+    val remove = stringResource(Res.string.remove)
+    val removeLinesAbove = stringResource(Res.string.remove_lines_above)
+    val clearOldSessions = stringResource(Res.string.clear_old_sessions)
+    return remember(state, copyUrl) {
         buildMenu {
-            item(label = "Copy URL", onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
+            item(label = copyUrl, onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
             if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket) {
                 item(
-                    label = "Copy cUrl",
+                    label = copyCurl,
                     onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) }
                 )
                 item(
-                    label = "Create Mock",
+                    label = createMock,
                     onClick = { onActionCallback(NetworkAction.CreateMock(state)) }
                 )
                 item(
-                    label = "Replay",
+                    label = replay,
                     onClick = { onActionCallback(NetworkAction.Replay(state)) }
                 )
                 item(
-                    label = "Share as Markdown",
+                    label = shareMarkdown,
                     onClick = { onActionCallback(NetworkAction.ShareAsMarkdown(state)) }
                 )
             }
-            item(label = "Select Item", onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
+            item(label = selectItem, onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
             separator()
-            subMenu(label = "Filter") {
-                subMenu(label = "Include") {
-                    item(label = "Domain", onClick = {
+            subMenu(label = filter) {
+                subMenu(label = include) {
+                    item(label = domain, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -252,7 +378,7 @@ private fun contextualActions(
                             )
                         )
                     })
-                    item(label = "Query", onClick = {
+                    item(label = query, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -263,8 +389,8 @@ private fun contextualActions(
                         )
                     })
                 }
-                subMenu("Exclude") {
-                    item("Domain", onClick = {
+                subMenu(exclude) {
+                    item(domain, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -274,7 +400,7 @@ private fun contextualActions(
                             )
                         )
                     })
-                    item(label = "Query", onClick = {
+                    item(label = query, onClick = {
                         onActionCallback(
                             NetworkAction.HeaderAction.FilterAction(
                                 OnFilterAction.TextFilter(
@@ -287,13 +413,13 @@ private fun contextualActions(
                 }
             }
             separator()
-            item(label = "Remove", onClick = { onActionCallback(NetworkAction.Remove(state)) })
+            item(label = remove, onClick = { onActionCallback(NetworkAction.Remove(state)) })
             item(
-                label = "Remove lines above",
+                label = removeLinesAbove,
                 onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) }
             )
             item(
-                label = "Clear old sessions",
+                label = clearOldSessions,
                 onClick = { onActionCallback(NetworkAction.ClearOldSession) }
             )
         }
@@ -321,6 +447,7 @@ fun NetworkItemViewState.NetworkTypeUi.image(): ImageVector? = when (this) {
         }
 }
 
+@Composable
 fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
     is NetworkItemViewState.NetworkTypeUi.GraphQl,
     is NetworkItemViewState.NetworkTypeUi.Grpc,
@@ -328,40 +455,55 @@ fun NetworkItemViewState.NetworkTypeUi.imageColor(): Color = when (this) {
 
     is NetworkItemViewState.NetworkTypeUi.WebSocket ->
         when (this.icon) {
-            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Up -> Color(0xFF007BFF)
-            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Down -> Color(0xFF28A745)
+            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Up -> FloconTheme.colors.catNetwork
+            NetworkItemViewState.NetworkTypeUi.WebSocket.IconType.Down -> FloconTheme.colors.statusSuccess
             null -> null
         }
-} ?: Color.Green
+} ?: FloconTheme.colors.statusSuccess
 
 @Composable
-@Preview
-private fun ItemViewPreview() {
-    FloconTheme {
-        NetworkItemView(
-            modifier = Modifier.fillMaxWidth(),
-            selected = false,
-            multiSelect = false,
-            multiSelected = false,
-            state = previewNetworkItemViewState(),
-            onAction = {},
-        )
-    }
-}
-
-@Composable
-@Preview
-private fun ItemViewPreview_error() {
+private fun ItemPreview(
+    state: NetworkItemViewState,
+    selected: Boolean = false,
+) {
     FloconTheme {
         FloconSurface {
             NetworkItemView(
                 modifier = Modifier.fillMaxWidth(),
-                selected = false,
-                multiSelect = true,
+                selected = selected,
+                multiSelect = false,
                 multiSelected = false,
-                state = previewNetworkItemViewStateError(),
+                state = state,
                 onAction = {},
             )
         }
     }
 }
+
+@Composable
+@Preview
+private fun ItemViewPreview() = ItemPreview(previewNetworkItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewSelectedPreview() = ItemPreview(previewNetworkItemViewState(), selected = true)
+
+@Composable
+@Preview
+private fun ItemViewMockedPreview() = ItemPreview(previewMockedItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewImagePreview() = ItemPreview(previewImageItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewError500Preview() = ItemPreview(previewNetworkItemViewStateError())
+
+@Composable
+@Preview
+private fun ItemViewExceptionPreview() = ItemPreview(previewExceptionItemViewState())
+
+@Composable
+@Preview
+private fun ItemViewGrpcPreview() = ItemPreview(previewGrpcItemViewState())

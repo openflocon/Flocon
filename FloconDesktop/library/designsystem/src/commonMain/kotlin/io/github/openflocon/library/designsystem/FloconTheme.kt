@@ -8,6 +8,7 @@ import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -22,21 +23,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
-import io.github.openflocon.library.designsystem.theme.FloconColorPaletteNew
+import io.github.openflocon.library.designsystem.theme.AppScale
+import io.github.openflocon.library.designsystem.theme.FloconColors
+import io.github.openflocon.library.designsystem.theme.FloconGlassBackground
+import io.github.openflocon.library.designsystem.theme.FloconGlassDarkColors
+import io.github.openflocon.library.designsystem.theme.FloconGlassLightColors
 import io.github.openflocon.library.designsystem.theme.FloconShape
-import io.github.openflocon.library.designsystem.theme.LocalFloconColorPalette
+import io.github.openflocon.library.designsystem.theme.FloconSizes
+import io.github.openflocon.library.designsystem.theme.FloconSpacing
+import io.github.openflocon.library.designsystem.theme.LocalFloconColors
 import io.github.openflocon.library.designsystem.theme.LocalFloconShape
-import io.github.openflocon.library.designsystem.theme.darkPalette
-import io.github.openflocon.library.designsystem.theme.lightPalette
+import io.github.openflocon.library.designsystem.theme.LocalFloconSizes
+import io.github.openflocon.library.designsystem.theme.LocalFloconSpacing
 import io.github.openflocon.library.designsystem.theme.materialDarkScheme
 import io.github.openflocon.library.designsystem.theme.materialLightScheme
 import io.github.openflocon.library.designsystem.theme.multiplyFontSizeBy
 
 object FloconTheme {
 
-    val colorPalette: FloconColorPaletteNew
+    // the tokens of the design system (bg, ink, categories, http statuses…)
+    val colors: FloconColors
         @Composable @ReadOnlyComposable
-        get() = LocalFloconColorPalette.current
+        get() = LocalFloconColors.current
 
     val typography: Typography
         @Composable @ReadOnlyComposable
@@ -49,24 +57,30 @@ object FloconTheme {
     val isDarkTheme: Boolean
         @Composable @ReadOnlyComposable
         get() = LocalIsDarkTheme.current
+
+    val spacing: FloconSpacing
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconSpacing.current
+
+    val sizes: FloconSizes
+        @Composable @ReadOnlyComposable
+        get() = LocalFloconSizes.current
 }
 
 private val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 @Composable
 fun FloconTheme(
-    fontSizeMultiplier: Float = 1f,
+    // provides the spacing, the sizes and the font scale of the preset chosen by the user
+    appScale: AppScale = AppScale.Default,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorPalette = when {
-        isDarkTheme -> darkPalette
-        else -> lightPalette
-    }
-    val ripple = ripple(color = colorPalette.accent)
+    val colors = if (isDarkTheme) FloconGlassDarkColors else FloconGlassLightColors
+    val ripple = ripple(color = colors.accent)
     val selectionTextColor = TextSelectionColors(
-        handleColor = colorPalette.accent,
-        backgroundColor = colorPalette.accent,
+        handleColor = colors.accent,
+        backgroundColor = colors.accent.copy(alpha = 0.35f),
     )
 
     val materialTypo = MaterialTheme.typography
@@ -84,27 +98,32 @@ fun FloconTheme(
         )
     }
     val scrollbarStyle = LocalScrollbarStyle.current.copy(
-        unhoverColor = colorPalette.secondary,
-        hoverColor = colorPalette.onSecondary
+        unhoverColor = colors.bg300,
+        hoverColor = colors.inkMuted
     )
 
     MaterialTheme(
-        typography = typography.multiplyFontSizeBy(fontSizeMultiplier),
+        typography = typography.multiplyFontSizeBy(appScale.fontScale),
         colorScheme = if (isDarkTheme) {
-            materialDarkScheme(colorPalette)
+            materialDarkScheme(colors)
         } else {
-            materialLightScheme(colorPalette)
+            materialLightScheme(colors)
         }
     ) {
         CompositionLocalProvider(
             LocalIndication provides ripple,
+            LocalContentColor provides colors.ink,
             LocalIsDarkTheme provides isDarkTheme,
-            LocalFloconColorPalette provides colorPalette,
+            LocalFloconColors provides colors,
+            LocalFloconSpacing provides appScale.spacing,
+            LocalFloconSizes provides appScale.sizes,
             LocalTextSelectionColors provides selectionTextColor,
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
             LocalContextMenuRepresentation provides FloconMenuRepresentation(),
-            content = content
+            content = {
+                FloconGlassBackground(content = content)
+            }
         )
     }
 }

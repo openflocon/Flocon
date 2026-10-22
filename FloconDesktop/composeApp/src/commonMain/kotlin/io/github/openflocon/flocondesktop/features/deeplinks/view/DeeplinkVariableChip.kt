@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,17 +41,17 @@ internal fun DeeplinkVariableChip(
 
     Row(
         modifier = modifier.background(
-            color = FloconTheme.colorPalette.surface,
+            color = FloconTheme.colors.bg000,
             shape = RoundedCornerShape(4.dp),
         )
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
             text = "${variable.name}:",
             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
 
         when (val mode = variable.mode) {
@@ -103,8 +103,8 @@ internal fun DeeplinkVariableChip(
                                             isExpanded = false
                                         }
                                         .padding(
-                                            vertical = 4.dp,
-                                            horizontal = 8.dp
+                                            vertical = FloconTheme.spacing.extraSmall,
+                                            horizontal = FloconTheme.spacing.small
                                         )
                                 )
                             }
@@ -128,14 +128,14 @@ private fun VariableInputField(
 
     Box(
         modifier = modifier.background(
-            color = FloconTheme.colorPalette.primary,
+            color = FloconTheme.colors.bg100,
             shape = RoundedCornerShape(2.dp),
-        ).padding(horizontal = 4.dp, vertical = 2.dp),
+        ).padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
     ) {
         Text(
             text = placeholder,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.4f),
+            color = FloconTheme.colors.ink.copy(alpha = 0.4f),
             modifier = Modifier.graphicsLayer { alpha = if (isValueEmpty) 1f else 0f },
         )
         BasicTextField(
@@ -143,11 +143,11 @@ private fun VariableInputField(
             value = value,
             onValueChange = onValueChange,
             textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSurface,
+                color = FloconTheme.colors.ink,
                 fontWeight = FontWeight.Bold,
             ),
             readOnly = readOnly,
-            cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
+            cursorBrush = SolidColor(FloconTheme.colors.ink),
         )
     }
 }
@@ -157,9 +157,9 @@ private fun VariableInputField(
 private fun DeeplinkVariablesPanelViewPreview() {
     FloconTheme {
         Column(
-            modifier = Modifier.background(FloconTheme.colorPalette.primary)
+            modifier = Modifier.background(FloconTheme.colors.bg100)
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(FloconTheme.spacing.small)
         ) {
             DeeplinkVariableChip(
                 variable = DeeplinkVariableViewState(
@@ -171,14 +171,14 @@ private fun DeeplinkVariablesPanelViewPreview() {
                 onValueChange = {}
             )
             DeeplinkVariableChip(
-                variable =  DeeplinkVariableViewState(
+                variable = DeeplinkVariableViewState(
                     name = "env",
                     description = null,
                     value = "staging",
                     mode =
-                        DeeplinkVariableViewState.Mode.AutoComplete(
-                            listOf("dev", "staging", "prod")
-                        ),
+                    DeeplinkVariableViewState.Mode.AutoComplete(
+                        listOf("dev", "staging", "prod")
+                    ),
                 ),
                 onValueChange = {}
             )

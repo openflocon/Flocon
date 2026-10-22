@@ -51,11 +51,13 @@ internal fun TableSelectorView(
                     if (tablesState is TablesStateUiModel.WithContent)
                         expanded = true
                 },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 when (tablesState) {
                     TablesStateUiModel.Empty -> Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
+
                     TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
+
                     is TablesStateUiModel.WithContent -> {
                         Text(text = tablesState.selected.name, style = FloconTheme.typography.bodySmall)
                         FloconIcon(
@@ -74,7 +76,7 @@ internal fun TableSelectorView(
             onValueChanged = {
                 filterText = it
             },
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny)
         )
         Column(
             modifier = Modifier

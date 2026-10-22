@@ -125,6 +125,7 @@ class DashboardViewModel(
             selectDashboardArrangementUseCase(
                 when (arrangement) {
                     is DashboardArrangement.Adaptive -> DashboardArrangementDomainModel.Adaptive
+
                     is DashboardArrangement.Fixed ->
                         DashboardArrangementDomainModel.Fixed(
                             itemsPerRow = arrangement.itemsPerRow

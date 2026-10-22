@@ -20,8 +20,8 @@ fun FloconSlider(
         steps = steps,
         valueRange = valueRange,
         colors = SliderDefaults.colors(
-            activeTrackColor = FloconTheme.colorPalette.secondary,
-            thumbColor = FloconTheme.colorPalette.onSecondary
+            activeTrackColor = FloconTheme.colors.accent,
+            thumbColor = FloconTheme.colors.accent
         ),
         modifier = modifier
     )

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.view.items.Dashboar
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextFieldView
 import io.github.openflocon.flocondesktop.features.dashboard.view.items.DashboardTextView
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardContainerView(
@@ -54,27 +54,27 @@ fun DashboardContainerView(
         modifier =
         modifier.border(
             width = 1.dp,
-            color = FloconTheme.colorPalette.secondary,
+            color = FloconTheme.colors.bg200,
             shape = FloconTheme.shapes.medium
         ),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.extraSmall),
                 textAlign = TextAlign.Center,
                 text = viewState.containerName,
                 style =
                 FloconTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                 ),
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
 
             Column(
-                modifier = Modifier.padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.padding(top = FloconTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             ) {
                 viewState.rows.fastForEach { rowItem ->
                     when (rowItem) {
@@ -189,7 +189,7 @@ fun DashboardContainerView(
 @Composable
 private fun DashboardContainerViewPreview() {
     FloconTheme {
-        Box(modifier = Modifier.background(FloconTheme.colorPalette.surface).padding(all = 8.dp)) {
+        Box(modifier = Modifier.background(FloconTheme.colors.bg000).padding(all = FloconTheme.spacing.small)) {
             DashboardContainerView(
                 onClickButton = {},
                 viewState = previewDashboardContainerViewState(),

@@ -35,4 +35,5 @@ jobs:
 
       - name: Run tests and assemble
         working-directory: FloconAndroid
-        run: ./gradlew test assemble
+        # jvmTest: the plugins unit tests (KMP modules), test: the Android sample unit tests
+        run: ./gradlew jvmTest test assemble

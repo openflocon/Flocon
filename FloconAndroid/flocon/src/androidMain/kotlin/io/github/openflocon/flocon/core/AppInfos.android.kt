@@ -18,9 +18,10 @@ private fun deviceName(): String {
 }
 
 internal actual fun getAppInfos(floconContext: FloconContext): AppInfos {
-    val appContext = floconContext.appContext
+    val appContext = floconContext.context
+
     return AppInfos(
-        deviceId = deviceId(floconContext.appContext),
+        deviceId = deviceId(appContext),
         deviceName = deviceName(),
         appName = AppUtils.getAppName(appContext),
         appPackageName = AppUtils.getAppPackageName(appContext),

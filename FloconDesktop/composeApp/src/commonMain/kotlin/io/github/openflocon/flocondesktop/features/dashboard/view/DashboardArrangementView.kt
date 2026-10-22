@@ -7,11 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_auto
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DashboardArrangementView(
@@ -28,7 +31,7 @@ internal fun DashboardArrangementView(
         anchorContent = {
             FloconButton(
                 onClick = { expanded = true },
-                containerColor = FloconTheme.colorPalette.secondary
+                containerColor = FloconTheme.colors.bg200
             ) {
                 Text(
                     text = when (arrangement) {
@@ -42,7 +45,7 @@ internal fun DashboardArrangementView(
         modifier = modifier
     ) {
         FloconDropdownMenuItem(
-            text = "Auto",
+            text = stringResource(Res.string.general_auto),
             onClick = {
                 onArrangementClicked(DashboardArrangement.Adaptive)
                 expanded = false

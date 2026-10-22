@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,6 @@ import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AnalyticsRowView(
@@ -52,7 +52,7 @@ fun AnalyticsRowView(
             modifier = modifier
                 .height(IntrinsicSize.Min)
                 .clickable(onClick = { onAction(AnalyticsAction.OnClick(model)) })
-                .padding(vertical = 8.dp)
+                .padding(vertical = FloconTheme.spacing.small)
                 .then(
                     if (model.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
@@ -65,35 +65,35 @@ fun AnalyticsRowView(
                 modifier = Modifier.width(110.dp),
                 textAlign = TextAlign.Center,
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
-                color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.4f),
+                color = FloconTheme.colors.ink.copy(alpha = 0.4f),
             )
 
             Text(
                 text = model.eventName,
                 modifier = Modifier.width(200.dp),
                 style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onPrimary,
+                color = FloconTheme.colors.ink,
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                 model.properties.fastForEach {
                     Row(
                         Modifier
                             .background(
                                 shape = FloconTheme.shapes.extraLarge,
-                                color = FloconTheme.colorPalette.secondary
+                                color = FloconTheme.colors.bg200
                             )
-                            .padding(horizontal = 8.dp, vertical = 1.dp),
+                            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
                     ) {
                         Text(
                             text = it.name + " :",
                             style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                         )
                         Text(
                             text = it.value,
                             style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colorPalette.onSecondary,
+                            color = FloconTheme.colors.inkMuted,
                         )
                     }
                 }
@@ -102,9 +102,9 @@ fun AnalyticsRowView(
                         text = "...",
                         modifier =
                         Modifier
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = FloconTheme.spacing.extraSmall),
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onPrimary,
+                        color = FloconTheme.colors.ink,
                     )
                 }
             }

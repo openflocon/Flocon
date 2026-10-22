@@ -2,16 +2,17 @@ package io.github.openflocon.mcp.files
 
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.domain.files.repository.FilesRepository
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.addTypedToolWithResult
 import io.github.openflocon.mcp.jsonResult
 import io.github.openflocon.mcp.mcpOutputJson
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ImageContent
 import io.modelcontextprotocol.kotlin.sdk.types.TextContent
@@ -26,12 +27,23 @@ internal class FilesMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
+        server.addTypedTool(
+            name = "list_file_roots",
+            title = "List file roots",
+            description = "Lists the root folders announced by the mobile app (id, name, absolute path): " +
+                "the default folders of the platform (ex: files and caches on Android, documents, caches or tmp on iOS) " +
+                "and the folders registered by the app. Use an id with list_files. " +
+                "The app must be connected to Flocon, otherwise the last known roots are returned.",
+            annotations = readOnlyToolAnnotations,
+            handler = ::listFileRoots,
+        )
+
         server.addTypedTool(
             name = "list_files",
             title = "List files",
             description = "Lists the content of a directory of the mobile app: name, absolute path, size, last modification. " +
-                "Start with \"$PATH_FILES\" or \"$PATH_CACHES\", then use the absolute path of a sub directory. " +
+                "Start with the id of a root folder (see list_file_roots), then use the absolute path of a sub directory. " +
                 "The app must be connected to Flocon, otherwise the last known content is returned.",
             annotations = readOnlyToolAnnotations,
             handler = ::listFiles,
@@ -48,13 +60,41 @@ internal class FilesMcpToolProvider(
         )
     }
 
+    private suspend fun listFileRoots(input: ListFileRootsInput): FileRootsMcpResult {
+        val target = targetResolver.resolve(input)
+
+        val refreshError = filesRepository.refreshRoots(deviceIdAndPackageName = target)
+            .fold(doOnFailure = { it }, doOnSuccess = { null })
+        val roots = filesRepository.observeRoots(deviceIdAndPackageName = target).first()
+
+        if (refreshError != null && roots.isEmpty()) {
+            throw McpToolException(APP_NOT_ANSWERING)
+        }
+
+        return FileRootsMcpResult(
+            deviceId = target.deviceId,
+            packageName = target.packageName,
+            fromCache = refreshError != null,
+            warning = refreshError?.let { "$APP_NOT_ANSWERING Returning the last known roots." },
+            roots = roots.map { it.toMcpModel() },
+        )
+    }
+
     private suspend fun listFiles(input: ListFilesInput): FilesMcpResult {
         val target = targetResolver.resolve(input)
-        val pathArg = input.path.takeIf { it.isNotBlank() } ?: PATH_FILES
-        val path = when (pathArg.lowercase()) {
-            PATH_FILES -> FilePathDomainModel.Constants.FilesDir
-            PATH_CACHES -> FilePathDomainModel.Constants.CachesDir
-            else -> FilePathDomainModel.Real(pathArg.requireAbsolute())
+        // the roots are announced by the app: ask for them when they are not known yet
+        val roots = filesRepository.observeRoots(deviceIdAndPackageName = target).first()
+            .ifEmpty {
+                filesRepository.refreshRoots(deviceIdAndPackageName = target)
+                filesRepository.observeRoots(deviceIdAndPackageName = target).first()
+            }
+        val pathArg = input.path.takeIf { it.isNotBlank() }
+            ?: roots.firstOrNull()?.id
+            ?: throw McpToolException("No root folder is known for this app: $APP_NOT_ANSWERING")
+        val path = if (roots.any { it.id == pathArg }) {
+            FilePathDomainModel.Root(pathArg)
+        } else {
+            FilePathDomainModel.Real(pathArg.requireAbsolute(roots))
         }
 
         // the refresh stores the content returned by the app, read just after
@@ -178,7 +218,16 @@ internal class FilesMcpToolProvider(
 
     private fun String.requireAbsolute(): String = also {
         if (!startsWith("/")) {
-            throw McpToolException("'$this' is not an absolute path: use \"$PATH_FILES\", \"$PATH_CACHES\" or a path returned by list_files.")
+            throw McpToolException("'$this' is not an absolute path: use a path returned by list_files.")
+        }
+    }
+
+    private fun String.requireAbsolute(roots: List<FileRootDomainModel>): String = also {
+        if (!startsWith("/")) {
+            throw McpToolException(
+                "'$this' is neither a root folder nor an absolute path: use one of the root ids " +
+                    roots.joinToString { "\"${it.id}\"" } + " (see list_file_roots) or a path returned by list_files.",
+            )
         }
     }
 
@@ -211,10 +260,15 @@ private fun FileDomainModel.toMcpModel() = FileMcpModel(
     name = name,
     path = when (val path = path) {
         is FilePathDomainModel.Real -> path.absolutePath
-        FilePathDomainModel.Constants.FilesDir -> "files"
-        FilePathDomainModel.Constants.CachesDir -> "caches"
+        is FilePathDomainModel.Root -> path.id
     },
     isDirectory = isDirectory,
     size = size,
     lastModified = lastModified.toString(),
+)
+
+private fun FileRootDomainModel.toMcpModel() = FileRootMcpModel(
+    id = id,
+    name = name,
+    path = path,
 )

@@ -1,7 +1,9 @@
 package io.github.openflocon.flocondesktop.features.network.list
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +26,7 @@ import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
+import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
@@ -75,6 +78,7 @@ import kotlin.uuid.Uuid
 
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
+    observeCurrentDeviceHasNetworkRequestsUseCase: ObserveCurrentDeviceHasNetworkRequestsUseCase,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
@@ -126,6 +130,9 @@ class NetworkViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(defaultNetworkSettings)
 
+    val isPinned = settings.map { it.pinnedDetails }
+        .stateInWhileSubscribed(settings.value.pinnedDetails)
+
     private val filterUiState = combine(
         mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
         badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
@@ -175,6 +182,12 @@ class NetworkViewModel(
     // true while the reset is running: the paging list can take a few seconds to reflect
     // the delete, so we display an empty list immediately instead of waiting for Room
     private val isClearing = MutableStateFlow(false)
+
+    // no call at all for the app, whatever the filters
+    val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasNetworkRequestsUseCase()
+        .map { hasRequests -> !hasRequests }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val items: Flow<PagingData<NetworkItemViewState>> =
         combine(
@@ -241,23 +254,37 @@ class NetworkViewModel(
     fun onAction(action: NetworkAction) {
         when (action) {
             is NetworkAction.SelectRequest -> onSelectRequest(action)
+
             is NetworkAction.ClosePanel -> onClosePanel()
+
             is NetworkAction.Reset -> onReset()
+
             is NetworkAction.OpenMocks -> openMocks(callId = null)
+
             is NetworkAction.CreateMock -> {
                 openMocks(callId = action.item.uuid)
             }
 
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
+
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
+
             is NetworkAction.CopyCUrl -> onCopyCUrl(action)
+
             is NetworkAction.Replay -> onReplay(action)
+
             is NetworkAction.CopyUrl -> onCopyUrl(action)
+
             is NetworkAction.Remove -> onRemove(action)
+
             is NetworkAction.RemoveLinesAbove -> onRemoveLinesAbove(action)
+
             is NetworkAction.FilterQuery -> onFilterQuery(action)
+
             is NetworkAction.ExportCsv -> onExportCsv()
+
             is NetworkAction.ImportFromCsv -> onImportFromCsv()
+
             is NetworkAction.HeaderAction.ClickOnSort -> headerDelegate.onClickSort(
                 type = action.type,
                 sort = action.sort,
@@ -268,12 +295,19 @@ class NetworkViewModel(
             )
 
             is NetworkAction.InvertList -> toggleInvertList(action)
+
             is NetworkAction.ToggleAutoScroll -> toggleAutoScroll(action)
+
             NetworkAction.ClearOldSession -> onClearSession()
+
             is NetworkAction.Down -> selectRequest(action.itemIdToSelect)
+
             is NetworkAction.Up -> selectRequest(action.itemIdToSelect)
+
             is NetworkAction.UpdateDisplayOldSessions -> toggleDisplayOldSessions(action)
+
             NetworkAction.OpenWebsocketMocks -> openWebsocketMocks()
+
             NetworkAction.CloseWebsocketMocks -> contentState.update {
                 it.copy(
                     websocketMocksDisplayed = false
@@ -281,18 +315,26 @@ class NetworkViewModel(
             }
 
             is NetworkAction.Pinned -> onPinned(action)
+
             is NetworkAction.SetDefaultSelectedTab -> setDefaultSelectedTab(action)
+
             is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
+
             is NetworkAction.SelectLine -> onSelectLine(action)
+
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
+
             NetworkAction.MultiSelect -> onMultiSelect()
+
             NetworkAction.DeleteSelection -> onDeleteSelection()
+
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
+
             NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
+
             is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
         }
     }
-
 
     private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -394,24 +436,13 @@ class NetworkViewModel(
         }
     }
 
-
     private fun onSelectRequest(action: NetworkAction.SelectRequest) {
         selectRequest(action.id)
     }
 
-    private var selectRequestJob: Job? = null
     private fun selectRequest(id: String) {
         contentState.update { it.copy(selectedRequestId = id) }
-        selectRequestJob?.cancel()
-        selectRequestJob = viewModelScope.launch {
-            observeNetworkSettingsUseCase().collect {
-                if (it.pinnedDetails) {
-                    detailDelegate.setRequestId(id)
-                } else {
-                    navigationState.navigate(NetworkRoutes.Panel(id))
-                }
-            }
-        }
+        navigationState.navigate(NetworkRoutes.Panel(id))
     }
 
     private fun openMocks(callId: String?) {

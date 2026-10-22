@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.view.filters
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter_excludes
+import flocondesktop.composeapp.generated.resources.filter_includes
+import flocondesktop.composeapp.generated.resources.general_by_value
 import io.github.openflocon.flocondesktop.common.ui.interactions.hover
 import io.github.openflocon.flocondesktop.features.network.list.model.header.TextFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
@@ -44,7 +49,7 @@ import io.github.openflocon.library.designsystem.components.FloconSmallIconButto
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TextFilterDropdownContent(
@@ -71,17 +76,17 @@ fun TextFilterDropdownContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp)
+                    .padding(vertical = FloconTheme.spacing.compact)
             ) {
                 if (filterState.includedFilters.isNotEmpty()) {
                     Text(
-                        text = "Includes",
+                        text = stringResource(Res.string.filter_includes),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 6.dp),
+                            .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                            color = FloconTheme.colors.ink.copy(alpha = 0.5f),
                         )
                     )
 
@@ -105,16 +110,16 @@ fun TextFilterDropdownContent(
                 }
 
                 if (filterState.excludedFilters.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(FloconTheme.spacing.compact))
 
                     Text(
-                        text = "Excludes",
+                        text = stringResource(Res.string.filter_excludes),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp, horizontal = 6.dp),
+                            .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.compact),
                         style = FloconTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.5f),
+                            color = FloconTheme.colors.ink.copy(alpha = 0.5f),
                         ),
                     )
 
@@ -154,9 +159,9 @@ private fun FilterItemView(
             .hover {
                 isHover = it
             }
-            .padding(horizontal = 6.dp, vertical = 1.dp),
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Box(modifier = Modifier.height(12.dp)) {
             FloconSwitch(
@@ -169,14 +174,14 @@ private fun FilterItemView(
             text = item.text,
             style = FloconTheme.typography.bodySmall,
             modifier = Modifier.weight(1f),
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
 
         val binAlpha by animateFloatAsState(if (isHover) 1f else 0f)
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = null,
-            tint = FloconTheme.colorPalette.onSecondary,
+            tint = FloconTheme.colors.inkMuted,
             modifier = Modifier.size(32.dp)
                 .graphicsLayer {
                     alpha = binAlpha
@@ -187,7 +192,7 @@ private fun FilterItemView(
                         clickDelete(item)
                     },
                 )
-                .padding(5.dp),
+                .padding(FloconTheme.spacing.compact),
         )
     }
 }
@@ -202,7 +207,7 @@ private fun TextFilterFieldView(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         FloconTextFieldWithoutM3(
             value = value,
@@ -214,14 +219,14 @@ private fun TextFilterFieldView(
                     value = "" // reset
                 },
             ),
-            placeholder = defaultPlaceHolder("By value", color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)),
+            placeholder = defaultPlaceHolder(stringResource(Res.string.general_by_value), color = FloconTheme.colors.inkMuted.copy(alpha = 0.5f)),
             textStyle = FloconTheme.typography.bodySmall.copy(
-                color = FloconTheme.colorPalette.onSecondary,
+                color = FloconTheme.colors.inkMuted,
             ),
-            containerColor = FloconTheme.colorPalette.secondary,
+            containerColor = FloconTheme.colors.floating,
             modifier = Modifier
                 .weight(1f)
-                .padding(all = 2.dp)
+                .padding(all = FloconTheme.spacing.tiny)
         )
         FloconSmallIconButton(
             enabled = value.isNotEmpty(),
@@ -256,14 +261,14 @@ private fun TextFilterButton(
             .clip(RoundedCornerShape(6.dp))
             .size(32.dp)
             .graphicsLayer { alpha = if (enabled) 1f else 0.5f }
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.floating)
             .clickable(onClick = onClick, enabled = enabled)
-            .padding(all = 8.dp),
+            .padding(all = FloconTheme.spacing.small),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = FloconTheme.colorPalette.onPrimary,
+            tint = FloconTheme.colors.ink,
             modifier = Modifier.fillMaxSize(),
         )
     }

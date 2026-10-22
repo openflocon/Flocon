@@ -15,10 +15,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FloconLineDescription(
@@ -29,23 +29,25 @@ fun FloconLineDescription(
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 2.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             SelectionContainer(
                 modifier = if (labelWidth != null) {
                     Modifier
                         .width(labelWidth)
-                        .padding(end = 8.dp)
+                        .padding(end = FloconTheme.spacing.small)
                 } else {
                     Modifier.weight(1f)
                 }
             ) {
                 Text(
                     text = label,
-                    style = FloconTheme.typography.titleSmall,
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = FloconTheme.colors.inkFaint,
                 )
             }
             Row(
@@ -53,7 +55,7 @@ fun FloconLineDescription(
                     .weight(1f)
                     .wrapContentWidth(align = Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 content = content
             )
         }
@@ -75,24 +77,11 @@ fun FloconLineDescription(
         modifier = modifier,
     ) {
         SelectionContainer {
+            // the values are technical data: urls, times, sizes
             Text(
                 text = value,
-                style = FloconTheme.typography.bodyMedium,
+                style = floconMonoStyle(),
             )
         }
-    }
-}
-
-
-@Preview
-@Composable
-private fun DetailLineView_closed_Preview() {
-    FloconTheme {
-        FloconLineDescription(
-            label = "label",
-            value = "value",
-            labelWidth = 100.dp,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }

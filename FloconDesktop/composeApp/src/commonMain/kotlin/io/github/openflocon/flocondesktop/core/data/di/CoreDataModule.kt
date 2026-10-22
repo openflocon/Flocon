@@ -1,9 +1,11 @@
 package io.github.openflocon.flocondesktop.core.data.di
 
 import io.github.openflocon.domain.device.repository.DevicesRepository
+import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
+import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSourcePrefs
@@ -16,6 +18,9 @@ val coreDataModule =
     module {
         singleOf(::SettingsRepositoryImpl) {
             bind<SettingsRepository>()
+        }
+        singleOf(::MenuPreferencesRepositoryImpl) {
+            bind<MenuPreferencesRepository>()
         }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()

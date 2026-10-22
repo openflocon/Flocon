@@ -5,12 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.openflocon.data.local.adb.dao.AdbDevicesDao
+import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.adbcommander.dao.AdbCommanderDao
 import io.github.openflocon.data.local.adbcommander.models.AdbCommandHistoryEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbFlowStepEntity
 import io.github.openflocon.data.local.adbcommander.models.AdbSavedCommandEntity
-import io.github.openflocon.data.local.adb.model.DeviceWithSerialEntity
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.models.AnalyticsItemEntity
 import io.github.openflocon.data.local.crashreporter.dao.CrashReportDao
@@ -19,13 +19,13 @@ import io.github.openflocon.data.local.dashboard.dao.FloconDashboardDao
 import io.github.openflocon.data.local.dashboard.models.DashboardContainerEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardElementEntity
 import io.github.openflocon.data.local.dashboard.models.DashboardEntity
+import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
 import io.github.openflocon.data.local.database.dao.QueryDao
 import io.github.openflocon.data.local.database.dao.TablesDao
+import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.database.models.DatabaseTableEntity
 import io.github.openflocon.data.local.database.models.FavoriteQueryEntity
 import io.github.openflocon.data.local.database.models.SuccessQueryEntity
-import io.github.openflocon.data.local.database.dao.DatabaseQueryLogDao
-import io.github.openflocon.data.local.database.models.DatabaseQueryLogEntity
 import io.github.openflocon.data.local.deeplink.ModeConverter
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkDao
 import io.github.openflocon.data.local.deeplink.dao.FloconDeeplinkVariableDao
@@ -34,6 +34,8 @@ import io.github.openflocon.data.local.deeplink.models.DeeplinkVariableEntity
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
 import io.github.openflocon.data.local.device.datasource.model.DeviceEntity
+import io.github.openflocon.data.local.featureflags.dao.FeatureFlagDao
+import io.github.openflocon.data.local.featureflags.models.FeatureFlagEntity
 import io.github.openflocon.data.local.files.dao.FloconFileDao
 import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.files.models.FileOptionsEntity
@@ -52,13 +54,14 @@ import io.github.openflocon.data.local.network.models.mock.MockNetworkEntity
 import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
+import io.github.openflocon.data.local.timeline.dao.TimelineDao
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 82,
+    version = 85,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -74,6 +77,7 @@ import kotlinx.coroutines.Dispatchers
         DeeplinkEntity::class,
         DeeplinkVariableEntity::class,
         AnalyticsItemEntity::class,
+        FeatureFlagEntity::class,
         NetworkFilterEntity::class,
         NetworkSettingsEntity::class,
         MockNetworkEntity::class,
@@ -107,6 +111,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val deeplinkDao: FloconDeeplinkDao
     abstract val deeplinkVariableDao: FloconDeeplinkVariableDao
     abstract val analyticsDao: FloconAnalyticsDao
+    abstract val featureFlagDao: FeatureFlagDao
     abstract val networkFilterDao: NetworkFilterDao
     abstract val networkMocksDao: NetworkMocksDao
     abstract val adbDevicesDao: AdbDevicesDao
@@ -116,6 +121,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val crashReportDao: CrashReportDao
     abstract val databaseQueryLogDao: DatabaseQueryLogDao
     abstract val adbCommanderDao: AdbCommanderDao
+    abstract val timelineDao: TimelineDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

@@ -61,24 +61,24 @@ private fun TelemetryConsentCard(
         modifier = modifier
             .width(420.dp)
             .clickable(onClick = { /* intercept clicks behind */ })
-            .background(color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium)
+            .background(color = FloconTheme.colors.bg200, shape = FloconTheme.shapes.medium)
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Text(
             text = stringResource(Res.string.telemetry_title),
-            color = FloconTheme.colorPalette.onTertiary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.titleSmall,
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = stringResource(Res.string.telemetry_consent_message),
-            color = FloconTheme.colorPalette.onTertiary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodySmall,
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = stringResource(Res.string.telemetry_learn_more),
-            color = FloconTheme.colorPalette.onTertiary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
             modifier = Modifier.clickable { uriHandler.openUri(TELEMETRY_DOC_URL) },
         )
@@ -90,22 +90,22 @@ private fun TelemetryConsentCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FloconButton(
-                containerColor = FloconTheme.colorPalette.primary,
+                containerColor = FloconTheme.colors.accent,
                 onClick = { onLevelSelected(TelemetryLevel.Full) },
             ) {
-                Text(stringResource(Res.string.telemetry_allow_full), color = FloconTheme.colorPalette.onPrimary)
+                Text(stringResource(Res.string.telemetry_allow_full), color = FloconTheme.colors.accentInk)
             }
             FloconOutlinedButton(
-                borderColor = FloconTheme.colorPalette.primary,
+                borderColor = FloconTheme.colors.accent,
                 onClick = { onLevelSelected(TelemetryLevel.Anonymous) },
             ) {
-                Text(stringResource(Res.string.telemetry_stay_anonymous), color = FloconTheme.colorPalette.primary)
+                Text(stringResource(Res.string.telemetry_stay_anonymous), color = FloconTheme.colors.accent)
             }
             FloconOutlinedButton(
-                borderColor = FloconTheme.colorPalette.primary,
+                borderColor = FloconTheme.colors.accent,
                 onClick = { onLevelSelected(TelemetryLevel.Disabled) },
             ) {
-                Text(stringResource(Res.string.telemetry_disable), color = FloconTheme.colorPalette.primary)
+                Text(stringResource(Res.string.telemetry_disable), color = FloconTheme.colors.accent)
             }
         }
     }

@@ -26,10 +26,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_insert_new_values
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TableItemView(
@@ -99,12 +102,12 @@ private fun TableView(
                     onTableDoubleClicked(item)
                 }
             )
-            .padding(horizontal = 12.dp)
-            .padding(vertical = 4.dp),
+            .padding(horizontal = FloconTheme.spacing.medium)
+            .padding(vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
-        val color = FloconTheme.colorPalette.onSurface
+        val color = FloconTheme.colors.ink
         Image(
             imageVector = Icons.Outlined.ChevronRight,
             modifier = Modifier.size(14.dp).graphicsLayer {

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.deeplink_removed
+import flocondesktop.composeapp.generated.resources.deeplink_send_error
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -55,11 +57,12 @@ class DeepLinkViewModel(
                 DeeplinkVariableViewState(
                     name = variable.name,
                     description = variable.description,
-                    value = when(val mode = variable.mode) {
+                    value = when (val mode = variable.mode) {
                         is DeeplinkVariableDomainModel.Mode.AutoComplete -> variablesValues.getOrDefault(
                             key = variable.name,
                             defaultValue = mode.suggestions.firstOrNull() ?: ""
                         )
+
                         is DeeplinkVariableDomainModel.Mode.Input -> variablesValues.getOrDefault(
                             key = variable.name,
                             defaultValue = ""
@@ -74,7 +77,7 @@ class DeepLinkViewModel(
                     }
                 )
             }
-        )
+        ).let { it.copy(showEmptyState = it.deepLinks.isEmpty() && it.variables.isEmpty()) }
     }
         .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 

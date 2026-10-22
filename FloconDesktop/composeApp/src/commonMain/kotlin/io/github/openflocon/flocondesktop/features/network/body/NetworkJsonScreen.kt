@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.body
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,9 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianneubauer.jsontree.search.rememberSearchState
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_clear
 import flocondesktop.composeapp.generated.resources.match_case_disabled
 import flocondesktop.composeapp.generated.resources.match_case_enabled
 import flocondesktop.composeapp.generated.resources.search
+import flocondesktop.composeapp.generated.resources.search_match_case
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkBodyDetailUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -63,7 +66,6 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -96,7 +98,7 @@ private fun NetworkBodyContent(
 
     val resultIndex = searchState.selectedResultListIndex
     LaunchedEffect(resultIndex) {
-        if(resultIndex != null && !listState.isScrollInProgress) {
+        if (resultIndex != null && !listState.isScrollInProgress) {
             listState.animateScrollToItem(resultIndex)
         }
     }
@@ -138,7 +140,7 @@ private fun NetworkBodyContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(8.dp),
+                    .padding(FloconTheme.spacing.small),
             )
         }
     }
@@ -165,38 +167,38 @@ private fun SearchBar(
     Column(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colorPalette.primary)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+                .background(FloconTheme.colors.bg100)
+                .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
         ) {
             FloconTextFieldWithoutM3(
                 value = query,
                 onValueChange = { queryChanged(it) },
                 placeholder = defaultPlaceHolder(
                     stringResource(Res.string.search),
-                    color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.5f)
+                    color = FloconTheme.colors.inkMuted.copy(alpha = 0.5f)
                 ),
                 leadingComponent = {
                     FloconIcon(
                         imageVector = Icons.Outlined.Search,
                         modifier = Modifier.size(16.dp),
-                        tint = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.7f),
+                        tint = FloconTheme.colors.inkMuted.copy(alpha = 0.7f),
                     )
                 },
                 trailingComponent = {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
                     ) {
                         FloconSmallIconButton(
-                            imageVector = if(matchCase) {
+                            imageVector = if (matchCase) {
                                 vectorResource(Res.drawable.match_case_enabled)
                             } else {
                                 vectorResource(Res.drawable.match_case_disabled)
                             },
                             onClick = { matchCaseChanged() },
-                            contentDescription = "Match Case",
+                            contentDescription = stringResource(Res.string.search_match_case),
                             modifier = Modifier
                                 .size(16.dp)
                                 .pointerHoverIcon(PointerIcon.Hand)
@@ -206,21 +208,21 @@ private fun SearchBar(
                             FloconSmallIconButton(
                                 imageVector = Icons.Outlined.Close,
                                 onClick = { queryChanged("") },
-                                contentDescription = "Clear",
+                                contentDescription = stringResource(Res.string.general_clear),
                                 modifier = Modifier.size(16.dp)
                             )
                         }
                     }
                 },
-                containerColor = FloconTheme.colorPalette.secondary,
-                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSecondary),
-                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                containerColor = FloconTheme.colors.bg200,
+                textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.inkMuted),
+                contentPadding = PaddingValues(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
                 modifier = Modifier
                     .width(280.dp)
                     .height(30.dp)
                     .border(
                         width = 1.dp,
-                        color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.2f),
+                        color = FloconTheme.colors.ink.copy(alpha = 0.2f),
                         shape = FloconTheme.shapes.medium
                     )
                     .focusRequester(focusRequester)
@@ -235,14 +237,17 @@ private fun SearchBar(
                                     }
                                     true
                                 }
+
                                 Key.DirectionDown -> {
                                     nextClicked()
                                     true
                                 }
+
                                 Key.DirectionUp -> {
                                     previousClicked()
                                     true
                                 }
+
                                 else -> false
                             }
                         } else {
@@ -258,25 +263,25 @@ private fun SearchBar(
                         .height(30.dp)
                         .border(
                             width = 1.dp,
-                            color = FloconTheme.colorPalette.onPrimary.copy(alpha = 0.2f),
+                            color = FloconTheme.colors.ink.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(6.dp)
                         )
                         .background(
-                            color = FloconTheme.colorPalette.secondary,
+                            color = FloconTheme.colors.bg200,
                             shape = RoundedCornerShape(6.dp)
                         )
-                        .padding(start = 8.dp, end = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        .padding(start = FloconTheme.spacing.small, end = FloconTheme.spacing.tiny),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 ) {
                     Text(
                         text = "${selectedResultIndex?.inc() ?: 0}/$totalResults",
                         style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colorPalette.onSecondary,
+                        color = FloconTheme.colors.inkMuted,
                     )
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowUpward,
                         onClick = previousClicked,
-                        contentPadding = PaddingValues(all = 4.dp),
+                        contentPadding = PaddingValues(all = FloconTheme.spacing.extraSmall),
                         enabled = selectedResultIndex != null,
                         modifier = Modifier.fillMaxHeight().aspectRatio(1f),
                     )
@@ -284,12 +289,12 @@ private fun SearchBar(
                         modifier = Modifier
                             .fillMaxHeight(0.6f)
                             .width(1.dp),
-                        color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.2f)
+                        color = FloconTheme.colors.inkMuted.copy(alpha = 0.2f)
                     )
                     FloconSmallIconButton(
                         imageVector = Icons.Outlined.ArrowDownward,
                         onClick = nextClicked,
-                        contentPadding = PaddingValues(all = 4.dp),
+                        contentPadding = PaddingValues(all = FloconTheme.spacing.extraSmall),
                         enabled = selectedResultIndex != null,
                         modifier = Modifier.fillMaxHeight().aspectRatio(1f),
                     )
@@ -299,11 +304,10 @@ private fun SearchBar(
 
         FloconHorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            color = FloconTheme.colorPalette.secondary
+            color = FloconTheme.colors.bg200
         )
     }
 }
-
 
 @Preview
 @Composable

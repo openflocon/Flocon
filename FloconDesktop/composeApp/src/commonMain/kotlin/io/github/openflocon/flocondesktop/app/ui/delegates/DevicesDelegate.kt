@@ -11,11 +11,12 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
+import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.flocondesktop.app.ui.model.AppsStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
-import io.github.openflocon.flocondesktop.common.log.LogManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -53,7 +54,7 @@ class DevicesDelegate(
                 val current = devices.firstOrNull { it.deviceId == currentDeviceId }
                 if (current == null) {
                     val firstDevice = devices.first()
-                    logManager.d(TAG, "No selected device found, auto-selecting: ${firstDevice.deviceId}")
+                    logManager.d(TAG, "No selected device found, auto-selecting: ${firstDevice.deviceId}", domain = LogDomain.Default)
                     select(firstDevice.deviceId)
                     DevicesStateUiModel.WithDevices(
                         devices = mapListToUi(
@@ -89,10 +90,10 @@ class DevicesDelegate(
         // do this only if we have 1 unique active device
         observeActiveDevicesUseCase().distinctUntilChanged().onEach { activeDevices ->
             val currentDeviceId = getCurrentDeviceIdAndPackageNameUseCase()?.deviceId
-            logManager.d(TAG, "Active devices changed: ${activeDevices.map { it.deviceId }}")
+            logManager.d(TAG, "Active devices changed: ${activeDevices.map { it.deviceId }}", domain = LogDomain.Default)
             if (activeDevices.size == 1 && currentDeviceId !in activeDevices.map { it.deviceId }) {
                 val firstActiveDevice = activeDevices.first()
-                logManager.d(TAG, "Auto-selecting active device: ${firstActiveDevice.deviceId}")
+                logManager.d(TAG, "Auto-selecting active device: ${firstActiveDevice.deviceId}", domain = LogDomain.Default)
                 select(firstActiveDevice.deviceId)
             }
         }.launchIn(coroutineScope)

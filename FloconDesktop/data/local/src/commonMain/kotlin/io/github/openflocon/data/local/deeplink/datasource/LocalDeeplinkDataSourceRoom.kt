@@ -69,13 +69,12 @@ internal class LocalDeeplinkDataSourceRoom(
     }
         .onEmpty { emit(Deeplinks(emptyList(), emptyList())) }
 
-    override fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> =
-        deeplinkDao.observeHistory(
-            deviceId = deviceIdAndPackageNameDomainModel.deviceId,
-            packageName = deviceIdAndPackageNameDomainModel.packageName,
-        )
-            .map { toDomainModels(it, json = json) }
-            .distinctUntilChanged()
+    override fun observeHistory(deviceIdAndPackageNameDomainModel: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = deeplinkDao.observeHistory(
+        deviceId = deviceIdAndPackageNameDomainModel.deviceId,
+        packageName = deviceIdAndPackageNameDomainModel.packageName,
+    )
+        .map { toDomainModels(it, json = json) }
+        .distinctUntilChanged()
 
     override suspend fun addToHistory(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

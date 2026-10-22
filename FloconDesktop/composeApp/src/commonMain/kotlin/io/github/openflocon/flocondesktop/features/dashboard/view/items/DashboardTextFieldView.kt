@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,14 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardTextFieldView(
@@ -34,12 +33,12 @@ fun DashboardTextFieldView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
             text = rowItem.label,
-            modifier = Modifier.padding(start = 4.dp),
-            color = FloconTheme.colorPalette.onPrimary,
+            modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Thin,
             ),
@@ -47,14 +46,14 @@ fun DashboardTextFieldView(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FloconTextFieldWithoutM3(
                 value = value,
                 onValueChange = onValueChange,
                 placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
-                containerColor = FloconTheme.colorPalette.secondary,
-                contentPadding = PaddingValues(horizontal = 4.dp),
+                containerColor = FloconTheme.colors.bg200,
+                contentPadding = PaddingValues(horizontal = FloconTheme.spacing.extraSmall),
                 modifier = Modifier
                     .weight(1f)
             )
@@ -62,7 +61,7 @@ fun DashboardTextFieldView(
             if (showSubmitButton) {
                 FloconIconTonalButton(
                     onClick = onSubmit,
-                    containerColor = FloconTheme.colorPalette.secondary,
+                    containerColor = FloconTheme.colors.bg200,
                 ) {
                     FloconIcon(
                         imageVector = Icons.AutoMirrored.Outlined.Send
@@ -85,7 +84,7 @@ internal fun DashboardTextFieldViewPreview_placeholder() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             value = "",
@@ -106,7 +105,7 @@ internal fun DashboardTextFieldViewPreview_withValue() {
     FloconTheme {
         DashboardTextFieldView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             rowItem = rowItem,
             value = "value",

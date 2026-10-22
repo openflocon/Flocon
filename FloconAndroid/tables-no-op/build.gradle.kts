@@ -1,0 +1,33 @@
+plugins {
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.ios.library")
+    id("flocon.jvm.library")
+    id("flocon.wasm.library")
+    id("flocon.publish")
+}
+
+kotlin {
+    android {
+        namespace = "io.github.openflocon.flocon.tables.noop"
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.floconNoOp)
+        }
+    }
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = project.property("floconGroupId") as String,
+        artifactId = "flocon-tables-no-op",
+        version = System.getenv("PROJECT_VERSION_NAME") ?: project.property("floconVersion") as String
+    )
+
+
+    pom {
+        name = "Flocon Tables No-Op"
+    }
+}

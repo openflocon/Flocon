@@ -1,41 +1,32 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.name
-import flocondesktop.composeapp.generated.resources.time
+import flocondesktop.composeapp.generated.resources.detail_copy_properties
+import flocondesktop.composeapp.generated.resources.detail_previous_session
+import flocondesktop.composeapp.generated.resources.detail_properties
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailChip
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsDetailViewModel
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
-import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -44,111 +35,71 @@ import org.koin.core.parameter.parametersOf
 fun AnalyticsDetailView(
     id: String
 ) {
-    val viewModel = koinViewModel<AnalyticsDetailViewModel> {
+    val viewModel = koinViewModel<AnalyticsDetailViewModel>(key = id) {
         parametersOf(id)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Content(
-        uiState = uiState
-    )
+    uiState?.let {
+        Content(
+            uiState = it,
+            onCopyProperties = viewModel::onCopyProperties,
+        )
+    }
 }
 
 @Composable
 private fun Content(
-    uiState: AnalyticsDetailUiModel
+    uiState: AnalyticsDetailUiModel,
+    onCopyProperties: () -> Unit,
 ) {
-    val scrollState = rememberScrollState()
-    val linesLabelWidth: Dp = 130.dp
-    val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
-
-    Box(
-        Modifier.background(FloconTheme.colorPalette.primary)
-    ) {
-        SelectionContainer(
-            modifier = Modifier.fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(all = 18.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                AnalyticsDetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.name),
-                    value = uiState.eventName,
-                    labelWidth = linesLabelWidth,
-                    withDivider = false,
-                )
-                AnalyticsDetailLineTextView(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.time),
-                    value = uiState.dateFormatted,
-                    labelWidth = linesLabelWidth,
-                    withDivider = false,
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = FloconTheme.colorPalette.secondary,
-                            shape = FloconTheme.shapes.medium
-                        )
-                ) {
-                    uiState.properties.forEachIndexed { index, property ->
-                        AnalyticsDetailLineTextView(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = property.name,
-                            value = property.value,
-                            labelWidth = linesLabelWidth,
-                            withDivider = true,
-                        )
-                        if (index != uiState.properties.lastIndex) {
-                            FloconHorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = FloconTheme.colorPalette.secondary
-                            )
-                        }
+    DetailPanel(
+        header = {
+            DetailHeader(
+                label = uiState.tableId,
+                title = uiState.eventName,
+                chips = {
+                    DetailChip(text = uiState.dateFormatted)
+                    if (uiState.isFromOldAppInstance) {
+                        DetailChip(text = stringResource(Res.string.detail_previous_session))
                     }
-                }
-            }
-        }
-        FloconVerticalScrollbar(
-            adapter = scrollAdapter,
-            modifier = Modifier.fillMaxHeight()
-                .align(Alignment.TopEnd)
+                },
+            )
+        },
+    ) {
+        PropertiesCard(
+            properties = uiState.properties,
+            onCopyProperties = onCopyProperties,
         )
     }
 }
 
 @Composable
-fun AnalyticsDetailLineTextView(
-    label: String,
-    value: String,
-    labelWidth: Dp,
-    withDivider: Boolean,
-    modifier: Modifier = Modifier,
+private fun PropertiesCard(
+    properties: List<AnalyticsDetailUiModel.PropertyUiModel>,
+    onCopyProperties: () -> Unit,
 ) {
-    AnalyticsDetailLineView(
-        labelWidth = labelWidth,
-        label = label,
-        modifier = modifier,
-        withDivider = withDivider,
+    val entries = remember(properties) { properties.map { it.name to it.value } }
+
+    DetailSectionCard(
+        title = stringResource(Res.string.detail_properties),
+        badge = entries.size.toString(),
+        copyContentDescription = stringResource(Res.string.detail_copy_properties),
+        onCopy = onCopyProperties.takeIf { entries.isNotEmpty() },
     ) {
         Text(
-            text = value,
+            text = entries.joinToString("\n") { (name, value) -> "$name: $value" },
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier.weight(1f)
-                .padding(vertical = 6.dp, horizontal = 8.dp),
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small),
         )
     }
 }
 
+@Preview
 @Composable
-fun AnalyticsDetailLineView(
+private fun AnalyticsDetailLineView(
     label: String,
     labelWidth: Dp,
     modifier: Modifier = Modifier,
@@ -164,17 +115,10 @@ fun AnalyticsDetailLineView(
             style = FloconTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold,
             ),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             modifier = Modifier
-                .padding(vertical = 6.dp, horizontal = 8.dp)
+                .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.small)
                 .width(labelWidth),
         )
-
-        VerticalDivider(
-            modifier = Modifier.fillMaxHeight(),
-            color = if (withDivider) FloconTheme.colorPalette.secondary else Color.Transparent
-        )
-
-        content()
     }
 }

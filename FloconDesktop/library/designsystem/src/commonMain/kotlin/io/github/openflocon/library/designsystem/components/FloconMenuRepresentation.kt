@@ -2,6 +2,8 @@
 
 package io.github.openflocon.library.designsystem.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.ContextMenuRepresentation
 import androidx.compose.foundation.ContextMenuState
@@ -28,10 +30,10 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberPopupPositionProviderAtPosition
 import com.composeunstyled.currentWindowContainerSize
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -49,14 +51,24 @@ internal class FloconMenuRepresentation : ContextMenuRepresentation {
         }
 
         val status = state.status
+        val visibleState = remember { MutableTransitionState(false) }
+        // kept so the menu can still be drawn while its exit animation plays
+        var lastMenu by remember { mutableStateOf<Pair<Offset, ImmutableList<FloconContextMenuItem>>?>(null) }
 
         if (status is ContextMenuState.Status.Open) {
+            lastMenu = status.rect.center to items.invoke()
+                .filterIsInstance<FloconContextMenuItem>()
+                .toImmutableList()
+        }
+        visibleState.targetState = status is ContextMenuState.Status.Open
+
+        val menu = lastMenu
+        if (menu != null && (visibleState.currentState || visibleState.targetState)) {
             Menu(
-                offset = status.rect.center,
-                items = items.invoke()
-                    .filterIsInstance<FloconContextMenuItem>()
-                    .toImmutableList(),
-                hide = ::hide
+                offset = menu.first,
+                items = menu.second,
+                hide = ::hide,
+                visibleState = visibleState,
             )
         }
     }
@@ -68,7 +80,10 @@ private fun Menu(
     items: ImmutableList<FloconContextMenuItem>,
     hide: () -> Unit,
     modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource? = null
+    interactionSource: MutableInteractionSource? = null,
+    visibleState: MutableTransitionState<Boolean> = remember {
+        MutableTransitionState(false).apply { targetState = true }
+    },
 ) {
     val position = rememberPopupPositionProviderAtPosition(offset)
 
@@ -76,20 +91,27 @@ private fun Menu(
         onDismissRequest = hide,
         popupPositionProvider = position
     ) {
-        Column(
-            modifier = modifier
-                .menuBackground()
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = DropdownEnterTransition,
+            exit = DropdownExitTransition,
         ) {
-            items.forEach { item ->
-                when (item) {
-                    is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
-                    is FloconContextMenuItem.SubMenu -> SubMenu(
-                        item = item,
-                        hide = hide,
-                        parent = interactionSource
-                    )
+            Column(
+                modifier = modifier
+                    .menuBackground()
+            ) {
+                items.forEach { item ->
+                    when (item) {
+                        is FloconContextMenuItem.Item -> Item(item = item, hide = hide)
 
-                    is FloconContextMenuItem.Separator -> FloconMenuSeparator()
+                        is FloconContextMenuItem.SubMenu -> SubMenu(
+                            item = item,
+                            hide = hide,
+                            parent = interactionSource
+                        )
+
+                        is FloconContextMenuItem.Separator -> FloconMenuSeparator()
+                    }
                 }
             }
         }
@@ -122,7 +144,8 @@ private fun SubMenu(
     var rect by remember { mutableStateOf(Rect.Zero) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     var boundsInWindow by remember { mutableStateOf(Rect.Zero) }
-    var padding by remember { mutableStateOf(PaddingValues(start = 4.dp)) }
+    val spacing = FloconTheme.spacing
+    var padding by remember { mutableStateOf(PaddingValues(start = spacing.extraSmall)) }
     val window = currentWindowContainerSize()
     val density = LocalDensity.current
 
@@ -158,7 +181,7 @@ private fun SubMenu(
                 .onGloballyPositioned {
                     density.run {
                         offset = if ((boundsInWindow.topRight.x.roundToInt() + it.size.width) > window.width.roundToPx()) {
-                            padding = PaddingValues(end = 4.dp)
+                            padding = PaddingValues(end = spacing.extraSmall)
                             rect.topLeft - Offset(x = it.size.width.toFloat(), y = 0f)
                         } else {
                             rect.topRight

@@ -12,12 +12,12 @@ import io.github.openflocon.mcp.McpTargetArguments
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.hasExplicitTarget
 import io.github.openflocon.mcp.isSameApp
 import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 import kotlinx.coroutines.flow.first
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -29,7 +29,7 @@ internal class NetworkMocksMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_network_mocks",
             title = "List network mocks",

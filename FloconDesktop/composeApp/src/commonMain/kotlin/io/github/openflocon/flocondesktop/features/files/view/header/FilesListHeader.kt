@@ -38,12 +38,12 @@ internal fun FilesListHeader(
     clickOnSort: (FileColumnUiModel, SortedByUiModel) -> Unit,
 ) {
     Row(
-        modifier = modifier.background(FloconTheme.colorPalette.secondary)
-            .padding(vertical = 8.dp, horizontal = 8.dp),
+        modifier = modifier.background(FloconTheme.colors.bg200)
+            .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.width(40.dp), contentAlignment = Alignment.Center) {
-            if(isSelecting) {
+            if (isSelecting) {
                 FloconCheckbox(
                     checked = selectingAll,
                     onCheckedChange = {
@@ -84,6 +84,6 @@ internal fun FilesListHeader(
             },
         )
 
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(FloconTheme.spacing.extraLarge))
     }
 }

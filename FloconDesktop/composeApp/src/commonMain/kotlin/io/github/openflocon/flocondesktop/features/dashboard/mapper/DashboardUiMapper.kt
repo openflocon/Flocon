@@ -41,6 +41,7 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
                         label = element.label,
                         value = when (element.type) {
                             DashboardElementDomainModel.PlainText.Type.Text -> element.value
+
                             DashboardElementDomainModel.PlainText.Type.Json -> JsonPrettyPrinter.prettyPrint(
                                 element.value
                             )

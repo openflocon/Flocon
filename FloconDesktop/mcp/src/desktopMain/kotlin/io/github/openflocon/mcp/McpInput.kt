@@ -1,6 +1,5 @@
 package io.github.openflocon.mcp
 
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolRequest
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ToolAnnotations
@@ -63,7 +62,7 @@ internal enum class McpOrder {
 /**
  * Registers a tool whose arguments are decoded into [I], and whose result [O] is returned as JSON
  */
-internal inline fun <reified I : Any, reified O> Server.addTypedTool(
+internal inline fun <reified I : Any, reified O> McpToolServer.addTypedTool(
     name: String,
     title: String,
     description: String,
@@ -78,21 +77,21 @@ internal inline fun <reified I : Any, reified O> Server.addTypedTool(
 /**
  * Same as [addTypedTool], for the tools building their result themselves (ex: an image)
  */
-internal inline fun <reified I : Any> Server.addTypedToolWithResult(
+internal inline fun <reified I : Any> McpToolServer.addTypedToolWithResult(
     name: String,
     title: String,
     description: String,
     annotations: ToolAnnotations,
     crossinline handler: suspend (I) -> CallToolResult,
 ) {
-    addTool(
+    addLoggedTool(
         name = name,
         title = title,
         description = description,
         inputSchema = toolSchemaOf<I>(),
-        toolAnnotations = annotations,
+        annotations = annotations,
     ) { request ->
-        safeToolCall { handler(request.decodeArguments<I>()) }
+        handler(request.decodeArguments<I>())
     }
 }
 
@@ -153,5 +152,6 @@ private fun JsonElement.withoutNullTypes(): JsonElement = when (this) {
     )
 
     is JsonArray -> JsonArray(map { it.withoutNullTypes() })
+
     is JsonPrimitive -> this
 }

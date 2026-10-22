@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -12,7 +13,6 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArra
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.previewDashboardViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardView(
@@ -29,10 +29,9 @@ fun DashboardView(
         modifier = modifier,
         columns = when (arrangement) {
             is DashboardArrangement.Adaptive -> StaggeredGridCells.Adaptive(minSize = 300.dp)
-
             is DashboardArrangement.Fixed -> StaggeredGridCells.Fixed(arrangement.itemsPerRow)
         },
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalItemSpacing = 8.dp,
     ) {
         items(viewState.items) {

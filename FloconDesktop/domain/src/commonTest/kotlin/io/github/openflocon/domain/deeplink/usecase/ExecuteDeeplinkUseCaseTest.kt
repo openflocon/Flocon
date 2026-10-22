@@ -19,6 +19,7 @@ import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -113,6 +114,12 @@ class ExecuteDeeplinkUseCaseTest {
             openedUrls += url
             return Success("")
         }
+
+        override suspend fun takeScreenshot(filePath: String): Either<Throwable, String> = Success(filePath)
+
+        override suspend fun startRecording(filePath: String): Either<Throwable, Unit> = Success(Unit)
+
+        override suspend fun stopRecording(filePath: String): Either<Throwable, String> = Success(filePath)
     }
 
     private class FakeAdbRepository : AdbRepository {
@@ -183,7 +190,7 @@ class ExecuteDeeplinkUseCaseTest {
         override val networkSettingsFlow: Flow<NetworkSettings> = emptyFlow()
         override fun getAdbPath(): String = "adb"
         override suspend fun setAdbPath(path: String) {}
-        override suspend fun setFontSizeMultiplier(value: Float) {}
+        override suspend fun setAppScale(value: AppScaleSetting) {}
         override suspend fun setTheme(value: ThemeSetting) {}
         override fun getFloconDocumentsPath(): String? = null
         override suspend fun setFloconDocumentsPath(path: String) {}
@@ -196,7 +203,7 @@ class ExecuteDeeplinkUseCaseTest {
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
-        override val fontSizeMultiplier: StateFlow<Float> = MutableStateFlow(1f)
+        override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
         override fun setAdbForwardStatus(status: AdbForwardStatus) {}

@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, crashes and databases of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events and databases, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -227,6 +227,16 @@ Yes, `postViewed` was sent 3 times since the app started:
 
 **Prompt**
 
+> Which variant of the `new_checkout` feature flag is the app using?
+
+**Response**
+
+`new_checkout` (provider `firebase`) is on the `treatment` variant, with the payload `{ "buttonColor": "#FF5722", "steps": 3 }`.
+
+---
+
+**Prompt**
+
 > Show me the slow calls in the app.
 
 **Response**
@@ -250,6 +260,16 @@ The search call is the slowest. It may be worth adding a loading state or deboun
 **Response**
 
 Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_error"}`. Open an article in the app to see the error screen. I can disable the mock when you're done.
+
+---
+
+**Prompt**
+
+> Record the checkout flow and show me what the screen looks like when the payment fails.
+
+**Response**
+
+Recording started on the Pixel 9. I tapped through the checkout, then stopped the recording: the video is saved at `~/Documents/Flocon/ScreenRecord/record_io.flocon.sample_1736000000000.mp4`. A screenshot of the failure shows an empty payment form with no error message, while `POST /payments` returned a **402**. The error is not displayed by the app.
 
 ## Available tools
 
@@ -276,6 +296,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_feature_flags` | Feature flags of the app (provider, name, state on / off / custom, variant, payload preview), the providers. Filters: provider, text in the name / variant / payload. |
+| `get_feature_flag` | A feature flag with its state, variant and full payload. |
 | `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
 | `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |
 | `list_images` | Images loaded by the app (url, load time), newest first. Filters: text, start timestamp. Optionally the headers. |
@@ -284,6 +306,15 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
+| `list_deeplinks` | Deeplinks declared by the app (link, label, description, parameters) and their variables. |
+| `list_deeplink_history` | Deeplinks recently opened from Flocon. |
+| `open_deeplink` | Opens a deeplink on the device (`adb` on Android, the booted Simulator on iOS) and adds it to the history. Not read only: it acts on the device. |
+| `take_screenshot` | Screenshot of the device screen (`adb` on Android, the booted Simulator on iOS), saved as a PNG in the Flocon documents folder (`Screenshot/`). Returns the path and the image, so the agent sees the screen. Not read only: it acts on the device. |
+| `start_screen_recording` | Starts recording the device screen. One recording per device; on Android, `screenrecord` stops by itself after 3 minutes. |
+| `stop_screen_recording` | Stops the recording and returns the path of the mp4 saved in `ScreenRecord/`. Without target, stops the only running recording. |
+| `open_flocon_folder` | Opens the Flocon documents folder (screenshots, screen records, exports), or a sub folder (`Screenshot`, `ScreenRecord`), in the file manager of the computer, and returns its path. |
+| `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId`. |
+| `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |

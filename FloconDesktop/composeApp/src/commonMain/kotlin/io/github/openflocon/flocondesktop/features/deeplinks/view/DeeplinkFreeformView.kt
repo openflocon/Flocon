@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.freeform_link
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
@@ -28,7 +28,6 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val freeformItem = DeeplinkViewState(
     description = null,
@@ -49,23 +48,23 @@ fun DeeplinkFreeformItemView(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FloconTextFieldWithoutM3(
                 value = value,
                 onValueChange = { value = it },
                 placeholder = defaultPlaceHolder(stringResource(Res.string.freeform_link)),
                 textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.bg200,
                 modifier = Modifier.weight(1f),
                 leadingComponent = {
                     Spacer(
-                        modifier = Modifier.width(4.dp)
+                        modifier = Modifier.width(FloconTheme.spacing.extraSmall)
                     )
                 }
             )
@@ -78,7 +77,7 @@ fun DeeplinkFreeformItemView(
                         ),
                     )
                 },
-                containerColor = FloconTheme.colorPalette.tertiary
+                containerColor = FloconTheme.colors.ink
             ) {
                 FloconIcon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
@@ -94,7 +93,7 @@ private fun DeeplinkFreeformItemViewPreview() {
     FloconTheme {
         DeeplinkFreeformItemView(
             modifier = Modifier.background(
-                FloconTheme.colorPalette.primary,
+                FloconTheme.colors.bg100,
             ),
             submit = { _, _ -> },
         )

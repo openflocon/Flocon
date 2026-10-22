@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,8 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
@@ -73,13 +76,13 @@ private data class BigDialogScene(
                 .graphicsLayer {
                     this.alpha = this@BigDialogScene.alpha.value
                 }
-                .background(FloconTheme.colorPalette.primary.copy(alpha = 0.7f))
+                .background(Color.Black.copy(alpha = 0.5f))
                 .clickable(
                     onClick = onBack,
                     indication = null,
                     interactionSource = null
                 )
-                .padding(64.dp)
+                .padding(FloconTheme.spacing.doubleExtraLarge)
                 .graphicsLayer {
                     this.scaleX = scale.value
                     this.scaleY = scale.value
@@ -88,12 +91,13 @@ private data class BigDialogScene(
                     shape = RoundedCornerShape(12.dp),
                     shadow = Shadow(
                         radius = 4.dp,
-                        color = FloconTheme.colorPalette.onAccent.copy(alpha = 0.5f)
+                        color = Color.Black.copy(alpha = 0.35f)
                     )
                 )
                 .clip(RoundedCornerShape(12.dp))
-                .background(FloconTheme.colorPalette.primary)
-                .padding(16.dp)
+                .background(FloconTheme.colors.floating)
+                .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(12.dp))
+                .padding(FloconTheme.spacing.large)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -101,7 +105,8 @@ private data class BigDialogScene(
             ) {
                 Text(
                     text = properties.title,
-                    color = FloconTheme.colorPalette.onPrimary,
+                    color = FloconTheme.colors.ink,
+                    fontWeight = FontWeight.SemiBold,
                     style = FloconTheme.typography.headlineSmall
                 )
                 FloconIconButton(
@@ -109,13 +114,13 @@ private data class BigDialogScene(
                 ) {
                     FloconIcon(
                         imageVector = Icons.Default.Close,
-                        tint = FloconTheme.colorPalette.onPrimary
+                        tint = FloconTheme.colors.inkFaint
                     )
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(FloconTheme.spacing.small))
+            HorizontalDivider(color = FloconTheme.colors.line)
+            Spacer(Modifier.height(FloconTheme.spacing.small))
             Box(
                 Modifier
                     .fillMaxSize()
@@ -161,8 +166,6 @@ class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {
     companion object {
         const val BIG_DIALOG = "BIG_DIALOG"
 
-        fun bigDialog(properties: BigDialogProperties): Map<String, Any> =
-            mapOf(BIG_DIALOG to properties)
+        fun bigDialog(properties: BigDialogProperties): Map<String, Any> = mapOf(BIG_DIALOG to properties)
     }
-
 }

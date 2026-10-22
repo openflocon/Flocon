@@ -18,19 +18,16 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
 
-private val VerticalContentPadding = 4.dp
-private val HorizontalContentPadding = 8.dp
-
 @Composable
 fun FloconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     content: @Composable RowScope.() -> Unit
 ) {
     FloconSurface(
         color = containerColor,
-        contentColor = FloconTheme.colorPalette.contentColorFor(containerColor),
+        contentColor = FloconTheme.colors.contentColorFor(containerColor),
         onClick = onClick,
         modifier = modifier,
         shape = FloconTheme.shapes.medium
@@ -39,7 +36,7 @@ fun FloconButton(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(PaddingValues(vertical = VerticalContentPadding, horizontal = HorizontalContentPadding)),
+                modifier = Modifier.padding(PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small)),
                 content = content
             )
         }
@@ -55,17 +52,17 @@ fun FloconOutlinedButton(
 ) {
     FloconSurface(
         color = Color.Transparent,
-        contentColor = FloconTheme.colorPalette.onSurface,
+        contentColor = FloconTheme.colors.ink,
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, borderColor ?: FloconTheme.colorPalette.onSurface),
+        border = BorderStroke(1.dp, borderColor ?: FloconTheme.colors.lineStrong),
     ) {
         CompositionLocalProvider(LocalTextStyle provides FloconTheme.typography.labelLarge) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(PaddingValues(vertical = VerticalContentPadding, horizontal = HorizontalContentPadding)),
+                modifier = Modifier.padding(PaddingValues(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small)),
                 content = content
             )
         }

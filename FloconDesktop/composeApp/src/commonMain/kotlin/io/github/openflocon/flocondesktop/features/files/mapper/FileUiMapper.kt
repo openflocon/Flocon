@@ -8,15 +8,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
+import io.github.openflocon.domain.files.models.FileRootDomainModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
 
@@ -36,7 +37,7 @@ fun FileDomainModel.toUi(withFoldersSize: Boolean): FileUiModel = FileUiModel(
     },
     dateFormatted = formatDate(lastModified),
     contextualActions = buildContextualActions(
-        isConstant = this.path is FilePathDomainModel.Constants,
+        isConstant = this.path is FilePathDomainModel.Root,
         isFolder = this.isDirectory,
     ),
 )
@@ -60,16 +61,27 @@ fun FileUiModel.toDomain(): FileDomainModel = FileDomainModel(
 )
 
 fun FilePathUiModel.toDomain(): FilePathDomainModel = when (this) {
-    FilePathUiModel.Constants.CachesDir -> FilePathDomainModel.Constants.CachesDir
-    FilePathUiModel.Constants.FilesDir -> FilePathDomainModel.Constants.FilesDir
+    is FilePathUiModel.Root -> FilePathDomainModel.Root(this.id)
     is FilePathUiModel.Real -> FilePathDomainModel.Real(this.absolutePath)
 }
 
 fun FilePathDomainModel.toUi(): FilePathUiModel = when (this) {
-    FilePathDomainModel.Constants.CachesDir -> FilePathUiModel.Constants.CachesDir
-    FilePathDomainModel.Constants.FilesDir -> FilePathUiModel.Constants.FilesDir
+    is FilePathDomainModel.Root -> FilePathUiModel.Root(this.id)
     is FilePathDomainModel.Real -> FilePathUiModel.Real(this.absolutePath)
 }
+
+fun FileRootDomainModel.toUi(): FileUiModel = FileUiModel(
+    name = name,
+    type = FileTypeUiModel.Folder,
+    path = FilePathUiModel.Root(id),
+    sizeFormatted = null,
+    icon = Icons.Outlined.Folder,
+    dateFormatted = null,
+    contextualActions = buildContextualActions(
+        isConstant = true,
+        isFolder = true,
+    ),
+)
 
 fun buildContextualActions(
     isFolder: Boolean,

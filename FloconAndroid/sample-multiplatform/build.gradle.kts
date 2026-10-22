@@ -1,142 +1,109 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    id("flocon.kotlin.library")
+    id("flocon.android.library")
+    id("flocon.jvm.library")
+    id("flocon.ios.library")
+    id("flocon.wasm.library")
+
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.buildconfig)
+    alias(libs.plugins.apollo)
 }
 
 kotlin {
     android {
         namespace = "io.github.openflocon.flocon.myapplication.multi"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        androidResources {
-            enable = true
-        }
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-
-    jvm("desktop")
-
-    // Compose Multiplatform 1.11 dropped the iosX64 (Intel Mac simulator) variant, so the
-    // sample's iosX64CompilationDependenciesMetadata can no longer resolve compose.runtime
-    // for that target. Apple-silicon devs use iosSimulatorArm64; real devices use iosArm64.
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":flocon"))
-                implementation(project(":flocon-base"))
-                implementation(project(":ktor-interceptor"))
+        commonMain.dependencies {
+            implementation(projects.flocon)
+            implementation(projects.deeplinks)
+            implementation(projects.analytics)
+            implementation(projects.featureflags)
+            implementation(projects.tables)
+            implementation(projects.sharedprefs)
+            implementation(projects.network.ktorInterceptor)
+            implementation(projects.database.room3)
 
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
 
-                // Ktor client core
-                implementation(libs.ktor.client.core)
+            // Ktor client core
+            implementation(libs.ktor.client.core)
 
-                // room
-                implementation(libs.androidx.room.runtime)
-                implementation(libs.androidx.sqlite.bundled)
+            // room
+            implementation(libs.androidx.room3.runtime)
 
-                // Compose Multiplatform
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
+            // Compose Multiplatform
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(libs.compose.navigation3.ui)
 
-                implementation(libs.coil.compose)
-                implementation(libs.coil.network.ktor)
-            }
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+
+            // Apollo (GraphQL)
+            implementation(libs.apollo.runtime)
+
         }
 
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.androidx.core.ktx)
-                implementation(libs.androidx.lifecycle.runtime.ktx)
-                implementation(libs.androidx.activity.compose)
+        androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.lifecycle.runtime.ktx)
+            implementation(libs.androidx.activity.compose)
 
-                // Ktor client for Android
-                implementation(libs.ktor.client.okhttp)
-            }
+            // Ktor client for Android
+            implementation(libs.ktor.client.okhttp)
+
+            // OkHttp
+            implementation(libs.okhttp)
+
+            // Coil with OkHttp network fetcher
+            implementation(libs.coil.network.okhttp)
+
+            // Datastore
+            implementation(libs.androidx.datastore.preferences)
+
+            implementation(projects.network.ktorInterceptor)
+            implementation(projects.network.okhttpInterceptor)
+            implementation(projects.database.room3)
+            implementation(projects.database.room)
+            implementation(libs.androidx.room.runtime)
+            implementation(projects.sharedprefs)
+            implementation(projects.datastores)
+            implementation(projects.analytics)
+            implementation(projects.crashreporter)
+            implementation(projects.tables)
         }
 
-        val desktopMain by getting {
-            dependencies {
-                // Ktor client for desktop/JVM
-                implementation(libs.ktor.client.cio)
-
-                implementation(libs.sqlite.jdbc)
-                implementation(libs.androidx.sqlite.bundled)
-
-                // Compose Desktop
-                implementation(compose.desktop.currentOs)
-                implementation(libs.kotlinx.coroutines.swing)
-                implementation(libs.ktor.client.java)
-            }
-        }
-
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-            dependencies {
-                // Ktor client for iOS
-                implementation(libs.ktor.client.cio)
-            }
-        }
     }
 }
-
 
 dependencies {
     listOf(
         "kspAndroid",
-        "kspDesktop",
+        "kspJvm",
         "kspIosSimulatorArm64",
-        "kspIosArm64"
+        "kspIosArm64",
+        "kspWasmJs"
     ).forEach {
-        add(it, libs.androidx.room.compiler)
+        add(it, libs.androidx.room3.compiler)
     }
-    //ksp(libs.androidx.room.compiler)
+    // Room 2, used by an Android only database to test the Room 2 module
+    add("kspAndroid", libs.androidx.room.compiler)
+
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.github.openflocon.flocon.myapplication.multi.MainKt"
-
-        nativeDistributions {
-            targetFormats(
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
-            )
-            packageName = "FloconMultiApp"
-            packageVersion = "1.0.0"
-        }
+apollo {
+    service("github") {
+        packageName.set("com.github")
+        srcDir("src/androidMain/graphql")
     }
 }
-

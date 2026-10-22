@@ -33,12 +33,12 @@ internal fun ColumnView(
             .clickable {
                 onClicked(model)
             }
-            .padding(start = 46.dp)
-            .padding(vertical = 4.dp),
+            .padding(start = FloconTheme.spacing.doubleExtraLarge + FloconTheme.spacing.large)
+            .padding(vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
-        val color = FloconTheme.colorPalette.onSurface
+        val color = FloconTheme.colors.ink
 
         Box(Modifier.size(20.dp), contentAlignment = Alignment.Center) {
             Image(
@@ -51,14 +51,14 @@ internal fun ColumnView(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd).size(10.dp).background(
-                            FloconTheme.colorPalette.accent,
+                            FloconTheme.colors.accentSoft,
                             shape = CircleShape,
-                        ).padding(1.dp)
+                        ).padding(FloconTheme.spacing.tiny)
                 ) {
                     Image(
                         imageVector = Icons.Filled.VpnKey,
                         modifier = Modifier.fillMaxSize(),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onAccent),
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.accent),
                         contentDescription = null,
                     )
                 }

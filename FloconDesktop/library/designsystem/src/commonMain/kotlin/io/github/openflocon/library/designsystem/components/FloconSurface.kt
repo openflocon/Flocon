@@ -16,9 +16,9 @@ import io.github.openflocon.library.designsystem.theme.contentColorFor
 @Composable
 fun FloconSurface(
     modifier: Modifier = Modifier,
-    color: Color = FloconTheme.colorPalette.surface,
+    color: Color = FloconTheme.colors.bg000,
     shape: Shape = RectangleShape,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(color),
+    contentColor: Color = FloconTheme.colors.contentColorFor(color),
     tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
@@ -40,10 +40,10 @@ fun FloconSurface(
 fun FloconSurface(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = FloconTheme.colorPalette.surface,
+    color: Color = FloconTheme.colors.bg000,
     enabled: Boolean = true,
     shape: Shape = RectangleShape,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(color),
+    contentColor: Color = FloconTheme.colors.contentColorFor(color),
     tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,

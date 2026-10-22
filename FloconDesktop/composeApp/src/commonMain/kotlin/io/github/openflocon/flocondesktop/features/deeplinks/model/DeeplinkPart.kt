@@ -16,7 +16,6 @@ sealed interface DeeplinkPart {
         val autoComplete: List<String>? = null,
     ) : DeeplinkPart
 
-
     @Immutable
     data class Variable(
         val value: String

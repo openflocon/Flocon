@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,85 +47,84 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DeeplinkItemView(
-        item: DeeplinkViewState,
-        submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
-        removeFromHistory: (DeeplinkViewState) -> Unit,
-        variableValues: ImmutableMap<String, String> = persistentMapOf(),
-        modifier: Modifier = Modifier,
+    item: DeeplinkViewState,
+    submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
+    removeFromHistory: (DeeplinkViewState) -> Unit,
+    variableValues: ImmutableMap<String, String> = persistentMapOf(),
+    modifier: Modifier = Modifier,
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
 
     Column(
-            modifier = modifier.padding(vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(vertical = FloconTheme.spacing.extraSmall),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         item.label?.let {
             Text(
-                    text = item.label,
-                    modifier = Modifier.padding(start = 4.dp),
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = FloconTheme.colorPalette.onPrimary
+                text = item.label,
+                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
+                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                color = FloconTheme.colors.ink
             )
         }
         Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FlowRow(
-                    modifier =
-                            Modifier.weight(1f)
-                                    .clip(FloconTheme.shapes.medium)
-                                    .background(
-                                            if (item.isHistory) FloconTheme.colorPalette.accent
-                                            else FloconTheme.colorPalette.surface
-                                    )
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.Center,
+                modifier =
+                Modifier.weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(
+                        if (item.isHistory) FloconTheme.colors.accentSoft
+                        else FloconTheme.colors.bg000
+                    )
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.Center,
             ) {
                 item.parts.fastForEach { part ->
                     TextFieldPart(
-                            part = part,
-                            variableValues = variableValues,
-                            onFieldValueChanged = { field, value -> values.put(field, value) },
+                        part = part,
+                        variableValues = variableValues,
+                        onFieldValueChanged = { field, value -> values.put(field, value) },
                     )
                 }
             }
 
             if (item.isHistory) {
                 FloconIconTonalButton(
-                        onClick = { removeFromHistory(item) },
-                        containerColor = FloconTheme.colorPalette.tertiary,
+                    onClick = { removeFromHistory(item) },
+                    containerColor = FloconTheme.colors.ink,
                 ) {
                     FloconIcon(
-                            imageVector = Icons.Default.Delete,
+                        imageVector = Icons.Default.Delete,
                     )
                 }
             }
 
             FloconIconTonalButton(
-                    onClick = { submit(item, values.toMap()) },
-                    containerColor = FloconTheme.colorPalette.tertiary,
+                onClick = { submit(item, values.toMap()) },
+                containerColor = FloconTheme.colors.ink,
             ) {
                 FloconIcon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
+                    imageVector = Icons.AutoMirrored.Filled.Send,
                 )
             }
         }
         item.description?.let {
             Text(
-                    text = it,
-                    style =
-                            FloconTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.Light,
-                                    fontStyle = FontStyle.Italic,
-                            ),
-                    color = FloconTheme.colorPalette.onSurface,
-                    modifier = Modifier.padding(start = 4.dp),
+                text = it,
+                style =
+                FloconTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Light,
+                    fontStyle = FontStyle.Italic,
+                ),
+                color = FloconTheme.colors.ink,
+                modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
             )
         }
     }
@@ -133,9 +133,9 @@ fun DeeplinkItemView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextFieldPart(
-        part: DeeplinkPart,
-        variableValues: ImmutableMap<String, String>,
-        onFieldValueChanged: (DeeplinkPart.TextField, value: String) -> Unit
+    part: DeeplinkPart,
+    variableValues: ImmutableMap<String, String>,
+    onFieldValueChanged: (DeeplinkPart.TextField, value: String) -> Unit
 ) {
     when (part) {
         is DeeplinkPart.TextField -> {
@@ -146,76 +146,78 @@ private fun TextFieldPart(
             LaunchedEffect(part, value) { onFieldValueChangedCallback(part, value) }
 
             val filteredAutoComplete =
-                    remember(value, part.autoComplete) {
-                        part.autoComplete?.filter { it.contains(value, ignoreCase = true) }
-                    }
+                remember(value, part.autoComplete) {
+                    part.autoComplete?.filter { it.contains(value, ignoreCase = true) }
+                }
             ExposedDropdownMenuBox(
-                    expanded = isExpanded,
-                    onExpandedChange = { isExpanded = it },
+                expanded = isExpanded,
+                onExpandedChange = { isExpanded = it },
             ) {
                 DeeplinkTextField(
-                        value = value,
-                        onValueChange = {
-                            value = it
-                            isExpanded = filteredAutoComplete?.isNotEmpty() == true
-                        },
-                        modifier = Modifier.menuAnchor(PrimaryEditable),
-                        label = part.label,
+                    value = value,
+                    onValueChange = {
+                        value = it
+                        isExpanded = filteredAutoComplete?.isNotEmpty() == true
+                    },
+                    modifier = Modifier.menuAnchor(PrimaryEditable),
+                    label = part.label,
                 )
 
                 // The dropdown menu
                 if (filteredAutoComplete?.isNotEmpty() == true) {
                     ExposedDropdownMenu(
-                            modifier = Modifier.widthIn(min = 200.dp),
-                            expanded = isExpanded,
-                            onDismissRequest = { isExpanded = false },
+                        modifier = Modifier.widthIn(min = 200.dp),
+                        expanded = isExpanded,
+                        onDismissRequest = { isExpanded = false },
                     ) {
                         filteredAutoComplete.forEach { item ->
                             Text(
-                                    text = item,
-                                    style = FloconTheme.typography.bodySmall,
-                                    modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .clickable {
-                                                        value = item
-                                                        isExpanded = false
-                                                    }
-                                                    .padding(
-                                                            vertical = 4.dp,
-                                                            horizontal = 8.dp,
-                                                    )
+                                text = item,
+                                style = FloconTheme.typography.bodySmall,
+                                modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        value = item
+                                        isExpanded = false
+                                    }
+                                    .padding(
+                                        vertical = FloconTheme.spacing.extraSmall,
+                                        horizontal = FloconTheme.spacing.small,
+                                    )
                             )
                         }
                     }
                 }
             }
         }
+
         is DeeplinkPart.Text -> {
             Text(
-                    part.value,
-                    style =
-                            FloconTheme.typography.bodySmall.copy(
-                                    color = FloconTheme.colorPalette.onSurface,
-                            ),
+                part.value,
+                style =
+                FloconTheme.typography.bodySmall.copy(
+                    color = FloconTheme.colors.ink,
+                ),
             )
         }
+
         is DeeplinkPart.Variable -> {
             val resolved = variableValues[part.value]
             Text(
-                    text = resolved.takeIf { !it.isNullOrEmpty() } ?: part.value,
-                    style =
-                            FloconTheme.typography.bodySmall.copy(
-                                    color =
-                                            if (resolved.isNullOrEmpty())
-                                                    FloconTheme.colorPalette.onSurface.copy(
-                                                            alpha = 0.4f
-                                                    )
-                                            else FloconTheme.colorPalette.onSurface,
-                                    fontWeight =
-                                            if (resolved.isNullOrEmpty()) FontWeight.Normal
-                                            else FontWeight.Bold,
-                            ),
+                text = resolved.takeIf { !it.isNullOrEmpty() } ?: part.value,
+                style =
+                FloconTheme.typography.bodySmall.copy(
+                    color =
+                    if (resolved.isNullOrEmpty())
+                        FloconTheme.colors.ink.copy(
+                            alpha = 0.4f
+                        )
+                    else FloconTheme.colors.ink,
+                    fontWeight =
+                    if (resolved.isNullOrEmpty()) FontWeight.Normal
+                    else FontWeight.Bold,
+                ),
             )
         }
     }
@@ -223,38 +225,38 @@ private fun TextFieldPart(
 
 @Composable
 private fun DeeplinkTextField(
-        modifier: Modifier = Modifier,
-        label: String,
-        value: String,
-        onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
 ) {
     val isValueEmpty = value.isEmpty()
     Box(
-            modifier =
-                    modifier.background(
-                                    color = FloconTheme.colorPalette.primary,
-                                    shape = RoundedCornerShape(2.dp),
-                            )
-                            .padding(horizontal = 2.dp, vertical = 2.dp)
-                            .width(IntrinsicSize.Min),
+        modifier =
+        modifier.background(
+            color = FloconTheme.colors.bg100,
+            shape = RoundedCornerShape(2.dp),
+        )
+            .padding(horizontal = FloconTheme.spacing.tiny, vertical = FloconTheme.spacing.tiny)
+            .width(IntrinsicSize.Min),
     ) {
         Text(
-                text = label,
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colorPalette.onSurface.copy(alpha = 0.45f),
-                modifier = Modifier.graphicsLayer { alpha = if (isValueEmpty) 1f else 0f },
+            text = label,
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.ink.copy(alpha = 0.45f),
+            modifier = Modifier.graphicsLayer { alpha = if (isValueEmpty) 1f else 0f },
         )
 
         BasicTextField(
-                textStyle =
-                        FloconTheme.typography.bodySmall.copy(
-                                color = FloconTheme.colorPalette.onSurface,
-                                fontWeight = FontWeight.Bold,
-                        ),
-                maxLines = 1,
-                value = value,
-                cursorBrush = SolidColor(FloconTheme.colorPalette.onSurface),
-                onValueChange = onValueChange,
+            textStyle =
+            FloconTheme.typography.bodySmall.copy(
+                color = FloconTheme.colors.ink,
+                fontWeight = FontWeight.Bold,
+            ),
+            maxLines = 1,
+            value = value,
+            cursorBrush = SolidColor(FloconTheme.colors.ink),
+            onValueChange = onValueChange,
         )
     }
 }
@@ -264,13 +266,13 @@ private fun DeeplinkTextField(
 private fun DeeplinkItemViewPreview() {
     FloconTheme {
         DeeplinkItemView(
-                modifier =
-                        Modifier.background(
-                                FloconTheme.colorPalette.primary,
-                        ),
-                submit = { _, _ -> },
-                item = previewDeeplinkViewState(),
-                removeFromHistory = {},
+            modifier =
+            Modifier.background(
+                FloconTheme.colors.bg100,
+            ),
+            submit = { _, _ -> },
+            item = previewDeeplinkViewState(),
+            removeFromHistory = {},
         )
     }
 }

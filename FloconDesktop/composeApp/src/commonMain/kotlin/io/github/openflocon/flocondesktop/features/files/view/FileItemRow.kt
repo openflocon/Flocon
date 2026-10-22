@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,11 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_copy_path
+import flocondesktop.composeapp.generated.resources.general_delete
+import flocondesktop.composeapp.generated.resources.general_delete_content
+import flocondesktop.composeapp.generated.resources.general_open
 import io.github.openflocon.flocondesktop.common.ui.ContextualView
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
@@ -40,7 +46,7 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -57,11 +63,21 @@ fun FileItemRow(
     val shiftPressed = remember { mutableStateOf(false) }
     val onContextualActionCallback by rememberUpdatedState(onContextualAction)
 
+    val openLabel = stringResource(Res.string.general_open)
+    val copyPathLabel = stringResource(Res.string.general_copy_path)
+    val deleteContentLabel = stringResource(Res.string.general_delete_content)
+    val deleteLabel = stringResource(Res.string.general_delete)
+
     ContextualView(
-        items = remember(file) {
+        items = remember(file, openLabel, copyPathLabel, deleteContentLabel, deleteLabel) {
             file.contextualActions.map { action ->
                 FloconContextMenuItem.Item(
-                    label = action.text,
+                    label = when (action.id) {
+                        FileUiModel.ContextualAction.Action.Open -> openLabel
+                        FileUiModel.ContextualAction.Action.CopyPath -> copyPathLabel
+                        FileUiModel.ContextualAction.Action.DeleteContent -> deleteContentLabel
+                        FileUiModel.ContextualAction.Action.Delete -> deleteLabel
+                    },
                     onClick = {
                         onContextualActionCallback(
                             file,
@@ -93,7 +109,7 @@ fun FileItemRow(
                         onClick(file)
                     }
                 )
-                .padding(vertical = 8.dp, horizontal = 16.dp),
+                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(multiSelect) {
@@ -106,18 +122,18 @@ fun FileItemRow(
                                 onSelectFile(path, selected, index, shiftPressed.value)
                             }
                         },
-                        uncheckedColor = FloconTheme.colorPalette.secondary
+                        uncheckedColor = FloconTheme.colors.bg200
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
                 }
             }
-            
+
             FloconIcon(
                 imageVector = file.icon,
                 modifier = Modifier.size(24.dp)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
 
             Text(
                 text = file.name,
@@ -133,7 +149,7 @@ fun FileItemRow(
                 maxLines = 1,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(150.dp),
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )
 
@@ -143,7 +159,7 @@ fun FileItemRow(
                 style = FloconTheme.typography.bodySmall,
                 maxLines = 1,
                 modifier = Modifier.width(100.dp),
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
             )
 
@@ -152,11 +168,11 @@ fun FileItemRow(
                 Icon(
                     imageVector = Icons.Outlined.ChevronRight,
                     modifier = Modifier.size(24.dp),
-                    tint = FloconTheme.colorPalette.onPrimary,
+                    tint = FloconTheme.colors.ink,
                     contentDescription = null,
                 )
             } else {
-                Spacer(modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.size(FloconTheme.spacing.extraLarge))
             }
         }
     }
@@ -168,7 +184,7 @@ private fun FileItemRowPreview_folder() {
     val file = FileUiModel(
         name = "MyFile",
         type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Constants.CachesDir,
+        path = FilePathUiModel.Root(id = "caches"),
         icon = Icons.Outlined.Folder,
         sizeFormatted = "1 MB",
         contextualActions = persistentListOf(),
@@ -222,7 +238,7 @@ private fun FileItemRowPreview() {
                     file = FileUiModel(
                         name = "MyFile",
                         type = FileTypeUiModel.Folder,
-                        path = FilePathUiModel.Constants.CachesDir,
+                        path = FilePathUiModel.Root(id = "caches"),
                         icon = Icons.Outlined.Folder,
                         sizeFormatted = "1 MB",
                         contextualActions = persistentListOf(),
@@ -256,4 +272,3 @@ private fun FileItemRowPreview() {
         }
     }
 }
-

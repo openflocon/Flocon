@@ -22,7 +22,5 @@ internal data class DeeplinkVariableReceivedDataModel(
         @Serializable
         @SerialName("auto_complete")
         data class AutoComplete(val suggestions: List<String>) : Mode
-
     }
-
 }

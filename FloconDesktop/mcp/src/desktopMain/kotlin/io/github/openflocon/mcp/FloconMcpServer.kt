@@ -2,6 +2,8 @@ package io.github.openflocon.mcp
 
 import co.touchlab.kermit.Logger
 import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
@@ -21,6 +23,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 class FloconMcpServer(
     private val toolProviders: List<McpToolProvider>,
     private val port: Int = Constant.MCP_SERVER_PORT,
+    private val logManager: LogManager,
 ) : McpServerRepository {
 
     private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
@@ -35,6 +38,7 @@ class FloconMcpServer(
         }.start(wait = false)
 
         Logger.i(TAG) { "MCP server started on http://localhost:$port$PATH" }
+        logManager.i(TAG, "Server started on http://localhost:$port$PATH (${toolProviders.size} tool providers)", domain = LogDomain.Mcp)
     }
 
     @Synchronized
@@ -56,7 +60,8 @@ class FloconMcpServer(
         ),
         instructions = INSTRUCTIONS,
     ) {
-        toolProviders.forEach { it.register(this) }
+        val toolServer = McpToolServer(server = this, logManager = logManager)
+        toolProviders.forEach { it.register(toolServer) }
     }
 
     private companion object {
@@ -79,16 +84,25 @@ class FloconMcpServer(
             - Bad network simulation: list_bad_network_configs shows the configs (latency, random errors) and the active one,
               set_active_bad_network_config turns one on (only one at a time) or off. Always turn the simulation off
               when you are done and tell the user which config you left active.
-            - Files of the app: list_files browses the "files" / "caches" directories, read_file returns a file content.
+            - Files of the app: list_file_roots lists the root folders announced by the app, list_files browses them, read_file returns a file content.
             - Analytics events sent by the app: count_analytics_events gives an overview per event name,
               list_analytics_events the events with their properties.
+            - Feature flags of the app: list_feature_flags gives the provider, name and variant of each flag,
+              get_feature_flag the full payload.
             - Databases of the app: list_databases gives the databaseId, list_database_tables the schema,
               query_database runs read only SQL queries (add a LIMIT), list_database_query_logs the queries run by the app.
+            - Deeplinks: list_deeplinks gives the deeplinks declared by the app with their parameters, list_deeplink_history those opened from Flocon,
+              open_deeplink opens a deeplink on the device (this one acts on the device, the other ones are read only).
+            - SharedPreferences of the app: list_shared_preferences gives the sharedPreferenceId,
+              get_shared_preference_values the typed keys / values of a file (optional text filter and limit).
             - Dashboards sent by the app: list_dashboards gives the ids, get_dashboard the containers and elements with their values.
             - Images loaded by the app: list_images gives their urls and load times.
             - Crashes reported by the app: list_crash_reports gives the exception type and message,
               get_crash_report the full stack trace.
             - Custom tables sent by the app (Table plugin): list_tables gives the tableId, list_table_items the rows.
+            - Screen of the device (Android, or the booted iOS Simulator): take_screenshot returns the image and its path,
+              start_screen_recording / stop_screen_recording record a video (mp4). Files are saved in the Flocon documents folder,
+              open_flocon_folder opens it on the computer and returns its path.
         """.trimIndent()
     }
 }

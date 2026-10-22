@@ -82,6 +82,7 @@ nav:
   - Home: index.md
   - Getting Started:
     - Installation & Setup: setup.md
+    - Migrating to 2.0: migration.md
     - macOS Setup: macos-install.md
     - Troubleshooting: troubleshooting.md
   - Features:
@@ -98,10 +99,14 @@ nav:
       - Preferences & DataStore: sharedpref.md
       - File Explorer: files.md
     - Custom Debugging:
+      - Timeline: timeline.md
       - Reactive Dashboards: dashboard.md
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md
       - Analytics Viewer: analytics.md
+      - Feature Flags Viewer: featureflags.md
+      - Crash Reporter: crashreporter.md
+      - ADB Commander: adb-commander.md
     - AI Agents (MCP): mcp.md
   - About:
     - The Story: about.md

@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.settings.repository
 
+import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ interface SettingsRepository {
 
     suspend fun setAdbPath(path: String)
 
-    suspend fun setFontSizeMultiplier(value: Float)
+    suspend fun setAppScale(value: AppScaleSetting)
 
     suspend fun setTheme(value: ThemeSetting)
 
@@ -40,7 +41,7 @@ interface SettingsRepository {
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 
     val adbPath: Flow<String?>
-    val fontSizeMultiplier: StateFlow<Float>
+    val appScale: StateFlow<AppScaleSetting>
     val theme: StateFlow<ThemeSetting>
     val adbForwardStatus: StateFlow<AdbForwardStatus>
 

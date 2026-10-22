@@ -54,9 +54,12 @@ class TelemetryManager(
 
         val distinctId = when (current.level) {
             TelemetryLevel.Disabled -> return
+
             TelemetryLevel.Anonymous -> sessionId
-            TelemetryLevel.Full -> preferences.installationId
-                ?: UUID.randomUUID().toString().also { preferences.installationId = it }
+
+            TelemetryLevel.Full ->
+                preferences.installationId
+                    ?: UUID.randomUUID().toString().also { preferences.installationId = it }
         }
 
         val allProperties = properties + mapOf(

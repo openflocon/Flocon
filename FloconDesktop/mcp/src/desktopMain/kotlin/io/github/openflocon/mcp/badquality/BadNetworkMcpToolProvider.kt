@@ -7,11 +7,11 @@ import io.github.openflocon.domain.network.repository.NetworkBadQualityRepositor
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.isSameApp
 import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 import kotlinx.coroutines.flow.first
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -27,7 +27,7 @@ internal class BadNetworkMcpToolProvider(
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_bad_network_configs",
             title = "List bad network configs",

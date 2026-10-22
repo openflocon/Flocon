@@ -10,10 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
@@ -64,7 +64,7 @@ private fun SharedPreferenceEditScreenContent(
             )
             FloconDialogButtons(
                 onCancel = cancel,
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier.padding(all = FloconTheme.spacing.small),
                 onValidate = {
                     save(row, value)
                 },

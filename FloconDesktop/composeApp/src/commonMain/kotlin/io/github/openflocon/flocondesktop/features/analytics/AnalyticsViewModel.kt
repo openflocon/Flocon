@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -72,6 +73,12 @@ class AnalyticsViewModel(
     )
     val screenState = _screenState.asStateFlow()
     val itemsState: StateFlow<AnalyticsStateUiModel> = analyticsSelectorDelegate.deviceAnalyticss
+
+    // an analytics table is created by the first event: no table, no event
+    val showEmptyState: StateFlow<Boolean> = itemsState
+        .map { it is AnalyticsStateUiModel.Empty }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val selectedItemId = MutableStateFlow<String?>(null)
     val selectedItem: StateFlow<AnalyticsDetailUiModel?> = combines(
@@ -147,10 +154,15 @@ class AnalyticsViewModel(
                 }
 
                 is AnalyticsAction.Remove -> removeAnalyticsItemUseCase(action.item.id)
+
                 is AnalyticsAction.RemoveLinesAbove -> removeAnalyticsItemsBeforeUseCase(action.item.id)
+
                 is AnalyticsAction.ToggleAutoScroll -> _screenState.update { it.copy(autoScroll = !it.autoScroll) }
+
                 is AnalyticsAction.InvertList -> _screenState.update { it.copy(invertList = action.value) }
+
                 is AnalyticsAction.ClearOldSession -> removeOldSessionsAnalyticsUseCase()
+
                 is AnalyticsAction.ExportCsv -> onExportCsv()
             }
         }

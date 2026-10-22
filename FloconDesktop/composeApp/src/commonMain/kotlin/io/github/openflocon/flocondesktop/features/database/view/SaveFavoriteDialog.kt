@@ -20,7 +20,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
@@ -43,10 +42,10 @@ fun SaveFavoriteDialog(
         Column(modifier = Modifier) {
             Text(
                 "Save as favorite",
-                modifier = Modifier.fillMaxWidth().background(FloconTheme.colorPalette.primary)
+                modifier = Modifier.fillMaxWidth().background(FloconTheme.colors.floating)
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     )
             )
             FloconTextField(
@@ -62,12 +61,12 @@ fun SaveFavoriteDialog(
                 maxLines = 1,
                 textStyle = FloconTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.floating,
                 modifier = Modifier.fillMaxWidth()
                     .focusRequester(focusRequester)
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     ).onKeyEvent { keyEvent ->
                         // detect CMD + Enter
                         if (keyEvent.type == KeyEventType.KeyDown &&
@@ -92,8 +91,8 @@ fun SaveFavoriteDialog(
                 },
                 modifier = Modifier.fillMaxWidth()
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     )
             )
         }

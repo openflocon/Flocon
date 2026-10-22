@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.network.body
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,16 +16,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffInfo
 import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.diff_clipboard
+import flocondesktop.composeapp.generated.resources.diff_original
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkDiffUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconJsonTreeDiff
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NetworkDiffWindow(
@@ -49,24 +52,24 @@ private fun NetworkDiffContent(
         Column {
             val diffInfo = jsonTreeDiffInfo
 
-            if(diffInfo != null) {
+            if (diffInfo != null) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 4.dp)
+                        .padding(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall)
                 ) {
                     Text(
                         modifier = Modifier
                             .weight(1F)
-                            .padding(start = 8.dp),
-                        text = "Original:",
+                            .padding(start = FloconTheme.spacing.small),
+                        text = stringResource(Res.string.diff_original),
                         style = FloconTheme.typography.titleMedium
                     )
 
                     Row(modifier = Modifier.weight(1F)) {
                         Text(
                             modifier = Modifier.weight(1F),
-                            text = "Clipboard:",
+                            text = stringResource(Res.string.diff_clipboard),
                             style = FloconTheme.typography.titleMedium
                         )
 
@@ -82,9 +85,9 @@ private fun NetworkDiffContent(
                 modifier = Modifier.fillMaxSize(),
                 originalJson = diff.json,
                 revisedJson = diff.clipboardJson,
-                paddingValues = PaddingValues(8.dp),
+                paddingValues = PaddingValues(FloconTheme.spacing.small),
                 colors = defaultDarkDiffColors.copy(
-                    regularBackgroundColor = FloconTheme.colorPalette.surface
+                    regularBackgroundColor = FloconTheme.colors.bg000
                 ),
                 onSuccess = { jsonTreeDiffInfo = it.info },
                 onLoading = {
@@ -96,13 +99,14 @@ private fun NetworkDiffContent(
                     }
                 },
                 onError = {
-                    when(it.error) {
+                    when (it.error) {
                         is OriginalJsonError -> {
                             Text(
                                 text = "Error in original Json:\n${it.error.throwable.localizedMessage}",
                                 style = FloconTheme.typography.bodyMedium
                             )
                         }
+
                         is RevisedJsonError -> {
                             Text(
                                 text = "Error in clipboard Json:\n${it.error.throwable.localizedMessage}",

@@ -23,49 +23,77 @@ Use cases:
 
 ---
 
-## Defining Dashboards
+## Setup
 
-### Static Dashboard
+Dashboards are part of the core module (`flocon` / `flocon-no-op`), install the plugin:
 
 ```kotlin
-floconDashboard(id = "main") {
+startFlocon(context) {
+    install(FloconDashboard)
+}
+```
+
+---
+
+## Defining Dashboards
+
+### Reactive Dashboard (Kotlin `Flow`)
+
+A dashboard is attached to a `CoroutineScope`: it is updated while the scope is active, and every
+section bound to a `Flow` is re-rendered on the desktop when the flow emits:
+
+```kotlin
+Flocon.dashboardPlugin.dashboard(id = "user_dashboard", scope = viewModelScope) {
+    section(name = "Active User", flow = userFlow) { user ->
+        text(label = "User ID", value = user.id)
+        text(label = "Email", value = user.email)
+
+        textField(
+            id = "display_name",
+            label = "Display Name",
+            placeHolder = "John",
+            value = user.displayName,
+            onSubmitted = { newName ->
+                userViewModel.updateName(newName)
+            }
+        )
+
+        checkBox(
+            id = "beta",
+            label = "Beta Features Enabled",
+            value = user.isBeta,
+            onUpdated = { isEnabled ->
+                userViewModel.setBeta(isEnabled)
+            }
+        )
+    }
+
     section(name = "App Status") {
         text(label = "Environment", value = "Staging")
         label(label = "Build: #142")
         button(
             text = "Clear Image Cache",
+            id = "clear_cache",
             onClick = { clearImageCache() }
         )
     }
 }
 ```
 
+`dashboard(...)` returns a `Job`: cancel it to stop updating the dashboard.
+
 ---
 
-### Reactive Dashboard (Kotlin `Flow`)
-
-You can bind a dashboard section directly to a Kotlin `StateFlow` or `Flow`. The desktop UI updates automatically whenever new data is emitted:
+### Static Dashboard
 
 ```kotlin
-floconDashboard(id = "user_dashboard") {
-    section(name = "Active User", userFlow) { user ->
-        text(label = "User ID", value = user.id)
-        text(label = "Email", value = user.email)
-        
-        textField(
-            label = "Display Name",
-            value = user.displayName,
-            onSubmitted = { newName ->
-                userViewModel.updateName(newName)
-            }
-        )
-        
-        checkBox(
-            label = "Beta Features Enabled",
-            value = user.isBeta,
-            onUpdated = { isEnabled ->
-                userViewModel.setBeta(isEnabled)
-            }
+Flocon.dashboardPlugin.registerDashboard(id = "main") {
+    section(name = "App Status") {
+        text(label = "Environment", value = "Staging")
+        button(
+            text = "Clear Image Cache",
+            id = "clear_cache",
+            onClick = { clearImageCache() }
         )
     }
 }
@@ -94,7 +122,7 @@ floconDashboard(id = "user_dashboard") {
 Group inputs together with a single submission action:
 
 ```kotlin
-floconDashboard(id = "settings") {
+Flocon.dashboardPlugin.dashboard(id = "settings", scope = scope) {
     form(
         name = "Server Configuration",
         submitText = "Apply Settings",
@@ -104,7 +132,7 @@ floconDashboard(id = "settings") {
             applyNewConfig(host, mockMode)
         }
     ) {
-        textField(id = "host_input", label = "API Host", value = "https://staging.api.com")
+        textField(id = "host_input", label = "API Host", placeHolder = null, value = "https://staging.api.com")
         checkBox(id = "mock_mode", label = "Enable Mock Mode", value = false)
     }
 }

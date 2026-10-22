@@ -45,11 +45,12 @@ fun PreferenceAutoUpdate(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (state) {
             is PreferenceAutoUpdate.Disabled -> {}
+
             is PreferenceAutoUpdate.Enabled -> {
                 AutoUpdateTextField(
                     modifier = Modifier.width(100.dp),
@@ -71,13 +72,13 @@ fun PreferenceAutoUpdate(
                 onChange(it)
             },
             colors = CheckboxDefaults.colors(
-                uncheckedColor = FloconTheme.colorPalette.secondary,
-                checkedColor = FloconTheme.colorPalette.secondary,
+                uncheckedColor = FloconTheme.colors.bg200,
+                checkedColor = FloconTheme.colors.bg200,
             )
         )
         Text(
             stringResource(Res.string.auto_update),
-            color = FloconTheme.colorPalette.onPrimary,
+            color = FloconTheme.colors.ink,
             style = FloconTheme.typography.bodySmall,
             modifier = Modifier.clickable {
                 val enabled = state is PreferenceAutoUpdate.Enabled
@@ -112,11 +113,11 @@ private fun AutoUpdateTextField(
         },
         placeholder = defaultPlaceHolder(placeholderText),
         leadingComponent = {},
-        containerColor = FloconTheme.colorPalette.secondary,
+        containerColor = FloconTheme.colors.bg200,
         trailingComponent = {
             Text(text = "ms", style = FloconTheme.typography.bodySmall)
         },
-        textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
+        textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.ink),
         modifier = modifier
     )
 }

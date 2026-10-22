@@ -9,15 +9,19 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -29,9 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
+
+private val NavItemHorizontalPadding = 10.dp
+private val NavItemGap = 10.dp
+private val NavIconSize = 16.dp
 
 @Composable
 fun PanelView(
@@ -42,56 +53,53 @@ fun PanelView(
     isEnabled: Boolean, // just make it gray but still selectable
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isPinnable: Boolean = false,
+    isPinned: Boolean = false,
+    onTogglePin: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = FloconTheme.shapes.medium
     val color by animateColorAsState(
         targetValue = when {
-            hovered -> FloconTheme.colorPalette.secondary
-            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
+            isSelected -> FloconTheme.colors.accentSoft
+            hovered -> FloconTheme.colors.bg300
+            else -> FloconTheme.colors.bg300.copy(alpha = 0f)
         },
         label = "color",
     )
-    val borderColor by animateColorAsState(
-        targetValue = when {
-            isSelected -> FloconTheme.colorPalette.accent
-            else -> FloconTheme.colorPalette.surface.copy(alpha = 0f)
-        },
-        label = "border_color",
-    )
     val iconColor by animateColorAsState(
         targetValue = when {
-            isSelected -> FloconTheme.colorPalette.onAccent
-            hovered -> FloconTheme.colorPalette.onSecondary
-            else -> FloconTheme.colorPalette.onPrimary
+            isSelected -> FloconTheme.colors.accent
+            hovered -> FloconTheme.colors.ink
+            else -> FloconTheme.colors.inkMuted
         }
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected || hovered) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
     )
     val lineAlpha by animateFloatAsState(
         if (isEnabled.not() && isSelected.not()) {
             0.3f
         } else 1f
     )
-    val horizontalPadding = 12.dp
-
     Row(
         modifier = modifier
             .clip(shape)
             .background(color)
-            .border(1.dp, borderColor, shape)
             .graphicsLayer {
                 alpha = lineAlpha
             }
             .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
-            .padding(horizontal = horizontalPadding, vertical = 4.dp),
+            // collapsed: the icon is centered in the 64dp rail
+            .padding(horizontal = if (expanded) NavItemHorizontalPadding else 0.dp),
+        horizontalArrangement = if (expanded) Arrangement.Start else Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = Modifier
-                .size(PanelContentMinSize - horizontalPadding.times(2))
-                .padding(4.dp),
+            modifier = Modifier.size(NavIconSize),
             imageVector = icon,
-            contentDescription = "Description de mon image",
+            contentDescription = stringResource(Res.string.app_logo_content_description),
             tint = iconColor,
         )
         AnimatedVisibility(
@@ -101,10 +109,24 @@ fun PanelView(
         ) {
             Text(
                 text = text,
-                color = FloconTheme.colorPalette.onSurface,
-                style = FloconTheme.typography.bodyMedium,
+                color = textColor,
+                style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                 maxLines = 1,
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(start = NavItemGap),
+            )
+        }
+        // the pin is displayed on hover, and always for a pinned item
+        if (expanded && isPinnable && (hovered || isPinned)) {
+            Spacer(Modifier.weight(1f))
+            Icon(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(shape)
+                    .clickable(onClick = onTogglePin)
+                    .padding(FloconTheme.spacing.tiny),
+                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                contentDescription = if (isPinned) "Unpin" else "Pin",
+                tint = FloconTheme.colors.ink,
             )
         }
     }

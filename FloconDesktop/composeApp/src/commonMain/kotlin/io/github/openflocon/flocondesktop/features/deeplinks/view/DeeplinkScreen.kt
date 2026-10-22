@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,9 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_variables
+import flocondesktop.composeapp.generated.resources.general_history
+import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.deeplinks.DeepLinkViewModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
@@ -35,11 +41,11 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVaria
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.toImmutableMap
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -72,7 +78,10 @@ private fun DeeplinkScreen(
     }
     val history by remember(state.deepLinks) { derivedStateOf { state.deepLinks.filter { it.isHistory } } }
 
-    FloconFeature(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
         // Top bar: freeform input only
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
@@ -81,77 +90,90 @@ private fun DeeplinkScreen(
                     submit = submit,
                     modifier = Modifier.fillMaxWidth(),
                 )
-            }
+            },
+            actions = {
+                FeatureDocButton(doc = FeatureDoc.Deeplinks)
+            },
         )
 
-        // Main body — two rows of equal weight
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Top half: variables (left) | deeplinks (right)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+        if (state.showEmptyState) {
+            FeatureEmptyState(
+                doc = FeatureDoc.Deeplinks,
                 modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxWidth()
-            ) {
-                // Left: Variables
-                DeeplinkScrollablePanel(
-                    title = "Variables",
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .fillMaxHeight()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary),
-                ) {
-                    items(state.variables) { item ->
-                        DeeplinkVariableChip(
-                            variable = item,
-                            onValueChange = { setVariable(item.name, it) },
-                        )
-                    }
-                }
-
-                // Right: Deeplinks (non-history)
-                DeeplinkScrollablePanel(
-                    title = "Deeplinks",
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary),
-                ) {
-                    items(deepLinks) { item ->
-                        DeeplinkItemView(
-                            submit = submit,
-                            removeFromHistory = removeFromHistory,
-                            item = item,
-                            variableValues = variableValues,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-
-            // Bottom half: History
-            DeeplinkScrollablePanel(
-                title = "History",
-                modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colorPalette.primary)
+                    .background(FloconTheme.colors.bg100),
+            )
+        } else {
+            // Main body — two rows of equal weight
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(history) { item ->
-                    SelectionContainer {
-                        DeeplinkItemView(
-                            submit = submit,
-                            removeFromHistory = removeFromHistory,
-                            item = item,
-                            variableValues = variableValues,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                // Top half: variables (left) | deeplinks (right)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxWidth()
+                ) {
+                    // Left: Variables
+                    DeeplinkScrollablePanel(
+                        title = stringResource(Res.string.deeplink_variables),
+                        modifier = Modifier
+                            .weight(0.3f)
+                            .fillMaxHeight()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colors.bg100),
+                    ) {
+                        items(state.variables) { item ->
+                            DeeplinkVariableChip(
+                                variable = item,
+                                onValueChange = { setVariable(item.name, it) },
+                            )
+                        }
+                    }
+
+                    // Right: Deeplinks (non-history)
+                    DeeplinkScrollablePanel(
+                        title = stringResource(Res.string.menu_item_deeplinks),
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .fillMaxHeight()
+                            .clip(FloconTheme.shapes.medium)
+                            .background(FloconTheme.colors.bg100),
+                    ) {
+                        items(deepLinks) { item ->
+                            DeeplinkItemView(
+                                submit = submit,
+                                removeFromHistory = removeFromHistory,
+                                item = item,
+                                variableValues = variableValues,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                }
+
+                // Bottom half: History
+                DeeplinkScrollablePanel(
+                    title = stringResource(Res.string.general_history),
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100)
+                ) {
+                    items(history) { item ->
+                        SelectionContainer {
+                            DeeplinkItemView(
+                                submit = submit,
+                                removeFromHistory = removeFromHistory,
+                                item = item,
+                                variableValues = variableValues,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                 }
             }
@@ -188,8 +210,8 @@ private fun DeeplinkScrollablePanel(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(all = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(all = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 content = content,
             )
             FloconVerticalScrollbar(
@@ -205,13 +227,13 @@ private fun DeeplinkPanelHeader(title: String) {
     Text(
         text = title,
         style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-        color = FloconTheme.colorPalette.onPrimary,
+        color = FloconTheme.colors.ink,
         modifier = Modifier
             .fillMaxWidth()
-            .background(FloconTheme.colorPalette.primary)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .background(FloconTheme.colors.bg100)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact),
     )
-    HorizontalDivider(color = FloconTheme.colorPalette.surface)
+    HorizontalDivider(color = FloconTheme.colors.bg000)
 }
 
 @Composable
@@ -220,36 +242,36 @@ private fun DeeplinkScreenPreview() {
     FloconTheme {
         DeeplinkScreen(
             state =
-                DeeplinkScreenState(
-                    deepLinks = listOf(
-                        previewDeeplinkViewState(),
-                        previewDeeplinkViewState(),
-                        previewDeeplinkViewState().copy(isHistory = true),
-                        previewDeeplinkViewState().copy(isHistory = true),
-                    ),
-                    variables =
-                        listOf(
-                            DeeplinkVariableViewState(
-                                name = "userId",
-                                description = null,
-                                value = ""
-                            ),
-                            DeeplinkVariableViewState(
-                                name = "env",
-                                description = null,
-                                value = "staging",
-                                mode =
-                                    DeeplinkVariableViewState.Mode
-                                        .AutoComplete(
-                                            listOf(
-                                                "dev",
-                                                "staging",
-                                                "prod"
-                                            )
-                                        ),
-                            ),
-                        ),
+            DeeplinkScreenState(
+                deepLinks = listOf(
+                    previewDeeplinkViewState(),
+                    previewDeeplinkViewState(),
+                    previewDeeplinkViewState().copy(isHistory = true),
+                    previewDeeplinkViewState().copy(isHistory = true),
                 ),
+                variables =
+                listOf(
+                    DeeplinkVariableViewState(
+                        name = "userId",
+                        description = null,
+                        value = ""
+                    ),
+                    DeeplinkVariableViewState(
+                        name = "env",
+                        description = null,
+                        value = "staging",
+                        mode =
+                        DeeplinkVariableViewState.Mode
+                            .AutoComplete(
+                                listOf(
+                                    "dev",
+                                    "staging",
+                                    "prod"
+                                )
+                            ),
+                    ),
+                ),
+            ),
             submit = { _, _ -> },
             removeFromHistory = {},
             setVariable = { _, _ -> },

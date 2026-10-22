@@ -9,10 +9,10 @@ import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowExecut
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.HistoryEntryUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.SavedCommandUiModel
+import kotlinx.collections.immutable.toImmutableList
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlinx.collections.immutable.toImmutableList
 
 fun AdbCommandDomainModel.toUiModel() = SavedCommandUiModel(
     id = id,
@@ -56,6 +56,4 @@ fun AdbFlowExecutionState.toUiModel() = FlowExecutionUiModel(
 
 private val timestampFormatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
-private fun formatTimestamp(epochMs: Long): String {
-    return timestampFormatter.format(Date(epochMs))
-}
+private fun formatTimestamp(epochMs: Long): String = timestampFormatter.format(Date(epochMs))

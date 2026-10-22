@@ -48,8 +48,5 @@ data class DeeplinkVariableEntity(
         @Serializable
         @SerialName("auto_complete")
         data class AutoComplete(val suggestions: List<String>) : Mode
-
     }
-
 }
-

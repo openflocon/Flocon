@@ -13,10 +13,10 @@ import io.github.openflocon.mcp.McpOrder
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
+import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.hasExplicitTarget
 import io.github.openflocon.mcp.readOnlyToolAnnotations
-import io.modelcontextprotocol.kotlin.sdk.server.Server
 
 internal class NetworkMcpToolProvider(
     private val networkRepository: NetworkRepository,
@@ -24,7 +24,7 @@ internal class NetworkMcpToolProvider(
     private val generateCurlCommandUseCase: GenerateCurlCommandUseCase,
 ) : McpToolProvider {
 
-    override fun register(server: Server) {
+    override fun register(server: McpToolServer) {
         server.addTypedTool(
             name = "list_network_calls",
             title = "List network calls",
