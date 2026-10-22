@@ -157,7 +157,6 @@ fun NetworkScreen(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-<<<<<<< HEAD
                 .clip(FloconTheme.shapes.large)
                 .background(FloconTheme.colors.bg100)
                 .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
@@ -167,8 +166,6 @@ fun NetworkScreen(
                     enabled = uiState.detailState != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
-=======
->>>>>>> 81547da23 (refact: [NETWORK] Replace combine chains with Molecule in the network list)
                 .onPreviewKeyEvent { event ->
                     if (event.type != KeyEventType.KeyDown) {
                         return@onPreviewKeyEvent false

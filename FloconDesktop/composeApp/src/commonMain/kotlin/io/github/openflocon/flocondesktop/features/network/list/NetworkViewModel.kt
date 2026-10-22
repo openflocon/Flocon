@@ -42,7 +42,6 @@ import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetw
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
@@ -84,7 +83,6 @@ class NetworkViewModel(
     private val headerDelegate: HeaderDelegate,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val navigationState: MainFloconNavigationState,
-    private val detailDelegate: NetworkDetailDelegate,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
 ) : ViewModel(headerDelegate),
@@ -269,8 +267,6 @@ class NetworkViewModel(
             is NetworkAction.Pinned -> onPinned(action)
 
             is NetworkAction.SetDefaultSelectedTab -> setDefaultSelectedTab(action)
-
-            is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
 
             is NetworkAction.SelectLine -> onSelectLine(action)
 
@@ -558,22 +554,12 @@ class NetworkViewModel(
     }
 }
 
-<<<<<<< HEAD
-private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = if (isActive) {
-    Filters.FilterItem(
-        text = text,
-    )
-} else {
-    null
-}
-=======
 internal data class NetworkListQuery(
     val deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
     val isClearing: Boolean,
     val sort: NetworkSortDomainModel?,
     val filter: NetworkFilterDomainModel,
 )
->>>>>>> 81547da23 (refact: [NETWORK] Replace combine chains with Molecule in the network list)
 
 internal fun buildNetworkListQuery(
     deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
