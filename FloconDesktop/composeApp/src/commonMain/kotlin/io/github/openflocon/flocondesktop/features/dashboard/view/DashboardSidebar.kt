@@ -47,10 +47,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DashboardSidebar(
-    modifier: Modifier = Modifier,
     state: DashboardsStateUiModel,
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.bg200
 
