@@ -149,9 +149,13 @@ internal fun NetworkSearchPreviewView(
                         matches.filter { it.location == currentMatch?.location }.forEach { match ->
                             addStyle(
                                 style = SpanStyle(
-                                    background = if (match == currentMatch) Color.Red.copy(alpha = 0.5f) else Color.Yellow.copy(
-                                        alpha = 0.3f
-                                    ),
+                                    background = if (match == currentMatch) {
+                                        Color.Red.copy(alpha = 0.5f)
+                                    } else {
+                                        Color.Yellow.copy(
+                                            alpha = 0.3f
+                                        )
+                                    },
                                     color = if (match == currentMatch) Color.White else Color.Black
                                 ),
                                 start = match.start,

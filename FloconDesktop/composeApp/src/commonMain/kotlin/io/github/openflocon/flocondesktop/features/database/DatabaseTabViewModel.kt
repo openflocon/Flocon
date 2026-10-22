@@ -99,8 +99,11 @@ class DatabaseTabViewModel(
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
     val state: StateFlow<DatabaseScreenState> = queryResult.map { queryResult ->
-        if (queryResult == null) DatabaseScreenState.Idle
-        else DatabaseScreenState.Result(queryResult)
+        if (queryResult == null) {
+            DatabaseScreenState.Idle
+        } else {
+            DatabaseScreenState.Result(queryResult)
+        }
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,

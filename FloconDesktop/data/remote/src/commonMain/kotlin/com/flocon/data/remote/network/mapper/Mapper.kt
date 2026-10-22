@@ -160,7 +160,9 @@ fun extractGraphQl(decoded: FloconNetworkRequestDataModel): GraphQlExtracted? {
                     queryName = queryName,
                     operationType = "persistedQuery",
                 )
-            } else null
+            } else {
+                null
+            }
         } catch (t: Throwable) {
             null
         }

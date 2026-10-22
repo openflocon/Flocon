@@ -42,14 +42,16 @@ internal fun AnalyticsSelectorView(
         expanded = expanded,
         onDismissRequest = { expanded = false },
         onExpandRequest = {
-            if (analyticsState is AnalyticsStateUiModel.WithContent)
+            if (analyticsState is AnalyticsStateUiModel.WithContent) {
                 expanded = true
+            }
         },
         anchorContent = {
             FloconButton(
                 onClick = {
-                    if (analyticsState is AnalyticsStateUiModel.WithContent)
+                    if (analyticsState is AnalyticsStateUiModel.WithContent) {
                         expanded = true
+                    }
                 },
                 containerColor = FloconTheme.colors.bg200
             ) {

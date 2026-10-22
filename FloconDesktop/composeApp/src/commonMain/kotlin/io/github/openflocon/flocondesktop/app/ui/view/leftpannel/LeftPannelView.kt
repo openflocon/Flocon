@@ -240,8 +240,9 @@ private fun ColumnScope.MenuItems(
             isPinned = item.isPinned,
             onTogglePin = { onTogglePin(item) },
         )
-        if (index != items.lastIndex)
+        if (index != items.lastIndex) {
             Spacer(Modifier.height(FloconTheme.spacing.tiny))
+        }
     }
 }
 

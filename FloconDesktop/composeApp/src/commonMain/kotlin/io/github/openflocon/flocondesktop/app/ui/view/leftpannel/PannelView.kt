@@ -81,7 +81,9 @@ fun PanelView(
     val lineAlpha by animateFloatAsState(
         if (isEnabled.not() && isSelected.not()) {
             0.3f
-        } else 1f
+        } else {
+            1f
+        }
     )
     Row(
         modifier = modifier

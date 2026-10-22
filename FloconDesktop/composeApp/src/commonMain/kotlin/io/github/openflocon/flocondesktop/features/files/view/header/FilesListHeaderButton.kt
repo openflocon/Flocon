@@ -58,9 +58,13 @@ internal fun FilesListHeaderButton(
             modifier = Modifier.weight(1f)
                 .clip(shape)
                 .background(
-                    if (sortedBy != SortedByUiModel.None) FloconTheme.colors.accent.copy(
-                        alpha = 0.3f
-                    ) else Color.Transparent
+                    if (sortedBy != SortedByUiModel.None) {
+                        FloconTheme.colors.accent.copy(
+                            alpha = 0.3f
+                        )
+                    } else {
+                        Color.Transparent
+                    }
                 )
                 .clickable(onClick = {
                     // TODO

@@ -219,8 +219,9 @@ fun CommandInputView(
         ) {
             FloconButton(
                 onClick = {
-                    if (!isInputEmpty)
+                    if (!isInputEmpty) {
                         onAction(AdbCommanderAction.ExecuteCommand)
+                    }
                 },
                 containerColor = FloconTheme.colors.ink,
                 modifier = Modifier

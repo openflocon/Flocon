@@ -205,8 +205,9 @@ fun DatabaseQueryView(
             val isEnabled = query.isNotBlank()
             FloconButton(
                 onClick = {
-                    if (isEnabled)
+                    if (isEnabled) {
                         onAction(DatabaseTabAction.ExecuteQuery(query))
+                    }
                 },
                 containerColor = colors.accent,
                 modifier = Modifier

@@ -29,12 +29,13 @@ fun FilterDropdown(
             onClick = { filterExpanded = !filterExpanded },
             label = { Text(text = text) },
             icon = {
-                if (icon != null)
+                if (icon != null) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )
+                }
             },
         )
         FloconDropdownMenu(

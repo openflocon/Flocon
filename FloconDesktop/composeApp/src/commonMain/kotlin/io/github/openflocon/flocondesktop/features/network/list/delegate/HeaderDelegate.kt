@@ -163,7 +163,9 @@ class HeaderDelegate(
                             items = it.items.map { item ->
                                 if (item.method == clicked) {
                                     item.copy(isSelected = !item.isSelected)
-                                } else item
+                                } else {
+                                    item
+                                }
                             },
                         )
                     }
@@ -254,12 +256,16 @@ private fun TextFilterStateUiModel.performAction(
             includedFilters = includedFilters.map {
                 if (it == action.item) {
                     action.item.copy(isActive = action.isActive)
-                } else it
+                } else {
+                    it
+                }
             },
             excludedFilters = excludedFilters.map {
                 if (it == action.item) {
                     action.item.copy(isActive = action.isActive)
-                } else it
+                } else {
+                    it
+                }
             },
         )
     }

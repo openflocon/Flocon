@@ -171,8 +171,9 @@ fun NetworkScreen(
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
                 .onPreviewKeyEvent { event ->
-                    if (event.type != KeyEventType.KeyDown)
+                    if (event.type != KeyEventType.KeyDown) {
                         return@onPreviewKeyEvent false
+                    }
 
                     when (event.key) {
                         Key.DirectionUp -> {
@@ -545,10 +546,11 @@ private fun selectPreviousRow(
 ): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
     .takeIf { it != -1 }
     ?.let { selectedIndex ->
-        val newIndex = if (uiState.settings.invertList)
+        val newIndex = if (uiState.settings.invertList) {
             selectedIndex + 1
-        else
+        } else {
             selectedIndex - 1
+        }
         newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
     }?.let {
         rows[it]
@@ -560,10 +562,11 @@ private fun selectNextRow(
 ): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
     .takeIf { it != -1 }
     ?.let { selectedIndex ->
-        val newIndex = if (uiState.settings.invertList)
+        val newIndex = if (uiState.settings.invertList) {
             selectedIndex - 1
-        else
+        } else {
             selectedIndex + 1
+        }
         newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
     }?.let {
         rows[it]

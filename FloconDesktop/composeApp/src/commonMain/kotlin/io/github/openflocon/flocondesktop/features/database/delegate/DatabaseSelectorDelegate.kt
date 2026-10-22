@@ -45,8 +45,11 @@ class DatabaseSelectorDelegate(
         combine(
             observeDeviceDatabaseUseCase(),
             selectedDatabaseId.flatMapLatest {
-                if (it == null) flowOf(null)
-                else observeCurrentDeviceSelectedDatabaseAndTablesUseCase(it)
+                if (it == null) {
+                    flowOf(null)
+                } else {
+                    observeCurrentDeviceSelectedDatabaseAndTablesUseCase(it)
+                }
             },
         ) { databases, selected ->
             if (databases.isEmpty()) {

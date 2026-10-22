@@ -80,8 +80,11 @@ fun DeeplinkItemView(
                 Modifier.weight(1f)
                     .clip(FloconTheme.shapes.medium)
                     .background(
-                        if (item.isHistory) FloconTheme.colors.accentSoft
-                        else FloconTheme.colors.bg000
+                        if (item.isHistory) {
+                            FloconTheme.colors.accentSoft
+                        } else {
+                            FloconTheme.colors.bg000
+                        }
                     )
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
                 verticalArrangement = Arrangement.Center,
@@ -209,14 +212,19 @@ private fun TextFieldPart(
                 style =
                 FloconTheme.typography.bodySmall.copy(
                     color =
-                    if (resolved.isNullOrEmpty())
+                    if (resolved.isNullOrEmpty()) {
                         FloconTheme.colors.ink.copy(
                             alpha = 0.4f
                         )
-                    else FloconTheme.colors.ink,
+                    } else {
+                        FloconTheme.colors.ink
+                    },
                     fontWeight =
-                    if (resolved.isNullOrEmpty()) FontWeight.Normal
-                    else FontWeight.Bold,
+                    if (resolved.isNullOrEmpty()) {
+                        FontWeight.Normal
+                    } else {
+                        FontWeight.Bold
+                    },
                 ),
             )
         }

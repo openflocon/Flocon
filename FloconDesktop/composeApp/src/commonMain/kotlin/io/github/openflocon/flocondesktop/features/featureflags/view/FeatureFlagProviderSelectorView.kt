@@ -41,14 +41,16 @@ internal fun FeatureFlagProviderSelectorView(
         expanded = expanded,
         onDismissRequest = { expanded = false },
         onExpandRequest = {
-            if (providersState is FeatureFlagProvidersUiModel.WithContent)
+            if (providersState is FeatureFlagProvidersUiModel.WithContent) {
                 expanded = true
+            }
         },
         anchorContent = {
             FloconButton(
                 onClick = {
-                    if (providersState is FeatureFlagProvidersUiModel.WithContent)
+                    if (providersState is FeatureFlagProvidersUiModel.WithContent) {
                         expanded = true
+                    }
                 },
                 containerColor = FloconTheme.colors.bg200
             ) {

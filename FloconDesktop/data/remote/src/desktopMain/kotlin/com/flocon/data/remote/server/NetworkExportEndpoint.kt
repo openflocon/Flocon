@@ -103,7 +103,9 @@ private suspend fun ApplicationCall.respondJson(
                         startTimestamp = startTimestamp,
                         endTimestamp = endTimestamp,
                     )
-                } else null,
+                } else {
+                    null
+                },
             ),
         )
 

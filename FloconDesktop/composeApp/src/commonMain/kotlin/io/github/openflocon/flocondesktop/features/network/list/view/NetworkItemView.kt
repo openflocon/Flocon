@@ -121,7 +121,9 @@ fun NetworkItemView(
                 .then(
                     if (state.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
-                    } else Modifier
+                    } else {
+                        Modifier
+                    }
                 )
                 .height(IntrinsicSize.Min)
                 .background(

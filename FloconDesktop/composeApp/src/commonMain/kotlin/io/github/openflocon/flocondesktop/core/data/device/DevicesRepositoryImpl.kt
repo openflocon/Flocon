@@ -51,10 +51,11 @@ class DevicesRepositoryImpl(
     }
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = localCurrentDeviceDataSource.currentDeviceId.flatMapLatest {
-        if (it == null)
+        if (it == null) {
             flowOf(null)
-        else
+        } else {
             localDevicesDataSource.observeDeviceById(it)
+        }
     }
 
     // returns new if new device

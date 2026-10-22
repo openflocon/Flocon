@@ -619,7 +619,9 @@ private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = 
     Filters.FilterItem(
         text = text,
     )
-} else null
+} else {
+    null
+}
 
 private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
     return items.map { it.text }.takeIf { it.isNotEmpty() }
