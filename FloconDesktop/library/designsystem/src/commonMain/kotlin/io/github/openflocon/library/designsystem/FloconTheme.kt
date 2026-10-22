@@ -23,8 +23,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.components.FloconMenuRepresentation
 import io.github.openflocon.library.designsystem.theme.FloconColors
-import io.github.openflocon.library.designsystem.theme.FloconDarkColors
-import io.github.openflocon.library.designsystem.theme.FloconLightColors
+import io.github.openflocon.library.designsystem.theme.FloconGlassBackground
+import io.github.openflocon.library.designsystem.theme.FloconGlassDarkColors
+import io.github.openflocon.library.designsystem.theme.FloconGlassLightColors
 import io.github.openflocon.library.designsystem.theme.LocalFloconColors
 import io.github.openflocon.library.designsystem.theme.AppScale
 import io.github.openflocon.library.designsystem.theme.FloconSizes
@@ -74,7 +75,7 @@ fun FloconTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (isDarkTheme) FloconDarkColors else FloconLightColors
+    val colors = if (isDarkTheme) FloconGlassDarkColors else FloconGlassLightColors
     val ripple = ripple(color = colors.accent)
     val selectionTextColor = TextSelectionColors(
         handleColor = colors.accent,
@@ -118,7 +119,9 @@ fun FloconTheme(
             LocalScrollbarStyle provides scrollbarStyle,
             LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
             LocalContextMenuRepresentation provides FloconMenuRepresentation(),
-            content = content
+            content = {
+                FloconGlassBackground(isDarkTheme = isDarkTheme, content = content)
+            }
         )
     }
 }

@@ -38,6 +38,7 @@ fun FloconDialog(
             true
         }
         FloconSurface(
+            color = FloconTheme.colors.floating,
             shape = RoundedCornerShape(10.dp),
             modifier = modifier
                 .fillMaxWidth()
@@ -56,7 +57,7 @@ fun FloconDialogHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colors.bg100)
+            .background(FloconTheme.colors.floating)
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {

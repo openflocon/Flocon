@@ -14,15 +14,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+
+/** When true the selector sits inside a joined control: no border or rounded corners of its own. */
+internal val LocalTopBarSelectorJoined = compositionLocalOf { false }
 
 @Composable
 internal fun TopBarSelector(
@@ -36,12 +41,20 @@ internal fun TopBarSelector(
     val colors = FloconTheme.colors
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
+    val joined = LocalTopBarSelectorJoined.current
 
     Row(
         modifier = modifier
-            .clip(shape)
-            .background(if (hovered) colors.bg200 else colors.bg100)
-            .border(1.dp, if (hovered) colors.lineStrong else colors.line, shape)
+            .then(
+                if (joined) {
+                    Modifier.background(if (hovered) colors.bg200 else Color.Transparent)
+                } else {
+                    Modifier
+                        .clip(shape)
+                        .background(if (hovered) colors.bg200 else colors.bg100)
+                        .border(1.dp, if (hovered) colors.lineStrong else colors.line, shape)
+                },
+            )
             .hoverable(interactionSource)
             .clickable(
                 interactionSource = interactionSource,
