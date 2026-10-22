@@ -50,6 +50,10 @@
     <string name="timeline_source_app_start">App start</string>
     <string name="timeline_app_started">App started</string>
     <string name="timeline_live">Live</string>
+    <plurals name="network_counter_requests">
+        <item quantity="one">request</item>
+        <item quantity="other">requests</item>
+    </plurals>
     <plurals name="timeline_counter_events">
         <item quantity="one">event</item>
         <item quantity="other">events</item>

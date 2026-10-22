@@ -2,7 +2,9 @@ package io.github.openflocon.flocondesktop.features.network.list
 
 import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -127,6 +129,9 @@ class NetworkViewModel(
     private val settings: StateFlow<NetworkSettings> = observeNetworkSettingsUseCase()
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(defaultNetworkSettings)
+
+    val isPinned = settings.map { it.pinnedDetails }
+        .stateInWhileSubscribed(settings.value.pinnedDetails)
 
     private val filterUiState = combine(
         mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
@@ -407,19 +412,9 @@ class NetworkViewModel(
         selectRequest(action.id)
     }
 
-    private var selectRequestJob: Job? = null
     private fun selectRequest(id: String) {
         contentState.update { it.copy(selectedRequestId = id) }
-        selectRequestJob?.cancel()
-        selectRequestJob = viewModelScope.launch {
-            observeNetworkSettingsUseCase().collect {
-                if (it.pinnedDetails) {
-                    detailDelegate.setRequestId(id)
-                } else {
-                    navigationState.navigate(NetworkRoutes.Panel(id))
-                }
-            }
-        }
+        navigationState.navigate(NetworkRoutes.Panel(id))
     }
 
     private fun openMocks(callId: String?) {

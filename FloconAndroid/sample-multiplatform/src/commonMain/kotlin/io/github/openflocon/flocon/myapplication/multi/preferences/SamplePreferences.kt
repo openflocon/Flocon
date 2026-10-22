@@ -1,5 +1,8 @@
 package io.github.openflocon.flocon.myapplication.multi.preferences
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 
@@ -9,7 +12,8 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceVal
 object SamplePreferences : FloconPreference {
     override val name: String = "Sample preferences"
 
-    var counter: Int = 0
+    /** Backed by a Compose state, so the screen follows the edits made from the desktop app. */
+    var counter: Int by mutableIntStateOf(0)
 
     private val values = mutableMapOf<String, FloconPreferenceValue>()
 

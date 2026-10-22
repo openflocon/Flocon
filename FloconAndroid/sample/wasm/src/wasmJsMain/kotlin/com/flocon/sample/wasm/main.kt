@@ -16,6 +16,7 @@ import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
+import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
@@ -97,6 +98,9 @@ private fun registerWasmSampleFeatures() {
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseFood) {
+        Databases.foodDatabase.foodDao().insertFood(newFood())
     }
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 does not support Wasm")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")

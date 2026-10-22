@@ -14,13 +14,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.MetadataScope
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.get
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.navigation.FloconRoute
 
@@ -29,10 +30,8 @@ data class MenuScene(
     val scene: Scene<FloconRoute>,
     val menuContent: @Composable ((expanded: Boolean, onToggleExpanded: () -> Unit) -> Unit),
     val topBarContent: @Composable (() -> Unit)?
-) : Scene<FloconRoute> {
-    override val key: Any = Unit
-    override val entries: List<NavEntry<FloconRoute>> = scene.entries
-    override val previousEntries: List<NavEntry<FloconRoute>> = scene.previousEntries
+) : Scene<FloconRoute> by scene {
+    override val key: Any = MenuScene::class.qualifiedName!!
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
@@ -42,7 +41,6 @@ data class MenuScene(
             topBar = { topBarContent?.invoke() },
             modifier = Modifier.fillMaxSize()
         ) { padding ->
-            // the sidebar is flush with the window edge, the content keeps its own margin
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -51,11 +49,15 @@ data class MenuScene(
                 Box(
                     modifier = Modifier
                         .width(width)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
                 ) {
                     menuContent(expanded) { expanded = !expanded }
                 }
-                Row(modifier = Modifier.weight(1f).fillMaxHeight().padding(FloconTheme.spacing.small)) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
                     scene.content()
                 }
             }
@@ -69,7 +71,7 @@ class MenuSceneStrategy(
 ) : SceneDecoratorStrategy<FloconRoute> {
 
     override fun SceneDecoratorStrategyScope<FloconRoute>.decorateScene(scene: Scene<FloconRoute>): Scene<FloconRoute> {
-        if (scene.metadata.containsKey(MENU_KEY)) {
+        if (scene.metadata[MenuKey] == true || scene.metadata[KeepMenuKey] == true) {
             return MenuScene(
                 scene = scene,
                 menuContent = menuContent,
@@ -80,9 +82,15 @@ class MenuSceneStrategy(
         return scene
     }
 
-    companion object {
-        private const val MENU_KEY = "menu_key"
+}
 
-        fun menu() = mapOf(MENU_KEY to MENU_KEY)
-    }
+data object MenuKey : NavMetadataKey<Boolean>
+data object KeepMenuKey : NavMetadataKey<Boolean>
+
+fun MetadataScope.menu() {
+    put(MenuKey, true)
+}
+
+fun MetadataScope.keepMenu() {
+    put(KeepMenuKey, true)
 }

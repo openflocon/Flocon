@@ -4,6 +4,7 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 
 import android.content.Context
 import io.github.openflocon.flocon.myapplication.multi.Databases
+import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.room2.CatDatabase
 import io.github.openflocon.flocon.myapplication.multi.room2.CatEntity
@@ -30,6 +31,9 @@ fun registerAndroidSampleFeatures(context: Context) {
     SampleFeatures.on(SampleFeature.Grpc) { AndroidTestContext.grpcSayHello() }
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         Databases.getDogDatabase(context).dogDao().insertDog(newDog("Flocon"))
+    }
+    SampleFeatures.on(SampleFeature.DatabaseFood) {
+        Databases.getFoodDatabase(context).foodDao().insertFood(newFood())
     }
     SampleFeatures.on(SampleFeature.DatabaseRoom2) {
         CatDatabase.get(context).catDao().insertCat(
