@@ -1,12 +1,19 @@
 package io.github.openflocon.flocondesktop.features.network.list.delegate
 
-import io.github.openflocon.domain.common.DispatcherProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
+import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
 import io.github.openflocon.domain.network.usecase.GetNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkFilterUseCase
 import io.github.openflocon.domain.network.usecase.UpdateNetworkFilterUseCase
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toTextFilterDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toTextFilterUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
@@ -20,13 +27,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.col
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.NetworkTextColumnUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -34,23 +37,29 @@ import kotlinx.coroutines.launch
 
 class HeaderDelegate(
     private val closeableDelegate: CloseableDelegate,
-    dispatcherProvider: DispatcherProvider,
     private val observeNetworkFilterUseCase: ObserveNetworkFilterUseCase,
     private val updateNetworkFilterUseCase: UpdateNetworkFilterUseCase,
     private val getNetworkFilterUseCase: GetNetworkFilterUseCase,
 ) : CloseableScoped by closeableDelegate {
+
+    data class HeaderQuery(
+        val sort: NetworkSortDomainModel?,
+        val textFilters: List<NetworkFilterDomainModel.Filters>,
+        val methods: List<String>?,
+    )
 
     data class Sorted(
         val column: NetworkColumnsTypeUiModel,
         val sort: SortedByUiModel.Enabled,
     )
 
-    val textFiltersState: StateFlow<Map<NetworkTextFilterColumns, TextFilterStateUiModel>> =
+    private val textFiltersState: StateFlow<Map<NetworkTextFilterColumns, TextFilterStateUiModel>> =
         observeNetworkFilterUseCase()
             .map { it.mapValues { (key, value) -> toTextFilterUi(value) } }
             .stateIn(coroutineScope, started = SharingStarted.WhileSubscribed(5_000), emptyMap())
 
-    val sorted = MutableStateFlow<Sorted?>(null)
+    private val sorted = MutableStateFlow<Sorted?>(null)
+
     private val methodFilterState = MutableStateFlow(
         MethodFilterState(
             items = NetworkMethodUi.all().map {
@@ -63,31 +72,42 @@ class HeaderDelegate(
         ),
     )
 
-    fun allowedMethods(): Flow<List<NetworkMethodUi>> = methodFilterState.map {
-        it.items
-            .filter { item -> item.isSelected }
-            .map { item -> item.method }
-    }.distinctUntilChanged()
+    val headerState: StateFlow<NetworkHeaderUiState> = coroutineScope.launchMolecule(
+        RecompositionMode.Immediate
+    ) {
+        val sorted by sorted.collectAsState()
+        val methodFilterState by methodFilterState.collectAsState()
+        val textFiltersState by textFiltersState.collectAsState()
 
-    val headerUiState = combine(
-        sorted,
-        methodFilterState,
-        textFiltersState,
-    ) { sorted, methodFilterState, textFiltersState ->
-        buildHeaderValue(
+        buildNetworkColumnsValue(
             sorted = sorted,
             methodFilterState = methodFilterState,
             textFiltersState = textFiltersState,
         )
     }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            coroutineScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            defaultHeaderValue(),
-        )
 
-    fun buildHeaderValue(
+    /** Header inputs expressed as domain values, used to query the network list. */
+    val queryInputs: StateFlow<HeaderQuery> = coroutineScope.launchMolecule(
+        RecompositionMode.Immediate
+    ) {
+        val sorted by sorted.collectAsState()
+        val methodFilterState by methodFilterState.collectAsState()
+        val textFiltersState by textFiltersState.collectAsState()
+
+        HeaderQuery(
+            sort = sorted.toDomain(),
+            textFilters = remember(textFiltersState) { textFiltersState.toDomain() },
+            methods = remember(methodFilterState) {
+                methodsToDomain(
+                    methodFilterState.items
+                        .filter(MethodFilterState.Item::isSelected)
+                        .map(MethodFilterState.Item::method)
+                )
+            },
+        )
+    }
+
+    private fun buildNetworkColumnsValue(
         sorted: Sorted?,
         methodFilterState: MethodFilterState,
         textFiltersState: Map<NetworkTextFilterColumns, TextFilterStateUiModel>,
@@ -127,15 +147,6 @@ class HeaderDelegate(
             filter = textFiltersState[NetworkTextFilterColumns.Time]
                 ?: TextFilterStateUiModel.EMPTY,
         ),
-    )
-
-    fun defaultHeaderValue(): NetworkHeaderUiState = NetworkHeaderUiState(
-        requestTime = NetworkTextColumnUiModel.EMPTY,
-        method = NetworkMethodColumnUiModel.EMPTY,
-        domain = NetworkTextColumnUiModel.EMPTY,
-        query = NetworkTextColumnUiModel.EMPTY,
-        status = NetworkStatusColumnUiModel.EMPTY,
-        time = NetworkTextColumnUiModel.EMPTY,
     )
 
     fun onClickSort(type: NetworkColumnsTypeUiModel, sort: SortedByUiModel.Enabled) {
@@ -191,6 +202,12 @@ class HeaderDelegate(
             newValue = toTextFilterDomain(updated),
         )
     }
+
+    private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
+        return items.map(NetworkMethodUi::text)
+            .takeIf { it.isNotEmpty() }
+            ?.takeIf { it.size != NetworkMethodUi.all().size }
+    }
 }
 
 private fun TextFilterStateUiModel.performAction(
@@ -213,14 +230,14 @@ private fun TextFilterStateUiModel.performAction(
         if (exists) {
             copy(
                 excludedFilters = (
-                    excludedFilters.map {
-                        if (it.text == action.text) {
-                            newItem
-                        } else {
-                            it
+                        excludedFilters.map {
+                            if (it.text == action.text) {
+                                newItem
+                            } else {
+                                it
+                            }
                         }
-                    }
-                    ).distinctBy { it.text }
+                        ).distinctBy { it.text }
             )
         } else {
             copy(excludedFilters = (excludedFilters + newItem).distinctBy { it.text })
@@ -237,14 +254,14 @@ private fun TextFilterStateUiModel.performAction(
         if (exists) {
             copy(
                 includedFilters = (
-                    includedFilters.map {
-                        if (it.text == action.text) {
-                            newItem
-                        } else {
-                            it
+                        includedFilters.map {
+                            if (it.text == action.text) {
+                                newItem
+                            } else {
+                                it
+                            }
                         }
-                    }
-                    ).distinctBy { it.text }
+                        ).distinctBy { it.text }
             )
         } else {
             copy(includedFilters = (includedFilters + newItem).distinctBy { it.text })

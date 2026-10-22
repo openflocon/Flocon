@@ -3,10 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.list.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -121,13 +118,12 @@ fun NetworkScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val items: LazyPagingItems<NetworkItemViewState> = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText
-    val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     NetworkScreen(
         uiState = uiState,
         rows = items,
         filterText = filterText,
-        showEmptyState = showEmptyState,
+        showEmptyState = uiState.showEmptyState,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
@@ -161,6 +157,7 @@ fun NetworkScreen(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
+<<<<<<< HEAD
                 .clip(FloconTheme.shapes.large)
                 .background(FloconTheme.colors.bg100)
                 .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
@@ -170,6 +167,8 @@ fun NetworkScreen(
                     enabled = uiState.detailState != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
+=======
+>>>>>>> 81547da23 (refact: [NETWORK] Replace combine chains with Molecule in the network list)
                 .onPreviewKeyEvent { event ->
                     if (event.type != KeyEventType.KeyDown) {
                         return@onPreviewKeyEvent false

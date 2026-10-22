@@ -80,7 +80,7 @@ kotlin {
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
 
-//            implementation(libs.material3.adaptive)
+            implementation(libs.molecule.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
