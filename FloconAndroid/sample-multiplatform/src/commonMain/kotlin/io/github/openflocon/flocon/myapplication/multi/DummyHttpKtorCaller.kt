@@ -1,14 +1,13 @@
 package io.github.openflocon.flocon.myapplication.multi
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 
+/** Each call returns a short summary of the response, displayed under the button that triggered it. */
 object DummyHttpKtorCaller {
 
     lateinit var client: HttpClient
@@ -17,42 +16,16 @@ object DummyHttpKtorCaller {
         client = httpClient
     }
 
-    fun callGet() {
-        GlobalScope.launch(Dispatchers.Default) {
-            try {
-                val response = client.get("https://jsonplaceholder.typicode.com/todos/1")
+    suspend fun callGet(): String =
+        client.get("https://jsonplaceholder.typicode.com/todos/1").summary()
 
-                if (response.status.value in 200..299) {
-                    val responseBody: String = response.body()
-                    println("GET SUCCESS: $responseBody")
-                } else {
-                    println("GET FAILURE: ${response.status}")
-                }
-            } catch (t: Throwable) {
-                println("GET ERROR: ${t.message}")
-                t.printStackTrace()
-            }
-        }
-    }
+    suspend fun callPost(): String =
+        client.post("https://jsonplaceholder.typicode.com/posts") {
+            setBody("{ \"test\" : \"yes\" }")
+        }.summary()
 
-    fun callPost() {
-        GlobalScope.launch(Dispatchers.Default) {
-            try {
-                val response = client.post("https://jsonplaceholder.typicode.com/posts") {
-                    setBody("{ \"test\" : \"yes\" }")
-                }
+    suspend fun callNotFound(): String =
+        client.get("https://jsonplaceholder.typicode.com/todos/9999999").summary()
 
-                if (response.status.value in 200..299) {
-                    val responseBody: String = response.body()
-                    println("POST SUCCESS: $responseBody")
-                } else {
-                    println("POST FAILURE: ${response.status}")
-                }
-            } catch (t: Throwable) {
-                println("POST ERROR: ${t.message}")
-                t.printStackTrace()
-            }
-        }
-    }
+    private suspend fun HttpResponse.summary(): String = "${status.value} · ${bodyAsText().length} chars"
 }
-

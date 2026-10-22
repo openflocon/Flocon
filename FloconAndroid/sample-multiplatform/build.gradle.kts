@@ -43,6 +43,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(libs.compose.ui.backhandler)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)

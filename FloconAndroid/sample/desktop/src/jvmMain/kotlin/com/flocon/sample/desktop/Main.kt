@@ -24,6 +24,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.database.initializeDatabases
+import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
@@ -91,7 +92,7 @@ fun main() {
 
     initializeDatabases(dogDatabase = dogDatabase, foodDatabase = foodDatabase)
 
-    registerDesktopSampleFeatures(dogDatabase)
+    registerDesktopSampleFeatures(dogDatabase, foodDatabase)
 
     application {
         Window(onCloseRequest = ::exitApplication, title = "Flocon Sample - Desktop") {
@@ -118,7 +119,7 @@ private fun foodDatabase(): FoodDatabase {
         .build()
 }
 
-private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase) {
+private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
     SampleFeatures.platformName = "Desktop (JVM)"
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
@@ -131,6 +132,9 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase) {
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseFood) {
+        foodDatabase.foodDao().insertFood(newFood())
     }
     SampleFeatures.on(SampleFeature.Files) {
         // "caches" in the files plugin
