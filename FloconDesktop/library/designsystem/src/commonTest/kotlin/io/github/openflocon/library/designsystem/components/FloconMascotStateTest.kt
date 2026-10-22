@@ -99,4 +99,41 @@ class FloconMascotStateTest {
         }
         assertEquals(setOf(true, false), seen)
     }
+
+    @Test
+    fun beingPettedMakesItHappyThenSeatedAgain() {
+        val mascot = state()
+        mascot.pet()
+        mascot.update(16, 0, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Happy, mascot.mode)
+
+        mascot.run(targetX = 500f, durationMs = 1_800, startMs = 16)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+    }
+
+    @Test
+    fun beingPettedWakesItUpAndKeepsItInPlace() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 9_000)
+        assertEquals(FloconMascotMode.Sleep, mascot.mode)
+
+        mascot.pet()
+        mascot.update(16, 9_000, 900f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Happy, mascot.mode)
+        assertEquals(500f, mascot.x)
+    }
+
+    @Test
+    fun hopsWhileHappy() {
+        val mascot = state()
+        mascot.pet()
+        val seen = mutableSetOf<Boolean>()
+        var t = 0L
+        while (t < 800) {
+            mascot.update(16, t, 500f, 0f, 1_000f)
+            seen += mascot.hopUp
+            t += 16
+        }
+        assertEquals(setOf(true, false), seen)
+    }
 }

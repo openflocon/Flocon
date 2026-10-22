@@ -10,7 +10,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-enum class FloconMascotMode { Sit, Walk, Sleep }
+enum class FloconMascotMode { Sit, Walk, Sleep, Happy }
 
 /**
  * Distances and speed are in the same unit as the x passed to [FloconMascotState.update] (px).
@@ -52,6 +52,14 @@ class FloconMascotState(
     var blinking by mutableStateOf(false)
         private set
 
+    /** Toggles while [FloconMascotMode.Happy]: the mascot hops. */
+    var hopUp by mutableStateOf(false)
+        private set
+
+    /** 0 or 1 while [FloconMascotMode.Happy]: hearts floating up. */
+    var heartFrame by mutableIntStateOf(0)
+        private set
+
     /** Number of "z" shown above the head while sleeping (1..2). */
     var sleepZCount by mutableIntStateOf(1)
         private set
@@ -60,6 +68,12 @@ class FloconMascotState(
     private var sitMs = config.minSitMs
     private var idleMs = 0L
     private var walkMs = 0L
+    private var happyMs = 0L
+
+    /** The mascot has been clicked: it gets happy for a moment and stays where it is. */
+    fun pet() {
+        happyMs = HAPPY_MS
+    }
 
     fun update(
         deltaMs: Long,
@@ -74,8 +88,14 @@ class FloconMascotState(
         val dx = target - x
         val distance = abs(dx)
 
-        sitMs = if (chasing) 0 else sitMs + deltaMs
-        if (!chasing && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
+        val happy = happyMs > 0
+        if (happy) {
+            happyMs = (happyMs - deltaMs).coerceAtLeast(0)
+            chasing = false
+        }
+
+        sitMs = if (chasing || happy) 0 else sitMs + deltaMs
+        if (!chasing && !happy && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
         if (chasing && distance <= config.stopDistance) chasing = false
 
         var step = 0f
@@ -85,8 +105,9 @@ class FloconMascotState(
         }
         val moving = step > 0f
 
-        idleMs = if (moving) 0 else idleMs + deltaMs
+        idleMs = if (moving || happy) 0 else idleMs + deltaMs
         mode = when {
+            happy -> FloconMascotMode.Happy
             moving -> FloconMascotMode.Walk
             idleMs > config.sleepAfterMs -> FloconMascotMode.Sleep
             else -> FloconMascotMode.Sit
@@ -97,6 +118,8 @@ class FloconMascotState(
         alternateLegs = (walkMs / config.stepMs) % 2 == 1L
         tailUp = (timeMs / TAIL_MS) % 2 == 1L
         blinking = timeMs % BLINK_PERIOD_MS < BLINK_MS
+        hopUp = happy && (happyMs / HOP_MS) % 2 == 0L
+        heartFrame = ((happyMs / HEART_MS) % 2).toInt()
         sleepZCount = ((timeMs / Z_MS) % 2).toInt() + 1
     }
 
@@ -106,5 +129,8 @@ class FloconMascotState(
         const val BLINK_PERIOD_MS = 3_600L
         const val BLINK_MS = 160L
         const val Z_MS = 700L
+        const val HAPPY_MS = 1_600L
+        const val HOP_MS = 160L
+        const val HEART_MS = 320L
     }
 }

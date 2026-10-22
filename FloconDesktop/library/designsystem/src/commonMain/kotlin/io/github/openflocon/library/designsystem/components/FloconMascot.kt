@@ -1,6 +1,7 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,6 +10,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.ceil
@@ -37,21 +41,28 @@ private val Shadow = Color(0x40000000)
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
+ * Clicking it makes it happy ([FloconMascotState.pet]).
  */
 @Composable
 fun FloconMascot(
     state: FloconMascotState,
     modifier: Modifier = Modifier,
 ) {
-    Canvas(modifier = modifier.size(width = FloconMascotWidth, height = FloconMascotHeight)) {
+    Canvas(
+        modifier = modifier
+            .size(width = FloconMascotWidth, height = FloconMascotHeight)
+            .pointerHoverIcon(PointerIcon.Hand)
+            .pointerInput(state) { detectTapGestures { state.pet() } },
+    ) {
         val unit = size.width / GridWidth
         withTransform({
             if (!state.facingRight) scale(scaleX = -1f, scaleY = 1f, pivot = Offset(size.width / 2f, 0f))
         }) {
             when (state.mode) {
                 FloconMascotMode.Walk -> drawWalking(unit, state)
-                FloconMascotMode.Sit -> drawSitting(unit, state, asleep = false)
-                FloconMascotMode.Sleep -> drawSitting(unit, state, asleep = true)
+                FloconMascotMode.Sit -> drawSitting(unit, state, FloconMascotMode.Sit)
+                FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
+                FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
             }
         }
     }
@@ -119,49 +130,71 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
     pixels(unit, 16, 10 + bob + ear, 3, 2, EarPink)
 }
 
-private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, asleep: Boolean) {
-    val tail = if (!asleep && state.tailUp) -1 else 0
+private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: FloconMascotMode) {
+    val asleep = mode == FloconMascotMode.Sleep
+    val happy = mode == FloconMascotMode.Happy
+    val lift = if (happy && state.hopUp) -3 else 0
+    val tail = if (!asleep && (state.tailUp || happy)) -1 else 0
     val eyesClosed = asleep || state.blinking
 
     pixels(unit, 5, 24, 20, 1, Shadow)
 
     // tail
-    pixels(unit, 2, 18 + tail, 4, 2, GoldenDark)
-    pixels(unit, 1, 16 + tail, 2, 3, GoldenDark)
+    pixels(unit, 2, 18 + tail + lift, 4, 2, GoldenDark)
+    pixels(unit, 1, 16 + tail + lift, 2, 3, GoldenDark)
     // haunch, torso, paws
-    pixels(unit, 6, 15, 11, 9, GoldenDark)
-    pixels(unit, 15, 11, 9, 13, Golden)
-    pixels(unit, 17, 17, 5, 7, GoldenLight)
-    pixels(unit, 5, 23, 8, 2, GoldenLight)
-    pixels(unit, 20, 23, 5, 2, GoldenLight)
+    pixels(unit, 6, 15 + lift, 11, 9, GoldenDark)
+    pixels(unit, 15, 11 + lift, 9, 13, Golden)
+    pixels(unit, 17, 17 + lift, 5, 7, GoldenLight)
+    pixels(unit, 5, 23 + lift, 8, 2, GoldenLight)
+    pixels(unit, 20, 23 + lift, 5, 2, GoldenLight)
     // far ear
-    pixels(unit, 27, 0, 3, 3, EarBlue)
-    pixels(unit, 27, 2, 3, 1, GoldenDark)
+    pixels(unit, 27, 0 + lift, 3, 3, EarBlue)
+    pixels(unit, 27, 2 + lift, 3, 1, GoldenDark)
     // head
-    pixels(unit, 17, 2, 12, 11, Golden)
-    pixels(unit, 25, 8, 6, 5, GoldenLight)
-    pixels(unit, 29, 8, 2, 2, Ink)
-    pixels(unit, 21, 10, 2, 1, Blush)
-    if (eyesClosed) {
-        pixels(unit, 21, 7, 3, 1, Ink)
+    pixels(unit, 17, 2 + lift, 12, 11, Golden)
+    pixels(unit, 25, 8 + lift, 6, 5, GoldenLight)
+    pixels(unit, 29, 8 + lift, 2, 2, Ink)
+    pixels(unit, 21, 10 + lift, 2, 1, Blush)
+    if (happy) {
+        // ^ ^ eyes and the tongue out
+        pixels(unit, 22, 7 + lift, 1, 1, Ink)
+        pixels(unit, 23, 6 + lift, 1, 1, Ink)
+        pixels(unit, 24, 7 + lift, 1, 1, Ink)
+        pixels(unit, 27, 13 + lift, 2, 1, Tongue)
+    } else if (eyesClosed) {
+        pixels(unit, 21, 7 + lift, 3, 1, Ink)
     } else {
-        pixels(unit, 22, 5, 2, 3, Ink)
-        pixels(unit, 22, 5, 1, 1, Color.White)
-        pixels(unit, 27, 13, 2, 1, Tongue)
+        pixels(unit, 22, 5 + lift, 2, 3, Ink)
+        pixels(unit, 22, 5 + lift, 1, 1, Color.White)
+        pixels(unit, 27, 13 + lift, 2, 1, Tongue)
     }
     // near ear
-    pixels(unit, 15, 4, 3, 7, Golden)
-    pixels(unit, 15, 9, 3, 2, EarPink)
+    pixels(unit, 15, 4 + lift, 3, 7, Golden)
+    pixels(unit, 15, 9 + lift, 3, 2, EarPink)
 
     if (asleep) {
-        pixels(unit, 31, 3, 3, 1, Sleep)
-        pixels(unit, 32, 4, 1, 1, Sleep)
-        pixels(unit, 31, 5, 3, 1, Sleep)
+        pixels(unit, 31, 3 + lift, 3, 1, Sleep)
+        pixels(unit, 32, 4 + lift, 1, 1, Sleep)
+        pixels(unit, 31, 5 + lift, 3, 1, Sleep)
         if (state.sleepZCount >= 2) {
-            pixels(unit, 30, -2, 4, 1, Sleep)
-            pixels(unit, 32, -1, 1, 1, Sleep)
-            pixels(unit, 31, 0, 1, 1, Sleep)
-            pixels(unit, 30, 1, 4, 1, Sleep)
+            pixels(unit, 30, -2 + lift, 4, 1, Sleep)
+            pixels(unit, 32, -1 + lift, 1, 1, Sleep)
+            pixels(unit, 31, 0 + lift, 1, 1, Sleep)
+            pixels(unit, 30, 1 + lift, 4, 1, Sleep)
         }
     }
+
+    if (happy) {
+        drawHeart(unit, 30, -2 - state.heartFrame)
+        drawHeart(unit, 24, -6 - state.heartFrame)
+    }
+}
+
+private fun DrawScope.drawHeart(unit: Float, x: Int, y: Int) {
+    pixels(unit, x + 1, y, 1, 1, EarPink)
+    pixels(unit, x + 3, y, 1, 1, EarPink)
+    pixels(unit, x, y + 1, 5, 1, EarPink)
+    pixels(unit, x + 1, y + 2, 3, 1, EarPink)
+    pixels(unit, x + 2, y + 3, 1, 1, EarPink)
 }
