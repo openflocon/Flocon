@@ -36,7 +36,6 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 
 @Composable
 fun MockLineView(
@@ -93,7 +92,7 @@ fun MockLineView(
                 text = item.urlPattern,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = floconMonoStyle(),
+                style = FloconTheme.typography.monoMedium,
                 color = colors.inkMuted,
                 modifier = Modifier.alpha(dimmed),
             )

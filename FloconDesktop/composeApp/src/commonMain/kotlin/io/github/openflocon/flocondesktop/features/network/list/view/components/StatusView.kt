@@ -23,7 +23,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 
 /**
  * The color of a status: an http code is colored by family (1xx info, 2xx success, 4xx warning, 5xx error),
@@ -83,7 +82,7 @@ fun StatusView(
                                 minFontSize = 8.sp,
                             ),
                             maxLines = 1,
-                            style = floconMonoStyle(small = true).copy(
+                            style = FloconTheme.typography.monoSmall.copy(
                                 color = color,
                                 fontWeight = FontWeight.SemiBold,
                             ),

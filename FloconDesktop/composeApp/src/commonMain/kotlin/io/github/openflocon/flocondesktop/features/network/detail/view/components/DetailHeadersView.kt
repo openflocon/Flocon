@@ -49,7 +49,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -126,7 +125,7 @@ private fun HeaderItemRow(
                 SelectionContainer {
                     Text(
                         text = item.name,
-                        style = floconMonoStyle(),
+                        style = FloconTheme.typography.monoMedium,
                         fontWeight = FontWeight.Medium,
                         color = FloconTheme.colors.ink,
                     )
@@ -197,7 +196,7 @@ private fun HeaderValueText(
             SelectionContainer {
                 Text(
                     text = value,
-                    style = floconMonoStyle(),
+                    style = FloconTheme.typography.monoMedium,
                     color = FloconTheme.colors.inkMuted,
                     maxLines = 10,
                     overflow = TextOverflow.Ellipsis,
@@ -208,7 +207,7 @@ private fun HeaderValueText(
         SelectionContainer(modifier = modifier) {
             Text(
                 text = value,
-                style = floconMonoStyle(),
+                style = FloconTheme.typography.monoMedium,
                 color = FloconTheme.colors.inkMuted,
                 maxLines = 10,
                 overflow = TextOverflow.Ellipsis,
