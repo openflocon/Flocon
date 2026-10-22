@@ -183,30 +183,25 @@ fun NetworkItemView(
                 MethodView(method = state.method)
             }
 
-            // Route - Takes remaining space (weight)
-            Row(
+            // Domain - Width from data class
+            Text(
+                text = state.domain,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall,
+                fontSize = 12.sp,
+                color = colors.inkFaint,
+                modifier = Modifier
+                    .width(columnWidths.domainWidth)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
+            )
+
+            // Request - Takes remaining space (weight)
+            RequestChip(
+                state = state,
+                selected = selected || hovered,
                 modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = state.domain,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = FloconTheme.typography.bodySmall,
-                    fontSize = 12.sp,
-                    color = colors.inkFaint,
-                    modifier = Modifier
-                        .weight(columnWidths.domainWeight)
-                        .padding(horizontal = FloconTheme.spacing.extraSmall),
-                )
-                RequestChip(
-                    state = state,
-                    selected = selected || hovered,
-                    modifier = Modifier
-                        .weight(columnWidths.queryWeight)
-                        .padding(start = FloconTheme.spacing.small),
-                )
-            }
+            )
 
             // NetworkStatusUi - Fixed width for the tag from data class
             StatusView(
