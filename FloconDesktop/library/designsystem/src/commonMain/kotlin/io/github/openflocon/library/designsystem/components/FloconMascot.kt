@@ -116,7 +116,7 @@ fun FloconMascot(
                     val eased = progress * progress * (3f - 2f * progress)
                     // counter-clockwise in the sprite's own space, so it is a backflip on both sides
                     rotate(degrees = -360f * eased, pivot = Offset(size.width / 2f, size.height * BodyCenterY)) {
-                        drawRunning(unit, stretched = false, dust = progress > BackflipLanding)
+                        drawRunning(unit, stretched = false, dust = progress > BackflipLanding, curledTail = true)
                     }
                 }
             }
@@ -187,7 +187,7 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
 }
 
 /** Gallop: stretched out in the air, then gathered when landing, with ears and tail streaming back. */
-private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean) {
+private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean, curledTail: Boolean = false) {
     val air = if (stretched) -2 else 0
     val dy = air + if (stretched) 1 else -1
 
@@ -201,8 +201,16 @@ private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean
         }
     }
 
-    // tail streaming back
-    pixels(unit, 0, (if (stretched) 10 else 8) + air, 6, 2, GoldenDark)
+    if (curledTail) {
+        // tail curled up in an arc, so it doesn't look like a stick while spinning
+        pixels(unit, 3, 10, 3, 2, GoldenDark)
+        pixels(unit, 1, 8, 3, 2, GoldenDark)
+        pixels(unit, 1, 6, 2, 2, GoldenDark)
+        pixels(unit, 3, 5, 2, 2, GoldenDark)
+    } else {
+        // tail streaming back
+        pixels(unit, 0, (if (stretched) 10 else 8) + air, 6, 2, GoldenDark)
+    }
     if (stretched) {
         // far legs reaching out, back and front
         pixels(unit, 1, 16 + air, 6, 3, GoldenDark)
