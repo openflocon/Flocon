@@ -10,7 +10,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-enum class FloconMascotMode { Sit, Walk, Sleep, Happy }
+enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy }
 
 /**
  * Distances and speed are in the same unit as the x passed to [FloconMascotState.update] (px).
@@ -27,6 +27,8 @@ class FloconMascotConfig(
     val runSpeedPerSecond: Float,
     val minSitMs: Long = 3_000,
     val sleepAfterMs: Long = 8_000,
+    val lieAfterMs: Long = 16_000,
+    val minLieMs: Long = 6_000,
     val stepMs: Long = 250,
     val runStepMs: Long = 130,
     val minTurnIntervalMs: Long = 600,
@@ -34,7 +36,8 @@ class FloconMascotConfig(
 
 /**
  * Behavior of the mascot: it stays still while the pointer is near, wakes up when the pointer gets
- * too far, walks next to it, sits for at least [FloconMascotConfig.minSitMs], then falls asleep.
+ * too far, walks next to it, sits for at least [FloconMascotConfig.minSitMs], then falls asleep and,
+ * after a long time, lies down with its head on the ground for at least [FloconMascotConfig.minLieMs].
  * It only moves horizontally, the caller owns the vertical position.
  */
 @Stable
@@ -78,6 +81,7 @@ class FloconMascotState(
     private var idleMs = 0L
     private var walkMs = 0L
     private var happyMs = 0L
+    private var lieMs = 0L
     private var sinceTurnMs = config.minTurnIntervalMs
 
     /** The mascot has been clicked: it gets happy for a moment and stays where it is. */
@@ -105,7 +109,8 @@ class FloconMascotState(
         }
 
         sitMs = if (chasing || happy) 0 else sitMs + deltaMs
-        if (!chasing && !happy && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
+        val rested = mode != FloconMascotMode.Lie || lieMs >= config.minLieMs
+        if (!chasing && !happy && rested && distance > config.wakeDistance && sitMs >= config.minSitMs) chasing = true
         if (chasing && distance <= config.stopDistance) chasing = false
 
         // it runs while the pointer is far, and keeps running until it has gotten much closer
@@ -123,6 +128,7 @@ class FloconMascotState(
         mode = when {
             happy -> FloconMascotMode.Happy
             moving -> FloconMascotMode.Walk
+            idleMs > config.lieAfterMs -> FloconMascotMode.Lie
             idleMs > config.sleepAfterMs -> FloconMascotMode.Sleep
             else -> FloconMascotMode.Sit
         }
@@ -134,6 +140,7 @@ class FloconMascotState(
             sinceTurnMs = 0
         }
 
+        lieMs = if (mode == FloconMascotMode.Lie) lieMs + deltaMs else 0
         if (moving) walkMs += deltaMs
         alternateLegs = (walkMs / (if (running) config.runStepMs else config.stepMs)) % 2 == 1L
         tailUp = (timeMs / TAIL_MS) % 2 == 1L

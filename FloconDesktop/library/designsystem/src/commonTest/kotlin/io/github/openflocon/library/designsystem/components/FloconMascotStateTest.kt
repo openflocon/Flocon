@@ -172,4 +172,25 @@ class FloconMascotStateTest {
         assertFalse(mascot.running)
         assertEquals(FloconMascotMode.Walk, mascot.mode)
     }
+
+    @Test
+    fun liesDownAfterALongTime() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 17_000)
+        assertEquals(FloconMascotMode.Lie, mascot.mode)
+    }
+
+    @Test
+    fun staysLyingForAtLeastTheMinimumDurationBeforeWakingUp() {
+        val mascot = state()
+        mascot.run(targetX = 500f, durationMs = 17_000)
+        assertEquals(FloconMascotMode.Lie, mascot.mode)
+
+        // it has been lying for about a second: a far pointer doesn't wake it yet
+        mascot.run(targetX = 900f, durationMs = 4_000, startMs = 17_000)
+        assertEquals(FloconMascotMode.Lie, mascot.mode)
+
+        mascot.run(targetX = 900f, durationMs = 2_500, startMs = 21_000)
+        assertEquals(FloconMascotMode.Walk, mascot.mode)
+    }
 }

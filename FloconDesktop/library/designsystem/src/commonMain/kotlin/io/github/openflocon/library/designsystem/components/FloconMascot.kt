@@ -64,6 +64,7 @@ fun FloconMascot(
                 FloconMascotMode.Sit -> drawSitting(unit, state, FloconMascotMode.Sit)
                 FloconMascotMode.Sleep -> drawSitting(unit, state, FloconMascotMode.Sleep)
                 FloconMascotMode.Happy -> drawSitting(unit, state, FloconMascotMode.Happy)
+                FloconMascotMode.Lie -> drawLying(unit, state)
             }
         }
     }
@@ -184,6 +185,46 @@ private fun DrawScope.drawRunning(unit: Float, state: FloconMascotState) {
     // near ear streaming back
     pixels(unit, 13, 5 + dy, 6, 3, Golden)
     pixels(unit, 13, 5 + dy, 2, 3, EarPink)
+}
+
+/** Lying down, head resting on the front paws, eyes closed. */
+private fun DrawScope.drawLying(unit: Float, state: FloconMascotState) {
+    val breath = if (state.sleepZCount >= 2) 1 else 0
+
+    pixels(unit, 3, 24, 27, 1, Shadow)
+
+    // tail
+    pixels(unit, 1, 20, 5, 2, GoldenDark)
+    pixels(unit, 0, 18, 2, 3, GoldenDark)
+    // haunch and body
+    pixels(unit, 5, 16, 9, 8, GoldenDark)
+    pixels(unit, 12, 15 - breath, 12, 9 + breath, Golden)
+    pixels(unit, 14, 21, 9, 3, GoldenLight)
+    // front paws stretched out under the head
+    pixels(unit, 20, 21, 11, 3, Golden)
+    pixels(unit, 29, 21, 2, 3, GoldenLight)
+    // far ear
+    pixels(unit, 26, 10, 3, 3, GoldenDark)
+    pixels(unit, 26, 10, 3, 1, EarBlue)
+    // head resting on the paws
+    pixels(unit, 19, 13, 12, 9, Golden)
+    pixels(unit, 26, 17, 6, 5, GoldenLight)
+    pixels(unit, 30, 17, 2, 2, Ink)
+    pixels(unit, 22, 18, 2, 1, Blush)
+    pixels(unit, 23, 16, 3, 1, Ink)
+    // near ear hanging down
+    pixels(unit, 17, 14, 3, 7, Golden)
+    pixels(unit, 17, 19, 3, 2, EarPink)
+
+    pixels(unit, 31, 9, 3, 1, Sleep)
+    pixels(unit, 32, 10, 1, 1, Sleep)
+    pixels(unit, 31, 11, 3, 1, Sleep)
+    if (state.sleepZCount >= 2) {
+        pixels(unit, 30, 4, 4, 1, Sleep)
+        pixels(unit, 32, 5, 1, 1, Sleep)
+        pixels(unit, 31, 6, 1, 1, Sleep)
+        pixels(unit, 30, 7, 4, 1, Sleep)
+    }
 }
 
 private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: FloconMascotMode) {
