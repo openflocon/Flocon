@@ -82,6 +82,7 @@ internal class FakeDevicesRepository(
     override val devices: Flow<List<DeviceDomainModel>> = flowOf(devicesWithApps.keys.toList())
     override val currentDeviceId: Flow<DeviceId?> = MutableStateFlow(currentDeviceIdValue)
     override val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> = flowOf(activeDevicesValue)
+    override val activeAddresses: Flow<Map<DeviceId, String>> = flowOf(emptyMap())
 
     private fun appsOf(deviceId: DeviceId) = devicesWithApps.entries.firstOrNull { it.key.deviceId == deviceId }?.value.orEmpty()
 
