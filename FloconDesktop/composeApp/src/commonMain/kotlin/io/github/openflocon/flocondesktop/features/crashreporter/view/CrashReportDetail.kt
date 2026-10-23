@@ -31,10 +31,10 @@ import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 
 @Composable
 internal fun CrashReportDetail(
-    modifier: Modifier = Modifier,
     onCopy: (CrashReporterSelectedUiModel) -> Unit,
     onDelete: (CrashReporterSelectedUiModel) -> Unit,
-    crash: CrashReporterSelectedUiModel
+    crash: CrashReporterSelectedUiModel,
+    modifier: Modifier = Modifier
 ) {
     SelectionContainer {
         Column(

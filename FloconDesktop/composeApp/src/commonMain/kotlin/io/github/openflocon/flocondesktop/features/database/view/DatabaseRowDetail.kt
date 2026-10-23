@@ -57,8 +57,8 @@ import org.koin.compose.koinInject
 @Composable
 fun DatabaseRowDetail(
     state: DetailResultItem,
-    modifier: Modifier = Modifier,
     columns: List<String>,
+    modifier: Modifier = Modifier,
 ) {
     val scrollState: ScrollState = rememberScrollState()
 

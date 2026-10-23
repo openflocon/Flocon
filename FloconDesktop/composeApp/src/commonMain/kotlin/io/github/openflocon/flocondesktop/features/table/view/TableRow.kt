@@ -33,9 +33,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TableRow(
     model: TableRowUiModel,
-    columnsWidth: Dp = 150.dp,
     onAction: (action: TableAction) -> Unit,
     modifier: Modifier = Modifier,
+    columnsWidth: Dp = 150.dp,
 ) {
     ContextualMenu(
         items = contextualActions(

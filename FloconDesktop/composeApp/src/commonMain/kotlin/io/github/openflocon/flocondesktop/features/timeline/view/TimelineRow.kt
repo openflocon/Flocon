@@ -179,9 +179,9 @@ private fun TimeColumn(
 internal fun Rail(
     color: Color,
     haloColor: Color,
-    outerHaloColor: Color? = null,
     overflow: Dp,
     modifier: Modifier = Modifier,
+    outerHaloColor: Color? = null,
 ) {
     val line = FloconTheme.colors.line
     Box(

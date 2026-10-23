@@ -17,8 +17,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun DashboardMarkdown(
-    modifier: Modifier = Modifier,
     rowItem: DashboardContainerViewState.RowItem.Markdown,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),

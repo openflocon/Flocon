@@ -21,8 +21,8 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 
 @Composable
 internal fun DashboardText(
-    modifier: Modifier = Modifier,
     rowItem: DashboardContainerViewState.RowItem.Text,
+    modifier: Modifier = Modifier,
 ) {
     SelectionContainer(
         modifier = modifier,

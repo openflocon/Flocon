@@ -154,10 +154,10 @@ private fun SearchBar(
     nextClicked: () -> Unit,
     queryChanged: (String) -> Unit,
     matchCaseChanged: () -> Unit,
-    modifier: Modifier = Modifier,
     selectedResultIndex: Int?,
     totalResults: Int,
     matchCase: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
 

@@ -311,12 +311,12 @@ private fun DatabaseLogsHeader(
 
 @Composable
 private fun PageSelector(
-    modifier: Modifier = Modifier,
     onPreviousPage: () -> Unit,
     isPreviousEnabled: Boolean,
     paginationLabel: String,
     onNextPage: () -> Unit,
-    isNextEnabled: Boolean
+    isNextEnabled: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -355,9 +355,9 @@ private fun PageSelector(
 
 @Composable
 private fun FilterChips(
-    modifier: Modifier = Modifier,
     filterChips: ImmutableList<FilterChipUiModel>,
     toggleFilterType: (FilterChipUiModel) -> Unit,
+    modifier: Modifier = Modifier,
     removeFilterChip: (FilterChipUiModel) -> Unit
 ) {
     val itemsColor = FloconTheme.colors.inkMuted

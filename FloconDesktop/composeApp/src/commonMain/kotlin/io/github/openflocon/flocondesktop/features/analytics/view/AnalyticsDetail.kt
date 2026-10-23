@@ -102,8 +102,8 @@ private fun PropertiesCard(
 private fun AnalyticsDetailLine(
     label: String,
     labelWidth: Dp,
-    modifier: Modifier = Modifier,
     withDivider: Boolean,
+    modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(

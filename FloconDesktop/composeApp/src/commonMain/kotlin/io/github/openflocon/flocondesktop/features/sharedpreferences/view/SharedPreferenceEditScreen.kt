@@ -46,8 +46,8 @@ fun SharedPreferenceEditScreen(
 private fun SharedPreferenceEditScreenContent(
     row: SharedPreferencesRowUiModel,
     stringValue: SharedPreferencesRowUiModel.Value.StringValue,
-    modifier: Modifier = Modifier,
     cancel: () -> Unit,
+    modifier: Modifier = Modifier,
     save: (SharedPreferencesRowUiModel, stringValue: String) -> Unit,
 ) {
     var value by remember { mutableStateOf(stringValue.value) }

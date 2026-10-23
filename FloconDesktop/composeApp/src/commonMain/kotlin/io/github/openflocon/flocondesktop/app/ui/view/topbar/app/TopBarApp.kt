@@ -37,8 +37,8 @@ import kotlin.io.encoding.Base64
 @Composable
 internal fun TopBarApp(
     deviceApp: DeviceAppUiModel,
-    modifier: Modifier = Modifier,
     platform: DeviceItemUiModel.Platform,
+    modifier: Modifier = Modifier,
     selected: Boolean = false,
     deleteClick: (() -> Unit)? = null,
 ) {
@@ -109,8 +109,8 @@ internal fun TopBarApp(
 @Composable
 private fun AppImage(
     deviceApp: DeviceAppUiModel,
-    modifier: Modifier = Modifier,
-    platform: DeviceItemUiModel.Platform
+    platform: DeviceItemUiModel.Platform,
+    modifier: Modifier = Modifier
 ) {
     val imageBitmap = remember(deviceApp.iconEncoded) {
         deviceApp.iconEncoded?.let { encoded ->

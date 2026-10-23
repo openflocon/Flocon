@@ -156,10 +156,10 @@ fun FloconIconToggleButton(
 
 @Composable
 fun FloconIconButton(
-    modifier: Modifier = Modifier,
     tooltip: String,
-    size: Dp = Size,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = Size,
     containerColor: Color = FloconTheme.colors.bg200,
     contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
