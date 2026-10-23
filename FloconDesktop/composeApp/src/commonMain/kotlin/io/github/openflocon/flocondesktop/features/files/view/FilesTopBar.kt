@@ -53,7 +53,6 @@ fun FilesTopBar(
     onRefresh: () -> Unit,
     updateWithFoldersSize: (Boolean) -> Unit,
     filterBar: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
     options: FilesStateUiModel.Options,
     canSelect: Boolean,
     selecting: Boolean,
@@ -61,6 +60,7 @@ fun FilesTopBar(
     onDeleteSelection: () -> Unit,
     onMultiSelect: () -> Unit,
     onClearMultiSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
@@ -146,10 +146,10 @@ fun FilesTopBar(
 private fun Selecting(
     selecting: Boolean,
     selectedCount: Int,
-    modifier: Modifier = Modifier,
     onDeleteSelection: () -> Unit,
     onClearMultiSelect: () -> Unit,
     onMultiSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier,
