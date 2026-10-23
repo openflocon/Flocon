@@ -9,7 +9,9 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCas
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveDeviceConnectionTypesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.RememberDeviceConnectionTypesUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.log.LogDomain
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DevicesDelegate(
     private val selectDeviceUseCase: SelectDeviceUseCase,
@@ -35,6 +38,8 @@ class DevicesDelegate(
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
     observeActiveDeviceAddressesUseCase: ObserveActiveDeviceAddressesUseCase,
+    observeDeviceConnectionTypesUseCase: ObserveDeviceConnectionTypesUseCase,
+    rememberDeviceConnectionTypesUseCase: RememberDeviceConnectionTypesUseCase,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val deleteDeviceApplicationUseCase: DeleteDeviceApplicationUseCase,
@@ -48,9 +53,9 @@ class DevicesDelegate(
             observeDevicesUseCase(),
             observeCurrentDeviceIdUseCase(),
             observeActiveDevicesUseCase(),
-            observeActiveDeviceAddressesUseCase(),
+            combine(observeActiveDeviceAddressesUseCase(), observeDeviceConnectionTypesUseCase(), ::Pair),
             observeCurrentDeviceCapabilitiesUseCase(),
-        ) { devices, currentDeviceId, activeDevices, activeAddresses, currentDeviceCapabilities ->
+        ) { devices, currentDeviceId, activeDevices, (activeAddresses, connectionTypes), currentDeviceCapabilities ->
             if (devices.isEmpty()) {
                 DevicesStateUiModel.Empty
             } else {
@@ -64,10 +69,12 @@ class DevicesDelegate(
                             devices = devices,
                             activeDevices = activeDevices,
                             activeAddresses = activeAddresses,
+                            connectionTypes = connectionTypes,
                         ),
                         deviceSelected = firstDevice.mapToUi(
                             activeDevices = activeDevices,
                             activeAddresses = activeAddresses,
+                            connectionTypes = connectionTypes,
                             currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )
@@ -77,10 +84,12 @@ class DevicesDelegate(
                             devices = devices,
                             activeDevices = activeDevices,
                             activeAddresses = activeAddresses,
+                            connectionTypes = connectionTypes,
                         ),
                         deviceSelected = current.mapToUi(
                             activeDevices = activeDevices,
                             activeAddresses = activeAddresses,
+                            connectionTypes = connectionTypes,
                             currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )
@@ -93,6 +102,9 @@ class DevicesDelegate(
         )
 
     init {
+        // an offline device stays in the dropdown tab (adb / network) it last connected with
+        coroutineScope.launch { rememberDeviceConnectionTypesUseCase() }
+
         // everytime we detect a new active app, we check if it's the current one, if not, we select it
         // do this only if we have 1 unique active device
         observeActiveDevicesUseCase().distinctUntilChanged().onEach { activeDevices ->
