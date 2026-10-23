@@ -21,7 +21,6 @@ ktlint_standard_kdoc-wrapping = disabled
 ktlint_standard_class-naming = disabled
 ktlint_compose_modifier-missing-check = disabled
 ktlint_compose_param-order-check = disabled
-ktlint_compose_modifier-reused-check = disabled
 ktlint_compose_compositionlocal-allowlist = disabled
 ktlint_compose_modifier-not-used-at-root = disabled
 ktlint_compose_preview-public-check = enabled
