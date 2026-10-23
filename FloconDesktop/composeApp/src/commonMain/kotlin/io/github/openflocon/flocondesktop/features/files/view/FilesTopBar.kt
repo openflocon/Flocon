@@ -61,6 +61,7 @@ fun FilesTopBar(
     onMultiSelect: () -> Unit,
     modifier: Modifier = Modifier,
     onClearMultiSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
@@ -150,6 +151,7 @@ private fun Selecting(
     onClearMultiSelect: () -> Unit,
     modifier: Modifier = Modifier,
     onMultiSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier,

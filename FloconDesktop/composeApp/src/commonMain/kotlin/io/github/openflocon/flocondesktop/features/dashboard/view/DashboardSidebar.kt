@@ -51,6 +51,7 @@ fun DashboardSidebar(
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
     modifier: Modifier = Modifier,
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.bg200
 

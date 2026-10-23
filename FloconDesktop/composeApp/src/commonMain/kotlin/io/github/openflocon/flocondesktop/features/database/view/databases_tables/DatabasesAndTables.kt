@@ -40,6 +40,7 @@ fun DatabasesAndTables(
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     modifier: Modifier = Modifier,
     onAction: (DatabaseScreenAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.line
 

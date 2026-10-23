@@ -30,6 +30,7 @@ internal fun DashboardPlainText(
     rowItem: DashboardContainerViewState.RowItem.PlainText,
     modifier: Modifier = Modifier,
     onOpenExternalClicked: (content: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     SelectionContainer(
         modifier = modifier,

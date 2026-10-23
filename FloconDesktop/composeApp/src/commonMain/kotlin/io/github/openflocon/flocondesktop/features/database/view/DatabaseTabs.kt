@@ -51,6 +51,7 @@ fun DatabaseTabs(
     selected: DatabaseTabState?,
     modifier: Modifier = Modifier,
     onAction: (DatabaseTabViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val lineColor = FloconTheme.colors.line
     LazyRow(

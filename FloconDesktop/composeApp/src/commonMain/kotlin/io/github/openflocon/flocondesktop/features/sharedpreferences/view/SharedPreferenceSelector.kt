@@ -46,6 +46,7 @@ fun SharedPreferenceSelector(
     state: SharedPrefsStateUiModel,
     modifier: Modifier = Modifier,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.bg200
 

@@ -229,6 +229,7 @@ private fun DeeplinkTextField(
     value: String,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isValueEmpty = value.isEmpty()
     Box(

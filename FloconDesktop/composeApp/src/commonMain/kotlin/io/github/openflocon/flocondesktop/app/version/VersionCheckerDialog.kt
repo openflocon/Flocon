@@ -49,6 +49,7 @@ private fun VersionCheckerDialog(
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     modifier: Modifier = Modifier,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier.padding(FloconTheme.spacing.large),
@@ -73,6 +74,7 @@ private fun VersionCheckerDialog(
     version: VersionCheckerViewModel.VersionAvailableUiModel,
     modifier: Modifier = Modifier,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
 

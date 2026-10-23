@@ -42,6 +42,7 @@ internal fun TableEntry(
     onDeleteContentClicked: (TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
     onInsertContentClicked: (TableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
