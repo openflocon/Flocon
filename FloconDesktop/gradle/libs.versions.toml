@@ -1,6 +1,5 @@
 [versions]
 about-libraries = "15.0.2"
-agp = "9.2.0"
 androidx-lifecycle = "2.11.0"
 buildconfig = "6.0.10"
 coil = "3.5.0"
@@ -128,7 +127,6 @@ compose-rules-ktlint = { module = "io.nlopez.compose.rules:ktlint", version.ref 
 
 [plugins]
 about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "about-libraries" }
-android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
