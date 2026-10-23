@@ -29,17 +29,17 @@ import androidx.navigation3.runtime.get
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
-import io.github.openflocon.flocondesktop.app.ui.mascot.LocalMascot
-import io.github.openflocon.flocondesktop.app.ui.mascot.MascotOverlay
-import io.github.openflocon.flocondesktop.app.ui.mascot.MascotPlatforms
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
-import io.github.openflocon.flocondesktop.app.ui.mascot.mascotPlatform
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.mascot.LocalMascot
+import io.github.openflocon.navigation.mascot.MascotOverlay
+import io.github.openflocon.navigation.mascot.MascotPlatforms
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
