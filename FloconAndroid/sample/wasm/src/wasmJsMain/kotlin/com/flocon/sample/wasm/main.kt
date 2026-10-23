@@ -21,6 +21,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
@@ -80,7 +81,7 @@ fun main() {
 }
 
 private fun registerWasmSampleFeatures() {
-    SampleFeatures.platformName = "Wasm"
+    SampleFeatures.platform = SamplePlatform.Web
 
     SampleFeatures.unavailable(SampleFeature.OkHttp, "The OkHttp interceptor is Android and JVM only")
     SampleFeatures.unavailable(SampleFeature.OkHttpGzip, "The OkHttp interceptor is Android and JVM only")
