@@ -44,21 +44,19 @@ private const val HeartRiseMs = 170L
 /** Shortest swing of the pointer that counts as a stroke. */
 private val MinStroke = 6.dp
 
-private val Golden = Color(0xFFF2B544)
-
-/** A touch darker than the head, so the neck shows. */
-private val GoldenBody = Color(0xFFE0A034)
-private val GoldenDark = Color(0xFFD99522)
-private val GoldenLight = Color(0xFFF9D98B)
-private val GoldenPaw = Color(0xFFEBC06A)
-private val Ink = Color(0xFF2B2140)
-private val Ear = Color(0xFFC9841C)
-private val EarPink = Color(0xFFFF5C9A)
-private val Blush = Color(0xFFFF8FB1)
-private val Tongue = Color(0xFFFF7A9C)
-private val Sleep = Color(0xFFF5D68B)
-private val Shadow = Color(0x40000000)
-private val Dust = Color(0x66FFFFFF)
+private val Golden = FloconPixelPalette.Golden
+private val GoldenBody = FloconPixelPalette.GoldenBody
+private val GoldenDark = FloconPixelPalette.GoldenDark
+private val GoldenLight = FloconPixelPalette.GoldenLight
+private val GoldenPaw = FloconPixelPalette.GoldenPaw
+private val Ink = FloconPixelPalette.Ink
+private val Ear = FloconPixelPalette.Ear
+private val EarPink = FloconPixelPalette.Pink
+private val Blush = FloconPixelPalette.Blush
+private val Tongue = FloconPixelPalette.Tongue
+private val Sleep = FloconPixelPalette.Sleep
+private val Shadow = FloconPixelPalette.Shadow
+private val Dust = FloconPixelPalette.Dust
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
