@@ -45,10 +45,10 @@ internal fun BoxScope.VersionChecker() {
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     state: VersionCheckerViewModel.VersionAvailableState,
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier.padding(FloconTheme.spacing.large),
@@ -70,9 +70,9 @@ private fun VersionCheckerDialog(
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     version: VersionCheckerViewModel.VersionAvailableUiModel,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
 

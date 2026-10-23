@@ -37,11 +37,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun TableEntry(
     item: TableUiModel,
-    modifier: Modifier = Modifier,
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (TableUiModel) -> Unit,
     onInsertContentClicked: (TableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var isOpened by remember(item.name) { mutableStateOf(false) }
     Column(modifier = modifier) {
