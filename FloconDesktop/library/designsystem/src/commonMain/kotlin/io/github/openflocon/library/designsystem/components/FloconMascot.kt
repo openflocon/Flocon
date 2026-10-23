@@ -45,12 +45,15 @@ private const val HeartRiseMs = 170L
 private val MinStroke = 6.dp
 
 private val Golden = Color(0xFFF2B544)
+
+/** A touch darker than the head, so the neck shows. */
+private val GoldenBody = Color(0xFFE0A034)
 private val GoldenDark = Color(0xFFD99522)
 private val GoldenLight = Color(0xFFF9D98B)
 private val GoldenPaw = Color(0xFFEBC06A)
 private val Ink = Color(0xFF2B2140)
+private val Ear = Color(0xFFC9841C)
 private val EarPink = Color(0xFFFF5C9A)
-private val EarBlue = Color(0xFF3AA0FF)
 private val Blush = Color(0xFFFF8FB1)
 private val Tongue = Color(0xFFFF7A9C)
 private val Sleep = Color(0xFFF5D68B)
@@ -160,16 +163,13 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
     pixels(unit, 19, 17 + legA, 3, 6, GoldenDark)
     pixels(unit, 19, 22 + legA, 3, 1, GoldenPaw)
     // body
-    pixels(unit, 6, 9 + bob, 18, 9, Golden)
+    pixels(unit, 6, 9 + bob, 18, 9, GoldenBody)
     pixels(unit, 8, 16 + bob, 14, 2, GoldenLight)
     // near legs
-    pixels(unit, 7, 17 + legA, 3, 6, Golden)
+    pixels(unit, 7, 17 + legA, 3, 6, GoldenBody)
     pixels(unit, 7, 22 + legA, 3, 1, GoldenLight)
-    pixels(unit, 21, 17 + legB, 3, 6, Golden)
+    pixels(unit, 21, 17 + legB, 3, 6, GoldenBody)
     pixels(unit, 21, 22 + legB, 3, 1, GoldenLight)
-    // far ear
-    pixels(unit, 27, 1 + bob, 3, 3, GoldenDark)
-    pixels(unit, 27, bob, 3, 2, EarBlue)
     // head
     pixels(unit, 18, 3 + bob, 12, 11, Golden)
     pixels(unit, 26, 9 + bob, 6, 5, GoldenLight)
@@ -182,7 +182,7 @@ private fun DrawScope.drawWalking(unit: Float, state: FloconMascotState) {
         pixels(unit, 23, 6 + bob, 1, 1, Color.White)
     }
     // near ear
-    pixels(unit, 16, 5 + bob + ear, 3, 7, Golden)
+    pixels(unit, 16, 5 + bob + ear, 3, 7, Ear)
     pixels(unit, 16, 10 + bob + ear, 3, 2, EarPink)
 }
 
@@ -216,27 +216,24 @@ private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean
         pixels(unit, 1, 16 + air, 6, 3, GoldenDark)
         pixels(unit, 22, 16 + air, 6, 3, GoldenDark)
         // body, flat
-        pixels(unit, 6, 10 + air, 18, 8, Golden)
+        pixels(unit, 6, 10 + air, 18, 8, GoldenBody)
         pixels(unit, 8, 16 + air, 14, 2, GoldenLight)
         // near legs reaching out
-        pixels(unit, 3, 18 + air, 6, 3, Golden)
+        pixels(unit, 3, 18 + air, 6, 3, GoldenBody)
         pixels(unit, 2, 18 + air, 1, 3, GoldenLight)
-        pixels(unit, 24, 18 + air, 6, 3, Golden)
+        pixels(unit, 24, 18 + air, 6, 3, GoldenBody)
         pixels(unit, 29, 18 + air, 1, 3, GoldenLight)
     } else {
         // legs gathered under the body
         pixels(unit, 12, 19, 3, 3, GoldenDark)
         pixels(unit, 20, 19, 3, 3, GoldenDark)
-        pixels(unit, 6, 8, 18, 9, Golden)
+        pixels(unit, 6, 8, 18, 9, GoldenBody)
         pixels(unit, 8, 15, 14, 2, GoldenLight)
-        pixels(unit, 9, 17, 4, 5, Golden)
+        pixels(unit, 9, 17, 4, 5, GoldenBody)
         pixels(unit, 9, 21, 4, 1, GoldenLight)
-        pixels(unit, 17, 17, 4, 5, Golden)
+        pixels(unit, 17, 17, 4, 5, GoldenBody)
         pixels(unit, 17, 21, 4, 1, GoldenLight)
     }
-    // far ear streaming back
-    pixels(unit, 22, 1 + dy, 5, 2, GoldenDark)
-    pixels(unit, 22, 1 + dy, 2, 2, EarBlue)
     // head
     pixels(unit, 18, 3 + dy, 12, 11, Golden)
     pixels(unit, 26, 9 + dy, 6, 5, GoldenLight)
@@ -246,7 +243,7 @@ private fun DrawScope.drawRunning(unit: Float, stretched: Boolean, dust: Boolean
     pixels(unit, 23, 6 + dy, 2, 2, Ink)
     pixels(unit, 23, 6 + dy, 1, 1, Color.White)
     // near ear streaming back
-    pixels(unit, 13, 5 + dy, 6, 3, Golden)
+    pixels(unit, 13, 5 + dy, 6, 3, Ear)
     pixels(unit, 13, 5 + dy, 2, 3, EarPink)
 }
 
@@ -261,14 +258,11 @@ private fun DrawScope.drawLying(unit: Float, state: FloconMascotState) {
     pixels(unit, 0, 18, 2, 3, GoldenDark)
     // haunch and body
     pixels(unit, 5, 16, 9, 8, GoldenDark)
-    pixels(unit, 12, 15 - breath, 12, 9 + breath, Golden)
+    pixels(unit, 12, 15 - breath, 12, 9 + breath, GoldenBody)
     pixels(unit, 14, 21, 9, 3, GoldenLight)
     // front paws stretched out under the head
-    pixels(unit, 20, 21, 11, 3, Golden)
+    pixels(unit, 20, 21, 11, 3, GoldenBody)
     pixels(unit, 29, 21, 2, 3, GoldenLight)
-    // far ear
-    pixels(unit, 26, 10, 3, 3, GoldenDark)
-    pixels(unit, 26, 10, 3, 1, EarBlue)
     // head resting on the paws
     pixels(unit, 19, 13, 12, 9, Golden)
     pixels(unit, 26, 17, 6, 5, GoldenLight)
@@ -276,7 +270,7 @@ private fun DrawScope.drawLying(unit: Float, state: FloconMascotState) {
     pixels(unit, 22, 18, 2, 1, Blush)
     pixels(unit, 23, 16, 3, 1, Ink)
     // near ear hanging down
-    pixels(unit, 17, 14, 3, 7, Golden)
+    pixels(unit, 17, 14, 3, 7, Ear)
     pixels(unit, 17, 19, 3, 2, EarPink)
 
     pixels(unit, 31, 9, 3, 1, Sleep)
@@ -306,13 +300,10 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
     pixels(unit, 1, 16 + tail + lift, 2, 3, GoldenDark)
     // haunch, torso, paws
     pixels(unit, 6, 15 + lift, 11, 9, GoldenDark)
-    pixels(unit, 15, 11 + lift, 9, 13, Golden)
+    pixels(unit, 15, 11 + lift, 9, 13, GoldenBody)
     pixels(unit, 17, 17 + lift, 5, 7, GoldenLight)
     pixels(unit, 5, 23 + lift, 8, 2, GoldenLight)
     pixels(unit, 20, 23 + lift, 5, 2, GoldenLight)
-    // far ear
-    pixels(unit, 27, 0 + lift + headDy, 3, 3, EarBlue)
-    pixels(unit, 27, 2 + lift + headDy, 3, 1, GoldenDark)
     // head
     pixels(unit, 17, 2 + lift + headDy, 12, 11, Golden)
     pixels(unit, 25, 8 + lift + headDy, 6, 5, GoldenLight)
@@ -333,7 +324,7 @@ private fun DrawScope.drawSitting(unit: Float, state: FloconMascotState, mode: F
         pixels(unit, 27, 13 + lift + headDy, 2, 1, Tongue)
     }
     // near ear
-    pixels(unit, 15, 4 + lift + headDy, 3, 7, Golden)
+    pixels(unit, 15, 4 + lift + headDy, 3, 7, Ear)
     pixels(unit, 15, 9 + lift + headDy, 3, 2, EarPink)
 
     if (asleep) {
