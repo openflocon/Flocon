@@ -143,10 +143,11 @@ private fun ToggleExpandedButton(
     modifier: Modifier = Modifier,
 ) {
     val description = stringResource(
-        resource = if (expanded)
+        resource = if (expanded) {
             Res.string.menu_collapse
-        else
+        } else {
             Res.string.menu_expand
+        }
     )
 
     FloconIconButton(
