@@ -29,6 +29,34 @@ The app also needs the cleartext network config, as for any `Url` use.
 | iOS | Personal Hotspot over Bluetooth requires a cellular plan |
 | Risks | Some Android OEMs and carriers block tethering |
 
+### Trying option A
+
+Status: **checked in code, not yet tried on hardware** (the authoring environment has no Bluetooth).
+
+What the code check established:
+
+| Check | Result |
+|---|---|
+| The PAN address shows up in Settings > Connection | Yes. `192.168.44.x` is site-local (RFC 1918) and the interface filter only drops down, loopback and virtual interfaces. Covered by `LocalNetworkAddressesTest`. |
+| The server accepts the connection | Yes. Both servers bind `0.0.0.0`, so any interface works. |
+| The SDK reaches it | Yes, `Url(host = <PAN ip>)`. Nothing is resolved through adb in this mode. |
+| The list is refreshed when the PAN comes up | **No.** The addresses are read once when the Settings screen opens. Join the PAN first, then open Settings (or reopen it). A refresh would be a small follow-up. |
+| Cleartext `ws://` to that ip | Needs the network security config described in [Connection modes](connection-modes.md). |
+
+To try it on real hardware:
+
+1. Phone: pair with the desktop, then enable Settings > Hotspot & tethering > Bluetooth tethering.
+2. Desktop: join the phone's Bluetooth network.
+   - macOS: System Settings > Bluetooth, connect to the phone, then *Connect to Network*.
+   - Windows: *Bluetooth & devices* > the phone > *Connect using* > *Access point*.
+   - Linux: NetworkManager's Bluetooth connection (`bnep0` interface).
+3. Open Flocon Desktop > Settings > Adb > Connection and note the `192.168.44.x` address.
+4. App: `connectionMode = FloconConnectionMode.Url(host = "<that ip>")`, with cleartext allowed for it.
+5. Allow ports `9023` / `9024` in the desktop firewall, unplug USB (or `adb kill-server`), and check the device and a network call show up in Flocon.
+6. Note the latency and the time to open a large payload (an image or a database dump).
+
+Results to report back here: OS pair used, whether step 3 showed the ip, and the throughput feel.
+
 ## Option B: RFCOMM / SPP stream
 
 | Part | Design |
