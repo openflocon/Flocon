@@ -121,6 +121,7 @@
     <string name="update_available_client">Mise à jour du SDK : %1$s</string>
     <string name="no_analytics">Aucun analytics</string>
     <string name="no_devices_found">Aucun appareil trouvé</string>
+    <string name="topbar_connect_by_url">Connecter une app par url</string>
     <string name="open_external">Ouvrir dans un éditeur externe</string>
     <string name="preferences">Préférences</string>
     <string name="record_saved_at">Enregistrement sauvegardé dans %1$s</string>

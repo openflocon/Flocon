@@ -22,6 +22,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -29,12 +30,18 @@ internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
+    localUrls: ImmutableList<String>,
+    onCopyLocalUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     when (state) {
-        DevicesStateUiModel.Empty -> Empty()
+        DevicesStateUiModel.Empty -> Empty(
+            localUrls = localUrls,
+            onCopyLocalUrl = onCopyLocalUrl,
+            modifier = modifier,
+        )
 
         DevicesStateUiModel.Loading -> Loading()
 
@@ -71,28 +78,52 @@ internal fun TopBarDeviceDropdown(
                     },
                 )
             }
+            if (localUrls.isNotEmpty()) {
+                TopBarLocalUrls(
+                    urls = localUrls,
+                    onCopy = onCopyLocalUrl,
+                    modifier = Modifier.padding(FloconTheme.spacing.small),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun Empty() {
-    TopBarSelector(
-        onClick = {},
-        modifier = Modifier
-            .height(48.dp)
-            .width(FloconTheme.sizes.deviceDropdownWidth)
+private fun Empty(
+    localUrls: ImmutableList<String>,
+    onCopyLocalUrl: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    // with no device yet, this is where the url to put in the app is needed the most
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { if (localUrls.isNotEmpty()) expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            TopBarSelector(
+                onClick = { if (localUrls.isNotEmpty()) expanded = true },
+                modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+            ) {
+                Text(
+                    text = stringResource(Res.string.no_devices_found),
+                    modifier = Modifier.padding(
+                        vertical = FloconTheme.spacing.extraSmall,
+                        horizontal = FloconTheme.spacing.medium
+                    ),
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.ink,
+                )
+            }
+        },
     ) {
-        Text(
-            text = stringResource(Res.string.no_devices_found),
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(
-                    vertical = FloconTheme.spacing.extraSmall,
-                    horizontal = FloconTheme.spacing.medium
-                ),
-            style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colors.ink,
+        TopBarLocalUrls(
+            urls = localUrls,
+            onCopy = onCopyLocalUrl,
+            modifier = Modifier.padding(FloconTheme.spacing.small),
         )
     }
 }
