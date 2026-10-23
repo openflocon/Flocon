@@ -160,6 +160,7 @@ class ExecuteDeeplinkUseCaseTest {
         override val devices: Flow<List<DeviceDomainModel>> = MutableStateFlow(listOf(device))
         override val currentDeviceId: Flow<DeviceId?> = MutableStateFlow(device.deviceId)
         override val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> = emptyFlow()
+        override val activeAddresses: Flow<Map<DeviceId, String>> = emptyFlow()
         override suspend fun getCurrentDeviceId(): DeviceId = device.deviceId
         override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
         override suspend fun getCurrentDevice(): DeviceDomainModel = device

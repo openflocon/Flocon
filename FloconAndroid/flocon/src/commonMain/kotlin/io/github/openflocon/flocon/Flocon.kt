@@ -84,6 +84,16 @@ class Flocon internal constructor(
         }
     }
 
+    /**
+     * Changes how the app reaches the desktop after [startFlocon], e.g. once the host is known
+     * (QR code scanned, ip typed by the user). Events captured before are queued and sent on connection.
+     */
+    fun setConnectionMode(mode: FloconConnectionMode) {
+        config.scope.launch {
+            config.client.updateConnection(mode)
+        }
+    }
+
     companion object {
         var instance: Flocon? = null
             get() = field ?: error("Flocon is not initialized")

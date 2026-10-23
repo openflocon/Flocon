@@ -49,12 +49,7 @@ internal fun TopBarDevice(
     val colors = FloconTheme.colors
 
     Row(
-        modifier = modifier.padding(
-            start = FloconTheme.spacing.small,
-            end = FloconTheme.spacing.extraSmall,
-            top = FloconTheme.spacing.small,
-            bottom = FloconTheme.spacing.small
-        ),
+        modifier = modifier.padding(FloconTheme.spacing.small),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -131,6 +126,16 @@ internal fun TopBarDevice(
                     style = FloconTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
                 )
+                if (device.isActive && device.address != null) {
+                    Text(
+                        text = "· ${device.address}",
+                        color = colors.inkFaint,
+                        style = FloconTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
         if (!selected && deleteClick != null) {

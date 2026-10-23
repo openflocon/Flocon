@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.settings
 
+import io.github.openflocon.domain.settings.usecase.GetLocalNetworkAddressesUseCase
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
@@ -13,6 +14,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 internal val settingsModule = module {
+    factoryOf(::GetLocalNetworkAddressesUseCase)
     factoryOf(::InitAdbPathUseCase)
     factoryOf(::StartAdbForwardUseCase)
     factoryOf(::TestAdbUseCase)

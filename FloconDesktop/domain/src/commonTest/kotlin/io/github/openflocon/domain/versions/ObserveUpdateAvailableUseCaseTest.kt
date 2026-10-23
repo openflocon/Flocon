@@ -44,6 +44,7 @@ class ObserveUpdateAvailableUseCaseTest {
         override val devices: Flow<List<DeviceDomainModel>> = emptyFlow()
         override val currentDeviceId: Flow<DeviceId?> = flowOf(currentDeviceIdValue)
         override val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> = emptyFlow()
+        override val activeAddresses: Flow<Map<DeviceId, String>> = emptyFlow()
 
         override suspend fun getCurrentDeviceId(): DeviceId? = currentDeviceIdValue
         override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = throw NotImplementedError()

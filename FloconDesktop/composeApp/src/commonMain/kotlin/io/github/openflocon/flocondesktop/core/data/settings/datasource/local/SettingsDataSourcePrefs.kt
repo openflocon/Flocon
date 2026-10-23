@@ -62,6 +62,15 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { it.toThemeSetting() }
         .stateIn(ThemeSetting.DEFAULT)
 
+    override val deviceConnectionTypes: Flow<Map<String, String>> = flowSettings.getStringOrNullFlow(DEVICE_CONNECTION_TYPES)
+        .mapLatest { value ->
+            value?.let { runCatching { json.decodeFromString<Map<String, String>>(it) }.getOrNull() }.orEmpty()
+        }
+
+    override suspend fun setDeviceConnectionTypes(types: Map<String, String>) {
+        settings.putString(DEVICE_CONNECTION_TYPES, json.encodeToString(types))
+    }
+
     override val mascotEnabled: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(MASCOT_ENABLED)
         .mapLatest { it ?: true }
 
@@ -172,6 +181,8 @@ internal class SettingsDataSourcePrefs(
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"
 
         private const val NETWORK_SETTINGS = "network_settings"
+
+        private const val DEVICE_CONNECTION_TYPES = "device_connection_types"
 
         private const val PINNED_MENU_ITEMS = "pinned_menu_items"
         private const val COLLAPSED_MENU_SECTIONS = "collapsed_menu_sections"
