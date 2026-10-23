@@ -20,6 +20,7 @@ import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
 import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.concurrent.Volatile
 import kotlinx.serialization.modules.EmptySerializersModule
 
 class FloconClient internal constructor(
@@ -30,8 +31,14 @@ class FloconClient internal constructor(
     private val appInstance by lazy { currentTimeMillis() }
     private val appInfos by lazy { getAppInfos(context) }
     private val versionName by lazy { BuildConfig.APP_VERSION }
+    private val adbHost by lazy { getServerHost(context) }
+
+    @Volatile
     private var connectionMode: FloconConnectionMode = FloconConnectionMode.Adb
-    private val address by lazy { connectionMode.resolve(adbHost = { getServerHost(context) }) }
+
+    // resolved on every use, so a mode set later is picked up by the next connection attempt
+    private val address: FloconServerAddress
+        get() = connectionMode.resolve(adbHost = { adbHost })
 
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
     private val httpClient: FloconHttpClient = buildFloconHttpClient()
@@ -45,6 +52,15 @@ class FloconClient internal constructor(
 
     fun setupConnection(mode: FloconConnectionMode) {
         this.connectionMode = mode
+    }
+
+    /**
+     * Switches the target of an already started client: the current session (if any) is closed,
+     * which restarts the connection loop against the new address.
+     */
+    suspend fun updateConnection(mode: FloconConnectionMode) {
+        setupConnection(mode)
+        webSocketClient.disconnect()
     }
 
     @Throws(Throwable::class)

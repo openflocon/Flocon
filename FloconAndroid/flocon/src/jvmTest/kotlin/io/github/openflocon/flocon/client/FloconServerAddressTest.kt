@@ -28,4 +28,16 @@ class FloconServerAddressTest {
 
         assertEquals(FloconServerAddress("desktop.example.com", 1000, 2000), address)
     }
+
+    @Test
+    fun `switching the mode later resolves the new host`() {
+        var mode: FloconConnectionMode = FloconConnectionMode.Adb
+        val resolve = { mode.resolve(adbHost = { "10.0.2.2" }) }
+
+        assertEquals("10.0.2.2", resolve().host)
+
+        mode = FloconConnectionMode.Url(host = "192.168.1.20")
+
+        assertEquals(FloconServerAddress("192.168.1.20", 9023, 9024), resolve())
+    }
 }

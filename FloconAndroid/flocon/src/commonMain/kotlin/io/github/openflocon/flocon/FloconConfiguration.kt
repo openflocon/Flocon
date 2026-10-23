@@ -81,7 +81,7 @@ fun startFlocon(
     client.setupEncoder(encoder)
     client.setupConnection(configuration.connectionMode)
 
-    Flocon(
+    Flocon.instance = Flocon(
         config = config,
         plugins = configuration.build(encoder),
         encoder = encoder

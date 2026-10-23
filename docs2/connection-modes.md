@@ -22,6 +22,24 @@ startFlocon(FloconContext(this)) {
 
 The desktop lists its local addresses in **Settings > Adb** (section *Connection*), with a copy button for each `ws://<ip>:9023` url. Use the ip of the interface that your device can reach.
 
+### Connecting later (QR code, typed ip)
+
+If the host is only known after the app started (a QR code scanned, an ip typed in a debug screen), keep `startFlocon` at app start so that nothing is missed, and set the mode once you have the host:
+
+```kotlin
+// at app start: plugins are installed and capture right away
+startFlocon(FloconContext(this)) {
+    install(FloconNetwork)
+}
+
+// later, e.g. after scanning the QR code
+Flocon.instance.setConnectionMode(FloconConnectionMode.Url(host = scannedHost))
+```
+
+Until a desktop is reachable, the SDK retries every 3 seconds and keeps the events in a queue, which are sent once connected. The queue holds the **200 most recent messages**: if the app is very chatty before the host is set, the oldest ones are dropped.
+
+`setConnectionMode` can also be called while connected, to move the app to another desktop: the current session is closed and the SDK reconnects to the new host. It is a no-op in the `flocon-no-op` artifact.
+
 ### Android: allow cleartext traffic
 
 The SDK uses `ws://` and `http://`. Android blocks cleartext traffic to anything but `localhost` by default (API 28+), so add a network security config to your debug build:
@@ -70,7 +88,7 @@ TLS tunnels (ngrok, cloudflared, ...) terminate on `wss://` / `https://`, which 
 
 This mode is a prototype. Things to discuss before making it a first-class feature:
 
-- **Discovery:** QR code on the desktop, or mDNS, instead of typing an ip in the code.
+- **Discovery:** QR code on the desktop, or mDNS, instead of typing an ip in the code. The app side is ready for it: a scanner only has to call `Flocon.instance.setConnectionMode(...)`.
 - **Pairing token:** the server is now reachable from the network, so the desktop should refuse apps that do not present a token.
 - **TLS:** a scheme flag on `Url` (`wss` / `https`) with a certificate on the desktop.
 - **Relay mode:** a relay between the app and the desktop for remote devices that cannot reach the desktop.
