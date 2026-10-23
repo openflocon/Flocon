@@ -343,6 +343,17 @@
     <string name="settings_connection_url_description">Apps can also reach Flocon directly over the network, without adb: Wi-Fi only phones, iOS devices, other machines. Flocon accepts both modes at the same time.</string>
     <string name="settings_connection_url_hint">In the app, use FloconConnectionMode.Url(host = "&lt;ip&gt;"). The device must be on the same network (or reach this machine through a VPN), and ports 9023 and 9024 must be allowed in the firewall.</string>
     <string name="settings_connection_url_empty">No local network address found. Connect this machine to a network to use the Url mode.</string>
+    <string name="settings_connection_bluetooth_title">Bluetooth (experimental)</string>
+    <string name="settings_connection_bluetooth_description">The app waits on a Bluetooth link instead of dialling Flocon: use FloconConnectionMode.Bluetooth in the app (Android only). Pair the phone with this computer, bind the Flocon service of the phone to a serial port, then connect that port here.</string>
+    <string name="settings_connection_bluetooth_hint">Linux: sudo rfcomm connect /dev/rfcomm0 &lt;phone address&gt; &lt;channel&gt;. Windows: Bluetooth &amp; devices &gt; More Bluetooth options &gt; COM Ports &gt; Add an outgoing port for the phone. macOS: a paired device shows up as /dev/tty.&lt;name&gt;. Start the app first, it waits for this connection.</string>
+    <string name="settings_connection_bluetooth_empty">No Bluetooth serial port found. Pair the phone and bind its serial port, then refresh.</string>
+    <string name="settings_connection_bluetooth_refresh">Refresh the ports</string>
+    <string name="settings_connection_bluetooth_connect">Connect</string>
+    <string name="settings_connection_bluetooth_disconnect">Disconnect</string>
+    <string name="settings_connection_bluetooth_status_idle">Not connected.</string>
+    <string name="settings_connection_bluetooth_status_connecting">Opening %1$s…</string>
+    <string name="settings_connection_bluetooth_status_connected">Connected on %1$s. The app appears here once it is started and connected.</string>
+    <string name="settings_connection_bluetooth_status_error">Failed on %1$s: %2$s</string>
     <string name="settings_documents_description">Directory where screenshots, screen recordings, and exported files are saved. Defaults to ~/Documents/Flocon.</string>
     <string name="settings_documents_folder_path">Documents Folder Path</string>
     <string name="settings_filter_logs">Filter logs...</string>

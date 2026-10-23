@@ -7,6 +7,11 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_test_failure
+import io.github.openflocon.domain.bluetooth.models.BluetoothBridgeStateDomainModel
+import io.github.openflocon.domain.bluetooth.usecase.ConnectBluetoothBridgeUseCase
+import io.github.openflocon.domain.bluetooth.usecase.DisconnectBluetoothBridgeUseCase
+import io.github.openflocon.domain.bluetooth.usecase.ListBluetoothPortsUseCase
+import io.github.openflocon.domain.bluetooth.usecase.ObserveBluetoothBridgeStateUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -30,6 +35,7 @@ import io.github.openflocon.flocondesktop.common.log.toUiModel
 import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +53,10 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val testAdbUseCase: TestAdbUseCase,
     getLocalNetworkAddressesUseCase: GetLocalNetworkAddressesUseCase,
+    observeBluetoothBridgeStateUseCase: ObserveBluetoothBridgeStateUseCase,
+    private val listBluetoothPortsUseCase: ListBluetoothPortsUseCase,
+    private val connectBluetoothBridgeUseCase: ConnectBluetoothBridgeUseCase,
+    private val disconnectBluetoothBridgeUseCase: DisconnectBluetoothBridgeUseCase,
     observeAppScaleUseCase: ObserveAppScaleUseCase,
     private val setAppScaleUseCase: SetAppScaleUseCase,
     observeThemeUseCase: ObserveThemeUseCase,
@@ -73,6 +83,25 @@ class SettingsViewModel(
 
     private val localAddresses = getLocalNetworkAddressesUseCase().toImmutableList()
 
+    private val bluetoothPorts = MutableStateFlow<ImmutableList<String>>(persistentListOf())
+
+    private val bluetooth = combine(
+        bluetoothPorts,
+        observeBluetoothBridgeStateUseCase(),
+    ) { ports, bridge ->
+        BluetoothUiState(
+            ports = ports,
+            status = when (bridge.status) {
+                BluetoothBridgeStateDomainModel.Status.Idle -> BluetoothStatusUiModel.Idle
+                BluetoothBridgeStateDomainModel.Status.Connecting -> BluetoothStatusUiModel.Connecting
+                BluetoothBridgeStateDomainModel.Status.Connected -> BluetoothStatusUiModel.Connected
+                BluetoothBridgeStateDomainModel.Status.Error -> BluetoothStatusUiModel.Error
+            },
+            port = bridge.port,
+            error = bridge.error,
+        )
+    }
+
     private val filteredLogs = combine(
         logManager.logs,
         selectedLogDomains,
@@ -83,11 +112,11 @@ class SettingsViewModel(
 
     val uiState = combine(
         observeAppScaleUseCase(),
-        combine(observeThemeUseCase(), observeMascotEnabledUseCase()) { theme, mascotEnabled -> theme to mascotEnabled },
+        combine(observeThemeUseCase(), observeMascotEnabledUseCase(), bluetooth) { theme, mascotEnabled, bluetooth -> Triple(theme, mascotEnabled, bluetooth) },
         filteredLogs,
         settingsRepository.adbForwardStatus,
         combine(selectedLogDomains, selectedLogLevels) { domains, levels -> domains to levels },
-    ) { appScale, (theme, mascotEnabled), logs, forwardStatus, (domains, levels) ->
+    ) { appScale, (theme, mascotEnabled, bluetooth), logs, forwardStatus, (domains, levels) ->
         SettingsUiState(
             appScale = appScale,
             theme = theme,
@@ -95,6 +124,7 @@ class SettingsViewModel(
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
             localAddresses = localAddresses,
+            bluetooth = bluetooth,
             selectedLogDomains = domains,
             selectedLogLevels = levels,
         )
@@ -109,12 +139,19 @@ class SettingsViewModel(
                 logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN,
                 localAddresses = localAddresses,
+                bluetooth = BluetoothUiState(
+                    ports = persistentListOf(),
+                    status = BluetoothStatusUiModel.Idle,
+                    port = null,
+                    error = null,
+                ),
                 selectedLogDomains = LogDomain.entries.toSet(),
                 selectedLogLevels = LogLevel.entries.toSet(),
             )
         )
 
     init {
+        refreshBluetoothPorts()
         viewModelScope.launch {
             // Utiliser GlobalScope ici pour la simplicité de l'exemple, mais préférez un scope dédié
             settingsRepository.adbPath.collect { path ->
@@ -134,6 +171,15 @@ class SettingsViewModel(
             is SettingsAction.ThemeChange -> onThemeChange(action)
             is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
             is SettingsAction.CopyLocalUrl -> copyToClipboard(action.url)
+            SettingsAction.RefreshBluetoothPorts -> refreshBluetoothPorts()
+            is SettingsAction.ConnectBluetooth -> connectBluetoothBridgeUseCase(action.port)
+            SettingsAction.DisconnectBluetooth -> disconnectBluetoothBridgeUseCase()
+        }
+    }
+
+    private fun refreshBluetoothPorts() {
+        viewModelScope.launch(dispatcherProvider.data) {
+            bluetoothPorts.value = listBluetoothPortsUseCase().toImmutableList()
         }
     }
 
