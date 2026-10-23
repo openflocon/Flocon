@@ -44,6 +44,9 @@ class DevicesRepositoryImpl(
     override val activeDevices = remoteDeviceDataSource.activeDevices
         .flowOn(dispatcherProvider.data)
 
+    override val activeAddresses = remoteDeviceDataSource.activeAddresses
+        .flowOn(dispatcherProvider.data)
+
     override suspend fun getCurrentDeviceId(): DeviceId? = localCurrentDeviceDataSource.getCurrentDeviceId()
 
     override suspend fun getCurrentDevice(): DeviceDomainModel? = localCurrentDeviceDataSource.getCurrentDeviceId()?.let {

@@ -131,6 +131,16 @@ internal fun TopBarDevice(
                     style = FloconTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
                 )
+                if (device.isActive && device.address != null) {
+                    Text(
+                        text = "· ${device.address}",
+                        color = colors.inkFaint,
+                        style = FloconTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
         if (!selected && deleteClick != null) {

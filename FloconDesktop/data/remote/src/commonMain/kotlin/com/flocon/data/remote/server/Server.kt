@@ -26,6 +26,9 @@ interface Server {
     )
 
     val activeDevices: Flow<Set<FloconDeviceIdAndPackageNameDataModel>>
+
+    // deviceId -> remote host of its websocket (a loopback address when connected through adb)
+    val activeAddresses: Flow<Map<String, String>>
     val receivedFiles: Flow<FloconReceivedFileDomainModel>
 }
 

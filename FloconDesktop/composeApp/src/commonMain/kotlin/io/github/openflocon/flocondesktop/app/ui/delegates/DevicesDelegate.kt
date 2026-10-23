@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.delegates
 import io.github.openflocon.domain.device.usecase.DeleteDeviceApplicationUseCase
 import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveActiveDeviceAddressesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
@@ -33,6 +34,7 @@ class DevicesDelegate(
     observeCurrentDeviceAppsUseCase: ObserveCurrentDeviceAppsUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeActiveDevicesUseCase: ObserveActiveDevicesUseCase,
+    observeActiveDeviceAddressesUseCase: ObserveActiveDeviceAddressesUseCase,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val deleteDeviceApplicationUseCase: DeleteDeviceApplicationUseCase,
@@ -46,8 +48,9 @@ class DevicesDelegate(
             observeDevicesUseCase(),
             observeCurrentDeviceIdUseCase(),
             observeActiveDevicesUseCase(),
+            observeActiveDeviceAddressesUseCase(),
             observeCurrentDeviceCapabilitiesUseCase(),
-        ) { devices, currentDeviceId, activeDevices, currentDeviceCapabilities ->
+        ) { devices, currentDeviceId, activeDevices, activeAddresses, currentDeviceCapabilities ->
             if (devices.isEmpty()) {
                 DevicesStateUiModel.Empty
             } else {
@@ -59,10 +62,12 @@ class DevicesDelegate(
                     DevicesStateUiModel.WithDevices(
                         devices = mapListToUi(
                             devices = devices,
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
+                            activeAddresses = activeAddresses,
                         ),
                         deviceSelected = firstDevice.mapToUi(
                             activeDevices = activeDevices,
+                            activeAddresses = activeAddresses,
                             currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )
@@ -70,10 +75,12 @@ class DevicesDelegate(
                     DevicesStateUiModel.WithDevices(
                         devices = mapListToUi(
                             devices = devices,
-                            activeDevices = activeDevices
+                            activeDevices = activeDevices,
+                            activeAddresses = activeAddresses,
                         ),
                         deviceSelected = current.mapToUi(
                             activeDevices = activeDevices,
+                            activeAddresses = activeAddresses,
                             currentDeviceCapabilities = currentDeviceCapabilities,
                         ),
                     )

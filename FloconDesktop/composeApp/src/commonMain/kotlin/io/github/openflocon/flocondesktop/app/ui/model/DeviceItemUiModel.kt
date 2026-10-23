@@ -11,6 +11,8 @@ data class DeviceItemUiModel(
     val canScreenshot: Boolean,
     val canScreenRecord: Boolean,
     val canRestart: Boolean,
+    // ip the device connects from, null when unknown or when connected through adb (loopback)
+    val address: String? = null,
 ) {
     enum class Platform {
         Android,
