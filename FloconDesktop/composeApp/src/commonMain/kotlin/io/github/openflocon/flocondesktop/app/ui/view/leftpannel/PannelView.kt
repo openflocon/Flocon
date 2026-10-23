@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.PushPin
@@ -40,9 +41,7 @@ import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 
-private val NavItemHorizontalPadding = 10.dp
 private val NavItemGap = 10.dp
-private val NavIconSize = 16.dp
 
 @Composable
 fun SidePanel(
@@ -85,6 +84,7 @@ fun SidePanel(
             1f
         }
     )
+
     Row(
         modifier = modifier
             .clip(shape)
@@ -92,20 +92,20 @@ fun SidePanel(
             .graphicsLayer {
                 alpha = lineAlpha
             }
-            .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
-            // collapsed: the icon is centered in the 64dp rail
-            .padding(horizontal = if (expanded) NavItemHorizontalPadding else 0.dp),
-        horizontalArrangement = if (expanded) Arrangement.Start else Arrangement.Center,
+            .clickable(onClick = onClick, interactionSource = interactionSource, indication = null),
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = Modifier.size(NavIconSize),
+            modifier = Modifier
+                .size(PanelContentMinSize)
+                .padding(FloconTheme.spacing.medium),
             imageVector = icon,
             contentDescription = stringResource(Res.string.app_logo_content_description),
             tint = iconColor,
         )
         AnimatedVisibility(
-            expanded,
+            visible = expanded,
             enter = fadeIn(),
             exit = fadeOut(tween(100)),
         ) {

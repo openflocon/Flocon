@@ -2,6 +2,7 @@
 
 package io.github.openflocon.navigation.scene
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -20,6 +21,8 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.navigation.FloconRoute
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -52,7 +55,11 @@ data class WindowScene(
             state = state,
             title = windowProperties?.title ?: "",
         ) {
-            entry.Content()
+            FloconSurface(
+                color = FloconTheme.colors.islandSidebar
+            ) {
+                entry.Content()
+            }
         }
     }
 }

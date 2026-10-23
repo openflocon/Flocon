@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -92,19 +93,18 @@ data class MenuScene(
             ) { padding ->
                 // the sidebar and the content float as islands over the page background
                 Row(
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
+                        .padding(FloconTheme.spacing.medium)
                 ) {
                     Box(
                         modifier = Modifier
                             .width(width)
                             .fillMaxHeight()
-                            .padding(
-                                start = FloconTheme.spacing.medium,
-                                top = FloconTheme.spacing.medium,
-                                bottom = FloconTheme.spacing.medium,
-                            )
+                            .floconIsland(FloconTheme.colors.islandSidebar)
+                            .padding(FloconTheme.spacing.small)
                             .mascotPlatform(platforms = mascotPlatforms),
                     ) {
                         menuContent(expanded) { expanded = !expanded }
@@ -113,7 +113,6 @@ data class MenuScene(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .padding(FloconTheme.spacing.medium)
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
                             scene.content()

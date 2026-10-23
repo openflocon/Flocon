@@ -150,7 +150,7 @@ private fun Title(
     ) {
         Image(
             modifier = Modifier
-                .size(40.dp)
+                .size(48.dp)
                 .clip(RoundedCornerShape(10.dp)),
             painter = painterResource(Res.drawable.app_icon_small),
             contentDescription = stringResource(Res.string.app_logo_content_description),

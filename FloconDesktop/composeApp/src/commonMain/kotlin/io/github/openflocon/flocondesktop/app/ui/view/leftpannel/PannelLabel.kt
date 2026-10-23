@@ -54,6 +54,7 @@ fun PannelLabel(
                     Text(
                         modifier = Modifier.weight(1f),
                         text = text.uppercase(),
+                        maxLines = 1,
                         style = FloconTheme.typography.labelSmall.copy(
                             fontSize = 11.sp,
                             lineHeight = 14.sp,
