@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.screenshot_saved_at
-import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
@@ -88,9 +87,8 @@ internal class AppViewModel(
     getLocalNetworkAddressesUseCase: GetLocalNetworkAddressesUseCase,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
-    private val localUrls = getLocalNetworkAddressesUseCase()
-        .map { "ws://$it:${Constant.SERVER_WEBSOCKET_PORT}" }
-        .toImmutableList()
+    // bare ips: this is what goes in FloconConnectionMode.Url(host = ...), without scheme nor port
+    private val localUrls = getLocalNetworkAddressesUseCase().toImmutableList()
 
     private val contentState = MutableStateFlow(
         ContentUiState(

@@ -138,7 +138,7 @@
     <string name="detail_copy_columns">Copy columns</string>
     <string name="detail_previous_session">Previous session</string>
     <string name="no_devices_found">No Devices Found</string>
-    <string name="topbar_connect_by_url">Connect an app by url</string>
+    <string name="topbar_connect_by_url">Host to use in the app (FloconConnectionMode.Url)</string>
     <string name="open_external">Open in external editor</string>
     <string name="preferences">Preferences</string>
     <string name="record_saved_at">Record saved at %1$s</string>

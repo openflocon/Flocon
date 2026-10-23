@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.flocon.sample.android.grpc.GrpcController
+import io.github.openflocon.flocon.FloconConnectionMode
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
         FloconLogger.enabled = true
 
         startFlocon(FloconContext(this)) {
+            connectionMode = FloconConnectionMode.Url("ws://192.168.1.81:9023")
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")

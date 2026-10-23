@@ -30,6 +30,22 @@ class FloconServerAddressTest {
     }
 
     @Test
+    fun `url mode strips a scheme and a port pasted in the host`() {
+        listOf("ws://192.168.1.20:9023", "http://192.168.1.20", "192.168.1.20:9023", " 192.168.1.20/ ").forEach {
+            val address = FloconConnectionMode.Url(host = it).resolve(adbHost = { "localhost" })
+
+            assertEquals(FloconServerAddress("192.168.1.20", 9023, 9024), address, it)
+        }
+    }
+
+    @Test
+    fun `url mode keeps an ipv6 host`() {
+        val address = FloconConnectionMode.Url(host = "fe80::1").resolve(adbHost = { "localhost" })
+
+        assertEquals("fe80::1", address.host)
+    }
+
+    @Test
     fun `switching the mode later resolves the new host`() {
         var mode: FloconConnectionMode = FloconConnectionMode.Adb
         val resolve = { mode.resolve(adbHost = { "10.0.2.2" }) }

@@ -18,7 +18,7 @@ data class AppUiState(
     val deviceState: DevicesStateUiModel,
     val appState: AppsStateUiModel,
     val recordState: RecordVideoStateUiModel,
-    // ws://<ip>:<port> urls of this machine, to fill FloconConnectionMode.Url in an app
+    // ips of this machine, the host to give to FloconConnectionMode.Url in an app
     val localUrls: ImmutableList<String> = persistentListOf(),
 ) {
     // the selected device is connected right now; true while loading so the pages don't flash
@@ -36,5 +36,5 @@ fun previewAppUiState() = AppUiState(
     deviceState = previewDevicesStateUiModel(),
     appState = previewAppsStateUiModel(),
     recordState = RecordVideoStateUiModel.Recording,
-    localUrls = persistentListOf("ws://192.168.1.20:9023"),
+    localUrls = persistentListOf("192.168.1.20"),
 )

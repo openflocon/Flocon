@@ -22,8 +22,18 @@ internal fun FloconConnectionMode.resolve(adbHost: () -> String): FloconServerAd
     )
 
     is FloconConnectionMode.Url -> FloconServerAddress(
-        host = host,
+        host = host.toBareHost(),
         websocketPort = websocketPort,
         httpPort = httpPort,
     )
+}
+
+/**
+ * The ports and the scheme are added by the SDK: a pasted `ws://192.168.1.20:9023` would otherwise
+ * be parsed with `ws` as the host and the port 80.
+ */
+internal fun String.toBareHost(): String {
+    val withoutPath = trim().substringAfter("://").substringBefore('/')
+    // more than one ':' is an ipv6 literal: leave it alone
+    return if (withoutPath.count { it == ':' } == 1) withoutPath.substringBefore(':') else withoutPath
 }

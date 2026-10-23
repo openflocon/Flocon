@@ -74,7 +74,7 @@ internal fun TopBarLocalUrls(
 private fun TopBarLocalUrlsPreview() {
     FloconTheme {
         TopBarLocalUrls(
-            urls = persistentListOf("ws://192.168.1.20:9023", "ws://10.0.0.4:9023"),
+            urls = persistentListOf("192.168.1.20", "10.0.0.4"),
             onCopy = {},
         )
     }
