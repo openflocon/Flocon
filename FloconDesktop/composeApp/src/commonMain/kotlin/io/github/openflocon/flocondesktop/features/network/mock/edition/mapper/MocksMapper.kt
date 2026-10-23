@@ -30,11 +30,13 @@ fun MockNetworkUiModel.toDomain(): MockNetworkDomainModel = MockNetworkDomainMod
             delay = response.delay,
             headers = response.headers,
         )
+
         is MockNetworkUiModel.Response.Exception -> MockNetworkDomainModel.Response.Exception(
             delay = response.delay,
             classPath = response.classPath,
         )
-    }
+    },
+    displayName = displayName,
 )
 
 fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
@@ -53,11 +55,13 @@ fun MockNetworkDomainModel.toUi(): MockNetworkUiModel = MockNetworkUiModel(
             delay = r.delay,
             headers = r.headers,
         )
+
         is MockNetworkDomainModel.Response.Exception -> MockNetworkUiModel.Response.Exception(
             delay = r.delay,
             classPath = r.classPath,
         )
-    }
+    },
+    displayName = displayName,
 )
 
 fun createEditable(initialMock: SelectedMockUiModel): EditableMockNetworkUiModel = when (initialMock) {
@@ -81,10 +85,11 @@ fun createEditable(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel
     isShared = initialMock?.isShared ?: false,
     responseType = when (initialMock?.response) {
         null,
-        is MockNetworkUiModel.Response.Body -> EditableMockNetworkUiModel.ResponseType.BODY
+        is MockNetworkUiModel.Response.Body -> ResponseType.BODY
 
-        is MockNetworkUiModel.Response.Exception -> EditableMockNetworkUiModel.ResponseType.EXCEPTION
+        is MockNetworkUiModel.Response.Exception -> ResponseType.EXCEPTION
     },
+    displayName = initialMock?.displayName.orEmpty(),
 )
 
 private fun editableBodyResponse(initialMock: MockNetworkUiModel?): EditableMockNetworkUiModel.Response.Body {
@@ -122,11 +127,13 @@ fun editableToUi(editable: EditableMockNetworkUiModel): Either<Throwable, MockNe
                     it.key to it.value
                 }.filterNot { it.key.isEmpty() },
             )
+
             ResponseType.EXCEPTION -> MockNetworkUiModel.Response.Exception(
                 delay = editable.delay,
                 classPath = editable.exceptionResponse.classPath,
             )
-        }
+        },
+        displayName = editable.displayName,
     ).success()
 } catch (t: Throwable) {
     t.failure()

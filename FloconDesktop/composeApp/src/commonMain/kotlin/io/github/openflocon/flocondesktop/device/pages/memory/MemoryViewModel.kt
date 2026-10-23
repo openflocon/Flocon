@@ -29,7 +29,6 @@ class MemoryViewModel(
     }
 
     fun onAction(action: MemoryAction) {
-
     }
 
     private suspend fun refreshMemory() {
@@ -75,5 +74,4 @@ class MemoryViewModel(
     companion object {
         private const val MEM_REGEX = """([\d,]+)K:\s+([a-zA-Z0-9._:-]+)\s+$${"pid"}\s+(\d+)(?:\s+/\s+([a-zA-Z\s]+))?$"""
     }
-
 }

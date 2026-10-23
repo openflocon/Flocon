@@ -14,6 +14,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FloconNetworkDao {
 
+    @Query(
+        """
+        SELECT EXISTS(
+            SELECT 1 FROM FloconNetworkCallEntity
+            WHERE deviceId = :deviceId
+            AND packageName = :packageName
+        )
+    """
+    )
+    fun observeHasAny(deviceId: DeviceId, packageName: AppPackageName): Flow<Boolean>
+
     @RawQuery(observedEntities = [FloconNetworkCallEntity::class])
     suspend fun getRequestsRaw(query: RoomRawQuery): List<FloconNetworkCallEntity>
 
@@ -67,6 +78,34 @@ interface FloconNetworkDao {
         packageName: String,
         callId: String,
     ): FloconNetworkCallEntity?
+
+    @Query(
+        """
+        SELECT * FROM FloconNetworkCallEntity
+        WHERE (:startTimestamp IS NULL OR request_startTime >= :startTimestamp)
+        AND (:endTimestamp IS NULL OR request_startTime <= :endTimestamp)
+        ORDER BY request_startTime ASC
+    """,
+    )
+    suspend fun getAllRequests(
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<FloconNetworkCallEntity>
+
+    @Query(
+        """
+        SELECT * FROM FloconNetworkCallEntity
+        WHERE deviceId = :deviceId
+        AND (:startTimestamp IS NULL OR request_startTime >= :startTimestamp)
+        AND (:endTimestamp IS NULL OR request_startTime <= :endTimestamp)
+        ORDER BY request_startTime ASC
+    """,
+    )
+    suspend fun getAllRequestsByDevice(
+        deviceId: String,
+        startTimestamp: Long? = null,
+        endTimestamp: Long? = null,
+    ): List<FloconNetworkCallEntity>
 
     @Query("DELETE FROM FloconNetworkCallEntity")
     suspend fun clearAll()

@@ -2,8 +2,10 @@ package io.github.openflocon.flocondesktop.features.network.list.model
 
 import androidx.compose.runtime.Immutable
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_other
 import flocondesktop.composeapp.generated.resources.graphql
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.stringResource
 
 @Immutable
 sealed interface NetworkMethodUi {
@@ -29,6 +31,11 @@ sealed interface NetworkMethodUi {
 
         data object DELETE : Http {
             override val text: String = "DELETE"
+            override val icon = null
+        }
+
+        data object PATCH : Http {
+            override val text: String = "PATCH"
             override val icon = null
         }
     }
@@ -70,6 +77,7 @@ sealed interface NetworkMethodUi {
             Http.POST,
             Http.PUT,
             Http.DELETE,
+            Http.PATCH,
             GraphQl.QUERY,
             GraphQl.MUTATION,
             Grpc,

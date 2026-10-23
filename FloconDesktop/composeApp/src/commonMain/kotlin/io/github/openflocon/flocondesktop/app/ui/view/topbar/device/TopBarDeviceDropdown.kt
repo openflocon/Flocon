@@ -1,12 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
@@ -22,6 +21,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -34,54 +34,47 @@ internal fun TopBarDeviceDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = it
-        },
-        modifier = modifier,
-    ) {
-        when (state) {
-            DevicesStateUiModel.Empty -> Empty()
-            DevicesStateUiModel.Loading -> Loading()
-            is DevicesStateUiModel.WithDevices -> TopBarSelector(
-                onClick = {
-                    expanded = true
-                },
-                modifier = modifier,
-            ) {
-                TopBarDeviceView(
-                    device = state.deviceSelected,
-                    onClick = { expanded = true },
-                    onClickDetail = { onClickDetail(state.deviceSelected) },
-                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                )
-            }
-        }
-        ExposedDropdownMenu(
+    when (state) {
+        DevicesStateUiModel.Empty -> Empty()
+
+        DevicesStateUiModel.Loading -> Loading()
+
+        is DevicesStateUiModel.WithDevices -> FloconDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = FloconTheme.colorPalette.primary,
-            shadowElevation = 0.dp,
-            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            modifier = Modifier.exposedDropdownSize(),
+            onExpandRequest = { expanded = true },
+            modifier = modifier,
+            anchorContent = {
+                TopBarSelector(
+                    onClick = { expanded = true },
+                    modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                ) {
+                    TopBarDevice(
+                        device = state.deviceSelected,
+                        detailClick = { onClickDetail(state.deviceSelected) },
+                    )
+                }
+            },
         ) {
-            if (state is DevicesStateUiModel.WithDevices) {
-                state.devices.forEach { device ->
-                    TopBarDeviceView(
-                        device = device,
-                        selected = state.deviceSelected.id == device.id,
-                        onClick = {
+            state.devices.forEach { device ->
+                val isSelected = state.deviceSelected.id == device.id
+
+                TopBarDevice(
+                    modifier = Modifier
+                        .width(FloconTheme.sizes.deviceDropdownWidth)
+                        .clip(FloconTheme.shapes.medium)
+                        .clickable {
                             onDeviceSelected(device)
                             expanded = false
                         },
-                        onClickDetail = { onClickDetail(device) },
-                        onDelete = {
-                            deleteDevice(device)
-                            expanded = false
-                        },
-                    )
-                }
+                    device = device,
+                    selected = isSelected,
+                    detailClick = { onClickDetail(device) },
+                    deleteClick = {
+                        deleteDevice(device)
+                        expanded = false
+                    },
+                )
             }
         }
     }
@@ -91,12 +84,20 @@ internal fun TopBarDeviceDropdown(
 private fun Empty() {
     TopBarSelector(
         onClick = {},
+        modifier = Modifier
+            .height(48.dp)
+            .width(FloconTheme.sizes.deviceDropdownWidth)
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(
+                    vertical = FloconTheme.spacing.extraSmall,
+                    horizontal = FloconTheme.spacing.medium
+                ),
             style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colorPalette.onSurface,
+            color = FloconTheme.colors.ink,
         )
     }
 }
@@ -105,6 +106,7 @@ private fun Empty() {
 private fun Loading() {
     TopBarSelector(
         onClick = {},
+        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
     ) {
         FloconCircularProgressIndicator()
     }

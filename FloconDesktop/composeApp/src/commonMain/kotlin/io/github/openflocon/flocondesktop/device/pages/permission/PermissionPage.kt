@@ -46,10 +46,10 @@ private fun Content(
         modifier = Modifier
             .fillMaxSize()
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.line)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg300,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -81,12 +81,12 @@ private fun Content(
                 FloconCheckbox(
                     checked = item.granted,
                     onCheckedChange = null,
-                    uncheckedColor = FloconTheme.colorPalette.secondary
+                    uncheckedColor = FloconTheme.colors.bg300
                 )
             }
             if (index != uiState.list.lastIndex) {
                 FloconHorizontalDivider(
-                    color = FloconTheme.colorPalette.secondary
+                    color = FloconTheme.colors.bg300
                 )
             }
         }

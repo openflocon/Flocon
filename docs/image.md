@@ -1,40 +1,42 @@
-### 🖼️ Downloaded Image Viewer
+---
+title: Downloaded Image Viewer
+description: Preview and inspect images fetched by your application in real time.
+---
 
-<img width="1297" height="838" alt="Screenshot 2025-09-12 at 15 40 53" src="https://github.com/user-attachments/assets/5f83ce95-0b03-4bfd-9d67-099c7b5ca5cc" />
+# 🖼️ Downloaded Image Viewer
 
-Flocon captures and displays **images downloaded by the Android app**, giving you a clear, visual representation of media fetched over the network — such as avatars, product thumbnails, banners, or any other images requested at runtime.
+Flocon captures and displays **images downloaded over the network** at runtime — such as user avatars, feed thumbnails, banners, and cached media assets.
 
-For each image, Flocon shows:
+---
 
-- A live **thumbnail preview** of the image  
-- The **URL** from which it was downloaded
-- The **download timestamp**  
+## Overview
 
-This feature is extremely useful for:
+<img width="1297" height="838" alt="Image Previewer" src="https://github.com/user-attachments/assets/5f83ce95-0b03-4bfd-9d67-099c7b5ca5cc" style="border-radius: 8px;" />
 
-- Verifying that images are loading correctly and not broken  
-- Debugging CDN issues, placeholders, or misconfigured URLs  
-- Comparing image quality and compression at runtime  
-- Inspecting lazy loading or image caching behaviors  
+For every downloaded image, Flocon displays:
 
-Whether you're working on UI/UX, performance optimization, or just debugging a missing image, this tool gives you **immediate visibility** into every image fetched by your app.
+- **Thumbnail Preview**: Direct visual preview rendered inside the desktop app
+- **Origin URL**: Full remote source address
+- **Timing**: Timestamp and load ordering
 
-Usage with coil
+This is invaluable for debugging missing placeholders, CDN resolution failures, image compression artifacts, or unexpected network cache misses.
+
+---
+
+## Setup with Coil 3
+
+When using Coil, connect your `ImageLoader` with the Flocon-enabled OkHttp or Ktor client:
 
 ```kotlin
-// just add your okhttp client (with the flocon interceptor)
 SingletonImageLoader.setSafe {
-        ImageLoader.Builder(context = context)
-            .components {
-                // works also for ktor network fetcher
-                add(
-                    coil3.network.okhttp.OkHttpNetworkFetcherFactory(
-                        callFactory = {
-                            okHttpClient
-                        },
-                    ),
+    ImageLoader.Builder(context = context)
+        .components {
+            add(
+                coil3.network.okhttp.OkHttpNetworkFetcherFactory(
+                    callFactory = { okHttpClient }, // okHttpClient configured with FloconOkhttpInterceptor
                 )
-            }
-            .build()
+            )
+        }
+        .build()
 }
 ```

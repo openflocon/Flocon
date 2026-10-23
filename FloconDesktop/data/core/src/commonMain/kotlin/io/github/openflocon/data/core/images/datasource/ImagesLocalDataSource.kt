@@ -14,6 +14,14 @@ interface ImagesLocalDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     ): Flow<List<DeviceImageDomainModel>>
 
+    suspend fun searchImages(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sinceTimestamp: Long?,
+        text: String?,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<DeviceImageDomainModel>
+
     suspend fun clearImages(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )

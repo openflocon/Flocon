@@ -26,6 +26,8 @@ import io.github.openflocon.flocondesktop.features.network.mock.processor.Export
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportResult
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportResult
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -52,12 +54,12 @@ class NetworkMocksViewModel(
 
     val items = observeNetworkMocksUseCase()
         .distinctUntilChanged()
-        .map { it.map { it.toLineUi() } }
+        .map { it.map { it.toLineUi() }.toImmutableList() }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
+            initialValue = persistentListOf(),
         )
 
     val editionWindow = MutableStateFlow<MockEditionWindowUiModel?>(null)
@@ -77,14 +79,20 @@ class NetworkMocksViewModel(
                 id = action.id,
                 enabled = action.enabled
             )
+
             is NetworkMockAction.ChangeIsShared -> changeIsShared(
                 id = action.id,
                 isShared = action.isShared
             )
+
             is NetworkMockAction.OnAddItemClicked -> createNewMock()
+
             is NetworkMockAction.OnDeleteClicked -> deleteMock(id = action.id)
+
             is NetworkMockAction.OnItemClicked -> clickOnMock(id = action.id)
+
             is NetworkMockAction.OnExportClicked -> exportMocks()
+
             is NetworkMockAction.OnImportClicked -> importMocks()
         }
     }
@@ -109,7 +117,9 @@ class NetworkMocksViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (val result = importMocksProcessor()) {
                 is ImportResult.Cancelled -> { /* no op */ }
+
                 is ImportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
+
                 is ImportResult.Success -> {
                     result.mocks.forEach {
                         addNetworkMocksUseCase(it)

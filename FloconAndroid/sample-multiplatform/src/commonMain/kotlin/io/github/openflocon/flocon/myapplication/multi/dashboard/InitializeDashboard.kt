@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.dashboard
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.myapplication.multi.dashboard.tokens.tokensFlow
 import io.github.openflocon.flocon.myapplication.multi.dashboard.user.userFlow
 import io.github.openflocon.flocon.plugins.dashboard.dsl.button
@@ -13,14 +14,15 @@ import io.github.openflocon.flocon.plugins.dashboard.dsl.markdown
 import io.github.openflocon.flocon.plugins.dashboard.dsl.html
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
 import io.github.openflocon.flocon.plugins.dashboard.dsl.textField
-import io.github.openflocon.flocon.plugins.dashboard.floconDashboard
+import io.github.openflocon.flocon.plugins.dashboard.dashboard
+import io.github.openflocon.flocon.plugins.dashboard.dashboardPlugin
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 fun initializeDashboard() {
     GlobalScope.launch {
-        floconDashboard(id = "main") {
+        Flocon.dashboardPlugin.dashboard(id = "main", scope = this) {
             section(name = "User", userFlow) { user ->
                 text(label = "username", value = user.userName)
                 text(label = "fullName", value = user.fullName, color = Color.Red.toArgb())
@@ -57,7 +59,7 @@ fun initializeDashboard() {
         }
     }
     GlobalScope.launch {
-        floconDashboard(id = "plainText") {
+        Flocon.dashboardPlugin.dashboard(id = "plainText", scope = this) {
             section(name = "Test") {
                 plainText(
                     label = "lorem",
@@ -95,7 +97,7 @@ fun initializeDashboard() {
         }
     }
     GlobalScope.launch {
-        floconDashboard(id = "markdown") {
+        Flocon.dashboardPlugin.dashboard(id = "markdown", scope = this) {
             section(name = "Markdown") {
                 markdown(
                     label = "Release Note",
@@ -115,7 +117,7 @@ fun initializeDashboard() {
     }
 
     GlobalScope.launch {
-        floconDashboard(id = "html") {
+        Flocon.dashboardPlugin.dashboard(id = "html", scope = this) {
             section(name = "HTML Test") {
                 html(
                     label = "Formatted Text",
@@ -126,7 +128,7 @@ fun initializeDashboard() {
     }
 
     GlobalScope.launch {
-        floconDashboard(id = "form") {
+        Flocon.dashboardPlugin.dashboard(id = "form", scope = this) {
             form(
                 name = "Test form",
                 submitText = "Submit form test button",

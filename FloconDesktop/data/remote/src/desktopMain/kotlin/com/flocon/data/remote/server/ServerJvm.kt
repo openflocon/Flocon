@@ -5,6 +5,7 @@ import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
+import io.github.openflocon.domain.network.repository.NetworkRepository
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
@@ -18,7 +19,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
-import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
@@ -41,6 +41,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServerJvm(
     private val json: Json,
+    private val networkRepository: Lazy<NetworkRepository>,
 ) : Server {
     private val _receivedMessages = Channel<FloconIncomingMessageDataModel>()
     override val receivedMessages = _receivedMessages.receiveAsFlow()
@@ -67,7 +68,6 @@ class ServerJvm(
         val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
             embeddedServer(Netty, port = port) {
                 install(WebSockets) {
-                    pingPeriod = 15.seconds
                     timeout = 15.seconds
                     maxFrameSize = Long.MAX_VALUE
                     masking = false
@@ -186,11 +186,13 @@ class ServerJvm(
     }
 
     override fun starHttp(port: Int) {
-        if (httpServer != null)
+        if (httpServer != null) {
             return
+        }
 
-        val desktopPath = Paths.get(System.getProperty("user.home"), "Desktop", "Flocon", "Files").absolutePathString()
-        File(desktopPath).also {
+        val rootFloconFolder = Paths.get(System.getProperty("user.home"), ".flocon", "Files")
+            .absolutePathString()
+        File(rootFloconFolder).also {
             if (!it.exists()) {
                 it.mkdirs()
             }
@@ -214,7 +216,7 @@ class ServerJvm(
 
                             is PartData.FileItem -> {
                                 val fileName = part.originalFileName ?: "flocon_file${System.currentTimeMillis()}.bin"
-                                val targetFile = File(desktopPath, fileName)
+                                val targetFile = File(rootFloconFolder, fileName)
                                 part.streamProvider().use { input ->
                                     targetFile.outputStream().use { output ->
                                         input.copyTo(output)
@@ -250,6 +252,14 @@ class ServerJvm(
 
                     call.respondText("file received : ${savedFile?.absolutePath ?: "inconnu"}")
                 }
+
+                // Add network export routes
+                networkExportRoutes(
+                    json = json,
+                    getNetworkCalls = { deviceId, startTimestamp, endTimestamp ->
+                        networkRepository.value.getAllNetworkCalls(deviceId, startTimestamp, endTimestamp)
+                    }
+                )
             }
         }.start(wait = false)
 

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,9 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -38,17 +37,22 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -91,8 +95,10 @@ private fun ImagesScreen(
 ) {
     val lazyListState = rememberLazyGridState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+    var currentFilter by remember { mutableStateOf("") }
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
         FloconPageTopBar(
@@ -100,8 +106,11 @@ private fun ImagesScreen(
                 .fillMaxWidth(),
             filterBar = {
                 FilterBar(
-                    placeholderText = "Filter images",
-                    onTextChange = { onFilterChanged(it) },
+                    placeholderText = stringResource(Res.string.images_filter),
+                    onTextChange = {
+                        currentFilter = it
+                        onFilterChanged(it)
+                    },
                     modifier = Modifier.weight(1f),
                 )
             },
@@ -110,14 +119,24 @@ private fun ImagesScreen(
                     imageVector = Icons.Outlined.Delete,
                     onClick = onReset,
                 )
+                FeatureDocButton(doc = FeatureDoc.Images)
             }
         )
         when (state) {
-            ImagesStateUiModel.Empty,
             ImagesStateUiModel.Idle -> Box(Modifier)
 
+            ImagesStateUiModel.Empty -> if (currentFilter.isEmpty()) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.Images,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100),
+                )
+            }
+
             is ImagesStateUiModel.WithImages -> {
-                val gridPadding = 8.dp
+                val gridPadding = FloconTheme.spacing.small
 
                 Box(
                     modifier = Modifier.fillMaxSize()
@@ -131,10 +150,10 @@ private fun ImagesScreen(
                         modifier = Modifier
                             .matchParentSize()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colorPalette.primary)
+                            .background(FloconTheme.colors.bg100)
                     ) {
                         items(state.images) {
-                            ImageItemView(
+                            ImageItem(
                                 model = it,
                                 onClick = onClickImage,
                                 modifier = Modifier
@@ -173,10 +192,10 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .background(Color.Black)
                         .fillMaxWidth()
-                        .padding(all = 12.dp),
+                        .padding(all = FloconTheme.spacing.medium),
                 ) {
-                    Text(text = model.downloadedAt, color = Color.White, fontSize = 14.sp)
-                    Text(text = model.url, color = Color.Gray, fontSize = 10.sp)
+                    Text(text = model.downloadedAt, color = Color.White, fontSize = FloconTheme.typography.labelLarge.fontSize)
+                    Text(text = model.url, color = Color.Gray, fontSize = FloconTheme.typography.labelSmall.fontSize)
                 }
             }
             AsyncImage(

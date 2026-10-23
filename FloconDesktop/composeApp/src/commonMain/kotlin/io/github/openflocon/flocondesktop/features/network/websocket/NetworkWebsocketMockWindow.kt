@@ -38,6 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.network_websocket_mock_title
 import io.github.openflocon.domain.network.models.NetworkWebsocketId
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
@@ -46,6 +48,8 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -80,7 +84,7 @@ private fun NetworkWebsocketMockContent(
 @Composable
 private fun NetworkWebsocketMockContent(
     selectedId: String?,
-    ids: List<NetworkWebsocketId>,
+    ids: ImmutableList<NetworkWebsocketId>,
     onClientSelected: (String) -> Unit,
     onSend: (String) -> Unit,
 ) {
@@ -88,15 +92,15 @@ private fun NetworkWebsocketMockContent(
         modifier = Modifier.fillMaxWidth(),
     ) {
         FloconDialogHeader(
-            title = "Network Websocket Mock",
+            title = stringResource(Res.string.network_websocket_mock_title),
             modifier = Modifier.fillMaxWidth(),
         )
 
         Column(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 12.dp)
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+                .padding(vertical = FloconTheme.spacing.medium)
+                .padding(horizontal = FloconTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             var selectionExpanded by remember { mutableStateOf(false) }
 
@@ -117,11 +121,11 @@ private fun NetworkWebsocketMockContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colorPalette.primary)
-                        .padding(horizontal = 12.dp, vertical = 8.dp).clickable {
+                        .background(FloconTheme.colors.bg100)
+                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small).clickable {
                             selectionExpanded = true
                         },
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 ) {
                     Text(
                         text = selectedId ?: ids.firstOrNull() ?: "",
@@ -132,7 +136,7 @@ private fun NetworkWebsocketMockContent(
                         imageVector = Icons.Outlined.KeyboardArrowDown,
                         contentDescription = "",
                         modifier = Modifier.width(16.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colorPalette.onPrimary)
+                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
                     )
                 }
 
@@ -143,7 +147,7 @@ private fun NetworkWebsocketMockContent(
                 ) {
                     ids.fastForEach { id ->
                         Text(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small)
                                 .clickable {
                                     onClientSelected(id)
                                     selectionExpanded = false
@@ -155,7 +159,7 @@ private fun NetworkWebsocketMockContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
 
             Text(
                 modifier = Modifier
@@ -182,7 +186,7 @@ private fun NetworkWebsocketMockContent(
                         }
                         return@onKeyEvent false
                     },
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 FloconTextField(
                     value = message,
@@ -199,7 +203,7 @@ private fun NetworkWebsocketMockContent(
                 Box(
                     modifier = Modifier.size(30.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(FloconTheme.colorPalette.tertiary)
+                        .background(FloconTheme.colors.ink)
                         .clickable {
                             onSend(message)
                         },
@@ -208,7 +212,7 @@ private fun NetworkWebsocketMockContent(
                     FloconIcon(
                         modifier = Modifier.size(14.dp),
                         imageVector = Icons.Filled.Send,
-                        tint = FloconTheme.colorPalette.onTertiary,
+                        tint = FloconTheme.colors.bg100,
                     )
                 }
             }

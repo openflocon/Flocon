@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.network.badquality.edition.m
 
 import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 
 fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
@@ -13,7 +14,7 @@ fun BadQualityConfigDomainModel.toUi() = BadQualityConfigUiModel(
     errorProbability = errorProbability,
     errors = errors.map { error ->
         error.toUi()
-    },
+    }.toImmutableList(),
 )
 
 private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.Error(
@@ -24,6 +25,7 @@ private fun BadQualityConfigDomainModel.Error.toUi() = BadQualityConfigUiModel.E
             body = t.body,
             contentType = t.contentType,
         )
+
         is BadQualityConfigDomainModel.Error.Type.Exception -> BadQualityConfigUiModel.Error.Type.Exception(
             classPath = t.classPath,
         )
@@ -56,6 +58,7 @@ private fun BadQualityConfigUiModel.Error.toDomain() = BadQualityConfigDomainMod
             body = t.body,
             contentType = t.contentType,
         )
+
         is BadQualityConfigUiModel.Error.Type.Exception -> BadQualityConfigDomainModel.Error.Type.Exception(
             classPath = t.classPath,
         )

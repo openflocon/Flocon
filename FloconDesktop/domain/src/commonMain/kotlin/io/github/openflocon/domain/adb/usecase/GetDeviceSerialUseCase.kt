@@ -7,7 +7,5 @@ class GetDeviceSerialUseCase internal constructor(
 ) {
     suspend operator fun invoke(
         deviceId: String
-    ): String {
-        return adbRepository.getAdbSerial(deviceId).orEmpty()
-    }
+    ): String = adbRepository.getAdbSerial(deviceId).orEmpty()
 }

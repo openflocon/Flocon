@@ -4,15 +4,18 @@ import io.github.openflocon.domain.device.usecase.DeleteDeviceApplicationUseCase
 import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.HandleDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
+import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCase
@@ -38,6 +41,7 @@ internal val deviceModule = module {
     factoryOf(::SelectDeviceAppUseCase)
     factoryOf(::SelectDeviceUseCase)
     factoryOf(::HandleNewAppUseCase)
+    factoryOf(::IsCurrentDeviceIosUseCase)
     factoryOf(::TakeScreenshotUseCase)
     factoryOf(::StartRecordingVideoUseCase)
     factoryOf(::StopRecordingVideoUseCase)
@@ -48,4 +52,6 @@ internal val deviceModule = module {
     factoryOf(::RestartAppUseCase)
     factoryOf(::ObserveCurrentDeviceFloconSdkVersionNameUseCase)
     factoryOf(::ObserveCurrentDeviceCapabilitiesUseCase)
+    factoryOf(::ObserveCurrentDeviceInstalledPluginsUseCase)
+    factoryOf(::GetFloconDocumentPathUseCase)
 }

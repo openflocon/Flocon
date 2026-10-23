@@ -20,3 +20,8 @@ local.properties
 # Kotlin Multiplatform
 .kotlin/
 kotlin-js-store/
+
+# iOS
+xcuserdata/
+# IDE (VS Code / Eclipse) build output
+bin/

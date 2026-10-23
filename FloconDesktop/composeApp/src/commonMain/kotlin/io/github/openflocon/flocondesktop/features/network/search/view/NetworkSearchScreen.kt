@@ -33,15 +33,17 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.search_placeholder
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.SearchScope
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
-import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItemView
+import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItem
 import io.github.openflocon.flocondesktop.features.network.search.Match
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.search.model.NetworkSearchUiState
-import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreviewView
-import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChipsView
+import io.github.openflocon.flocondesktop.features.network.search.view.components.NetworkSearchPreview
+import io.github.openflocon.flocondesktop.features.network.search.view.components.ScopeChips
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
@@ -49,6 +51,8 @@ import io.github.openflocon.library.designsystem.components.FloconTextFieldWitho
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -87,7 +91,7 @@ private fun NetworkSearchScreen(
     uiState: NetworkSearchUiState,
     selectedRequestId: String?,
     selectedRequest: FloconNetworkCallDomainModel?,
-    matches: List<Match>,
+    matches: ImmutableList<Match>,
     currentMatchIndex: Int,
     onNextMatch: () -> Unit,
     onPrevMatch: () -> Unit,
@@ -150,35 +154,35 @@ private fun NetworkSearchScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(FloconTheme.colorPalette.primary)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .background(FloconTheme.colors.bg100)
+                    .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium)
             ) {
                 FloconTextFieldWithoutM3(
                     value = query,
                     onValueChange = {
                         onQueryChanged(it)
                     },
-                    placeholder = defaultPlaceHolder("Search..."),
+                    placeholder = defaultPlaceHolder(stringResource(Res.string.search_placeholder)),
                     leadingComponent = {
                         FloconIcon(
                             imageVector = Icons.Outlined.Search,
                             modifier = Modifier.size(16.dp)
                         )
                     },
-                    containerColor = FloconTheme.colorPalette.secondary,
-                    textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colorPalette.onSurface),
+                    containerColor = FloconTheme.colors.bg200,
+                    textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.ink),
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .fillMaxWidth()
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                    modifier = Modifier.padding(top = FloconTheme.spacing.small),
                 ) {
                     SearchScope.entries.forEach { scope ->
-                        ScopeChipsView(
+                        ScopeChips(
                             uiState = uiState,
                             scope = scope,
                             onScopeToggled = onScopeToggled
@@ -197,11 +201,11 @@ private fun NetworkSearchScreen(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.matchParentSize(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        contentPadding = PaddingValues(vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                        contentPadding = PaddingValues(vertical = FloconTheme.spacing.medium),
                     ) {
                         items(uiState.results) { item ->
-                            NetworkItemView(
+                            NetworkItem(
                                 state = item,
                                 selected = item.uuid == selectedRequestId,
                                 multiSelect = false,
@@ -224,7 +228,7 @@ private fun NetworkSearchScreen(
                 }
 
                 if (selectedRequestId != null && selectedRequest != null) {
-                    NetworkSearchPreviewView(
+                    NetworkSearchPreview(
                         request = selectedRequest,
                         matches = matches,
                         currentMatchIndex = currentMatchIndex,

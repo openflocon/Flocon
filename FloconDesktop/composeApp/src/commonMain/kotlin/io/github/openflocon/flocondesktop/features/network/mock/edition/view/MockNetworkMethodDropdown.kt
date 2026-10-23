@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 
 @Composable
@@ -23,11 +24,11 @@ fun MockNetworkMethodDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        MockNetworkLabelView(label)
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
+        MockNetworkLabel(label)
 
         Box {
-            MockNetworkMethodView(
+            MockNetworkMethod(
                 method = value,
                 onClick = {
                     expanded = true
@@ -38,8 +39,8 @@ fun MockNetworkMethodDropdown(
                 onDismissRequest = { expanded = false },
             ) {
                 MockNetworkMethodUi.entries.forEach { method ->
-                    MockNetworkMethodView(
-                        modifier = Modifier.padding(all = 4.dp),
+                    MockNetworkMethod(
+                        modifier = Modifier.padding(all = FloconTheme.spacing.extraSmall),
                         method = method,
                         onClick = {
                             onValueChange(method)

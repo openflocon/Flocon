@@ -24,7 +24,6 @@ class InfoViewModel(
     }
 
     fun onAction(action: InfoAction) {
-
     }
 
     private fun deviceInfo() {
@@ -40,5 +39,4 @@ class InfoViewModel(
             }
         }
     }
-
 }

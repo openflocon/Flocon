@@ -5,6 +5,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
+import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
@@ -31,4 +32,7 @@ interface Server {
 @OptIn(ExperimentalUuidApi::class)
 fun newRequestId(): String = Uuid.random().toString()
 
-expect fun getServer(json: Json): Server
+expect fun getServer(
+    json: Json,
+    networkRepository: Lazy<NetworkRepository>,
+): Server

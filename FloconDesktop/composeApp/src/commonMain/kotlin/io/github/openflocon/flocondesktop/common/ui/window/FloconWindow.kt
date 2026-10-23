@@ -1,10 +1,11 @@
 package io.github.openflocon.flocondesktop.common.ui.window
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.FrameWindowScope
 
+@Immutable
 interface FloconWindowState
 
 val defaultWindowSize = DpSize(800.dp, 600.dp)
@@ -19,5 +20,5 @@ expect fun FloconWindow(
     state: FloconWindowState,
     onCloseRequest: () -> Unit,
     alwaysOnTop: Boolean = false,
-    content: @Composable FrameWindowScope.() -> Unit,
+    content: @Composable () -> Unit
 )

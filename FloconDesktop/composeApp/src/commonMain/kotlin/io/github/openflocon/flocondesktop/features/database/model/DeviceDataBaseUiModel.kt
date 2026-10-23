@@ -1,17 +1,18 @@
 package io.github.openflocon.flocondesktop.features.database.model
 
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import kotlinx.collections.immutable.ImmutableList
 
 data class DeviceDataBaseUiModel(
     val id: DeviceDataBaseId,
     val name: String,
     val isSelected: Boolean,
-    val tables: List<TableUiModel>?,
+    val tables: ImmutableList<TableUiModel>?,
 )
 
 data class TableUiModel(
     val name: String,
-    val columns: List<ColumnUiModel>
+    val columns: ImmutableList<ColumnUiModel>
 ) {
     data class ColumnUiModel(
         val name: String,

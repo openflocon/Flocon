@@ -2,10 +2,10 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
 
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.multiplatform)
 
     alias(libs.plugins.kotlinx.serialization)
 }
@@ -17,7 +17,6 @@ kotlin {
         // Pour Kotlin 1.9+
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
     }
 
@@ -36,6 +35,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.library.designsystem)
+            implementation(libs.kotlinx.immutable)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

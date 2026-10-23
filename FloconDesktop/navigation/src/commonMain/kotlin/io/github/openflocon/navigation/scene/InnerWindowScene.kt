@@ -45,7 +45,9 @@ internal data class InnerWindowScene<T : Any>(
                 .background(Color.Black.copy(alpha = 0.5f))
                 .clickable(onClick = onBack, indication = null, interactionSource = remember { MutableInteractionSource() })
         ) {
+            val closeButtonOffset = FloconTheme.spacing.large
             FloconSurface(
+                color = FloconTheme.colors.floating,
                 shape = FloconTheme.shapes.small,
                 modifier = Modifier.fillMaxSize(0.9f)
             ) {
@@ -57,8 +59,8 @@ internal data class InnerWindowScene<T : Any>(
                     .align(Alignment.TopEnd)
                     .offset {
                         IntOffset(
-                            x = -16.dp.roundToPx(),
-                            y = 16.dp.roundToPx()
+                            x = -closeButtonOffset.roundToPx(),
+                            y = closeButtonOffset.roundToPx()
                         )
                     }
             ) {

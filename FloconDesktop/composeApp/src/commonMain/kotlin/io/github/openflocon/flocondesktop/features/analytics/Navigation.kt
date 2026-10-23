@@ -1,12 +1,15 @@
 package io.github.openflocon.flocondesktop.features.analytics
 
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
-import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsDetailView
+import io.github.openflocon.flocondesktop.app.keepMenu
+import io.github.openflocon.flocondesktop.app.menu
+import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsDetail
 import io.github.openflocon.flocondesktop.features.analytics.view.AnalyticsScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
-import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import kotlinx.serialization.Serializable
 
 sealed interface AnalyticsRoutes : FloconRoute {
@@ -23,17 +26,19 @@ sealed interface AnalyticsRoutes : FloconRoute {
 
 fun EntryProviderScope<FloconRoute>.analyticsRoutes() {
     entry<AnalyticsRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
+        metadata = metadata {
+            menu()
+        }
     ) {
         AnalyticsScreen()
     }
     entry<AnalyticsRoutes.Detail>(
-        metadata = PanelSceneStrategy.panel(
-            pinnable = false,
-            closable = true
-        )
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
     ) {
-        AnalyticsDetailView(
+        AnalyticsDetail(
             id = it.id
         )
     }

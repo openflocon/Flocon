@@ -51,10 +51,11 @@ class DevicesRepositoryImpl(
     }
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = localCurrentDeviceDataSource.currentDeviceId.flatMapLatest {
-        if (it == null)
+        if (it == null) {
             flowOf(null)
-        else
+        } else {
             localDevicesDataSource.observeDeviceById(it)
+        }
     }
 
     // returns new if new device
@@ -213,13 +214,25 @@ class DevicesRepositoryImpl(
 
     // endregion
 
-    override val pluginName = listOf(Protocol.FromDevice.Device.Plugin)
+    override val pluginName = listOf(
+        Protocol.FromDevice.Device.Plugin,
+        Protocol.FromDevice.Bonjour.Plugin,
+    )
 
     override suspend fun onMessageReceived(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         message: FloconIncomingMessageDomainModel,
     ) {
         when (message.method) {
+            Protocol.FromDevice.Bonjour.Method.Bonjour -> {
+                // null for an SDK that does not send its plugins: everything is displayed
+                localDevicesDataSource.saveInstalledPlugins(
+                    deviceId = message.deviceId,
+                    appPackageName = message.appPackageName,
+                    installedPlugins = remoteDeviceDataSource.getInstalledPlugins(message),
+                )
+            }
+
             Protocol.FromDevice.Device.Method.RegisterDevice -> {
                 remoteDeviceDataSource.getDeviceSerial(message)?.let { serial ->
                     adbRepository.saveAdbSerial(
@@ -228,6 +241,7 @@ class DevicesRepositoryImpl(
                     )
                 }
             }
+
             Protocol.FromDevice.Device.Method.AppIcon -> {
                 localDevicesDataSource.saveAppIcon(
                     deviceId = message.deviceId,

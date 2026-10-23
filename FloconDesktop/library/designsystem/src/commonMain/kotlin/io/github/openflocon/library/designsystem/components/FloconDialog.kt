@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -37,6 +38,7 @@ fun FloconDialog(
             true
         }
         FloconSurface(
+            color = FloconTheme.colors.floating,
             shape = RoundedCornerShape(10.dp),
             modifier = modifier
                 .fillMaxWidth()
@@ -49,25 +51,29 @@ fun FloconDialog(
 
 @Composable
 fun FloconDialogHeader(
-    title: String,
+    title: String?,
     modifier: Modifier = Modifier,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
         modifier
-            .background(FloconTheme.colorPalette.primary)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .background(FloconTheme.colors.floating)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = title,
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-                .padding(start = 4.dp)
-                .weight(1f),
-            style = FloconTheme.typography.titleMedium,
-            color = FloconTheme.colorPalette.onPrimary,
-        )
+        if (title != null) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .padding(vertical = FloconTheme.spacing.medium)
+                    .padding(start = FloconTheme.spacing.extraSmall)
+                    .weight(1f),
+                style = FloconTheme.typography.titleMedium,
+                color = FloconTheme.colors.ink,
+            )
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -83,7 +89,7 @@ fun FloconDialogButtons(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small, Alignment.End),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {

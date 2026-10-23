@@ -19,5 +19,7 @@ fun FloconNetworkCallDomainModel.toUi(
     status = getStatusUi(this),
     isMocked = request.isMocked,
     isReplayed = isReplayed,
-    isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false
+    isFromOldAppInstance = deviceIdAndPackageName?.appInstance?.let { it != appInstance } ?: false,
+    isImage = (response as? FloconNetworkCallDomainModel.Response.Success)?.isImage == true,
+    errorMessage = (response as? FloconNetworkCallDomainModel.Response.Failure)?.issue,
 )

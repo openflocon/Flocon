@@ -1,8 +1,11 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.mapper
 
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 
 data class DeeplinkItem(
     val model: DeeplinkDomainModel,
@@ -12,15 +15,28 @@ data class DeeplinkItem(
 internal fun mapToUi(
     history: List<DeeplinkDomainModel>,
     deepLinks: List<DeeplinkDomainModel>,
+    variables: List<DeeplinkVariableDomainModel>,
+    variableValues: Map<String, String>
 ): List<DeeplinkViewState> = buildList {
     addAll(history.map { DeeplinkItem(model = it, isHistory = true) })
     addAll(deepLinks.map { DeeplinkItem(model = it, isHistory = false) })
-}.distinctBy { it.model.link }
+}
+    .distinctBy { it.model.link }
     .map {
-        mapToUi(it.model, isHistory = it.isHistory)
+        mapToUi(
+            deepLink = it.model,
+            isHistory = it.isHistory,
+            variables = variables,
+            variableValues = variableValues
+        )
     }
 
-internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): DeeplinkViewState = DeeplinkViewState(
+internal fun mapToUi(
+    deepLink: DeeplinkDomainModel,
+    isHistory: Boolean,
+    variables: List<DeeplinkVariableDomainModel>,
+    variableValues: Map<String, String>
+): DeeplinkViewState = DeeplinkViewState(
     label = deepLink.label,
     description = deepLink.description,
     deeplinkId = deepLink.id,
@@ -28,11 +44,27 @@ internal fun mapToUi(deepLink: DeeplinkDomainModel, isHistory: Boolean): Deeplin
     parts = if (isHistory) {
         listOf(DeeplinkPart.Text(deepLink.link))
     } else {
-        parseDeeplinkString(deepLink.link, deepLink = deepLink)
-    },
+        parseDeeplinkString(
+            input = deepLink.link,
+            deepLink = deepLink,
+            variables = variables,
+            variableValues = variableValues
+        )
+    }
 )
 
-internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): List<DeeplinkPart> {
+internal fun parseDeeplinkString(
+    input: String,
+    deepLink: DeeplinkDomainModel = DeeplinkDomainModel(
+        id = 0,
+        label = null,
+        link = input,
+        description = null,
+        parameters = emptyList()
+    ),
+    variables: List<DeeplinkVariableDomainModel> = emptyList(),
+    variableValues: Map<String, String> = emptyMap()
+): List<DeeplinkPart> {
     val regex = "\\[([^\\[\\]]*)\\]".toRegex() // Regex pour trouver [quelquechose]
     val result = mutableListOf<DeeplinkPart>()
     var lastIndex = 0
@@ -50,17 +82,37 @@ internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): 
         }
 
         // 2. Ajouter la partie "TextField"
-        result.add(
-            DeeplinkPart.TextField(
-                label = value,
-                autoComplete = deepLink.parameters.find { it.paramName == value }?.autoComplete
+        val parameter = deepLink.parameters.find { it.name == value }
+
+        if (parameter != null) {
+            result.add(
+                when (parameter) {
+                    is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkPart.TextField(
+                        label = value,
+                        autoComplete = parameter.autoComplete
+                    )
+
+                    is DeeplinkDomainModel.Parameter.Variable -> DeeplinkPart.Variable(
+                        value = variableValues[parameter.variableName]
+                            ?: variables.firstSuggestionOf(parameter.variableName)
+                            ?: "{${parameter.variableName}}"
+                    )
+                }
             )
-        )
+        } else {
+            result.add(
+                DeeplinkPart.TextField(
+                    label = value,
+                    autoComplete = null
+                )
+            )
+        }
 
         lastIndex = range.last + 1
     }
 
     // 3. Ajouter la dernière partie "Text" après le dernier [value] (s'il y en a une)
+
     if (lastIndex < input.length) {
         val remainingText = input.substring(lastIndex)
         if (remainingText.isNotEmpty()) {
@@ -70,3 +122,9 @@ internal fun parseDeeplinkString(input: String, deepLink: DeeplinkDomainModel): 
 
     return result
 }
+
+private fun List<DeeplinkVariableDomainModel>.firstSuggestionOf(variableName: String): String? = firstOrNull { it.name == variableName }
+    ?.mode
+    ?.let { it as? DeeplinkVariableDomainModel.Mode.AutoComplete }
+    ?.suggestions
+    ?.firstOrNull()

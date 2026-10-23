@@ -20,7 +20,7 @@ fun FloconTextValue(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
-    valueContainerColor: Color = FloconTheme.colorPalette.primary
+    valueContainerColor: Color = FloconTheme.colors.bg300
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -41,7 +41,7 @@ fun FloconTextValue(
             Text(
                 text = value,
                 style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colorPalette.contentColorFor(valueContainerColor)
+                color = FloconTheme.colors.contentColorFor(valueContainerColor)
             )
         }
     }

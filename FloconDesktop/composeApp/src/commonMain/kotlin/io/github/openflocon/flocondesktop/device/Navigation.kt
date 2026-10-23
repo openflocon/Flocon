@@ -10,7 +10,6 @@ sealed interface DeviceRoutes : FloconRoute {
 
     @Serializable
     data class Detail(val id: DeviceId) : DeviceRoutes
-
 }
 
 fun EntryProviderScope<FloconRoute>.deviceRoutes() {

@@ -47,10 +47,10 @@ private fun Content(
         modifier = Modifier
             .fillMaxSize()
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.line)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg300,
                 shape = FloconTheme.shapes.medium
             )
     ) {
@@ -67,7 +67,7 @@ private fun Content(
                     .copy(fontWeight = FontWeight.Bold)
             )
             FloconHorizontalDivider(
-                color = FloconTheme.colorPalette.secondary
+                color = FloconTheme.colors.bg300
             )
         }
         itemsIndexed(
@@ -86,7 +86,7 @@ private fun Content(
             )
             if (index != uiState.list.lastIndex) {
                 FloconHorizontalDivider(
-                    color = FloconTheme.colorPalette.secondary
+                    color = FloconTheme.colors.bg300
                 )
             }
         }
@@ -109,7 +109,7 @@ private fun BasicItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.line)
             .padding(4.dp)
     ) {
         Text(

@@ -1,7 +1,11 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_exception
+import flocondesktop.composeapp.generated.resources.general_loading
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import org.jetbrains.compose.resources.stringResource
 
 fun loadingStatus() = NetworkStatusUi(
     text = "Loading",
@@ -16,6 +20,7 @@ fun failureStatus() = NetworkStatusUi(
 fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = networkCall.response?.let { response ->
     when (response) {
         is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
+
         is FloconNetworkCallDomainModel.Response.Success -> when (val s = response.specificInfos) {
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.GraphQl -> toGraphQlNetworkStatusUi(isSuccess = s.isSuccess)
             is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Http -> toNetworkStatusUi(s.httpCode)
@@ -26,6 +31,7 @@ fun getStatusUi(networkCall: FloconNetworkCallDomainModel): NetworkStatusUi = ne
     is FloconNetworkCallDomainModel.Request.SpecificInfos.GraphQl,
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc,
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> loadingStatus()
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> {
         NetworkStatusUi(
             text = s.event,
@@ -48,6 +54,7 @@ fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi {
     val response = call.response ?: return loadingStatus()
     return when (response) {
         is FloconNetworkCallDomainModel.Response.Failure -> failureStatus()
+
         is FloconNetworkCallDomainModel.Response.Success -> {
             when (val s = response.specificInfos) {
                 is FloconNetworkCallDomainModel.Response.Success.SpecificInfos.Grpc -> {
@@ -57,6 +64,7 @@ fun toGrpcNetworkStatusUi(call: FloconNetworkCallDomainModel): NetworkStatusUi {
                         status = if (isSuccess) NetworkStatusUi.Status.SUCCESS else NetworkStatusUi.Status.ERROR,
                     )
                 }
+
                 else -> NetworkStatusUi(
                     text = "not a grpc response",
                     status = NetworkStatusUi.Status.ERROR,

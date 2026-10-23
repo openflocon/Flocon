@@ -35,38 +35,36 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-
-private val Height = 32.dp
-private val Spacing = 2.dp
-private val FilterIcon = (Height - Spacing) / 2
 
 private const val NOT_ENABLED_OPACITY = 0.3f
 
 @Composable
 fun HeaderLabelItem(
     text: String,
-    modifier: Modifier = Modifier,
     sortedBy: SortedByUiModel,
     filtered: Boolean,
     clickOnSort: (SortedByUiModel.Enabled) -> Unit,
     clickOnFilter: () -> Unit,
+    modifier: Modifier = Modifier,
     labelAlignment: Alignment = Alignment.Center,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = RoundedCornerShape(4.dp)
-    val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-    val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
+    // small capitals, like the titles of the groups of the design system
+    val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
+    val textColor = FloconTheme.colors.inkFaint
 
     Row(
         modifier = modifier
-            .height(Height)
-            .padding(horizontal = 4.dp)
+            .height(FloconTheme.sizes.headerHeight)
+            .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Box(
             contentAlignment = labelAlignment,
@@ -74,20 +72,20 @@ fun HeaderLabelItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(shape)
-                .background(if (filtered) FloconTheme.colorPalette.accent.copy(alpha = 0.3f) else Color.Transparent)
+                .background(if (filtered) FloconTheme.colors.accentSoft else Color.Transparent)
                 .clickable(onClick = clickOnFilter),
         ) {
             Text(
-                text = text,
+                text = text.uppercase(),
                 style = typo,
                 textAlign = TextAlign.Center,
                 color = textColor,
-                modifier = Modifier.padding(horizontal = 4.dp),
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
             )
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(Spacing),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             FilterIcon(
                 icon = Icons.Outlined.ArrowDropUp,
@@ -98,6 +96,7 @@ fun HeaderLabelItem(
                 alignment = Alignment.BottomCenter,
                 textColor = when (sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> textColor
+
                     SortedByUiModel.Enabled.Descending,
                     SortedByUiModel.None,
                     -> textColor.copy(alpha = NOT_ENABLED_OPACITY)
@@ -131,9 +130,10 @@ private fun FilterIcon(
     alignment: Alignment,
     modifier: Modifier = Modifier,
 ) {
+    val filterIconSize = (FloconTheme.sizes.headerHeight - FloconTheme.spacing.tiny) / 2
     Box(
         modifier = modifier
-            .size(FilterIcon)
+            .size(filterIconSize)
             .graphicsLayer {
                 alpha = if (hovered || sorted) 1f else 0f
             }
@@ -145,7 +145,7 @@ private fun FilterIcon(
             imageVector = icon,
             contentDescription = null,
             tint = textColor,
-            modifier = Modifier.size(FilterIcon),
+            modifier = Modifier.size(filterIconSize),
         )
     }
 }

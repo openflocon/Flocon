@@ -5,6 +5,7 @@ import io.github.openflocon.data.core.deeplink.datasource.DeeplinkRemoteDataSour
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
@@ -28,13 +29,11 @@ class DeeplinkRepositoryImpl(
     ) {
         when (message.method) {
             Protocol.FromDevice.Deeplink.Method.GetDeeplinks -> {
-                val items = remote.getItems(message)
-
-                println(items.toString())
+                val deeplinks = remote.getItems(message) ?: return
 
                 localDeeplinkDataSource.update(
                     deviceIdAndPackageNameDomainModel = deviceIdAndPackageName,
-                    deeplinks = items
+                    deeplinks = deeplinks
                 )
             }
         }
@@ -47,7 +46,7 @@ class DeeplinkRepositoryImpl(
         // no op
     }
 
-    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DeeplinkDomainModel>> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
+    override fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Deeplinks> = localDeeplinkDataSource.observe(deviceIdAndPackageName)
         .flowOn(dispatcherProvider.data)
 
     override suspend fun getDeeplinkById(

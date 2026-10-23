@@ -53,11 +53,11 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
         )
     } else if (device.isPlatformIos()) {
         DeviceCapabilitiesDomainModel(
-            screenshot = false,
-            recordScreen = false,
+            screenshot = true, // iOS Simulator only, through `xcrun simctl io screenshot`
+            recordScreen = true, // iOS Simulator only, through `xcrun simctl io recordVideo`
             restart = false,
             sharedPreferences = false, // may be possible on next versions
-            deeplinks = false,
+            deeplinks = true, // iOS Simulator only, through `xcrun simctl openurl`
             files = false, // may be possible on next versions
         )
     } else {

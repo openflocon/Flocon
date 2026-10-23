@@ -26,8 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -35,7 +39,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
 
 private val Size = 32.dp
-private val Padding = 8.dp
 
 /**
  * Cannot use IconButton because of the indication
@@ -45,16 +48,20 @@ fun FloconIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    size: Dp = Size,
+    shape: Shape = FloconTheme.shapes.medium,
+    padding: PaddingValues = PaddingValues(FloconTheme.spacing.small),
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
-            .size(Size)
-            .clip(FloconTheme.shapes.medium)
+            .size(size)
+            .clip(shape)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(all = 8.dp)
+            .pointerHoverIcon(PointerIcon.Hand)
+            .padding(padding)
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.onSurface) {
+        CompositionLocalProvider(LocalContentColor provides FloconTheme.colors.ink) {
             content()
         }
     }
@@ -65,7 +72,7 @@ fun FloconIconTonalButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    containerColor: Color = FloconTheme.colorPalette.primary,
+    containerColor: Color = FloconTheme.colors.bg200,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -74,10 +81,11 @@ fun FloconIconTonalButton(
             .clip(FloconTheme.shapes.medium)
             .background(containerColor)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(all = 8.dp)
+            .pointerHoverIcon(PointerIcon.Hand)
+            .padding(all = FloconTheme.spacing.small)
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides FloconTheme.colorPalette.contentColorFor(
+            LocalContentColor provides FloconTheme.colors.contentColorFor(
                 containerColor
             )
         ) {
@@ -94,29 +102,29 @@ fun FloconIconToggleButton(
     enabled: Boolean = true,
     tooltip: String? = null,
     size: Dp = Size,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
     val contentColor by animateColorAsState(
         when {
             !enabled -> contentColor.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.onAccent
+            value -> FloconTheme.colors.accent
             else -> contentColor
         }
     )
     val borderColor by animateColorAsState(
         when {
             !enabled -> Color.Transparent
-            value -> FloconTheme.colorPalette.onAccent
+            value -> FloconTheme.colors.accent
             else -> Color.Transparent
         }
     )
     val containerColor by animateColorAsState(
         when {
             !enabled -> containerColor.copy(alpha = .5f)
-            value -> FloconTheme.colorPalette.accent
+            value -> FloconTheme.colors.accentSoft
             else -> containerColor
         }
     )
@@ -140,7 +148,8 @@ fun FloconIconToggleButton(
                     value = value,
                     onValueChange = onValueChange
                 )
-                .padding(Padding)
+                .pointerHoverIcon(PointerIcon.Hand)
+                .padding(FloconTheme.spacing.small)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {
                 content()
@@ -151,12 +160,12 @@ fun FloconIconToggleButton(
 
 @Composable
 fun FloconIconButton(
-    modifier: Modifier = Modifier,
     tooltip: String,
-    size: Dp = Size,
     onClick: () -> Unit,
-    containerColor: Color = FloconTheme.colorPalette.primary,
-    contentColor: Color = FloconTheme.colorPalette.contentColorFor(containerColor),
+    modifier: Modifier = Modifier,
+    size: Dp = Size,
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val shape = FloconTheme.shapes.medium
@@ -173,7 +182,8 @@ fun FloconIconButton(
                 .clickable(
                     onClick = onClick,
                 )
-                .padding(Padding)
+                .pointerHoverIcon(PointerIcon.Hand)
+                .padding(FloconTheme.spacing.small)
         ) {
             CompositionLocalProvider(LocalContentColor provides contentColor) {
                 content()
@@ -185,21 +195,24 @@ fun FloconIconButton(
 @Composable
 fun WithTooltip(
     tooltip: String?,
+    modifier: Modifier = Modifier,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
-        offset = DpOffset(x = 0.dp, y = 2.dp)
+        offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.tiny)
     ),
     content: @Composable () -> Unit
 ) {
     if (tooltip != null) {
         TooltipArea(
+            modifier = modifier,
             tooltip = {
                 Text(
                     text = tooltip,
                     style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colors.ink,
                     modifier = Modifier
                         .clip(FloconTheme.shapes.small)
-                        .background(FloconTheme.colorPalette.primary)
-                        .padding(vertical = 2.dp, horizontal = 4.dp)
+                        .background(FloconTheme.colors.bg200)
+                        .padding(vertical = FloconTheme.spacing.tiny, horizontal = FloconTheme.spacing.extraSmall)
                 )
             },
             delayMillis = 100,
@@ -208,7 +221,9 @@ fun WithTooltip(
             content()
         }
     } else {
-        content()
+        Box(modifier = modifier) {
+            content()
+        }
     }
 }
 
@@ -239,7 +254,6 @@ fun FloconIconButton(
     modifier: Modifier = Modifier,
     tooltip: String? = null,
     enabled: Boolean = true,
-    tint: Color = LocalContentColor.current
 ) {
     WithTooltip(tooltip) {
         FloconIconButton(
@@ -249,7 +263,6 @@ fun FloconIconButton(
         ) {
             FloconIcon(
                 imageVector = imageVector,
-                tint = tint,
             )
         }
     }

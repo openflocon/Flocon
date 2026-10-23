@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun BoxScope.VersionCheckerView() {
+internal fun BoxScope.VersionChecker() {
     val viewmodel = koinViewModel<VersionCheckerViewModel>()
     val state by viewmodel.state.collectAsStateWithLifecycle()
     state?.let {
@@ -45,24 +45,28 @@ internal fun BoxScope.VersionCheckerView() {
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     state: VersionCheckerViewModel.VersionAvailableState,
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier.padding(16.dp),
+        modifier.padding(FloconTheme.spacing.large),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
         state.client?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onClientDismiss
+                modifier = Modifier,
+                version = it,
+                onDismiss = onClientDismiss
             )
         }
         state.desktop?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onDesktopDismiss
+                modifier = Modifier,
+                version = it,
+                onDismiss = onDesktopDismiss
             )
         }
     }
@@ -70,9 +74,9 @@ private fun VersionCheckerDialog(
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     version: VersionCheckerViewModel.VersionAvailableUiModel,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -84,46 +88,49 @@ private fun VersionCheckerDialog(
                     // intercept click behind
                 }
             ).background(
-                color = FloconTheme.colorPalette.tertiary, shape = FloconTheme.shapes.medium
-            ).padding(horizontal = 12.dp, 10.dp)
+                color = FloconTheme.colors.ink,
+                shape = FloconTheme.shapes.medium
+            ).padding(horizontal = FloconTheme.spacing.medium, 10.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = version.title,
-                color = FloconTheme.colorPalette.onTertiary,
+                color = FloconTheme.colors.bg100,
                 style = FloconTheme.typography.titleSmall,
             )
 
             version.subtitle?.let {
                 Text(
                     text = it,
-                    color = FloconTheme.colorPalette.onTertiary,
+                    color = FloconTheme.colors.bg100,
                     style = FloconTheme.typography.bodySmall,
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(
-                    containerColor = FloconTheme.colorPalette.primary, onClick = {
+                    containerColor = FloconTheme.colors.bg100,
+                    onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
                     }
                 ) {
-                    Text(stringResource(Res.string.download), color = FloconTheme.colorPalette.onPrimary)
+                    Text(stringResource(Res.string.download), color = FloconTheme.colors.ink)
                 }
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
-                    }, borderColor = FloconTheme.colorPalette.primary
+                    },
+                    borderColor = FloconTheme.colors.bg100
                 ) {
-                    Text(stringResource(Res.string.close), color = FloconTheme.colorPalette.primary)
+                    Text(stringResource(Res.string.close), color = FloconTheme.colors.bg100)
                 }
             }
         }

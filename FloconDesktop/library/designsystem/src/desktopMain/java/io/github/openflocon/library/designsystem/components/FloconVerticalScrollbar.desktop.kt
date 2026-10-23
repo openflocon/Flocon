@@ -19,8 +19,8 @@ data class FloconScrollAdapterDesktop(
 @Composable
 actual fun FloconVerticalScrollbar(
     adapter: FloconScrollAdapter,
-    style: ScrollbarStyle,
-    modifier: Modifier
+    modifier: Modifier,
+    style: ScrollbarStyle
 ) {
     VerticalScrollbar(
         adapter = (adapter as FloconScrollAdapterDesktop).scrollbarAdapter,

@@ -12,11 +12,12 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SharedPreferencesFilterBar(
-    items: List<SharedPreferencesRowUiModel>,
+    items: ImmutableList<SharedPreferencesRowUiModel>,
     onItemsChange: (List<SharedPreferencesRowUiModel>) -> Unit,
     modifier: Modifier = Modifier,
 ) {

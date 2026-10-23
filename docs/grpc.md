@@ -1,40 +1,55 @@
-# Grpc
+---
+title: gRPC Inspector
+description: Inspect and debug gRPC streams and unary calls with Flocon.
+---
 
-Similar to network inteceptions, Flocon works with grpc 
+# ⚡ gRPC Inspector
 
-it works with `io.grpc:grpc-android` : https://github.com/grpc/grpc-java
+Flocon allows you to inspect **gRPC calls and Protocol Buffers messages** in real time, supporting Android applications built with `grpc-java` / `grpc-android`.
 
-> [!WARNING]
-> please ensure your version is at lease `1.70.0`
+---
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon-grpc-interceptor.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon-grpc-interceptor)
+## Prerequisites
 
-> [!IMPORTANT]
-> While dealing with protobuf on Android projects, it's best to use its lighter artifact (protobuf-javalite or protobuf-kotlin-lite). 
-> It might be that your project needs the larger protobuf version (protobuf-java or protobuf-kotlin).
-> Flocon offers two interceptor artifacts that leverage a different JSON formatter. It declutters the JSON printing by removing unwanted fields with a dedicated formatter depending on the protobuf library.
-> Make sure you choose the correct artifact.
+!!! warning "gRPC Version"
+    Ensure your `grpc-android` / `grpc-java` version is at least **`1.70.0`**.
 
-```
- // If you're using protobuf-javalite or protobuf-kotlin-lite
-implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
+---
 
-implementation("io.github.openflocon:grpc-interceptor-lite:LAST_VERSION")
-```
-or
-```
-// If you're using protobuf-java or protobuf-kotlin
-implementation("com.google.protobuf:protobuf-java:$PROTOBUF_VERSION")
+## Choosing the Right Artifact
 
-implementation("io.github.openflocon:grpc-interceptor:LAST_VERSION") 
-```
+Android projects frequently use either standard Protobuf (`protobuf-java` / `protobuf-kotlin`) or the lightweight mobile variant (`protobuf-javalite` / `protobuf-kotlin-lite`). Flocon provides dedicated artifacts for each to ensure clean JSON serialization:
 
+=== "Protobuf Lite (Recommended for Android)"
+
+    ```kotlin
+    dependencies {
+        implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
+        
+        debugImplementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-lite-no-op:LAST_VERSION")
+    }
+    ```
+
+=== "Full Protobuf"
+
+    ```kotlin
+    dependencies {
+        implementation("com.google.protobuf:protobuf-kotlin:$PROTOBUF_VERSION")
+        
+        debugImplementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-no-op:LAST_VERSION")
+    }
+    ```
+
+---
+
+## Interceptor Configuration
+
+Attach `FloconGrpcInterceptor` to your `ManagedChannelBuilder`:
 
 ```kotlin
-ManagedChannelBuilder
-            ...
-            .intercept(
-                FloconGrpcInterceptor()
-            )
-            .build()
+val channel = ManagedChannelBuilder.forAddress(host, port)
+    .intercept(FloconGrpcInterceptor())
+    .build()
 ```

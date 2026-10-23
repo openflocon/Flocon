@@ -72,6 +72,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
 
             val request = Request.Builder()
                 .url("ws://$address:$port")
+                .header("User-Agent", "Flocon")
                 .build()
 
             val newWebSocket = client.newWebSocket(request, connectionListener)

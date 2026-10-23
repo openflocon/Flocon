@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.badquality.edition.model
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.util.UUID
 
 data class BadQualityConfigUiModel(
@@ -9,7 +11,7 @@ data class BadQualityConfigUiModel(
     val isEnabled: Boolean,
     val latency: LatencyConfig,
     val errorProbability: Double, // chance of triggering an error
-    val errors: List<Error>, // list of errors
+    val errors: ImmutableList<Error>, // list of errors
 ) {
     data class LatencyConfig(
         val triggerProbability: Double,
@@ -54,5 +56,5 @@ fun previewBadQualityConfigUiModel(errorCount: Int) = BadQualityConfigUiModel(
                 contentType = "application/json",
             )
         )
-    },
+    }.toImmutableList(),
 )

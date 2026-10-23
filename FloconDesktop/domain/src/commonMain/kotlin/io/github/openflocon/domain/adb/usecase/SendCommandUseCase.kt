@@ -20,5 +20,4 @@ class SendCommandUseCase(
             deviceSerial = deviceSerial
         )
     }
-
 }

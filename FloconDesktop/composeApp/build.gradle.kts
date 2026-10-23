@@ -3,14 +3,13 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-//    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp) // Add KSP plugin
     alias(libs.plugins.room)
-    alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.about.libraries)
 
     alias(libs.plugins.buildconfig)
 }
@@ -28,14 +27,8 @@ kotlin {
         // Pour Kotlin 1.9+
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        freeCompilerArgs.add("-Xcontext-parameters")
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.ExperimentalComposeUiApi")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-        freeCompilerArgs.add("-Xdata-flow-based-exhaustiveness")
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_2)
     }
 
     jvm("desktop")
@@ -48,15 +41,15 @@ kotlin {
             implementation(compose.components.resources)
 
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.kotlinx.coroutinesCore)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.kotlinx.coroutines.core)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
-            implementation(libs.kotlinx.serializationJson)
-            implementation(libs.kotlinx.dateTime)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.coil.compose)
@@ -76,23 +69,27 @@ kotlin {
             implementation(projects.data.core)
 
             implementation(projects.domain)
+            implementation(projects.mcp)
 
             implementation(projects.library.designsystem)
 
             implementation(projects.navigation)
 
             implementation(libs.kermit)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
 
-//            implementation(libs.material3.adaptive)
+            implementation(libs.molecule.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.ktor.clientJava)
-            // implementation(libs.ui.tooling.preview.desktop)
+            implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.java)
+            implementation(libs.ui.tooling.preview.desktop)
         }
     }
 }
@@ -119,7 +116,7 @@ compose.desktop {
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Flocon"
             packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0"
             macOS {
@@ -132,6 +129,8 @@ compose.desktop {
             }
             windows {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.ico"))
+                menu = true
+                upgradeUuid = "5c6d2b4c-360a-4135-a445-68bfa25ce450"
             }
         }
     }

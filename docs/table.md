@@ -1,38 +1,49 @@
-### 📋 Structured Data Tables
+---
+title: Structured Data Tables
+description: Stream and visualize structured data rows in interactive desktop tables.
+---
 
-<img width="1196" height="768" alt="tables" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" />
+# 📋 Structured Data Tables
 
-In addition to dashboards, Flocon supports structured **data tables** (compatible with Kotlin Multiplatform). These allow you to visualize lists of items with multiple columns directly in the desktop interface.
+Flocon supports structured **data tables** (Kotlin Multiplatform compatible). These allow your app to stream rows of multi-column data directly to the desktop interface for real-time inspection.
 
-Use cases include:
-- Displaying active user sessions.
-- Inspecting items in local memory or cache.
-- Monitoring custom business events.
-- Comparing simulated backend responses.
+---
 
-Tables are interactive, scrollable, and provide a clear way to inspect real-time collections.
+## Overview
 
-#### Usage
+<img width="1196" height="768" alt="Tables View" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" style="border-radius: 8px;" />
 
-To log a new row in a table, identify the table by name and use the `log` method with the `toParam` DSL to define column values.
+Common use cases:
+- Inspecting active in-memory user sessions or authentication states.
+- Streaming custom business domain telemetry.
+- Monitoring cache keys and eviction events.
+- Tracking queued background jobs or workers.
+
+---
+
+## Logging Table Rows
+
+To log a row into a named table, call `floconTable(...)` and pass columns using the `toParam` DSL:
 
 ```kotlin
 floconTable("active_sessions").log(
     "user_id" toParam "1024",
-    "name" toParam "Florent",
+    "name" toParam "Raphael",
     "status" toParam "Active",
-    "last_seen" toParam "2023-10-27 10:00"
+    "last_seen" toParam "2026-08-14 17:30"
 )
 ```
 
-#### Real-time Updates
+---
 
-Whenever you call `.log()`, a new row is appended to the corresponding table in Flocon Desktop. This makes it ideal for tracking events or state changes over time.
+## Real-Time Event Tracking
+
+Every `.log()` invocation appends a row with real-time updates:
 
 ```kotlin
 fun onUserAction(user: User, action: String) {
     floconTable("user_actions").log(
-        "timestamp" toParam currentTimeMillis().toString(),
+        "timestamp" toParam System.currentTimeMillis().toString(),
         "user" toParam user.name,
         "action" toParam action
     )

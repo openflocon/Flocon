@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.mapper
 
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.general_success
 import io.github.openflocon.domain.database.models.DatabaseAndTablesDomainModel
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel
@@ -10,6 +12,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiM
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
+import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): DeviceDataBaseUiModel {
     val isSelected = this.id == selected.database.id
@@ -20,8 +24,10 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
         tables = if (isSelected) {
             selected.tables.map {
                 it.toUi()
-            }
-        } else null
+            }.toImmutableList()
+        } else {
+            null
+        }
     )
 }
 
@@ -38,20 +44,23 @@ fun DatabaseTableDomainModel.toUi(): TableUiModel = TableUiModel(
                 }
             },
         )
-    }
+    }.toImmutableList()
 )
 
 fun DatabaseExecuteSqlResponseDomainModel.toUi(): QueryResultUiModel = when (this) {
     is DatabaseExecuteSqlResponseDomainModel.Error -> QueryResultUiModel.Text(this.message)
+
     is DatabaseExecuteSqlResponseDomainModel.Insert -> QueryResultUiModel.Text("Inserted (insertedId=$insertedId)")
+
     DatabaseExecuteSqlResponseDomainModel.RawSuccess -> QueryResultUiModel.Text("Success")
+
     is DatabaseExecuteSqlResponseDomainModel.Select ->
         QueryResultUiModel.Values(
             columns = this.columns,
             rows =
             values.map {
                 DatabaseRowUiModel(it)
-            },
+            }.toImmutableList(),
         )
 
     is DatabaseExecuteSqlResponseDomainModel.UpdateDelete -> QueryResultUiModel.Text("Done, affected=$affectedCount")

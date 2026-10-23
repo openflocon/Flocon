@@ -60,11 +60,8 @@ internal class DeviceViewModel(
         contentState.update { it.copy(selectedTab = action.selected) }
     }
 
-    private suspend fun sendCommand(vararg args: String): String {
-        return sendCommandUseCase(deviceSerial.value, *args)
-            .getOrNull()
-            .orEmpty()
-            .removeSuffix("\n")
-    }
-
+    private suspend fun sendCommand(vararg args: String): String = sendCommandUseCase(deviceSerial.value, *args)
+        .getOrNull()
+        .orEmpty()
+        .removeSuffix("\n")
 }

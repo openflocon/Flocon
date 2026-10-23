@@ -3,17 +3,35 @@ package io.github.openflocon.domain
 
 object Protocol {
     object FromDevice {
+        // lowercase: incoming plugin and method names are lowercased when a message is received
 
-        object Analytics {
-            const val Plugin = "Analytics"
+        // first message sent by the SDK when it connects, with the installed plugins
+        object Bonjour {
+            const val Plugin = "bonjour"
 
             object Method {
-                const val AddItems = "AddItems"
+                const val Bonjour = "bonjour"
+            }
+        }
+
+        object Analytics {
+            const val Plugin = "analytics"
+
+            object Method {
+                const val AddItems = "additems"
+            }
+        }
+
+        object FeatureFlags {
+            const val Plugin = "featureflags"
+
+            object Method {
+                const val Register = "register"
             }
         }
 
         object Dashboard {
-            const val Plugin = "Dashboard"
+            const val Plugin = "dashboard"
 
             object Method {
                 const val Update = "update"
@@ -24,8 +42,8 @@ object Protocol {
             const val Plugin = "device"
 
             object Method {
-                const val RegisterDevice = "registerDevice"
-                const val AppIcon = "appIcon"
+                const val RegisterDevice = "registerdevice"
+                const val AppIcon = "appicon"
             }
         }
 
@@ -34,16 +52,16 @@ object Protocol {
 
             object Method {
                 const val Query = "query"
-                const val GetDatabases = "getDatabases"
-                const val LogQuery = "logQuery"
+                const val GetDatabases = "getdatabases"
+                const val LogQuery = "logquery"
             }
         }
 
         object Deeplink {
-            const val Plugin = "Deeplink"
+            const val Plugin = "deeplink"
 
             object Method {
-                const val GetDeeplinks = "GetDeeplinks"
+                const val GetDeeplinks = "getdeeplinks"
             }
         }
 
@@ -51,7 +69,8 @@ object Protocol {
             const val Plugin = "files"
 
             object Method {
-                const val ListFiles = "listFiles"
+                const val ListFiles = "listfiles"
+                const val GetRoots = "getroots"
             }
         }
 
@@ -59,7 +78,7 @@ object Protocol {
             const val Plugin = "images"
 
             object Method {
-                const val LogNetworkImage = "logNetworkCall"
+                const val LogNetworkImage = "lognetworkcall"
             }
         }
 
@@ -67,35 +86,35 @@ object Protocol {
             const val Plugin = "network"
 
             object Method {
-                const val LogNetworkCallRequest = "logNetworkCallRequest"
-                const val LogNetworkCallResponse = "logNetworkCallResponse"
-                const val LogWebSocketEvent = "logWebSocketEvent"
-                const val RegisterWebSocketIds = "registerWebSocketIds"
+                const val LogNetworkCallRequest = "lognetworkcallrequest"
+                const val LogNetworkCallResponse = "lognetworkcallresponse"
+                const val LogWebSocketEvent = "logwebsocketevent"
+                const val RegisterWebSocketIds = "registerwebsocketids"
             }
         }
 
         object SharedPreferences {
-            const val Plugin = "sharedPreferences"
+            const val Plugin = "sharedpreferences"
 
             object Method {
-                const val GetSharedPreferences = "getSharedPreferences"
-                const val GetSharedPreferenceValue = "getSharedPreferenceValue"
+                const val GetSharedPreferences = "getsharedpreferences"
+                const val GetSharedPreferenceValue = "getsharedpreferencevalue"
             }
         }
 
         object Table {
-            const val Plugin = "Table"
+            const val Plugin = "table"
 
             object Method {
-                const val AddItems = "AddItems"
+                const val AddItems = "additems"
             }
         }
 
         object CrashReporter {
-            const val Plugin = "CrashReporter"
+            const val Plugin = "crashreporter"
 
             object Method {
-                const val ReportCrash = "reportCrash"
+                const val ReportCrash = "reportcrash"
             }
         }
 
@@ -141,6 +160,7 @@ object Protocol {
                 const val DeleteFiles = "deleteFiles"
                 const val DeleteFolderContent = "deleteFolderContent"
                 const val GetFile = "getFile"
+                const val GetRoots = "getRoots"
             }
         }
 

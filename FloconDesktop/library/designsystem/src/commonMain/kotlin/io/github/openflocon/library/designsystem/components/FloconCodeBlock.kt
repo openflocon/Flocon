@@ -1,6 +1,7 @@
 package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,13 +17,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.theme.contentColorFor
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FloconCodeBlock(
     code: String,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colorPalette.primary
+    containerColor: Color = FloconTheme.colors.bg200,
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
+    // a thin border around the block, ex: the colors of the design system
+    borderColor: Color? = null,
 ) {
     Box(
         modifier = modifier
@@ -30,9 +33,20 @@ fun FloconCodeBlock(
                 color = containerColor,
                 shape = RoundedCornerShape(8.dp),
             )
-            .padding(8.dp),
+            .then(
+                if (borderColor != null) {
+                    Modifier.border(
+                        1.dp,
+                        borderColor,
+                        RoundedCornerShape(8.dp)
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .padding(FloconTheme.spacing.small),
     ) {
-        CompositionLocalProvider(LocalContentColor provides FloconTheme.colorPalette.contentColorFor(containerColor)) {
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
             SelectionContainer {
                 Text(
                     text = code,
@@ -40,21 +54,5 @@ fun FloconCodeBlock(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun CodeBlockViewPreview() {
-    FloconTheme {
-        FloconCodeBlock(
-            code =
-            """
-                {
-                   "code" : "value"
-                }
-            """.trimIndent(),
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }

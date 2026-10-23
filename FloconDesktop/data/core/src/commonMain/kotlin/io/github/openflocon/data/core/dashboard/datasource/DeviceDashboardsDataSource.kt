@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface DeviceDashboardsDataSource {
 
-    fun observeSelectedDeviceDashboard(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardId?>
+    fun observeSelectedDeviceDashboard(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardId?>
 
     fun selectDeviceDashboard(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     )
 
     fun deleteDashboard(
@@ -19,9 +21,13 @@ interface DeviceDashboardsDataSource {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
     )
 
-    fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel>
+    fun observeDashboardArrangement(
+        dashboardId: DashboardId,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+    ): Flow<DashboardArrangementDomainModel>
 
     fun selectDashboardArrangement(
+        dashboardId: DashboardId,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         arrangement: DashboardArrangementDomainModel,
     )

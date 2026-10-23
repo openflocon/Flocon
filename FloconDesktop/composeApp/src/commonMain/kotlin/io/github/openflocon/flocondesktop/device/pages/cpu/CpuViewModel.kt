@@ -22,7 +22,6 @@ class CpuViewModel(
     }
 
     fun onAction(action: CpuAction) {
-
     }
 
     private fun refreshCpu() {
@@ -62,5 +61,4 @@ class CpuViewModel(
         private const val CPU_REGEX =
             """(\d+(?:\.\d+)?)%\s+([^:]+):\s+(\d+(?:\.\d+)?)%\s+user\s+\+\s+(\d+(?:\.\d+)?)%\s+kernel\s+/ faults:\s+(\d+)\s+minor\s+(\d+)\s+major"""
     }
-
 }

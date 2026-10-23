@@ -34,33 +34,37 @@ private const val NOT_ENABLED_OPACITY = 0.3f
 @Composable
 internal fun FilesListHeaderButton(
     title: String,
-    subtitle: String? = null,
     sortedBy: SortedByUiModel,
     clickOnSort: (SortedByUiModel) -> Unit,
-    textAlign: TextAlign = TextAlign.Center,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    textAlign: TextAlign = TextAlign.Center,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = RoundedCornerShape(4.dp)
     val typo = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-    val textColor = FloconTheme.colorPalette.onSurface.copy(alpha = 0.7f)
+    val textColor = FloconTheme.colors.ink.copy(alpha = 0.7f)
 
     Row(
         modifier = modifier
-            .height(FilterIcon_Height)
-            .padding(horizontal = 4.dp)
+            .height(FloconTheme.sizes.headerHeight)
+            .padding(horizontal = FloconTheme.spacing.extraSmall)
             .hoverable(interactionSource),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
         Column(
             modifier = Modifier.weight(1f)
                 .clip(shape)
                 .background(
-                    if (sortedBy != SortedByUiModel.None) FloconTheme.colorPalette.accent.copy(
-                        alpha = 0.3f
-                    ) else Color.Transparent
+                    if (sortedBy != SortedByUiModel.None) {
+                        FloconTheme.colors.accent.copy(
+                            alpha = 0.3f
+                        )
+                    } else {
+                        Color.Transparent
+                    }
                 )
                 .clickable(onClick = {
                     // TODO
@@ -73,7 +77,7 @@ internal fun FilesListHeaderButton(
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
                 textAlign = textAlign,
-                color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
             )
 
             subtitle?.let {
@@ -83,14 +87,14 @@ internal fun FilesListHeaderButton(
                     style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     textAlign = textAlign,
-                    color = FloconTheme.colorPalette.onSecondary.copy(alpha = 0.6f),
+                    color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 )
             }
         }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(FilterIcon_Spacing),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
         ) {
             FilterIcon(
                 icon = Icons.Outlined.ArrowDropUp,
@@ -101,6 +105,7 @@ internal fun FilesListHeaderButton(
                 alignment = Alignment.BottomCenter,
                 textColor = when (sortedBy) {
                     SortedByUiModel.Enabled.Ascending -> textColor
+
                     SortedByUiModel.Enabled.Descending,
                     SortedByUiModel.None,
                     -> textColor.copy(alpha = NOT_ENABLED_OPACITY)

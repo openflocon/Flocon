@@ -18,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.network.badquality.edition.ma
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.list.mapper.toLineUi
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,12 +52,12 @@ class BadQualityNetworkViewModel(
 
     val items = observeAllNetworkBadQualitiesUseCase()
         .distinctUntilChanged()
-        .map { it.map { it.toLineUi() } }
+        .map { it.map { it.toLineUi() }.toImmutableList() }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
+            initialValue = persistentListOf(),
         )
 
     val selectedItem = MutableStateFlow<SelectedBadQualityUiModel?>(null)

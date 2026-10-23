@@ -12,6 +12,7 @@ import io.github.openflocon.domain.crashreporter.usecase.ClearAllCrashReportUseC
 import io.github.openflocon.domain.crashreporter.usecase.DeleteCrashReportUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsByIdUseCase
 import io.github.openflocon.domain.crashreporter.usecase.ObserveCrashReportsUseCase
+import io.github.openflocon.domain.crashreporter.usecase.ObserveCurrentDeviceHasCrashReportsUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToDetailUi
 import io.github.openflocon.flocondesktop.features.crashreporter.mapper.mapToUi
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.getString
 
 internal class CrashReporterViewModel(
     observeCrashReportsUseCase: ObserveCrashReportsUseCase,
+    observeCurrentDeviceHasCrashReportsUseCase: ObserveCurrentDeviceHasCrashReportsUseCase,
     private val observeCrashReportsByIdUseCase: ObserveCrashReportsByIdUseCase,
     private val deleteCrashReportUseCase: DeleteCrashReportUseCase,
     private val clearAllCrashReportUseCase: ClearAllCrashReportUseCase,
@@ -45,6 +47,11 @@ internal class CrashReporterViewModel(
         .map { pagingData -> pagingData.map { it.mapToUi() } }
         .flowOn(dispatcherProvider.viewModel)
         .cachedIn(viewModelScope)
+
+    val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasCrashReportsUseCase()
+        .map { hasCrashReports -> !hasCrashReports }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val selectedId = MutableStateFlow<String?>(null)
     val selected: StateFlow<CrashReporterSelectedUiModel?> = selectedId
@@ -72,10 +79,12 @@ internal class CrashReporterViewModel(
                 is CrashReporterAction.Clean -> {
                     clearAllCrashReportUseCase()
                 }
+
                 is CrashReporterAction.Copy -> {
                     copyToClipboard(action.crash.stackTrace)
                     feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
                 }
+
                 is CrashReporterAction.Delete -> deleteCrashReportUseCase(action.crashId)
             }
         }

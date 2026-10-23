@@ -9,11 +9,8 @@ abstract class PageViewModel(
     private val sendCommandUseCase: SendCommandUseCase
 ) : ViewModel() {
 
-    protected suspend fun sendCommand(vararg args: String): String {
-        return sendCommandUseCase(deviceSerial, *args)
-            .getOrNull()
-            .orEmpty()
-            .removeSuffix("\n")
-    }
-
+    protected suspend fun sendCommand(vararg args: String): String = sendCommandUseCase(deviceSerial, *args)
+        .getOrNull()
+        .orEmpty()
+        .removeSuffix("\n")
 }

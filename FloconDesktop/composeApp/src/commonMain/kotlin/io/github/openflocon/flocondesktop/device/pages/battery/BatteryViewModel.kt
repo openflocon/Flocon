@@ -44,7 +44,6 @@ class BatteryViewModel(
     }
 
     fun onAction(action: BatteryAction) {
-
     }
 
     private fun refreshBattery() {
@@ -97,5 +96,4 @@ class BatteryViewModel(
         private const val CHARGING_POLICY_REGEX = """Charging policy:\s+(\d+)"""
         private const val CAPACITY_LEVEL_REGEX = """Capacity level:\s+(\d+)"""
     }
-
 }

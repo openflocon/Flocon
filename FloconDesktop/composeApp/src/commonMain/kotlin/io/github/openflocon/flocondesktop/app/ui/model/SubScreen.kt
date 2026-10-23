@@ -1,5 +1,8 @@
 package io.github.openflocon.flocondesktop.app.ui.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface SubScreen {
     data object Dashboard : SubScreen
 
@@ -13,12 +16,17 @@ sealed interface SubScreen {
     data object SharedPreferences : SubScreen
 
     data object Analytics : SubScreen
+
+    data object FeatureFlags : SubScreen
+
     data object Tables : SubScreen
 
     data object Settings : SubScreen
 
     data object Deeplinks : SubScreen
+    data object AdbCommander : SubScreen
     data object CrashReporter : SubScreen
+    data object Timeline : SubScreen
 }
 
 val SubScreen.id: String

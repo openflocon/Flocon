@@ -79,5 +79,4 @@ class PermissionViewModel(
     companion object {
         private const val PERMISSION_PREFIX = "android.permission."
     }
-
 }

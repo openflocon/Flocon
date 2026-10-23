@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package io.github.openflocon.data.local.deeplink.models
 
 import androidx.room.Entity
@@ -5,7 +7,10 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.openflocon.data.local.device.datasource.model.DeviceAppEntity
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Entity(
     indices = [
@@ -31,10 +36,26 @@ data class DeeplinkEntity(
     val description: String?,
     val parametersAsJson: String,
     val isHistory: Boolean,
-)
+    val executedAt: Long = 0L, // for the history: when the deeplink has been opened (0 for the other ones)
+) {
 
-@Serializable
-data class DeeplinkParameterEntity(
-    val paramName: String,
-    val autoComplete: List<String>,
-)
+    @Serializable
+    @JsonClassDiscriminator("type")
+    sealed interface Parameter {
+        val name: String
+
+        @Serializable
+        @SerialName("auto_complete")
+        data class AutoComplete(
+            override val name: String,
+            val autoComplete: List<String>
+        ) : Parameter
+
+        @Serializable
+        @SerialName("variable")
+        data class Variable(
+            override val name: String,
+            val variableName: String
+        ) : Parameter
+    }
+}

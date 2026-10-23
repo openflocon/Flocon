@@ -5,8 +5,10 @@ import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSou
 import io.github.openflocon.data.core.analytics.datasource.AnalyticsRemoteDataSource
 import io.github.openflocon.data.core.analytics.datasource.DeviceAnalyticsDataSource
 import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.analytics.models.AnalyticsEventCountDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsSearchDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -71,6 +73,30 @@ class AnalyticsRepositoryImpl(
             deviceIdAndPackageName = deviceIdAndPackageName,
             analyticsTableId = analyticsTableId,
             filter = filter,
+        )
+    }
+
+    override suspend fun searchAnalytics(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<AnalyticsItemDomainModel> = withContext(dispatcherProvider.data) {
+        analyticsLocalDataSource.search(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            search = search,
+            newestFirst = newestFirst,
+            limit = limit,
+        )
+    }
+
+    override suspend fun countAnalyticsByEventName(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+    ): List<AnalyticsEventCountDomainModel> = withContext(dispatcherProvider.data) {
+        analyticsLocalDataSource.countByEventName(
+            deviceIdAndPackageName = deviceIdAndPackageName,
+            search = search,
         )
     }
 

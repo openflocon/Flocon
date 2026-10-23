@@ -12,6 +12,7 @@ import io.github.openflocon.domain.database.usecase.ClearDatabaseQueryLogsUseCas
 import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
+import io.github.openflocon.domain.database.utils.injectSqlArgs
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -21,9 +22,13 @@ import io.github.openflocon.flocondesktop.features.database.model.toDomain
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -36,9 +41,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-import io.github.openflocon.domain.database.utils.injectSqlArgs
-import kotlinx.coroutines.flow.StateFlow
 
 class DatabaseQueryLogsViewModel(
     private val dbName: String,
@@ -56,7 +58,7 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
-    private val _filterChips = MutableStateFlow<List<FilterChipUiModel>>(emptyList())
+    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(persistentListOf())
     val filterChips = _filterChips.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -141,47 +143,51 @@ class DatabaseQueryLogsViewModel(
     fun addIncludeFilter() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
-            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE) }
+            _filterChips.update { it.adding(FilterChipUiModel(query, FilterChipUiModel.FilterType.INCLUDE)) }
             _searchQuery.value = ""
             _page.value = 0
         }
     }
-    
+
     fun addExcludeFilter() {
         val query = _searchQuery.value.trim()
         if (query.isNotEmpty() && !_filterChips.value.any { it.text == query }) {
-            _filterChips.update { it + FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE) }
+            _filterChips.update { it.adding(FilterChipUiModel(query, FilterChipUiModel.FilterType.EXCLUDE)) }
             _searchQuery.value = ""
             _page.value = 0
         }
     }
-    
+
     fun toggleFilterType(chip: FilterChipUiModel) {
         _filterChips.update { list ->
-            list.map {
-                if (it == chip) {
-                    it.copy(type = if (it.type == FilterChipUiModel.FilterType.INCLUDE)
-                        FilterChipUiModel.FilterType.EXCLUDE
-                    else
-                        FilterChipUiModel.FilterType.INCLUDE
-                    )
-                } else {
-                    it
+            list.mutate { chips ->
+                chips.replaceAll {
+                    if (it == chip) {
+                        it.copy(
+                            type = if (it.type == FilterChipUiModel.FilterType.INCLUDE) {
+                                FilterChipUiModel.FilterType.EXCLUDE
+                            } else {
+                                FilterChipUiModel.FilterType.INCLUDE
+                            },
+                        )
+                    } else {
+                        it
+                    }
                 }
             }
         }
         _page.value = 0
     }
-    
+
     fun addFilter(text: String, type: FilterChipUiModel.FilterType) {
-         if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
-            _filterChips.update { it + FilterChipUiModel(text, type) }
+        if (text.isNotEmpty() && !_filterChips.value.any { it.text == text }) {
+            _filterChips.update { it.adding(FilterChipUiModel(text, type)) }
             _page.value = 0
         }
     }
 
     fun removeFilterChip(chip: FilterChipUiModel) {
-        _filterChips.update { it - chip }
+        _filterChips.update { it.removing(chip) }
         _page.value = 0
     }
 
@@ -254,19 +260,16 @@ private fun DatabaseQueryLogDomainModel.toUi(currentDeviceAndPackage: DeviceIdAn
     type = findType(this),
 )
 
-
-private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? {
-    return if(model.isTransaction) {
-        DatabaseQueryUiModel.Type.Transaction
-    } else if(model.sqlQuery.startsWith("SELECT")) {
-        DatabaseQueryUiModel.Type.Select
-    } else if(model.sqlQuery.startsWith("INSERT")) {
-        DatabaseQueryUiModel.Type.Insert
-    } else if(model.sqlQuery.startsWith("UPDATE")) {
-        DatabaseQueryUiModel.Type.Update
-    } else if(model.sqlQuery.startsWith("DELETE")) {
-        DatabaseQueryUiModel.Type.Delete
-    } else {
-        null
-    }
+private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? = if (model.isTransaction) {
+    DatabaseQueryUiModel.Type.Transaction
+} else if (model.sqlQuery.startsWith("SELECT")) {
+    DatabaseQueryUiModel.Type.Select
+} else if (model.sqlQuery.startsWith("INSERT")) {
+    DatabaseQueryUiModel.Type.Insert
+} else if (model.sqlQuery.startsWith("UPDATE")) {
+    DatabaseQueryUiModel.Type.Update
+} else if (model.sqlQuery.startsWith("DELETE")) {
+    DatabaseQueryUiModel.Type.Delete
+} else {
+    null
 }

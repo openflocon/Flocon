@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,12 +19,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.files_filter
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.files.FilesViewModel
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
@@ -31,9 +37,9 @@ import io.github.openflocon.flocondesktop.features.files.model.previewFilesState
 import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHeader
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconFeature
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -66,7 +72,8 @@ private fun FilesScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    FloconFeature(
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
         FilesTopBar(
@@ -82,7 +89,7 @@ private fun FilesScreen(
             filterBar = {
                 FilterBar(
                     filterText = filterText,
-                    placeholderText = "Filter files",
+                    placeholderText = stringResource(Res.string.files_filter),
                     onTextChange = { onAction(FilesAction.FilterTextChanged(it)) },
                     modifier = Modifier.width(250.dp),
                 )
@@ -97,7 +104,7 @@ private fun FilesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colorPalette.primary),
+                .background(FloconTheme.colors.bg100),
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),
@@ -113,7 +120,7 @@ private fun FilesScreen(
             ) {
                 LazyColumn(
                     state = listState,
-                    contentPadding = PaddingValues(vertical = 4.dp),
+                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.extraSmall),
                     modifier = Modifier
                         .fillMaxSize(),
                 ) {
@@ -127,8 +134,8 @@ private fun FilesScreen(
                             onClick = { onAction(FilesAction.FileClicked(it)) },
                             modifier = Modifier.fillMaxWidth(),
                             onContextualAction = { file, action -> onAction(FilesAction.ContextualAction(file, action)) },
-                            onSelectFile = { p, selected, i, shiftHeld -> 
-                                onAction(FilesAction.SelectFile(p, selected, i, shiftHeld)) 
+                            onSelectFile = { p, selected, i, shiftHeld ->
+                                onAction(FilesAction.SelectFile(p, selected, i, shiftHeld))
                             },
                         )
                         if (index != state.files.lastIndex) {
@@ -141,6 +148,12 @@ private fun FilesScreen(
                     modifier = Modifier.fillMaxHeight()
                         .align(Alignment.TopEnd)
                 )
+                if (state.showEmptyState) {
+                    FeatureEmptyState(
+                        doc = FeatureDoc.Files,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }
@@ -152,7 +165,7 @@ private fun FilesScreenPreview() {
     FloconTheme {
         FilesScreen(
             state = previewFilesStateUiModel(),
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
             onAction = {},
         )
     }

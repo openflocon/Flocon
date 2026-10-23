@@ -8,8 +8,10 @@ import io.github.openflocon.data.core.analytics.datasource.AnalyticsLocalDataSou
 import io.github.openflocon.data.local.analytics.dao.FloconAnalyticsDao
 import io.github.openflocon.data.local.analytics.mapper.toAnalyticsDomain
 import io.github.openflocon.data.local.analytics.mapper.toEntity
+import io.github.openflocon.domain.analytics.models.AnalyticsEventCountDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsIdentifierDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.models.AnalyticsSearchDomainModel
 import io.github.openflocon.domain.analytics.models.AnalyticsTableId
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -64,6 +66,38 @@ class AnalyticsLocalDataSourceRoom(
         analyticsTableId = analyticsTableId,
         filter = filter,
     ).let { it.map { it.toAnalyticsDomain() } }
+
+    override suspend fun search(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+        newestFirst: Boolean,
+        limit: Int,
+    ): List<AnalyticsItemDomainModel> = analyticsDao.searchAnalyticsItems(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        analyticsTableId = search.analyticsTableId,
+        appInstance = search.appInstance,
+        sinceTimestamp = search.sinceTimestamp,
+        filterOnEventNames = search.eventNames != null,
+        eventNames = search.eventNames.orEmpty(),
+        filter = search.text,
+        newestFirst = newestFirst,
+        limit = limit,
+    ).map { it.toAnalyticsDomain() }
+
+    override suspend fun countByEventName(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        search: AnalyticsSearchDomainModel,
+    ): List<AnalyticsEventCountDomainModel> = analyticsDao.countAnalyticsItemsByEventName(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        analyticsTableId = search.analyticsTableId,
+        appInstance = search.appInstance,
+        sinceTimestamp = search.sinceTimestamp,
+        filterOnEventNames = search.eventNames != null,
+        eventNames = search.eventNames.orEmpty(),
+        filter = search.text,
+    ).map { AnalyticsEventCountDomainModel(eventName = it.eventName, count = it.count) }
 
     override fun observeById(
         id: String,

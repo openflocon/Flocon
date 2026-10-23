@@ -1,8 +1,10 @@
 package io.github.openflocon.library.designsystem.components
 
-import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,16 +19,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
-
-private val DropdownItemHeight = 30.dp
-private val DropdownItemHorizontalPadding = 4.dp
 
 @Composable
 fun FloconMenuItem(
@@ -40,22 +42,20 @@ fun FloconMenuItem(
     val interaction = remember { MutableInteractionSource() }
 
     FloconDropdownMenuItem(
+        interactionSource = interaction,
         modifier = modifier
             .clickable(
                 onClick = onClick,
-                indication = LocalIndication.current,
+                // the hover is the feedback
+                indication = null,
                 interactionSource = interaction,
             )
-            .padding(horizontal = DropdownItemHorizontalPadding)
+            .padding(horizontal = FloconTheme.spacing.small)
     ) {
         leadingIcon?.let { FloconMenuIcon(leadingIcon) } ?: run {
-            Spacer(Modifier.width(4.dp))
+            Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
         }
-        Text(
-            text = text,
-            style = FloconTheme.typography.labelMedium,
-            modifier = Modifier.weight(1f)
-        )
+        MenuItemText(text)
         secondaryAction?.invoke()
         trailingIcon?.let { FloconMenuIcon(trailingIcon) }
     }
@@ -72,21 +72,18 @@ fun FloconMenuItem(
     val interaction = remember { MutableInteractionSource() }
 
     FloconDropdownMenuItem(
+        interactionSource = interaction,
         modifier = modifier
             .toggleable(
                 value = checked,
                 onValueChange = onCheckedChange,
-                indication = LocalIndication.current,
+                indication = null,
                 interactionSource = interaction,
             )
-            .padding(PaddingValues(horizontal = DropdownItemHorizontalPadding))
+            .padding(PaddingValues(horizontal = FloconTheme.spacing.small))
     ) {
         FloconMenuIcon(leadingIcon)
-        Text(
-            text = text,
-            style = FloconTheme.typography.labelMedium,
-            modifier = Modifier.weight(1f)
-        )
+        MenuItemText(text)
         FloconSwitch(
             checked = checked
         )
@@ -98,8 +95,19 @@ fun FloconMenuSeparator(
     modifier: Modifier = Modifier
 ) {
     FloconHorizontalDivider(
-        modifier = modifier.padding(horizontal = 4.dp),
-        color = FloconTheme.colorPalette.secondary
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.compact),
+        color = FloconTheme.colors.line
+    )
+}
+
+@Composable
+private fun RowScope.MenuItemText(text: String) {
+    Text(
+        text = text,
+        style = FloconTheme.typography.bodyMedium,
+        fontWeight = FontWeight.Medium,
+        color = FloconTheme.colors.ink,
+        modifier = Modifier.weight(1f)
     )
 }
 
@@ -110,6 +118,7 @@ private fun FloconMenuIcon(
     if (leadingIcon != null) {
         FloconIcon(
             imageVector = leadingIcon,
+            tint = FloconTheme.colors.inkMuted,
             modifier = Modifier.size(16.dp)
         )
     } else {
@@ -119,16 +128,21 @@ private fun FloconMenuIcon(
 
 @Composable
 private fun FloconDropdownMenuItem(
+    interactionSource: MutableInteractionSource,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
+    val hovered by interactionSource.collectIsHoveredAsState()
+
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .height(DropdownItemHeight)
-            .clip(FloconTheme.shapes.small)
+            .height(FloconTheme.sizes.menuItemHeight)
+            .clip(FloconTheme.shapes.medium)
+            .background(if (hovered) FloconTheme.colors.bg300 else Color.Transparent)
+            .hoverable(interactionSource)
             .then(modifier),
         content = content
     )

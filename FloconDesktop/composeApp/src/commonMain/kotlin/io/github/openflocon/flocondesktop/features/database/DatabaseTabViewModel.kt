@@ -20,6 +20,8 @@ import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiM
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,12 +61,12 @@ class DatabaseTabViewModel(
     var query = mutableStateOf("")
 
     val lastQueries = observeLastSuccessQueriesUseCase(params.databaseId)
-        .map { it.filterNot { it.isBlank() } }
+        .map { it.filterNot { it.isBlank() }.toImmutableList() }
         .flowOn(dispatcherProvider.data)
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            emptyList()
+            persistentListOf()
         )
 
     private val autoUpdateJob = AtomicReference<Job?>(null)
@@ -97,8 +99,11 @@ class DatabaseTabViewModel(
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
     val state: StateFlow<DatabaseScreenState> = queryResult.map { queryResult ->
-        if (queryResult == null) DatabaseScreenState.Idle
-        else DatabaseScreenState.Result(queryResult)
+        if (queryResult == null) {
+            DatabaseScreenState.Idle
+        } else {
+            DatabaseScreenState.Result(queryResult)
+        }
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
@@ -142,6 +147,7 @@ class DatabaseTabViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (action) {
                 is DatabaseTabAction.ClearQuery -> clearQuery()
+
                 is DatabaseTabAction.ExecuteQuery -> {
                     updateQuery(action.query)
                     executeQuery(
@@ -151,6 +157,7 @@ class DatabaseTabViewModel(
                 }
 
                 is DatabaseTabAction.UpdateAutoUpdate -> updateAutoUpdate(action.value)
+
                 DatabaseTabAction.Copy -> {
                     copyToClipboard(query.value)
                     feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))

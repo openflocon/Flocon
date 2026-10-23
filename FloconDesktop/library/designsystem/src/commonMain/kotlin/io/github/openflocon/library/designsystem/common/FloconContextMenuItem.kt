@@ -2,6 +2,8 @@ package io.github.openflocon.library.designsystem.common
 
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 sealed class FloconContextMenuItem(
@@ -16,7 +18,7 @@ sealed class FloconContextMenuItem(
     @Immutable
     class SubMenu(
         label: String,
-        val items: List<FloconContextMenuItem>
+        val items: ImmutableList<FloconContextMenuItem>
     ) : FloconContextMenuItem(label, onClick = {})
 
     @Immutable
@@ -44,10 +46,10 @@ class FloconContextMenuBuilder internal constructor() {
     }
 }
 
-fun buildMenu(block: FloconContextMenuBuilder.() -> Unit): List<FloconContextMenuItem> {
+fun buildMenu(block: FloconContextMenuBuilder.() -> Unit): ImmutableList<FloconContextMenuItem> {
     val config = FloconContextMenuBuilder()
 
     config.apply(block)
 
-    return config.list
+    return config.list.toImmutableList()
 }

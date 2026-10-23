@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.dashboard.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 sealed interface DashboardsStateUiModel {
@@ -12,13 +14,13 @@ sealed interface DashboardsStateUiModel {
 
     @Immutable
     data class WithContent(
-        val dashboards: List<DeviceDashboardUiModel>,
+        val dashboards: ImmutableList<DeviceDashboardUiModel>,
         val selected: DeviceDashboardUiModel,
     ) : DashboardsStateUiModel
 }
 
 fun previewDashboardsStateUiModel() = DashboardsStateUiModel.WithContent(
-    dashboards = listOf(
+    dashboards = persistentListOf(
         previewDeviceDashboardUiModel(),
         previewDeviceDashboardUiModel(),
         previewDeviceDashboardUiModel(),

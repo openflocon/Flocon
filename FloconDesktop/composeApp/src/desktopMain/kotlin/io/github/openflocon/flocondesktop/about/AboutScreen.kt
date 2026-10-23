@@ -14,43 +14,54 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.layout.onFirstVisible
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.onVisibilityChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.v2.Window
+import androidx.compose.ui.window.v2.WindowBoundsProvider
+import androidx.compose.ui.window.v2.WindowPositionProvider
+import androidx.compose.ui.window.v2.WindowSizeProvider
+import androidx.compose.ui.window.v2.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon
+import flocondesktop.composeapp.generated.resources.app_name
+import flocondesktop.composeapp.generated.resources.settings_about_title
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.utils.openInBrowser
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import java.net.URI
 
 @Composable
 internal fun AboutScreen(
     onCloseRequest: () -> Unit
 ) {
-    Window(
-        title = "About",
-        onCloseRequest = onCloseRequest,
-        state = rememberWindowState(
-            placement = WindowPlacement.Floating,
-            position = WindowPosition(Alignment.Center),
-            size = DpSize(Dp.Unspecified, Dp.Unspecified)
+    val windowState = rememberWindowState(
+        initialPlacement = WindowPlacement.Floating,
+        initialBoundsProvider = WindowBoundsProvider(
+            positionProvider = WindowPositionProvider.CenteredOnScreen,
+            sizeProvider = WindowSizeProvider.Fixed(400.dp, 600.dp)
         )
+    )
+
+    Window(
+        title = stringResource(Res.string.settings_about_title),
+        onCloseRequest = onCloseRequest,
+        state = windowState,
+        resizable = false
     ) {
         FloconSurface {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(16.dp)
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.padding(FloconTheme.spacing.large)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
@@ -58,29 +69,28 @@ internal fun AboutScreen(
                     modifier = Modifier.size(120.dp)
                 )
                 Text(
-                    text = "Flocon",
+                    text = stringResource(Res.string.app_name),
                     style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 Text(
                     text = BuildConfig.APP_VERSION,
                     style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colorPalette.onSurface
+                    color = FloconTheme.colors.ink
                 )
                 FloconTextButton(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))
                     },
-                    containerColor = FloconTheme.colorPalette.tertiary
                 ) {
                     Text(
                         text = "GitHub"
                     )
                 }
                 FlowRow(
-                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall, Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(
-                        4.dp,
+                        FloconTheme.spacing.extraSmall,
                         Alignment.CenterHorizontally
                     ),
                     modifier = Modifier
@@ -89,7 +99,7 @@ internal fun AboutScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     contributors.fastForEach {
-                        ContributorView(it)
+                        ContributorItem(it)
                     }
                 }
             }

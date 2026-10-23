@@ -10,10 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
 import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextField
@@ -24,6 +24,7 @@ fun SharedPreferenceEditScreen(
     stringValue: SharedPreferencesRowUiModel.Value.StringValue,
     cancel: () -> Unit,
     save: (SharedPreferencesRowUiModel, stringValue: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val windowState = remember(row.key) { createFloconWindowState() }
     FloconWindow(
@@ -36,7 +37,7 @@ fun SharedPreferenceEditScreen(
             stringValue = stringValue,
             save = save,
             cancel = cancel,
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
         )
     }
 }
@@ -45,8 +46,8 @@ fun SharedPreferenceEditScreen(
 private fun SharedPreferenceEditScreenContent(
     row: SharedPreferencesRowUiModel,
     stringValue: SharedPreferencesRowUiModel.Value.StringValue,
-    modifier: Modifier = Modifier,
     cancel: () -> Unit,
+    modifier: Modifier = Modifier,
     save: (SharedPreferencesRowUiModel, stringValue: String) -> Unit,
 ) {
     var value by remember { mutableStateOf(stringValue.value) }
@@ -64,7 +65,7 @@ private fun SharedPreferenceEditScreenContent(
             )
             FloconDialogButtons(
                 onCancel = cancel,
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier.padding(all = FloconTheme.spacing.small),
                 onValidate = {
                     save(row, value)
                 },

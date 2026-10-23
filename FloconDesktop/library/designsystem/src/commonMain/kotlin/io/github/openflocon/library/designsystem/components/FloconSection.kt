@@ -6,11 +6,13 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Text
@@ -21,8 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -46,25 +49,40 @@ fun FloconSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (expandable) {
-                FloconIconButton(
-                    onClick = { expanded = !expanded },
-                ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .then(
+                        if (expandable) {
+                            Modifier
+                                .clip(FloconTheme.shapes.small)
+                                .clickable { expanded = !expanded }
+                                .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.tiny)
+                        } else {
+                            Modifier
+                        }
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+            ) {
+                if (expandable) {
                     FloconIcon(
                         imageVector = Icons.Outlined.ExpandMore,
-                        modifier = Modifier.graphicsLayer { rotationZ = rotate }
+                        modifier = Modifier
+                            .padding(FloconTheme.spacing.extraSmall)
+                            .graphicsLayer { rotationZ = rotate }
                     )
                 }
+                Text(
+                    text = title,
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = FloconTheme.colors.ink,
+                )
             }
-            Text(
-                text = title,
-                style = FloconTheme.typography.titleMedium,
-                color = FloconTheme.colorPalette.onPrimary,
-                modifier = Modifier.weight(1f)
-            )
             actions?.invoke(this)
         }
         AnimatedVisibility(

@@ -9,8 +9,11 @@ fun getMethodUi(networkCall: FloconNetworkCallDomainModel): NetworkMethodUi = wh
         "mutation" -> NetworkMethodUi.GraphQl.MUTATION
         else -> NetworkMethodUi.OTHER(s.operationType, icon = null)
     }
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Http -> toHttpMethodUi(networkCall.request.method)
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.Grpc -> NetworkMethodUi.Grpc
+
     is FloconNetworkCallDomainModel.Request.SpecificInfos.WebSocket -> NetworkMethodUi.WebSocket
 }
 
@@ -19,5 +22,6 @@ fun toHttpMethodUi(httpMethod: String): NetworkMethodUi = when (httpMethod.lower
     "put" -> NetworkMethodUi.Http.PUT
     "post" -> NetworkMethodUi.Http.POST
     "delete" -> NetworkMethodUi.Http.DELETE
+    "patch" -> NetworkMethodUi.Http.PATCH
     else -> NetworkMethodUi.OTHER(httpMethod, icon = null)
 }

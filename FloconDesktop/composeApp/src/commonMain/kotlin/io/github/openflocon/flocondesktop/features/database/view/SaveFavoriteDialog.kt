@@ -20,17 +20,18 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 fun SaveFavoriteDialog(
-    favoritesTitles: Set<String>,
+    favoritesTitles: ImmutableSet<String>,
     onDismiss: () -> Unit,
-    onSave: (queryName: String) -> Unit
+    onSave: (queryName: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var favoriteName by remember { mutableStateOf("") }
 
@@ -38,14 +39,15 @@ fun SaveFavoriteDialog(
 
     FloconDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier,
     ) {
-        Column(modifier = Modifier) {
+        Column {
             Text(
                 "Save as favorite",
-                modifier = Modifier.fillMaxWidth().background(FloconTheme.colorPalette.primary)
+                modifier = Modifier.fillMaxWidth().background(FloconTheme.colors.floating)
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     )
             )
             FloconTextField(
@@ -61,12 +63,12 @@ fun SaveFavoriteDialog(
                 maxLines = 1,
                 textStyle = FloconTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                containerColor = FloconTheme.colorPalette.secondary,
+                containerColor = FloconTheme.colors.floating,
                 modifier = Modifier.fillMaxWidth()
                     .focusRequester(focusRequester)
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     ).onKeyEvent { keyEvent ->
                         // detect CMD + Enter
                         if (keyEvent.type == KeyEventType.KeyDown &&
@@ -91,8 +93,8 @@ fun SaveFavoriteDialog(
                 },
                 modifier = Modifier.fillMaxWidth()
                     .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+                        horizontal = FloconTheme.spacing.large,
+                        vertical = FloconTheme.spacing.medium
                     )
             )
         }

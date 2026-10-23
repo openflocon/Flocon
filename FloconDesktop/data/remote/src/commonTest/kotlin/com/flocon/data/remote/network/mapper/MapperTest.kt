@@ -69,4 +69,19 @@ class MapperTest {
 
         assertNull(result)
     }
+
+    @Test
+    fun `should extract from url when variable value contains ampersand`() {
+        val decoded = FloconNetworkRequestDataModel(
+            url = "https://www.ourapi.com/graphql?operationName=UserData&variables=%7B%22var1%22%3A%2212345%266789%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22abcdef%22%7D%7D",
+            requestBody = null,
+        )
+
+        val result = extractGraphQl(decoded)
+
+        assertNotNull(result)
+        assertIs<GraphQlExtracted.PersistedQuery>(result)
+        assertEquals("UserData", result.queryName)
+        assertEquals("persistedQuery", result.operationType)
+    }
 }

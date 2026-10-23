@@ -15,9 +15,17 @@ class ObserveDashboardArrangementUseCase(
         if (model == null) {
             flowOf(DashboardArrangementDomainModel.Adaptive)
         } else {
-            dashboardRepository.observeDashboardArrangement(
-                deviceIdAndPackageName = model,
-            )
+            dashboardRepository.observeSelectedDeviceDashboard(deviceIdAndPackageName = model)
+                .flatMapLatest { dashboardId ->
+                    if (dashboardId == null) {
+                        flowOf(DashboardArrangementDomainModel.Adaptive)
+                    } else {
+                        dashboardRepository.observeDashboardArrangement(
+                            dashboardId = dashboardId,
+                            deviceIdAndPackageName = model,
+                        )
+                    }
+                }
         }
     }
 }

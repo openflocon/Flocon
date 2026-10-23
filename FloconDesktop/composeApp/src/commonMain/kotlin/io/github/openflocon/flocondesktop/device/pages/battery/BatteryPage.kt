@@ -40,71 +40,71 @@ private fun Content(
         modifier = Modifier
             .fillMaxSize()
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.line)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg300,
                 shape = FloconTheme.shapes.medium
             )
             .verticalScroll(rememberScrollState())
             .padding(8.dp)
     ) {
-        FloconTextValue(label = "Technology", value = uiState.technology.orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
-        FloconTextValue(label = "Health", value = uiState.health?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Technology", value = uiState.technology.orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
+        FloconTextValue(label = "Health", value = uiState.health?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
         FloconTextValue(
             label = "Capacity",
             value = uiState.capacityLevel?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
-        FloconTextValue(label = "AC Powered", value = uiState.acPowered?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "AC Powered", value = uiState.acPowered?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
         FloconTextValue(
             label = "Charge counter",
             value = uiState.chargeCounter?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Charging policy",
             value = uiState.chargingPolicy?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Charging state",
             value = uiState.chargingState?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Max Charging current",
             value = uiState.maxChargingCurrent?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Max Charging voltage",
             value = uiState.maxChargingVoltage?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Dock powered",
             value = uiState.dockPowered?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
-        FloconTextValue(label = "Level", value = uiState.level?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
-        FloconTextValue(label = "Voltage", value = uiState.voltage?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Level", value = uiState.level?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
+        FloconTextValue(label = "Voltage", value = uiState.voltage?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
         FloconTextValue(
             label = "Temperature",
             value = uiState.temperature?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
         FloconTextValue(
             label = "Wireless powered",
             value = uiState.wirelessPowered?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
-        FloconTextValue(label = "Scale", value = uiState.scale?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Scale", value = uiState.scale?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
         FloconTextValue(
             label = "USB Powered",
             value = uiState.usbPowered?.toString().orEmpty(),
-            valueContainerColor = FloconTheme.colorPalette.secondary
+            valueContainerColor = FloconTheme.colors.bg300
         )
-        FloconTextValue(label = "Present", value = uiState.present?.toString().orEmpty(), valueContainerColor = FloconTheme.colorPalette.secondary)
+        FloconTextValue(label = "Present", value = uiState.present?.toString().orEmpty(), valueContainerColor = FloconTheme.colors.bg300)
     }
 }

@@ -64,27 +64,27 @@ private fun General(
             FloconTextValue(
                 label = "Brand",
                 value = state.brand,
-                valueContainerColor = FloconTheme.colorPalette.secondary
+                valueContainerColor = FloconTheme.colors.bg300
             )
             FloconTextValue(
                 label = "Battery",
                 value = state.battery,
-                valueContainerColor = FloconTheme.colorPalette.secondary
+                valueContainerColor = FloconTheme.colors.bg300
             )
             FloconTextValue(
                 label = "Serial number",
                 value = state.serialNumber,
-                valueContainerColor = FloconTheme.colorPalette.secondary
+                valueContainerColor = FloconTheme.colors.bg300
             )
             FloconTextValue(
                 label = "Version - Release",
                 value = state.versionRelease,
-                valueContainerColor = FloconTheme.colorPalette.secondary
+                valueContainerColor = FloconTheme.colors.bg300
             )
             FloconTextValue(
                 label = "Version - Sdk",
                 value = state.versionSdk,
-                valueContainerColor = FloconTheme.colorPalette.secondary
+                valueContainerColor = FloconTheme.colors.bg300
             )
         }
     }
@@ -101,10 +101,10 @@ private fun Section(
         modifier = Modifier
             .fillMaxWidth()
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colorPalette.primary)
+            .background(FloconTheme.colors.line)
             .border(
                 width = 1.dp,
-                color = FloconTheme.colorPalette.secondary,
+                color = FloconTheme.colors.bg300,
                 shape = FloconTheme.shapes.medium
             )
     ) {

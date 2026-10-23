@@ -4,4 +4,5 @@ object Constant {
 
     const val SERVER_WEBSOCKET_PORT: Int = 9023
     const val SERVER_HTTP_PORT: Int = 9024
+    const val MCP_SERVER_PORT: Int = 9042
 }

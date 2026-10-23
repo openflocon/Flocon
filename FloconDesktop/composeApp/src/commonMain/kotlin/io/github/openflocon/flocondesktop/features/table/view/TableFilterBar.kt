@@ -13,17 +13,18 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.table.model.TableRowUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TableFilterBar(
-    tableItems: List<TableRowUiModel>,
+    tableItems: ImmutableList<TableRowUiModel>,
     onItemsChange: (List<TableRowUiModel>) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -50,7 +51,7 @@ fun TableFilterBar(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         FilterBar(
             placeholderText = stringResource(Res.string.filter),

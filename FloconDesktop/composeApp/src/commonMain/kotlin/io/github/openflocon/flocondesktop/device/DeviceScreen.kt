@@ -32,6 +32,7 @@ import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
+import io.github.openflocon.library.designsystem.components.TabType
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -74,18 +75,22 @@ private fun Content(
                         selectedTabIndex = uiState.contentState.selectedTab.ordinal,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        tabs.forEach { tab ->
+                        tabs.forEachIndexed { index, tab ->
                             FloconTab(
                                 text = tab.title,
-                                selected = uiState.contentState.selectedTab == tab,
-                                onClick = { onAction(DeviceAction.SelectTab(tab)) },
-                                selectedContentColor = FloconTheme.colorPalette.onSurface
+                                isSelected = uiState.contentState.selectedTab == tab,
+                                onSelected = { onAction(DeviceAction.SelectTab(tab)) },
+                                tabType = when (index) {
+                                    0 -> TabType.Start
+                                    tabs.lastIndex -> TabType.End
+                                    else -> TabType.Middle
+                                },
                             )
                         }
                     }
                     FloconHorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
-                        color = FloconTheme.colorPalette.primary
+                        color = FloconTheme.colors.line
                     )
                 }
             }

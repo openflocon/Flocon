@@ -90,6 +90,15 @@ interface LocalDatabaseDataSource {
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel>
 
+    suspend fun getLatestQueryLogs(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        dbName: String,
+        showTransactions: Boolean,
+        filters: List<FilterQueryLogDomainModel>,
+        appInstance: Long?,
+        limit: Int,
+    ): List<DatabaseQueryLogDomainModel>
+
     suspend fun deleteAllQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     )

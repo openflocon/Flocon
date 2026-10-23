@@ -22,6 +22,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBase
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.flocondesktop.features.database.model.generateInsertQuery
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,13 +47,13 @@ class DatabaseViewModel(
 
     val favorites = observeFavoriteQueriesUseCase()
         .map { list ->
-            list.map { it.mapToUi() }
+            list.map { it.mapToUi() }.toImmutableList()
         }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList(),
+            initialValue = persistentListOf(),
         )
 
     private val _selectedTab =
@@ -74,12 +76,12 @@ class DatabaseViewModel(
         observeCurrentDeviceIdAndPackageNameUseCase(),
         _tabs,
     ).map { (deviceIdAndPackageName, tabs) ->
-        tabs[deviceIdAndPackageName] ?: emptyList()
+        tabs[deviceIdAndPackageName]?.toImmutableList() ?: persistentListOf()
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = persistentListOf()
         )
 
     fun onAction(action: DatabaseScreenAction) {
@@ -88,6 +90,7 @@ class DatabaseViewModel(
                 is DatabaseScreenAction.DeleteFavorite -> deleteFavorite(
                     favorite = action.favoriteQuery,
                 )
+
                 is DatabaseScreenAction.OnDatabaseDoubleClicked -> databaseSelectorDelegate.onDatabaseSelected(
                     action.database.id
                 )?.let {
@@ -106,12 +109,17 @@ class DatabaseViewModel(
                     is DatabaseTabViewAction.OnTabSelected -> onTabSelected(
                         tab = a.tab
                     )
+
                     is DatabaseTabViewAction.OnCloseClicked -> removeTab(
                         tab = a.tab
                     )
+
                     is DatabaseTabViewAction.OnCloseAllClicked -> removeAllTab()
+
                     is DatabaseTabViewAction.OnCloseOnLeftClicked -> removeTabOnLeft(a.tab)
+
                     is DatabaseTabViewAction.OnCloseOnRightClicked -> removeTabOnRight(a.tab)
+
                     is DatabaseTabViewAction.OnCloseOtherClicked -> removeTabsExcept(a.tab)
                 }
 

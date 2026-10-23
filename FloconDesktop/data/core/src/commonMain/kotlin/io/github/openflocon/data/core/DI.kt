@@ -1,22 +1,27 @@
 package io.github.openflocon.data.core
 
+import io.github.openflocon.data.core.adbcommander.adbCommanderModule
 import io.github.openflocon.data.core.analytics.analyticsModule
 import io.github.openflocon.data.core.crashreporter.crashReporterModule
 import io.github.openflocon.data.core.dashboard.dashboardModule
 import io.github.openflocon.data.core.database.databaseModule
 import io.github.openflocon.data.core.deeplink.deeplinkModule
+import io.github.openflocon.data.core.featureflags.featureFlagsModule
 import io.github.openflocon.data.core.files.filesModule
 import io.github.openflocon.data.core.images.imagesModule
 import io.github.openflocon.data.core.messages.messageModule
 import io.github.openflocon.data.core.network.networkModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
+import io.github.openflocon.data.core.timeline.timelineModule
 import io.github.openflocon.data.core.versions.versionModule
 import org.koin.dsl.module
 
 val dataCoreModule = module {
     includes(
+        adbCommanderModule,
         analyticsModule,
+        featureFlagsModule,
         dashboardModule,
         databaseModule,
         deeplinkModule,
@@ -28,5 +33,6 @@ val dataCoreModule = module {
         messageModule,
         versionModule,
         crashReporterModule,
+        timelineModule,
     )
 }

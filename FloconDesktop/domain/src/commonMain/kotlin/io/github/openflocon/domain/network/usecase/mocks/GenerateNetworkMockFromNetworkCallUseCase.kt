@@ -16,7 +16,7 @@ class GenerateNetworkMockFromNetworkCallUseCase(
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         requestId: String,
-    ): MockNetworkDomainModel? = getCurrentDeviceIdAndPackageNameUseCase()?.let { deviceIdAndPackageName ->
+    ): MockNetworkDomainModel? = getCurrentDeviceIdAndPackageNameUseCase()?.let { _ ->
         observeNetworkRequestsByIdUseCase(requestId = requestId).firstOrNull()
     }?.let { request ->
         MockNetworkDomainModel(
@@ -27,9 +27,12 @@ class GenerateNetworkMockFromNetworkCallUseCase(
             ),
             isEnabled = true, // enabled by default
             isShared = false,
+            displayName = "",
             response = request.response?.let {
                 when (it) {
-                    is FloconNetworkCallDomainModel.Response.Failure -> null // maybe generate error response in this case
+                    is FloconNetworkCallDomainModel.Response.Failure -> null
+
+                    // maybe generate error response in this case
                     is FloconNetworkCallDomainModel.Response.Success -> MockNetworkDomainModel.Response.Body(
                         httpCode = request.httpCode() ?: 200,
                         body = it.body ?: "",

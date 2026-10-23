@@ -16,6 +16,8 @@ data class NetworkItemViewState(
     val isMocked: Boolean,
     val isReplayed: Boolean,
     val isFromOldAppInstance: Boolean,
+    val isImage: Boolean = false,
+    val errorMessage: String? = null,
 ) {
 
     fun contains(text: String): Boolean = type.contains(text) ||
@@ -118,4 +120,23 @@ fun previewGraphQlItemViewState(): NetworkItemViewState = NetworkItemViewState(
     isMocked = false,
     isFromOldAppInstance = false,
     isReplayed = false,
+)
+
+fun previewImageItemViewState(): NetworkItemViewState = previewNetworkItemViewState().copy(
+    type = NetworkItemViewState.NetworkTypeUi.Url(query = "/images/avatar.png"),
+    isImage = true,
+)
+
+fun previewMockedItemViewState(): NetworkItemViewState = previewNetworkItemViewState().copy(isMocked = true)
+
+fun previewExceptionItemViewState(): NetworkItemViewState = previewNetworkItemViewState().copy(
+    status = NetworkStatusUi("Exception", NetworkStatusUi.Status.EXCEPTION),
+    timeFormatted = null,
+    errorMessage = "Unable to resolve host \"google.com\"",
+)
+
+fun previewGrpcItemViewState(): NetworkItemViewState = previewNetworkItemViewState().copy(
+    method = NetworkMethodUi.Grpc,
+    status = NetworkStatusUi("OK", NetworkStatusUi.Status.SUCCESS),
+    type = NetworkItemViewState.NetworkTypeUi.Grpc(method = "user.UserService/GetUser"),
 )

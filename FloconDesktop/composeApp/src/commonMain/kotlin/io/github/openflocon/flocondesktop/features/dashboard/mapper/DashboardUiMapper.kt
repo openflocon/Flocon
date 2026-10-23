@@ -12,6 +12,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArra
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState.ContainerConfig
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardViewState
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewState(
     items = containers.map { container ->
@@ -40,6 +41,7 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
                         label = element.label,
                         value = when (element.type) {
                             DashboardElementDomainModel.PlainText.Type.Text -> element.value
+
                             DashboardElementDomainModel.PlainText.Type.Json -> JsonPrettyPrinter.prettyPrint(
                                 element.value
                             )
@@ -69,9 +71,9 @@ internal fun DashboardDomainModel.toUi(): DashboardViewState = DashboardViewStat
                         value = element.value,
                     )
                 }
-            },
+            }.toImmutableList(),
         )
-    },
+    }.toImmutableList(),
 )
 
 internal fun ContainerConfigDomainModel.toUI(): ContainerConfig = when (this) {
