@@ -32,6 +32,7 @@ import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
@@ -144,7 +145,8 @@ internal class AppViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // the selected item can be hidden when another app is selected: go to the first available one
             menuState.collect { menu ->
-                val available = menu.topItems + menu.pinnedItems + menu.sections.flatMap { it.items } + menu.bottomItems
+                val available =
+                    menu.topItems + menu.pinnedItems + menu.sections.flatMap { it.items } + menu.bottomItems
                 val current = contentState.value.current
                 if (available.isNotEmpty() && available.none { it.screen == current }) {
                     onSelectMenu(AppAction.SelectMenu(available.first().screen))

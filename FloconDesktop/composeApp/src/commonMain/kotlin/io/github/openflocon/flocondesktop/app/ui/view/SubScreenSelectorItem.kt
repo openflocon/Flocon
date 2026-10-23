@@ -88,4 +88,6 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.CrashReporter -> Icons.Outlined.BugReport
 
     SubScreen.Timeline -> Icons.Outlined.Timeline
+
+    SubScreen.Accessibility -> Icons.Outlined.Accessibility
 }

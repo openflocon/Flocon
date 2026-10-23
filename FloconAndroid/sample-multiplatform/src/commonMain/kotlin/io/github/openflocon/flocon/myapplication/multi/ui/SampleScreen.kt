@@ -15,6 +15,7 @@ enum class SampleScreen(
     Network("Network", "HTTP, WebSocket, GraphQL, gRPC", SampleCategory.Network, SampleIcons.Network),
     Database("Database", "Room 2, Room 3, in-memory", SampleCategory.Database, SampleIcons.Database),
     Analytics("Analytics", "Events and properties", SampleCategory.Analytics, SampleIcons.Analytics),
+    Accessibility("Accessibility", "Screen reader events and labels", SampleCategory.Accessibility, SampleIcons.Accessibility),
     FeatureFlags("Feature flags", "Toggle and observe", SampleCategory.FeatureFlags, SampleIcons.FeatureFlags),
     Preferences("Preferences", "Custom store, DataStore, SharedPreferences", SampleCategory.Neutral, SampleIcons.Preferences),
     Files("Files", "Files the desktop can browse", SampleCategory.Neutral, SampleIcons.Files, SamplePlatform.NotWeb),

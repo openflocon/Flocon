@@ -71,20 +71,4 @@ interface TimelineDao {
         query: RoomRawQuery,
     ): Flow<List<TimelineSessionCountEntity>>
 
-    @RawQuery(
-        observedEntities = [
-            FloconNetworkCallEntity::class,
-            AnalyticsItemEntity::class,
-            AccessibilityEventEntity::class,
-            CrashReportEntity::class,
-            DatabaseQueryLogEntity::class,
-            TableEntity::class,
-            TableItemEntity::class,
-            DeeplinkEntity::class,
-            AdbCommandHistoryEntity::class,
-        ]
-    )
-    fun observeActivity(
-        query: RoomRawQuery,
-    ): Flow<List<TimelineActivityRowEntity>>
 }

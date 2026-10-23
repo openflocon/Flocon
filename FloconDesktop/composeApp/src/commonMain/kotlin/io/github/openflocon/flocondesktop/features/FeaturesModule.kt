@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features
 
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesModule
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
+import io.github.openflocon.flocondesktop.features.accessibility.accessibilityModule
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule

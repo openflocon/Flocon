@@ -1,12 +1,14 @@
 package io.github.openflocon.flocondesktop.features.accessibility
 
 import androidx.navigation3.runtime.EntryProviderScope
-import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
+import androidx.navigation3.runtime.metadata
+import io.github.openflocon.flocondesktop.app.keepMenu
+import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.accessibility.view.AccessibilityDetailView
 import io.github.openflocon.flocondesktop.features.accessibility.view.AccessibilityScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
-import io.github.openflocon.navigation.scene.PanelSceneStrategy
+import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import kotlinx.serialization.Serializable
 
 sealed interface AccessibilityRoutes : FloconRoute {
@@ -23,15 +25,17 @@ sealed interface AccessibilityRoutes : FloconRoute {
 
 fun EntryProviderScope<FloconRoute>.accessibilityRoutes() {
     entry<AccessibilityRoutes.Main>(
-        metadata = MenuSceneStrategy.menu()
+        metadata = metadata {
+            menu()
+        }
     ) {
         AccessibilityScreen()
     }
     entry<AccessibilityRoutes.Detail>(
-        metadata = PanelSceneStrategy.panel(
-            pinnable = false,
-            closable = true
-        )
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
     ) {
         AccessibilityDetailView(
             id = it.id,
