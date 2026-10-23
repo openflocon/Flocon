@@ -47,10 +47,10 @@ private val TabIndicatorHeight = 2.dp
 
 @Composable
 fun DatabaseTabs(
-    modifier: Modifier = Modifier,
     tabs: ImmutableList<DatabaseTabState>,
     selected: DatabaseTabState?,
     onAction: (DatabaseTabViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val lineColor = FloconTheme.colors.line
     LazyRow(

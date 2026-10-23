@@ -36,10 +36,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DatabasesAndTables(
-    modifier: Modifier = Modifier,
     state: DatabasesStateUiModel,
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.line
 

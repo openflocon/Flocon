@@ -593,7 +593,7 @@ private fun NetworkScreenPreview() {
             uiState = uiState,
             rows = rows,
             onAction = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
             showEmptyState = false,
         )
     }
