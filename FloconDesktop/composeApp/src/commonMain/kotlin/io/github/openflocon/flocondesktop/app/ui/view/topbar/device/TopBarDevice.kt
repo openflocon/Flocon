@@ -49,12 +49,7 @@ internal fun TopBarDevice(
     val colors = FloconTheme.colors
 
     Row(
-        modifier = modifier.padding(
-            start = FloconTheme.spacing.small,
-            end = FloconTheme.spacing.extraSmall,
-            top = FloconTheme.spacing.small,
-            bottom = FloconTheme.spacing.small
-        ),
+        modifier = modifier.padding(FloconTheme.spacing.small),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {

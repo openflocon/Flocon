@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -136,7 +137,7 @@ private fun DeviceMenuContent(
 ) {
     Column(
         modifier = modifier
-            .width(FloconTheme.sizes.deviceDropdownWidth)
+            .fillMaxWidth()
             .padding(horizontal = FloconTheme.spacing.small),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
