@@ -292,6 +292,17 @@
     <string name="settings_connection_url_description">Les apps peuvent aussi joindre Flocon directement par le réseau, sans adb : téléphones en Wi-Fi seul, appareils iOS, autres machines. Flocon accepte les deux modes en même temps.</string>
     <string name="settings_connection_url_hint">Dans l’app, utilisez FloconConnectionMode.Url(host = "&lt;ip&gt;"). L’appareil doit être sur le même réseau (ou joindre cette machine via un VPN), et les ports 9023 et 9024 doivent être autorisés dans le pare-feu.</string>
     <string name="settings_connection_url_empty">Aucune adresse réseau locale trouvée. Connectez cette machine à un réseau pour utiliser le mode Url.</string>
+    <string name="settings_connection_bluetooth_title">Bluetooth (expérimental)</string>
+    <string name="settings_connection_bluetooth_description">L’app attend sur une liaison Bluetooth au lieu de joindre Flocon : utilisez FloconConnectionMode.Bluetooth dans l’app (Android uniquement). Appairez le téléphone à cet ordinateur, associez le service Flocon du téléphone à un port série, puis connectez ce port ici.</string>
+    <string name="settings_connection_bluetooth_hint">Linux : sudo rfcomm connect /dev/rfcomm0 &lt;adresse du téléphone&gt; &lt;canal&gt;. Windows : Bluetooth et appareils &gt; Autres options Bluetooth &gt; Ports COM &gt; Ajouter un port sortant pour le téléphone. macOS : un appareil appairé apparaît comme /dev/tty.&lt;nom&gt;. Lancez d’abord l’app, elle attend cette connexion.</string>
+    <string name="settings_connection_bluetooth_empty">Aucun port série Bluetooth trouvé. Appairez le téléphone et associez son port série, puis actualisez.</string>
+    <string name="settings_connection_bluetooth_refresh">Actualiser les ports</string>
+    <string name="settings_connection_bluetooth_connect">Connecter</string>
+    <string name="settings_connection_bluetooth_disconnect">Déconnecter</string>
+    <string name="settings_connection_bluetooth_status_idle">Non connecté.</string>
+    <string name="settings_connection_bluetooth_status_connecting">Ouverture de %1$s…</string>
+    <string name="settings_connection_bluetooth_status_connected">Connecté sur %1$s. L’app apparaît ici une fois lancée et connectée.</string>
+    <string name="settings_connection_bluetooth_status_error">Échec sur %1$s : %2$s</string>
     <string name="settings_documents_description">Dossier où sont enregistrés les captures d’écran, les enregistrements vidéo et les fichiers exportés. Par défaut : ~/Documents/Flocon.</string>
     <string name="settings_documents_folder_path">Chemin du dossier de documents</string>
     <string name="settings_filter_logs">Filtrer les logs…</string>

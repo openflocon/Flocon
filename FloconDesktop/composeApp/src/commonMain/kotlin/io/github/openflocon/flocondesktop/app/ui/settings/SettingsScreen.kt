@@ -80,6 +80,17 @@ import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
 import flocondesktop.composeapp.generated.resources.settings_connection_adb_title
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_connect
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_description
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_disconnect
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_empty
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_hint
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_refresh
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_status_connected
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_status_connecting
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_status_error
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_status_idle
+import flocondesktop.composeapp.generated.resources.settings_connection_bluetooth_title
 import flocondesktop.composeapp.generated.resources.settings_connection_title
 import flocondesktop.composeapp.generated.resources.settings_connection_url_description
 import flocondesktop.composeapp.generated.resources.settings_connection_url_empty
@@ -247,6 +258,7 @@ private fun SettingsScreen(
                     needsAdbSetup = needsAdbSetup,
                     adbForwardStatus = uiState.adbForwardStatus,
                     localAddresses = uiState.localAddresses,
+                    bluetooth = uiState.bluetooth,
                     onAction = onAction,
                 )
 
@@ -466,6 +478,7 @@ private fun AdbPane(
     needsAdbSetup: Boolean,
     adbForwardStatus: AdbForwardStatus,
     localAddresses: ImmutableList<String>,
+    bluetooth: BluetoothUiState,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -611,7 +624,104 @@ private fun AdbPane(
                     style = FloconTheme.typography.bodySmall,
                 )
             }
+
+            ConnectionBlock(
+                title = stringResource(Res.string.settings_connection_bluetooth_title),
+                description = stringResource(Res.string.settings_connection_bluetooth_description),
+            ) {
+                BluetoothContent(bluetooth = bluetooth, onAction = onAction)
+            }
         }
+    }
+}
+
+@Composable
+private fun BluetoothContent(
+    bluetooth: BluetoothUiState,
+    onAction: (SettingsAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        val port = bluetooth.port.orEmpty()
+        Text(
+            text = when (bluetooth.status) {
+                BluetoothStatusUiModel.Idle -> stringResource(Res.string.settings_connection_bluetooth_status_idle)
+                BluetoothStatusUiModel.Connecting -> stringResource(Res.string.settings_connection_bluetooth_status_connecting, port)
+                BluetoothStatusUiModel.Connected -> stringResource(Res.string.settings_connection_bluetooth_status_connected, port)
+                BluetoothStatusUiModel.Error -> stringResource(
+                    Res.string.settings_connection_bluetooth_status_error,
+                    port,
+                    bluetooth.error.orEmpty(),
+                )
+            },
+            color = if (bluetooth.status == BluetoothStatusUiModel.Error) FloconTheme.colors.statusError else FloconTheme.colors.ink,
+            style = FloconTheme.typography.bodySmall,
+        )
+
+        if (bluetooth.ports.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.settings_connection_bluetooth_empty),
+                color = FloconTheme.colors.inkMuted,
+                style = FloconTheme.typography.bodySmall,
+            )
+        } else {
+            bluetooth.ports.forEach { name ->
+                val isOpen = name == bluetooth.port && bluetooth.status != BluetoothStatusUiModel.Idle
+                BluetoothPortRow(
+                    port = name,
+                    isOpen = isOpen,
+                    onToggle = {
+                        onAction(if (isOpen) SettingsAction.DisconnectBluetooth else SettingsAction.ConnectBluetooth(name))
+                    },
+                )
+            }
+        }
+
+        SettingsButton(
+            text = stringResource(Res.string.settings_connection_bluetooth_refresh),
+            onClick = { onAction(SettingsAction.RefreshBluetoothPorts) },
+        )
+
+        Text(
+            text = stringResource(Res.string.settings_connection_bluetooth_hint),
+            color = FloconTheme.colors.inkMuted,
+            style = FloconTheme.typography.bodySmall,
+        )
+    }
+}
+
+@Composable
+private fun BluetoothPortRow(
+    port: String,
+    isOpen: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(FloconTheme.shapes.small)
+            .background(FloconTheme.colors.bg200)
+            .padding(FloconTheme.spacing.medium)
+    ) {
+        Text(
+            text = port,
+            color = FloconTheme.colors.ink,
+            style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+            modifier = Modifier.weight(1f)
+        )
+        SettingsButton(
+            text = stringResource(
+                if (isOpen) Res.string.settings_connection_bluetooth_disconnect else Res.string.settings_connection_bluetooth_connect,
+            ),
+            onClick = onToggle,
+            primary = !isOpen,
+        )
     }
 }
 
