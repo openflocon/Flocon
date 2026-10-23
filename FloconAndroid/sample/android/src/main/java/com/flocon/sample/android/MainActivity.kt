@@ -1,11 +1,14 @@
 package com.flocon.sample.android
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.flocon.sample.android.grpc.GrpcController
+import io.github.openflocon.flocon.FloconConnectionMode
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
@@ -40,6 +43,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.OkHttpClient
 
+/**
+ * How the sample reaches Flocon Desktop. [FloconConnectionMode.Bluetooth] needs no adb and no network:
+ * see docs/bluetooth-exploration.md, the desktop connects from Settings > Connection.
+ */
+private val SampleConnectionMode: FloconConnectionMode = FloconConnectionMode.Adb
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +56,13 @@ class MainActivity : ComponentActivity() {
 
         FloconLogger.enabled = true
 
+        if (SampleConnectionMode == FloconConnectionMode.Bluetooth && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // the SDK can't ask for it, it retries to connect until it is granted
+            requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
+        }
+
         startFlocon(FloconContext(this)) {
+            connectionMode = SampleConnectionMode
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")
