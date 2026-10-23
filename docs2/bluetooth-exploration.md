@@ -1,6 +1,6 @@
 # Bluetooth connection (exploration)
 
-Exploration only, no code yet. It builds on [Connection modes](connection-modes.md).
+Exploration. Option A needs no code, option B has a prototype (`FloconConnectionMode.Bluetooth`, see [Connection modes](connection-modes.md)). It builds on [Connection modes](connection-modes.md).
 
 ## Why
 
@@ -66,10 +66,37 @@ Results to report back here: OS pair used, whether step 3 showed the ip, and the
 | Desktop link | Pair the phone. The OS exposes the RFCOMM channel as a serial port: Linux `rfcomm bind` / `/dev/rfcomm0`, Windows outgoing COM port, macOS `/dev/tty.*` (flaky for phones on recent macOS). Read it with jSerialComm. |
 | Framing | A byte stream has no frame boundaries and no http upload. Use length-prefixed frames with a type byte: text message or file chunk. |
 | Desktop bridge | A "Bluetooth bridge" opens the serial port and, per app, opens a websocket client to `ws://localhost:9023`, forwarding frames both ways. File chunks are re-assembled and POSTed to `localhost:9024/upload`. The server is untouched. |
-| SDK abstraction | A `FloconTransport` (connect / send text / send file / receive), implemented by the current websocket + http client and by a new Bluetooth transport. Selected by a future `FloconConnectionMode.Bluetooth`. |
+| SDK abstraction | The existing websocket and http client interfaces implemented by one Bluetooth transport, selected by `FloconConnectionMode.Bluetooth` (built in the prototype, instead of a new `FloconTransport`). |
 | Platforms | Android only (iOS does not expose RFCOMM outside MFi) |
 | Throughput | About 1-2 Mbit/s in practice |
 | Effort | Medium on the SDK, high on the desktop (per-OS port discovery, pairing UX) |
+
+### Prototype of option B
+
+Status: **built, the logic is tested, not yet tried with a real phone**.
+
+| Part | What exists |
+|---|---|
+| SDK | `FloconConnectionMode.Bluetooth`. In `FloconClient`, a `FloconBluetoothTransport` replaces the websocket and the http clients (one RFCOMM server, Android only). The framing is in `BluetoothFrames.kt`, specified in [`protocol/transport-bluetooth.md`](https://github.com/openflocon/Flocon/blob/main/protocol/transport-bluetooth.md). |
+| Desktop | `BluetoothBridge` reads a serial port and forwards to the unchanged server (websocket client for the messages, multipart post for the files). Settings > Connection > Bluetooth lists the serial ports that look like a phone, with Connect / Disconnect. Ports are listed with jSerialComm. |
+| Sample | `SampleConnectionMode` in the Android sample `MainActivity`, and the runtime permission request. |
+
+What was verified without a phone:
+
+| Check | How |
+|---|---|
+| Framing (split reads, several frames per read, invalid input) | 8 unit tests, in the SDK and in the desktop module |
+| The bridge | 5 tests against a real Ktor server: text both ways, a chunked file arriving on `/upload` with the right fields, the link closing, an invalid stream, an unreachable server |
+| Serial port detection | Unit tests of the name heuristics (Linux, Windows, macOS) |
+
+What is **not** verified: the Android side (`BluetoothServerSocket`) and the OS side (does the serial port appear and connect?) on real hardware, and the Settings UI in the running app.
+
+Known limits:
+
+- One app at a time per phone (one service uuid). Several apps would need a multiplexing id in the frames.
+- The desktop depends on the OS to open the RFCOMM connection: `rfcomm` on Linux, an outgoing COM port on Windows, and on macOS a serial port only appears for some devices.
+- The ports are listed when the Settings screen opens or on *Refresh*.
+- No reconnection on the desktop: if the link drops, press Connect again. The app listens again by itself.
 
 ## Option C: BLE GATT
 
@@ -85,7 +112,7 @@ Results to report back here: OS pair used, whether step 3 showed the ip, and the
 
 | | A: PAN + `Url` | B: RFCOMM | C: BLE GATT |
 |---|---|---|---|
-| Code needed | None | `FloconTransport`, Bluetooth transport, desktop bridge | Same as B plus iOS, plus chunking and flow control |
+| Code needed | None | Bluetooth transport, desktop bridge | Same as B plus iOS, plus chunking and flow control |
 | Android | Yes | Yes | Yes |
 | iOS | Only with a cellular plan | No | Yes |
 | Desktop OS | macOS, Windows, Linux | Per-OS serial port, macOS flaky | Native libs, Linux via BlueZ |
@@ -97,7 +124,7 @@ Results to report back here: OS pair used, whether step 3 showed the ip, and the
 ## Recommendation
 
 1. Document and validate **A** now. It needs no code and works with PR #670.
-2. Prototype **B** behind the `FloconTransport` abstraction and the desktop bridge only if A proves insufficient.
+2. **B** is prototyped: try it with a phone, and keep it only if A proves insufficient or too manual.
 3. Consider **C** only if iOS without a network becomes a need.
 
 ## Open questions
