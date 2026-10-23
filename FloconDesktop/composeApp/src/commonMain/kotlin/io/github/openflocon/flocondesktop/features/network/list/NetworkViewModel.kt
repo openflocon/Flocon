@@ -44,11 +44,11 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
+import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSettingsUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
-import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.async

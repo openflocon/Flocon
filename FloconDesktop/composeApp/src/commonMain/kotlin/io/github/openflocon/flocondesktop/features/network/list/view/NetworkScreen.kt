@@ -96,7 +96,7 @@ fun NetworkScreen(
                 .clickable(
                     interactionSource = null,
                     indication = null,
-                    enabled = uiState.detailState != null,
+                    enabled = uiState.contentState.selectedRequestId != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
                 .networkKeyboardNavigation(
