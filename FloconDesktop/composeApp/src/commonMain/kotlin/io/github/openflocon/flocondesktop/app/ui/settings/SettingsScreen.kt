@@ -108,12 +108,12 @@ import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconDoghouse
+import io.github.openflocon.library.designsystem.components.FloconDoghouseWidth
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.FloconDoghouse
-import io.github.openflocon.library.designsystem.components.FloconDoghouseWidth
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
