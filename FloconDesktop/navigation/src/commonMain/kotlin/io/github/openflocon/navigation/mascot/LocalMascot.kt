@@ -55,10 +55,8 @@ fun Modifier.mascotPlatform(
 }
 
 @Composable
-fun Modifier.mascotPlatform(predicate: () -> Boolean): Modifier {
-    return if (predicate()) {
-        mascotPlatform()
-    } else {
-        this
-    }
+fun Modifier.mascotPlatform(predicate: () -> Boolean): Modifier = if (predicate()) {
+    mascotPlatform()
+} else {
+    this
 }

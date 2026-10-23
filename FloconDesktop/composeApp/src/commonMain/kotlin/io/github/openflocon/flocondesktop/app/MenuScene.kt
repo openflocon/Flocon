@@ -114,7 +114,6 @@ data class MenuScene(
                             .weight(1f)
                             .fillMaxHeight()
                             .padding(FloconTheme.spacing.medium)
-                            .mascotPlatform(platforms = mascotPlatforms),
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
                             scene.content()

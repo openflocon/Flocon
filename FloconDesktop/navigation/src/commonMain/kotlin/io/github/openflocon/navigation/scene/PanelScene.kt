@@ -4,6 +4,7 @@ package io.github.openflocon.navigation.scene
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.rememberTransition
@@ -52,6 +53,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -136,7 +138,6 @@ private data class PanelScene(
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            // the panel island plus the gap separating it from the content
                             .width(PANEL_WIDTH + FloconTheme.spacing.medium)
                     )
                 }
@@ -195,13 +196,24 @@ private data class PanelScene(
                         },
                         modifier = Modifier.fillMaxHeight()
                     ) {
+                        val colors = FloconTheme.colors
+                        val islandColor by animateColorAsState(
+                            targetValue = if (transitionState.targetState.second) {
+                                colors.islandSidebar
+                            } else {
+                                colors.islandSidebar.copy(alpha = 1f)
+                            },
+                            animationSpec = tween(500)
+                        )
+
                         Crossfade(
                             targetState = panelEntry,
                             animationSpec = tween(500),
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(PANEL_WIDTH)
-                                .floconIsland(FloconTheme.colors.floating)
+                                .floconIsland(islandColor)
+                                .mascotPlatform(predicate = { transitionState.currentState.second })
                         ) { target ->
                             target.Content()
                         }
@@ -259,7 +271,7 @@ interface OnPin {
     fun onPin(pinned: Boolean)
 }
 
-private data class PaneProperties(
+data class PaneProperties internal constructor(
     val closable: Boolean = false,
     val onPinHandler: @Composable (() -> OnPin)? = null
 )

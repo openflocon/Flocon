@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -32,7 +31,6 @@ import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy

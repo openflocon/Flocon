@@ -41,6 +41,8 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.networkKeyboardNavigation
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeader
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.floconIsland
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -91,8 +93,7 @@ fun NetworkScreen(
                 .fillMaxHeight()
                 .weight(1f)
                 .clip(FloconTheme.shapes.large)
-                .background(FloconTheme.colors.bg100)
-                .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+                .floconIsland(FloconTheme.colors.bg100)
                 .clickable(
                     interactionSource = null,
                     indication = null,
@@ -104,6 +105,7 @@ fun NetworkScreen(
                     uiState = uiState,
                     onAction = onAction,
                 )
+                .mascotPlatform()
         ) {
             NetworkPageHeader(
                 requestCount = rows.itemCount,
