@@ -4,6 +4,7 @@ import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconConnectionMode
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.bluetooth.buildFloconBluetoothTransport
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -33,8 +34,8 @@ class FloconClient internal constructor(
     private var connectionMode: FloconConnectionMode = FloconConnectionMode.Adb
     private val address by lazy { connectionMode.resolve(adbHost = { getServerHost(context) }) }
 
-    private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
-    private val httpClient: FloconHttpClient = buildFloconHttpClient()
+    private var webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
+    private var httpClient: FloconHttpClient = buildFloconHttpClient()
 
     private var encoder = FloconEncoder(EmptySerializersModule())
 
@@ -45,6 +46,12 @@ class FloconClient internal constructor(
 
     fun setupConnection(mode: FloconConnectionMode) {
         this.connectionMode = mode
+        if (mode == FloconConnectionMode.Bluetooth) {
+            // one link carries the messages and the files
+            val transport = buildFloconBluetoothTransport(context)
+            webSocketClient = transport
+            httpClient = transport
+        }
     }
 
     @Throws(Throwable::class)

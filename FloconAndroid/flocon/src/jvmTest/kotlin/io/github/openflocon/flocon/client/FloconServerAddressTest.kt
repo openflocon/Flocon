@@ -22,6 +22,14 @@ class FloconServerAddressTest {
     }
 
     @Test
+    fun `bluetooth mode does not resolve the platform host`() {
+        val address = FloconConnectionMode.Bluetooth
+            .resolve(adbHost = { error("adb host must not be resolved in bluetooth mode") })
+
+        assertEquals(FloconServerAddress("bluetooth", 0, 0), address)
+    }
+
+    @Test
     fun `url mode uses custom ports`() {
         val address = FloconConnectionMode.Url(host = "desktop.example.com", websocketPort = 1000, httpPort = 2000)
             .resolve(adbHost = { "localhost" })
