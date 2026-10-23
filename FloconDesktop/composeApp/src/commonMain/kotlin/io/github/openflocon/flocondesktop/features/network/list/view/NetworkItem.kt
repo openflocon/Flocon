@@ -167,16 +167,6 @@ fun NetworkItem(
                 )
             }
 
-            Rail(
-                color = if (isError) colors.statusError else colors.catNetwork,
-                haloColor = if (highlighted) colors.bg300 else colors.bg100,
-                // the line goes through the padding of the row
-                overflow = FloconTheme.spacing.tiny,
-                modifier = Modifier
-                    .width(FloconTheme.sizes.markerColumn)
-                    .fillMaxHeight(),
-            )
-
             // Method - Fixed width for the tag from data class
             Box(
                 modifier = Modifier.width(columnWidths.methodWidth),
@@ -230,6 +220,7 @@ private fun RequestCell(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
+
     Row(
         modifier = modifier.heightIn(min = FloconTheme.sizes.rowHeight),
         verticalAlignment = Alignment.CenterVertically,
@@ -289,7 +280,12 @@ private fun RequestCell(
             fontSize = 12.sp,
             color = colors.ink,
             // the path gives way to the error message only when both do not fit
-            modifier = Modifier.weight(1f, fill = false),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .clip(FloconTheme.shapes.medium)
+                .background(colors.bg100)
+                .padding(FloconTheme.spacing.small)
         )
         state.errorMessage?.let { message ->
             Text(
