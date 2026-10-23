@@ -44,6 +44,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.OkHttpClient
 
+/**
+ * How the sample reaches Flocon Desktop. [FloconConnectionMode.Bluetooth] needs no adb and no network:
+ * see docs/bluetooth-exploration.md, the desktop connects from Settings > Connection.
+ */
+private val SampleConnectionMode: FloconConnectionMode = FloconConnectionMode.Adb
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +61,13 @@ class MainActivity : ComponentActivity() {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK), 0)
         }
 
+        if (SampleConnectionMode == FloconConnectionMode.Bluetooth && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // the SDK can't ask for it, it retries to connect until it is granted
+            requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 1)
+        }
+
         startFlocon(FloconContext(this)) {
-            connectionMode = FloconConnectionMode.Url("192.168.1.81")
+            connectionMode = SampleConnectionMode
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")
