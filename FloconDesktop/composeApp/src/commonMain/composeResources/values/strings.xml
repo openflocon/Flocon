@@ -353,5 +353,6 @@
     <string name="topbar_open_folder">open flocon folder</string>
     <string name="topbar_record">Record</string>
     <string name="topbar_restart">restart</string>
+    <string name="topbar_device_info">Device info</string>
     <string name="topbar_screenshot">screenshot</string>
 </resources>

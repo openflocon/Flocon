@@ -1,8 +1,8 @@
 package io.github.openflocon.domain.deeplink.usecase
 
-import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.DeviceWithSerialDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
+import io.github.openflocon.domain.adb.usecase.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
