@@ -1,6 +1,7 @@
 package com.flocon.data.remote
 
 import com.flocon.data.remote.analytics.analyticsModule
+import com.flocon.data.remote.bluetooth.bluetoothModule
 import com.flocon.data.remote.crashreporter.crashReportModule
 import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
@@ -20,6 +21,7 @@ import org.koin.dsl.module
 val dataRemoteModule = module {
     includes(
         analyticsModule,
+        bluetoothModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,
