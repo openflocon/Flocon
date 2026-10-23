@@ -1,11 +1,12 @@
 # Connection modes
 
-The SDK can reach the Flocon desktop in two ways. You pick one per app with `connectionMode`:
+The SDK can reach the Flocon desktop in three ways. You pick one per app with `connectionMode`:
 
 | Mode | How the app dials the desktop | Needs |
 |---|---|---|
 | `FloconConnectionMode.Adb` (default) | `localhost` through `adb reverse` (`10.0.2.2` on an Android emulator) | A USB / adb link to the device |
 | `FloconConnectionMode.Url(host)` | Directly to `host` (a LAN ip, a VPN ip, a public ip or a domain) | Network access to the desktop |
+| `FloconConnectionMode.Bluetooth` (experimental, Android) | The app waits, the desktop connects over Bluetooth RFCOMM | A paired phone, see [Over Bluetooth](#over-bluetooth) |
 
 The desktop listens on **both modes at the same time**: its websocket (`9023`) and http (`9024`) servers are bound on all interfaces, and it keeps running the `adb reverse` loop. There is nothing to switch on the desktop. A USB phone (`Adb`) and a Wi-Fi phone or an iOS device (`Url`) can show up side by side.
 
@@ -65,6 +66,34 @@ Everything else (network, databases, preferences, dashboards, analytics, ...) wo
 **Warning: the Flocon server has no authentication and no TLS. Anyone who can reach the port can impersonate an app, and can receive and drive the desktop's commands (database queries, preferences edits, ...). Never expose the ports to the open internet.**
 
 TLS tunnels (ngrok, cloudflared, ...) terminate on `wss://` / `https://`, which the SDK does not support yet: its schemes are fixed to `ws` and `http`.
+
+## Over Bluetooth
+
+No USB and no usable Wi-Fi? Use Bluetooth PAN tethering with the `Url` mode, no extra code:
+
+1. On the phone, enable Settings > Hotspot & tethering > Bluetooth tethering.
+2. Pair the desktop with the phone and join its Bluetooth network (PAN). The desktop gets an ip such as `192.168.44.x`, which appears in Settings > Connection.
+3. Use that ip as `FloconConnectionMode.Url(host = "<desktop PAN ip>")`, with the cleartext network config described above.
+
+Throughput is about 1-2 Mbit/s. See [Bluetooth connection (exploration)](bluetooth-exploration.md) for the limits and the other options.
+
+### Without any network: `FloconConnectionMode.Bluetooth` (experimental)
+
+The app opens a Bluetooth RFCOMM server and waits for the desktop. Android only.
+
+```kotlin
+startFlocon(FloconContext(this)) {
+    connectionMode = FloconConnectionMode.Bluetooth
+    install(FloconNetwork)
+}
+```
+
+1. The app must be granted `BLUETOOTH_CONNECT` at runtime (API 31+). The SDK declares the permission but cannot ask for it, it retries to connect until it is granted.
+2. Pair the phone with the desktop, then start the app: it waits for the desktop.
+3. Make the OS expose the Flocon service of the phone as a serial port (`b3c7e6a2-5f1d-4e8a-9a37-2f6d4c1e0a42`): see the hints in **Settings > Adb > Connection > Bluetooth**.
+4. In that same section, refresh the ports and press **Connect** on the port of the phone.
+
+The messages and the files go through the same Flocon server, only the carrier changes: see [the frame format](https://github.com/openflocon/Flocon/blob/main/protocol/transport-bluetooth.md). Only one app at a time, and large payloads are slow.
 
 ## Open questions / next steps
 

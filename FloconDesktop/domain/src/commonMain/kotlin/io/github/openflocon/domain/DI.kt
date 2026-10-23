@@ -3,6 +3,7 @@ package io.github.openflocon.domain
 import io.github.openflocon.domain.adb.adbModule
 import io.github.openflocon.domain.adbcommander.adbCommanderModule
 import io.github.openflocon.domain.analytics.analyticsModule
+import io.github.openflocon.domain.bluetooth.bluetoothModule
 import io.github.openflocon.domain.crashreporter.crashReporterDomainModule
 import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
@@ -27,6 +28,7 @@ val domainModule = module {
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        bluetoothModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,

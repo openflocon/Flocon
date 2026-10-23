@@ -84,6 +84,7 @@ nav:
     - Installation & Setup: setup.md
     - Migrating to 2.0: migration.md
     - Connection Modes: connection-modes.md
+    - Bluetooth (exploration): bluetooth-exploration.md
     - macOS Setup: macos-install.md
     - Troubleshooting: troubleshooting.md
   - Features:
