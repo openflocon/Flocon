@@ -8,4 +8,6 @@ sealed interface SettingsAction {
     data class AppScaleChange(val value: AppScaleSetting) : SettingsAction
 
     data class ThemeChange(val value: ThemeSetting) : SettingsAction
+
+    data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
 }

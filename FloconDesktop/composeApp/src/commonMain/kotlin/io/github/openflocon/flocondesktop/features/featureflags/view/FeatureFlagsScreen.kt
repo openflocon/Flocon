@@ -90,7 +90,7 @@ fun FeatureFlagsScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             selector = {
-                FeatureFlagProviderSelectorView(
+                FeatureFlagProviderSelector(
                     providersState = providersState,
                     onProviderSelected = onProviderSelected,
                     modifier = Modifier.fillMaxWidth(),
@@ -148,7 +148,7 @@ fun FeatureFlagsScreen(
                         items = rows,
                         key = { _, item -> item.id },
                     ) { index, item ->
-                        FeatureFlagRowView(
+                        FeatureFlagRow(
                             model = item,
                             onAction = onAction,
                             modifier = Modifier.fillMaxWidth(),

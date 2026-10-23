@@ -40,7 +40,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.FloconTextField
 
 @Composable
-fun SharedPreferenceRowView(
+fun SharedPreferenceRow(
     model: SharedPreferencesRowUiModel,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
@@ -227,7 +227,7 @@ private fun SharedPreferenceSendButton(
 @Composable
 private fun SharedPreferenceRowPreview() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesStringRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -240,7 +240,7 @@ private fun SharedPreferenceRowPreview() {
 @Composable
 private fun SharedPreferenceRowPreview_int() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesIntRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -253,7 +253,7 @@ private fun SharedPreferenceRowPreview_int() {
 @Composable
 private fun SharedPreferenceRowPreview_float() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesFloatRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -266,7 +266,7 @@ private fun SharedPreferenceRowPreview_float() {
 @Composable
 private fun SharedPreferenceRowPreview_boolean() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesBooleanRowUiModel(),
             onValueChanged = { _, _ -> },
@@ -279,7 +279,7 @@ private fun SharedPreferenceRowPreview_boolean() {
 @Composable
 private fun SharedPreferenceRowPreview_long() {
     FloconTheme {
-        SharedPreferenceRowView(
+        SharedPreferenceRow(
             modifier = Modifier.fillMaxWidth(),
             model = previewSharedPreferencesLongRowUiModel(),
             onValueChanged = { _, _ -> },

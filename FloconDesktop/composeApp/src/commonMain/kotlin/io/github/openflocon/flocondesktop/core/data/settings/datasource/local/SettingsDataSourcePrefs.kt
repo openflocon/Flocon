@@ -62,6 +62,13 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { it.toThemeSetting() }
         .stateIn(ThemeSetting.DEFAULT)
 
+    override val mascotEnabled: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(MASCOT_ENABLED)
+        .mapLatest { it ?: true }
+
+    override suspend fun setMascotEnabled(enabled: Boolean) {
+        settings.putBoolean(MASCOT_ENABLED, enabled)
+    }
+
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
 
@@ -159,6 +166,7 @@ internal class SettingsDataSourcePrefs(
         private const val APP_SCALE = "app_scale"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
+        private const val MASCOT_ENABLED = "mascot_enabled"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"

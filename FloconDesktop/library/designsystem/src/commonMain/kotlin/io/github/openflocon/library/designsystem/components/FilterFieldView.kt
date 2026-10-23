@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
-fun DropdownFilterFieldView(
+fun DropdownFilterField(
     value: String,
     onValueChanged: (value: String) -> Unit,
     placeholder: String = "Filter",

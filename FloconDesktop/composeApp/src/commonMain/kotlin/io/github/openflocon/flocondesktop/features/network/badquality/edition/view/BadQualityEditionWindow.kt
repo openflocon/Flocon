@@ -233,7 +233,7 @@ fun BadNetworkQualityEditionContent(
                     suffix = { Text(text = "%") },
                     containerColor = FloconTheme.colors.bg200,
                 )
-                BadQualityErrorsListView(
+                BadQualityErrorsList(
                     modifier = Modifier
                         .padding(top = FloconTheme.spacing.medium),
                     errors = errors,

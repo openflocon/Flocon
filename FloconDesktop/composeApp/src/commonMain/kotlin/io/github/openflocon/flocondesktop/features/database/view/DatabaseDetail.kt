@@ -10,7 +10,7 @@ fun DatabaseDetails(
     state: DetailResultItem,
     columns: List<String>
 ) {
-    DatabaseRowDetailView(
+    DatabaseRowDetail(
         modifier = Modifier.fillMaxSize(),
         state = state,
         columns = columns,
