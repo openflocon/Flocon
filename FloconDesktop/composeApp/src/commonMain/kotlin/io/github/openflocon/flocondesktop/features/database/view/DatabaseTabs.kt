@@ -49,7 +49,6 @@ private val TabIndicatorHeight = 2.dp
 fun DatabaseTabs(
     tabs: ImmutableList<DatabaseTabState>,
     selected: DatabaseTabState?,
-    modifier: Modifier = Modifier,
     onAction: (DatabaseTabViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {

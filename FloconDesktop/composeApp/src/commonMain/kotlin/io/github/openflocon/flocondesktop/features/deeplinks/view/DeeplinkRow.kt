@@ -227,7 +227,6 @@ private fun TextFieldPart(
 private fun DeeplinkTextField(
     label: String,
     value: String,
-    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {

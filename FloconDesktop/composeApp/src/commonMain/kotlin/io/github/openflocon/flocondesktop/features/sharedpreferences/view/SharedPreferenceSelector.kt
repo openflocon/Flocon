@@ -44,7 +44,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SharedPreferenceSelector(
     state: SharedPrefsStateUiModel,
-    modifier: Modifier = Modifier,
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {

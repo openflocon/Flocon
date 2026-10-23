@@ -40,7 +40,6 @@ internal fun TableEntry(
     onTableDoubleClicked: (TableUiModel) -> Unit,
     onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
     onDeleteContentClicked: (TableUiModel) -> Unit,
-    modifier: Modifier = Modifier,
     onInsertContentClicked: (TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {

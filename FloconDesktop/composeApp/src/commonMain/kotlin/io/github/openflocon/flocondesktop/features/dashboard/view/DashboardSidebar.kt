@@ -49,7 +49,6 @@ import org.jetbrains.compose.resources.stringResource
 fun DashboardSidebar(
     state: DashboardsStateUiModel,
     onDashboardSelected: (DeviceDashboardUiModel) -> Unit,
-    modifier: Modifier = Modifier,
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {

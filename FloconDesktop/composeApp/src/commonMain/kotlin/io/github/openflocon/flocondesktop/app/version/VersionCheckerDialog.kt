@@ -47,7 +47,6 @@ internal fun BoxScope.VersionChecker() {
 private fun VersionCheckerDialog(
     state: VersionCheckerViewModel.VersionAvailableState,
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
-    modifier: Modifier = Modifier,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -76,7 +75,6 @@ private fun VersionCheckerDialog(
 @Composable
 private fun VersionCheckerDialog(
     version: VersionCheckerViewModel.VersionAvailableUiModel,
-    modifier: Modifier = Modifier,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {

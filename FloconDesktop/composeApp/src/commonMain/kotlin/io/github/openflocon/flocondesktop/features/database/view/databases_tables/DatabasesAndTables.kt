@@ -38,7 +38,6 @@ import org.jetbrains.compose.resources.stringResource
 fun DatabasesAndTables(
     state: DatabasesStateUiModel,
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
-    modifier: Modifier = Modifier,
     onAction: (DatabaseScreenAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {

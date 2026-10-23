@@ -59,7 +59,6 @@ fun FilesTopBar(
     selectedCount: Int,
     onDeleteSelection: () -> Unit,
     onMultiSelect: () -> Unit,
-    modifier: Modifier = Modifier,
     onClearMultiSelect: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -149,7 +148,6 @@ private fun Selecting(
     selectedCount: Int,
     onDeleteSelection: () -> Unit,
     onClearMultiSelect: () -> Unit,
-    modifier: Modifier = Modifier,
     onMultiSelect: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
