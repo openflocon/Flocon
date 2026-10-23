@@ -23,11 +23,9 @@ For every active WebSocket connection, Flocon records:
 
 ## Setup & Integration
 
-WebSocket events are reported to the network plugin: add `flocon-network-core` and `install(FloconNetwork)` (see [Network](network.md#setup-integration)).
+### With OkHttp (Android)
 
-### With OkHttp (Android & JVM)
-
-Flocon provides built-in WebSocket extension helpers for OkHttp (module `flocon-okhttp-interceptor`). Using the same `id` lets you send mocked messages to this WebSocket from the desktop app:
+Flocon provides built-in WebSocket extension helpers for OkHttp:
 
 === "Logging Outgoing Messages"
 
@@ -60,12 +58,12 @@ Flocon provides built-in WebSocket extension helpers for OkHttp (module `flocon-
 
 ### Manual Logging (Kotlin Multiplatform)
 
-If you use custom WebSocket implementations (or multiplatform WebSocket engines), forward events directly to the network plugin:
+If you use custom WebSocket implementations (or multiplatform WebSocket engines), forward events directly via `floconLogWebSocketEvent`:
 
 === "Outgoing Frames"
 
     ```kotlin
-    Flocon.networkPlugin.logWebSocket(
+    floconLogWebSocketEvent(
         FloconWebSocketEvent(
             websocketUrl = "wss://api.example.com/ws",
             event = FloconWebSocketEvent.Event.SendMessage,
@@ -77,7 +75,7 @@ If you use custom WebSocket implementations (or multiplatform WebSocket engines)
 === "Incoming Frames"
 
     ```kotlin
-    Flocon.networkPlugin.logWebSocket(
+    floconLogWebSocketEvent(
         FloconWebSocketEvent(
             websocketUrl = "wss://api.example.com/ws",
             event = FloconWebSocketEvent.Event.ReceiveMessage,
