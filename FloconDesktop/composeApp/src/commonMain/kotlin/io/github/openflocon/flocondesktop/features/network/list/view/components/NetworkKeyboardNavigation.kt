@@ -51,33 +51,31 @@ fun Modifier.networkKeyboardNavigation(
 private fun selectPreviousRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList) {
-                selectedIndex + 1
-            } else {
-                selectedIndex - 1
-            }
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList) {
+            selectedIndex + 1
+        } else {
+            selectedIndex - 1
         }
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }
 
 private fun selectNextRow(
     rows: LazyPagingItems<NetworkItemViewState>,
     uiState: NetworkUiState
-): NetworkItemViewState? =
-    rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
-        .takeIf { it != -1 }
-        ?.let { selectedIndex ->
-            val newIndex = if (uiState.settings.invertList) {
-                selectedIndex - 1
-            } else {
-                selectedIndex + 1
-            }
-            newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
-        }?.let {
-            rows[it]
+): NetworkItemViewState? = rows.itemSnapshotList.indexOfFirst { it?.uuid == uiState.contentState.selectedRequestId }
+    .takeIf { it != -1 }
+    ?.let { selectedIndex ->
+        val newIndex = if (uiState.settings.invertList) {
+            selectedIndex - 1
+        } else {
+            selectedIndex + 1
         }
+        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+    }?.let {
+        rows[it]
+    }

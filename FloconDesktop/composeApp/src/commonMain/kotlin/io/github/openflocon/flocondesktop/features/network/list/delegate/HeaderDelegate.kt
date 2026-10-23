@@ -203,11 +203,9 @@ class HeaderDelegate(
         )
     }
 
-    private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
-        return items.map(NetworkMethodUi::text)
-            .takeIf { it.isNotEmpty() }
-            ?.takeIf { it.size != NetworkMethodUi.all().size }
-    }
+    private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? = items.map(NetworkMethodUi::text)
+        .takeIf { it.isNotEmpty() }
+        ?.takeIf { it.size != NetworkMethodUi.all().size }
 }
 
 private fun TextFilterStateUiModel.performAction(
@@ -230,14 +228,14 @@ private fun TextFilterStateUiModel.performAction(
         if (exists) {
             copy(
                 excludedFilters = (
-                        excludedFilters.map {
-                            if (it.text == action.text) {
-                                newItem
-                            } else {
-                                it
-                            }
+                    excludedFilters.map {
+                        if (it.text == action.text) {
+                            newItem
+                        } else {
+                            it
                         }
-                        ).distinctBy { it.text }
+                    }
+                    ).distinctBy { it.text }
             )
         } else {
             copy(excludedFilters = (excludedFilters + newItem).distinctBy { it.text })
@@ -254,14 +252,14 @@ private fun TextFilterStateUiModel.performAction(
         if (exists) {
             copy(
                 includedFilters = (
-                        includedFilters.map {
-                            if (it.text == action.text) {
-                                newItem
-                            } else {
-                                it
-                            }
+                    includedFilters.map {
+                        if (it.text == action.text) {
+                            newItem
+                        } else {
+                            it
                         }
-                        ).distinctBy { it.text }
+                    }
+                    ).distinctBy { it.text }
             )
         } else {
             copy(includedFilters = (includedFilters + newItem).distinctBy { it.text })
