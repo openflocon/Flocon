@@ -58,6 +58,7 @@ object FloconPixelPalette {
     val Spark = Color(0xFFFFD34D)
     val Sky = Color(0xFF9ED8F5)
     val Grass = Color(0xFF7CC47F)
+    val RoofDark = Color(0xFFB23A3F)
 
     /** A photo developing, from dark to [Sky]. */
     val Developing = listOf(Color(0xFF2E2E3A), Color(0xFF5B6475), Color(0xFF8FB8D0), Sky)

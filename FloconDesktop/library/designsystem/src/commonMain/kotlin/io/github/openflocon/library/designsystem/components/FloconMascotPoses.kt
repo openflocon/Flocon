@@ -101,6 +101,42 @@ fun FloconPixelScope.drawMascotSitting(
     pixels(15 + headX, 9 + headY, 3, 2, Pink)
 }
 
+/** The mascot walking, facing right: [stepped] swaps which legs are lifted, the body bobs with them. */
+fun FloconPixelScope.drawMascotWalking(stepped: Boolean) {
+    val legA = if (stepped) -2 else 0
+    val legB = if (stepped) 0 else -2
+    val bob = if (stepped) -1 else 0
+    val tail = if (stepped) -1 else 1
+    val ear = if (stepped) 1 else 0
+
+    pixels(6, 24, 20, 1, Shadow)
+    pixels(3, 9 + bob + tail, 3, 2, GoldenDark)
+    pixels(1, 7 + bob + tail, 3, 3, GoldenDark)
+    // far legs
+    pixels(11, 17 + legB, 3, 6, GoldenDark)
+    pixels(11, 22 + legB, 3, 1, GoldenPaw)
+    pixels(19, 17 + legA, 3, 6, GoldenDark)
+    pixels(19, 22 + legA, 3, 1, GoldenPaw)
+    // body
+    pixels(6, 9 + bob, 18, 9, GoldenBody)
+    pixels(8, 16 + bob, 14, 2, GoldenLight)
+    // near legs
+    pixels(7, 17 + legA, 3, 6, GoldenBody)
+    pixels(7, 22 + legA, 3, 1, GoldenLight)
+    pixels(21, 17 + legB, 3, 6, GoldenBody)
+    pixels(21, 22 + legB, 3, 1, GoldenLight)
+    // head
+    pixels(18, 3 + bob, 12, 11, Golden)
+    pixels(26, 9 + bob, 6, 5, GoldenLight)
+    pixels(30, 9 + bob, 2, 2, Ink)
+    pixels(22, 11 + bob, 2, 1, Blush)
+    pixels(23, 6 + bob, 2, 3, Ink)
+    pixels(23, 6 + bob, 1, 1, White)
+    // near ear
+    pixels(16, 5 + bob + ear, 3, 7, Ear)
+    pixels(16, 10 + bob + ear, 3, 2, Pink)
+}
+
 /**
  * The mascot standing, facing right, head lowered by [headY]: [digging] stretches the near front leg forward.
  */
