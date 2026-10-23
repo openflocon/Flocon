@@ -98,7 +98,6 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import org.jetbrains.compose.resources.stringResource
 
 private enum class TestPatternStatus {
@@ -537,7 +536,7 @@ fun MockEditorScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MockNetworkLabelView(stringResource(Res.string.network_headers))
+                            MockNetworkLabel(stringResource(Res.string.network_headers))
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
@@ -729,7 +728,7 @@ fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
     Text(
         text = text,
         color = FloconTheme.colors.inkMuted,
-        style = floconMonoStyle(),
+        style = FloconTheme.typography.monoMedium,
         modifier = Modifier
             .clip(CircleShape)
             .background(FloconTheme.colors.bg200)

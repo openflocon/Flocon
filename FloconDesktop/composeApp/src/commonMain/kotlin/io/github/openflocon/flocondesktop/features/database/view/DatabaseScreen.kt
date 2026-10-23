@@ -25,7 +25,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavori
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabState
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
-import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTablesView
+import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTables
 import io.github.openflocon.library.designsystem.FloconTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -79,7 +79,7 @@ fun DatabaseScreen(
             )
         } else {
             Row(Modifier.fillMaxSize()) {
-                DatabasesAndTablesView(
+                DatabasesAndTables(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(340.dp),
@@ -90,7 +90,7 @@ fun DatabaseScreen(
                 Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    DatabaseTabsView(
+                    DatabaseTabs(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = FloconTheme.spacing.medium),
                         tabs = tabs,
                         selected = selectedTab,
@@ -99,7 +99,7 @@ fun DatabaseScreen(
                         },
                     )
                     selectedTab?.let {
-                        DatabaseTabView(
+                        DatabaseTab(
                             tab = it,
                             favoritesTitles = remember(favorites) {
                                 favorites.map { it.title }.toImmutableSet()

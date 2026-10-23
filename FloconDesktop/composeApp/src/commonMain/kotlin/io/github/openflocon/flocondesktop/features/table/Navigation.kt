@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.app.menu
-import io.github.openflocon.flocondesktop.features.table.view.TableDetailView
+import io.github.openflocon.flocondesktop.features.table.view.TableDetail
 import io.github.openflocon.flocondesktop.features.table.view.TableScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
@@ -36,7 +36,7 @@ fun EntryProviderScope<FloconRoute>.tableRoutes() {
             panel()
         }
     ) {
-        TableDetailView(
+        TableDetail(
             id = it.id
         )
     }

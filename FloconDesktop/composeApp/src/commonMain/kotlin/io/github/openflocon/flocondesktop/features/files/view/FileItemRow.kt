@@ -35,7 +35,7 @@ import flocondesktop.composeapp.generated.resources.general_copy_path
 import flocondesktop.composeapp.generated.resources.general_delete
 import flocondesktop.composeapp.generated.resources.general_delete_content
 import flocondesktop.composeapp.generated.resources.general_open
-import io.github.openflocon.flocondesktop.common.ui.ContextualView
+import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
@@ -68,7 +68,7 @@ fun FileItemRow(
     val deleteContentLabel = stringResource(Res.string.general_delete_content)
     val deleteLabel = stringResource(Res.string.general_delete)
 
-    ContextualView(
+    ContextualMenu(
         items = remember(file, openLabel, copyPathLabel, deleteContentLabel, deleteLabel) {
             file.contextualActions.map { action ->
                 FloconContextMenuItem.Item(

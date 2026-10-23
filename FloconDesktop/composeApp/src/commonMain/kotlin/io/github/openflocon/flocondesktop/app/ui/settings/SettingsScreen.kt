@@ -41,6 +41,7 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.ModeNight
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
@@ -81,6 +82,8 @@ import flocondesktop.composeapp.generated.resources.settings_adb_valid
 import flocondesktop.composeapp.generated.resources.settings_documents_description
 import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
 import flocondesktop.composeapp.generated.resources.settings_licenses_description
+import flocondesktop.composeapp.generated.resources.settings_mascot_description
+import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
@@ -107,6 +110,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
@@ -240,6 +244,7 @@ private fun SettingsScreen(
                 SettingsTab.Appearance -> AppearancePane(
                     appScale = uiState.appScale,
                     currentTheme = uiState.theme,
+                    mascotEnabled = uiState.mascotEnabled,
                     onAction = onAction,
                 )
 
@@ -631,6 +636,7 @@ private fun AdbForwardStatusBadge(
 private fun AppearancePane(
     appScale: AppScaleSetting,
     currentTheme: ThemeSetting,
+    mascotEnabled: Boolean,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -666,6 +672,17 @@ private fun AppearancePane(
             ScaleDropdown(
                 selected = appScale.toAppScale(),
                 onSelect = { onAction(SettingsAction.AppScaleChange(it.toSetting())) },
+            )
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_mascot_title),
+            icon = Icons.Outlined.Pets,
+            description = stringResource(Res.string.settings_mascot_description)
+        ) {
+            FloconSwitch(
+                checked = mascotEnabled,
+                onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
             )
         }
     }

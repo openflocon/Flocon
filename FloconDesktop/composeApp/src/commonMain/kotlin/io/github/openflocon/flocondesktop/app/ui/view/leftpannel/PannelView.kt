@@ -45,7 +45,7 @@ private val NavItemGap = 10.dp
 private val NavIconSize = 16.dp
 
 @Composable
-fun PanelView(
+fun SidePanel(
     icon: ImageVector,
     text: String,
     isSelected: Boolean,
@@ -134,9 +134,9 @@ fun PanelView(
 
 @Composable
 @Preview
-private fun PannelViewPreview() {
+private fun PannelPreview() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,
@@ -151,7 +151,7 @@ private fun PannelViewPreview() {
 @Preview
 private fun PannelViewPreview_Selected() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = true,
@@ -166,7 +166,7 @@ private fun PannelViewPreview_Selected() {
 @Preview
 private fun PannelViewPreview_Disabled() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,

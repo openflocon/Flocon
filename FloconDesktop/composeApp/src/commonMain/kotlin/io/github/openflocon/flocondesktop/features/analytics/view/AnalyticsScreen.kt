@@ -138,7 +138,7 @@ fun AnalyticsScreen(
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
             selector = {
-                AnalyticsSelectorView(
+                AnalyticsSelector(
                     analyticsState = itemsState,
                     onAnalyticsSelected = onAnalyticsSelected,
                     modifier = Modifier.fillMaxWidth(),
@@ -221,7 +221,7 @@ fun AnalyticsScreen(
                     ) { index ->
                         val item = rows[index]
                         if (item != null) {
-                            AnalyticsRowView(
+                            AnalyticsRow(
                                 model = item,
                                 modifier = Modifier.fillMaxWidth(),
                                 onAction = onAction,
@@ -278,7 +278,7 @@ private fun AnalyticsScreenPreview() {
             screenState = previewAnalyticsScreenUiState(),
             onFilterTextChanged = {},
             onResetClicked = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
         )
     }
 }

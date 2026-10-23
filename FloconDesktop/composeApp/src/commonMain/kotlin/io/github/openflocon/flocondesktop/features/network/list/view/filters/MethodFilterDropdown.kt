@@ -13,7 +13,7 @@ import androidx.compose.ui.util.fastForEach
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.previewMethodFilterState
-import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
@@ -28,7 +28,7 @@ fun MethodFilterDropdownContent(
         filterState.items.fastForEach { item ->
             val alpha by animateFloatAsState(if (item.isSelected) 1f else 0.3f)
             Box(modifier = Modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall)) {
-                MethodView(
+                MethodTag(
                     method = item.method,
                     modifier = Modifier.alpha(alpha),
                     onClick = {

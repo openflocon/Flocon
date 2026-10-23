@@ -108,7 +108,7 @@ fun FeatureEmptyState(
                     }
                 }
                 if (!hasDevice) {
-                    NoDeviceNoticeView(
+                    NoDeviceNotice(
                         onGettingStartedClicked = { runCatching { uriHandler.openUri(FeatureDoc.SETUP_URL) } },
                     )
                 }
@@ -121,7 +121,7 @@ fun FeatureEmptyState(
  * "No device connected" card, with a slowly pulsing dot: Flocon is waiting for an app.
  */
 @Composable
-private fun NoDeviceNoticeView(
+private fun NoDeviceNotice(
     onGettingStartedClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
