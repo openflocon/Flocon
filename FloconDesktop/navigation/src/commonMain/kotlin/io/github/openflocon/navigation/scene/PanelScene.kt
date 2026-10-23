@@ -14,7 +14,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +50,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -136,7 +136,8 @@ private data class PanelScene(
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(PANEL_WIDTH)
+                            // the panel island plus the gap separating it from the content
+                            .width(PANEL_WIDTH + FloconTheme.spacing.medium)
                     )
                 }
             }
@@ -200,7 +201,7 @@ private data class PanelScene(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(PANEL_WIDTH)
-                                .background(FloconTheme.colors.floating)
+                                .floconIsland(FloconTheme.colors.floating)
                         ) { target ->
                             target.Content()
                         }
