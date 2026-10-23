@@ -13,6 +13,15 @@ object Protocol {
             }
         }
 
+        object Accessibility {
+            const val Plugin = "accessibility"
+
+            object Method {
+                const val AddEvents = "addevents"
+                const val State = "state"
+            }
+        }
+
         object FeatureFlags {
             const val Plugin = "featureflags"
 
@@ -114,6 +123,13 @@ object Protocol {
     }
 
     object ToDevice {
+
+        object Accessibility {
+            const val Plugin = "Accessibility"
+
+            object Method {
+            }
+        }
 
         object Analytics {
             const val Plugin = "Analytics"

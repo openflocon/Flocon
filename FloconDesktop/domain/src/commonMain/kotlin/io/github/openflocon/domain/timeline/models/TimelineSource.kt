@@ -4,6 +4,7 @@ enum class TimelineSource {
     Network,
     Database,
     Analytics,
+    Accessibility,
     Crash,
     Table,
     Deeplink,

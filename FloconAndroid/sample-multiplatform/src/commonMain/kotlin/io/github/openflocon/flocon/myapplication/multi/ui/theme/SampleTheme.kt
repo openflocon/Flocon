@@ -34,6 +34,7 @@ enum class SampleCategory(val color: Color) {
     Network(Color(0xFF5EAAF7)),
     Database(Color(0xFF3FCFB5)),
     Analytics(Color(0xFFB494FF)),
+    Accessibility(Color(0xFF6FD3E8)),
     FeatureFlags(Color(0xFFF5B440)),
     Table(Color(0xFFA9D65E)),
     Deeplink(Color(0xFFF483C2)),

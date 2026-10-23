@@ -30,6 +30,7 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("FROM DatabaseQueryLogEntity"))
         assertTrue(query.sql.contains("FROM AnalyticsItemEntity"))
+        assertTrue(query.sql.contains("FROM AccessibilityEventEntity"))
         assertTrue(query.sql.contains("FROM CrashReportEntity"))
         assertTrue(query.sql.contains("FROM TableItemEntity JOIN TableEntity"))
         assertTrue(query.sql.contains("FROM DeeplinkEntity"))
@@ -124,9 +125,9 @@ class TimelineQueryBuilderTest {
     fun `the session filter is only applied on the sources that store it`() {
         val query = build(TimelineFilterDomainModel(appInstance = 42L))
 
-        // network, database, analytics and the app starts
-        assertEquals(4, Regex("appInstance = \\?").findAll(query.sql).count())
-        assertEquals(4, query.params.count { it == 42L })
+        // network, database, analytics, accessibility and the app starts
+        assertEquals(5, Regex("appInstance = \\?").findAll(query.sql).count())
+        assertEquals(5, query.params.count { it == 42L })
     }
 
     @Test

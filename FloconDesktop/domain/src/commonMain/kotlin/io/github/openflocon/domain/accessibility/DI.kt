@@ -1,0 +1,17 @@
+package io.github.openflocon.domain.accessibility
+
+import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventsUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityStateUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
+import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.module
+
+internal val accessibilityModule = module {
+    factoryOf(::ObserveCurrentDeviceAccessibilityEventsUseCase)
+    factoryOf(::ObserveCurrentDeviceAccessibilityEventUseCase)
+    factoryOf(::ObserveCurrentDeviceAccessibilityTypesUseCase)
+    factoryOf(::ObserveCurrentDeviceAccessibilityStateUseCase)
+    factoryOf(::ResetCurrentDeviceAccessibilityEventsUseCase)
+}

@@ -1,6 +1,7 @@
 package io.github.openflocon.mcp
 
 import io.github.openflocon.domain.mcp.repository.McpServerRepository
+import io.github.openflocon.mcp.accessibility.AccessibilityMcpToolProvider
 import io.github.openflocon.mcp.analytics.AnalyticsMcpToolProvider
 import io.github.openflocon.mcp.badquality.BadNetworkMcpToolProvider
 import io.github.openflocon.mcp.capture.CaptureMcpToolProvider
@@ -40,6 +41,7 @@ val mcpModule = module {
     singleOf(::FilesMcpToolProvider) bind McpToolProvider::class
     singleOf(::AnalyticsMcpToolProvider) bind McpToolProvider::class
     singleOf(::FeatureFlagsMcpToolProvider) bind McpToolProvider::class
+    singleOf(::AccessibilityMcpToolProvider) bind McpToolProvider::class
     singleOf(::DatabaseMcpToolProvider) bind McpToolProvider::class
     singleOf(::ExecuteDeeplinkOpener) bind DeeplinkOpener::class
     singleOf(::DeeplinkMcpToolProvider) bind McpToolProvider::class

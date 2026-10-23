@@ -53,6 +53,25 @@ class MapperTest {
     }
 
     @Test
+    fun `an accessibility row is an accessibility event`() {
+        val event = TimelineRowEntity(
+            kind = "accessibility",
+            id = "a1",
+            ts = 1200L,
+            title = "Add to cart",
+            subtitle = "VIEW_FOCUSED",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.Accessibility, event.source)
+        assertEquals("VIEW_FOCUSED", event.subtitle)
+    }
+
+    @Test
     fun `the summary is indexed by source and by session`() {
         val summary = toSummaryDomain(
             summaryRows = listOf(

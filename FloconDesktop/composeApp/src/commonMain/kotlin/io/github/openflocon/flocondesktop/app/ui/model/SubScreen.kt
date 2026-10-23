@@ -19,6 +19,8 @@ sealed interface SubScreen {
 
     data object FeatureFlags : SubScreen
 
+    data object Accessibility : SubScreen
+
     data object Tables : SubScreen
 
     data object Settings : SubScreen

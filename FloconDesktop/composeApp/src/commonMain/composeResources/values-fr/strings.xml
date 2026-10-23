@@ -41,6 +41,7 @@
     <string name="timeline_empty">Aucun événement pour le moment</string>
     <string name="timeline_source_network">Réseau</string>
     <string name="timeline_source_analytics">Analytics</string>
+    <string name="timeline_source_accessibility">Accessibilité</string>
     <string name="timeline_source_crash">Crash</string>
     <string name="timeline_source_database">Base de données</string>
     <string name="timeline_source_table">Table</string>

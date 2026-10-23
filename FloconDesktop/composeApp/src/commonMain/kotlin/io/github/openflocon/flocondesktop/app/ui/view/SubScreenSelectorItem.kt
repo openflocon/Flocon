@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.ui.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.NetworkWifi
+import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DatasetLinked
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import flocondesktop.composeapp.generated.resources.menu_item_analytics
 import flocondesktop.composeapp.generated.resources.menu_item_crashReporter
@@ -41,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.Analytics -> Res.string.menu_item_analytics
     SubScreen.FeatureFlags -> Res.string.menu_item_feature_flags
+    SubScreen.Accessibility -> Res.string.menu_item_accessibility
     SubScreen.Network -> Res.string.menu_item_network
     SubScreen.Database -> Res.string.menu_item_database
     SubScreen.Files -> Res.string.menu_item_files
@@ -85,4 +88,6 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.CrashReporter -> Icons.Outlined.BugReport
 
     SubScreen.Timeline -> Icons.Outlined.Timeline
+
+    SubScreen.Accessibility -> Icons.Outlined.Accessibility
 }
