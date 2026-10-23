@@ -50,6 +50,9 @@ private const val BlinkEvery = 8
 
 private val DoghouseHeight = 38.dp
 
+/** Width that shows the house and the mascot sitting next to it: 78 pixels of 1.2 dp. */
+val FloconDoghouseWidth = 94.dp
+
 private val MascotOutside = HouseWidth + Gap
 
 /**
@@ -75,9 +78,9 @@ internal fun doghouseTapToggles(expanded: Boolean, xPx: Float): Boolean = if (ex
 }
 
 /**
- * The doghouse of the side panel, on its left. The mascot sits next to it when the panel is [expanded],
- * and walks into it when it collapses (and back out when it expands again). Tapping the mascot folds
- * the panel, tapping the house unfolds it: [onToggleExpanded].
+ * A doghouse with the mascot next to it. The mascot sits outside when [expanded], and walks into the
+ * house when it is not (and back out when it is again). Tapping the mascot sends it in, tapping the
+ * house lets it out: [onToggleExpanded].
  */
 @Composable
 fun FloconDoghouse(

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app
 
-import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
-import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelAnimationMs
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -57,10 +55,7 @@ data class MenuScene(
 
     override val content: @Composable (() -> Unit) = {
         var expanded by remember { mutableStateOf(true) }
-        val width by animateDpAsState(
-            targetValue = if (expanded) PanelMaxWidth else PanelMinWidth,
-            animationSpec = tween(durationMillis = PanelAnimationMs, easing = EaseInOutCubic),
-        )
+        val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
 
         val mascotEnabled by koinViewModel<MascotViewModel>().isEnabled.collectAsStateWithLifecycle()
         var origin by remember { mutableStateOf(Offset.Zero) }
