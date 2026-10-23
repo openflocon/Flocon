@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.accessibility.view
 
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,6 +27,8 @@ import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityDetailViewModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

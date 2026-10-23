@@ -70,5 +70,4 @@ interface TimelineDao {
     fun observeSessionCounts(
         query: RoomRawQuery,
     ): Flow<List<TimelineSessionCountEntity>>
-
 }

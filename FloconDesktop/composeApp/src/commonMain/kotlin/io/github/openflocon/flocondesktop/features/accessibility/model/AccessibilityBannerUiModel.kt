@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.accessibility.model
 
-import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * What the device says about its assistive technologies, to explain why events may be missing

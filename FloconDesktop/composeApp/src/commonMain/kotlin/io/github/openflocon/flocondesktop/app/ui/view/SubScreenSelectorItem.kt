@@ -3,9 +3,9 @@ package io.github.openflocon.flocondesktop.app.ui.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.NetworkWifi
+import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Folder
@@ -19,11 +19,11 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import flocondesktop.composeapp.generated.resources.menu_item_analytics
 import flocondesktop.composeapp.generated.resources.menu_item_crashReporter
 import flocondesktop.composeapp.generated.resources.menu_item_dashboard
-import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.menu_item_database
 import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
 import flocondesktop.composeapp.generated.resources.menu_item_feature_flags

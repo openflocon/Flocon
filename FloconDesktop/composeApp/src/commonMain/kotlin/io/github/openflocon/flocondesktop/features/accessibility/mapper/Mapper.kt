@@ -1,12 +1,12 @@
 package io.github.openflocon.flocondesktop.features.accessibility.mapper
 
-import kotlinx.collections.immutable.toImmutableList
 import io.github.openflocon.domain.accessibility.models.AccessibilityEventDomainModel
 import io.github.openflocon.domain.accessibility.models.AccessibilityStateDomainModel
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityBannerUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityDetailUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityRowUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun AccessibilityEventDomainModel.mapToUi() = AccessibilityRowUiModel(
     id = id,
@@ -32,7 +32,9 @@ internal fun AccessibilityEventDomainModel.mapToDetailUi() = AccessibilityDetail
 
 internal fun AccessibilityStateDomainModel.mapToBannerUi(): AccessibilityBannerUiModel = when {
     !supported -> AccessibilityBannerUiModel.NotSupported
+
     !enabled -> AccessibilityBannerUiModel.NotEnabled
+
     else -> AccessibilityBannerUiModel.Running(
         services = services.toImmutableList(),
         touchExploration = touchExploration,

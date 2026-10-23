@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.features.accessibility.model
 
-import kotlinx.collections.immutable.ImmutableList
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 data class AccessibilityDetailUiModel(

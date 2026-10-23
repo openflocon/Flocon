@@ -50,7 +50,7 @@ class SummaryMapperTest {
         val withAccessibility = summary.copy(
             sources = summary.sources + (
                 TimelineSource.Accessibility to TimelineSourceSummaryDomainModel(count = 3, httpErrorCount = 0, firstTimestamp = 600L, lastTimestamp = 2_500L)
-            ),
+                ),
         )
 
         val ui = withAccessibility.toUi(selected = setOf(TimelineSource.Network, TimelineSource.Accessibility))

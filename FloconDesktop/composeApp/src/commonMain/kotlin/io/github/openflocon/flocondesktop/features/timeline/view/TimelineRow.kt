@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
-import flocondesktop.composeapp.generated.resources.timeline_source_adb
 import flocondesktop.composeapp.generated.resources.timeline_source_accessibility
+import flocondesktop.composeapp.generated.resources.timeline_source_adb
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
 import flocondesktop.composeapp.generated.resources.timeline_source_app_start
 import flocondesktop.composeapp.generated.resources.timeline_source_crash

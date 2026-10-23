@@ -28,7 +28,9 @@ internal fun AccessibilityBannerView(
 ) {
     val text = when (banner) {
         AccessibilityBannerUiModel.NotSupported -> stringResource(Res.string.accessibility_banner_not_supported)
+
         AccessibilityBannerUiModel.NotEnabled -> stringResource(Res.string.accessibility_banner_not_enabled)
+
         is AccessibilityBannerUiModel.Running -> {
             val running = stringResource(
                 Res.string.accessibility_banner_services,
