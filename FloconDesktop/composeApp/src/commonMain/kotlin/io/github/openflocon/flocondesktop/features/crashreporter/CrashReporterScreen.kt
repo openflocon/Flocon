@@ -68,11 +68,11 @@ fun CrashReporterScreen(
 
 @Composable
 private fun CrashReportScreen(
-    modifier: Modifier = Modifier,
     onAction: (CrashReporterAction) -> Unit,
     crashReports: LazyPagingItems<CrashReporterUiModel>,
     selected: CrashReporterSelectedUiModel?,
     showEmptyState: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),

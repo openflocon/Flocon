@@ -177,9 +177,12 @@ class FilesViewModel(
     private fun computeTotalSize(
         withFoldersSize: Boolean,
         sorted: List<FileDomainModel>?
-    ): String? = if (!withFoldersSize) null
-    else sorted?.sumOf { it.size }?.let {
-        ByteFormatter.formatBytes(it)
+    ): String? = if (!withFoldersSize) {
+        null
+    } else {
+        sorted?.sumOf { it.size }?.let {
+            ByteFormatter.formatBytes(it)
+        }
     }
 
     private fun sort(

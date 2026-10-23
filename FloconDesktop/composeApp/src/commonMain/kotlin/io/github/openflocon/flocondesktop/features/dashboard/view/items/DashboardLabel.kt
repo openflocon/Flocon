@@ -14,8 +14,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 @Composable
 internal fun DashboardLabel(
-    modifier: Modifier = Modifier,
     rowItem: DashboardContainerViewState.RowItem.Label,
+    modifier: Modifier = Modifier,
 ) {
     SelectionContainer(
         modifier = modifier,

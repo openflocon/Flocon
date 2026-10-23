@@ -22,6 +22,7 @@ internal fun PluginScreen(
         icon = screen.icon,
         onBack = onBack,
         scrollable = scrollable,
+        platforms = screen.platforms,
         content = content,
     )
 }

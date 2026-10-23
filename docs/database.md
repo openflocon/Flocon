@@ -24,92 +24,48 @@ Key capabilities:
 
 ---
 
-## Setup
-
-Add the database core and the module matching your Room version:
-
-=== "Room 2 (androidx.room)"
-
-    ```kotlin
-    dependencies {
-        debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
-        debugImplementation("io.github.openflocon:flocon-database-room:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-database-room-no-op:LAST_VERSION")
-    }
-    ```
-
-=== "Room 3 (androidx.room3)"
-
-    ```kotlin
-    dependencies {
-        debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
-        debugImplementation("io.github.openflocon:flocon-database-room3:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-database-room3-no-op:LAST_VERSION")
-    }
-    ```
-
-Then install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
-
-```kotlin
-startFlocon(context) {
-    install(FloconDatabase) {
-        room()
-    }
-}
-```
-
----
-
 ## Database Registration
 
 ### Automatic (Android)
-With `room()`, Flocon automatically scans your app's databases folder for SQLite database files on Android.
+On Android, Flocon automatically scans your app's internal sandbox for SQLite database files without requiring additional setup.
 
-### Room Databases (all platforms)
-To register a Room database (in-memory databases included) with a display name:
+### In-Memory / Custom Databases (Android)
+To register an **in-memory Room database** or specify a custom display name:
 
 ```kotlin
 val dogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
 
-Flocon.databasePlugin.register(
+floconRegisterDatabase(
     displayName = "In-Memory Dogs",
-    database = dogDatabase,
+    openHelper = dogDatabase.openHelper
 )
 ```
 
-`register(displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
+### Kotlin Multiplatform (Desktop & iOS)
 
-### Room 3 on the web (Wasm)
+For KMP projects, register the database with its absolute filesystem path:
 
-Room 3 runs on Wasm with `WebWorkerSQLiteDriver` (`androidx.sqlite:sqlite-web`), which talks to a SQLite
-Web Worker. There is no file system, so the databases are not discovered: register each Room database
-with `register(displayName, database)` (the plugin still has to be installed with `install(FloconDatabase) { room() }`):
+=== "Desktop (JVM)"
 
-```kotlin
-val dogDatabase = Room.databaseBuilder<DogDatabase>(name = "dogs.db")
-    .setDriver(WebWorkerSQLiteDriver(createWorker()))
-    .build()
+    ```kotlin
+    val dbFile = File(System.getProperty("java.io.tmpdir"), "app_database.db")
 
-Flocon.databasePlugin.register(displayName = "dogs", database = dogDatabase)
-```
-
-See `FloconAndroid/sample/wasm` for a complete setup (worker, npm package and KSP for wasmJs).
-
-### SQLite Files (Kotlin Multiplatform)
-
-Any SQLite file can be registered with its absolute path:
-
-```kotlin
-Flocon.databasePlugin.register(
-    FloconFileDatabaseModel(
-        id = "app_db",
+    floconRegisterDatabase(
         displayName = "App DB",
         absolutePath = dbFile.absolutePath,
     )
-)
-```
+    ```
+
+=== "iOS (Kotlin Multiplatform)"
+
+    ```kotlin
+    val dbPath = "${documentDirectory()}/app_database.db"
+
+    floconRegisterDatabase(
+        displayName = "App DB",
+        absolutePath = dbPath
+    )
+    ```
 
 ---
 
@@ -119,38 +75,30 @@ Flocon can display all SQL queries executed by your app in real-time — great f
 
 <img width="1440" height="968" alt="Database Query Logging" src="https://github.com/user-attachments/assets/f7c06191-17c1-41f6-9184-86b50d6f9945" style="border-radius: 8px;" />
 
-=== "Room 2 (Android)"
+=== "Room Callback Integration"
 
     ```kotlin
+    val dbName = "dogs_database"
     val database = Room.databaseBuilder(
         context.applicationContext,
         DogDatabase::class.java,
-        "dogs_database"
-    )
-        .floconLogs() // io.github.openflocon.flocon.database.room.extensions.floconLogs
-        .build()
+        dbName
+    ).setQueryCallback({ sqlQuery, bindArgs -> 
+        floconLogDatabaseQuery(
+            dbName = dbName, 
+            sqlQuery = sqlQuery, 
+            bindArgs = bindArgs
+        ) 
+    }, Executors.newSingleThreadExecutor())
+    .build()
     ```
-
-    Room 3 has no query callback: use the manual logging.
 
 === "Manual Query Logging"
 
     ```kotlin
-    Flocon.databasePlugin.logQuery(
+    floconLogDatabaseQuery(
         dbName = "my_custom_db",
         sqlQuery = "SELECT * FROM users WHERE id = ?",
         bindArgs = listOf(42)
     )
-    ```
-
-    Room only accepts one query callback per database. If your app already sets its own
-    `setQueryCallback`, call `logQuery` from it to forward the queries to Flocon:
-
-    ```kotlin
-    Room.databaseBuilder(context, DogDatabase::class.java, "dogs_database")
-        .setQueryCallback({ sqlQuery, bindArgs ->
-            Flocon.databasePlugin.logQuery("dogs_database", sqlQuery, bindArgs)
-            myOwnLogger.log(sqlQuery)
-        }, Executors.newSingleThreadExecutor())
-        .build()
     ```

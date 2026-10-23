@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.flocondesktop.features.network.badquality.BadQualityNetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.body.NetworkJsonViewModel
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
@@ -26,7 +25,6 @@ internal val networkModule = module {
     factoryOf(::MessagesServerDelegate)
     factoryOf(::HeaderDelegate)
     factoryOf(::OpenBodyDelegate)
-    factoryOf(::NetworkDetailDelegate)
 
     viewModelOf(::NetworkMocksViewModel)
     factoryOf(::ExportMocksProcessor)

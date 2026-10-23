@@ -12,7 +12,10 @@ class ObserveImagesUseCase(
     private val imagesRepository: ImagesRepository,
 ) {
     operator fun invoke(): Flow<List<DeviceImageDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
-        if (current == null) flowOf(emptyList())
-        else imagesRepository.observeImages(deviceIdAndPackageName = current)
+        if (current == null) {
+            flowOf(emptyList())
+        } else {
+            imagesRepository.observeImages(deviceIdAndPackageName = current)
+        }
     }
 }

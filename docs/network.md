@@ -48,24 +48,12 @@ Flocon also includes a built-in network conditioner to simulate real-world condi
 
 ## Setup & Integration
 
-The interceptors report to the **network plugin**: add `flocon-network-core` and install it.
-
-```kotlin
-startFlocon(context) {
-    install(FloconNetwork)
-}
-```
-
-Without `FloconNetwork`, the interceptors let the calls go through untouched.
-
-### With OkHttp (Android & JVM)
+### With OkHttp (Android)
 
 === "libs.versions.toml"
 
     ```toml
     [libraries]
-    flocon-network = { module = "io.github.openflocon:flocon-network-core", version.ref = "flocon" }
-    flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op", version.ref = "flocon" }
     flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
     flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op", version.ref = "flocon" }
     ```
@@ -74,8 +62,6 @@ Without `FloconNetwork`, the interceptors let the calls go through untouched.
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
         debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
         releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }
@@ -85,14 +71,7 @@ Add the interceptor to your `OkHttpClient` builder:
 
 ```kotlin
 val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(
-        FloconOkhttpInterceptor(
-            // optional: display these responses as images
-            isImage = { it.request.url.toString().contains("cdn") },
-            // optional: calls to skip
-            shouldLog = { chain -> !chain.request().url.encodedPath.startsWith("/health") },
-        )
-    )
+    .addInterceptor(FloconOkhttpInterceptor())
     .build()
 ```
 
@@ -104,8 +83,6 @@ val okHttpClient = OkHttpClient.Builder()
 
     ```toml
     [libraries]
-    flocon-network = { module = "io.github.openflocon:flocon-network-core", version.ref = "flocon" }
-    flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op", version.ref = "flocon" }
     flocon-ktor = { module = "io.github.openflocon:flocon-ktor-interceptor", version.ref = "flocon" }
     flocon-ktor-no-op = { module = "io.github.openflocon:flocon-ktor-interceptor-no-op", version.ref = "flocon" }
     ```
@@ -116,26 +93,19 @@ val okHttpClient = OkHttpClient.Builder()
     kotlin {
         sourceSets {
             commonMain.dependencies {
-                implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
                 implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
             }
         }
     }
     ```
 
-    For release builds, see [Release builds](setup.md#4-release-builds-no-op).
-
 Install the plugin into your Ktor `HttpClient`:
 
 ```kotlin
 val httpClient = HttpClient {
-    install(FloconKtorPlugin) {
-        // optional
-        isImage = { it.responseContentType?.startsWith("image/") == true }
-        shouldLog = { request -> request.url.host != "localhost" }
-    }
+    install(FloconKtorPlugin)
 }
 ```
 
 !!! tip "Ktor Compatibility"
-    Built and tested with Ktor `3.x`.
+    Tested and verified with Ktor `3.x` and `2.x`.

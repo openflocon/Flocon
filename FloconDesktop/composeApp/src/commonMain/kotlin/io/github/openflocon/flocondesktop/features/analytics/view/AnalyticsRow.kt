@@ -56,7 +56,9 @@ fun AnalyticsRow(
                 .then(
                     if (model.isFromOldAppInstance) {
                         Modifier.alpha(0.4f)
-                    } else Modifier
+                    } else {
+                        Modifier
+                    }
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {

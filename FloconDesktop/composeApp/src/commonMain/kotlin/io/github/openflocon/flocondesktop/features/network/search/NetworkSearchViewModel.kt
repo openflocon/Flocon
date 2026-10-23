@@ -86,8 +86,11 @@ class NetworkSearchViewModel(
 
     val selectedRequest: StateFlow<FloconNetworkCallDomainModel?> = _selectedRequestId
         .flatMapLatest { id ->
-            if (id == null) flowOf(null)
-            else observeNetworkRequestsByIdUseCase(id)
+            if (id == null) {
+                flowOf(null)
+            } else {
+                observeNetworkRequestsByIdUseCase(id)
+            }
         }
         .stateIn(
             scope = viewModelScope,

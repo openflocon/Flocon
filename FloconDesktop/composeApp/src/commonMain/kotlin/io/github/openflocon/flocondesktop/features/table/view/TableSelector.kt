@@ -42,14 +42,16 @@ internal fun TableSelector(
         expanded = expanded,
         onDismissRequest = { expanded = false },
         onExpandRequest = {
-            if (tablesState is TablesStateUiModel.WithContent)
+            if (tablesState is TablesStateUiModel.WithContent) {
                 expanded = true
+            }
         },
         anchorContent = {
             FloconButton(
                 onClick = {
-                    if (tablesState is TablesStateUiModel.WithContent)
+                    if (tablesState is TablesStateUiModel.WithContent) {
                         expanded = true
+                    }
                 },
                 containerColor = FloconTheme.colors.bg200
             ) {

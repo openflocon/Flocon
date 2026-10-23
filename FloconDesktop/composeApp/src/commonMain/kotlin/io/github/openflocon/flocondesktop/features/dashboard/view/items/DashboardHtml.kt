@@ -19,8 +19,8 @@ import javax.swing.JEditorPane
 
 @Composable
 internal fun DashboardHtml(
-    modifier: Modifier = Modifier,
     rowItem: DashboardContainerViewState.RowItem.Html,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),

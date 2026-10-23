@@ -53,8 +53,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TextFilterDropdownContent(
-    modifier: Modifier = Modifier,
     filterState: TextFilterStateUiModel,
+    modifier: Modifier = Modifier,
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     Column(
@@ -149,8 +149,8 @@ fun TextFilterDropdownContent(
 @Composable
 private fun FilterEntry(
     item: TextFilterStateUiModel.FilterItem,
-    modifier: Modifier = Modifier,
     changeIsActive: (item: TextFilterStateUiModel.FilterItem, newValue: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     clickDelete: (item: TextFilterStateUiModel.FilterItem) -> Unit,
 ) {
     var isHover by remember { mutableStateOf(false) }
