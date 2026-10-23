@@ -3,8 +3,10 @@ package io.github.openflocon.flocondesktop.core.data.di
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.settings.repository.MascotPreferencesRepository
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
+import io.github.openflocon.flocondesktop.core.data.settings.MascotPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
@@ -21,6 +23,9 @@ val coreDataModule =
         }
         singleOf(::MenuPreferencesRepositoryImpl) {
             bind<MenuPreferencesRepository>()
+        }
+        singleOf(::MascotPreferencesRepositoryImpl) {
+            bind<MascotPreferencesRepository>()
         }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()

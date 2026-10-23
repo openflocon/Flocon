@@ -16,6 +16,7 @@ data class SettingsUiState(
     val logs: ImmutableList<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
     val theme: ThemeSetting,
+    val mascotEnabled: Boolean,
     val selectedLogDomains: Set<LogDomain>,
     val selectedLogLevels: Set<LogLevel>,
 )
@@ -30,6 +31,7 @@ fun previewSettingsUiState() = SettingsUiState(
         LogEntryUiModel(LogLevel.INFO, "[MCP] list_devices ok in 12 ms", "12:00:03", LogDomain.Mcp),
     ),
     theme = ThemeSetting.DEFAULT,
+    mascotEnabled = true,
     selectedLogDomains = LogDomain.entries.toSet(),
     selectedLogLevels = LogLevel.entries.toSet(),
 )
