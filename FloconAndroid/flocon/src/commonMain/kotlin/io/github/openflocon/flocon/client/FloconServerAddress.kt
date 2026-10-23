@@ -21,6 +21,13 @@ internal fun FloconConnectionMode.resolve(adbHost: () -> String): FloconServerAd
         httpPort = DEFAULT_HTTP_PORT,
     )
 
+    // nothing is dialled: the app listens, the transport doesn't use the address
+    FloconConnectionMode.Bluetooth -> FloconServerAddress(
+        host = "bluetooth",
+        websocketPort = 0,
+        httpPort = 0,
+    )
+
     is FloconConnectionMode.Url -> FloconServerAddress(
         host = host.toBareHost(),
         websocketPort = websocketPort,
