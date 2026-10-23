@@ -1,0 +1,349 @@
+package io.github.openflocon.flocondesktop.features.database.view
+
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.nb_lines
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
+import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
+import org.koin.mp.KoinPlatform
+
+@Serializable
+data class DetailResultItem(
+    val index: Int,
+    val item: DatabaseRowUiModel,
+)
+
+@Composable
+fun DatabaseResult(
+    result: QueryResultUiModel?,
+    onExportCsvClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val columnsWidth = 200.dp
+
+    if (result == null) {
+        return
+    }
+
+    SelectionContainer(modifier) {
+        when (result) {
+            is QueryResultUiModel.Text -> {
+                Text(
+                    text = result.text,
+                    color = FloconTheme.colors.ink,
+                    modifier = Modifier.padding(FloconTheme.spacing.small),
+                )
+            }
+
+            is QueryResultUiModel.Values -> {
+                val color = FloconTheme.colors.line
+
+                var selectedItem by remember(result) {
+                    mutableStateOf<DetailResultItem?>(null)
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100)
+                        .border(
+                            width = 1.dp,
+                            color = color,
+                            shape = FloconTheme.shapes.medium
+                        )
+                ) {
+                    ResultHeader(
+                        result = result,
+                        modifier = Modifier.fillMaxWidth(),
+                        onExportCsvClicked = onExportCsvClicked
+                    )
+                    FloconHorizontalDivider(
+                        color = color,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .horizontalScroll(rememberScrollState())
+                            .onPreviewKeyEvent { event ->
+                                if (event.type != KeyEventType.KeyDown) {
+                                    return@onPreviewKeyEvent false
+                                }
+
+                                when (event.key) {
+                                    Key.DirectionUp -> {
+                                        selectedItem?.index?.let { i ->
+                                            val newIndex = i - 1
+                                            result.rows.getOrNull(newIndex)?.let {
+                                                val item = DetailResultItem(
+                                                    index = newIndex,
+                                                    item = it
+                                                )
+
+                                                selectedItem = item
+                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                            }
+                                        }
+
+                                        true
+                                    }
+
+                                    Key.DirectionDown -> {
+                                        selectedItem?.index?.let { i ->
+                                            val newIndex = i + 1
+                                            result.rows.getOrNull(newIndex)?.let {
+                                                val item = DetailResultItem(
+                                                    index = newIndex,
+                                                    item = it
+                                                )
+
+                                                selectedItem = item
+                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                            }
+                                        }
+
+                                        true
+                                    }
+
+                                    else -> false
+                                }
+                            }
+                    ) {
+                        stickyHeader {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(FloconTheme.colors.bg100)
+                                    .height(FloconTheme.sizes.headerHeight)
+                                    .padding(horizontal = FloconTheme.spacing.small),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                result.columns
+                                    .fastForEachIndexed { index, item ->
+                                        Text(
+                                            item,
+                                            style = FloconTheme.typography.bodySmall.copy(
+                                                fontWeight = FontWeight.Medium,
+                                                fontFamily = FontFamily.Monospace,
+                                            ),
+                                            color = FloconTheme.colors.inkFaint,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .width(columnsWidth)
+                                                .padding(all = FloconTheme.spacing.extraSmall),
+                                        )
+                                    }
+                            }
+                        }
+                        itemsIndexed(result.rows) { index, row ->
+                            val selected = index == selectedItem?.index
+
+                            DatabaseResultRow(
+                                index = index,
+                                row = row,
+                                columnsWidth = columnsWidth,
+                                selected = selected,
+                                onItemSelected = {
+                                    selectedItem = it
+                                    KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                        .navigate(DatabaseRoutes.Detail(it, result.columns))
+                                }
+                            )
+
+                            if (index != result.rows.lastIndex) {
+                                FloconHorizontalDivider(
+                                    color = color,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DatabaseResultRow(
+    index: Int,
+    row: DatabaseRowUiModel,
+    columnsWidth: Dp,
+    selected: Boolean,
+    onItemSelected: (DetailResultItem) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .height(FloconTheme.sizes.rowHeight)
+            .clip(FloconTheme.shapes.small)
+            .then(
+                if (selected) {
+                    Modifier.background(FloconTheme.colors.accentSoft)
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = FloconTheme.spacing.small)
+            .clickable {
+                onItemSelected(
+                    DetailResultItem(
+                        index = index,
+                        item = row
+                    )
+                )
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        row.items.forEachIndexed { index, item ->
+            Text(
+                text = item ?: "NULL",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = FloconTheme.colors.inkMuted,
+                modifier = Modifier
+                    .width(columnsWidth)
+                    .graphicsLayer {
+                        if (item == null) {
+                            alpha = 0.5f
+                        }
+                    }
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ResultHeader(
+    result: QueryResultUiModel.Values,
+    onExportCsvClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier
+            .background(FloconTheme.colors.bg100)
+            .padding(horizontal = FloconTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            stringResource(Res.string.nb_lines, result.rows.size),
+            style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = FloconTheme.colors.ink,
+            modifier = Modifier
+                .padding(all = FloconTheme.spacing.extraSmall),
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        Box(
+            Modifier.size(30.dp).clickable {
+                onExportCsvClicked()
+            }.padding(FloconTheme.spacing.compact)
+        ) {
+            Image(
+                imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.inkFaint),
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun DatabaseResultViewPreviewText() {
+    FloconTheme {
+        val result = QueryResultUiModel.Text(text = "This is a sample text result.")
+        DatabaseResult(
+            result = result,
+            onExportCsvClicked = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DatabaseResultViewPreviewValues() {
+    val result = QueryResultUiModel.Values(
+        columns = listOf("ID", "Name", "Email"),
+        rows = persistentListOf(
+            DatabaseRowUiModel(items = listOf("1", "John Doe", "john.doe@example.com")),
+            DatabaseRowUiModel(items = listOf("2", "Jane Smith", "jane.smith@example.com")),
+            DatabaseRowUiModel(items = listOf("3", "Peter Jones", null)),
+        ),
+    )
+    FloconTheme {
+        DatabaseResult(
+            result = result,
+            onExportCsvClicked = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DatabaseResultViewPreviewNull() {
+    FloconTheme {
+        DatabaseResult(
+            result = null,
+            onExportCsvClicked = {},
+        )
+    }
+}

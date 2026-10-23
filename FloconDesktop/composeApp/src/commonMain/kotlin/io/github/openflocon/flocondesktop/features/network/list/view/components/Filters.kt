@@ -20,11 +20,12 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 fun FilterDropdown(
     text: String,
     icon: ImageVector?,
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
 ) {
     var filterExpanded by remember { mutableStateOf(false) }
 
-    Column {
+    Column(modifier = modifier) {
         SuggestionChip(
             onClick = { filterExpanded = !filterExpanded },
             label = { Text(text = text) },

@@ -92,8 +92,8 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewGra
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
-import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeaderView
-import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeaderView
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeader
+import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeader
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockWindow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -153,12 +153,12 @@ fun NetworkScreen(
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
                 .clip(FloconTheme.shapes.large)
@@ -206,7 +206,7 @@ fun NetworkScreen(
                     }
                 }
         ) {
-            NetworkPageHeaderView(
+            NetworkPageHeader(
                 requestCount = rows.itemCount,
                 modifier = Modifier.padding(
                     top = FloconTheme.spacing.small,
@@ -399,7 +399,7 @@ fun NetworkScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                NetworkItemHeaderView(
+                NetworkItemHeader(
                     columnWidths = columnWidths,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -437,7 +437,7 @@ fun NetworkScreen(
                         ) { index ->
                             val item = rows[index]
                             if (item != null) {
-                                NetworkItemView(
+                                NetworkItem(
                                     state = item,
                                     selected = item.uuid == uiState.contentState.selectedRequestId,
                                     columnWidths = columnWidths,
@@ -596,7 +596,7 @@ private fun NetworkScreenPreview() {
             uiState = uiState,
             rows = rows,
             onAction = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
             showEmptyState = false,
         )
     }

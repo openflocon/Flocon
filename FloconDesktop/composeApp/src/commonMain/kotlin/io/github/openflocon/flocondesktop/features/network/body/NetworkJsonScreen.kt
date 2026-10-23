@@ -72,6 +72,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun NetworkJsonScreen(
     json: String,
+    modifier: Modifier = Modifier,
     key: String = json,
 ) {
     val viewModel = koinViewModel<NetworkJsonViewModel>(key = key) {
@@ -81,7 +82,7 @@ fun NetworkJsonScreen(
 
     NetworkBodyContent(
         body = uiState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     )
 }
 
@@ -153,10 +154,10 @@ private fun SearchBar(
     nextClicked: () -> Unit,
     queryChanged: (String) -> Unit,
     matchCaseChanged: () -> Unit,
-    modifier: Modifier = Modifier,
     selectedResultIndex: Int?,
     totalResults: Int,
     matchCase: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
 

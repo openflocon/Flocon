@@ -24,6 +24,6 @@ expect fun rememberFloconScrollbarAdapter(scrollState: LazyGridState): FloconScr
 @Composable
 expect fun FloconVerticalScrollbar(
     adapter: FloconScrollAdapter,
-    style: ScrollbarStyle = LocalScrollbarStyle.current,
     modifier: Modifier = Modifier,
+    style: ScrollbarStyle = LocalScrollbarStyle.current,
 )

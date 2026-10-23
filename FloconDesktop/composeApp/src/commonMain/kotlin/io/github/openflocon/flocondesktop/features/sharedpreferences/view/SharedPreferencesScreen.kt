@@ -115,7 +115,7 @@ fun SharedPrefScreen(
             )
         } else {
             Row(Modifier.fillMaxSize()) {
-                SharedPreferenceSelectorView(
+                SharedPreferenceSelector(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(340.dp),
@@ -128,7 +128,7 @@ fun SharedPrefScreen(
                     val lazyListState = rememberLazyListState()
                     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
                     Box(
-                        modifier = modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                             .clip(FloconTheme.shapes.medium)
                             .background(FloconTheme.colors.bg100)
                             .border(
@@ -142,7 +142,7 @@ fun SharedPrefScreen(
                                 .fillMaxWidth()
                         ) {
                             Row(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
@@ -173,7 +173,7 @@ fun SharedPrefScreen(
 
                                     is SharedPreferencesRowsStateUiModel.WithContent -> {
                                         items(sharedPrefRows) {
-                                            SharedPreferenceRowView(
+                                            SharedPreferenceRow(
                                                 model = it,
                                                 modifier = Modifier.fillMaxWidth(),
                                                 onValueChanged = changeValue,

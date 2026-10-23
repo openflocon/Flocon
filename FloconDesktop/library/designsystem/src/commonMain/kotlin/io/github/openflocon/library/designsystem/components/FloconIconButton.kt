@@ -156,10 +156,10 @@ fun FloconIconToggleButton(
 
 @Composable
 fun FloconIconButton(
-    modifier: Modifier = Modifier,
     tooltip: String,
-    size: Dp = Size,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = Size,
     containerColor: Color = FloconTheme.colors.bg200,
     contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
@@ -191,6 +191,7 @@ fun FloconIconButton(
 @Composable
 fun WithTooltip(
     tooltip: String?,
+    modifier: Modifier = Modifier,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
         offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.tiny)
     ),
@@ -198,6 +199,7 @@ fun WithTooltip(
 ) {
     if (tooltip != null) {
         TooltipArea(
+            modifier = modifier,
             tooltip = {
                 Text(
                     text = tooltip,
@@ -215,7 +217,9 @@ fun WithTooltip(
             content()
         }
     } else {
-        content()
+        Box(modifier = modifier) {
+            content()
+        }
     }
 }
 

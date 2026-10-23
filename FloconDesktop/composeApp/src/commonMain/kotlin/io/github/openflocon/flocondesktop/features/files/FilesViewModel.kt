@@ -78,7 +78,8 @@ class FilesViewModel(
             withFoldersSize = withFoldersSize,
         )
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5_000),
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
         FilesStateUiModel.Options(
             withFoldersSize = false,
         )

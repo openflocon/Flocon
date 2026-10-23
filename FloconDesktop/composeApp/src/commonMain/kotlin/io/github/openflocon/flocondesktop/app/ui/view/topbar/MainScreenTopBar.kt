@@ -51,7 +51,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MainScreenTopBar(
-    modifier: Modifier = Modifier,
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
@@ -63,6 +62,7 @@ fun MainScreenTopBar(
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
@@ -83,7 +83,7 @@ fun MainScreenTopBar(
             onUpdateChipClicked = onUpdateChipClicked,
             modifier = Modifier.padding(end = FloconTheme.spacing.medium),
         )
-        TopBarDeviceAndAppView(
+        TopBarDeviceAndApp(
             devicesState = devicesState,
             appsState = appsState,
             onDeviceSelected = onDeviceSelected,

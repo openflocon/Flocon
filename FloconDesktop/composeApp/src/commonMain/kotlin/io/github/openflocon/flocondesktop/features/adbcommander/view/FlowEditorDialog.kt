@@ -41,8 +41,12 @@ import org.jetbrains.compose.resources.stringResource
 fun FlowEditorDialog(
     state: FlowEditorState,
     onAction: (AdbCommanderAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    FloconDialog(onDismissRequest = { onAction(AdbCommanderAction.DismissFlowEditor) }) {
+    FloconDialog(
+        onDismissRequest = { onAction(AdbCommanderAction.DismissFlowEditor) },
+        modifier = modifier,
+    ) {
         Column {
             FloconDialogHeader(
                 title = if (state.flowId != null) {

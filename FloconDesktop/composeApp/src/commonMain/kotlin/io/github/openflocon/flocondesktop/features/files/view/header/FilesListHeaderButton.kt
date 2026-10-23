@@ -34,11 +34,11 @@ private const val NOT_ENABLED_OPACITY = 0.3f
 @Composable
 internal fun FilesListHeaderButton(
     title: String,
-    subtitle: String? = null,
     sortedBy: SortedByUiModel,
     clickOnSort: (SortedByUiModel) -> Unit,
-    textAlign: TextAlign = TextAlign.Center,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    textAlign: TextAlign = TextAlign.Center,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()

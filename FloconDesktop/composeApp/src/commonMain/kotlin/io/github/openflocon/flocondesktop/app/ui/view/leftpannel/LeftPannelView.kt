@@ -59,7 +59,7 @@ val PanelMinWidth = 64.dp
 val PanelContentMinSize = 34.dp
 
 @Composable
-fun LeftPanelView(
+fun LeftPanel(
     state: MenuState,
     current: SubScreen,
     expanded: Boolean,
@@ -226,7 +226,7 @@ private fun ColumnScope.MenuItems(
     onTogglePin: (MenuItem) -> Unit = {},
 ) {
     items.fastForEachIndexed { index, item ->
-        PanelView(
+        SidePanel(
             modifier = Modifier
                 .height(PanelContentMinSize)
                 .fillMaxWidth(),
@@ -248,12 +248,12 @@ private fun ColumnScope.MenuItems(
 
 @Composable
 @Preview
-private fun LeftPanelViewPreview() {
+private fun LeftPanelPreview() {
     val selectedItem = remember { mutableStateOf<SubScreen>(SubScreen.Network) }
 
     FloconTheme {
         Box(modifier = Modifier.background(FloconTheme.colors.bg000))
-        LeftPanelView(
+        LeftPanel(
             current = selectedItem.value,
             state = previewMenuState(),
             onClickItem = { selectedItem.value = it.screen },

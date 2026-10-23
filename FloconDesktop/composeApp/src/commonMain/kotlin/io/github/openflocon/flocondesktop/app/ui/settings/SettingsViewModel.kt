@@ -16,8 +16,10 @@ import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.domain.settings.usecase.SetAppScaleUseCase
+import io.github.openflocon.domain.settings.usecase.SetMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
@@ -46,6 +48,8 @@ class SettingsViewModel(
     private val setAppScaleUseCase: SetAppScaleUseCase,
     observeThemeUseCase: ObserveThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
+    observeMascotEnabledUseCase: ObserveMascotEnabledUseCase,
+    private val setMascotEnabledUseCase: SetMascotEnabledUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
@@ -74,14 +78,15 @@ class SettingsViewModel(
 
     val uiState = combine(
         observeAppScaleUseCase(),
-        observeThemeUseCase(),
+        combine(observeThemeUseCase(), observeMascotEnabledUseCase()) { theme, mascotEnabled -> theme to mascotEnabled },
         filteredLogs,
         settingsRepository.adbForwardStatus,
         combine(selectedLogDomains, selectedLogLevels) { domains, levels -> domains to levels },
-    ) { appScale, theme, logs, forwardStatus, (domains, levels) ->
+    ) { appScale, (theme, mascotEnabled), logs, forwardStatus, (domains, levels) ->
         SettingsUiState(
             appScale = appScale,
             theme = theme,
+            mascotEnabled = mascotEnabled,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
             selectedLogDomains = domains,
@@ -94,6 +99,7 @@ class SettingsViewModel(
             initialValue = SettingsUiState(
                 appScale = AppScaleSetting.DEFAULT,
                 theme = ThemeSetting.DEFAULT,
+                mascotEnabled = true,
                 logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN,
                 selectedLogDomains = LogDomain.entries.toSet(),
@@ -119,6 +125,7 @@ class SettingsViewModel(
         when (action) {
             is SettingsAction.AppScaleChange -> onAppScaleChange(action)
             is SettingsAction.ThemeChange -> onThemeChange(action)
+            is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
         }
     }
 
@@ -131,6 +138,12 @@ class SettingsViewModel(
     private fun onThemeChange(action: SettingsAction.ThemeChange) {
         viewModelScope.launch {
             setThemeUseCase(action.value)
+        }
+    }
+
+    private fun onMascotEnabledChange(action: SettingsAction.MascotEnabledChange) {
+        viewModelScope.launch {
+            setMascotEnabledUseCase(action.enabled)
         }
     }
 
