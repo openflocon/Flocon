@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -180,7 +181,7 @@ private fun FeatureFlagsScreenPreview() {
             ),
             selectedStates = FeatureFlagStateUiModel.entries.toSet(),
             onStateToggled = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
             onFilterTextChanged = {},
             onAction = {},
             modifier = Modifier.fillMaxSize(),

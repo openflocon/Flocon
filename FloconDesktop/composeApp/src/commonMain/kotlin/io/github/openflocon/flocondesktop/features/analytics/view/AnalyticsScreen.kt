@@ -278,7 +278,7 @@ private fun AnalyticsScreenPreview() {
             screenState = previewAnalyticsScreenUiState(),
             onFilterTextChanged = {},
             onResetClicked = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
         )
     }
 }
