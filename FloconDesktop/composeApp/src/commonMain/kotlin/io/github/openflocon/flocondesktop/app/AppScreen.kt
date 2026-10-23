@@ -42,14 +42,14 @@ import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun AppScreen() {
+fun AppScreen(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<AppViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
     val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
             navigationState = viewModel.navigationState,

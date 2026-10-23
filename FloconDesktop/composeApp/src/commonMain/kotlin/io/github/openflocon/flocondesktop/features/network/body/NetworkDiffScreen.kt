@@ -31,11 +31,12 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NetworkDiffWindow(
-    diff: NetworkDiffUi
+    diff: NetworkDiffUi,
+    modifier: Modifier = Modifier,
 ) {
     NetworkDiffContent(
         diff = diff,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     )
 }
 

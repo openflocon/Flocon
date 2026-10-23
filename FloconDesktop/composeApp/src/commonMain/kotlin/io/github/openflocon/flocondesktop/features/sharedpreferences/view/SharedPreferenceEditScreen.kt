@@ -24,6 +24,7 @@ fun SharedPreferenceEditScreen(
     stringValue: SharedPreferencesRowUiModel.Value.StringValue,
     cancel: () -> Unit,
     save: (SharedPreferencesRowUiModel, stringValue: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val windowState = remember(row.key) { createFloconWindowState() }
     FloconWindow(
@@ -36,7 +37,7 @@ fun SharedPreferenceEditScreen(
             stringValue = stringValue,
             save = save,
             cancel = cancel,
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
         )
     }
 }

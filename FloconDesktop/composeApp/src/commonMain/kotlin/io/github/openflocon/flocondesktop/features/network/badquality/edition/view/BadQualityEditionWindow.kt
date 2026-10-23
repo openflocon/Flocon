@@ -57,12 +57,13 @@ fun BadQualityEditionWindow(
     onCloseRequest: () -> Unit,
     save: (state: BadQualityConfigUiModel) -> Unit,
     state: SelectedBadQualityUiModel,
+    modifier: Modifier = Modifier,
 ) {
     FloconDialog(
         onDismissRequest = onCloseRequest,
         // two cards side by side: the default width of a dialog is too narrow
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.width(920.dp),
+        modifier = modifier.width(920.dp),
     ) {
         BadNetworkQualityEditionContent(
             state = state,

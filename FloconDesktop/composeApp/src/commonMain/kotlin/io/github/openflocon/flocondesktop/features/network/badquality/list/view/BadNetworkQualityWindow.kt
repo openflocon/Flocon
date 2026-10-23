@@ -20,12 +20,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun BadNetworkQualityWindow(
     onCloseRequest: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     FloconDialog(
         onDismissRequest = onCloseRequest,
         // the list has several columns: the default width of a dialog is too narrow
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.width(920.dp),
+        modifier = modifier.width(920.dp),
     ) {
         BadNetworkQualityContent(
             onCloseRequest = onCloseRequest,
