@@ -28,6 +28,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
@@ -120,7 +121,7 @@ private fun foodDatabase(): FoodDatabase {
 }
 
 private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
-    SampleFeatures.platformName = "Desktop (JVM)"
+    SampleFeatures.platform = SamplePlatform.Desktop
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         dogDatabase.dogDao().insertDog(

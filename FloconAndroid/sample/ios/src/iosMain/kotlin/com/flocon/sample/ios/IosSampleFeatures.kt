@@ -8,6 +8,7 @@ import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSString
@@ -18,7 +19,7 @@ import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 
 fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
-    SampleFeatures.platformName = "iOS"
+    SampleFeatures.platform = SamplePlatform.Ios
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         val now = (NSDate().timeIntervalSince1970 * 1000).toLong()

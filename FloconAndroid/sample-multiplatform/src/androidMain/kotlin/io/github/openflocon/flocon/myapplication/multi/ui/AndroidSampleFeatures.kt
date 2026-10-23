@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
  * Android supports every feature of the sample. [AndroidTestContext] must be filled first.
  */
 fun registerAndroidSampleFeatures(context: Context) {
-    SampleFeatures.platformName = "Android"
+    SampleFeatures.platform = SamplePlatform.Android
 
     SampleFeatures.on(SampleFeature.OkHttp) { FloconOkHttpTester.call() }
     SampleFeatures.on(SampleFeature.OkHttpGzip) { FloconOkHttpTester.callGzip() }
