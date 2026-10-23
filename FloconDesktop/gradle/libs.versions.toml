@@ -8,6 +8,7 @@ compose-multiplatform = "1.12.2"
 compose-rules = "0.5.9"
 junit = "4.13.2"
 filekit = "0.16.0"
+molecule = "2.2.0"
 kermit = "2.1.0"
 koin = "4.2.2"
 kotlin = "2.4.0"
@@ -66,6 +67,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
 # Kermit
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
