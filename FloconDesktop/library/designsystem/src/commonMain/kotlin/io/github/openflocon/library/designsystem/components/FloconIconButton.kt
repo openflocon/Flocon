@@ -191,6 +191,7 @@ fun FloconIconButton(
 @Composable
 fun WithTooltip(
     tooltip: String?,
+    modifier: Modifier = Modifier,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
         offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.tiny)
     ),
@@ -198,6 +199,7 @@ fun WithTooltip(
 ) {
     if (tooltip != null) {
         TooltipArea(
+            modifier = modifier,
             tooltip = {
                 Text(
                     text = tooltip,
@@ -215,7 +217,9 @@ fun WithTooltip(
             content()
         }
     } else {
-        content()
+        Box(modifier = modifier) {
+            content()
+        }
     }
 }
 

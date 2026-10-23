@@ -83,7 +83,7 @@ fun MainScreenTopBar(
             onUpdateChipClicked = onUpdateChipClicked,
             modifier = Modifier.padding(end = FloconTheme.spacing.medium),
         )
-        TopBarDeviceAndAppView(
+        TopBarDeviceAndApp(
             devicesState = devicesState,
             appsState = appsState,
             onDeviceSelected = onDeviceSelected,

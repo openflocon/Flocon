@@ -98,7 +98,6 @@ import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.defaultLabel
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import org.jetbrains.compose.resources.stringResource
 
 private enum class TestPatternStatus {
@@ -157,6 +156,7 @@ fun MockEditorScreen(
     initialMock: SelectedMockUiModel,
     onSave: (MockNetworkUiModel) -> Unit,
     onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var mock by remember { mutableStateOf(createEditable(initialMock)) }
     var testUrl by remember { mutableStateOf("") }
@@ -176,7 +176,7 @@ fun MockEditorScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(FloconTheme.colors.bg100),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -537,7 +537,7 @@ fun MockEditorScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MockNetworkLabelView(stringResource(Res.string.network_headers))
+                            MockNetworkLabel(stringResource(Res.string.network_headers))
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
@@ -725,12 +725,16 @@ fun MockEditorScreen(
 }
 
 @Composable
-fun NetworkMockMediaType(text: String, onClicked: (text: String) -> Unit) {
+fun NetworkMockMediaType(
+    text: String,
+    onClicked: (text: String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = text,
         color = FloconTheme.colors.inkMuted,
-        style = floconMonoStyle(),
-        modifier = Modifier
+        style = FloconTheme.typography.monoMedium,
+        modifier = modifier
             .clip(CircleShape)
             .background(FloconTheme.colors.bg200)
             .border(1.dp, FloconTheme.colors.lineStrong, CircleShape)

@@ -38,7 +38,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -47,7 +46,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NetworkMocksWindow(
-    fromNetworkCallId: String?
+    fromNetworkCallId: String?,
+    modifier: Modifier = Modifier,
 ) {
     val viewModel: NetworkMocksViewModel = koinViewModel()
     LaunchedEffect(viewModel, fromNetworkCallId) {
@@ -58,7 +58,7 @@ fun NetworkMocksWindow(
 
     NetworkMocksContent(
         mocks = mocks,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onAction = viewModel::onAction,
     )
 
@@ -106,7 +106,7 @@ internal fun NetworkMocksContent(
             ) {
                 Text(
                     text = mocks.size.toString(),
-                    style = floconMonoStyle(small = true),
+                    style = FloconTheme.typography.monoSmall,
                     color = colors.inkMuted,
                     modifier = Modifier
                         .background(colors.bg300, CircleShape)
@@ -143,7 +143,7 @@ internal fun NetworkMocksContent(
                 .background(colors.bg100, FloconTheme.shapes.large)
                 .border(1.dp, colors.line, FloconTheme.shapes.large)
         ) {
-            MocksHeaderView(Modifier.fillMaxWidth())
+            MocksHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,7 +153,7 @@ internal fun NetworkMocksContent(
                     items = mocks,
                     key = MockNetworkLineUiModel::id
                 ) {
-                    MockLineView(
+                    MockLine(
                         item = it,
                         onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
                         onDeleteClicked = { id -> onAction(NetworkMockAction.OnDeleteClicked(id)) },

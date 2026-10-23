@@ -153,7 +153,7 @@ private fun ImagesScreen(
                             .background(FloconTheme.colors.bg100)
                     ) {
                         items(state.images) {
-                            ImageItemView(
+                            ImageItem(
                                 model = it,
                                 onClick = onClickImage,
                                 modifier = Modifier

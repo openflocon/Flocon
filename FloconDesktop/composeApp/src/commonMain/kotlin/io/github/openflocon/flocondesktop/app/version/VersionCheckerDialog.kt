@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun BoxScope.VersionCheckerView() {
+internal fun BoxScope.VersionChecker() {
     val viewmodel = koinViewModel<VersionCheckerViewModel>()
     val state by viewmodel.state.collectAsStateWithLifecycle()
     state?.let {
@@ -45,10 +45,10 @@ internal fun BoxScope.VersionCheckerView() {
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     state: VersionCheckerViewModel.VersionAvailableState,
     onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier.padding(FloconTheme.spacing.large),
@@ -57,12 +57,16 @@ private fun VersionCheckerDialog(
     ) {
         state.client?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onClientDismiss
+                modifier = Modifier,
+                version = it,
+                onDismiss = onClientDismiss
             )
         }
         state.desktop?.let {
             VersionCheckerDialog(
-                modifier = Modifier, version = it, onDismiss = onDesktopDismiss
+                modifier = Modifier,
+                version = it,
+                onDismiss = onDesktopDismiss
             )
         }
     }
@@ -70,9 +74,9 @@ private fun VersionCheckerDialog(
 
 @Composable
 private fun VersionCheckerDialog(
-    modifier: Modifier = Modifier,
     version: VersionCheckerViewModel.VersionAvailableUiModel,
     onDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -84,7 +88,8 @@ private fun VersionCheckerDialog(
                     // intercept click behind
                 }
             ).background(
-                color = FloconTheme.colors.ink, shape = FloconTheme.shapes.medium
+                color = FloconTheme.colors.ink,
+                shape = FloconTheme.shapes.medium
             ).padding(horizontal = FloconTheme.spacing.medium, 10.dp)
     ) {
         Column(
@@ -111,7 +116,8 @@ private fun VersionCheckerDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloconButton(
-                    containerColor = FloconTheme.colors.bg100, onClick = {
+                    containerColor = FloconTheme.colors.bg100,
+                    onClick = {
                         uriHandler.openUri(version.link)
                         onDismiss(version)
                     }
@@ -121,7 +127,8 @@ private fun VersionCheckerDialog(
                 FloconOutlinedButton(
                     onClick = {
                         onDismiss(version)
-                    }, borderColor = FloconTheme.colors.bg100
+                    },
+                    borderColor = FloconTheme.colors.bg100
                 ) {
                     Text(stringResource(Res.string.close), color = FloconTheme.colors.bg100)
                 }
