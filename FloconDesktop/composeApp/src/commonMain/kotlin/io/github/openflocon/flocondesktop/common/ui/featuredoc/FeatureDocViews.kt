@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +39,18 @@ import flocondesktop.composeapp.generated.resources.feature_doc_no_device_descri
 import flocondesktop.composeapp.generated.resources.feature_doc_no_device_title
 import flocondesktop.composeapp.generated.resources.feature_doc_open_documentation
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.illustration.FeatureIllustration
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.scene.FeatureScene
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.scene.scene
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconEmptyState
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.resources.stringResource
+
+// the pixel scenes are 50 x 32 pixels, 4 dp each
+private val SceneWidth = 200.dp
+private val SceneHeight = 128.dp
 
 /**
  * Small (i) button, always visible on a page, opening its documentation.
@@ -63,7 +70,7 @@ fun FeatureDocButton(
 }
 
 /**
- * Placeholder displayed when a page has no content: illustration of the feature,
+ * Placeholder displayed when a page has no content: 8-bit scene of the mascot using the feature (or its illustration),
  * a short explanation and a "How to set up" button opening the setup section of its documentation.
  * When the selected device is not connected (see [LocalHasDevice]), a notice below says so.
  */
@@ -80,10 +87,18 @@ fun FeatureEmptyState(
         description = doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
         modifier = modifier,
         illustration = {
-            FeatureIllustration(
-                doc = doc,
-                modifier = Modifier.size(width = illustrationSize.dp, height = (illustrationSize * 0.75f).dp),
-            )
+            val scene = remember(doc) { doc.scene() }
+            if (scene != null) {
+                FeatureScene(
+                    scene = scene,
+                    modifier = Modifier.size(width = SceneWidth, height = SceneHeight),
+                )
+            } else {
+                FeatureIllustration(
+                    doc = doc,
+                    modifier = Modifier.size(width = illustrationSize.dp, height = (illustrationSize * 0.75f).dp),
+                )
+            }
         },
         action = {
             Column(
