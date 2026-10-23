@@ -23,6 +23,7 @@ import org.koin.core.parameter.parametersOf
 fun DatabaseTabQuery(
     tab: DatabaseTabState,
     favoritesTitles: ImmutableSet<String>,
+    modifier: Modifier = Modifier,
 ) {
     val viewModel: DatabaseTabViewModel = koinViewModel(
         key = tab.id,
@@ -57,6 +58,7 @@ fun DatabaseTabQuery(
         state = state,
         lastQueries = lastQueries,
         favoritesTitles = favoritesTitles,
+        modifier = modifier,
     )
 }
 
@@ -69,9 +71,10 @@ private fun DatabaseTabViewContent(
     onAction: (action: DatabaseTabAction) -> Unit,
     state: DatabaseScreenState,
     lastQueries: ImmutableList<String>,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        Modifier.fillMaxSize(),
+        modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         DatabaseQuery(

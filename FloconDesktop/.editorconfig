@@ -18,7 +18,6 @@ ktlint_standard_package-name = disabled
 ktlint_standard_enum-entry-name-case = disabled
 ktlint_standard_kdoc-wrapping = disabled
 ktlint_standard_class-naming = disabled
-ktlint_compose_modifier-missing-check = disabled
 ktlint_compose_param-order-check = disabled
 ktlint_compose_compositionlocal-allowlist = disabled
 ktlint_compose_modifier-not-used-at-root = disabled

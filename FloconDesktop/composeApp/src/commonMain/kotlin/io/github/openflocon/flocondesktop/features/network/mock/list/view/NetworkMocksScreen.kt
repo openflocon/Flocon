@@ -46,7 +46,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NetworkMocksWindow(
-    fromNetworkCallId: String?
+    fromNetworkCallId: String?,
+    modifier: Modifier = Modifier,
 ) {
     val viewModel: NetworkMocksViewModel = koinViewModel()
     LaunchedEffect(viewModel, fromNetworkCallId) {
@@ -57,7 +58,7 @@ fun NetworkMocksWindow(
 
     NetworkMocksContent(
         mocks = mocks,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onAction = viewModel::onAction,
     )
 
