@@ -133,6 +133,8 @@
     <string name="settings_adb_setup_title">Veuillez d’abord configurer ADB, ce champ est obligatoire</string>
     <string name="settings_adb_valid">La configuration ADB est valide</string>
     <string name="settings_font_size_multiplier">Multiplicateur de taille de police : %1$sx</string>
+    <string name="settings_mascot_hide">Renvoyer la mascotte dans sa niche</string>
+    <string name="settings_mascot_show">Faire sortir la mascotte de sa niche</string>
     <string name="settings_mascot_title">Mascotte</string>
     <string name="settings_mascot_description">Un petit chien se promène en haut de la page et suit votre souris. Désactivez-le si vous préférez une interface calme.</string>
     <string name="settings_theme">Thème</string>

@@ -150,6 +150,8 @@
     <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
     <string name="settings_adb_valid">ADB configuration is valid</string>
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
+    <string name="settings_mascot_hide">Send the mascot to its doghouse</string>
+    <string name="settings_mascot_show">Let the mascot out of its doghouse</string>
     <string name="settings_mascot_title">Mascot</string>
     <string name="settings_mascot_description">A little dog walks along the top of the page and follows your mouse. Turn it off if you prefer a quiet interface.</string>
     <string name="settings_theme">Theme</string>
