@@ -267,7 +267,9 @@ fun BadNetworkQualityEditionContent(
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {
                                                 error
-                                            } else it
+                                            } else {
+                                                it
+                                            }
                                         }.toPersistentList()
                                     } else {
                                         errors.adding(error)
@@ -289,7 +291,9 @@ fun BadNetworkQualityEditionContent(
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {
                                                 error
-                                            } else it
+                                            } else {
+                                                it
+                                            }
                                         }.toPersistentList()
                                     } else {
                                         errors.adding(error)

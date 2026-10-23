@@ -7,8 +7,10 @@ import kotlinx.collections.immutable.toPersistentMap
 
 internal fun List<DeviceImageDomainModel>.filterBy(filter: String): List<DeviceImageDomainModel> = if (filter.isEmpty()) {
     this
-} else this.filter {
-    it.url.contains(filter)
+} else {
+    this.filter {
+        it.url.contains(filter)
+    }
 }
 
 internal fun DeviceImageDomainModel.toUi(): ImagesUiModel = ImagesUiModel(

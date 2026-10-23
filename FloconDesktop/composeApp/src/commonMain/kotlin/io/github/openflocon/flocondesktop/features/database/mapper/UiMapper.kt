@@ -25,7 +25,9 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
             selected.tables.map {
                 it.toUi()
             }.toImmutableList()
-        } else null
+        } else {
+            null
+        }
     )
 }
 

@@ -41,7 +41,9 @@ class DeviceDashboardsDataSourceInMemory : DeviceDashboardsDataSource {
         selectedDeviceDashboards.update {
             if (it[dashboardKey] == dashboardId) {
                 it - dashboardKey
-            } else it
+            } else {
+                it
+            }
         }
     }
 

@@ -118,8 +118,9 @@ fun DatabaseResult(
                             .fillMaxSize()
                             .horizontalScroll(rememberScrollState())
                             .onPreviewKeyEvent { event ->
-                                if (event.type != KeyEventType.KeyDown)
+                                if (event.type != KeyEventType.KeyDown) {
                                     return@onPreviewKeyEvent false
+                                }
 
                                 when (event.key) {
                                     Key.DirectionUp -> {
@@ -258,8 +259,9 @@ private fun DatabaseResultRow(
                 modifier = Modifier
                     .width(columnsWidth)
                     .graphicsLayer {
-                        if (item == null)
+                        if (item == null) {
                             alpha = 0.5f
+                        }
                     }
                     .padding(horizontal = FloconTheme.spacing.extraSmall),
             )

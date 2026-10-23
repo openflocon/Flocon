@@ -186,8 +186,9 @@ class ServerJvm(
     }
 
     override fun starHttp(port: Int) {
-        if (httpServer != null)
+        if (httpServer != null) {
             return
+        }
 
         val rootFloconFolder = Paths.get(System.getProperty("user.home"), ".flocon", "Files")
             .absolutePathString()

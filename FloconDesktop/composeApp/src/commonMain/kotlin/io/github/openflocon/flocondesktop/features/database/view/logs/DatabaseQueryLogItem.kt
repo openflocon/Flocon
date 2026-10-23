@@ -25,7 +25,9 @@ fun DatabaseQueryLogItem(
         modifier = modifier.then(
             if (log.isFromOldSession) {
                 Modifier.alpha(0.8f)
-            } else Modifier
+            } else {
+                Modifier
+            }
         ),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {

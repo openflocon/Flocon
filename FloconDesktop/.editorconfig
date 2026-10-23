@@ -13,7 +13,6 @@ ktlint_standard_trailing-comma-on-call-site = disabled
 ktlint_standard_comment-wrapping = disabled
 ktlint_standard_trailing-comma-on-declaration-site = disabled
 ktlint_standard_max-line-length = disabled
-ktlint_standard_multiline-if-else = disabled
 ktlint_standard_package-name = disabled
 ktlint_standard_enum-entry-name-case = disabled
 ktlint_standard_kdoc-wrapping = disabled
