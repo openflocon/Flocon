@@ -36,6 +36,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.library.designsystem)
+            implementation(libs.kotlinx.immutable)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

@@ -223,9 +223,7 @@ private fun NetworkDetailContent(
     var openFilePicker by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(FloconTheme.colors.bg100)
+        modifier = Modifier.fillMaxSize()
     ) {
         // Hidden off-screen full log view for Save full log as Image
         Box(

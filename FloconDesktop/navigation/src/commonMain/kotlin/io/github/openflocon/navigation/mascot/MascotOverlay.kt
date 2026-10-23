@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.app.ui.mascot
+package io.github.openflocon.navigation.mascot
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

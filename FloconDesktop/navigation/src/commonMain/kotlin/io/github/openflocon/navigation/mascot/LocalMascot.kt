@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.app.ui.mascot
+package io.github.openflocon.navigation.mascot
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,4 +52,11 @@ fun Modifier.mascotPlatform(
         onDispose { platforms.unregister(key) }
     }
     return onGloballyPositioned { platforms.register(key, it.boundsInRoot()) }
+}
+
+@Composable
+fun Modifier.mascotPlatform(predicate: () -> Boolean): Modifier = if (predicate()) {
+    mascotPlatform()
+} else {
+    this
 }
