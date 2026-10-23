@@ -50,6 +50,21 @@ class LocalNetworkAddressesTest {
     }
 
     @Test
+    fun `keeps the address of a bluetooth pan joined next to wifi and a vpn`() {
+        // phone tethering over bluetooth hands out 192.168.44.x (usb tethering: 192.168.42.x)
+        val result = filterLocalNetworkAddresses(
+            listOf(
+                candidate("192.168.1.20"),
+                candidate("192.168.44.37"),
+                candidate("100.64.0.5"),
+                candidate("169.254.10.2", isUp = false),
+            )
+        )
+
+        assertEquals(listOf("192.168.1.20", "192.168.44.37"), result)
+    }
+
+    @Test
     fun `site-local check handles range edges and invalid input`() {
         assertTrue(isSiteLocalIpv4("172.31.255.255"))
         assertFalse(isSiteLocalIpv4("172.15.0.1"))
