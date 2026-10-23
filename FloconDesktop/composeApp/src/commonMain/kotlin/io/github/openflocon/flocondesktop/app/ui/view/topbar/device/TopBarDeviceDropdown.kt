@@ -29,7 +29,6 @@ internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
-    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -49,10 +48,7 @@ internal fun TopBarDeviceDropdown(
                     onClick = { expanded = true },
                     modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
                 ) {
-                    TopBarDevice(
-                        device = state.deviceSelected,
-                        detailClick = { onClickDetail(state.deviceSelected) },
-                    )
+                    TopBarDevice(device = state.deviceSelected)
                 }
             },
         ) {
@@ -69,7 +65,6 @@ internal fun TopBarDeviceDropdown(
                         },
                     device = device,
                     selected = isSelected,
-                    detailClick = { onClickDetail(device) },
                     deleteClick = {
                         deleteDevice(device)
                         expanded = false

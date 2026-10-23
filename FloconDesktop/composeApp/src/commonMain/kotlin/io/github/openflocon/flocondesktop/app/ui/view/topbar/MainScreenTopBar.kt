@@ -91,7 +91,6 @@ fun MainScreenTopBar(
             onAppSelected = onAppSelected,
             deleteDevice = deleteDevice,
             deleteApp = deleteApp,
-            onClickDetail = onClickDetail,
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
@@ -101,6 +100,7 @@ fun MainScreenTopBar(
             onRestartClicked = onRestartClicked,
             onOpenFolderClicked = onOpenFolderClicked,
             devicesState = devicesState,
+            onDeviceInfoClicked = { devicesState.deviceSelected?.let(onClickDetail) },
         )
     }
 }

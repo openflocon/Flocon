@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +45,6 @@ internal fun TopBarDevice(
     modifier: Modifier = Modifier,
     selected: Boolean = false,
     deleteClick: (() -> Unit)? = null,
-    detailClick: (() -> Unit)? = null,
 ) {
     val colors = FloconTheme.colors
 
@@ -132,22 +130,6 @@ internal fun TopBarDevice(
                     color = colors.inkFaint,
                     style = FloconTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
-                )
-            }
-        }
-        if (detailClick != null) {
-            Box(
-                Modifier
-                    .clip(FloconTheme.shapes.small)
-                    .background(colors.bg300)
-                    .padding(FloconTheme.spacing.tiny)
-                    .clickable(onClick = detailClick),
-                contentAlignment = Alignment.Center,
-            ) {
-                FloconIcon(
-                    imageVector = Icons.Outlined.Info,
-                    tint = colors.inkMuted,
-                    modifier = Modifier.size(14.dp)
                 )
             }
         }

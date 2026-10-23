@@ -35,7 +35,6 @@ internal fun TopBarDeviceAndApp(
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
-    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -55,7 +54,6 @@ internal fun TopBarDeviceAndApp(
                 state = devicesState,
                 onDeviceSelected = onDeviceSelected,
                 deleteDevice = deleteDevice,
-                onClickDetail = onClickDetail,
             )
 
             AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {
