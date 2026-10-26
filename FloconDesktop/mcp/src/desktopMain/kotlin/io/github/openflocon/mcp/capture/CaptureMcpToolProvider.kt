@@ -10,10 +10,12 @@ import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.addTypedToolWithResult
 import io.github.openflocon.mcp.hasExplicitTarget
 import io.github.openflocon.mcp.mcpOutputJson
+import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ImageContent
 import io.modelcontextprotocol.kotlin.sdk.types.TextContent
+import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,6 +25,7 @@ import java.util.Base64
 
 internal class CaptureMcpToolProvider(
     private val screenCapturer: ScreenCapturer,
+    private val windowCapturer: FloconWindowCapturer,
     private val targetResolver: McpTargetResolver,
 ) : McpToolProvider {
 
@@ -46,6 +49,19 @@ internal class CaptureMcpToolProvider(
             annotations = writeToolAnnotations(destructive = false, idempotent = false),
             handler = ::takeScreenshot,
         )
+
+        server.addLoggedTool(
+            name = "take_flocon_screenshot",
+            title = "Take Flocon screenshot",
+            description = "Returns an image of what the Flocon desktop app currently displays (the screen selected in Flocon: " +
+                "network calls, database, analytics...), not the screen of the device: use take_screenshot for the device. " +
+                "Only the visible content of the window is captured, and the image may be scaled down. " +
+                "Nothing is saved on the computer.",
+            inputSchema = ToolSchema(),
+            annotations = readOnlyToolAnnotations,
+        ) {
+            takeFloconScreenshot()
+        }
 
         server.addTypedTool(
             name = "start_screen_recording",
@@ -88,6 +104,23 @@ internal class CaptureMcpToolProvider(
             content = listOfNotNull(
                 TextContent(text = mcpOutputJson.encodeToString(result)),
                 bytes?.let { ImageContent(data = Base64.getEncoder().encodeToString(it), mimeType = "image/png") },
+            ),
+            isError = false,
+        )
+    }
+
+    private suspend fun takeFloconScreenshot(): CallToolResult {
+        val capture = windowCapturer.capture().fold(
+            doOnFailure = { throw McpToolException("Unable to capture the Flocon window: ${it.message ?: it::class.simpleName}") },
+            doOnSuccess = { it },
+        )
+        if (capture.pngBytes.size > MAX_IMAGE_BYTES) {
+            throw McpToolException("The capture of the Flocon window is too big to be returned (${capture.pngBytes.size} bytes).")
+        }
+        return CallToolResult(
+            content = listOf(
+                TextContent(text = mcpOutputJson.encodeToString(FloconScreenshotMcpResult(width = capture.width, height = capture.height))),
+                ImageContent(data = Base64.getEncoder().encodeToString(capture.pngBytes), mimeType = "image/png"),
             ),
             isError = false,
         )

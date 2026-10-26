@@ -19,6 +19,8 @@ import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
+import io.github.openflocon.flocondesktop.app.capture.WindowCaptureController
+import io.github.openflocon.flocondesktop.app.capture.WindowCaptureHost
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.flocondesktop.common.di.commonModule
@@ -80,7 +82,9 @@ fun App() {
             appScale = appScale.toAppScale(),
             isDarkTheme = isDarkTheme,
         ) {
-            AppScreen()
+            WindowCaptureHost(controller = koinInject<WindowCaptureController>()) {
+                AppScreen()
+            }
         }
 //        }
     }

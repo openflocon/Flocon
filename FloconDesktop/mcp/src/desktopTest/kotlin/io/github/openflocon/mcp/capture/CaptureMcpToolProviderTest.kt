@@ -61,12 +61,25 @@ class CaptureMcpToolProviderTest {
         }
     }
 
+    private class FakeWindowCapturer : FloconWindowCapturer {
+        var result: Either<Throwable, FloconWindowCapture> =
+            Success(FloconWindowCapture(pngBytes = byteArrayOf(1, 2, 3), width = 800, height = 600))
+        var captures = 0
+
+        override suspend fun capture(): Either<Throwable, FloconWindowCapture> {
+            captures++
+            return result
+        }
+    }
+
     private val capturer = FakeCapturer(screenshotFile)
+    private val windowCapturer = FakeWindowCapturer()
 
     private val server = McpTestServer(
         toolProviders = listOf(
             CaptureMcpToolProvider(
                 screenCapturer = capturer,
+                windowCapturer = windowCapturer,
                 targetResolver = targetResolver(devicesRepository),
             ),
         ),
@@ -83,15 +96,59 @@ class CaptureMcpToolProviderTest {
     }
 
     @Test
-    fun `the capture tools act on the device so none is read only`() = runBlocking {
+    fun `the device capture tools act on the device so none is read only`() = runBlocking {
         val tools = server.listTools()
 
         assertEquals(
-            setOf("take_screenshot", "start_screen_recording", "stop_screen_recording"),
+            setOf("take_screenshot", "take_flocon_screenshot", "start_screen_recording", "stop_screen_recording"),
             tools.map { it.name }.toSet(),
         )
-        assertTrue(tools.none { it.annotations?.readOnlyHint == true })
+        val deviceTools = tools.filter { it.name != "take_flocon_screenshot" }
+        assertTrue(deviceTools.none { it.annotations?.readOnlyHint == true })
         assertTrue(tools.all { it.annotations?.destructiveHint == false })
+    }
+
+    @Test
+    fun `take_flocon_screenshot only reads Flocon`() = runBlocking {
+        val tool = server.listTools().single { it.name == "take_flocon_screenshot" }
+
+        assertEquals(true, tool.annotations?.readOnlyHint)
+    }
+
+    @Test
+    fun `take_flocon_screenshot returns the size and the image`() = runBlocking {
+        val result = server.callTool("take_flocon_screenshot")
+
+        assertEquals(false, result.isError)
+        val text = assertIs<TextContent>(result.content[0])
+        val json = Json.parseToJsonElement(text.text).jsonObject
+        assertEquals("800", json["width"]!!.jsonPrimitive.content)
+        assertEquals("600", json["height"]!!.jsonPrimitive.content)
+        val image = assertIs<ImageContent>(result.content[1])
+        assertEquals("image/png", image.mimeType)
+        assertEquals("AQID", image.data)
+        assertEquals(1, windowCapturer.captures)
+        assertTrue(capturer.screenshotTargets.isEmpty())
+    }
+
+    @Test
+    fun `take_flocon_screenshot returns an error when the capture fails`() = runBlocking {
+        windowCapturer.result = Failure(IllegalStateException("window not displayed"))
+
+        val result = server.callTool("take_flocon_screenshot")
+
+        assertEquals(true, result.isError)
+    }
+
+    @Test
+    fun `take_flocon_screenshot returns an error when the image is too big to be returned`() = runBlocking {
+        windowCapturer.result = Success(
+            FloconWindowCapture(pngBytes = ByteArray(6 * 1024 * 1024), width = 4000, height = 3000),
+        )
+
+        val result = server.callTool("take_flocon_screenshot")
+
+        assertEquals(true, result.isError)
     }
 
     @Test

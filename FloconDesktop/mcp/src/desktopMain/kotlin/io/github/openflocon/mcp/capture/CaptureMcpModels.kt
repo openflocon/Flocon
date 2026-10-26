@@ -13,6 +13,13 @@ internal data class ScreenshotMcpResult(
 )
 
 @Serializable
+internal data class FloconScreenshotMcpResult(
+    /** Size in pixels of the returned image, which may be scaled down */
+    val width: Int,
+    val height: Int,
+)
+
+@Serializable
 internal data class StartScreenRecordingMcpResult(
     val deviceId: String,
     val packageName: String,

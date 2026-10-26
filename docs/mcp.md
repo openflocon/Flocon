@@ -280,6 +280,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
+| `take_flocon_screenshot` | Image of what the Flocon Desktop window currently displays (not the device screen). Only the visible content is captured, scaled down if it is too big, and nothing is saved on your computer. |
 
 ---
 
