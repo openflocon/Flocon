@@ -40,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previ
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -111,7 +112,8 @@ fun SharedPrefScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100),
+                    .background(FloconTheme.colors.bg100)
+                    .mascotPlatform()
             )
         } else {
             Row(Modifier.fillMaxSize()) {
@@ -136,6 +138,7 @@ fun SharedPrefScreen(
                                 color = FloconTheme.colors.bg200,
                                 shape = FloconTheme.shapes.medium
                             )
+                            .mascotPlatform()
                     ) {
                         Column(
                             modifier = Modifier

@@ -44,6 +44,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.toImmutableMap
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -102,7 +103,8 @@ private fun DeeplinkScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100),
+                    .background(FloconTheme.colors.bg100)
+                    .mascotPlatform(),
             )
         } else {
             // Main body — two rows of equal weight
@@ -124,7 +126,8 @@ private fun DeeplinkScreen(
                             .weight(0.3f)
                             .fillMaxHeight()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100),
+                            .background(FloconTheme.colors.bg100)
+                            .mascotPlatform(),
                     ) {
                         items(state.variables) { item ->
                             DeeplinkVariableChip(
@@ -141,7 +144,8 @@ private fun DeeplinkScreen(
                             .weight(0.7f)
                             .fillMaxHeight()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100),
+                            .background(FloconTheme.colors.bg100)
+                            .mascotPlatform(),
                     ) {
                         items(deepLinks) { item ->
                             DeeplinkRow(

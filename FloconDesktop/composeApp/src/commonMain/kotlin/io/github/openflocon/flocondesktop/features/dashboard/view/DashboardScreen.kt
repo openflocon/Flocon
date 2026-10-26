@@ -35,6 +35,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -121,7 +122,8 @@ fun DashboardScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100),
+                        .background(FloconTheme.colors.bg100)
+                        .mascotPlatform()
                 )
             } else {
                 Row(Modifier.fillMaxSize()) {
@@ -142,6 +144,7 @@ fun DashboardScreen(
                                 .fillMaxSize()
                                 .clip(FloconTheme.shapes.medium)
                                 .background(FloconTheme.colors.bg100)
+                                .mascotPlatform()
                                 .padding(all = FloconTheme.spacing.small),
                             viewState = state,
                             onClickButton = onClickButton,

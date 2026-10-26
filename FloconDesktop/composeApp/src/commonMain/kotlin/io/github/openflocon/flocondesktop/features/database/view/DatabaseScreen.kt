@@ -27,6 +27,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabSta
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTables
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import org.koin.compose.viewmodel.koinViewModel
@@ -75,7 +76,8 @@ fun DatabaseScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100),
+                    .background(FloconTheme.colors.bg100)
+                    .mascotPlatform()
             )
         } else {
             Row(Modifier.fillMaxSize()) {
