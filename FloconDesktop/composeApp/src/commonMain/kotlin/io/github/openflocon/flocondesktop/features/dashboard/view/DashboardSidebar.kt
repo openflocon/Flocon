@@ -43,6 +43,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboa
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -63,6 +64,7 @@ fun DashboardSidebar(
                 color = borderColor,
                 shape = FloconTheme.shapes.medium
             )
+            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()

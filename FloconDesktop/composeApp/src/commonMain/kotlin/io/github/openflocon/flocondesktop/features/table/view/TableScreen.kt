@@ -51,6 +51,7 @@ import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -93,11 +94,12 @@ fun TableScreen(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             selector = {
                 TableSelector(
                     tablesState = deviceTables,

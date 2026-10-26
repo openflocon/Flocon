@@ -104,8 +104,8 @@ data class MenuScene(
                             .width(width)
                             .fillMaxHeight()
                             .floconIsland(FloconTheme.colors.islandSidebar)
-                            .padding(FloconTheme.spacing.small)
-                            .mascotPlatform(platforms = mascotPlatforms),
+                            .mascotPlatform(platforms = mascotPlatforms)
+                            .padding(FloconTheme.spacing.small),
                     ) {
                         menuContent(expanded) { expanded = !expanded }
                     }

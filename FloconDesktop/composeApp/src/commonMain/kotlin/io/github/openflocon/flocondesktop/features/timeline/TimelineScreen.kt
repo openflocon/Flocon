@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,6 +51,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,7 +81,6 @@ fun TimelineScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TimelineContent(
     rows: LazyPagingItems<TimelineItemUiModel>,
@@ -109,7 +108,7 @@ internal fun TimelineContent(
         modifier = modifier
             .background(colors.bg100, panelShape)
             .border(1.dp, colors.line, panelShape)
-            // no bottom padding: the list scrolls through it with its content padding
+            .mascotPlatform()
             .padding(start = FloconTheme.spacing.large, top = FloconTheme.spacing.large, end = FloconTheme.spacing.large)
             .focusRequester(screenFocus)
             .focusable()

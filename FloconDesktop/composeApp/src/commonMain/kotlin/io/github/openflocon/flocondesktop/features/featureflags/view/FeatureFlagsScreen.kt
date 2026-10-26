@@ -43,6 +43,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -125,6 +126,7 @@ fun FeatureFlagsScreen(
                     color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
+                .mascotPlatform()
         ) {
             if (providersState is FeatureFlagProvidersUiModel.Empty) {
                 FeatureEmptyState(

@@ -45,6 +45,7 @@ import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashRepo
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportDetail
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,7 +85,8 @@ private fun CrashReportScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100),
+                    .background(FloconTheme.colors.bg100)
+                    .mascotPlatform()
             )
         } else {
             Row(Modifier.fillMaxSize()) {
@@ -108,6 +110,7 @@ private fun CrashReportScreen(
                             color = FloconTheme.colors.bg200,
                             shape = FloconTheme.shapes.medium
                         )
+                        .mascotPlatform()
                 ) {
                     selected?.let {
                         CrashReportDetail(
@@ -145,6 +148,7 @@ fun LeftPannel(
                 color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             )
+            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()
