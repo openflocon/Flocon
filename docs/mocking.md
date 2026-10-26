@@ -29,6 +29,8 @@ Add the appropriate network interceptor to your project depending on your networ
     Add dependencies:
     ```kotlin
     dependencies {
+        // OkHttp 4.12+ or 5.x, declared by your app: Flocon does not bring it
+        implementation("com.squareup.okhttp3:okhttp:OKHTTP_VERSION")
         debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
         releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }

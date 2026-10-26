@@ -17,8 +17,8 @@ kotlin {
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.core)
 
-            implementation(dependencies.platform(libs.okhttp4.bom))
-            implementation(libs.okhttp4)
+            // OkHttp is provided by the app (4.12+ or 5.x): Flocon does not impose any version.
+            compileOnly(libs.okhttp4)
 
             implementation(libs.brotli.dec)
         }
@@ -26,6 +26,11 @@ kotlin {
         androidMain.dependencies {
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.android)
+        }
+
+        jvmTest.dependencies {
+            // compileOnly is not on the test classpath
+            implementation(libs.okhttp4)
         }
 
     }

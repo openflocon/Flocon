@@ -62,6 +62,8 @@ Flocon also includes a built-in network conditioner to simulate real-world condi
 
     ```kotlin
     dependencies {
+        // OkHttp 4.12+ or 5.x, declared by your app: Flocon does not bring it
+        implementation("com.squareup.okhttp3:okhttp:OKHTTP_VERSION")
         debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
         releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }
@@ -76,9 +78,9 @@ val okHttpClient = OkHttpClient.Builder()
 ```
 
 !!! note "OkHttp version"
-    Flocon is compatible with OkHttp **4.12+ and 5.x**. It declares OkHttp 4.12.0 as its minimum version,
-    so your app keeps the OkHttp version it already uses: Gradle resolves the highest version in your dependency graph
-    (OkHttp 5.x if your app uses it, 4.12.0 otherwise).
+    The interceptor is compatible with OkHttp **4.12+ and 5.x**. It does not bring OkHttp itself:
+    your app must declare the OkHttp dependency (you already do if you use an `OkHttpClient`),
+    so Flocon never changes the OkHttp version you use.
 
 ---
 

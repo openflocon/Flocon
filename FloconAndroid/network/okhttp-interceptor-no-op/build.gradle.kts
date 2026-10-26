@@ -14,8 +14,8 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.network.coreNoOp)
 
-            implementation(dependencies.platform(libs.okhttp4.bom))
-            implementation(libs.okhttp4)
+            // OkHttp is provided by the app (4.12+ or 5.x): Flocon does not impose any version.
+            compileOnly(libs.okhttp4)
         }
     }
 }
