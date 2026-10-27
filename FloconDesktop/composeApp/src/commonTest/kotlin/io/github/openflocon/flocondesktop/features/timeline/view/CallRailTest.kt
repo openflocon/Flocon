@@ -34,4 +34,28 @@ class CallRailTest {
     fun `nothing is drawn when none of the two lines is displayed`() {
         assertNull(callRailSpan(upperCenter = null, lowerCenter = null, viewportHeight = 600f))
     }
+
+    private val keys = listOf("a", "response", "b", "c", "request", "d")
+
+    @Test
+    fun `the items between the two lines of a call lose their rail`() {
+        assertEquals(setOf("b", "c"), keysBetween(keys, upperKey = "response", lowerKey = "request"))
+    }
+
+    @Test
+    fun `two adjacent lines have nothing between them`() {
+        assertEquals(emptySet(), keysBetween(listOf("response", "request"), upperKey = "response", lowerKey = "request"))
+    }
+
+    @Test
+    fun `an end scrolled out of the list is the edge of the list`() {
+        assertEquals(setOf("b", "c", "request", "d"), keysBetween(keys, upperKey = "response", lowerKey = "gone"))
+        assertEquals(setOf("a", "response", "b", "c"), keysBetween(keys, upperKey = "gone", lowerKey = "request"))
+    }
+
+    @Test
+    fun `nothing loses its rail without a response or without a displayed line`() {
+        assertEquals(emptySet(), keysBetween(keys, upperKey = null, lowerKey = "request"))
+        assertEquals(emptySet(), keysBetween(keys, upperKey = "gone", lowerKey = "gone-too"))
+    }
 }

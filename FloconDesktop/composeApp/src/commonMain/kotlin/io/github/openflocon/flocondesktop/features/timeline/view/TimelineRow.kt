@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -84,6 +84,7 @@ internal fun TimelineRow(
     delta: String?,
     selected: Boolean,
     hovered: Boolean,
+    railHidden: Boolean,
     onClick: (TimelineRowUiModel) -> Unit,
     onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -132,8 +133,18 @@ internal fun TimelineRow(
             delta = delta,
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
-        // the rail only appears when a call is hovered, see CallRail: its column keeps the others aligned
-        Spacer(Modifier.width(FloconTheme.sizes.markerColumn))
+        Rail(
+            color = color,
+            haloColor = if (highlighted) colors.bg300 else colors.bg100,
+            outerHaloColor = if (isCrash) soft else null,
+            // the line goes through the padding and the gap between two rows
+            overflow = spacing.tiny + spacing.tiny,
+            // replaced by the bar of the hovered call, see CallRail
+            visible = !railHidden,
+            modifier = Modifier
+                .width(FloconTheme.sizes.markerColumn)
+                .fillMaxHeight(),
+        )
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
             EventBadge(source = row.source)
         }
@@ -181,7 +192,12 @@ internal fun Rail(
     overflow: Dp,
     modifier: Modifier = Modifier,
     outerHaloColor: Color? = null,
+    visible: Boolean = true, // false: nothing is drawn, the column keeps its size
 ) {
+    if (!visible) {
+        Box(modifier)
+        return
+    }
     val line = FloconTheme.colors.line
     Box(
         modifier = modifier.drawBehind {
