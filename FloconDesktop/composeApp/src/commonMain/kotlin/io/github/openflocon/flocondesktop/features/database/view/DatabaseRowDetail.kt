@@ -67,10 +67,7 @@ fun DatabaseRowDetail(
     val scope = rememberCoroutineScope()
     val feedbackDisplayer = koinInject<FeedbackDisplayer>()
 
-    Box(
-        modifier
-            .background(FloconTheme.colors.bg100)
-    ) {
+    Box(modifier) {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
