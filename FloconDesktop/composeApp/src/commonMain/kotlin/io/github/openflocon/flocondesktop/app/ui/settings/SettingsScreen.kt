@@ -83,6 +83,8 @@ import flocondesktop.composeapp.generated.resources.settings_documents_descripti
 import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
 import flocondesktop.composeapp.generated.resources.settings_licenses_description
 import flocondesktop.composeapp.generated.resources.settings_mascot_description
+import flocondesktop.composeapp.generated.resources.settings_mascot_hide
+import flocondesktop.composeapp.generated.resources.settings_mascot_show
 import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
@@ -106,6 +108,8 @@ import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconDoghouse
+import io.github.openflocon.library.designsystem.components.FloconDoghouseWidth
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -680,10 +684,24 @@ private fun AppearancePane(
             icon = Icons.Outlined.Pets,
             description = stringResource(Res.string.settings_mascot_description)
         ) {
-            FloconSwitch(
-                checked = mascotEnabled,
-                onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
-            )
+            // the dog is out when the mascot is on, it sleeps in its doghouse when it is off
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+            ) {
+                FloconDoghouse(
+                    expanded = mascotEnabled,
+                    onToggleExpanded = { onAction(SettingsAction.MascotEnabledChange(!mascotEnabled)) },
+                    contentDescription = stringResource(
+                        if (mascotEnabled) Res.string.settings_mascot_hide else Res.string.settings_mascot_show,
+                    ),
+                    modifier = Modifier.width(FloconDoghouseWidth),
+                )
+                FloconSwitch(
+                    checked = mascotEnabled,
+                    onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
+                )
+            }
         }
     }
 }
