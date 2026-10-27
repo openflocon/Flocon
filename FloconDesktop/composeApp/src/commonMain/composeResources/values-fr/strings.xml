@@ -20,6 +20,9 @@
     <string name="deeplink_removed">Deeplink retiré de l’historique</string>
     <string name="devices_connected">Connecté</string>
     <string name="devices_disconnected">Déconnecté</string>
+    <string name="device_platform_android">ANDROID</string>
+    <string name="device_platform_ios">IOS</string>
+    <string name="device_platform_desktop">DESKTOP</string>
     <string name="download">Télécharger</string>
     <string name="error_exporting_csv">Erreur lors de l’export du CSV</string>
     <string name="export_csv">Exporter en CSV</string>
