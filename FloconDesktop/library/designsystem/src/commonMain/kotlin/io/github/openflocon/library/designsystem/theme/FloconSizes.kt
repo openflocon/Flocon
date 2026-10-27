@@ -21,7 +21,7 @@ data class FloconSizes(
     val markerColumn: Dp = 22.dp,
     val categoryColumn: Dp = 104.dp,
     val sidePanelWidth: Dp = 280.dp,
-    val deviceDropdownWidth: Dp = 220.dp,
+    val deviceDropdownWidth: Dp = 300.dp,
     val appDropdownWidth: Dp = 300.dp,
     val topBarButton: Dp = 36.dp,
     val columnToggle: Dp = 56.dp,

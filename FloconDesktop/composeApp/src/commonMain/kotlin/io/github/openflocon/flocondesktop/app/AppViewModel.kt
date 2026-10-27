@@ -17,6 +17,7 @@ import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCas
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.usecase.GetLocalNetworkAddressesUseCase
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
@@ -47,7 +48,9 @@ import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,7 +84,11 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
+    getLocalNetworkAddressesUseCase: GetLocalNetworkAddressesUseCase,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
+
+    // bare ips: this is what goes in FloconConnectionMode.Url(host = ...), without scheme nor port
+    private val localUrls = getLocalNetworkAddressesUseCase().toImmutableList()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -120,7 +127,8 @@ internal class AppViewModel(
             menuState = menu,
             deviceState = devices,
             appState = apps,
-            recordState = record
+            recordState = record,
+            localUrls = localUrls,
         )
     }
         .stateInWhileSubscribed(
@@ -129,7 +137,8 @@ internal class AppViewModel(
                 menuState = menuState.value,
                 deviceState = devicesDelegate.devicesState.value,
                 appState = devicesDelegate.appsState.value,
-                recordState = recordVideoDelegate.state.value
+                recordState = recordVideoDelegate.state.value,
+                localUrls = localUrls,
             )
         )
 
@@ -200,6 +209,8 @@ internal class AppViewModel(
             is AppAction.ToggleSection -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 toggleCollapsedMenuSectionUseCase(action.sectionId)
             }
+
+            is AppAction.CopyLocalUrl -> copyToClipboard(action.url)
 
             is AppAction.DeleteApp -> deleteApp(action)
 

@@ -13,6 +13,7 @@ interface DevicesRepository {
     val devices: Flow<List<DeviceDomainModel>>
     val currentDeviceId: Flow<DeviceId?>
     val activeDevices: Flow<Set<DeviceIdAndPackageNameDomainModel>> // devices with active websocket connection
+    val activeAddresses: Flow<Map<DeviceId, String>> // remote host of the active websocket of each device
 
     suspend fun getCurrentDeviceId(): DeviceId?
 

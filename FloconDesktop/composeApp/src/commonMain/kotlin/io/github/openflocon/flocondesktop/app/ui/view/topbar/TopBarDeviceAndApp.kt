@@ -26,6 +26,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.app.TopBarAppDropdown
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.device.TopBarDeviceDropdown
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun TopBarDeviceAndApp(
@@ -35,6 +36,8 @@ internal fun TopBarDeviceAndApp(
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
+    localUrls: ImmutableList<String>,
+    onCopyLocalUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -54,6 +57,8 @@ internal fun TopBarDeviceAndApp(
                 state = devicesState,
                 onDeviceSelected = onDeviceSelected,
                 deleteDevice = deleteDevice,
+                localUrls = localUrls,
+                onCopyLocalUrl = onCopyLocalUrl,
             )
 
             AnimatedVisibility(devicesState is DevicesStateUiModel.WithDevices) {

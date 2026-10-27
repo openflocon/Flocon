@@ -102,6 +102,8 @@ private fun Content(
                             devicesState = uiState.deviceState,
                             appsState = uiState.appState,
                             recordState = uiState.recordState,
+                            localUrls = uiState.localUrls,
+                            onCopyLocalUrl = { onAction(AppAction.CopyLocalUrl(it)) },
                             deleteApp = { onAction(AppAction.DeleteApp(it)) },
                             deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
                             onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },

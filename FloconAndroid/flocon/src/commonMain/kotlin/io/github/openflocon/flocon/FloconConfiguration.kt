@@ -18,6 +18,11 @@ class FloconConfiguration internal constructor(
     private var serializerModule = SerializersModule {}
 
     /**
+     * How the app reaches the desktop. [FloconConnectionMode.Adb] by default.
+     */
+    var connectionMode: FloconConnectionMode = FloconConnectionMode.Adb
+
+    /**
      * Install a plugin with the given [factory] and optional [configure] block.
      */
     fun <Config : FloconPluginConfig, Plugin : FloconPlugin> install(
@@ -74,8 +79,9 @@ fun startFlocon(
     val encoder = FloconEncoder(module = configuration.encoding())
 
     client.setupEncoder(encoder)
+    client.setupConnection(configuration.connectionMode)
 
-    Flocon(
+    Flocon.instance = Flocon(
         config = config,
         plugins = configuration.build(encoder),
         encoder = encoder

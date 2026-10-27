@@ -1,11 +1,15 @@
 package com.flocon.sample.android
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.ContextCompat
 import com.flocon.sample.android.grpc.GrpcController
+import io.github.openflocon.flocon.FloconConnectionMode
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.analytics.FloconAnalytics
@@ -47,7 +51,12 @@ class MainActivity : ComponentActivity() {
 
         FloconLogger.enabled = true
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK), 0)
+        }
+
         startFlocon(FloconContext(this)) {
+            connectionMode = FloconConnectionMode.Url("192.168.1.81")
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")

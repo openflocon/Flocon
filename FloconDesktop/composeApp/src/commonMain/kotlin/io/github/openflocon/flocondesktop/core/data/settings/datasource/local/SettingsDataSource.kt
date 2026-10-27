@@ -33,6 +33,10 @@ internal interface SettingsDataSource {
     fun getLastSeenReleaseNotesVersion(): String?
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 
+    // deviceId -> name of the DeviceConnectionTypeDomainModel it last connected with
+    val deviceConnectionTypes: Flow<Map<String, String>>
+    suspend fun setDeviceConnectionTypes(types: Map<String, String>)
+
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
 

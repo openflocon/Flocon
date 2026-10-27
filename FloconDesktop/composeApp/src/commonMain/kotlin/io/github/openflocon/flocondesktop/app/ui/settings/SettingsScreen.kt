@@ -68,6 +68,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_clear
+import flocondesktop.composeapp.generated.resources.general_copy
 import flocondesktop.composeapp.generated.resources.general_copy_all
 import flocondesktop.composeapp.generated.resources.general_open_folder
 import flocondesktop.composeapp.generated.resources.general_pick
@@ -76,9 +77,14 @@ import flocondesktop.composeapp.generated.resources.general_save
 import flocondesktop.composeapp.generated.resources.settings_adb_configuration
 import flocondesktop.composeapp.generated.resources.settings_adb_description
 import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
-import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
+import flocondesktop.composeapp.generated.resources.settings_connection_adb_title
+import flocondesktop.composeapp.generated.resources.settings_connection_title
+import flocondesktop.composeapp.generated.resources.settings_connection_url_description
+import flocondesktop.composeapp.generated.resources.settings_connection_url_empty
+import flocondesktop.composeapp.generated.resources.settings_connection_url_hint
+import flocondesktop.composeapp.generated.resources.settings_connection_url_title
 import flocondesktop.composeapp.generated.resources.settings_documents_description
 import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
 import flocondesktop.composeapp.generated.resources.settings_licenses_description
@@ -98,6 +104,7 @@ import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
+import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -243,6 +250,8 @@ private fun SettingsScreen(
                     testAdbPath = testAdbPath,
                     needsAdbSetup = needsAdbSetup,
                     adbForwardStatus = uiState.adbForwardStatus,
+                    localAddresses = uiState.localAddresses,
+                    onAction = onAction,
                 )
 
                 SettingsTab.Appearance -> AppearancePane(
@@ -460,6 +469,8 @@ private fun AdbPane(
     testAdbPath: () -> Unit,
     needsAdbSetup: Boolean,
     adbForwardStatus: AdbForwardStatus,
+    localAddresses: ImmutableList<String>,
+    onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -549,33 +560,116 @@ private fun AdbPane(
         }
 
         SettingsCard(
-            title = stringResource(Res.string.settings_adb_reverse_forwarding),
+            title = stringResource(Res.string.settings_connection_title),
             icon = Icons.Outlined.Cable,
-            description = stringResource(Res.string.settings_reverse_forwarding_description)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FloconTheme.shapes.small)
-                    .background(FloconTheme.colors.bg200)
-                    .padding(FloconTheme.spacing.medium)
+            ConnectionBlock(
+                title = stringResource(Res.string.settings_connection_adb_title),
+                description = stringResource(Res.string.settings_reverse_forwarding_description),
             ) {
-                AdbForwardStatusBadge(status = adbForwardStatus)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.small)
+                        .background(FloconTheme.colors.bg200)
+                        .padding(FloconTheme.spacing.medium)
+                ) {
+                    AdbForwardStatusBadge(status = adbForwardStatus)
 
+                    Text(
+                        text = when (adbForwardStatus) {
+                            AdbForwardStatus.OK -> "Reverse port forwarding is active and healthy."
+                            AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
+                            AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
+                        },
+                        color = FloconTheme.colors.inkMuted,
+                        style = FloconTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            ConnectionBlock(
+                title = stringResource(Res.string.settings_connection_url_title),
+                description = stringResource(Res.string.settings_connection_url_description),
+            ) {
+                if (localAddresses.isEmpty()) {
+                    Text(
+                        text = stringResource(Res.string.settings_connection_url_empty),
+                        color = FloconTheme.colors.inkMuted,
+                        style = FloconTheme.typography.bodySmall,
+                    )
+                } else {
+                    localAddresses.forEach { address ->
+                        LocalUrlRow(
+                            url = "ws://$address:${Constant.SERVER_WEBSOCKET_PORT}",
+                            onCopy = { onAction(SettingsAction.CopyLocalUrl(it)) },
+                        )
+                    }
+                }
                 Text(
-                    text = when (adbForwardStatus) {
-                        AdbForwardStatus.OK -> "Reverse port forwarding is active and healthy."
-                        AdbForwardStatus.NOK -> "Connection failed. Please ensure ADB is configured correctly and your device is connected."
-                        AdbForwardStatus.UNKNOWN -> "Status unknown. Waiting for device or forwarding loop to initialize."
-                    },
+                    text = stringResource(Res.string.settings_connection_url_hint),
                     color = FloconTheme.colors.inkMuted,
                     style = FloconTheme.typography.bodySmall,
-                    modifier = Modifier.weight(1f)
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ConnectionBlock(
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            style = FloconTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = FloconTheme.colors.ink,
+        )
+        Text(
+            text = description,
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+        content()
+    }
+}
+
+@Composable
+private fun LocalUrlRow(
+    url: String,
+    onCopy: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(FloconTheme.shapes.small)
+            .background(FloconTheme.colors.bg200)
+            .padding(FloconTheme.spacing.medium)
+    ) {
+        Text(
+            text = url,
+            color = FloconTheme.colors.ink,
+            style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+            modifier = Modifier.weight(1f)
+        )
+        SettingsButton(
+            text = stringResource(Res.string.general_copy),
+            onClick = { onCopy(url) },
+        )
     }
 }
 

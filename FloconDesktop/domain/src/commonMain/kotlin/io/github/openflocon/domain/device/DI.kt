@@ -9,6 +9,7 @@ import io.github.openflocon.domain.device.usecase.HandleDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
+import io.github.openflocon.domain.device.usecase.ObserveActiveDeviceAddressesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
@@ -16,9 +17,11 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkV
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
+import io.github.openflocon.domain.device.usecase.ObserveDeviceConnectionTypesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCase
+import io.github.openflocon.domain.device.usecase.RememberDeviceConnectionTypesUseCase
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
@@ -35,6 +38,9 @@ internal val deviceModule = module {
     factoryOf(::HandleNewDeviceUseCase)
     factoryOf(::ObserveCurrentDeviceIdUseCase)
     factoryOf(::ObserveActiveDevicesUseCase)
+    factoryOf(::ObserveActiveDeviceAddressesUseCase)
+    factoryOf(::ObserveDeviceConnectionTypesUseCase)
+    factoryOf(::RememberDeviceConnectionTypesUseCase)
     factoryOf(::ObserveCurrentDeviceAppsUseCase)
     factoryOf(::ObserveCurrentDeviceIdAndPackageNameUseCase)
     factoryOf(::ObserveDevicesUseCase)

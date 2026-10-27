@@ -14,6 +14,7 @@ import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.server.plugins.origin
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.post
@@ -28,6 +29,7 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -59,6 +61,16 @@ class ServerJvm(
     override val activeDevices = activeSessions.map { it.keys }
         .distinctUntilChanged()
 
+    // remote host of each open websocket, loopback for adb reverse, the device ip otherwise
+    private val sessionHosts = MutableStateFlow(emptyMap<WebSocketSession, String>())
+
+    override val activeAddresses = combine(activeSessions, sessionHosts) { sessions, hosts ->
+        sessions.entries
+            .mapNotNull { (device, session) -> hosts[session]?.let { device.deviceId to it } }
+            .toMap()
+    }
+        .distinctUntilChanged()
+
     private var httpServer: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? =
         null
 
@@ -77,6 +89,8 @@ class ServerJvm(
                         Logger.d("WebSocket connection established!")
                         val currentSession =
                             this // Store the current session to use in finally block
+                        val remoteHost = call.request.origin.remoteHost
+                        sessionHosts.update { it + (currentSession to remoteHost) }
 
                         // Use a try-catch block to handle the exception when the channel is closed.
                         try {
@@ -137,6 +151,7 @@ class ServerJvm(
                             activeSessions.update { map ->
                                 map.filterValues { it != currentSession }
                             }
+                            sessionHosts.update { it - currentSession }
                             Logger.d("WebSocket : Session removed from active sessions.")
                         }
                     }

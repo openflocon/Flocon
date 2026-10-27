@@ -8,6 +8,7 @@ import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataSource
 import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,8 @@ class DeviceRemoteDataSourceImpl(
                 )
             }.toSet()
         }.distinctUntilChanged()
+
+    override val activeAddresses: Flow<Map<DeviceId, String>> = server.activeAddresses
 
     override fun getDeviceSerial(message: FloconIncomingMessageDomainModel): String? = json.safeDecodeFromString<RegisterDeviceDataModel>(message.body)
         ?.serial

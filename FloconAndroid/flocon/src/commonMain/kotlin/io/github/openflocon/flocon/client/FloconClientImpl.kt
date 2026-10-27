@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.client
 
 import io.github.openflocon.flocon.FloconApp
+import io.github.openflocon.flocon.FloconConnectionMode
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
 import io.github.openflocon.flocon.core.FloconEncoder
@@ -19,6 +20,7 @@ import io.github.openflocon.flocon.websocket.buildFloconWebSocketClient
 import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.concurrent.Volatile
 import kotlinx.serialization.modules.EmptySerializersModule
 
 class FloconClient internal constructor(
@@ -29,7 +31,14 @@ class FloconClient internal constructor(
     private val appInstance by lazy { currentTimeMillis() }
     private val appInfos by lazy { getAppInfos(context) }
     private val versionName by lazy { BuildConfig.APP_VERSION }
-    private val address by lazy { getServerHost(context) }
+    private val adbHost by lazy { getServerHost(context) }
+
+    @Volatile
+    private var connectionMode: FloconConnectionMode = FloconConnectionMode.Adb
+
+    // resolved on every use, so a mode set later is picked up by the next connection attempt
+    private val address: FloconServerAddress
+        get() = connectionMode.resolve(adbHost = { adbHost })
 
     private val webSocketClient: FloconWebSocketClient = buildFloconWebSocketClient()
     private val httpClient: FloconHttpClient = buildFloconHttpClient()
@@ -41,14 +50,27 @@ class FloconClient internal constructor(
         this.encoder = encoder
     }
 
+    fun setupConnection(mode: FloconConnectionMode) {
+        this.connectionMode = mode
+    }
+
+    /**
+     * Switches the target of an already started client: the current session (if any) is closed,
+     * which restarts the connection loop against the new address.
+     */
+    suspend fun updateConnection(mode: FloconConnectionMode) {
+        setupConnection(mode)
+        webSocketClient.disconnect()
+    }
+
     @Throws(Throwable::class)
     override suspend fun connect(
         onClosed: () -> Unit,
         onMessageReceived: (message: String) -> Unit
     ) {
         webSocketClient.connect(
-            address = address,
-            port = FLOCON_WEBSOCKET_PORT,
+            address = address.host,
+            port = address.websocketPort,
             onMessageReceived = onMessageReceived,
             onClosed = onClosed,
         )
@@ -89,8 +111,8 @@ class FloconClient internal constructor(
     ) {
         scope.launch {
             httpClient.send(
-                address = address,
-                port = FLOCON_HTTP_PORT,
+                address = address.host,
+                port = address.httpPort,
                 file = file,
                 infos = infos,
                 deviceId = appInfos.deviceId,
@@ -104,10 +126,5 @@ class FloconClient internal constructor(
         scope.launch {
             webSocketClient.sendPendingMessages()
         }
-    }
-
-    companion object {
-        private const val FLOCON_WEBSOCKET_PORT = 9023
-        private const val FLOCON_HTTP_PORT = 9024
     }
 }

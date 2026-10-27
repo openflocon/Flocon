@@ -46,6 +46,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActio
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconIsland
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -57,6 +58,8 @@ fun MainScreenTopBar(
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
+    localUrls: ImmutableList<String>,
+    onCopyLocalUrl: (String) -> Unit,
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
@@ -90,6 +93,8 @@ fun MainScreenTopBar(
             onAppSelected = onAppSelected,
             deleteDevice = deleteDevice,
             deleteApp = deleteApp,
+            localUrls = localUrls,
+            onCopyLocalUrl = onCopyLocalUrl,
         )
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
