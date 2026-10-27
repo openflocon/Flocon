@@ -62,13 +62,13 @@ import org.koin.core.component.KoinComponent
 private data class PanelScene(
     override val key: Any,
     private val allEntries: List<NavEntry<FloconRoute>>,
-    private val properties: PaneProperties,
     private val onBack: () -> Unit
 ) : Scene<FloconRoute>,
     KoinComponent {
 
     private val mainEntry = allEntries.last { !it.metadata.contains(PanelKey) }
-    private val panelEntry = allEntries.last { it.metadata.contains(PanelKey) }
+    private val panelEntry = allEntries.lastOrNull { it.metadata.contains(PanelKey) }
+    private val properties: PaneProperties? = panelEntry?.metadata[PanelKey]
 
     override val previousEntries: List<NavEntry<FloconRoute>> =
         allEntries.filter { it.metadata.contains(PanelKey) }
@@ -84,7 +84,7 @@ private data class PanelScene(
 
     override val content: @Composable (() -> Unit) = {
         val scope = rememberCoroutineScope()
-        val onPin = properties.onPinHandler?.invoke()
+        val onPin = properties?.onPinHandler?.invoke()
         val pinnable = remember(onPin) { onPin != null }
         val isPinned by onPin?.isPinned
             ?.collectAsStateWithLifecycle()
@@ -99,6 +99,12 @@ private data class PanelScene(
         LaunchedEffect(transitionState.currentState) {
             if (transitionState.currentState.first == States.EXIT) {
                 onBack()
+            }
+        }
+
+        LaunchedEffect(panelEntry) {
+            if (panelEntry == null) {
+                transitionState.targetState = States.EXIT to isPinned
             }
         }
 
@@ -215,7 +221,7 @@ private data class PanelScene(
                                 .floconIsland(islandColor)
                                 .mascotPlatform(predicate = { transitionState.currentState.second })
                         ) { target ->
-                            target.Content()
+                            target?.Content()
                         }
                     }
                 }
@@ -233,17 +239,11 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 
     override fun SceneStrategyScope<FloconRoute>.calculateScene(
         entries: List<NavEntry<FloconRoute>>
-    ): Scene<FloconRoute>? {
-        val lastEntry = entries.lastOrNull() ?: return null
-        val properties = lastEntry.metadata[PanelKey] ?: return null
-
-        return PanelScene(
-            key = Unit,
-            allEntries = entries,
-            properties = properties,
-            onBack = onBack
-        )
-    }
+    ): Scene<FloconRoute> = PanelScene(
+        key = Unit,
+        allEntries = entries,
+        onBack = onBack
+    )
 
     companion object {
 
