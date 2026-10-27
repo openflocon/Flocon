@@ -12,8 +12,7 @@ interface FloconWebSocketClient {
         onClosed: () -> Unit,
     )
 
-    suspend fun sendPendingMessages()
-
+    /** Returns `false` if the message could not be sent, for example when not connected. */
     suspend fun sendMessage(message: String): Boolean
 
     suspend fun disconnect()

@@ -17,6 +17,25 @@ class FloconConfiguration internal constructor(
 
     private var serializerModule = SerializersModule {}
 
+    internal var connectsAutomatically = true
+        private set
+
+    internal var bufferCapacity = DEFAULT_BUFFER_CAPACITY
+        private set
+
+    /**
+     * Starts Flocon without connecting to the desktop app.
+     *
+     * Use it when the address of the desktop app is not known yet. What the plugins log is kept in
+     * memory, then sent when [Flocon.connect] is called.
+     *
+     * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
+     */
+    fun connectLater(bufferCapacity: Int = DEFAULT_BUFFER_CAPACITY) {
+        connectsAutomatically = false
+        this.bufferCapacity = bufferCapacity
+    }
+
     /**
      * Install a plugin with the given [factory] and optional [configure] block.
      */
@@ -44,6 +63,9 @@ class FloconConfiguration internal constructor(
 
     fun encoding() = serializerModule
 
+    internal companion object {
+        const val DEFAULT_BUFFER_CAPACITY = 5_000
+    }
 }
 
 @ConsistentCopyVisibility
@@ -74,10 +96,12 @@ fun startFlocon(
     val encoder = FloconEncoder(module = configuration.encoding())
 
     client.setupEncoder(encoder)
+    client.setupBuffer(capacity = configuration.bufferCapacity)
 
-    Flocon(
+    Flocon.instance = Flocon(
         config = config,
         plugins = configuration.build(encoder),
-        encoder = encoder
+        encoder = encoder,
+        connectsAutomatically = configuration.connectsAutomatically,
     )
 }
