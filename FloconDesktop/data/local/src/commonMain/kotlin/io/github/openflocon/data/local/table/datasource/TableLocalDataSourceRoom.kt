@@ -74,6 +74,34 @@ internal class TableLocalDataSourceRoom(
                 .flowOn(dispatcherProvider.data)
         }
 
+    override fun observeItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String): Flow<TableDomainModel?> = tableDao.observeItem(
+        deviceId = deviceIdAndPackageName.deviceId,
+        packageName = deviceIdAndPackageName.packageName,
+        itemId = itemId,
+    )
+        .flatMapLatest { item ->
+            if (item == null) {
+                flowOf(null)
+            } else {
+                tableDao.observeTableById(item.tableId).map { table ->
+                    table?.let {
+                        TableDomainModel(
+                            name = it.name,
+                            columns = item.columnsNames,
+                            items = listOf(
+                                TableDomainModel.TableItem(
+                                    itemId = item.itemId,
+                                    createdAt = item.createdAt,
+                                    values = item.values,
+                                ),
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        .flowOn(dispatcherProvider.data)
+
     override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = tableDao.observeTablesForDevice(deviceIdAndPackageName.deviceId, packageName = deviceIdAndPackageName.packageName)
         .map { list -> list.map { toDomain(it) } }
         .flowOn(dispatcherProvider.data)

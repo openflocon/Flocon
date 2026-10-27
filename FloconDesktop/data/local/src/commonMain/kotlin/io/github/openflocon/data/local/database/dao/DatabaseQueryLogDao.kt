@@ -31,6 +31,9 @@ interface DatabaseQueryLogDao {
         query: RoomRawQuery,
     ): List<DatabaseQueryLogEntity>
 
+    @androidx.room.Query("SELECT * FROM DatabaseQueryLogEntity WHERE id = :id LIMIT 1")
+    fun observeLog(id: Int): kotlinx.coroutines.flow.Flow<DatabaseQueryLogEntity?>
+
     @androidx.room.Query("DELETE FROM DatabaseQueryLogEntity WHERE deviceId = :deviceId AND packageName = :packageName")
     suspend fun deleteAll(deviceId: String, packageName: String)
 }

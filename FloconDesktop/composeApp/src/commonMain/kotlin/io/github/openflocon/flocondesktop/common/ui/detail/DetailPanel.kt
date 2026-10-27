@@ -47,9 +47,7 @@ internal fun DetailPanel(
     val scrollState = rememberScrollState()
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
 
-    Box(
-        modifier.background(FloconTheme.colors.bg100)
-    ) {
+    Box(modifier) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(scrollState)

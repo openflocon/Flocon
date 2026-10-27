@@ -6,6 +6,7 @@ import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseDetails
+import io.github.openflocon.flocondesktop.features.database.view.DatabaseQueryLogPanel
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.database.view.DetailResultItem
 import io.github.openflocon.navigation.FloconRoute
@@ -22,6 +23,12 @@ sealed interface DatabaseRoutes : FloconRoute {
     data class Detail(
         val result: DetailResultItem,
         val columns: List<String>
+    ) : DatabaseRoutes,
+        PanelRoute
+
+    @Serializable
+    data class QueryLogPanel(
+        val id: Int
     ) : DatabaseRoutes,
         PanelRoute
 }
@@ -43,6 +50,16 @@ fun EntryProviderScope<FloconRoute>.databaseRoutes() {
         DatabaseDetails(
             state = it.result,
             columns = it.columns
+        )
+    }
+    entry<DatabaseRoutes.QueryLogPanel>(
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
+    ) {
+        DatabaseQueryLogPanel(
+            id = it.id
         )
     }
 }
