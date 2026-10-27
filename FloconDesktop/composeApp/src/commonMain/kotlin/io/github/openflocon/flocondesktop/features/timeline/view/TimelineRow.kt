@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -132,16 +132,8 @@ internal fun TimelineRow(
             delta = delta,
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
-        Rail(
-            color = color,
-            haloColor = if (highlighted) colors.bg300 else colors.bg100,
-            outerHaloColor = if (isCrash) soft else null,
-            // the line goes through the padding and the gap between two rows
-            overflow = spacing.tiny + spacing.tiny,
-            modifier = Modifier
-                .width(FloconTheme.sizes.markerColumn)
-                .fillMaxHeight(),
-        )
+        // the rail only appears when a call is hovered, see CallRail: its column keeps the others aligned
+        Spacer(Modifier.width(FloconTheme.sizes.markerColumn))
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
             EventBadge(source = row.source)
         }
@@ -278,7 +270,7 @@ private fun NetworkTitle(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        PhaseChip(phase = phase)
+        PhaseArrow(phase = phase)
         if (network.method.isNotEmpty()) {
             MethodPill(method = network.method)
         }

@@ -6,7 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -82,27 +87,22 @@ internal fun StatusPill(
     }
 }
 
-// the side of a network call a row stands for: the request and the response have their own tint
+// the direction of a network call line: the request goes to the server, the response comes back
 @Composable
-internal fun PhaseChip(
+internal fun PhaseArrow(
     phase: TimelinePhase,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val (text, color, soft) = when (phase) {
-        TimelinePhase.Request -> Triple(stringResource(Res.string.timeline_network_request), colors.catNetwork, colors.catNetworkSoft)
-        TimelinePhase.Response -> Triple(stringResource(Res.string.timeline_network_response), colors.accent, colors.accentSoft)
+    val (image, color, description) = when (phase) {
+        TimelinePhase.Request -> Triple(Icons.AutoMirrored.Outlined.ArrowForward, colors.catNetwork, Res.string.timeline_network_request)
+        TimelinePhase.Response -> Triple(Icons.AutoMirrored.Outlined.ArrowBack, colors.statusSuccess, Res.string.timeline_network_response)
     }
-    Text(
-        text = text,
-        style = FloconTheme.typography.labelSmall,
-        fontWeight = FontWeight.SemiBold,
-        color = color,
-        maxLines = 1,
-        modifier = modifier
-            .clip(CircleShape)
-            .background(soft)
-            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+    Icon(
+        imageVector = image,
+        contentDescription = stringResource(description),
+        tint = color,
+        modifier = modifier.size(16.dp),
     )
 }
 
