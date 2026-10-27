@@ -232,7 +232,7 @@ fun CommandInput(
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colors.bg100
+                val contentColor = FloconTheme.colors.floating
                 Row(
                     Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
