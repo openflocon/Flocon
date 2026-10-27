@@ -173,6 +173,9 @@
     <string name="badquality_weight">Poids</string>
     <string name="database_see_all_queries">Voir toutes les requêtes</string>
     <string name="deeplink_send_error">Erreur lors de l’envoi du deeplink</string>
+    <string name="deeplink_panel_link">Lien</string>
+    <string name="deeplink_panel_copy_link">Copier le lien</string>
+    <string name="deeplink_panel_description">Description</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Presse-papiers :</string>
     <string name="diff_compare_clipboard">Comparer avec le presse-papiers</string>

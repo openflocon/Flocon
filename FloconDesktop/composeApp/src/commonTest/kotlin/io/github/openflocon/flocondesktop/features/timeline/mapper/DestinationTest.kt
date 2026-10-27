@@ -5,6 +5,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
+import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import kotlin.test.Test
@@ -57,10 +58,17 @@ class DestinationTest {
     }
 
     @Test
+    fun `a deeplink opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(DeeplinkRoutes.Panel(id = 9L)),
+            row(TimelineSource.Deeplink, id = "9").toDestination(),
+        )
+    }
+
+    @Test
     fun `the plugins without detail open their screen`() {
         assertEquals(TimelineDestination.Screen(SubScreen.Database), row(TimelineSource.Database).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
-        assertEquals(TimelineDestination.Screen(SubScreen.Deeplinks), row(TimelineSource.Deeplink).toDestination())
     }
 
     @Test

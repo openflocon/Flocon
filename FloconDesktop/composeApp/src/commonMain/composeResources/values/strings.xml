@@ -220,6 +220,9 @@
     <string name="badquality_weight">Weight</string>
     <string name="database_see_all_queries">See all queries</string>
     <string name="deeplink_send_error">Error while sending deeplink</string>
+    <string name="deeplink_panel_link">Link</string>
+    <string name="deeplink_panel_copy_link">Copy link</string>
+    <string name="deeplink_panel_description">Description</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>
