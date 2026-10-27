@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
@@ -16,10 +18,16 @@ internal sealed interface TimelineDestination {
     data class Panel(val route: FloconRoute) : TimelineDestination
 }
 
+private fun TimelinePhase.toNetworkTab(): NetworkDetailTab = when (this) {
+    TimelinePhase.Request -> NetworkDetailTab.Request
+    TimelinePhase.Response -> NetworkDetailTab.Response
+}
+
 // null: nothing to open for this event
 internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (source) {
     TimelineSource.AppStart -> null
-    TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id))
+    // the request line opens the request tab of the call, the response line its response tab
+    TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id, tab = phase.toNetworkTab()))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
     TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id))
     TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it)) }

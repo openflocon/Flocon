@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
@@ -29,17 +30,17 @@ class DestinationTest {
     )
 
     @Test
-    fun `a network call opens its detail panel`() {
+    fun `the request of a network call opens the request tab of its detail panel`() {
         assertEquals(
-            TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1")),
+            TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1", tab = NetworkDetailTab.Request)),
             row(TimelineSource.Network, id = "call-1").toDestination(),
         )
     }
 
     @Test
-    fun `the response of a network call opens the same detail panel as its request`() {
+    fun `the response of a network call opens the response tab of its detail panel`() {
         assertEquals(
-            TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1")),
+            TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1", tab = NetworkDetailTab.Response)),
             row(TimelineSource.Network, id = "call-1", phase = TimelinePhase.Response).toDestination(),
         )
     }

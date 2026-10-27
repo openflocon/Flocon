@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
@@ -41,8 +42,10 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data class Mocks(val id: String?) : NetworkRoutes
 
     @Serializable
-    data class Panel(val requestId: String) :
-        NetworkRoutes,
+    data class Panel(
+        val requestId: String,
+        val tab: NetworkDetailTab? = null, // null: the default tab of the settings
+    ) : NetworkRoutes,
         PanelRoute
 
     @Serializable
@@ -96,7 +99,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             keepMenu()
         }
     ) {
-        NetworkDetailScreen(requestId = it.requestId)
+        NetworkDetailScreen(requestId = it.requestId, tab = it.tab)
     }
     entry<NetworkRoutes.Mocks>(
         metadata = BigDialogSceneStrategy.bigDialog(
