@@ -57,7 +57,7 @@ internal fun AboutScreen(
         state = windowState,
         resizable = false
     ) {
-        FloconSurface {
+        FloconSurface(color = FloconTheme.colors.islandSidebar) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),

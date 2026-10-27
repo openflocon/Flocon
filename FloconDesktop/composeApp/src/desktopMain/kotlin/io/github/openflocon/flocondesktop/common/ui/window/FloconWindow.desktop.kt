@@ -16,6 +16,8 @@ import androidx.compose.ui.window.v2.WindowPositionProvider
 import androidx.compose.ui.window.v2.WindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_window
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
 
@@ -58,7 +60,10 @@ actual fun FloconWindow(
         onCloseRequest = onCloseRequest,
     ) {
         CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
-            content()
+            // same surface as the navigation window scenes (network details...)
+            FloconSurface(color = FloconTheme.colors.islandSidebar) {
+                content()
+            }
         }
     }
 }
