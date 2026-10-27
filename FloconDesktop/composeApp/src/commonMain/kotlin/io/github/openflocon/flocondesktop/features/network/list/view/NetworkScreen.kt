@@ -94,16 +94,16 @@ fun NetworkScreen(
                 .weight(1f)
                 .clip(FloconTheme.shapes.large)
                 .floconIsland(FloconTheme.colors.bg100)
+                .networkKeyboardNavigation(
+                    rows = rows,
+                    uiState = uiState,
+                    onAction = onAction,
+                )
                 .clickable(
                     interactionSource = null,
                     indication = null,
                     enabled = uiState.contentState.selectedRequestId != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
-                )
-                .networkKeyboardNavigation(
-                    rows = rows,
-                    uiState = uiState,
-                    onAction = onAction,
                 )
                 .mascotPlatform()
         ) {
