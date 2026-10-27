@@ -17,8 +17,8 @@ kotlin {
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.core)
 
-            implementation(dependencies.platform(libs.okhttp.bom))
-            implementation(libs.okhttp)
+            implementation(dependencies.platform(libs.okhttp4.bom))
+            implementation(libs.okhttp4)
 
             implementation(libs.brotli.dec)
         }

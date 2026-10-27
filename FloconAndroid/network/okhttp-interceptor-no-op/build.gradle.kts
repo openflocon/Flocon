@@ -14,8 +14,8 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.network.coreNoOp)
 
-            implementation(dependencies.platform(libs.okhttp.bom))
-            implementation(libs.okhttp)
+            implementation(dependencies.platform(libs.okhttp4.bom))
+            implementation(libs.okhttp4)
         }
     }
 }
