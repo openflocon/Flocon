@@ -18,8 +18,9 @@
     <string name="databases_favorites">Favorites</string>
     <string name="date">Date</string>
     <string name="deeplink_removed">Deeplink removed from history</string>
-    <string name="devices_connected">Connected</string>
-    <string name="devices_disconnected">Disconnected</string>
+    <string name="device_platform_android">ANDROID</string>
+    <string name="device_platform_ios">IOS</string>
+    <string name="device_platform_desktop">DESKTOP</string>
     <string name="download">Download</string>
     <string name="error_exporting_csv">Error while exporting csv</string>
     <string name="export_csv">Export CSV</string>
