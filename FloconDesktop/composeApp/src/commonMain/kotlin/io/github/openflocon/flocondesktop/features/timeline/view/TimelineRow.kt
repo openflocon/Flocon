@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
-import flocondesktop.composeapp.generated.resources.timeline_network_response
 import flocondesktop.composeapp.generated.resources.timeline_source_adb
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
 import flocondesktop.composeapp.generated.resources.timeline_source_app_start
@@ -230,7 +229,7 @@ private fun RowContent(
     ) {
         val network = row.network
         if (network != null) {
-            if (row.phase == TimelinePhase.Response) ResponseTitle(network) else NetworkTitle(network)
+            NetworkTitle(network, row.phase)
         } else {
             val base = FloconTheme.typography.bodyMedium
             Text(
@@ -256,44 +255,36 @@ private fun RowContent(
 }
 
 @Composable
-private fun NetworkTitle(network: TimelineNetworkUiModel) {
+private fun NetworkTitle(
+    network: TimelineNetworkUiModel,
+    phase: TimelinePhase,
+) {
     val colors = FloconTheme.colors
+    val isResponse = phase == TimelinePhase.Response
     val title: AnnotatedString = buildAnnotatedString {
         if (network.host != null) {
             withStyle(SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)) { append(network.host) }
             append(" ")
         }
-        withStyle(SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)) { append(network.path) }
+        // the response is the quieter of the two lines
+        val pathStyle = if (isResponse) {
+            SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)
+        } else {
+            SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)
+        }
+        withStyle(pathStyle) { append(network.path) }
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
+        PhaseChip(phase = phase)
         if (network.method.isNotEmpty()) {
             MethodPill(method = network.method)
         }
         Text(
             text = title,
             style = FloconTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
-        )
-    }
-}
-
-// the response of a call: what came back, below the line of its request in the time
-@Composable
-private fun ResponseTitle(network: TimelineNetworkUiModel) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-    ) {
-        TagPill(text = stringResource(Res.string.timeline_network_response))
-        Text(
-            text = network.path,
-            style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colors.inkMuted,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false),

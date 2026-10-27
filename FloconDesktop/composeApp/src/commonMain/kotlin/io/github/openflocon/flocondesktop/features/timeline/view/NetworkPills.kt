@@ -17,7 +17,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.timeline_network_request
+import flocondesktop.composeapp.generated.resources.timeline_network_response
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 // the mono style of the data: times, http codes, methods, paths
 @Composable
@@ -75,6 +80,30 @@ internal fun StatusPill(
             maxLines = 1,
         )
     }
+}
+
+// the side of a network call a row stands for: the request and the response have their own tint
+@Composable
+internal fun PhaseChip(
+    phase: TimelinePhase,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val (text, color, soft) = when (phase) {
+        TimelinePhase.Request -> Triple(stringResource(Res.string.timeline_network_request), colors.catNetwork, colors.catNetworkSoft)
+        TimelinePhase.Response -> Triple(stringResource(Res.string.timeline_network_response), colors.accent, colors.accentSoft)
+    }
+    Text(
+        text = text,
+        style = FloconTheme.typography.labelSmall,
+        fontWeight = FontWeight.SemiBold,
+        color = color,
+        maxLines = 1,
+        modifier = modifier
+            .clip(CircleShape)
+            .background(soft)
+            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+    )
 }
 
 // a small neutral label, ex: the provider of an analytics event
