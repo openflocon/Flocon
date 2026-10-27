@@ -13,7 +13,9 @@ Source of truth:
 | WebSocket | both             | `ws://<host>:9023/`              | All plugin messages (JSON text frames) |
 | HTTP      | mobile → desktop | `POST http://<host>:9024/upload` | File upload (see [files.md](files.md)) |
 
-On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024`, so `<host>` is `localhost`.
+On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024`, so `<host>` is `localhost`. With `FloconConnectionMode.Url`, `<host>` is the address given to the SDK.
+
+Experimental: the same messages and files can also travel over one Bluetooth RFCOMM link, see [transport-bluetooth.md](transport-bluetooth.md).
 
 ## Envelopes
 

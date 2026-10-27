@@ -12,4 +12,10 @@ sealed interface SettingsAction {
     data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
 
     data class CopyLocalUrl(val url: String) : SettingsAction
+
+    data object RefreshBluetoothPorts : SettingsAction
+
+    data class ConnectBluetooth(val port: String) : SettingsAction
+
+    data object DisconnectBluetooth : SettingsAction
 }

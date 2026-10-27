@@ -11,6 +11,13 @@ sealed interface FloconConnectionMode {
     data object Adb : FloconConnectionMode
 
     /**
+     * The app waits for the desktop on a Bluetooth RFCOMM link instead of dialling it. Android only.
+     * Pair the phone with the desktop, grant `BLUETOOTH_CONNECT` to the app at runtime, then connect
+     * the desktop from Settings > Connection. Experimental, see `docs/bluetooth-exploration.md`.
+     */
+    data object Bluetooth : FloconConnectionMode
+
+    /**
      * Dials the desktop directly, without adb: a LAN ip, a VPN ip, a public ip or a domain.
      * The desktop listens on its websocket and http ports for all modes at the same time.
      */
