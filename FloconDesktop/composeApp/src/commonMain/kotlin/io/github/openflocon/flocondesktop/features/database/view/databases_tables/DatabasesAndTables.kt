@@ -31,6 +31,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavori
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,6 +53,7 @@ fun DatabasesAndTables(
                 color = borderColor,
                 shape = FloconTheme.shapes.medium
             )
+            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()

@@ -53,6 +53,9 @@ class TableRepositoryImpl(
     override fun observeTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?> = tableLocalDataSource.observe(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)
         .flowOn(dispatcherProvider.data)
 
+    override fun observeTableItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String): Flow<TableDomainModel?> = tableLocalDataSource.observeItem(deviceIdAndPackageName = deviceIdAndPackageName, itemId = itemId)
+        .flowOn(dispatcherProvider.data)
+
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) {
         withContext(dispatcherProvider.data) {
             tableLocalDataSource.delete(deviceIdAndPackageName = deviceIdAndPackageName, tableId = tableId)

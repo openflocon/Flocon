@@ -29,3 +29,17 @@ fun previewDeviceItemUiModel() = DeviceItemUiModel(
     canScreenRecord = true,
     canRestart = true,
 )
+
+fun previewDeviceItemUiModel(
+    platform: DeviceItemUiModel.Platform = DeviceItemUiModel.Platform.Android,
+    isActive: Boolean = true,
+    deviceName: String = "Pixel 8 Pro",
+) = DeviceItemUiModel(
+    id = "$platform-$deviceName-$isActive",
+    deviceName = deviceName,
+    isActive = isActive,
+    platform = platform,
+    canScreenshot = true,
+    canScreenRecord = true,
+    canRestart = true,
+)

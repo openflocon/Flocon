@@ -115,6 +115,7 @@ private class FakeTableRepository(private val table: TableDomainModel) : TableRe
 
     override fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>> = flowOf(listOf(TableIdentifierDomainModel(id = 7, name = table.name)))
 
+    override fun observeTableItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String): Flow<TableDomainModel?> = error("not used")
     override suspend fun deleteTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableIdentifierDomainModel) = error("not used")
     override suspend fun selectDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId) = error("not used")
     override fun observeSelectedDeviceTable(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<TableIdentifierDomainModel?> = error("not used")

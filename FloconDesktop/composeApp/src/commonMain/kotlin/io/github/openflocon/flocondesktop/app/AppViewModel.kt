@@ -86,7 +86,7 @@ internal class AppViewModel(
 
     private val contentState = MutableStateFlow(
         ContentUiState(
-            current = SubScreen.Network
+            current = SubScreen.Timeline
         )
     )
 

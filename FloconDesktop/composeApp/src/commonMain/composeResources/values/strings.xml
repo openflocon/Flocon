@@ -20,6 +20,9 @@
     <string name="deeplink_removed">Deeplink removed from history</string>
     <string name="devices_connected">Connected</string>
     <string name="devices_disconnected">Disconnected</string>
+    <string name="device_platform_android">ANDROID</string>
+    <string name="device_platform_ios">IOS</string>
+    <string name="device_platform_desktop">DESKTOP</string>
     <string name="download">Download</string>
     <string name="error_exporting_csv">Error while exporting csv</string>
     <string name="export_csv">Export CSV</string>
@@ -98,6 +101,13 @@
     <string name="adb_commander_step_delay">Delay (ms)</string>
     <string name="adb_commander_cancel_flow">Cancel Flow</string>
     <string name="adb_commander_execute">Execute</string>
+    <string name="adb_commander_no_output">No output</string>
+    <string name="adb_commander_panel_command">Command</string>
+    <string name="adb_commander_panel_output">Output</string>
+    <string name="adb_commander_panel_copy_command">Copy command</string>
+    <string name="adb_commander_panel_copy_output">Copy output</string>
+    <string name="adb_commander_panel_success">Success</string>
+    <string name="adb_commander_panel_failure">Failure</string>
     <string name="adb_commander_quick_commands">Quick Commands</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Files</string>
@@ -172,6 +182,8 @@
     <string name="settings_adb_setup_title">Please setup ADB first, this field is mandatory</string>
     <string name="settings_adb_valid">ADB configuration is valid</string>
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
+    <string name="settings_mascot_hide">Send the mascot to its doghouse</string>
+    <string name="settings_mascot_show">Let the mascot out of its doghouse</string>
     <string name="settings_mascot_title">Mascot</string>
     <string name="settings_mascot_description">A little dog walks along the top of the page and follows your mouse. Turn it off if you prefer a quiet interface.</string>
     <string name="settings_theme">Theme</string>
@@ -233,6 +245,14 @@
     <string name="badquality_weight">Weight</string>
     <string name="database_see_all_queries">See all queries</string>
     <string name="deeplink_send_error">Error while sending deeplink</string>
+    <string name="deeplink_panel_link">Link</string>
+    <string name="deeplink_panel_copy_link">Copy link</string>
+    <string name="deeplink_panel_description">Description</string>
+    <string name="database_query_log_panel_sql">Query</string>
+    <string name="database_query_log_panel_copy_sql">Copy query</string>
+    <string name="database_query_log_panel_arguments">Arguments</string>
+    <string name="database_query_log_panel_copy_arguments">Copy arguments</string>
+    <string name="database_query_log_panel_transaction">Transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>

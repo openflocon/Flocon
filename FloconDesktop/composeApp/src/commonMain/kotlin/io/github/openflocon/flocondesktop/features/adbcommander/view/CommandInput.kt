@@ -55,6 +55,7 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -74,6 +75,7 @@ fun CommandInput(
                 color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
+            .mascotPlatform()
     ) {
         // Toolbar row
         Row(
@@ -230,7 +232,7 @@ fun CommandInput(
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colors.bg100
+                val contentColor = FloconTheme.colors.floating
                 Row(
                     Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),

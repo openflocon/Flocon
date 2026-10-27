@@ -264,6 +264,8 @@ class DatabaseRepositoryImpl(
         )
     }
 
+    override fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?> = localDatabaseDataSource.observeQueryLog(id)
+
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
             localDatabaseDataSource.deleteAllQueryLogs(deviceIdAndPackageName)

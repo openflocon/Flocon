@@ -206,8 +206,13 @@ private data class PanelScene(
                             animationSpec = tween(500)
                         )
 
+                        // keyed by contentKey: nav entries are recreated on each change, so a fast A -> B -> A would
+                        // otherwise compose A twice (fading out + fading in) with the same saveable state key
+                        val panelEntries = remember { mutableMapOf<Any, NavEntry<FloconRoute>>() }
+                        panelEntries[panelEntry.contentKey] = panelEntry
+
                         Crossfade(
-                            targetState = panelEntry,
+                            targetState = panelEntry.contentKey,
                             animationSpec = tween(500),
                             modifier = Modifier
                                 .fillMaxHeight()
@@ -215,7 +220,7 @@ private data class PanelScene(
                                 .floconIsland(islandColor)
                                 .mascotPlatform(predicate = { transitionState.currentState.second })
                         ) { target ->
-                            target.Content()
+                            panelEntries[target]?.Content()
                         }
                     }
                 }

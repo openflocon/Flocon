@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,10 +51,9 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @Composable
 fun ImagesScreen(
@@ -103,7 +101,8 @@ private fun ImagesScreen(
     ) {
         FloconPageTopBar(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .mascotPlatform(),
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),
@@ -131,7 +130,8 @@ private fun ImagesScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100),
+                        .background(FloconTheme.colors.bg100)
+                        .mascotPlatform()
                 )
             }
 
@@ -204,7 +204,7 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
                         .data(model.url)
                         .httpHeaders(
                             NetworkHeaders.Builder().apply {
-                                model.headers?.forEach { (key, value) ->
+                                model.headers.forEach { (key, value) ->
                                     add(key, value)
                                 }
                             }.build()
@@ -220,7 +220,7 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
 }
 
 @Composable
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 private fun ImagesScreenPreview() {
     FloconTheme {
         ImagesScreen(

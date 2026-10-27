@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -104,8 +105,8 @@ data class MenuScene(
                             .width(width)
                             .fillMaxHeight()
                             .floconIsland(FloconTheme.colors.islandSidebar)
-                            .padding(FloconTheme.spacing.small)
-                            .mascotPlatform(platforms = mascotPlatforms),
+                            .mascotPlatform(platforms = mascotPlatforms)
+                            .padding(FloconTheme.spacing.small),
                     ) {
                         menuContent(expanded) { expanded = !expanded }
                     }

@@ -1,11 +1,14 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityRoutes
+import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
+import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -57,11 +60,35 @@ class DestinationTest {
     }
 
     @Test
-    fun `the plugins without detail open their screen`() {
-        assertEquals(TimelineDestination.Screen(SubScreen.Database), row(TimelineSource.Database).toDestination())
-        assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
-        assertEquals(TimelineDestination.Screen(SubScreen.Deeplinks), row(TimelineSource.Deeplink).toDestination())
-        assertEquals(TimelineDestination.Screen(SubScreen.AdbCommander), row(TimelineSource.Adb).toDestination())
+    fun `an adb command opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = 7L)),
+            row(TimelineSource.Adb, id = "7").toDestination(),
+        )
+    }
+
+    @Test
+    fun `a deeplink opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(DeeplinkRoutes.Panel(id = 9L)),
+            row(TimelineSource.Deeplink, id = "9").toDestination(),
+        )
+    }
+
+    @Test
+    fun `a database query opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = 5)),
+            row(TimelineSource.Database, id = "5").toDestination(),
+        )
+    }
+
+    @Test
+    fun `a table item opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(TableRoutes.Detail(id = "item-1")),
+            row(TimelineSource.Table, id = "item-1").toDestination(),
+        )
     }
 
     @Test

@@ -20,6 +20,9 @@
     <string name="deeplink_removed">Deeplink retiré de l’historique</string>
     <string name="devices_connected">Connecté</string>
     <string name="devices_disconnected">Déconnecté</string>
+    <string name="device_platform_android">ANDROID</string>
+    <string name="device_platform_ios">IOS</string>
+    <string name="device_platform_desktop">DESKTOP</string>
     <string name="download">Télécharger</string>
     <string name="error_exporting_csv">Erreur lors de l’export du CSV</string>
     <string name="export_csv">Exporter en CSV</string>
@@ -96,6 +99,13 @@
     <string name="adb_commander_step_delay">Délai (ms)</string>
     <string name="adb_commander_cancel_flow">Annuler le flux</string>
     <string name="adb_commander_execute">Exécuter</string>
+    <string name="adb_commander_no_output">Aucune sortie</string>
+    <string name="adb_commander_panel_command">Commande</string>
+    <string name="adb_commander_panel_output">Sortie</string>
+    <string name="adb_commander_panel_copy_command">Copier la commande</string>
+    <string name="adb_commander_panel_copy_output">Copier la sortie</string>
+    <string name="adb_commander_panel_success">Succès</string>
+    <string name="adb_commander_panel_failure">Échec</string>
     <string name="adb_commander_quick_commands">Commandes rapides</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Fichiers</string>
@@ -134,6 +144,8 @@
     <string name="settings_adb_setup_title">Veuillez d’abord configurer ADB, ce champ est obligatoire</string>
     <string name="settings_adb_valid">La configuration ADB est valide</string>
     <string name="settings_font_size_multiplier">Multiplicateur de taille de police : %1$sx</string>
+    <string name="settings_mascot_hide">Renvoyer la mascotte dans sa niche</string>
+    <string name="settings_mascot_show">Faire sortir la mascotte de sa niche</string>
     <string name="settings_mascot_title">Mascotte</string>
     <string name="settings_mascot_description">Un petit chien se promène en haut de la page et suit votre souris. Désactivez-le si vous préférez une interface calme.</string>
     <string name="settings_theme">Thème</string>
@@ -165,6 +177,14 @@
     <string name="badquality_weight">Poids</string>
     <string name="database_see_all_queries">Voir toutes les requêtes</string>
     <string name="deeplink_send_error">Erreur lors de l’envoi du deeplink</string>
+    <string name="deeplink_panel_link">Lien</string>
+    <string name="deeplink_panel_copy_link">Copier le lien</string>
+    <string name="deeplink_panel_description">Description</string>
+    <string name="database_query_log_panel_sql">Requête</string>
+    <string name="database_query_log_panel_copy_sql">Copier la requête</string>
+    <string name="database_query_log_panel_arguments">Arguments</string>
+    <string name="database_query_log_panel_copy_arguments">Copier les arguments</string>
+    <string name="database_query_log_panel_transaction">Transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Presse-papiers :</string>
     <string name="diff_compare_clipboard">Comparer avec le presse-papiers</string>

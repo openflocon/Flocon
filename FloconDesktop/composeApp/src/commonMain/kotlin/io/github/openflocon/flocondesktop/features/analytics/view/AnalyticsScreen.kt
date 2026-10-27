@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -66,6 +65,7 @@ import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -136,7 +136,9 @@ fun AnalyticsScreen(
             )
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             selector = {
                 AnalyticsSelector(
                     analyticsState = itemsState,
@@ -253,7 +255,7 @@ fun AnalyticsScreen(
 }
 
 @Composable
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 private fun AnalyticsScreenPreview() {
     val rows = remember {
         flowOf(

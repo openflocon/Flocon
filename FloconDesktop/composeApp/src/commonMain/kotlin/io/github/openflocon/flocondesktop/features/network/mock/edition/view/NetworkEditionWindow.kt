@@ -92,7 +92,6 @@ import io.github.openflocon.library.designsystem.components.FloconDialogButtons
 import io.github.openflocon.library.designsystem.components.FloconDialogHeader
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
-import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.TabType
@@ -127,13 +126,11 @@ fun NetworkEditionWindow(
             state = windowState,
             onCloseRequest = onCloseRequest,
         ) {
-            FloconSurface {
-                NetworkEditionContent(
-                    state = state,
-                    onCancel = onCancel,
-                    onSave = onSave,
-                )
-            }
+            NetworkEditionContent(
+                state = state,
+                onCancel = onCancel,
+                onSave = onSave,
+            )
         }
     }
 }

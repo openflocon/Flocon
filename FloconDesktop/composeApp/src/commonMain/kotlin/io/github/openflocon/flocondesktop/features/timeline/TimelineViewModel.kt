@@ -12,7 +12,6 @@ import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
-import io.github.openflocon.flocondesktop.app.MenuNavigator
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -44,7 +43,6 @@ internal class TimelineViewModel(
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
-    private val menuNavigator: MenuNavigator,
 ) : ViewModel() {
 
     private val _filterText = MutableStateFlow("")
@@ -114,7 +112,6 @@ internal class TimelineViewModel(
                 }
                 when (destination) {
                     is TimelineDestination.Panel -> navigationState.navigate(destination.route)
-                    is TimelineDestination.Screen -> menuNavigator.open(destination.screen)
                     null -> Unit
                 }
             }

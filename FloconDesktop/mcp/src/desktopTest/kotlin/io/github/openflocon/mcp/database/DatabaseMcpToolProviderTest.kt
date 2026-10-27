@@ -321,5 +321,7 @@ private class FakeDatabaseRepository(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<Int> = error("not used")
 
+    override fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?> = error("not used")
+
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
 }
