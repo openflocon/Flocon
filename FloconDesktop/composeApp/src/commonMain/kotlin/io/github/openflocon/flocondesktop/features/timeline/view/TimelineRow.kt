@@ -194,29 +194,31 @@ internal fun Rail(
     outerHaloColor: Color? = null,
     visible: Boolean = true, // false: nothing is drawn, the column keeps its size
 ) {
-    if (!visible) {
-        Box(modifier)
-        return
-    }
     val line = FloconTheme.colors.line
     Box(
-        modifier = modifier.drawBehind {
-            val x = size.width / 2
-            drawLine(
-                color = line,
-                start = Offset(x, -overflow.toPx()),
-                end = Offset(x, size.height + overflow.toPx()),
-                strokeWidth = 1.dp.toPx(),
-            )
+        modifier = if (visible) {
+            modifier.drawBehind {
+                val x = size.width / 2
+                drawLine(
+                    color = line,
+                    start = Offset(x, -overflow.toPx()),
+                    end = Offset(x, size.height + overflow.toPx()),
+                    strokeWidth = 1.dp.toPx(),
+                )
+            }
+        } else {
+            modifier
         },
         contentAlignment = Alignment.Center,
     ) {
-        if (outerHaloColor != null) {
-            Box(Modifier.size(22.dp).background(outerHaloColor, CircleShape))
-        }
-        // the halo hides the line behind the dot
-        Box(Modifier.size(16.dp).background(haloColor, CircleShape), contentAlignment = Alignment.Center) {
-            Box(Modifier.size(10.dp).background(color, CircleShape))
+        if (visible) {
+            if (outerHaloColor != null) {
+                Box(Modifier.size(22.dp).background(outerHaloColor, CircleShape))
+            }
+            // the halo hides the line behind the dot
+            Box(Modifier.size(16.dp).background(haloColor, CircleShape), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(10.dp).background(color, CircleShape))
+            }
         }
     }
 }
