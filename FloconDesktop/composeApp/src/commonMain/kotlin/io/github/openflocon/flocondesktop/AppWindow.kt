@@ -24,7 +24,7 @@ import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
-import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.iossimulator.IosSimulatorRepositoryImpl
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.mcp.mcpModule
@@ -56,7 +56,7 @@ fun App() {
 //                    scope<MainRoutes.Sub> {
 //                        scoped { MainFloconNavigationState(MainRoutes.Main) }
 //                    }
-                    single { MainFloconNavigationState(NetworkRoutes.Main) }
+                    single { MainFloconNavigationState(TimelineRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                     singleOf(::IosSimulatorRepositoryImpl) bind IosSimulatorRepository::class
                 },

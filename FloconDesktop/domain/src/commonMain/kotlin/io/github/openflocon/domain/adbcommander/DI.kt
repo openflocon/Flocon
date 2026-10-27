@@ -5,8 +5,8 @@ import io.github.openflocon.domain.adbcommander.usecase.DeleteFlowUseCase
 import io.github.openflocon.domain.adbcommander.usecase.DeleteSavedCommandUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ExecuteAdbCommanderCommandUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ExecuteFlowUseCase
-import io.github.openflocon.domain.adbcommander.usecase.ObserveCommandHistoryUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveCommandHistoryItemUseCase
+import io.github.openflocon.domain.adbcommander.usecase.ObserveCommandHistoryUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveFlowsUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveSavedCommandsUseCase
 import io.github.openflocon.domain.adbcommander.usecase.SaveCommandUseCase
