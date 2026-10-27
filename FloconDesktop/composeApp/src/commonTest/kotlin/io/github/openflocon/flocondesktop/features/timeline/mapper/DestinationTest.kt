@@ -1,13 +1,13 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,8 +75,11 @@ class DestinationTest {
     }
 
     @Test
-    fun `the plugins without detail open their screen`() {
-        assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
+    fun `a table item opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(TableRoutes.Detail(id = "item-1")),
+            row(TimelineSource.Table, id = "item-1").toDestination(),
+        )
     }
 
     @Test

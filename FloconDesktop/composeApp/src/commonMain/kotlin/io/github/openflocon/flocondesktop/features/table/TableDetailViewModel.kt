@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableContentUseCase
+import io.github.openflocon.domain.table.usecase.ObserveCurrentDeviceTableItemUseCase
 import io.github.openflocon.flocondesktop.common.ui.detail.toCopyableText
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.table.mapper.toDetailUi
@@ -17,11 +17,11 @@ import org.jetbrains.compose.resources.getString
 
 class TableDetailViewModel(
     id: String,
-    observeCurrentDeviceTableContentUseCase: ObserveCurrentDeviceTableContentUseCase,
+    observeCurrentDeviceTableItemUseCase: ObserveCurrentDeviceTableItemUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
-    val uiState = observeCurrentDeviceTableContentUseCase()
+    val uiState = observeCurrentDeviceTableItemUseCase(id)
         .map { it?.toDetailUi(itemId = id) }
         .stateInWhileSubscribed<TableDetailUiModel?>(default = null)
 

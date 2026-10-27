@@ -1,22 +1,19 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
-import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
+import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.navigation.FloconRoute
 
 internal sealed interface TimelineDestination {
-    // the detail of the event, displayed in a panel on top of the timeline
+    // the detail of the event, displayed in a panel next to the timeline
     data class Panel(val route: FloconRoute) : TimelineDestination
-
-    // the screen of the plugin: some plugins have no detail of their own
-    data class Screen(val screen: SubScreen) : TimelineDestination
 }
 
 // null: nothing to open for this event
@@ -26,7 +23,7 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
     TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id))
     TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it)) }
-    TimelineSource.Table -> TimelineDestination.Screen(SubScreen.Tables)
+    TimelineSource.Table -> TimelineDestination.Panel(TableRoutes.Detail(id = id))
     TimelineSource.Deeplink -> id.toLongOrNull()?.let { TimelineDestination.Panel(DeeplinkRoutes.Panel(id = it)) }
     TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it)) }
 }
