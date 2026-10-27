@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
+import flocondesktop.composeapp.generated.resources.timeline_network_response
 import flocondesktop.composeapp.generated.resources.timeline_source_adb
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
 import flocondesktop.composeapp.generated.resources.timeline_source_app_start
@@ -49,6 +52,7 @@ import flocondesktop.composeapp.generated.resources.timeline_source_database
 import flocondesktop.composeapp.generated.resources.timeline_source_deeplink
 import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
@@ -80,14 +84,18 @@ internal fun TimelineRow(
     row: TimelineRowUiModel,
     delta: String?,
     selected: Boolean,
+    hovered: Boolean,
     onClick: (TimelineRowUiModel) -> Unit,
+    onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
     val shape = FloconTheme.shapes.medium
     val interactionSource = remember { MutableInteractionSource() }
-    val hovered by interactionSource.collectIsHoveredAsState()
+    val rowHovered by interactionSource.collectIsHoveredAsState()
+    LaunchedEffect(rowHovered) { onHoverChange(rowHovered) }
+    DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
     val (color, soft) = row.source.categoryColors()
     val isCrash = row.source == TimelineSource.Crash
     val highlighted = hovered || selected
@@ -222,7 +230,7 @@ private fun RowContent(
     ) {
         val network = row.network
         if (network != null) {
-            NetworkTitle(network)
+            if (row.phase == TimelinePhase.Response) ResponseTitle(network) else NetworkTitle(network)
         } else {
             val base = FloconTheme.typography.bodyMedium
             Text(
@@ -274,6 +282,25 @@ private fun NetworkTitle(network: TimelineNetworkUiModel) {
     }
 }
 
+// the response of a call: what came back, below the line of its request in the time
+@Composable
+private fun ResponseTitle(network: TimelineNetworkUiModel) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        TagPill(text = stringResource(Res.string.timeline_network_response))
+        Text(
+            text = network.path,
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colors.inkMuted,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false),
+        )
+    }
+}
+
 @Composable
 private fun RowMeta(row: TimelineRowUiModel) {
     Row(
@@ -282,6 +309,8 @@ private fun RowMeta(row: TimelineRowUiModel) {
     ) {
         val network = row.network
         if (network != null) {
+            // the request has nothing to tell yet: the status and the duration are the ones of the response
+            if (row.phase == TimelinePhase.Request) return@Row
             network.duration?.let {
                 Text(
                     text = it,

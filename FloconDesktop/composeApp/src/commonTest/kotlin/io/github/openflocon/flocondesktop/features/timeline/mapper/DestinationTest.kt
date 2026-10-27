@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
@@ -16,7 +17,7 @@ import kotlin.test.assertNull
 
 class DestinationTest {
 
-    private fun row(source: TimelineSource, id: String = "42") = TimelineRowUiModel(
+    private fun row(source: TimelineSource, id: String = "42", phase: TimelinePhase = TimelinePhase.Request) = TimelineRowUiModel(
         id = id,
         source = source,
         day = "20/10/2026",
@@ -24,6 +25,7 @@ class DestinationTest {
         timestamp = 0L,
         title = "title",
         subtitle = null,
+        phase = phase,
     )
 
     @Test
@@ -31,6 +33,14 @@ class DestinationTest {
         assertEquals(
             TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1")),
             row(TimelineSource.Network, id = "call-1").toDestination(),
+        )
+    }
+
+    @Test
+    fun `the response of a network call opens the same detail panel as its request`() {
+        assertEquals(
+            TimelineDestination.Panel(NetworkRoutes.Panel(requestId = "call-1")),
+            row(TimelineSource.Network, id = "call-1", phase = TimelinePhase.Response).toDestination(),
         )
     }
 

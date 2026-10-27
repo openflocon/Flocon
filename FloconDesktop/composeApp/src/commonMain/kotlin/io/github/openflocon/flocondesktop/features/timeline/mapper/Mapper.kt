@@ -18,6 +18,7 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     subtitle = subtitle?.takeIf { it.isNotBlank() },
     network = if (source == TimelineSource.Network) toNetworkUi() else null,
     sessionStart = sessionStart,
+    phase = phase,
 )
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {

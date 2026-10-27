@@ -108,7 +108,7 @@ internal class TimelineViewModel(
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()
                 if (destination != null) {
-                    _selectedKey.update { action.row.key }
+                    _selectedKey.update { action.row.callKey }
                 }
                 when (destination) {
                     is TimelineDestination.Panel -> navigationState.navigate(destination.route)

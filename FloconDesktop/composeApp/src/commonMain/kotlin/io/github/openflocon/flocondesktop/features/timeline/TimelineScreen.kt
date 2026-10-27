@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -164,6 +165,9 @@ internal fun TimelineContent(
             )
         }
 
+        // the rows currently hovered, by key, with the call they belong to: a request and its response are highlighted together
+        val hoveredRows = remember { mutableStateMapOf<String, String>() }
+
         LazyColumn(
             state = rememberLazyListState(),
             modifier = Modifier.fillMaxSize(),
@@ -189,7 +193,11 @@ internal fun TimelineContent(
                         TimelineRow(
                             row = item.row,
                             delta = delta,
-                            selected = item.row.key == selectedKey,
+                            selected = item.row.callKey == selectedKey,
+                            hovered = item.row.callKey in hoveredRows.values,
+                            onHoverChange = { hovered ->
+                                if (hovered) hoveredRows[item.row.key] = item.row.callKey else hoveredRows.remove(item.row.key)
+                            },
                             onClick = { onAction(TimelineAction.Open(it)) },
                             modifier = Modifier.fillMaxWidth(),
                         )
