@@ -95,6 +95,13 @@
     <string name="adb_commander_step_delay">Délai (ms)</string>
     <string name="adb_commander_cancel_flow">Annuler le flux</string>
     <string name="adb_commander_execute">Exécuter</string>
+    <string name="adb_commander_no_output">Aucune sortie</string>
+    <string name="adb_commander_panel_command">Commande</string>
+    <string name="adb_commander_panel_output">Sortie</string>
+    <string name="adb_commander_panel_copy_command">Copier la commande</string>
+    <string name="adb_commander_panel_copy_output">Copier la sortie</string>
+    <string name="adb_commander_panel_success">Succès</string>
+    <string name="adb_commander_panel_failure">Échec</string>
     <string name="adb_commander_quick_commands">Commandes rapides</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Fichiers</string>

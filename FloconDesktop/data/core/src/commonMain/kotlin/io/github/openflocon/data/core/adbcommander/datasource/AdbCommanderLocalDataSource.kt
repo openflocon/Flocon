@@ -12,6 +12,7 @@ interface AdbCommanderLocalDataSource {
     suspend fun updateSavedCommand(command: AdbCommandDomainModel, deviceId: String)
 
     fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryDomainModel>>
+    fun observeHistoryItem(id: Long): Flow<AdbCommandHistoryDomainModel?>
     suspend fun addToHistory(deviceId: String, command: String, output: String, isSuccess: Boolean)
     suspend fun clearHistory(deviceId: String)
 

@@ -6,6 +6,7 @@ import io.github.openflocon.domain.adbcommander.usecase.DeleteSavedCommandUseCas
 import io.github.openflocon.domain.adbcommander.usecase.ExecuteAdbCommanderCommandUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ExecuteFlowUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveCommandHistoryUseCase
+import io.github.openflocon.domain.adbcommander.usecase.ObserveCommandHistoryItemUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveFlowsUseCase
 import io.github.openflocon.domain.adbcommander.usecase.ObserveSavedCommandsUseCase
 import io.github.openflocon.domain.adbcommander.usecase.SaveCommandUseCase
@@ -22,6 +23,7 @@ internal val adbCommanderModule = module {
     factoryOf(::DeleteSavedCommandUseCase)
     factoryOf(::UpdateSavedCommandUseCase)
     factoryOf(::ObserveCommandHistoryUseCase)
+    factoryOf(::ObserveCommandHistoryItemUseCase)
     factoryOf(::ClearCommandHistoryUseCase)
     factoryOf(::ObserveFlowsUseCase)
     factoryOf(::SaveFlowUseCase)

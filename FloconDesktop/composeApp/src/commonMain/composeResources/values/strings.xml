@@ -96,6 +96,13 @@
     <string name="adb_commander_step_delay">Delay (ms)</string>
     <string name="adb_commander_cancel_flow">Cancel Flow</string>
     <string name="adb_commander_execute">Execute</string>
+    <string name="adb_commander_no_output">No output</string>
+    <string name="adb_commander_panel_command">Command</string>
+    <string name="adb_commander_panel_output">Output</string>
+    <string name="adb_commander_panel_copy_command">Copy command</string>
+    <string name="adb_commander_panel_copy_output">Copy output</string>
+    <string name="adb_commander_panel_success">Success</string>
+    <string name="adb_commander_panel_failure">Failure</string>
     <string name="adb_commander_quick_commands">Quick Commands</string>
     <string name="menu_item_deeplinks">Deeplinks</string>
     <string name="menu_item_files">Files</string>

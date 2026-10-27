@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
@@ -25,5 +26,5 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.Database -> TimelineDestination.Screen(SubScreen.Database)
     TimelineSource.Table -> TimelineDestination.Screen(SubScreen.Tables)
     TimelineSource.Deeplink -> TimelineDestination.Screen(SubScreen.Deeplinks)
-    TimelineSource.Adb -> TimelineDestination.Screen(SubScreen.AdbCommander)
+    TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it)) }
 }

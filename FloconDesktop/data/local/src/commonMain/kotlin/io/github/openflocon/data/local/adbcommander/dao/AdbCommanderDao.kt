@@ -36,6 +36,9 @@ interface AdbCommanderDao {
     @Query("SELECT * FROM AdbCommandHistoryEntity WHERE deviceId = :deviceId ORDER BY executedAt DESC LIMIT 200")
     fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryEntity>>
 
+    @Query("SELECT * FROM AdbCommandHistoryEntity WHERE id = :id LIMIT 1")
+    fun observeHistoryItem(id: Long): Flow<AdbCommandHistoryEntity?>
+
     @Insert
     suspend fun insertHistory(entry: AdbCommandHistoryEntity)
 

@@ -51,6 +51,21 @@ data class HistoryEntryUiModel(
 )
 
 @Immutable
+data class AdbCommandPanelUiModel(
+    val command: String,
+    val output: String,
+    val isSuccess: Boolean,
+    val executedAt: String,
+)
+
+fun previewAdbCommandPanelUiModel(isSuccess: Boolean = true) = AdbCommandPanelUiModel(
+    command = "shell getprop ro.build.version.sdk",
+    output = "34",
+    isSuccess = isSuccess,
+    executedAt = "2023-01-01 00:00:00",
+)
+
+@Immutable
 data class FlowExecutionUiModel(
     val flowName: String,
     val steps: ImmutableList<FlowExecutionStepUiModel>,

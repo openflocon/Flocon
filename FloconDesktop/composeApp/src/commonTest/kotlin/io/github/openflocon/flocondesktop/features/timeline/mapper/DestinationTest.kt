@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
@@ -48,11 +49,18 @@ class DestinationTest {
     }
 
     @Test
+    fun `an adb command opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = 7L)),
+            row(TimelineSource.Adb, id = "7").toDestination(),
+        )
+    }
+
+    @Test
     fun `the plugins without detail open their screen`() {
         assertEquals(TimelineDestination.Screen(SubScreen.Database), row(TimelineSource.Database).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Deeplinks), row(TimelineSource.Deeplink).toDestination())
-        assertEquals(TimelineDestination.Screen(SubScreen.AdbCommander), row(TimelineSource.Adb).toDestination())
     }
 
     @Test
