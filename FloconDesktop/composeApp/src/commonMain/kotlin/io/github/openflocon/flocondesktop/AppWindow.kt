@@ -78,11 +78,12 @@ fun App() {
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
-        FloconTheme(
-            appScale = appScale.toAppScale(),
-            isDarkTheme = isDarkTheme,
-        ) {
-            WindowCaptureHost(controller = koinInject<WindowCaptureController>()) {
+        // around the theme, so the capture includes the page background drawn by FloconTheme
+        WindowCaptureHost(controller = koinInject<WindowCaptureController>()) {
+            FloconTheme(
+                appScale = appScale.toAppScale(),
+                isDarkTheme = isDarkTheme,
+            ) {
                 AppScreen()
             }
         }
