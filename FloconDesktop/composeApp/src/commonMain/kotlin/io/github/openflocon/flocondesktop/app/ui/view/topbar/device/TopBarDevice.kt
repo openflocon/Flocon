@@ -23,16 +23,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.devices_connected
+import flocondesktop.composeapp.generated.resources.devices_disconnected
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel.Platform
 import io.github.openflocon.flocondesktop.app.ui.model.previewDeviceItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconSolidPill
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import org.jetbrains.compose.resources.stringResource
 
-/** The selected device, shown in the top bar: platform logo, name, connection dot and platform pill. */
+/** The selected device, shown in the top bar: platform logo, name, connection dot and state. */
 @Composable
 internal fun TopBarDevice(
     device: DeviceItemUiModel,
@@ -76,7 +79,16 @@ internal fun TopBarDevice(
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             ) {
                 ConnectionDot(isActive = device.isActive)
-                PlatformPill(platform = device.platform, isActive = device.isActive)
+                Text(
+                    text = if (device.isActive) {
+                        stringResource(Res.string.devices_connected)
+                    } else {
+                        stringResource(Res.string.devices_disconnected)
+                    },
+                    color = colors.inkFaint,
+                    style = FloconTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Medium,
+                )
             }
         }
     }
@@ -186,23 +198,6 @@ private fun ConnectionDot(isActive: Boolean) {
             Modifier
                 .size(6.dp)
                 .border(1.5.dp, FloconTheme.colors.inkFaint, CircleShape),
-        )
-    }
-}
-
-@Composable
-private fun PlatformPill(
-    platform: Platform,
-    isActive: Boolean,
-) {
-    val colors = FloconTheme.colors
-    val color = platform.color()
-
-    if (platform != Platform.Unknown) {
-        FloconSolidPill(
-            text = platform.label(),
-            background = if (isActive) color.copy(alpha = 0.16f) else colors.bg300,
-            contentColor = if (isActive) color else colors.inkMuted,
         )
     }
 }
