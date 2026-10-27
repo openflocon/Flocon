@@ -33,7 +33,7 @@ internal fun DashboardButton(
         ) {
             Text(
                 text = rowItem.text,
-                color = FloconTheme.colors.bg100,
+                color = FloconTheme.colors.floating,
                 style = FloconTheme.typography.bodySmall,
             )
         }
