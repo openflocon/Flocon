@@ -5,6 +5,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
@@ -24,7 +25,7 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
     TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id))
-    TimelineSource.Database -> TimelineDestination.Screen(SubScreen.Database)
+    TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it)) }
     TimelineSource.Table -> TimelineDestination.Screen(SubScreen.Tables)
     TimelineSource.Deeplink -> id.toLongOrNull()?.let { TimelineDestination.Panel(DeeplinkRoutes.Panel(id = it)) }
     TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it)) }

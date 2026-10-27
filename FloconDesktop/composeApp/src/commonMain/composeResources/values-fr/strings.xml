@@ -176,6 +176,11 @@
     <string name="deeplink_panel_link">Lien</string>
     <string name="deeplink_panel_copy_link">Copier le lien</string>
     <string name="deeplink_panel_description">Description</string>
+    <string name="database_query_log_panel_sql">Requête</string>
+    <string name="database_query_log_panel_copy_sql">Copier la requête</string>
+    <string name="database_query_log_panel_arguments">Arguments</string>
+    <string name="database_query_log_panel_copy_arguments">Copier les arguments</string>
+    <string name="database_query_log_panel_transaction">Transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Presse-papiers :</string>
     <string name="diff_compare_clipboard">Comparer avec le presse-papiers</string>

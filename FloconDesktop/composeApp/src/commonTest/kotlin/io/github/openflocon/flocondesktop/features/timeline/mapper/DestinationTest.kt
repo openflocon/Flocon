@@ -5,6 +5,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
+import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
@@ -66,8 +67,15 @@ class DestinationTest {
     }
 
     @Test
+    fun `a database query opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = 5)),
+            row(TimelineSource.Database, id = "5").toDestination(),
+        )
+    }
+
+    @Test
     fun `the plugins without detail open their screen`() {
-        assertEquals(TimelineDestination.Screen(SubScreen.Database), row(TimelineSource.Database).toDestination())
         assertEquals(TimelineDestination.Screen(SubScreen.Tables), row(TimelineSource.Table).toDestination())
     }
 

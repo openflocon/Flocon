@@ -115,6 +115,8 @@ interface DatabaseRepository {
         limit: Int,
     ): List<DatabaseQueryLogDomainModel>
 
+    fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?>
+
     suspend fun deleteAllQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     )

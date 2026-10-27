@@ -310,6 +310,21 @@ internal class LocalDatabaseDataSourceRoom(
         }
     }
 
+    override fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?> = databaseQueryLogDao.observeLog(id).map { entity ->
+        entity?.let {
+            DatabaseQueryLogDomainModel(
+                dbName = it.dbName,
+                sqlQuery = it.sqlQuery,
+                bindArgs = it.bindArgs?.let { args ->
+                    json.decodeFromString(args)
+                } ?: emptyList(),
+                timestamp = it.timestamp,
+                isTransaction = it.isTransaction,
+                appInstance = it.appInstance
+            )
+        }
+    }
+
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         databaseQueryLogDao.deleteAll(
             deviceId = deviceIdAndPackageName.deviceId,

@@ -223,6 +223,11 @@
     <string name="deeplink_panel_link">Link</string>
     <string name="deeplink_panel_copy_link">Copy link</string>
     <string name="deeplink_panel_description">Description</string>
+    <string name="database_query_log_panel_sql">Query</string>
+    <string name="database_query_log_panel_copy_sql">Copy query</string>
+    <string name="database_query_log_panel_arguments">Arguments</string>
+    <string name="database_query_log_panel_copy_arguments">Copy arguments</string>
+    <string name="database_query_log_panel_transaction">Transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>
