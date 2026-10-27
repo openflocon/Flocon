@@ -103,7 +103,7 @@ class FloconMcpServer(
             - Screen of the device (Android, or the booted iOS Simulator): take_screenshot returns the image and its path,
               start_screen_recording / stop_screen_recording record a video (mp4). Files are saved in the Flocon documents folder,
               open_flocon_folder opens it on the computer and returns its path.
-            - Flocon itself: take_flocon_screenshot returns an image of what the Flocon desktop app currently displays
+            - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
         """.trimIndent()
     }

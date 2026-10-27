@@ -51,8 +51,8 @@ internal class CaptureMcpToolProvider(
         )
 
         server.addLoggedTool(
-            name = "take_flocon_screenshot",
-            title = "Take Flocon screenshot",
+            name = "take_flocon_desktop_screenshot",
+            title = "Take Flocon Desktop screenshot",
             description = "Returns an image of what the Flocon desktop app currently displays (the screen selected in Flocon: " +
                 "network calls, database, analytics...), not the screen of the device: use take_screenshot for the device. " +
                 "Only the visible content of the window is captured, and the image may be scaled down. " +
@@ -60,7 +60,7 @@ internal class CaptureMcpToolProvider(
             inputSchema = ToolSchema(),
             annotations = readOnlyToolAnnotations,
         ) {
-            takeFloconScreenshot()
+            takeFloconDesktopScreenshot()
         }
 
         server.addTypedTool(
@@ -109,7 +109,7 @@ internal class CaptureMcpToolProvider(
         )
     }
 
-    private suspend fun takeFloconScreenshot(): CallToolResult {
+    private suspend fun takeFloconDesktopScreenshot(): CallToolResult {
         val capture = windowCapturer.capture().fold(
             doOnFailure = { throw McpToolException("Unable to capture the Flocon window: ${it.message ?: it::class.simpleName}") },
             doOnSuccess = { it },
