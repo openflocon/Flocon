@@ -12,6 +12,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import java.io.IOException
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -110,10 +111,12 @@ class FloconOkhttpInterceptor(
             // To get the response body, be careful
             // because the body can only be read once.
             // It must be duplicated so that the chain can continue normally.
-            val responseBody = response.body
+            // `Response.body` is nullable in OkHttp 4 and non-null in OkHttp 5,
+            // keep it explicitly nullable so it compiles (and behaves) the same with both
+            val responseBody: ResponseBody? = response.body
             var responseBodyString: String? = null
             var responseSize: Long? = null
-            val responseContentType: MediaType? = responseBody.contentType()
+            val responseContentType: MediaType? = responseBody?.contentType()
 
             val responseHeadersMap =
                 response.headers.toMultimap().mapValues { it.value.joinToString(",") }
