@@ -16,7 +16,7 @@ From the desktop UI, you can:
 - **Follow the events in order**: network calls, analytics events, database queries, table rows, crashes, deeplinks, ADB commands and app starts.
 - **Read the counters**: number of events, sessions, HTTP errors and crashes of what is displayed.
 - **Filter**: toggle the sources and search a text (`Ctrl+K` / `Cmd+K` focuses the search field).
-- **Open an event**: click a row to open it in its own page (network call, analytics event, crash...).
+- **Open an event**: click a row to open its detail in a side panel (network call, analytics event, database query, table row, crash, deeplink, ADB command). App starts have nothing to open.
 
 ---
 

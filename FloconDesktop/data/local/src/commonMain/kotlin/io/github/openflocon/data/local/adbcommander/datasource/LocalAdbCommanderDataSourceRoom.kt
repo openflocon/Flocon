@@ -42,6 +42,10 @@ internal class LocalAdbCommanderDataSourceRoom(
         .map { entities -> entities.map { it.toDomainModel() } }
         .distinctUntilChanged()
 
+    override fun observeHistoryItem(id: Long): Flow<AdbCommandHistoryDomainModel?> = dao.observeHistoryItem(id)
+        .map { it?.toDomainModel() }
+        .distinctUntilChanged()
+
     override suspend fun addToHistory(
         deviceId: String,
         command: String,
