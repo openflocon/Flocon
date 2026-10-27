@@ -19,8 +19,6 @@ import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
-import io.github.openflocon.flocondesktop.app.capture.WindowCaptureController
-import io.github.openflocon.flocondesktop.app.capture.WindowCaptureHost
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
 import io.github.openflocon.flocondesktop.common.di.commonModule
@@ -78,14 +76,11 @@ fun App() {
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
-        // around the theme, so the capture includes the page background drawn by FloconTheme
-        WindowCaptureHost(controller = koinInject<WindowCaptureController>()) {
-            FloconTheme(
-                appScale = appScale.toAppScale(),
-                isDarkTheme = isDarkTheme,
-            ) {
-                AppScreen()
-            }
+        FloconTheme(
+            appScale = appScale.toAppScale(),
+            isDarkTheme = isDarkTheme,
+        ) {
+            AppScreen()
         }
 //        }
     }

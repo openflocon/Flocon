@@ -43,5 +43,5 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 - `query_database` is read only (`SELECT`, `PRAGMA` without value, `EXPLAIN`): always add a `LIMIT`.
 - Files, calls and databases cannot be modified, only mocks can.
 - `take_screenshot`, `start_screen_recording` and `open_flocon_folder` act on the device / computer (iOS: the booted Simulator only): use them when asked or when seeing the screen helps.
-- `take_flocon_screenshot` only reads: it captures the visible content of the Flocon window (dialogs opened apart are not included).
+- `take_flocon_screenshot` only reads: it captures the Flocon main window as displayed, with its open dialogs, menus and popups (separate windows such as About are not included).
 - Start from summaries and fetch details only for the calls you need, bodies can be large.
