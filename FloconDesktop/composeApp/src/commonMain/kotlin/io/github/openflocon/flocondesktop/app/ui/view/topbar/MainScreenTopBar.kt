@@ -47,6 +47,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
+import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarConnectButton
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.features.connect.view.ConnectDialog
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -108,9 +109,9 @@ fun MainScreenTopBar(
             onRecordClicked = onRecordClicked,
             onRestartClicked = onRestartClicked,
             onOpenFolderClicked = onOpenFolderClicked,
-            onConnectClicked = { showConnectDialog = true },
             devicesState = devicesState,
         )
+        TopBarConnectButton(onClicked = { showConnectDialog = true })
     }
 }
 

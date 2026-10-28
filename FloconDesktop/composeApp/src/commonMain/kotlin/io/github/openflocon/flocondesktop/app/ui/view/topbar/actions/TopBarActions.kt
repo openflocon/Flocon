@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Videocam
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.topbar_connect
 import flocondesktop.composeapp.generated.resources.topbar_open_folder
 import flocondesktop.composeapp.generated.resources.topbar_record
 import flocondesktop.composeapp.generated.resources.topbar_restart
@@ -38,7 +36,6 @@ internal fun TopBarActions(
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
-    onConnectClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -87,13 +84,6 @@ internal fun TopBarActions(
             imageVector = Icons.Outlined.FolderOpen,
             contentDescription = stringResource(Res.string.topbar_open_folder),
             onClicked = onOpenFolderClicked,
-            isEnabled = true,
-        )
-        TopBarButton(
-            active = false,
-            imageVector = Icons.Outlined.QrCode2,
-            contentDescription = stringResource(Res.string.topbar_connect),
-            onClicked = onConnectClicked,
             isEnabled = true,
         )
     }

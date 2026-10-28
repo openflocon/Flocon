@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.connect
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.connect.usecase.GetLocalAddressesUseCase
 import io.github.openflocon.flocondesktop.features.connect.model.ConnectUiState
@@ -19,7 +20,7 @@ class ConnectViewModel(
     private val getLocalAddressesUseCase: GetLocalAddressesUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ConnectUiState(addresses = persistentListOf()))
+    private val _uiState = MutableStateFlow(ConnectUiState(addresses = persistentListOf(), port = Constant.SERVER_WEBSOCKET_PORT))
     val uiState: StateFlow<ConnectUiState> = _uiState.asStateFlow()
 
     /** The network can change while the app is open, so addresses are read again each time the dialog opens. */
@@ -28,7 +29,7 @@ class ConnectViewModel(
             val addresses = withContext(dispatcherProvider.viewModel) {
                 getLocalAddressesUseCase().map { LocalAddressUiModel(interfaceName = it.interfaceName, ip = it.ip) }
             }
-            _uiState.value = ConnectUiState(addresses = addresses.toImmutableList())
+            _uiState.value = ConnectUiState(addresses = addresses.toImmutableList(), port = Constant.SERVER_WEBSOCKET_PORT)
         }
     }
 }
