@@ -70,6 +70,16 @@ Compose is detected at runtime, the SDK does not add it to your app. `VIEW_CLICK
 
 ---
 
+## Move the focus from the desktop
+
+The top of the Accessibility panel shows the element the screen reader is on (text or content description, class, bounds, and its position in the focus order of the screen). The **previous** / **next** buttons move the accessibility focus on the device, like a swipe left / right with TalkBack, and the refresh button asks where the focus is now.
+
+- Android only, and only while TalkBack (or another accessibility service) is on. The buttons are disabled otherwise.
+- The SDK builds the focus order of the resumed activity itself (Views, and the merged semantics tree of Compose), so it can differ slightly from TalkBack's. It does not wrap around: next on the last element does nothing.
+- Dialogs, popups and other windows without an activity are not covered.
+
+---
+
 ## Manual API
 
 Use it on every platform, for example for the events the automatic capture cannot see:
