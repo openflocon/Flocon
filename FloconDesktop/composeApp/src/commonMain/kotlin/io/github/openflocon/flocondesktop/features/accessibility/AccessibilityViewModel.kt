@@ -5,9 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
+import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventsUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityStateUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
+import io.github.openflocon.domain.accessibility.usecase.RefreshAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
@@ -15,6 +19,7 @@ import io.github.openflocon.flocondesktop.features.accessibility.mapper.mapToBan
 import io.github.openflocon.flocondesktop.features.accessibility.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityBannerUiModel
+import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityFocusedNodeUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityRowUiModel
 import io.github.openflocon.library.designsystem.common.asState
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -38,6 +43,10 @@ class AccessibilityViewModel(
     observeCurrentDeviceAccessibilityEventsUseCase: ObserveCurrentDeviceAccessibilityEventsUseCase,
     observeCurrentDeviceAccessibilityTypesUseCase: ObserveCurrentDeviceAccessibilityTypesUseCase,
     observeCurrentDeviceAccessibilityStateUseCase: ObserveCurrentDeviceAccessibilityStateUseCase,
+    observeCurrentDeviceAccessibilityFocusedNodeUseCase: ObserveCurrentDeviceAccessibilityFocusedNodeUseCase,
+    private val focusNextAccessibilityNodeUseCase: FocusNextAccessibilityNodeUseCase,
+    private val focusPreviousAccessibilityNodeUseCase: FocusPreviousAccessibilityNodeUseCase,
+    private val refreshAccessibilityFocusedNodeUseCase: RefreshAccessibilityFocusedNodeUseCase,
     private val resetCurrentDeviceAccessibilityEventsUseCase: ResetCurrentDeviceAccessibilityEventsUseCase,
     private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
@@ -58,6 +67,22 @@ class AccessibilityViewModel(
         .map { it?.mapToBannerUi() }
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(null)
+
+    // the focus can only be moved while a screen reader is running on the device
+    val canMoveFocus: StateFlow<Boolean> = banner
+        .map { it is AccessibilityBannerUiModel.Running }
+        .stateInWhileSubscribed(false)
+
+    // null: nothing has the accessibility focus
+    val focusedNode: StateFlow<AccessibilityFocusedNodeUiModel?> = observeCurrentDeviceAccessibilityFocusedNodeUseCase()
+        .map { it?.mapToUi() }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateInWhileSubscribed(null)
+
+    init {
+        // the device only tells when the focus changes, ask where it is now
+        onAction(AccessibilityAction.OnRefreshFocusedNodeClicked)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val rows: StateFlow<ImmutableList<AccessibilityRowUiModel>> = combine(
@@ -94,6 +119,12 @@ class AccessibilityViewModel(
                 is AccessibilityAction.OnClick -> navigationState.navigate(
                     AccessibilityRoutes.Detail(id = action.item.id)
                 )
+
+                AccessibilityAction.OnFocusNextClicked -> focusNextAccessibilityNodeUseCase()
+
+                AccessibilityAction.OnFocusPreviousClicked -> focusPreviousAccessibilityNodeUseCase()
+
+                AccessibilityAction.OnRefreshFocusedNodeClicked -> refreshAccessibilityFocusedNodeUseCase()
             }
         }
     }

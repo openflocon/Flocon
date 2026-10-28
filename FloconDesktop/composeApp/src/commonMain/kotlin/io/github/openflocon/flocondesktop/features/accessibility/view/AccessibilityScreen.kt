@@ -34,6 +34,7 @@ import flocondesktop.composeapp.generated.resources.no_accessibility_events
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityViewModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityBannerUiModel
+import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityFocusedNodeUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityRowUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.previewAccessibilityRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
@@ -54,9 +55,13 @@ fun AccessibilityScreen(modifier: Modifier = Modifier) {
     val types by viewModel.types.collectAsStateWithLifecycle()
     val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
     val banner by viewModel.banner.collectAsStateWithLifecycle()
+    val focusedNode by viewModel.focusedNode.collectAsStateWithLifecycle()
+    val canMoveFocus by viewModel.canMoveFocus.collectAsStateWithLifecycle()
 
     AccessibilityScreen(
         banner = banner,
+        focusedNode = focusedNode,
+        canMoveFocus = canMoveFocus,
         types = types,
         selectedType = selectedType,
         onTypeSelected = viewModel::onTypeSelected,
@@ -72,6 +77,8 @@ fun AccessibilityScreen(modifier: Modifier = Modifier) {
 @Composable
 fun AccessibilityScreen(
     banner: AccessibilityBannerUiModel?,
+    focusedNode: AccessibilityFocusedNodeUiModel?,
+    canMoveFocus: Boolean,
     types: ImmutableList<String>,
     selectedType: String?,
     onTypeSelected: (String?) -> Unit,
@@ -96,6 +103,13 @@ fun AccessibilityScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+
+        AccessibilityFocusedNodeCard(
+            focusedNode = focusedNode,
+            canMoveFocus = canMoveFocus,
+            onAction = onAction,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
@@ -181,6 +195,14 @@ private fun AccessibilityScreenPreview() {
                 services = persistentListOf("TalkBack"),
                 touchExploration = true,
             ),
+            focusedNode = AccessibilityFocusedNodeUiModel(
+                title = "Add to cart",
+                className = "Button",
+                bounds = "[48,1530][1032,1674]",
+                screen = "CartActivity",
+                position = AccessibilityFocusedNodeUiModel.Position(number = 3, count = 12),
+            ),
+            canMoveFocus = true,
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),
             selectedType = null,
             onTypeSelected = {},

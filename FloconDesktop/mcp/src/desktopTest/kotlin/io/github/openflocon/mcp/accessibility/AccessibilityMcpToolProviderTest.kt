@@ -1,6 +1,7 @@
 package io.github.openflocon.mcp.accessibility
 
 import io.github.openflocon.domain.accessibility.models.AccessibilityEventDomainModel
+import io.github.openflocon.domain.accessibility.models.AccessibilityFocusedNodeDomainModel
 import io.github.openflocon.domain.accessibility.models.AccessibilityStateDomainModel
 import io.github.openflocon.domain.accessibility.repository.AccessibilityRepository
 import io.github.openflocon.domain.device.models.DeviceDomainModel
@@ -185,6 +186,16 @@ private class FakeAccessibilityRepository(
     override fun observeTypes(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<List<String>> = error("not used")
+
+    override fun observeFocusedNode(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<AccessibilityFocusedNodeDomainModel?> = error("not used")
+
+    override suspend fun requestFocusedNode(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
+
+    override suspend fun focusNext(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
+
+    override suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
 
     override fun observeState(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

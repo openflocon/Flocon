@@ -146,6 +146,11 @@
     <string name="no_accessibility_events">No accessibility events</string>
     <string name="accessibility_filter">Filter by text</string>
     <string name="accessibility_clear">Clear the events</string>
+    <string name="accessibility_focus_previous">Previous element</string>
+    <string name="accessibility_focus_next">Next element</string>
+    <string name="accessibility_focus_refresh">Get the focused element</string>
+    <string name="accessibility_focus_none">No element has the accessibility focus (turn on TalkBack, then press next)</string>
+    <string name="accessibility_focus_position">%1$d / %2$d</string>
     <string name="accessibility_all_types">All</string>
     <string name="accessibility_banner_not_supported">Automatic capture isn’t available on this platform. Events appear when the app calls Flocon.accessibilityPlugin.log().</string>
     <string name="accessibility_banner_not_enabled">No accessibility service is running on the device. Clicks are still captured on Android. Turn on TalkBack (Android) or VoiceOver (iOS) to capture the other events.</string>
