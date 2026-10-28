@@ -31,6 +31,7 @@ private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
         duration = durationMs?.let(::formatElapsed),
         durationMs = durationMs,
         httpActions = hasHttpActions(method),
+        isImage = isImage,
     )
 }
 

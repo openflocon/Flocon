@@ -12,6 +12,7 @@ data class TimelineRowEntity(
     val statusCode: Int?,
     val durationMs: Double?,
     val sessionStart: Long?,
+    val isImage: Boolean = false, // network only: the response is an image
 )
 
 // result row of the summary query: one per kind

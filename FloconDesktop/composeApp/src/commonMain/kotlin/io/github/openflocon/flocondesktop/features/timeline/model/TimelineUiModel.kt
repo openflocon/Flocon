@@ -36,6 +36,7 @@ internal data class TimelineNetworkUiModel(
     val durationMs: Double? = null, // to color the slow calls
     // a gRPC or a WebSocket call has no http request to copy as cURL, replay or mock
     val httpActions: Boolean = true,
+    val isImage: Boolean = false, // the response is an image
 )
 
 @Immutable
@@ -105,7 +106,7 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
         id = "n1",
         title = "https://api.acme.io/v1/users?id=2",
         phase = TimelinePhase.Response,
-        network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = 200, duration = "124 ms", durationMs = 124.0),
+        network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = 200, duration = "124 ms", durationMs = 124.0, isImage = true),
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,

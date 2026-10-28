@@ -7,7 +7,9 @@ import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class MapperTest {
 
@@ -107,5 +109,25 @@ class MapperTest {
         assertEquals(2, summary.sources.getValue(TimelineSource.Network).httpErrorCount)
         assertEquals(2, summary.sources.getValue(TimelineSource.AppStart).count)
         assertEquals(mapOf(3000L to 6), summary.sessionEventCounts)
+    }
+
+    @Test
+    fun `a row tells if the response of the call is an image`() {
+        val row = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1100L,
+            title = "https://a/logo.png",
+            subtitle = "200",
+            appInstance = 1000L,
+            method = "GET",
+            statusCode = 200,
+            durationMs = 20.0,
+            sessionStart = 1000L,
+            isImage = true,
+        )
+
+        assertTrue(row.toDomain().isImage)
+        assertFalse(row.copy(isImage = false).toDomain().isImage)
     }
 }
