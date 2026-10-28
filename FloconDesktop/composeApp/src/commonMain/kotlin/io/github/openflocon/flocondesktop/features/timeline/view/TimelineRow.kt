@@ -41,10 +41,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
-import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
-import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
-import io.github.openflocon.library.designsystem.common.copyToClipboard
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
@@ -60,9 +56,13 @@ import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
+import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
