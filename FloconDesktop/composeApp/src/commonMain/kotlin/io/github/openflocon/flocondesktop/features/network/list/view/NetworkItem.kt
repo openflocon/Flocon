@@ -81,7 +81,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewNet
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusCell
 import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
-import io.github.openflocon.flocondesktop.features.timeline.view.Rail
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu

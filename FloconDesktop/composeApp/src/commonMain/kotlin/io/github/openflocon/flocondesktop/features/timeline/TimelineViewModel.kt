@@ -10,15 +10,22 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -35,12 +42,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
+    observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
+    private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
+    private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
+    private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
+    private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
@@ -48,12 +61,22 @@ internal class TimelineViewModel(
     private val _filterText = MutableStateFlow("")
     val filterText: StateFlow<String> = _filterText.asStateFlow()
 
-    private val _selectedSources = MutableStateFlow(TimelineSource.entries.toSet())
-    val selectedSources: StateFlow<Set<TimelineSource>> = _selectedSources.asStateFlow()
+    // the sources displayed, saved in the settings. Read from the source, not from [selectedSources], to wait for the stored
+    // selection instead of loading all the sources first
+    private val storedSources: Flow<Set<TimelineSource>> = observeTimelineSettingsUseCase()
+        .map { it.selectedSources }
+        .distinctUntilChanged()
+
+    val selectedSources: StateFlow<Set<TimelineSource>> = storedSources
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSource.entries.toSet())
 
     // the device is connected
     val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
+        .map { TimelineSettingsUiModel(autoScroll = it.autoScroll, invertList = it.invertList, pinPanel = it.pinPanel) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)
@@ -63,7 +86,7 @@ internal class TimelineViewModel(
     private val filter: Flow<TimelineFilterDomainModel> = combine(
         // no delay when the text is cleared, a short one while typing
         _filterText.debounce { if (it.isEmpty()) 0L else 300L },
-        _selectedSources,
+        storedSources,
     ) { text, sources ->
         TimelineFilterDomainModel(
             sources = sources,
@@ -86,12 +109,16 @@ internal class TimelineViewModel(
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val items: Flow<PagingData<TimelineItemUiModel>> = filter
-        .flatMapLatest { filter ->
+    // the day headers depend on the direction of the list
+    // read from the source, not from [settings], to wait for the stored value instead of reloading the list after the default one
+    private val invertList: Flow<Boolean> = observeTimelineSettingsUseCase().map { it.invertList }.distinctUntilChanged()
+
+    val items: Flow<PagingData<TimelineItemUiModel>> = combine(filter, invertList) { filter, inverted -> filter to inverted }
+        .flatMapLatest { (filter, inverted) ->
             observeTimelineUseCase(filter).map { pagingData ->
                 pagingData
                     .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
-                    .insertSeparators { before, after -> separatorBetween(before, after) }
+                    .insertSeparators { before, after -> separatorBetween(before, after, inverted) }
             }
         }
         .flowOn(dispatcherProvider.viewModel)
@@ -101,14 +128,21 @@ internal class TimelineViewModel(
         when (action) {
             is TimelineAction.FilterTextChanged -> _filterText.update { action.text }
 
-            is TimelineAction.ToggleSource -> _selectedSources.update { current ->
-                if (action.source in current) current - action.source else current + action.source
+            is TimelineAction.ToggleSource -> viewModelScope.launch {
+                val current = selectedSources.value
+                setTimelineSelectedSourcesUseCase(if (action.source in current) current - action.source else current + action.source)
             }
+
+            is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }
+
+            is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
+
+            is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()
                 if (destination != null) {
-                    _selectedKey.update { action.row.key }
+                    _selectedKey.update { action.row.callKey }
                 }
                 when (destination) {
                     is TimelineDestination.Panel -> navigationState.navigate(destination.route)
