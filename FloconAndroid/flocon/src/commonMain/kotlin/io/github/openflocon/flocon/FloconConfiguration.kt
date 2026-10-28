@@ -1,3 +1,5 @@
+@file:OptIn(FloconInternalApi::class)
+
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
@@ -19,6 +21,25 @@ class FloconConfiguration internal constructor(
 
     internal var bufferCapacity = DEFAULT_BUFFER_CAPACITY
         private set
+
+    internal var initialAddress: String? = null
+        private set
+
+    internal var addressStore: FloconAddressStore? = null
+        private set
+
+    @FloconInternalApi
+    val context: FloconContext get() = config.context
+
+    /**
+     * Also tries to connect to [initialAddress] when Flocon starts, and to the last address kept in
+     * [store] if there is one (it wins), see `connectLater` in `flocon-connect`.
+     */
+    @FloconInternalApi
+    fun connectAtStart(initialAddress: String?, store: FloconAddressStore?) {
+        this.initialAddress = initialAddress
+        this.addressStore = store
+    }
 
     /**
      * Number of messages kept while no desktop app is reachable, see `connectLater` in `flocon-connect`.
@@ -94,5 +115,7 @@ fun startFlocon(
         config = config,
         plugins = configuration.build(encoder),
         encoder = encoder,
+        initialAddress = configuration.initialAddress,
+        addressStore = configuration.addressStore,
     )
 }

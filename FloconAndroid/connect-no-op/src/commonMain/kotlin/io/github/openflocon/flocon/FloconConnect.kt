@@ -5,7 +5,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** Does nothing. */
 @Suppress("UNUSED_PARAMETER")
-fun FloconConfiguration.connectLater(bufferCapacity: Int = 5_000) {
+fun FloconConfiguration.connectLater(
+    bufferCapacity: Int = 5_000,
+    address: String? = null,
+    rememberLastAddress: Boolean = true,
+) {
     // no op
 }
 

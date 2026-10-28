@@ -1,3 +1,5 @@
+@file:OptIn(FloconInternalApi::class)
+
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconLink
@@ -23,6 +25,8 @@ class Flocon internal constructor(
     private val config: FloconConfig,
     private val plugins: List<FloconPlugin>,
     private val encoder: FloconEncoder,
+    private val initialAddress: String? = null,
+    private val addressStore: FloconAddressStore? = null,
 ) {
 
     private val connectMutex = Mutex()
@@ -32,6 +36,21 @@ class Flocon internal constructor(
         val link = config.client.defaultLink
         setLinkState(link, FloconConnectionState.Connecting)
         link.job = launchConnection(link)
+
+        // then the address given by the app, or the last one that worked: the latter wins
+        val address = addressStore?.load() ?: initialAddress
+        if (address != null) {
+            try {
+                val server = parseFloconServer(address)
+                if (server != link.server) {
+                    val extra = config.client.addExtraLink(server)
+                    setLinkState(extra, FloconConnectionState.Connecting)
+                    extra.job = launchConnection(extra)
+                }
+            } catch (e: IllegalArgumentException) {
+                FloconLogger.logError("Ignoring the address '$address': ${e.message}", e)
+            }
+        }
     }
 
     private fun launchConnection(link: FloconLink): Job = config.scope.launch {
@@ -79,6 +98,8 @@ class Flocon internal constructor(
         // before the plugins: what they send on connection comes after the handshake
         config.client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder))
         setLinkState(link, FloconConnectionState.Connected)
+        // the address typed by the user, or given at start, comes back at the next launch
+        if (link !== config.client.defaultLink) addressStore?.save(link.server.host)
         plugins.forEach { it.onConnectedToServer() }
     }
 

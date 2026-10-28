@@ -9,10 +9,22 @@ import kotlinx.coroutines.flow.StateFlow
  * the desktop app can only be known later, then give it with [connect]: both are tried.
  *
  * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
+ * @param address the IP address of a computer to also try when Flocon starts, for example one with a
+ * fixed IP. No port nor scheme: the port is always 9023.
+ * @param rememberLastAddress keeps the last address Flocon connected to (given here or to [connect]) in the
+ * app preferences, and tries it again at the next launch. It wins over [address].
  */
 @OptIn(FloconInternalApi::class)
-fun FloconConfiguration.connectLater(bufferCapacity: Int = 5_000) {
+fun FloconConfiguration.connectLater(
+    bufferCapacity: Int = 5_000,
+    address: String? = null,
+    rememberLastAddress: Boolean = true,
+) {
     keepMessages(capacity = bufferCapacity)
+    connectAtStart(
+        initialAddress = address,
+        store = if (rememberLastAddress) floconAddressStore(context) else null,
+    )
 }
 
 /** The state of the connection to the desktop app: `Connected` as soon as one address is connected. */
