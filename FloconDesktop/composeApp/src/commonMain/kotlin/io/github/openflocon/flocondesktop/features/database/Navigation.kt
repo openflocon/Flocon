@@ -10,6 +10,7 @@ import io.github.openflocon.flocondesktop.features.database.view.DatabaseQueryLo
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.database.view.DetailResultItem
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.scene.PanelSceneStrategy.Companion.panel
 import kotlinx.serialization.Serializable
@@ -28,9 +29,15 @@ sealed interface DatabaseRoutes : FloconRoute {
 
     @Serializable
     data class QueryLogPanel(
-        val id: Int
+        val id: Int,
+        val fromTimeline: Boolean = false,
     ) : DatabaseRoutes,
-        PanelRoute
+        PanelRoute {
+
+        // opened from the timeline: its pin state is the one of the timeline
+        override val pinGroup: String?
+            get() = if (fromTimeline) PanelPinGroups.Timeline else null
+    }
 }
 
 fun EntryProviderScope<FloconRoute>.databaseRoutes() {

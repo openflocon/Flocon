@@ -53,10 +53,13 @@ import io.github.openflocon.library.designsystem.components.FloconIconTonalButto
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.MainFloconNavigationState
+import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @Immutable
 private data class PanelScene(
@@ -66,6 +69,9 @@ private data class PanelScene(
     private val onBack: () -> Unit
 ) : Scene<FloconRoute>,
     KoinComponent {
+
+    private val navigationState: MainFloconNavigationState by inject()
+    private val pinRegistry: PanelPinRegistry? by lazy { getKoin().getOrNull<PanelPinRegistry>() }
 
     private val mainEntry = allEntries.last { !it.metadata.contains(PanelKey) }
     private val panelEntry = allEntries.last { it.metadata.contains(PanelKey) }
@@ -84,7 +90,12 @@ private data class PanelScene(
 
     override val content: @Composable (() -> Unit) = {
         val scope = rememberCoroutineScope()
-        val onPin = properties.onPinHandler?.invoke()
+        // a panel opened from a group (the timeline) is pinned by the group, wherever its entry is declared
+        val groupOnPin = remember(panelEntry.contentKey) {
+            val group = (navigationState.stack.lastOrNull { it is PanelRoute } as? PanelRoute)?.pinGroup
+            group?.let { pinRegistry?.onPinFor(it) }
+        }
+        val onPin = groupOnPin ?: properties.onPinHandler?.invoke()
         val pinnable = remember(onPin) { onPin != null }
         val isPinned by onPin?.isPinned
             ?.collectAsStateWithLifecycle()
@@ -268,6 +279,14 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 }
 
 data object PanelKey : NavMetadataKey<PaneProperties>
+
+/**
+ * The pin state of the groups of panels, see [PanelRoute.pinGroup]. Provided by the app.
+ */
+interface PanelPinRegistry {
+
+    fun onPinFor(group: String): OnPin?
+}
 
 interface OnPin {
 

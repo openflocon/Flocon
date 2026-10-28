@@ -18,6 +18,7 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     subtitle = subtitle?.takeIf { it.isNotBlank() },
     network = if (source == TimelineSource.Network) toNetworkUi() else null,
     sessionStart = sessionStart,
+    phase = phase,
 )
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
@@ -45,16 +46,22 @@ internal fun splitUrl(url: String): Pair<String?, String> {
 /**
  * The events are sorted from the newest, so the header of a day goes above its first event.
  * [before] is the item displayed above, [after] the one below.
+ *
+ * When the list is [inverted] (the newest at the bottom), [before] is displayed below [after]: the header of a day
+ * goes above its oldest event, so after the last event of the day in the list order.
  */
 internal fun separatorBetween(
     before: TimelineItemUiModel?,
     after: TimelineItemUiModel?,
+    inverted: Boolean = false,
 ): TimelineItemUiModel? {
-    val next = (after as? TimelineItemUiModel.Row)?.row ?: return null
     val previous = (before as? TimelineItemUiModel.Row)?.row
+    val next = (after as? TimelineItemUiModel.Row)?.row
+    // the first event of a day when the list goes down, its last event when it goes up
+    val dayStart = if (inverted) previous else next
 
-    return if (previous?.day != next.day) {
-        TimelineItemUiModel.DayHeader(day = next.day, key = "day:${next.day}:${next.key}")
+    return if (dayStart != null && previous?.day != next?.day) {
+        TimelineItemUiModel.DayHeader(day = dayStart.day, key = "day:${dayStart.day}:${dayStart.key}")
     } else {
         null
     }

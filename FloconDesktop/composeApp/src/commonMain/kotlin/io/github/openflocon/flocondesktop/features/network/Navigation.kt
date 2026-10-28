@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
@@ -18,6 +19,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScre
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
@@ -41,9 +43,17 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data class Mocks(val id: String?) : NetworkRoutes
 
     @Serializable
-    data class Panel(val requestId: String) :
-        NetworkRoutes,
-        PanelRoute
+    data class Panel(
+        val requestId: String,
+        val tab: NetworkDetailTab? = null, // null: the default tab of the settings
+        val fromTimeline: Boolean = false,
+    ) : NetworkRoutes,
+        PanelRoute {
+
+        // opened from the timeline: its pin state is the one of the timeline
+        override val pinGroup: String?
+            get() = if (fromTimeline) PanelPinGroups.Timeline else null
+    }
 
     @Serializable
     data class WindowDetail(
@@ -96,7 +106,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             keepMenu()
         }
     ) {
-        NetworkDetailScreen(requestId = it.requestId)
+        NetworkDetailScreen(requestId = it.requestId, tab = it.tab)
     }
     entry<NetworkRoutes.Mocks>(
         metadata = BigDialogSceneStrategy.bigDialog(

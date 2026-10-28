@@ -11,23 +11,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
@@ -49,6 +48,7 @@ import flocondesktop.composeapp.generated.resources.timeline_source_database
 import flocondesktop.composeapp.generated.resources.timeline_source_deeplink
 import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
@@ -72,7 +72,7 @@ private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, Time
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
 /**
- * One event: time and delta | rail | category | content | meta.
+ * One event: time and delta | category | content | meta. Only the content and the meta are highlighted.
  * [delta] is the time since the previous event.
  */
 @Composable
@@ -80,43 +80,30 @@ internal fun TimelineRow(
     row: TimelineRowUiModel,
     delta: String?,
     selected: Boolean,
+    hovered: Boolean,
     onClick: (TimelineRowUiModel) -> Unit,
+    onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
     val shape = FloconTheme.shapes.medium
     val interactionSource = remember { MutableInteractionSource() }
-    val hovered by interactionSource.collectIsHoveredAsState()
+    val rowHovered by interactionSource.collectIsHoveredAsState()
+    LaunchedEffect(rowHovered) { onHoverChange(rowHovered) }
+    DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
     val (color, soft) = row.source.categoryColors()
     val isCrash = row.source == TimelineSource.Crash
     val highlighted = hovered || selected
 
+    // the whole row reacts to the pointer, but only the part after the category is highlighted
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
-            // a crash is never missed: the whole row is tinted, with a bar on its left
-            .then(
-                if (isCrash) {
-                    Modifier
-                        .background(soft, shape)
-                        .drawBehind {
-                            drawRoundRect(
-                                color = color,
-                                size = Size(2.dp.toPx(), size.height),
-                                cornerRadius = CornerRadius(2.dp.toPx()),
-                            )
-                        }
-                } else {
-                    Modifier
-                }
-            )
-            .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
             .hoverable(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null) { onClick(row) }
-            .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+            .padding(horizontal = spacing.compact),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
@@ -125,26 +112,44 @@ internal fun TimelineRow(
             delta = delta,
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
-        Rail(
-            color = color,
-            haloColor = if (highlighted) colors.bg300 else colors.bg100,
-            outerHaloColor = if (isCrash) soft else null,
-            // the line goes through the padding and the gap between two rows
-            overflow = spacing.tiny + spacing.tiny,
-            modifier = Modifier
-                .width(FloconTheme.sizes.markerColumn)
-                .fillMaxHeight(),
-        )
+        Spacer(Modifier.width(railGutter()))
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
             EventBadge(source = row.source)
         }
-        RowContent(
-            row = row,
+        Row(
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = FloconTheme.sizes.rowHeight),
-        )
-        RowMeta(row = row)
+                .fillMaxHeight()
+                .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
+                // a crash is never missed: the whole row is tinted, with a bar on its left
+                .then(
+                    if (isCrash) {
+                        Modifier
+                            .background(soft, shape)
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = color,
+                                    size = Size(2.dp.toPx(), size.height),
+                                    cornerRadius = CornerRadius(2.dp.toPx()),
+                                )
+                            }
+                    } else {
+                        Modifier
+                    }
+                )
+                .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
+                .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.small),
+        ) {
+            RowContent(
+                row = row,
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = FloconTheme.sizes.rowHeight),
+            )
+            RowMeta(row = row)
+        }
     }
 }
 
@@ -174,38 +179,6 @@ private fun TimeColumn(
     }
 }
 
-// the vertical line of the timeline, with the dot of the category on it
-@Composable
-internal fun Rail(
-    color: Color,
-    haloColor: Color,
-    overflow: Dp,
-    modifier: Modifier = Modifier,
-    outerHaloColor: Color? = null,
-) {
-    val line = FloconTheme.colors.line
-    Box(
-        modifier = modifier.drawBehind {
-            val x = size.width / 2
-            drawLine(
-                color = line,
-                start = Offset(x, -overflow.toPx()),
-                end = Offset(x, size.height + overflow.toPx()),
-                strokeWidth = 1.dp.toPx(),
-            )
-        },
-        contentAlignment = Alignment.Center,
-    ) {
-        if (outerHaloColor != null) {
-            Box(Modifier.size(22.dp).background(outerHaloColor, CircleShape))
-        }
-        // the halo hides the line behind the dot
-        Box(Modifier.size(16.dp).background(haloColor, CircleShape), contentAlignment = Alignment.Center) {
-            Box(Modifier.size(10.dp).background(color, CircleShape))
-        }
-    }
-}
-
 @Composable
 private fun RowContent(
     row: TimelineRowUiModel,
@@ -222,7 +195,7 @@ private fun RowContent(
     ) {
         val network = row.network
         if (network != null) {
-            NetworkTitle(network)
+            NetworkTitle(network, row.phase)
         } else {
             val base = FloconTheme.typography.bodyMedium
             Text(
@@ -248,19 +221,30 @@ private fun RowContent(
 }
 
 @Composable
-private fun NetworkTitle(network: TimelineNetworkUiModel) {
+private fun NetworkTitle(
+    network: TimelineNetworkUiModel,
+    phase: TimelinePhase,
+) {
     val colors = FloconTheme.colors
+    val isResponse = phase == TimelinePhase.Response
     val title: AnnotatedString = buildAnnotatedString {
         if (network.host != null) {
             withStyle(SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)) { append(network.host) }
             append(" ")
         }
-        withStyle(SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)) { append(network.path) }
+        // the response is the quieter of the two lines
+        val pathStyle = if (isResponse) {
+            SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)
+        } else {
+            SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)
+        }
+        withStyle(pathStyle) { append(network.path) }
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
+        PhaseArrow(phase = phase)
         if (network.method.isNotEmpty()) {
             MethodPill(method = network.method)
         }
@@ -282,6 +266,8 @@ private fun RowMeta(row: TimelineRowUiModel) {
     ) {
         val network = row.network
         if (network != null) {
+            // the request has nothing to tell yet: the status and the duration are the ones of the response
+            if (row.phase == TimelinePhase.Request) return@Row
             network.duration?.let {
                 Text(
                     text = it,

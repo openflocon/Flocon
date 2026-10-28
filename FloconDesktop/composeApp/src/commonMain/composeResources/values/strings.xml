@@ -51,6 +51,8 @@
     <string name="timeline_source_adb">ADB</string>
     <string name="timeline_source_deeplink">Deeplink</string>
     <string name="timeline_source_app_start">App start</string>
+    <string name="timeline_network_request">Request</string>
+    <string name="timeline_network_response">Response</string>
     <string name="timeline_app_started">App started</string>
     <string name="timeline_live">Live</string>
     <plurals name="network_counter_requests">

@@ -56,4 +56,31 @@ class SeparatorTest {
 
         assertNotEquals(first.key, second.key)
     }
+
+    @Test
+    fun `an inverted list gets the header of a day after the last event of this day`() {
+        assertEquals(
+            "20/10/2026",
+            dayOf(separatorBetween(before = item("20/10/2026"), after = item("19/10/2026"), inverted = true)),
+        )
+    }
+
+    @Test
+    fun `an inverted list closes with the header of its last day, and does not open with one`() {
+        assertEquals("19/10/2026", dayOf(separatorBetween(before = item("19/10/2026"), after = null, inverted = true)))
+        assertNull(separatorBetween(before = null, after = item("20/10/2026"), inverted = true))
+    }
+
+    @Test
+    fun `no header between two events of the same day in an inverted list`() {
+        assertNull(separatorBetween(before = item("20/10/2026"), after = item("20/10/2026"), inverted = true))
+    }
+
+    @Test
+    fun `the key of an inverted header depends on the event above it, to stay unique`() {
+        val first = separatorBetween(before = item("20/10/2026", id = "1"), after = null, inverted = true)!!
+        val second = separatorBetween(before = item("20/10/2026", id = "2"), after = null, inverted = true)!!
+
+        assertNotEquals(first.key, second.key)
+    }
 }
