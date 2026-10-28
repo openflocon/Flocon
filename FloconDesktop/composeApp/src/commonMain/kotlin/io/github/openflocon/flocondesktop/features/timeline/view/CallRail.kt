@@ -39,24 +39,6 @@ internal fun callRailSpan(
 }
 
 /**
- * The keys of the displayed items strictly between the two lines of a call, [keys] being the keys of the displayed items from the top.
- * An end scrolled out of the list is the edge of the list. Empty when the call has no response: [upperKey] is null.
- */
-internal fun keysBetween(
-    keys: List<String>,
-    upperKey: String?,
-    lowerKey: String?,
-): Set<String> {
-    if (upperKey == null || lowerKey == null) return emptySet()
-    val upper = keys.indexOf(upperKey)
-    val lower = keys.indexOf(lowerKey)
-    if (upper < 0 && lower < 0) return emptySet()
-    val from = if (upper < 0) 0 else upper + 1
-    val to = if (lower < 0) keys.size else lower
-    return if (from < to) keys.subList(from, to).toSet() else emptySet()
-}
-
-/**
  * Drawn over the list: the bar and the two dots of the hovered call, going through the events between its request and its response.
  * [upperKey] is the key of the response, [lowerKey] the one of the request.
  */

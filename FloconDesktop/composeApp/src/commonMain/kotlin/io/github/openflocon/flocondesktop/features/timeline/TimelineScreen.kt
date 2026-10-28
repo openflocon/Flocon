@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -56,7 +55,6 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
-import io.github.openflocon.flocondesktop.features.timeline.view.keysBetween
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -183,10 +181,6 @@ internal fun TimelineContent(
 
         val upperKey = railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" } // the response is the upper line: the list starts from the newest
         val lowerKey = railCall?.callKey
-        // the rail is replaced by the bar of the hovered call, between its two lines
-        val railHiddenKeys by remember(listState) {
-            derivedStateOf { keysBetween(listState.layoutInfo.visibleItemsInfo.map { it.key.toString() }, upperKey, lowerKey) }
-        }
 
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
@@ -216,7 +210,8 @@ internal fun TimelineContent(
                                 delta = delta,
                                 selected = item.row.callKey == selectedKey,
                                 hovered = item.row.callKey in hoveredCallKeys,
-                                railHidden = item.row.key in railHiddenKeys,
+                                // the rail leaves the place to the bar of the hovered call
+                                railHidden = railCall != null,
                                 onHoverChange = { hovered ->
                                     if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
                                 },
