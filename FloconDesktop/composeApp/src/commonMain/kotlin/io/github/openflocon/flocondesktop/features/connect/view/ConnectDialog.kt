@@ -1,8 +1,14 @@
 package io.github.openflocon.flocondesktop.features.connect.view
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +22,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.Text
@@ -26,10 +34,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -42,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.connect_copied
 import flocondesktop.composeapp.generated.resources.connect_copy
 import flocondesktop.composeapp.generated.resources.connect_empty
 import flocondesktop.composeapp.generated.resources.connect_hint
@@ -58,6 +69,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -95,17 +108,20 @@ private fun ConnectDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = modifier.width(if (multiple) MultiWidth else SingleWidth),
     ) {
-        if (multiple) {
-            MultipleAddresses(
-                uiState = uiState,
-                onClose = onDismissRequest,
-            )
-        } else {
-            SingleAddress(
-                address = uiState.addresses.firstOrNull(),
-                port = uiState.port,
-                onClose = onDismissRequest,
-            )
+        // FloconDialog has no border, drawn here over the content so that the window stands out
+        Box(modifier = Modifier.border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(10.dp))) {
+            if (multiple) {
+                MultipleAddresses(
+                    uiState = uiState,
+                    onClose = onDismissRequest,
+                )
+            } else {
+                SingleAddress(
+                    address = uiState.addresses.firstOrNull(),
+                    port = uiState.port,
+                    onClose = onDismissRequest,
+                )
+            }
         }
     }
 }
@@ -267,8 +283,6 @@ private fun AddressPreview(
     port: Int,
     modifier: Modifier = Modifier,
 ) {
-    val clipboardManager = LocalClipboardManager.current
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -298,30 +312,64 @@ private fun AddressPreview(
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
         )
-        Row(
-            modifier = Modifier
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.accent)
-                .clickable { clipboardManager.setText(AnnotatedString(address.ip)) }
-                .pointerHoverIcon(PointerIcon.Hand)
-                .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        ) {
-            FloconIcon(Icons.Outlined.ContentCopy, tint = FloconTheme.colors.accentInk, modifier = Modifier.size(16.dp))
-            Text(
-                text = stringResource(Res.string.connect_copy),
-                style = FloconTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = FloconTheme.colors.accentInk,
-            )
-        }
+        CopyButton(ip = address.ip)
         Text(
             text = stringResource(Res.string.connect_hint, address.ip),
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+private fun CopyButton(
+    ip: String,
+    modifier: Modifier = Modifier,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    var copied by remember(ip) { mutableStateOf(false) }
+
+    val scale by animateFloatAsState(if (pressed) 0.94f else 1f)
+    val background by animateColorAsState(if (copied) FloconTheme.colors.statusSuccess else FloconTheme.colors.accent)
+
+    Row(
+        modifier = modifier
+            .scale(scale)
+            .clip(FloconTheme.shapes.medium)
+            .background(background)
+            .clickable(interactionSource = interactionSource, indication = null) {
+                clipboardManager.setText(AnnotatedString(ip))
+                scope.launch {
+                    copied = true
+                    delay(1_500)
+                    copied = false
+                }
+            }
+            .pointerHoverIcon(PointerIcon.Hand)
+            .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium)
+            .animateContentSize(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        Crossfade(targetState = copied) { isCopied ->
+            FloconIcon(
+                imageVector = if (isCopied) Icons.Outlined.Check else Icons.Outlined.ContentCopy,
+                tint = FloconTheme.colors.accentInk,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Crossfade(targetState = copied) { isCopied ->
+            Text(
+                text = stringResource(if (isCopied) Res.string.connect_copied else Res.string.connect_copy),
+                style = FloconTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colors.accentInk,
+            )
+        }
     }
 }
 

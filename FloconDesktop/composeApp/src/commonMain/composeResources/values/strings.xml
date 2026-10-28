@@ -404,8 +404,9 @@
     <string name="connect_title">Connect</string>
     <string name="connect_scan">Scan to connect</string>
     <string name="connect_copy">Copy address</string>
+    <string name="connect_copied">Copied</string>
     <string name="connect_pick_network">Pick the network your phone is on.</string>
-    <string name="connect_hint">Same Wi-Fi as this computer, then scan, or call Flocon.connect(\"%1$s\")</string>
+    <string name="connect_hint">Same Wi-Fi as this computer, then scan, or call Flocon.connect("%1$s")</string>
     <string name="connect_empty">No local network address found. Check that this computer is connected to a network.</string>
     <string name="connect_port">port %1$d</string>
     <string name="topbar_open_folder">open flocon folder</string>
