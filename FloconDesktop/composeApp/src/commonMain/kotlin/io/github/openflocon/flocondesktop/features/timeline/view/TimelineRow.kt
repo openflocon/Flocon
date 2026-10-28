@@ -73,6 +73,11 @@ internal fun TimelineSource.label(): StringResource = when (this) {
 private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, TimelineSource.Deeplink)
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
+// the subtitle of these sources is a short name: it is a chip at the end of the line, so the row keeps one line
+private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analytics, TimelineSource.Deeplink, TimelineSource.Accessibility)
+
+private const val HoverAlpha = 0.55f
+
 /**
  * One event: time and delta | category | content | meta. Only the content and the meta are highlighted.
  * [delta] is the time since the previous event.
@@ -96,7 +101,6 @@ internal fun TimelineRow(
     DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
     val (color, soft) = row.source.categoryColors()
     val isCrash = row.source == TimelineSource.Crash
-    val highlighted = hovered || selected
 
     // the whole row reacts to the pointer, but only the part after the category is highlighted
     Row(
@@ -122,7 +126,15 @@ internal fun TimelineRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
+                // hovering is lighter than selecting, which also has a border
+                .background(
+                    when {
+                        selected -> colors.bg300
+                        hovered -> colors.bg300.copy(alpha = HoverAlpha)
+                        else -> Color.Transparent
+                    },
+                    shape,
+                )
                 // a crash is never missed: the whole row is tinted, with a bar on its left
                 .then(
                     if (isCrash) {
@@ -189,7 +201,7 @@ private fun RowContent(
     val colors = FloconTheme.colors
     val isCrash = row.source == TimelineSource.Crash
     // the status and the provider are displayed on the right
-    val subtitle = row.subtitle.takeIf { row.network == null && row.source != TimelineSource.Analytics }
+    val subtitle = row.subtitle.takeIf { row.network == null && row.source !in chipSubtitles }
 
     Column(
         modifier = modifier,
@@ -200,8 +212,14 @@ private fun RowContent(
             NetworkTitle(network, row.phase)
         } else {
             val base = FloconTheme.typography.bodyMedium
+            val title = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title
+            val text = if (row.source == TimelineSource.Database) {
+                remember(title, colors) { sqlTitle(title, keywordColor = colors.ink, textColor = colors.inkMuted) }
+            } else {
+                AnnotatedString(title)
+            }
             Text(
-                text = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title,
+                text = text,
                 style = if (row.source in monoTitles) base.copy(fontFamily = FontFamily.Monospace) else base,
                 fontWeight = FontWeight.Medium,
                 color = if (isCrash) colors.catCrash else colors.ink,
@@ -284,7 +302,7 @@ private fun RowMeta(row: TimelineRowUiModel) {
                 // no http code (ex: gRPC): what the app reports, if anything
                 row.subtitle?.let { TagPill(text = it) }
             }
-        } else if (row.source == TimelineSource.Analytics) {
+        } else if (row.source in chipSubtitles) {
             row.subtitle?.let { TagPill(text = it) }
         }
     }
