@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,6 +42,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -52,14 +55,17 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
-import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
+import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineItems
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
@@ -69,6 +75,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -335,3 +342,35 @@ private fun handleSelectionKey(
     }
     return true
 }
+
+@Composable
+private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
+    FloconTheme(isDarkTheme = isDarkTheme) {
+        val items = remember { previewTimelineItems() }
+        val rows = remember { MutableStateFlow(PagingData.from(items)) }.collectAsLazyPagingItems()
+        val selected = remember { items.filterIsInstance<TimelineItemUiModel.Row>().first { it.row.source == TimelineSource.Database }.row.callKey }
+
+        TimelineContent(
+            rows = rows,
+            filterText = remember { mutableStateOf("") },
+            selectedSources = TimelineSource.entries.toSet(),
+            selectedKey = selected,
+            summary = previewTimelineSummaryUiModel(),
+            isLive = true,
+            settings = previewTimelineSettingsUiModel(),
+            showEmptyState = false,
+            onAction = {},
+            modifier = Modifier.height(PreviewScreenHeight),
+        )
+    }
+}
+
+private val PreviewScreenHeight = 900.dp
+
+@Preview
+@Composable
+private fun TimelineScreenDarkPreview() = TimelineScreenPreviewContent(isDarkTheme = true)
+
+@Preview
+@Composable
+private fun TimelineScreenLightPreview() = TimelineScreenPreviewContent(isDarkTheme = false)

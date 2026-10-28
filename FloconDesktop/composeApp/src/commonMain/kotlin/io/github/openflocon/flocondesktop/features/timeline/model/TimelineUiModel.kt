@@ -144,3 +144,12 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
     previewTimelineRowUiModel(source = TimelineSource.Adb, id = "adb1", title = "adb shell pm list packages", subtitle = "package:com.acme.app"),
     previewTimelineRowUiModel(source = TimelineSource.AppStart, id = "s1"),
 )
+
+// a day of events, newest first, then the start of the session
+internal fun previewTimelineItems(): List<TimelineItemUiModel> {
+    val rows = previewTimelineRows()
+    return buildList {
+        add(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day:20/10/2026"))
+        rows.forEach { add(TimelineItemUiModel.Row(it)) }
+    }
+}

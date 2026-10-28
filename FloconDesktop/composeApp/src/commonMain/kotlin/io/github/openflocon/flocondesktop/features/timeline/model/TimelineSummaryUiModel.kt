@@ -29,3 +29,22 @@ internal data class TimelineSummaryUiModel(
         )
     }
 }
+
+internal fun previewTimelineSummaryUiModel() = TimelineSummaryUiModel(
+    sourceCounts = mapOf(
+        TimelineSource.Network to 8,
+        TimelineSource.Database to 1,
+        TimelineSource.Analytics to 1,
+        TimelineSource.Accessibility to 1,
+        TimelineSource.Crash to 1,
+        TimelineSource.Table to 1,
+        TimelineSource.Deeplink to 1,
+        TimelineSource.Adb to 1,
+    ),
+    eventCount = 15,
+    sessionCount = 1,
+    httpErrorCount = 2,
+    crashCount = 1,
+    range = "12:00:00 - 12:03:41",
+    sessionEventCounts = mapOf(0L to 15),
+)
