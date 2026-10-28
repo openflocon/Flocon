@@ -1,10 +1,13 @@
 package io.github.openflocon.data.core.accessibility.repository
 
+import io.github.openflocon.data.core.accessibility.datasource.AccessibilityFocusedNodeDataSource
 import io.github.openflocon.data.core.accessibility.datasource.AccessibilityLocalDataSource
 import io.github.openflocon.data.core.accessibility.datasource.AccessibilityRemoteDataSource
 import io.github.openflocon.data.core.accessibility.datasource.AccessibilityStateDataSource
+import io.github.openflocon.data.core.accessibility.datasource.ToDeviceAccessibilityDataSource
 import io.github.openflocon.domain.Protocol
 import io.github.openflocon.domain.accessibility.models.AccessibilityEventDomainModel
+import io.github.openflocon.domain.accessibility.models.AccessibilityFocusedNodeDomainModel
 import io.github.openflocon.domain.accessibility.models.AccessibilityStateDomainModel
 import io.github.openflocon.domain.accessibility.repository.AccessibilityRepository
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -20,6 +23,8 @@ class AccessibilityRepositoryImpl(
     private val accessibilityLocalDataSource: AccessibilityLocalDataSource,
     private val accessibilityRemoteDataSource: AccessibilityRemoteDataSource,
     private val accessibilityStateDataSource: AccessibilityStateDataSource,
+    private val accessibilityFocusedNodeDataSource: AccessibilityFocusedNodeDataSource,
+    private val toDeviceAccessibilityDataSource: ToDeviceAccessibilityDataSource,
 ) : AccessibilityRepository,
     MessagesReceiverRepository {
 
@@ -46,6 +51,15 @@ class AccessibilityRepositoryImpl(
                         accessibilityStateDataSource.set(
                             deviceIdAndPackageName = deviceIdAndPackageName,
                             state = it,
+                        )
+                    }
+                }
+
+                Protocol.FromDevice.Accessibility.Method.FocusedNode -> {
+                    accessibilityRemoteDataSource.getFocusedNode(message)?.let {
+                        accessibilityFocusedNodeDataSource.set(
+                            deviceIdAndPackageName = deviceIdAndPackageName,
+                            focusedNode = it,
                         )
                     }
                 }
@@ -86,6 +100,22 @@ class AccessibilityRepositoryImpl(
     override fun observeState(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<AccessibilityStateDomainModel?> = accessibilityStateDataSource.observe(deviceIdAndPackageName)
+
+    override fun observeFocusedNode(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<AccessibilityFocusedNodeDomainModel?> = accessibilityFocusedNodeDataSource.observe(deviceIdAndPackageName)
+
+    override suspend fun requestFocusedNode(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        toDeviceAccessibilityDataSource.requestFocusedNode(deviceIdAndPackageName)
+    }
+
+    override suspend fun focusNext(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        toDeviceAccessibilityDataSource.focusNext(deviceIdAndPackageName)
+    }
+
+    override suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        toDeviceAccessibilityDataSource.focusPrevious(deviceIdAndPackageName)
+    }
 
     override suspend fun searchEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

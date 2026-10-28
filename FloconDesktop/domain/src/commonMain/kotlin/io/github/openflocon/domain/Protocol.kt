@@ -28,6 +28,7 @@ object Protocol {
             object Method {
                 const val AddEvents = "addevents"
                 const val State = "state"
+                const val FocusedNode = "focusednode"
             }
         }
 
@@ -130,6 +131,16 @@ object Protocol {
     }
 
     object ToDevice {
+
+        object Accessibility {
+            const val Plugin = "Accessibility"
+
+            object Method {
+                const val GetFocusedNode = "getFocusedNode"
+                const val FocusNext = "focusNext"
+                const val FocusPrevious = "focusPrevious"
+            }
+        }
 
         object Dashboard {
             const val Plugin = "Dashboard"

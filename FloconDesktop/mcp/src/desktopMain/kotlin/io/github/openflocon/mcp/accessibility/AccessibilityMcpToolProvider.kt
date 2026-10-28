@@ -1,7 +1,9 @@
 package io.github.openflocon.mcp.accessibility
 
 import io.github.openflocon.domain.accessibility.models.AccessibilityEventDomainModel
+import io.github.openflocon.domain.accessibility.models.AccessibilityFocusedNodeDomainModel
 import io.github.openflocon.domain.accessibility.repository.AccessibilityRepository
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
@@ -9,6 +11,13 @@ import io.github.openflocon.mcp.McpToolServer
 import io.github.openflocon.mcp.addTypedTool
 import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 internal class AccessibilityMcpToolProvider(
@@ -35,6 +44,26 @@ internal class AccessibilityMcpToolProvider(
                 "Use it when list_accessibility_events is empty. Read only.",
             annotations = readOnlyToolAnnotations,
             handler = ::getState,
+        )
+
+        server.addTypedTool(
+            name = "get_accessibility_focused_node",
+            title = "Get the accessibility focused element",
+            description = "Asks the device which element the screen reader (TalkBack) is on, with its text, content description, " +
+                "class, bounds and position in the focus order of the screen. Android only, needs TalkBack on: " +
+                "check get_accessibility_state if nothing is focused.",
+            annotations = readOnlyToolAnnotations,
+            handler = ::getFocusedNode,
+        )
+
+        server.addTypedTool(
+            name = "move_accessibility_focus",
+            title = "Move the accessibility focus",
+            description = "Moves the accessibility focus of the device to the next or previous element of the screen, like a swipe " +
+                "right / left with TalkBack, and returns the element it landed on. Use it to walk the focus order and check " +
+                "what a screen reader reads. Android only, needs TalkBack on.",
+            annotations = writeToolAnnotations(destructive = false, idempotent = false),
+            handler = ::moveFocus,
         )
 
         server.addTypedTool(
@@ -84,6 +113,78 @@ internal class AccessibilityMcpToolProvider(
         )
     }
 
+    private suspend fun getFocusedNode(input: GetAccessibilityFocusedNodeInput): AccessibilityFocusedNodeMcpResult {
+        val target = targetResolver.resolve(input)
+
+        return focusedNodeAfter(target, reportMoved = false) { accessibilityRepository.requestFocusedNode(target) }
+    }
+
+    private suspend fun moveFocus(input: MoveAccessibilityFocusInput): AccessibilityFocusedNodeMcpResult {
+        val next = when (input.direction.lowercase()) {
+            "next" -> true
+            "previous" -> false
+            else -> throw McpToolException("direction must be \"next\" or \"previous\"")
+        }
+        val target = targetResolver.resolve(input)
+
+        return focusedNodeAfter(target, reportMoved = true) {
+            if (next) accessibilityRepository.focusNext(target) else accessibilityRepository.focusPrevious(target)
+        }
+    }
+
+    /**
+     * The device answers a request asynchronously: waits for the answer, and gives the current element when it never
+     * comes because nothing changed (the answer is the same as before)
+     */
+    private suspend fun focusedNodeAfter(
+        target: DeviceIdAndPackageNameDomainModel,
+        reportMoved: Boolean,
+        request: suspend () -> Unit,
+    ): AccessibilityFocusedNodeMcpResult {
+        val updates = accessibilityRepository.observeFocusedNode(target)
+        val before = updates.first()
+
+        val answer = coroutineScope {
+            // collecting starts before the request is sent, so the answer can't be missed
+            val answer = async(start = CoroutineStart.UNDISPATCHED) {
+                withTimeoutOrNull(FOCUS_ANSWER_TIMEOUT) { updates.drop(1).first() }
+            }
+            request()
+            answer.await()
+        }
+        val after = answer ?: updates.first()
+
+        return after.toMcp(target, moved = if (reportMoved) after != before else null)
+    }
+
+    private fun AccessibilityFocusedNodeDomainModel?.toMcp(
+        target: DeviceIdAndPackageNameDomainModel,
+        moved: Boolean?,
+    ): AccessibilityFocusedNodeMcpResult {
+        if (this == null || !found) {
+            return AccessibilityFocusedNodeMcpResult(
+                deviceId = target.deviceId,
+                packageName = target.packageName,
+                focused = false,
+                moved = moved,
+            )
+        }
+        return AccessibilityFocusedNodeMcpResult(
+            deviceId = target.deviceId,
+            packageName = target.packageName,
+            focused = true,
+            moved = moved,
+            text = text,
+            contentDescription = contentDescription,
+            className = className,
+            screen = screen,
+            bounds = bounds,
+            extras = extras,
+            position = index?.plus(1),
+            count = count,
+        )
+    }
+
     private suspend fun clearEvents(input: ClearAccessibilityEventsInput): ClearAccessibilityEventsMcpResult {
         val target = targetResolver.resolve(input)
 
@@ -107,3 +208,5 @@ internal class AccessibilityMcpToolProvider(
         timestampMs = createdAt,
     )
 }
+
+private val FOCUS_ANSWER_TIMEOUT = 1500.milliseconds

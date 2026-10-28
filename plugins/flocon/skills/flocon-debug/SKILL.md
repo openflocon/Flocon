@@ -33,7 +33,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Show the user the saved screenshots, videos or exports | `open_flocon_folder` (opens the Flocon documents folder, optional `Screenshot` / `ScreenRecord` sub folder) |
 | Check SharedPreferences | `list_shared_preferences` (gives the `sharedPreferenceId`), `get_shared_preference_values` (typed values, optional text filter) |
 | Check feature flags | `list_feature_flags` (provider, name, state, variant, filters), `get_feature_flag` for the full payload |
-| Check what a screen reader gets (focus order, announcements, content descriptions) | `get_accessibility_state` first (is TalkBack / VoiceOver on, is capture supported), then `list_accessibility_events` (type and text filters), `clear_accessibility_events` |
+| Check what a screen reader gets (focus order, announcements, content descriptions) | `get_accessibility_state` first (is TalkBack / VoiceOver on, is capture supported), then `list_accessibility_events` (type and text filters), `clear_accessibility_events`; walk the focus order with `move_accessibility_focus` (`next` / `previous`, needs TalkBack on) and read where it is with `get_accessibility_focused_node` |
 | Check which images the app loaded | `list_images` (urls and load times) |
 | Check persisted data | `list_databases` (gives the `databaseId`), `list_database_tables` (schema), `query_database`, `list_database_query_logs` (queries run by the app) |
 | Check custom tables | `list_tables` (gives the `tableId`), `list_table_items` (rows, optional text filter) |

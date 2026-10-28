@@ -300,6 +300,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `get_feature_flag` | A feature flag with its state, variant and full payload. |
 | `list_accessibility_events` | Accessibility events received from the app (what TalkBack / VoiceOver get: focus, announcements, content changes), newest first. Filters: type, text. |
 | `get_accessibility_state` | Whether automatic capture is supported and enabled, touch exploration, running accessibility services. |
+| `get_accessibility_focused_node` | Asks the device which element TalkBack is on (text, content description, class, bounds, position in the focus order). Android only. |
+| `move_accessibility_focus` | Moves the accessibility focus to the `next` or `previous` element (like a TalkBack swipe) and returns the element it landed on. Android only, needs TalkBack on. |
 | `clear_accessibility_events` | Deletes the accessibility events received from the app. |
 | `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
 | `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |

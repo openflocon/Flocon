@@ -1,6 +1,7 @@
 package io.github.openflocon.mcp.accessibility
 
 import io.github.openflocon.domain.accessibility.models.AccessibilityEventDomainModel
+import io.github.openflocon.domain.accessibility.models.AccessibilityFocusedNodeDomainModel
 import io.github.openflocon.domain.accessibility.models.AccessibilityStateDomainModel
 import io.github.openflocon.domain.accessibility.repository.AccessibilityRepository
 import io.github.openflocon.domain.device.models.DeviceDomainModel
@@ -12,6 +13,7 @@ import io.github.openflocon.mcp.json
 import io.github.openflocon.mcp.targetResolver
 import io.github.openflocon.mcp.text
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.int
@@ -59,15 +61,21 @@ class AccessibilityMcpToolProviderTest {
     fun tearDown() = runBlocking { server.stop() }
 
     @Test
-    fun `only clear_accessibility_events is not read only`() = runBlocking {
+    fun `only the tools that change something are not read only`() = runBlocking {
         val tools = server.listTools()
 
         assertEquals(
-            setOf("list_accessibility_events", "get_accessibility_state", "clear_accessibility_events"),
+            setOf(
+                "list_accessibility_events",
+                "get_accessibility_state",
+                "get_accessibility_focused_node",
+                "move_accessibility_focus",
+                "clear_accessibility_events",
+            ),
             tools.map { it.name }.toSet(),
         )
         assertEquals(
-            setOf("list_accessibility_events", "get_accessibility_state"),
+            setOf("list_accessibility_events", "get_accessibility_state", "get_accessibility_focused_node"),
             tools.filter { it.annotations?.readOnlyHint == true }.map { it.name }.toSet(),
         )
     }
@@ -137,6 +145,47 @@ class AccessibilityMcpToolProviderTest {
     }
 
     @Test
+    fun `get_accessibility_focused_node returns the element the screen reader is on`() = runBlocking {
+        val result = server.callTool("get_accessibility_focused_node").json()
+
+        assertEquals(true, result["focused"]!!.jsonPrimitive.boolean)
+        assertEquals("Item 2", result["text"]!!.jsonPrimitive.content)
+        assertEquals(2, result["position"]!!.jsonPrimitive.int)
+        assertEquals(3, result["count"]!!.jsonPrimitive.int)
+        assertNull(result["moved"])
+    }
+
+    @Test
+    fun `get_accessibility_focused_node says when nothing is focused`() = runBlocking {
+        accessibilityRepository.focusedNode.value = null
+
+        val result = server.callTool("get_accessibility_focused_node").json()
+
+        assertFalse(result["focused"]!!.jsonPrimitive.boolean)
+        assertNull(result["text"])
+    }
+
+    @Test
+    fun `move_accessibility_focus goes to the next and previous elements`() = runBlocking {
+        val next = server.callTool("move_accessibility_focus", mapOf("direction" to "next")).json()
+        assertEquals("Item 3", next["text"]!!.jsonPrimitive.content)
+        assertEquals(3, next["position"]!!.jsonPrimitive.int)
+        assertEquals(true, next["moved"]!!.jsonPrimitive.boolean)
+
+        val previous = server.callTool("move_accessibility_focus", mapOf("direction" to "PREVIOUS")).json()
+        assertEquals("Item 2", previous["text"]!!.jsonPrimitive.content)
+        assertEquals(true, previous["moved"]!!.jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `move_accessibility_focus rejects an unknown direction`() = runBlocking {
+        val result = server.callTool("move_accessibility_focus", mapOf("direction" to "up"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("direction"))
+    }
+
+    @Test
     fun `clear_accessibility_events deletes the events`() = runBlocking {
         val result = server.callTool("clear_accessibility_events").json()
 
@@ -171,6 +220,9 @@ private class FakeAccessibilityRepository(
     var state: AccessibilityStateDomainModel?,
 ) : AccessibilityRepository {
 
+    /** the focus order of the fake screen: 3 elements, the device answers a request with the element it ends on */
+    val focusedNode = MutableStateFlow<AccessibilityFocusedNodeDomainModel?>(focusOrderElement(index = 1))
+
     override fun observeEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         type: String?,
@@ -185,6 +237,23 @@ private class FakeAccessibilityRepository(
     override fun observeTypes(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<List<String>> = error("not used")
+
+    override fun observeFocusedNode(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): Flow<AccessibilityFocusedNodeDomainModel?> = focusedNode
+
+    override suspend fun requestFocusedNode(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        // the device answers with the element that is focused: nothing changes
+    }
+
+    override suspend fun focusNext(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = moveFocus(1)
+
+    override suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = moveFocus(-1)
+
+    private fun moveFocus(step: Int) {
+        val index = focusedNode.value?.index ?: return
+        if (index + step in 0..2) focusedNode.value = focusOrderElement(index + step)
+    }
 
     override fun observeState(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -216,3 +285,17 @@ private class FakeAccessibilityRepository(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Int = events.size.also { events = emptyList() }
 }
+
+private fun focusOrderElement(index: Int) = AccessibilityFocusedNodeDomainModel(
+    found = true,
+    text = "Item ${index + 1}",
+    contentDescription = null,
+    className = "Button",
+    screen = "ListActivity",
+    bounds = "[0,${index * 100}][100,${index * 100 + 100}]",
+    extras = emptyMap(),
+    index = index,
+    count = 3,
+    hasNext = index < 2,
+    hasPrevious = index > 0,
+)

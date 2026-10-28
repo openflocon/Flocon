@@ -9,8 +9,10 @@ import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.accessibility.model.AccessibilityEvent
+import io.github.openflocon.flocon.accessibility.model.AccessibilityFocusedNodeItem
 import io.github.openflocon.flocon.accessibility.model.AccessibilityItem
 import io.github.openflocon.flocon.accessibility.model.AccessibilityStateItem
+import io.github.openflocon.flocon.accessibility.model.toFocusedNodeItem
 import io.github.openflocon.flocon.accessibility.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -58,6 +60,9 @@ internal class FloconAccessibilityPluginImpl(
 
     private var lastState: AccessibilityStateItem = unsupportedState
 
+    /** Bounds of the element that last got the accessibility focus, null when it was cleared. */
+    private var focusedBounds: String? = null
+
     fun startCapture(context: FloconContext) {
         try {
             startAccessibilityCapture(
@@ -74,7 +79,22 @@ internal class FloconAccessibilityPluginImpl(
         method: String,
         body: String,
     ) {
-        // no op
+        val request = when (method) {
+            Protocol.ToDevice.Accessibility.Method.GetFocusedNode -> AccessibilityFocusRequest.Current
+            Protocol.ToDevice.Accessibility.Method.FocusNext -> AccessibilityFocusRequest.Next
+            Protocol.ToDevice.Accessibility.Method.FocusPrevious -> AccessibilityFocusRequest.Previous
+            else -> return
+        }
+        try {
+            val node = requestAccessibilityFocus(request, focusedBounds)
+            if (request != AccessibilityFocusRequest.Current) {
+                // the focus event comes later, don't wait for it to know where we are on a quick succession of requests
+                focusedBounds = node.bounds ?: focusedBounds
+            }
+            sendFocusedNode(node)
+        } catch (t: Throwable) {
+            FloconLogger.logError("error on accessibility focus request", t)
+        }
     }
 
     override suspend fun onConnectedToServer() {
@@ -86,6 +106,7 @@ internal class FloconAccessibilityPluginImpl(
     }
 
     override fun log(events: List<AccessibilityEvent>) {
+        events.forEach(::trackFocus)
         events.takeIf { it.isNotEmpty() }
             ?.map(AccessibilityEvent::toItem)
             ?.let { toSend ->
@@ -105,6 +126,31 @@ internal class FloconAccessibilityPluginImpl(
         log(AccessibilityEvent(type = ANNOUNCEMENT_TYPE, text = text))
     }
 
+    private fun trackFocus(event: AccessibilityEvent) {
+        when (event.type) {
+            ACCESSIBILITY_FOCUSED_TYPE -> {
+                focusedBounds = event.bounds
+                sendFocusedNode(event.toFocusedNodeItem())
+            }
+            ACCESSIBILITY_FOCUS_CLEARED_TYPE -> {
+                focusedBounds = null
+                sendFocusedNode(AccessibilityFocusedNodeItem())
+            }
+        }
+    }
+
+    private fun sendFocusedNode(node: AccessibilityFocusedNodeItem) {
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Accessibility.Plugin,
+                method = Protocol.FromDevice.Accessibility.Method.FocusedNode,
+                body = encoder.encode<AccessibilityFocusedNodeItem>(node)
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("error on sendAccessibilityFocusedNode", t)
+        }
+    }
+
     internal fun sendState(state: AccessibilityStateItem) {
         lastState = state
         try {
@@ -122,6 +168,8 @@ internal class FloconAccessibilityPluginImpl(
         var plugin: FloconAccessibilityPlugin? = null
 
         internal const val ANNOUNCEMENT_TYPE = "ANNOUNCEMENT"
+        internal const val ACCESSIBILITY_FOCUSED_TYPE = "VIEW_ACCESSIBILITY_FOCUSED"
+        internal const val ACCESSIBILITY_FOCUS_CLEARED_TYPE = "VIEW_ACCESSIBILITY_FOCUS_CLEARED"
 
         private val unsupportedState = AccessibilityStateItem(
             supported = false,

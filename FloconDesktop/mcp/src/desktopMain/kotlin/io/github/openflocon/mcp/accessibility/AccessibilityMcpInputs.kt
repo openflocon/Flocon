@@ -38,3 +38,21 @@ internal data class ClearAccessibilityEventsInput(
     @McpDescription(PACKAGE_NAME_DESCRIPTION)
     override val packageName: String? = null,
 ) : McpTargetArguments
+
+@Serializable
+internal data class GetAccessibilityFocusedNodeInput(
+    @McpDescription(DEVICE_ID_DESCRIPTION)
+    override val deviceId: String? = null,
+    @McpDescription(PACKAGE_NAME_DESCRIPTION)
+    override val packageName: String? = null,
+) : McpTargetArguments
+
+@Serializable
+internal data class MoveAccessibilityFocusInput(
+    @McpDescription("\"next\" or \"previous\": the element to move the accessibility focus to, in the focus order of the screen. It does not wrap around.")
+    val direction: String,
+    @McpDescription(DEVICE_ID_DESCRIPTION)
+    override val deviceId: String? = null,
+    @McpDescription(PACKAGE_NAME_DESCRIPTION)
+    override val packageName: String? = null,
+) : McpTargetArguments

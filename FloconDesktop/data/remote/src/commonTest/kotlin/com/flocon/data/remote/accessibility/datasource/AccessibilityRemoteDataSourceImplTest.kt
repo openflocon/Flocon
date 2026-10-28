@@ -73,4 +73,26 @@ class AccessibilityRemoteDataSourceImplTest {
     fun `an invalid state is ignored`() {
         assertNull(dataSource.getState(message("state", "[]")))
     }
+
+    @Test
+    fun `the focused node is decoded, the empty body is nothing focused`() {
+        val focused = dataSource.getFocusedNode(
+            message(
+                method = "focusednode",
+                body = """{"found":true,"text":"Add to cart","className":"Button","bounds":"[0,0][100,48]","index":2,"count":12,"hasNext":true}""",
+            )
+        )
+
+        assertNotNull(focused)
+        assertTrue(focused.found)
+        assertEquals("Add to cart", focused.text)
+        assertEquals(2, focused.index)
+        assertEquals(12, focused.count)
+        assertTrue(focused.hasNext)
+        assertEquals(false, focused.hasPrevious)
+
+        val nothing = dataSource.getFocusedNode(message(method = "focusednode", body = "{}"))
+        assertNotNull(nothing)
+        assertEquals(false, nothing.found)
+    }
 }
