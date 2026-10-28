@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core
 
+import io.github.openflocon.data.core.accessibility.accessibilityModule
 import io.github.openflocon.data.core.adbcommander.adbCommanderModule
 import io.github.openflocon.data.core.analytics.analyticsModule
 import io.github.openflocon.data.core.crashreporter.crashReporterModule
@@ -19,6 +20,7 @@ import org.koin.dsl.module
 
 val dataCoreModule = module {
     includes(
+        accessibilityModule,
         adbCommanderModule,
         analyticsModule,
         featureFlagsModule,

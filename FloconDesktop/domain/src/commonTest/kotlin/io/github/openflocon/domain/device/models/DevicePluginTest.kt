@@ -33,6 +33,12 @@ class DevicePluginTest {
     }
 
     @Test
+    fun `accessibility needs the accessibility plugin`() {
+        assertTrue(DevicePlugin.Accessibility.isInstalled(setOf("accessibility")))
+        assertFalse(DevicePlugin.Accessibility.isInstalled(setOf("network")))
+    }
+
+    @Test
     fun `images are available with the network plugin`() {
         assertTrue(DevicePlugin.Images.isInstalled(setOf("network")))
         assertFalse(DevicePlugin.Images.isInstalled(setOf("database")))

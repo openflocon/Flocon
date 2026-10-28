@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
@@ -28,6 +29,7 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.AppStart -> null
     TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id, tab = phase.toNetworkTab(), fromTimeline = true))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id, fromTimeline = true))
+    TimelineSource.Accessibility -> TimelineDestination.Panel(AccessibilityRoutes.Detail(id = id, fromTimeline = true))
     TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id, fromTimeline = true))
     TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it, fromTimeline = true)) }
     TimelineSource.Table -> TimelineDestination.Panel(TableRoutes.Detail(id = id, fromTimeline = true))

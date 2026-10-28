@@ -21,6 +21,7 @@ kotlin {
             implementation(projects.flocon)
             implementation(projects.deeplinks)
             implementation(projects.analytics)
+            implementation(projects.accessibility)
             implementation(projects.featureflags)
             implementation(projects.tables)
             implementation(projects.sharedprefs)

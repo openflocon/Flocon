@@ -132,6 +132,7 @@ internal fun buildMenu() = MenuState(
                 item(SubScreen.Tables, plugin = DevicePlugin.Tables),
                 item(SubScreen.CrashReporter, plugin = DevicePlugin.CrashReporter),
                 item(SubScreen.FeatureFlags, plugin = DevicePlugin.FeatureFlags),
+                item(SubScreen.Accessibility, plugin = DevicePlugin.Accessibility),
             ),
         ),
         MenuSection(

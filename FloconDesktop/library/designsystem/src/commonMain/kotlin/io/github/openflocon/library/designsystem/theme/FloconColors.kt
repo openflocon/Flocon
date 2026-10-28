@@ -53,6 +53,8 @@ data class FloconColors(
     val catDeeplinkSoft: Color,
     val catAdb: Color,
     val catAdbSoft: Color,
+    val catAccessibility: Color,
+    val catAccessibilitySoft: Color,
     val catAppstart: Color,
     val statusSuccess: Color,
     val statusInfo: Color,
@@ -83,6 +85,7 @@ data class FloconColors(
         EventCategory.Table -> catTable to catTableSoft
         EventCategory.Deeplink -> catDeeplink to catDeeplinkSoft
         EventCategory.Adb -> catAdb to catAdbSoft
+        EventCategory.Accessibility -> catAccessibility to catAccessibilitySoft
         EventCategory.AppStart -> accent to accentSoft
     }
 
@@ -96,7 +99,7 @@ data class FloconColors(
     }
 }
 
-enum class EventCategory { Network, Database, Analytics, Crash, Table, Deeplink, Adb, AppStart }
+enum class EventCategory { Network, Database, Analytics, Crash, Table, Deeplink, Adb, Accessibility, AppStart }
 
 val FloconDarkColors = FloconColors(
     bg000 = Color(0xFF111111),
@@ -143,6 +146,8 @@ val FloconDarkColors = FloconColors(
     catDeeplinkSoft = Color(0x21F483C2),
     catAdb = Color(0xFFA8ADB6),
     catAdbSoft = Color(0x21A8ADB6),
+    catAccessibility = Color(0xFFFF9F6B),
+    catAccessibilitySoft = Color(0x21FF9F6B),
     catAppstart = Color(0xFFF5B440),
     statusSuccess = Color(0xFF4FD08A),
     statusInfo = Color(0xFF5EAAF7),
@@ -205,6 +210,8 @@ val FloconLightColors = FloconColors(
     catDeeplinkSoft = Color(0xFFFBE8F2),
     catAdb = Color(0xFF555A63),
     catAdbSoft = Color(0xFFECECEA),
+    catAccessibility = Color(0xFFB4501B),
+    catAccessibilitySoft = Color(0xFFFCEBE0),
     catAppstart = Color(0xFFC27C0E),
     statusSuccess = Color(0xFF17804A),
     statusInfo = Color(0xFF1D6BBF),

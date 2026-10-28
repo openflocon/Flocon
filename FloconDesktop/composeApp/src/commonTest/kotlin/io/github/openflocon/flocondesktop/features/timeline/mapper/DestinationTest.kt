@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterRoutes
@@ -52,6 +53,14 @@ class DestinationTest {
         assertEquals(
             TimelineDestination.Panel(AnalyticsRoutes.Detail(id = "item-1", fromTimeline = true)),
             row(TimelineSource.Analytics, id = "item-1").toDestination(),
+        )
+    }
+
+    @Test
+    fun `an accessibility event opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(AccessibilityRoutes.Detail(id = "event-1", fromTimeline = true)),
+            row(TimelineSource.Accessibility, id = "event-1").toDestination(),
         )
     }
 

@@ -58,6 +58,7 @@ dependencies {
     implementation(projects.device)
     implementation(projects.datastores)
     implementation(projects.analytics)
+    implementation(projects.accessibility)
     implementation(projects.featureflags)
     implementation(projects.crashreporter)
     implementation(projects.tables)
@@ -140,6 +141,7 @@ val floconNoOpModules = mapOf(
     ":flocon" to ":flocon-no-op",
     ":connect" to ":connect-no-op",
     ":analytics" to ":analytics-no-op",
+    ":accessibility" to ":accessibility-no-op",
     ":featureflags" to ":featureflags-no-op",
     ":crashreporter" to ":crashreporter-no-op",
     ":database:core" to ":database:core-no-op",

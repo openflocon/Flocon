@@ -6,6 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.AccessibilityScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.AnalyticsScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.ConnectionScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.CrashScreen
@@ -25,6 +26,7 @@ sealed interface SampleRoute {
     data object Network : SampleRoute
     data object Database : SampleRoute
     data object Analytics : SampleRoute
+    data object Accessibility : SampleRoute
     data object FeatureFlags : SampleRoute
     data object Preferences : SampleRoute
     data object Files : SampleRoute
@@ -40,6 +42,7 @@ val SampleScreen.route: SampleRoute
         SampleScreen.Network -> SampleRoute.Network
         SampleScreen.Database -> SampleRoute.Database
         SampleScreen.Analytics -> SampleRoute.Analytics
+        SampleScreen.Accessibility -> SampleRoute.Accessibility
         SampleScreen.FeatureFlags -> SampleRoute.FeatureFlags
         SampleScreen.Preferences -> SampleRoute.Preferences
         SampleScreen.Files -> SampleRoute.Files
@@ -75,6 +78,7 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
             entry<SampleRoute.Network> { NetworkScreen(onBack) }
             entry<SampleRoute.Database> { DatabaseScreen(onBack) }
             entry<SampleRoute.Analytics> { AnalyticsScreen(onBack) }
+            entry<SampleRoute.Accessibility> { AccessibilityScreen(onBack) }
             entry<SampleRoute.FeatureFlags> { FeatureFlagsScreen(onBack) }
             entry<SampleRoute.Preferences> { PreferencesScreen(onBack) }
             entry<SampleRoute.Files> { FilesScreen(onBack) }

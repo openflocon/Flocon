@@ -22,6 +22,15 @@ object Protocol {
             }
         }
 
+        object Accessibility {
+            const val Plugin = "accessibility"
+
+            object Method {
+                const val AddEvents = "addevents"
+                const val State = "state"
+            }
+        }
+
         object FeatureFlags {
             const val Plugin = "featureflags"
 

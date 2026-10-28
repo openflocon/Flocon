@@ -298,6 +298,9 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
 | `list_feature_flags` | Feature flags of the app (provider, name, state on / off / custom, variant, payload preview), the providers. Filters: provider, text in the name / variant / payload. |
 | `get_feature_flag` | A feature flag with its state, variant and full payload. |
+| `list_accessibility_events` | Accessibility events received from the app (what TalkBack / VoiceOver get: focus, announcements, content changes), newest first. Filters: type, text. |
+| `get_accessibility_state` | Whether automatic capture is supported and enabled, touch exploration, running accessibility services. |
+| `clear_accessibility_events` | Deletes the accessibility events received from the app. |
 | `list_dashboards` | Ids of the dashboards sent by the app, and the one selected in Flocon Desktop. |
 | `get_dashboard` | A dashboard with its containers and elements (texts, values, check boxes, text fields, buttons). Read only: nothing is triggered. |
 | `list_images` | Images loaded by the app (url, load time), newest first. Filters: text, start timestamp. Optionally the headers. |
