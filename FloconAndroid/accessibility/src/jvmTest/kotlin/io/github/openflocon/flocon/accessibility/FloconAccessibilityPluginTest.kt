@@ -80,4 +80,48 @@ class FloconAccessibilityPluginTest {
             assertContains(body, "\"services\":[\"talkback\"]")
         }
     }
+
+    @Test
+    fun `an accessibility focus event sends the focused node`() {
+        plugin.log(AccessibilityEvent(type = "VIEW_ACCESSIBILITY_FOCUSED", text = "Buy", bounds = "[0,0][100,50]"))
+
+        val (pluginName, method, body) = sender.messages.last()
+        assertEquals(Protocol.FromDevice.Accessibility.Plugin, pluginName)
+        assertEquals(Protocol.FromDevice.Accessibility.Method.FocusedNode, method)
+        assertContains(body, "\"found\":true")
+        assertContains(body, "\"text\":\"Buy\"")
+        assertContains(body, "\"bounds\":\"[0,0][100,50]\"")
+    }
+
+    @Test
+    fun `clearing the accessibility focus sends an empty focused node`() {
+        plugin.log(AccessibilityEvent(type = "VIEW_ACCESSIBILITY_FOCUS_CLEARED"))
+
+        val (_, method, body) = sender.messages.last()
+        assertEquals(Protocol.FromDevice.Accessibility.Method.FocusedNode, method)
+        assertEquals("{}", body)
+    }
+
+    @Test
+    fun `focus commands reply with the focused node`() {
+        listOf(
+            Protocol.ToDevice.Accessibility.Method.GetFocusedNode,
+            Protocol.ToDevice.Accessibility.Method.FocusNext,
+            Protocol.ToDevice.Accessibility.Method.FocusPrevious,
+        ).forEach { command ->
+            sender.messages.clear()
+            runBlocking { plugin.onMessageReceived(command, "") }
+
+            val (pluginName, method, _) = sender.messages.single()
+            assertEquals(Protocol.FromDevice.Accessibility.Plugin, pluginName)
+            assertEquals(Protocol.FromDevice.Accessibility.Method.FocusedNode, method)
+        }
+    }
+
+    @Test
+    fun `an unknown command is ignored`() {
+        runBlocking { plugin.onMessageReceived("unknown", "") }
+
+        assertEquals(0, sender.messages.size)
+    }
 }

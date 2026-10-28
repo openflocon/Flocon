@@ -6,8 +6,10 @@
 |------------------|-------------|----------------------------|
 | Mobile → Desktop | `AddEvents` | `List<AccessibilityItem>`  |
 | Mobile → Desktop | `State`     | `AccessibilityStateItem`   |
-
-No message from desktop to mobile.
+| Mobile → Desktop | `FocusedNode` | `AccessibilityFocusedNodeItem` |
+| Desktop → Mobile | `GetFocusedNode` | empty |
+| Desktop → Mobile | `FocusNext`  | empty |
+| Desktop → Mobile | `FocusPrevious` | empty |
 
 ## `AddEvents` (Mobile → Desktop)
 
@@ -80,3 +82,22 @@ Body is a single `AccessibilityStateItem`. The SDK sends it when the plugin is i
   "services": ["com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService"]
 }
 ```
+
+## `FocusedNode` (Mobile → Desktop)
+
+The element the screen reader is on. Sent each time the accessibility focus changes (the body is then `{}` when the focus is cleared), and as the reply to `GetFocusedNode`, `FocusNext` and `FocusPrevious`. The body is a single `AccessibilityFocusedNodeItem`; every key is optional.
+
+### `AccessibilityFocusedNodeItem`
+
+| Key                  | Type                  | Description                                                                                  |
+|----------------------|-----------------------|----------------------------------------------------------------------------------------------|
+| `found`              | `Boolean`             | `true` when an element has the accessibility focus. Omitted (`false`) otherwise              |
+| `text`, `contentDescription`, `className`, `screen`, `bounds`, `extras` | | Same as in `AccessibilityItem`                                       |
+| `index`              | `Int?`                | Position of the element in the focus order of the screen. Only in the replies to a request   |
+| `count`              | `Int?`                | Number of elements in the focus order of the screen. Only in the replies to a request        |
+| `hasNext`            | `Boolean`             | `true` when `FocusNext` has an element to go to. Omitted (`false`) otherwise                 |
+| `hasPrevious`        | `Boolean`             | `true` when `FocusPrevious` has an element to go to. Omitted (`false`) otherwise             |
+
+## `GetFocusedNode`, `FocusNext`, `FocusPrevious` (Desktop → Mobile)
+
+Empty body. `FocusNext` / `FocusPrevious` give the accessibility focus to the next / previous element of the focus order of the resumed screen, without wrapping, then reply with `FocusedNode`. The SDK builds the focus order itself (Views, and the merged semantics tree of Compose), so it can differ slightly from TalkBack's. It only works while an assistive technology is on: without one there is no accessibility focus. Android only, other platforms reply with an empty `FocusedNode`.
