@@ -22,17 +22,13 @@ import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
-import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
-import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
-import io.github.openflocon.domain.network.usecase.ReplayNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
@@ -49,7 +45,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAct
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSettingsUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
-import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.async
@@ -74,7 +70,6 @@ import kotlin.uuid.Uuid
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
     observeCurrentDeviceHasNetworkRequestsUseCase: ObserveCurrentDeviceHasNetworkRequestsUseCase,
-    private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
@@ -85,6 +80,7 @@ class NetworkViewModel(
     private val navigationState: MainFloconNavigationState,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
+    private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
 ) : ViewModel(headerDelegate),
     KoinComponent {
 
@@ -92,13 +88,10 @@ class NetworkViewModel(
     private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
     private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase by inject()
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase by inject()
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase by inject()
     private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
     private val feedbackDisplayer: FeedbackDisplayer by inject()
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
-    private val replayNetworkCallUseCase: ReplayNetworkCallUseCase by inject()
-    private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
@@ -211,19 +204,11 @@ class NetworkViewModel(
 
             is NetworkAction.OpenMocks -> openMocks(callId = null)
 
-            is NetworkAction.CreateMock -> {
-                openMocks(callId = action.item.uuid)
-            }
-
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
 
             is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
 
-            is NetworkAction.CopyCUrl -> onCopyCUrl(action)
-
-            is NetworkAction.Replay -> onReplay(action)
-
-            is NetworkAction.CopyUrl -> onCopyUrl(action)
+            is NetworkAction.ItemOption -> onItemOption(action)
 
             is NetworkAction.Remove -> onRemove(action)
 
@@ -279,17 +264,12 @@ class NetworkViewModel(
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
 
             NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
-
-            is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
         }
     }
 
-    private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
+    private fun onItemOption(action: NetworkAction.ItemOption) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            getNetworkCallAsMarkdownUseCase(action.item.uuid)?.let {
-                copyToClipboard(it)
-                feedbackDisplayer.displayMessage("Markdown copied to clipboard")
-            }
+            networkItemOptionsDelegate.onOption(callId = action.id, option = action.option)
         }
     }
 
@@ -445,29 +425,6 @@ class NetworkViewModel(
             } finally {
                 isClearing.value = false
             }
-        }
-    }
-
-    private fun onCopyCUrl(action: NetworkAction.CopyCUrl) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                ?: return@launch
-            val curl = generateCurlCommandUseCase(domainModel)
-            copyToClipboard(curl)
-        }
-    }
-
-    private fun onReplay(action: NetworkAction.Replay) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            replayNetworkCallUseCase(action.item.uuid)
-        }
-    }
-
-    private fun onCopyUrl(action: NetworkAction.CopyUrl) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                ?: return@launch
-            copyToClipboard(domainModel.request.url)
         }
     }
 
