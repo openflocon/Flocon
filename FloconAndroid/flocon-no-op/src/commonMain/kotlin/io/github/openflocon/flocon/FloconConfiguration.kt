@@ -8,20 +8,11 @@ fun startFlocon(
 }
 
 class FloconConfiguration internal constructor() {
-    /** Does nothing. */
-    fun connectLater(bufferCapacity: Int = DEFAULT_BUFFER_CAPACITY) {
-        // no op
-    }
-
     fun <Config : FloconPluginConfig, Plugin : FloconPlugin> install(
         factory: FloconPluginFactory<Config, Plugin>,
         configure: Config.() -> Unit = {}
     ) {
         // no op
-    }
-
-    internal companion object {
-        const val DEFAULT_BUFFER_CAPACITY = 5_000
     }
 }
 

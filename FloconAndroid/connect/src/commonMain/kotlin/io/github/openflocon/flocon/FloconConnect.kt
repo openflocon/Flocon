@@ -1,0 +1,39 @@
+package io.github.openflocon.flocon
+
+import kotlinx.coroutines.flow.StateFlow
+
+/**
+ * Keeps what the plugins log in memory while no desktop app is reachable, to send it once one is.
+ *
+ * Flocon always tries the default address (localhost on an emulator). Use it when the address of
+ * the desktop app can only be known later, then give it with [connect]: both are tried.
+ *
+ * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
+ */
+@OptIn(FloconInternalApi::class)
+fun FloconConfiguration.connectLater(bufferCapacity: Int = 5_000) {
+    keepMessages(capacity = bufferCapacity)
+}
+
+/** The state of the connection to the desktop app: `Connected` as soon as one address is connected. */
+@OptIn(FloconInternalApi::class)
+val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
+    get() = connectionStateFlow
+
+/**
+ * Connects to the desktop app at the given address, in addition to the default one.
+ *
+ * Flocon always keeps trying the default address (localhost on an emulator), so this is
+ * meant for what it cannot guess, such as the IP of the computer from a real device, typically
+ * typed in a debug menu. Opens the connection, introduces the app to the desktop, then sends
+ * everything that was logged and not sent yet, in the order it was logged, and sends the next
+ * messages right away. If the connection is lost later, the messages are kept again and sent
+ * on reconnection, which is retried every 3 seconds. Calling it again replaces the address.
+ *
+ * @param url the address of the desktop app, such as `ws://192.168.1.20:9023`,
+ * `192.168.1.20:9023` or `192.168.1.20` (port 9023).
+ * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
+ * in every case, call it again to retry.
+ */
+@OptIn(FloconInternalApi::class)
+suspend fun Flocon.Companion.connect(url: String): FloconConnectResult = connectToServer(url)

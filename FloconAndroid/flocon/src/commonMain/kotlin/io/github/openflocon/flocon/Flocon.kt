@@ -166,25 +166,16 @@ class Flocon internal constructor(
                 ?: FloconConnectionState.Idle
         }
 
-        /** The state of the connection to the desktop app. */
-        val connectionState: StateFlow<FloconConnectionState> get() = mutableConnectionState
+        /** The state of the connection to the desktop app, see `Flocon.connectionState` in `flocon-connect`. */
+        @FloconInternalApi
+        val connectionStateFlow: StateFlow<FloconConnectionState> get() = mutableConnectionState
 
         /**
-         * Connects to the desktop app at the given address, in addition to the default one.
-         *
-         * Flocon always keeps trying the default address (localhost on an emulator), so this is
-         * meant for what it cannot guess, such as the IP of the computer from a real device, typically
-         * typed in a debug menu. Opens the connection, introduces the app to the desktop, then sends
-         * everything that was logged and not sent yet, in the order it was logged, and sends the next
-         * messages right away. If the connection is lost later, the messages are kept again and sent
-         * on reconnection, which is retried every 3 seconds. Calling it again replaces the address.
-         *
-         * @param url the address of the desktop app, such as `ws://192.168.1.20:9023`,
-         * `192.168.1.20:9023` or `192.168.1.20` (port 9023).
-         * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
-         * in every case, call it again to retry.
+         * Connects to the desktop app at the given address, in addition to the default one,
+         * see `Flocon.connect` in `flocon-connect`.
          */
-        suspend fun connect(url: String): FloconConnectResult =
+        @FloconInternalApi
+        suspend fun connectToServer(url: String): FloconConnectResult =
             instance?.connectTo(url) ?: FloconConnectResult.NotStarted
     }
 

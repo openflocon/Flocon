@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon
 
 /**
- * State of the connection to the Flocon desktop app, see [Flocon.connectionState].
+ * State of the connection to the Flocon desktop app, see `Flocon.connectionState` in `flocon-connect`.
  */
 sealed interface FloconConnectionState {
 
@@ -11,8 +11,7 @@ sealed interface FloconConnectionState {
     /**
      * Not connected: the messages are kept in memory until the connection is up.
      *
-     * This is the state after `startFlocon` with [FloconConfiguration.connectLater] until
-     * [Flocon.connect] is called, and right after a connection is lost.
+     * This is the state while no desktop app is reachable, and right after a connection is lost.
      */
     data object Buffering : FloconConnectionState
 

@@ -1,9 +1,9 @@
 package io.github.openflocon.flocon
 
 /**
- * Result of [Flocon.connect].
+ * Result of `Flocon.connect`.
  *
- * Whatever the result, the messages kept so far are not lost: call [Flocon.connect] again to retry.
+ * Whatever the result, the messages kept so far are not lost: call `Flocon.connect` again to retry.
  */
 sealed interface FloconConnectResult {
     /** Connected: what was kept has been sent, the next messages are sent right away. */

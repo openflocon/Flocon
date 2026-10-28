@@ -47,7 +47,7 @@ dependencies {
     implementation(projects.sampleMultiplatform)
 
     implementation(projects.flocon)
-    implementation(projects.cleartext)
+    implementation(projects.connect)
     implementation(projects.deeplinks)
     implementation(projects.database.room3)
     implementation(projects.database.room)
@@ -138,7 +138,7 @@ protobuf {
 // including the ones coming transitively from :sample-multiplatform
 val floconNoOpModules = mapOf(
     ":flocon" to ":flocon-no-op",
-    ":cleartext" to ":cleartext-no-op",
+    ":connect" to ":connect-no-op",
     ":analytics" to ":analytics-no-op",
     ":featureflags" to ":featureflags-no-op",
     ":crashreporter" to ":crashreporter-no-op",

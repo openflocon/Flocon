@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConnectResult
 import io.github.openflocon.flocon.FloconConnectionState
+import io.github.openflocon.flocon.connect
+import io.github.openflocon.flocon.connectionState
 import kotlinx.coroutines.launch
 
 /**

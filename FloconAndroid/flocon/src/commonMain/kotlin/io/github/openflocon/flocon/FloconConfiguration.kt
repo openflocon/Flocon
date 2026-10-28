@@ -21,15 +21,11 @@ class FloconConfiguration internal constructor(
         private set
 
     /**
-     * Keeps what the plugins log in memory while no desktop app is reachable, to send it once one is.
-     *
-     * Flocon always tries the default address (localhost on an emulator). Use it when the address of
-     * the desktop app can only be known later, then give it with [Flocon.connect]: both are tried.
-     *
-     * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
+     * Number of messages kept while no desktop app is reachable, see `connectLater` in `flocon-connect`.
      */
-    fun connectLater(bufferCapacity: Int = DEFAULT_BUFFER_CAPACITY) {
-        this.bufferCapacity = bufferCapacity
+    @FloconInternalApi
+    fun keepMessages(capacity: Int) {
+        bufferCapacity = capacity
     }
 
     /**

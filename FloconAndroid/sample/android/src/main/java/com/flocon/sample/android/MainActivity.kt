@@ -37,6 +37,7 @@ import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
 import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
+import io.github.openflocon.flocon.connectLater
 import io.github.openflocon.flocon.startFlocon
 import io.github.openflocon.flocon.tables.FloconTable
 import io.ktor.client.HttpClient
@@ -51,6 +52,8 @@ class MainActivity : ComponentActivity() {
         FloconLogger.enabled = true
 
         startFlocon(FloconContext(this)) {
+            // keep what is logged until a desktop is reachable (here, also by typing its IP in the app)
+            connectLater()
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")
