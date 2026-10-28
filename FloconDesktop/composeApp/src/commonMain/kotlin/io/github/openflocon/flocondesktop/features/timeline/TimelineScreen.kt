@@ -4,6 +4,9 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -213,8 +216,13 @@ internal fun TimelineContent(
 
         // the rows currently hovered, by key: a request and its response are highlighted together
         val hoveredRows = remember { mutableStateMapOf<String, TimelineRowUiModel>() }
-        val hoveredCallKeys = hoveredRows.values.mapTo(mutableSetOf()) { it.callKey }
-        val hoveredLinkKeys = hoveredRows.values.mapNotNullTo(mutableSetOf()) { it.linkKey() }
+        // the links only show while the pointer is over the list: a row can miss its exit, ex: when the detail panel opens
+        val listInteraction = remember { MutableInteractionSource() }
+        val listHovered by listInteraction.collectIsHoveredAsState()
+        LaunchedEffect(listHovered) { if (!listHovered) hoveredRows.clear() }
+        val hoveredNow = if (listHovered) hoveredRows.values.toList() else emptyList()
+        val hoveredCallKeys = hoveredNow.mapTo(mutableSetOf()) { it.callKey }
+        val hoveredLinkKeys = hoveredNow.mapNotNullTo(mutableSetOf()) { it.linkKey() }
 
         // the newest event is the first of the list, whatever the direction: look at it, not at the count, so the older
         // pages loaded while scrolling do not bring the list back to the top
@@ -226,9 +234,9 @@ internal fun TimelineContent(
         }
         // the bar between the lines of a hovered network call, nothing to link while it waits for its response, or between
         // the same event repeated
-        val railRow = hoveredRows.values.firstOrNull {
+        val railRow = hoveredNow.firstOrNull {
             it.source == TimelineSource.Network && (it.phase == TimelinePhase.Response || it.network?.duration != null)
-        } ?: hoveredRows.values.firstOrNull { it.linkKey() != null }
+        } ?: hoveredNow.firstOrNull { it.linkKey() != null }
         val railLinkKey = railRow?.linkKey()
         val railCallKey = railRow?.callKey.takeIf { railRow?.source == TimelineSource.Network }
         val itemCount = rows.itemCount
@@ -239,7 +247,7 @@ internal fun TimelineContent(
             }
         }
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().hoverable(listInteraction)) {
             LazyColumn(
                 state = listState,
                 reverseLayout = settings.invertList,
