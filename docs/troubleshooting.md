@@ -35,6 +35,15 @@ If your app uses a custom `networkSecurityConfig`, ensure you explicitly permit 
     </network-security-config>
     ```
 
+!!! tip "Connecting to the IP of your computer (real device)"
+    `Flocon.connect("192.168.1.20")` opens a cleartext `ws://` connection to that IP, which the configuration above does not allow (`cleartext communication ... not permitted`). Android cannot allow an IP range, so allow cleartext for your **debug** builds only, for example with a `base-config`:
+
+    ```xml
+    <network-security-config>
+        <base-config cleartextTrafficPermitted="true" />
+    </network-security-config>
+    ```
+
 ---
 
 ## 2. ADB Connection Issues
