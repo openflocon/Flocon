@@ -15,6 +15,7 @@ data class LocalAddressUiModel(
 data class ConnectUiState(
     val addresses: ImmutableList<LocalAddressUiModel>,
     val port: Int,
+    val mascotEnabled: Boolean,
 )
 
 fun previewConnectUiState() = ConnectUiState(
@@ -24,6 +25,7 @@ fun previewConnectUiState() = ConnectUiState(
         LocalAddressUiModel(interfaceName = "bridge0", ip = "172.20.10.4"),
     ),
     port = 9023,
+    mascotEnabled = true,
 )
 
 fun previewSingleConnectUiState() = previewConnectUiState().let { it.copy(addresses = it.addresses.take(1).toImmutableList()) }
