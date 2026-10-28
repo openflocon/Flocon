@@ -117,7 +117,7 @@ Download the latest release for your operating system:
 === "Android Requirements"
     - An Android device or emulator with **USB Debugging** enabled.
     - Android SDK Tools with `adb` (Android Debug Bridge) installed and accessible in your system `PATH`.
-    - Allowed cleartext connection to `localhost` / `127.0.0.1` (see [Troubleshooting](troubleshooting.md)).
+    - Nothing to configure for the connection: it is encrypted (TLS), so your app does not need to allow cleartext traffic.
 
 === "Multiplatform Requirements"
     - Kotlin **2.0.0** or newer.

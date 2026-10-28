@@ -211,7 +211,7 @@ Response to `listFiles`, `deleteFile`, `deleteFiles` and `deleteFolderContent` (
 
 ### Response: HTTP upload (Mobile → Desktop)
 
-The file is **not** sent through the websocket but uploaded with `POST http://<host>:9024/upload` (`multipart/form-data`, header `User-Agent: Flocon`).
+The file is **not** sent through the websocket but uploaded with `POST https://<host>:9024/upload` (`multipart/form-data`, header `User-Agent: Flocon`).
 
 | Part             | Type        | Description                         |
 |------------------|-------------|-------------------------------------|
@@ -223,7 +223,7 @@ The file is **not** sent through the websocket but uploaded with `POST http://<h
 | `file`           | file        | File content (`application/octet-stream`) |
 
 ```bash
-curl -X POST http://localhost:9024/upload \
+curl -k -X POST https://localhost:9024/upload \
   -H "User-Agent: Flocon" \
   -F remotePath=/data/user/0/com.example.app/files/config.json \
   -F requestId=c4d2… \

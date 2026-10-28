@@ -22,6 +22,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
 
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
+        .trustFloconDesktopCertificate()
         .build()
 
     private var webSocket: WebSocket? = null
@@ -71,7 +72,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
             }
 
             val request = Request.Builder()
-                .url("ws://$address:$port")
+                .url("wss://$address:$port")
                 .header("User-Agent", "Flocon")
                 .build()
 

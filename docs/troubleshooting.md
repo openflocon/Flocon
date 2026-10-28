@@ -7,33 +7,12 @@ description: Common issues and solutions when connecting Flocon Desktop to your 
 
 ## Flocon Desktop Cannot See Device Calls
 
-To allow Flocon to intercept and inspect network traffic, database queries, and custom events from your Android app, the app must be allowed to communicate with `localhost` (`127.0.0.1`), where the desktop companion communicates.
+The SDK talks to the desktop over TLS (`wss://localhost:9023`, `https://localhost:9024`) through `adb reverse`, so no cleartext configuration is needed in your app (no `networkSecurityConfig` entry for `localhost`).
 
-### 1. Allow Cleartext Traffic to Localhost
-
-If your app uses a custom `networkSecurityConfig`, ensure you explicitly permit cleartext traffic to `localhost` and `127.0.0.1`.
-
-=== "`AndroidManifest.xml`"
-
-    ```xml
-    <application
-        android:name=".MyApp"
-        android:networkSecurityConfig="@xml/network_security_config"
-        ... >
-    </application>
-    ```
-
-=== "`res/xml/network_security_config.xml`"
-
-    ```xml
-    <?xml version="1.0" encoding="utf-8"?>
-    <network-security-config>
-        <domain-config cleartextTrafficPermitted="true">
-            <domain includeSubdomains="true">localhost</domain>
-            <domain includeSubdomains="true">127.0.0.1</domain>
-        </domain-config>
-    </network-security-config>
-    ```
+### 1. Check the connection
+- Flocon Desktop must be running: it serves a self-signed certificate that the SDK accepts without verifying it.
+- The SDK and Flocon Desktop must be on the same version: an older SDK still tries the removed `ws://` connection and cannot connect (see [Migration](migration.md)).
+- Web (wasmJs) only: the browser rejects self-signed certificates, open `https://localhost:9023` once in the browser and accept the certificate.
 
 ---
 

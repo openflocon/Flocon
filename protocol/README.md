@@ -10,8 +10,10 @@ Source of truth:
 
 | Channel   | Direction        | Address                          | Usage                                  |
 |-----------|------------------|----------------------------------|----------------------------------------|
-| WebSocket | both             | `ws://<host>:9023/`              | All plugin messages (JSON text frames) |
-| HTTP      | mobile → desktop | `POST http://<host>:9024/upload` | File upload (see [files.md](files.md)) |
+| WebSocket | both             | `wss://<host>:9023/`              | All plugin messages (JSON text frames) |
+| HTTPS     | mobile → desktop | `POST https://<host>:9024/upload` | File upload (see [files.md](files.md)) |
+
+Both channels use TLS, so apps never need to allow cleartext traffic. The desktop serves a self-signed certificate (SAN `localhost` / `127.0.0.1`) that clients **must accept without verifying it** (trust-all, hostname check disabled): the TLS layer only encrypts the channel, it does not authenticate the desktop. The plain `ws://` / `http://` ports are no longer served.
 
 On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024`, so `<host>` is `localhost`.
 

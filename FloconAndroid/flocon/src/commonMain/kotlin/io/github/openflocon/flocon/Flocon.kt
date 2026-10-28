@@ -6,10 +6,8 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import io.github.openflocon.flocon.model.toBonjourBody
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Flocon internal constructor(
     private val config: FloconConfig,
@@ -51,18 +49,12 @@ class Flocon internal constructor(
                 it.sendPendingMessages()
             }
         } catch (t: Throwable) {
-            if (t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
-                withContext(Dispatchers.Main) {
-                    displayClearTextError(context = context)
-                }
-            } else {
-                t.printStackTrace()
-                delay(3_000)
-                start(
-                    client = client,
-                    context = context,
-                )
-            }
+            t.printStackTrace()
+            delay(3_000)
+            start(
+                client = client,
+                context = context,
+            )
         }
     }
 
