@@ -14,7 +14,7 @@ Flocon Desktop receives what happens in the mobile app connected to it and expos
 
 ## Targeting
 
-By default every tool targets the device and app selected in Flocon Desktop. Call `list_devices` to see the others, then pass `deviceId` and `packageName`.
+By default every tool targets the device and app selected in Flocon Desktop. Call `list_devices` to see the others (each has a `connectionType`: `default` for localhost, `wifi` when connected through the connect module), then pass `deviceId` and `packageName`.
 
 ## What to use for what
 

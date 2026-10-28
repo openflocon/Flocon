@@ -25,8 +25,16 @@ class BonjourDataModelTest {
         )
 
         assertEquals(
-            "{\"plugins\":[\"network\",\"sharedpreferences\",\"table\",\"deeplink\"]}",
-            plugins.toBonjourBody(FloconEncoder()),
+            "{\"plugins\":[\"network\",\"sharedpreferences\",\"table\",\"deeplink\"],\"connectionType\":\"default\"}",
+            plugins.toBonjourBody(FloconEncoder(), FloconConnectionType.Default),
+        )
+    }
+
+    @Test
+    fun `bonjour tells when the connection is made through the connect module`() {
+        assertEquals(
+            "{\"plugins\":[\"network\"],\"connectionType\":\"wifi\"}",
+            listOf(FakePlugin(Protocol.ToDevice.Network.Plugin)).toBonjourBody(FloconEncoder(), FloconConnectionType.Wifi),
         )
     }
 }
