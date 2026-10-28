@@ -5,6 +5,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.Modifier
 import com.flocon.sample.android.grpc.GrpcController
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -124,7 +127,10 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            App()
+            Column(modifier = Modifier.statusBarsPadding()) {
+                FloconConnectionBar()
+                App()
+            }
         }
     }
 }
