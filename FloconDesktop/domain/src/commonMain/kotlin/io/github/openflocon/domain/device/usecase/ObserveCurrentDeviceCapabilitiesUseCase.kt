@@ -35,19 +35,21 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
 internal fun computeCapabilities(
     device: DeviceDomainModel,
     app: DeviceAppDomainModel
-): DeviceCapabilitiesDomainModel? = if (device.isPlatformAndroid()) {
-    val adb = device.supportsAdb()
-    DeviceCapabilitiesDomainModel(
-        screenshot = adb,
-        recordScreen = adb,
-        restart = true,
-        sharedPreferences = true,
-        deeplinks = adb,
-        adbAvailable = adb,
-        files = true,
-    )
-} else if (device.isPlatformDesktop()) {
-    DeviceCapabilitiesDomainModel(
+): DeviceCapabilitiesDomainModel? = when {
+    device.isPlatformAndroid() -> {
+        val adb = device.supportsAdb()
+        DeviceCapabilitiesDomainModel(
+            screenshot = adb,
+            recordScreen = adb,
+            restart = true,
+            sharedPreferences = true,
+            deeplinks = adb,
+            adbAvailable = adb,
+            files = true,
+        )
+    }
+
+    device.isPlatformDesktop() -> DeviceCapabilitiesDomainModel(
         screenshot = false,
         recordScreen = false,
         restart = false,
@@ -55,8 +57,8 @@ internal fun computeCapabilities(
         deeplinks = false,
         files = false,
     )
-} else if (device.isPlatformIos()) {
-    DeviceCapabilitiesDomainModel(
+
+    device.isPlatformIos() -> DeviceCapabilitiesDomainModel(
         screenshot = true, // iOS Simulator only, through `xcrun simctl io screenshot`
         recordScreen = true, // iOS Simulator only, through `xcrun simctl io recordVideo`
         restart = false,
@@ -64,6 +66,6 @@ internal fun computeCapabilities(
         deeplinks = true, // iOS Simulator only, through `xcrun simctl openurl`
         files = false, // may be possible on next versions
     )
-} else {
-    null
+
+    else -> null
 }
