@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.adbcommander.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,16 +13,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.adb_commander_unavailable_wifi
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderViewModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconEmptyState
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,10 +48,16 @@ private fun AdbCommanderScreen(
     modifier: Modifier = Modifier,
 ) {
     if (!uiState.adbAvailable) {
-        FloconEmptyState(
+        FeatureEmptyState(
+            doc = FeatureDoc.AdbCommander,
             title = stringResource(Res.string.menu_item_adbCommander),
             description = stringResource(Res.string.adb_commander_unavailable_wifi),
-            modifier = modifier.fillMaxSize(),
+            showSetupButton = false,
+            modifier = modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colors.bg100)
+                .mascotPlatform(),
         )
         return
     }
