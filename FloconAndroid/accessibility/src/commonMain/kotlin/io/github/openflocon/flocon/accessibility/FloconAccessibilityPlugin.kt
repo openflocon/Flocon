@@ -106,7 +106,6 @@ internal class FloconAccessibilityPluginImpl(
     }
 
     override fun log(events: List<AccessibilityEvent>) {
-        events.forEach(::trackFocus)
         events.takeIf { it.isNotEmpty() }
             ?.map(AccessibilityEvent::toItem)
             ?.let { toSend ->
@@ -120,6 +119,8 @@ internal class FloconAccessibilityPluginImpl(
                     FloconLogger.logError("error on sendAccessibilityEvents", t)
                 }
             }
+        // after the events, so the focused node is the last message sent
+        events.forEach(::trackFocus)
     }
 
     override fun announce(text: String) {
