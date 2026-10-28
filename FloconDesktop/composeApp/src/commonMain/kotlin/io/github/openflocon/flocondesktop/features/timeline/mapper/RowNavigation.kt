@@ -47,3 +47,20 @@ internal fun TimelineRowUiModel.linkKey(): String? = when (source) {
     TimelineSource.AppStart, TimelineSource.Network, TimelineSource.Database -> null
     else -> "${source.name}:$title".takeIf { title.isNotBlank() }
 }
+
+/**
+ * The indices of the rows linked to the hovered one: the two lines of a network call ([callKey]), or the same event
+ * repeated ([linkKey]). Nothing without a key: the rows with nothing to link do not match each other.
+ */
+internal fun linkedRowIndices(
+    count: Int,
+    callKey: String?,
+    linkKey: String?,
+    rowAt: (Int) -> TimelineRowUiModel?,
+): List<Int> {
+    if (callKey == null && linkKey == null) return emptyList()
+    return (0 until count).filter { index ->
+        val row = rowAt(index) ?: return@filter false
+        if (callKey != null) row.callKey == callKey else row.linkKey() == linkKey
+    }
+}

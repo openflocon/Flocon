@@ -60,6 +60,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
+import io.github.openflocon.flocondesktop.features.timeline.mapper.linkedRowIndices
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
@@ -241,10 +242,7 @@ internal fun TimelineContent(
         val railCallKey = railRow?.callKey.takeIf { railRow?.source == TimelineSource.Network }
         val itemCount = rows.itemCount
         val linkedIndices = remember(railLinkKey, railCallKey, itemCount) {
-            (0 until itemCount).filter { index ->
-                val row = (rows.peek(index) as? TimelineItemUiModel.Row)?.row ?: return@filter false
-                if (railCallKey != null) row.callKey == railCallKey else row.linkKey() == railLinkKey
-            }
+            linkedRowIndices(itemCount, railCallKey, railLinkKey) { (rows.peek(it) as? TimelineItemUiModel.Row)?.row }
         }
 
         Box(modifier = Modifier.fillMaxSize().hoverable(listInteraction)) {

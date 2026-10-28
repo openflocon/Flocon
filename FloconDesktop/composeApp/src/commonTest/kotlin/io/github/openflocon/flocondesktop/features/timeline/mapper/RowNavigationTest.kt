@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 import kotlin.test.Test
@@ -71,5 +72,31 @@ class RowNavigationTest {
         assertNull(previewTimelineRowUiModel(TimelineSource.Database, title = "SELECT 1").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.Network, title = "https://acme.io").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.AppStart, title = "").linkKey())
+    }
+
+    private val linkRows = listOf(
+        previewTimelineRowUiModel(TimelineSource.Database, id = "1", title = "SELECT 1"),
+        previewTimelineRowUiModel(TimelineSource.Analytics, id = "2", title = "screen_view"),
+        previewTimelineRowUiModel(TimelineSource.Network, id = "n", title = "https://acme.io", phase = TimelinePhase.Response),
+        previewTimelineRowUiModel(TimelineSource.Analytics, id = "3", title = "screen_view"),
+        previewTimelineRowUiModel(TimelineSource.Network, id = "n", title = "https://acme.io"),
+        previewTimelineRowUiModel(TimelineSource.AppStart, id = "s", title = ""),
+    )
+
+    private fun linked(callKey: String?, linkKey: String?) = linkedRowIndices(linkRows.size, callKey, linkKey) { linkRows[it] }
+
+    @Test
+    fun `nothing is linked without a key, the rows with nothing to link do not match each other`() {
+        assertEquals(emptyList(), linked(callKey = null, linkKey = null))
+    }
+
+    @Test
+    fun `the two lines of a call are linked`() {
+        assertEquals(listOf(2, 4), linked(callKey = "Network:n", linkKey = null))
+    }
+
+    @Test
+    fun `the same event repeated is linked`() {
+        assertEquals(listOf(1, 3), linked(callKey = null, linkKey = "Analytics:screen_view"))
     }
 }
