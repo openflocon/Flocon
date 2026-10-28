@@ -88,6 +88,7 @@ private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analyt
 private const val HoverAlpha = 0.3f
 private const val SelectedBorderAlpha = 0.7f
 private const val HighlightAlpha = 0.35f
+private const val ErrorBoxAlpha = 0.12f
 
 /**
  * One event: time and delta | category | content | meta. Only the content and the meta are highlighted.
@@ -280,7 +281,7 @@ private fun NetworkTitle(
             val pathStyle = if (isResponse) {
                 SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)
             } else {
-                SpanStyle(color = network.statusCode?.takeIf { error }?.let(colors::httpStatus) ?: colors.ink, fontWeight = FontWeight.Medium)
+                SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)
             }
             withStyle(pathStyle) { append(network.path) }
         }
@@ -300,7 +301,19 @@ private fun NetworkTitle(
             maxLines = 1,
             // the host and the end of the path are the parts that tell the calls apart
             overflow = TextOverflow.MiddleEllipsis,
-            modifier = Modifier.weight(1f, fill = false),
+            modifier = Modifier
+                .weight(1f, fill = false)
+                // a failed call is boxed in red, whatever the family of its status
+                .then(
+                    if (error) {
+                        Modifier
+                            .background(colors.statusError.copy(alpha = ErrorBoxAlpha), FloconTheme.shapes.small)
+                            .border(1.dp, colors.statusError, FloconTheme.shapes.small)
+                            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny)
+                    } else {
+                        Modifier
+                    }
+                ),
         )
     }
 }

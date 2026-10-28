@@ -112,6 +112,13 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,
+        id = "n4",
+        title = "https://api.acme.io/v1/users/42",
+        phase = TimelinePhase.Response,
+        network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users/42", statusCode = 404, duration = "87 ms", durationMs = 87.0),
+    ),
+    previewTimelineRowUiModel(
+        source = TimelineSource.Network,
         id = "n3",
         title = "https://api.acme.io/acme.Users/List",
         subtitle = "OK",
