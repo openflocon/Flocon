@@ -8,30 +8,16 @@ internal data class FloconServer(
 )
 
 /**
- * Reads the address of the desktop app: `ws://192.168.1.20:9023`, `192.168.1.20:9023`
- * or `192.168.1.20` (port 9023).
+ * Reads the address of the desktop app: only its IP address or host, such as `192.168.1.20` or
+ * `my-mac.local`. The port is always [FLOCON_DEFAULT_WEBSOCKET_PORT].
  *
- * @throws IllegalArgumentException if the address is not readable, or uses a scheme other than `ws` / `http`.
+ * @throws IllegalArgumentException if the address is empty, or has a scheme, a port or a path.
  */
-internal fun parseFloconServer(url: String): FloconServer {
-    val trimmed = url.trim()
-    val scheme = trimmed.substringBefore("://", missingDelimiterValue = "").lowercase()
-    require(scheme.isEmpty() || scheme == "ws" || scheme == "http") {
-        "Unsupported scheme '$scheme' in '$url': Flocon connects with ws://"
+internal fun parseFloconServer(address: String): FloconServer {
+    val host = address.trim()
+    require(host.isNotEmpty() && host.none { it == ':' || it == '/' || it == '?' || it.isWhitespace() }) {
+        "Cannot read '$address', enter only the IP address of the computer, such as 192.168.1.20 " +
+            "(no port: it is always $FLOCON_DEFAULT_WEBSOCKET_PORT)"
     }
-    val authority = trimmed.substringAfter("://", trimmed)
-        .substringBefore('/')
-        .substringBefore('?')
-    val host = authority.substringBeforeLast(':', missingDelimiterValue = authority)
-    val portText = authority.substringAfterLast(':', missingDelimiterValue = "")
-    require(host.isNotEmpty() && host.none { it == ':' || it.isWhitespace() }) {
-        "Cannot read a host in '$url', expected something like ws://192.168.1.20:9023"
-    }
-    val port = if (portText.isEmpty()) {
-        FLOCON_DEFAULT_WEBSOCKET_PORT
-    } else {
-        portText.toIntOrNull()?.takeIf { it in 1..65535 }
-            ?: throw IllegalArgumentException("Invalid port '$portText' in '$url'")
-    }
-    return FloconServer(host = host, port = port)
+    return FloconServer(host = host, port = FLOCON_DEFAULT_WEBSOCKET_PORT)
 }

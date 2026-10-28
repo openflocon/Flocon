@@ -82,19 +82,19 @@ class Flocon internal constructor(
         plugins.forEach { it.onConnectedToServer() }
     }
 
-    /** Adds a connection to [url], next to the default one, replacing the one added before. */
-    private suspend fun connectTo(url: String): FloconConnectResult = connectMutex.withLock {
+    /** Adds a connection to [address], next to the default one, replacing the one added before. */
+    private suspend fun connectTo(address: String): FloconConnectResult = connectMutex.withLock {
         val server = try {
-            parseFloconServer(url)
+            parseFloconServer(address)
         } catch (e: IllegalArgumentException) {
-            return FloconConnectResult.InvalidAddress(e.message ?: url)
+            return FloconConnectResult.InvalidAddress(e.message ?: address)
         }
         val defaultLink = config.client.defaultLink
         if (server == defaultLink.server) {
             return if (defaultLink.isConnected) {
                 FloconConnectResult.Connected
             } else {
-                FloconConnectResult.Failed("$url is the default address, Flocon is already trying to connect to it")
+                FloconConnectResult.Failed("$address is the default address, Flocon is already trying to connect to it")
             }
         }
         config.client.extraLink?.let { removeExtraLink(it) }
@@ -175,8 +175,8 @@ class Flocon internal constructor(
          * see `Flocon.connect` in `flocon-connect`.
          */
         @FloconInternalApi
-        suspend fun connectToServer(url: String): FloconConnectResult =
-            instance?.connectTo(url) ?: FloconConnectResult.NotStarted
+        suspend fun connectToServer(address: String): FloconConnectResult =
+            instance?.connectTo(address) ?: FloconConnectResult.NotStarted
     }
 
 }

@@ -17,4 +17,4 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
 
 /** Does nothing, always [FloconConnectResult.NotStarted]. */
 @Suppress("UNUSED_PARAMETER")
-suspend fun Flocon.Companion.connect(url: String): FloconConnectResult = FloconConnectResult.NotStarted
+suspend fun Flocon.Companion.connect(address: String): FloconConnectResult = FloconConnectResult.NotStarted

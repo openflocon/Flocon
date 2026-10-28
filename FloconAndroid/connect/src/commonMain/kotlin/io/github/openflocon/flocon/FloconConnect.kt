@@ -30,10 +30,10 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
  * messages right away. If the connection is lost later, the messages are kept again and sent
  * on reconnection, which is retried every 3 seconds. Calling it again replaces the address.
  *
- * @param url the address of the desktop app, such as `ws://192.168.1.20:9023`,
- * `192.168.1.20:9023` or `192.168.1.20` (port 9023).
+ * @param address the IP address (or host) of the computer running Flocon Desktop, such as `192.168.1.20`.
+ * No port nor scheme: the port is always 9023, anything else is a [FloconConnectResult.InvalidAddress].
  * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
  * in every case, call it again to retry.
  */
 @OptIn(FloconInternalApi::class)
-suspend fun Flocon.Companion.connect(url: String): FloconConnectResult = connectToServer(url)
+suspend fun Flocon.Companion.connect(address: String): FloconConnectResult = connectToServer(address)
