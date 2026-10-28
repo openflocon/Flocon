@@ -21,6 +21,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.flocon)
+            implementation(projects.connect)
             implementation(projects.deeplinks)
             implementation(projects.analytics)
             implementation(projects.featureflags)
