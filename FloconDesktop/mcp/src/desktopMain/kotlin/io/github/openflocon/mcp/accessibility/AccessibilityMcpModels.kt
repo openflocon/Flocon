@@ -47,3 +47,23 @@ internal data class ClearAccessibilityEventsMcpResult(
     val packageName: String,
     val deleted: Int,
 )
+
+@Serializable
+internal data class AccessibilityFocusedNodeMcpResult(
+    val deviceId: String,
+    val packageName: String,
+    /** false: no element has the accessibility focus (or no screen reader is running), the other fields are not set */
+    val focused: Boolean,
+    /** only for move_accessibility_focus: false when the focus did not change, ex: already on the last element */
+    val moved: Boolean? = null,
+    val text: String? = null,
+    val contentDescription: String? = null,
+    val className: String? = null,
+    val screen: String? = null,
+    val bounds: String? = null,
+    val extras: Map<String, String>? = null,
+    /** 1-based position in the focus order of the screen, when known */
+    val position: Int? = null,
+    /** number of elements in the focus order of the screen, when known */
+    val count: Int? = null,
+)
