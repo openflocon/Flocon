@@ -59,15 +59,16 @@ class RowNavigationTest {
 
     @Test
     fun `the same event repeated is linked, the others are not`() {
-        val query = "SELECT 1"
+        val name = "screen_view"
         assertEquals(
-            previewTimelineRowUiModel(TimelineSource.Database, id = "1", title = query).linkKey(),
-            previewTimelineRowUiModel(TimelineSource.Database, id = "2", title = query).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Analytics, id = "1", title = name).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Analytics, id = "2", title = name).linkKey(),
         )
         assertNotEquals(
-            previewTimelineRowUiModel(TimelineSource.Database, title = query).linkKey(),
-            previewTimelineRowUiModel(TimelineSource.Analytics, title = query).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Analytics, title = name).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Deeplink, title = name).linkKey(),
         )
+        assertNull(previewTimelineRowUiModel(TimelineSource.Database, title = "SELECT 1").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.Network, title = "https://acme.io").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.AppStart, title = "").linkKey())
     }

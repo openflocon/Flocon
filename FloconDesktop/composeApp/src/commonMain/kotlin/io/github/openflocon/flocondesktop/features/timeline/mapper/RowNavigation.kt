@@ -38,11 +38,12 @@ internal fun TimelineRowUiModel.copyText(): String? = when (source) {
 }.takeIf { !it.isNullOrBlank() }
 
 /**
- * Events that are the same thing happening again (the same query, the same analytics event...) share a link key:
- * they are linked when one is hovered. Null for the events with nothing to link: the app start, and the network calls,
- * which are linked by their request and their response.
+ * Events that are the same thing happening again (the same analytics event, the same deeplink...) share a link key:
+ * they are linked when one is hovered. Null for the events with nothing to link: the app start, the database queries
+ * (a query is often repeated, linking them would only add noise), and the network calls, which are linked by their
+ * request and their response.
  */
 internal fun TimelineRowUiModel.linkKey(): String? = when (source) {
-    TimelineSource.AppStart, TimelineSource.Network -> null
+    TimelineSource.AppStart, TimelineSource.Network, TimelineSource.Database -> null
     else -> "${source.name}:$title".takeIf { title.isNotBlank() }
 }
