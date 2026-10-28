@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,7 +39,6 @@ import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
-import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -50,7 +48,6 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
-import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
@@ -173,74 +170,54 @@ internal fun TimelineContent(
         val hoveredRows = remember { mutableStateMapOf<String, TimelineRowUiModel>() }
         val hoveredCallKeys = hoveredRows.values.mapTo(mutableSetOf()) { it.callKey }
 
-        val listState = rememberLazyListState()
-        // the bar between the two lines of a hovered network call: nothing to link while it waits for its response
-        val railCall = hoveredRows.values.firstOrNull {
-            it.source == TimelineSource.Network && (it.phase == TimelinePhase.Response || it.network?.duration != null)
-        }
-
-        val upperKey = railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" } // the response is the upper line: the list starts from the newest
-        val lowerKey = railCall?.callKey
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
-                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-            ) {
-                items(
-                    count = rows.itemCount,
-                    key = rows.itemKey { it.key },
-                ) { index ->
-                    when (val item = rows[index]) {
-                        is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
-                            // the app start of a session, at the time the app started
-                            SessionHeader(
-                                row = item.row,
-                                eventCount = summary.sessionEventCounts[item.row.timestamp],
-                            )
-                        } else {
-                            val olderTimestamp = olderTimestamp(rows, index)
-                            val delta = remember(item.row.timestamp, olderTimestamp) {
-                                olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
-                            }
-                            TimelineRow(
-                                row = item.row,
-                                delta = delta,
-                                selected = item.row.callKey == selectedKey,
-                                hovered = item.row.callKey in hoveredCallKeys,
-                                // the rail leaves the place to the bar of the hovered call
-                                railHidden = railCall != null,
-                                onHoverChange = { hovered ->
-                                    if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
-                                },
-                                onClick = { onAction(TimelineAction.Open(it)) },
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
-
-                        is TimelineItemUiModel.DayHeader -> Text(
-                            text = item.day.uppercase(),
-                            style = FloconTheme.typography.labelSmall,
-                            color = colors.inkFaint,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
+        LazyColumn(
+            state = rememberLazyListState(),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
+        ) {
+            items(
+                count = rows.itemCount,
+                key = rows.itemKey { it.key },
+            ) { index ->
+                when (val item = rows[index]) {
+                    is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
+                        // the app start of a session, at the time the app started
+                        SessionHeader(
+                            row = item.row,
+                            eventCount = summary.sessionEventCounts[item.row.timestamp],
                         )
-
-                        null -> Unit
+                    } else {
+                        val olderTimestamp = olderTimestamp(rows, index)
+                        val delta = remember(item.row.timestamp, olderTimestamp) {
+                            olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
+                        }
+                        TimelineRow(
+                            row = item.row,
+                            delta = delta,
+                            selected = item.row.callKey == selectedKey,
+                            hovered = item.row.callKey in hoveredCallKeys,
+                            onHoverChange = { hovered ->
+                                if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
+                            },
+                            onClick = { onAction(TimelineAction.Open(it)) },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
+
+                    is TimelineItemUiModel.DayHeader -> Text(
+                        text = item.day.uppercase(),
+                        style = FloconTheme.typography.labelSmall,
+                        color = colors.inkFaint,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
+                    )
+
+                    null -> Unit
                 }
             }
-            CallRail(
-                listState = listState,
-                upperKey = upperKey,
-                lowerKey = lowerKey,
-                modifier = Modifier.fillMaxSize(),
-            )
         }
     }
 }

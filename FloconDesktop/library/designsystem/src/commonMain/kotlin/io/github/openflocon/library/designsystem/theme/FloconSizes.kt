@@ -18,7 +18,6 @@ data class FloconSizes(
     val menuItemHeight: Dp = 36.dp,
     val pillMinWidth: Dp = 38.dp,
     val timeColumn: Dp = 96.dp,
-    val markerColumn: Dp = 22.dp,
     val categoryColumn: Dp = 104.dp,
     val sidePanelWidth: Dp = 280.dp,
     val deviceDropdownWidth: Dp = 220.dp,

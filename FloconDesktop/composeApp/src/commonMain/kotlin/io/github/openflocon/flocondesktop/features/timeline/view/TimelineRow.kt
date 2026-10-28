@@ -16,9 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -39,7 +36,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
@@ -75,7 +71,7 @@ private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, Time
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
 /**
- * One event: time and delta | rail | category | content | meta.
+ * One event: time and delta | category | content | meta. Only the content and the meta are highlighted.
  * [delta] is the time since the previous event.
  */
 @Composable
@@ -84,7 +80,6 @@ internal fun TimelineRow(
     delta: String?,
     selected: Boolean,
     hovered: Boolean,
-    railHidden: Boolean,
     onClick: (TimelineRowUiModel) -> Unit,
     onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -100,31 +95,14 @@ internal fun TimelineRow(
     val isCrash = row.source == TimelineSource.Crash
     val highlighted = hovered || selected
 
+    // the whole row reacts to the pointer, but only the part after the category is highlighted
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
-            // a crash is never missed: the whole row is tinted, with a bar on its left
-            .then(
-                if (isCrash) {
-                    Modifier
-                        .background(soft, shape)
-                        .drawBehind {
-                            drawRoundRect(
-                                color = color,
-                                size = Size(2.dp.toPx(), size.height),
-                                cornerRadius = CornerRadius(2.dp.toPx()),
-                            )
-                        }
-                } else {
-                    Modifier
-                }
-            )
-            .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
             .hoverable(interactionSource)
             .clickable(interactionSource = interactionSource, indication = null) { onClick(row) }
-            .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+            .padding(horizontal = spacing.compact),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
@@ -133,28 +111,43 @@ internal fun TimelineRow(
             delta = delta,
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
-        Rail(
-            color = color,
-            haloColor = if (highlighted) colors.bg300 else colors.bg100,
-            outerHaloColor = if (isCrash) soft else null,
-            // the line goes through the padding and the gap between two rows
-            overflow = spacing.tiny + spacing.tiny,
-            // replaced by the bar of the hovered call, see CallRail
-            visible = !railHidden,
-            modifier = Modifier
-                .width(FloconTheme.sizes.markerColumn)
-                .fillMaxHeight(),
-        )
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
             EventBadge(source = row.source)
         }
-        RowContent(
-            row = row,
+        Row(
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = FloconTheme.sizes.rowHeight),
-        )
-        RowMeta(row = row)
+                .fillMaxHeight()
+                .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
+                // a crash is never missed: the whole row is tinted, with a bar on its left
+                .then(
+                    if (isCrash) {
+                        Modifier
+                            .background(soft, shape)
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = color,
+                                    size = Size(2.dp.toPx(), size.height),
+                                    cornerRadius = CornerRadius(2.dp.toPx()),
+                                )
+                            }
+                    } else {
+                        Modifier
+                    }
+                )
+                .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
+                .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.small),
+        ) {
+            RowContent(
+                row = row,
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = FloconTheme.sizes.rowHeight),
+            )
+            RowMeta(row = row)
+        }
     }
 }
 
@@ -180,45 +173,6 @@ private fun TimeColumn(
                 color = colors.inkFaint,
                 maxLines = 1,
             )
-        }
-    }
-}
-
-// the vertical line of the timeline, with the dot of the category on it
-@Composable
-internal fun Rail(
-    color: Color,
-    haloColor: Color,
-    overflow: Dp,
-    modifier: Modifier = Modifier,
-    outerHaloColor: Color? = null,
-    visible: Boolean = true, // false: nothing is drawn, the column keeps its size
-) {
-    val line = FloconTheme.colors.line
-    Box(
-        modifier = if (visible) {
-            modifier.drawBehind {
-                val x = size.width / 2
-                drawLine(
-                    color = line,
-                    start = Offset(x, -overflow.toPx()),
-                    end = Offset(x, size.height + overflow.toPx()),
-                    strokeWidth = 1.dp.toPx(),
-                )
-            }
-        } else {
-            modifier
-        },
-        contentAlignment = Alignment.Center,
-    ) {
-        if (visible) {
-            if (outerHaloColor != null) {
-                Box(Modifier.size(22.dp).background(outerHaloColor, CircleShape))
-            }
-            // the halo hides the line behind the dot
-            Box(Modifier.size(16.dp).background(haloColor, CircleShape), contentAlignment = Alignment.Center) {
-                Box(Modifier.size(10.dp).background(color, CircleShape))
-            }
         }
     }
 }
