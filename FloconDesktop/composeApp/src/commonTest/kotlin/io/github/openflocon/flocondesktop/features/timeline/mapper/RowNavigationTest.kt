@@ -4,6 +4,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 
 class RowNavigationTest {
@@ -54,5 +55,20 @@ class RowNavigationTest {
         assertEquals(DurationLevel.Normal, durationLevel(999.0))
         assertEquals(DurationLevel.Slow, durationLevel(1_000.0))
         assertEquals(DurationLevel.VerySlow, durationLevel(3_000.0))
+    }
+
+    @Test
+    fun `the same event repeated is linked, the others are not`() {
+        val query = "SELECT 1"
+        assertEquals(
+            previewTimelineRowUiModel(TimelineSource.Database, id = "1", title = query).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Database, id = "2", title = query).linkKey(),
+        )
+        assertNotEquals(
+            previewTimelineRowUiModel(TimelineSource.Database, title = query).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Analytics, title = query).linkKey(),
+        )
+        assertNull(previewTimelineRowUiModel(TimelineSource.Network, title = "https://acme.io").linkKey())
+        assertNull(previewTimelineRowUiModel(TimelineSource.AppStart, title = "").linkKey())
     }
 }

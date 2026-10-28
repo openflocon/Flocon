@@ -36,3 +36,13 @@ internal fun TimelineRowUiModel.copyText(): String? = when (source) {
     TimelineSource.Crash -> listOfNotNull(title, subtitle).joinToString(": ")
     else -> title
 }.takeIf { !it.isNullOrBlank() }
+
+/**
+ * Events that are the same thing happening again (the same query, the same analytics event...) share a link key:
+ * they are linked when one is hovered. Null for the events with nothing to link: the app start, and the network calls,
+ * which are linked by their request and their response.
+ */
+internal fun TimelineRowUiModel.linkKey(): String? = when (source) {
+    TimelineSource.AppStart, TimelineSource.Network -> null
+    else -> "${source.name}:$title".takeIf { title.isNotBlank() }
+}

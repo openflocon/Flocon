@@ -52,6 +52,7 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
+import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
@@ -64,6 +65,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
+import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.CoroutineScope
@@ -205,6 +207,7 @@ internal fun TimelineContent(
         // the rows currently hovered, by key: a request and its response are highlighted together
         val hoveredRows = remember { mutableStateMapOf<String, TimelineRowUiModel>() }
         val hoveredCallKeys = hoveredRows.values.mapTo(mutableSetOf()) { it.callKey }
+        val hoveredLinkKeys = hoveredRows.values.mapNotNullTo(mutableSetOf()) { it.linkKey() }
 
         // the newest event is the first of the list, whatever the direction: look at it, not at the count, so the older
         // pages loaded while scrolling do not bring the list back to the top
@@ -214,9 +217,19 @@ internal fun TimelineContent(
                 listState.animateScrollToItem(0)
             }
         }
-        // the bar between the two lines of a hovered network call: nothing to link while it waits for its response
-        val railCall = hoveredRows.values.firstOrNull {
+        // the bar between the lines of a hovered network call, nothing to link while it waits for its response, or between
+        // the same event repeated
+        val railRow = hoveredRows.values.firstOrNull {
             it.source == TimelineSource.Network && (it.phase == TimelinePhase.Response || it.network?.duration != null)
+        } ?: hoveredRows.values.firstOrNull { it.linkKey() != null }
+        val railLinkKey = railRow?.linkKey()
+        val railCallKey = railRow?.callKey.takeIf { railRow?.source == TimelineSource.Network }
+        val itemCount = rows.itemCount
+        val linkedIndices = remember(railLinkKey, railCallKey, itemCount) {
+            (0 until itemCount).filter { index ->
+                val row = (rows.peek(index) as? TimelineItemUiModel.Row)?.row ?: return@filter false
+                if (railCallKey != null) row.callKey == railCallKey else row.linkKey() == railLinkKey
+            }
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -246,7 +259,7 @@ internal fun TimelineContent(
                                 row = item.row,
                                 delta = delta,
                                 selected = item.row.callKey == selectedKey,
-                                hovered = item.row.callKey in hoveredCallKeys,
+                                hovered = item.row.callKey in hoveredCallKeys || item.row.linkKey() in hoveredLinkKeys,
                                 onHoverChange = { hovered ->
                                     if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
                                 },
@@ -273,9 +286,10 @@ internal fun TimelineContent(
             }
             CallRail(
                 listState = listState,
-                // the response is the upper line of the list, sorted from the newest, the lower one when the list is inverted
-                upperKey = if (settings.invertList) railCall?.callKey else railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" },
-                lowerKey = if (settings.invertList) railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" } else railCall?.callKey,
+                linkedIndices = linkedIndices,
+                // the request of a call can be older than the events loaded
+                leavesAfterLoaded = railCallKey != null && linkedIndices.size < 2,
+                color = railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
                 modifier = Modifier.fillMaxSize(),
             )
         }
