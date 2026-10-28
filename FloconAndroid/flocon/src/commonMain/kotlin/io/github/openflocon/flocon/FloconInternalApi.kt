@@ -1,8 +1,8 @@
 package io.github.openflocon.flocon
 
 /**
- * Used by the optional `flocon-connect` module, which exposes it as `Flocon.connect`, `connectLater`
- * and `Flocon.connectionState`. Not meant to be called directly.
+ * Used by the optional `flocon-connect` module, which exposes it as `Flocon.connect`, `connect { }` in
+ * `startFlocon` and `Flocon.connectionState`. Not meant to be called directly.
  */
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,

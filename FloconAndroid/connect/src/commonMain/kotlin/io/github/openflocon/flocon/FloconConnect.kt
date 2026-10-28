@@ -2,8 +2,8 @@ package io.github.openflocon.flocon
 
 import kotlinx.coroutines.flow.StateFlow
 
-/** Options of [connectLater]. */
-class FloconConnectLaterConfig internal constructor() {
+/** Options of [connect]. */
+class FloconConnectConfig internal constructor() {
     /** Number of messages kept while not connected. Above it, the oldest are dropped. */
     var bufferCapacity: Int = 5_000
 
@@ -27,14 +27,14 @@ class FloconConnectLaterConfig internal constructor() {
  * the desktop app can only be known later, then give it with [connect]: both are tried.
  *
  * ```
- * connectLater {
+ * connect {
  *     address = "192.168.1.20"
  * }
  * ```
  */
 @OptIn(FloconInternalApi::class)
-fun FloconConfiguration.connectLater(block: FloconConnectLaterConfig.() -> Unit = {}) {
-    val options = FloconConnectLaterConfig().apply(block)
+fun FloconConfiguration.connect(block: FloconConnectConfig.() -> Unit = {}) {
+    val options = FloconConnectConfig().apply(block)
     keepMessages(capacity = options.bufferCapacity)
     connectAtStart(
         initialAddress = options.address,

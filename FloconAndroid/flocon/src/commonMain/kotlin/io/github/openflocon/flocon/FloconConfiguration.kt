@@ -33,7 +33,7 @@ class FloconConfiguration internal constructor(
 
     /**
      * Also tries to connect to [initialAddress] when Flocon starts, and to the last address kept in
-     * [store] if there is one (it wins), see `connectLater` in `flocon-connect`.
+     * [store] if there is one (it wins), see `connect` in `flocon-connect`.
      */
     @FloconInternalApi
     fun connectAtStart(initialAddress: String?, store: FloconAddressStore?) {
@@ -42,7 +42,7 @@ class FloconConfiguration internal constructor(
     }
 
     /**
-     * Number of messages kept while no desktop app is reachable, see `connectLater` in `flocon-connect`.
+     * Number of messages kept while no desktop app is reachable, see `connect` in `flocon-connect`.
      */
     @FloconInternalApi
     fun keepMessages(capacity: Int) {

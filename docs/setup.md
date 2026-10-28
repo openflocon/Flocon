@@ -111,11 +111,10 @@ It also allows the cleartext `ws://` connection to any IP address (Android canno
 
 ```kotlin
 import io.github.openflocon.flocon.connect
-import io.github.openflocon.flocon.connectLater
 import io.github.openflocon.flocon.connectionState
 
 startFlocon(FloconContext(this)) {
-    connectLater() // optional, see below
+    connect { } // optional, see below
     install(FloconNetwork)
     install(FloconAnalytics)
 }
@@ -126,13 +125,13 @@ Flocon.connect("192.168.1.20")
 
 Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
 
-Up to 5000 messages are kept: above that, the oldest are dropped. `connectLater { bufferCapacity = ... }` changes this size.
+Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
 
-`connectLater` has two more options, all set here with a computer that has a fixed IP:
+`connect { ... }` has two more options, all set here with a computer that has a fixed IP:
 
 ```kotlin
 startFlocon(FloconContext(this)) {
-    connectLater {
+    connect {
         bufferCapacity = 10_000       // messages kept while no desktop is reachable
         address = "192.168.1.20"      // also tried at start, next to the default address
         rememberLastAddress = true    // the last connected address is tried again at the next launch
@@ -141,10 +140,10 @@ startFlocon(FloconContext(this)) {
 }
 ```
 
-- `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connectLater { address = "192.168.1.20" }`). Same rules as `Flocon.connect`: no port nor scheme.
+- `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connect { address = "192.168.1.20" }`). Same rules as `Flocon.connect`: no port nor scheme.
 - `rememberLastAddress` (`true` by default): the last address Flocon connected to (given here or typed with `Flocon.connect`) is kept in the app preferences (SharedPreferences on Android, UserDefaults on iOS, `java.util.prefs` on desktop, `localStorage` on web) and tried again at the next launch, next to the default address. It wins over `address`. Pass `false` to disable it.
 
-The saving and the retry at launch work when `connectLater()` is called in the `startFlocon` block.
+The saving and the retry at launch work when `connect { }` is called in the `startFlocon` block.
 
 The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
 

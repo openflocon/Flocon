@@ -3,8 +3,8 @@ package io.github.openflocon.flocon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-/** Options of [connectLater], they do nothing. */
-class FloconConnectLaterConfig internal constructor() {
+/** Options of [connect], they do nothing. */
+class FloconConnectConfig internal constructor() {
     var bufferCapacity: Int = 5_000
     var address: String? = null
     var rememberLastAddress: Boolean = true
@@ -12,7 +12,7 @@ class FloconConnectLaterConfig internal constructor() {
 
 /** Does nothing. */
 @Suppress("UNUSED_PARAMETER")
-fun FloconConfiguration.connectLater(block: FloconConnectLaterConfig.() -> Unit = {}) {
+fun FloconConfiguration.connect(block: FloconConnectConfig.() -> Unit = {}) {
     // no op
 }
 
