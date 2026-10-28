@@ -128,7 +128,18 @@ Until a desktop is reachable, everything the plugins log is kept in memory. `Flo
 
 Up to 5000 messages are kept: above that, the oldest are dropped. `connectLater(bufferCapacity = ...)` changes this size.
 
-`connectLater` has two more options:
+`connectLater` has two more options, here with a computer that has a fixed IP:
+
+```kotlin
+startFlocon(FloconContext(this)) {
+    connectLater(
+        bufferCapacity = 10_000,       // messages kept while no desktop is reachable
+        address = "192.168.1.20",      // also tried at start, next to the default address
+        rememberLastAddress = true,    // the last connected address is tried again at the next launch
+    )
+    install(FloconNetwork)
+}
+```
 
 - `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connectLater(address = "192.168.1.20")`). Same rules as `Flocon.connect`: no port nor scheme.
 - `rememberLastAddress` (`true` by default): the last address Flocon connected to (given here or typed with `Flocon.connect`) is kept in the app preferences (SharedPreferences on Android, UserDefaults on iOS, `java.util.prefs` on desktop, `localStorage` on web) and tried again at the next launch, next to the default address. It wins over `address`. Pass `false` to disable it.
