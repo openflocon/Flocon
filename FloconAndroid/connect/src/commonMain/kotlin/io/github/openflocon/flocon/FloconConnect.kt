@@ -2,28 +2,43 @@ package io.github.openflocon.flocon
 
 import kotlinx.coroutines.flow.StateFlow
 
+/** Options of [connectLater]. */
+class FloconConnectLaterConfig internal constructor() {
+    /** Number of messages kept while not connected. Above it, the oldest are dropped. */
+    var bufferCapacity: Int = 5_000
+
+    /**
+     * The IP address of a computer to also try when Flocon starts, for example one with a fixed IP.
+     * No port nor scheme: the port is always 9023.
+     */
+    var address: String? = null
+
+    /**
+     * Keeps the last address Flocon connected to (given as [address] or to [connect]) in the app
+     * preferences, and tries it again at the next launch. It wins over [address].
+     */
+    var rememberLastAddress: Boolean = true
+}
+
 /**
  * Keeps what the plugins log in memory while no desktop app is reachable, to send it once one is.
  *
  * Flocon always tries the default address (localhost on an emulator). Use it when the address of
  * the desktop app can only be known later, then give it with [connect]: both are tried.
  *
- * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
- * @param address the IP address of a computer to also try when Flocon starts, for example one with a
- * fixed IP. No port nor scheme: the port is always 9023.
- * @param rememberLastAddress keeps the last address Flocon connected to (given here or to [connect]) in the
- * app preferences, and tries it again at the next launch. It wins over [address].
+ * ```
+ * connectLater {
+ *     address = "192.168.1.20"
+ * }
+ * ```
  */
 @OptIn(FloconInternalApi::class)
-fun FloconConfiguration.connectLater(
-    bufferCapacity: Int = 5_000,
-    address: String? = null,
-    rememberLastAddress: Boolean = true,
-) {
-    keepMessages(capacity = bufferCapacity)
+fun FloconConfiguration.connectLater(block: FloconConnectLaterConfig.() -> Unit = {}) {
+    val options = FloconConnectLaterConfig().apply(block)
+    keepMessages(capacity = options.bufferCapacity)
     connectAtStart(
-        initialAddress = address,
-        store = if (rememberLastAddress) floconAddressStore(context) else null,
+        initialAddress = options.address,
+        store = if (options.rememberLastAddress) floconAddressStore(context) else null,
     )
 }
 
