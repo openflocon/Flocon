@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,12 +21,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
@@ -45,7 +51,9 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
+import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
@@ -58,6 +66,8 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -106,6 +116,9 @@ internal fun TimelineContent(
     val panelShape = FloconTheme.shapes.large
 
     // Ctrl+K (Cmd+K on macOS) goes to the search field, wherever the focus is in the screen
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    var searchFocused by remember { mutableStateOf(false) }
     val screenFocus = remember { FocusRequester() }
     val searchFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -122,9 +135,22 @@ internal fun TimelineContent(
             .focusRequester(screenFocus)
             .focusable()
             .onPreviewKeyEvent { event ->
-                if (event.type == KeyEventType.KeyDown && event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
+                if (event.type != KeyEventType.KeyDown) {
+                    false
+                } else if (event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
                     runCatching { searchFocus.requestFocus() }
                     true
+                } else if (!searchFocused && !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed) {
+                    // up / down / enter move the selection, but the search field keeps its own keys
+                    handleSelectionKey(
+                        key = event.key,
+                        rows = rows,
+                        selectedKey = selectedKey,
+                        inverted = settings.invertList,
+                        listState = listState,
+                        scope = scope,
+                        onAction = onAction,
+                    )
                 } else {
                     false
                 }
@@ -147,7 +173,8 @@ internal fun TimelineContent(
                 placeholderText = stringResource(Res.string.filter),
                 modifier = Modifier
                     .width(FloconTheme.sizes.sidePanelWidth)
-                    .focusRequester(searchFocus),
+                    .focusRequester(searchFocus)
+                    .onFocusChanged { searchFocused = it.isFocused },
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
@@ -178,8 +205,6 @@ internal fun TimelineContent(
         // the rows currently hovered, by key: a request and its response are highlighted together
         val hoveredRows = remember { mutableStateMapOf<String, TimelineRowUiModel>() }
         val hoveredCallKeys = hoveredRows.values.mapTo(mutableSetOf()) { it.callKey }
-
-        val listState = rememberLazyListState()
 
         // the newest event is the first of the list, whatever the direction: look at it, not at the count, so the older
         // pages loaded while scrolling do not bring the list back to the top
@@ -226,6 +251,7 @@ internal fun TimelineContent(
                                     if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
                                 },
                                 onClick = { onAction(TimelineAction.Open(it)) },
+                                highlight = filterText.value,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
@@ -266,4 +292,32 @@ private fun olderTimestamp(rows: LazyPagingItems<TimelineItemUiModel>, index: In
         if (row != null) return row.timestamp
     }
     return null
+}
+
+/**
+ * Up and down select the call above or below the selected one, enter opens it again.
+ * The list goes down from the newest, the other way round when it is [inverted]. True when the key was used.
+ */
+private fun handleSelectionKey(
+    key: Key,
+    rows: LazyPagingItems<TimelineItemUiModel>,
+    selectedKey: String?,
+    inverted: Boolean,
+    listState: LazyListState,
+    scope: CoroutineScope,
+    onAction: (TimelineAction) -> Unit,
+): Boolean {
+    val keyAt = { index: Int -> (rows.peek(index) as? TimelineItemUiModel.Row)?.row?.takeIf { it.toDestination() != null }?.callKey }
+    val target = when (key) {
+        Key.DirectionDown -> adjacentCallIndex(rows.itemCount, selectedKey, if (inverted) -1 else 1, keyAt)
+        Key.DirectionUp -> adjacentCallIndex(rows.itemCount, selectedKey, if (inverted) 1 else -1, keyAt)
+        Key.Enter, Key.NumPadEnter -> (0 until rows.itemCount).firstOrNull { selectedKey != null && keyAt(it) == selectedKey }
+        else -> return false
+    } ?: return true
+    val row = (rows.peek(target) as? TimelineItemUiModel.Row)?.row ?: return true
+    onAction(TimelineAction.Open(row))
+    if (listState.layoutInfo.visibleItemsInfo.none { it.index == target }) {
+        scope.launch { listState.scrollToItem(target) }
+    }
+    return true
 }

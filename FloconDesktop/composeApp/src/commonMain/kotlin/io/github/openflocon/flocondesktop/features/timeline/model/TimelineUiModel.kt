@@ -32,6 +32,7 @@ internal data class TimelineNetworkUiModel(
     val path: String,
     val statusCode: Int?, // null while waiting for the response, or without http code
     val duration: String?,
+    val durationMs: Double? = null, // to color the slow calls
 )
 
 @Immutable
@@ -100,14 +101,14 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
         id = "n1",
         title = "https://api.acme.io/v1/users?id=2",
         phase = TimelinePhase.Response,
-        network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = 200, duration = "124 ms"),
+        network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = 200, duration = "124 ms", durationMs = 124.0),
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,
         id = "n2",
         title = "https://api.acme.io/v1/orders",
         phase = TimelinePhase.Response,
-        network = TimelineNetworkUiModel(method = "POST", host = "api.acme.io", path = "/v1/orders", statusCode = 500, duration = "1.2 s"),
+        network = TimelineNetworkUiModel(method = "POST", host = "api.acme.io", path = "/v1/orders", statusCode = 500, duration = "3.4 s", durationMs = 3_400.0),
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,

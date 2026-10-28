@@ -11,7 +11,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRows
 import io.github.openflocon.library.designsystem.FloconTheme
 
-// every kind of event: the first line is hovered, the second one is selected
+// every kind of event: the first line is hovered, the second one is selected, "users" is the text of the filter
 @Composable
 private fun TimelineRowsPreviewContent(isDarkTheme: Boolean) {
     FloconTheme(isDarkTheme = isDarkTheme) {
@@ -30,6 +30,7 @@ private fun TimelineRowsPreviewContent(isDarkTheme: Boolean) {
                         delta = "+12ms",
                         selected = index == 1,
                         hovered = index == 0,
+                        highlight = "users",
                         onClick = {},
                         onHoverChange = {},
                         modifier = Modifier.fillMaxWidth(),
