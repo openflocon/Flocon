@@ -24,6 +24,7 @@ internal data class CallRailSpan(
 /**
  * [upperCenter] and [lowerCenter] are the vertical centers of the two lines of the call in the list, null when the line is
  * not displayed. The response is the upper one: the list is sorted from the newest.
+ * A request scrolled out below the list makes the bar leave the list at the bottom, a response scrolled out above at the top.
  * Null when there is nothing to draw: none of the two lines is displayed.
  */
 internal fun callRailSpan(
@@ -32,9 +33,7 @@ internal fun callRailSpan(
     viewportHeight: Float,
 ): CallRailSpan? = when {
     upperCenter != null && lowerCenter != null -> CallRailSpan(upperCenter, lowerCenter, topDot = true, bottomDot = true)
-    // the request is scrolled out below the list: the bar leaves the list on that side
     upperCenter != null -> CallRailSpan(upperCenter, viewportHeight, topDot = true, bottomDot = false)
-    // the response is scrolled out above the list
     lowerCenter != null -> CallRailSpan(0f, lowerCenter, topDot = false, bottomDot = true)
     else -> null
 }
