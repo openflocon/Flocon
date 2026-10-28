@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
@@ -46,7 +47,7 @@ internal fun TopBarDevice(
     val platformColor = device.platform.color()
 
     Row(
-        modifier = modifier.padding(FloconTheme.spacing.small),
+        modifier = modifier.padding(FloconTheme.spacing.compact),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -55,7 +56,7 @@ internal fun TopBarDevice(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(32.dp)
-                .clip(FloconTheme.shapes.medium)
+                .clip(RoundedCornerShape(6.dp))
                 .background(colors.bg300),
         ) {
             FloconIcon(
