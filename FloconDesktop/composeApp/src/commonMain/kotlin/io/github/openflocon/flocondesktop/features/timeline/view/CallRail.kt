@@ -11,6 +11,20 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 /**
+ * The vertical center of an item of the list, from the top of the list.
+ * The offset of an item is measured from the start of the list: its bottom when the list is [reversed].
+ */
+internal fun itemCenter(
+    offset: Int,
+    size: Int,
+    viewportHeight: Float,
+    reversed: Boolean,
+): Float {
+    val center = offset + size / 2f
+    return if (reversed) viewportHeight - center else center
+}
+
+/**
  * The vertical bar linking the request and the response of a call, from [top] to [bottom] in pixels of the list.
  * A dot is drawn on each end that is displayed: an end scrolled out of the list is only a bar leaving the list.
  */
@@ -65,10 +79,12 @@ internal fun CallRail(
 
     Canvas(modifier = modifier) {
         if (upperKey == null || lowerKey == null) return@Canvas
-        val items = listState.layoutInfo.visibleItemsInfo
+        val layoutInfo = listState.layoutInfo
+        val items = layoutInfo.visibleItemsInfo
+        val reversed = layoutInfo.reverseLayout
         val span = callRailSpan(
-            upperCenter = items.centerOf(upperKey),
-            lowerCenter = items.centerOf(lowerKey),
+            upperCenter = items.centerOf(upperKey, size.height, reversed),
+            lowerCenter = items.centerOf(lowerKey, size.height, reversed),
             viewportHeight = size.height,
         ) ?: return@Canvas
         // the center of the gutter between the time and the category of the rows
@@ -89,4 +105,5 @@ internal fun CallRail(
     }
 }
 
-private fun List<LazyListItemInfo>.centerOf(key: String): Float? = firstOrNull { it.key == key }?.let { it.offset + it.size / 2f }
+private fun List<LazyListItemInfo>.centerOf(key: String, viewportHeight: Float, reversed: Boolean): Float? = firstOrNull { it.key == key }
+    ?.let { itemCenter(offset = it.offset, size = it.size, viewportHeight = viewportHeight, reversed = reversed) }

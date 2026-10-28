@@ -46,8 +46,24 @@ internal sealed interface TimelineItemUiModel {
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
 }
 
+@Immutable
+internal data class TimelineSettingsUiModel(
+    val autoScroll: Boolean,
+    val invertList: Boolean,
+    val pinPanel: Boolean,
+)
+
+internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
+    autoScroll = false,
+    invertList = false,
+    pinPanel = false,
+)
+
 internal sealed interface TimelineAction {
     data class FilterTextChanged(val text: String) : TimelineAction
     data class ToggleSource(val source: TimelineSource) : TimelineAction
     data class Open(val row: TimelineRowUiModel) : TimelineAction
+    data class ToggleAutoScroll(val value: Boolean) : TimelineAction
+    data class InvertList(val value: Boolean) : TimelineAction
+    data class PinPanel(val value: Boolean) : TimelineAction
 }

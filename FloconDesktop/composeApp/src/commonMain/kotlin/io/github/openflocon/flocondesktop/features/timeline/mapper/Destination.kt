@@ -26,11 +26,11 @@ private fun TimelinePhase.toNetworkTab(): NetworkDetailTab = when (this) {
 // null: nothing to open for this event. The request line of a call opens its request tab, the response line its response tab
 internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (source) {
     TimelineSource.AppStart -> null
-    TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id, tab = phase.toNetworkTab()))
-    TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id))
-    TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id))
-    TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it)) }
-    TimelineSource.Table -> TimelineDestination.Panel(TableRoutes.Detail(id = id))
-    TimelineSource.Deeplink -> id.toLongOrNull()?.let { TimelineDestination.Panel(DeeplinkRoutes.Panel(id = it)) }
-    TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it)) }
+    TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id, tab = phase.toNetworkTab(), fromTimeline = true))
+    TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id, fromTimeline = true))
+    TimelineSource.Crash -> TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = id, fromTimeline = true))
+    TimelineSource.Database -> id.toIntOrNull()?.let { TimelineDestination.Panel(DatabaseRoutes.QueryLogPanel(id = it, fromTimeline = true)) }
+    TimelineSource.Table -> TimelineDestination.Panel(TableRoutes.Detail(id = id, fromTimeline = true))
+    TimelineSource.Deeplink -> id.toLongOrNull()?.let { TimelineDestination.Panel(DeeplinkRoutes.Panel(id = it, fromTimeline = true)) }
+    TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it, fromTimeline = true)) }
 }
