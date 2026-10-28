@@ -79,7 +79,7 @@ internal fun TopBarDevice(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             ) {
-                ConnectionDot(isActive = device.isActive)
+                ConnectionDot(isActive = device.isActive, isWifi = device.isWifi)
                 Text(
                     text = if (device.isActive) {
                         stringResource(Res.string.devices_connected)
@@ -90,9 +90,6 @@ internal fun TopBarDevice(
                     style = FloconTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
                 )
-                if (device.isActive && device.isWifi) {
-                    WifiIcon()
-                }
             }
         }
     }
@@ -119,7 +116,7 @@ internal fun TopBarDeviceRow(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ConnectionDot(isActive = device.isActive)
+        ConnectionDot(isActive = device.isActive, isWifi = device.isWifi)
         Text(
             text = device.deviceName,
             style = FloconTheme.typography.bodyMedium,
@@ -129,9 +126,6 @@ internal fun TopBarDeviceRow(
             color = if (device.isActive) colors.ink else colors.inkMuted,
             modifier = Modifier.weight(1f),
         )
-        if (device.isActive && device.isWifi) {
-            WifiIcon()
-        }
         if (selected) {
             FloconIcon(
                 imageVector = Icons.Outlined.Check,
@@ -195,20 +189,16 @@ internal fun TopBarDeviceGroupHeader(
     }
 }
 
-// the device is connected through the connect module, not through localhost
+// connected: a plain dot, or a wifi icon when connected through the connect module, not connected: a ring
 @Composable
-private fun WifiIcon() {
-    FloconIcon(
-        imageVector = Icons.Outlined.Wifi,
-        tint = FloconTheme.colors.inkFaint,
-        modifier = Modifier.size(12.dp),
-    )
-}
-
-// connected: a plain dot, not connected: a ring
-@Composable
-private fun ConnectionDot(isActive: Boolean) {
-    if (isActive) {
+private fun ConnectionDot(isActive: Boolean, isWifi: Boolean) {
+    if (isActive && isWifi) {
+        FloconIcon(
+            imageVector = Icons.Outlined.Wifi,
+            tint = FloconTheme.colors.statusSuccess,
+            modifier = Modifier.size(12.dp),
+        )
+    } else if (isActive) {
         FloconDot(color = FloconTheme.colors.statusSuccess)
     } else {
         Box(
