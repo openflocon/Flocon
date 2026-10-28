@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.adbcommander.view
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,19 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.adb_commander_unavailable_wifi
+import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderViewModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconEmptyState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -45,13 +44,11 @@ private fun AdbCommanderScreen(
     modifier: Modifier = Modifier,
 ) {
     if (!uiState.adbAvailable) {
-        Box(modifier = modifier, contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(Res.string.adb_commander_unavailable_wifi),
-                style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colors.ink,
-            )
-        }
+        FloconEmptyState(
+            title = stringResource(Res.string.menu_item_adbCommander),
+            description = stringResource(Res.string.adb_commander_unavailable_wifi),
+            modifier = modifier.fillMaxSize(),
+        )
         return
     }
 
