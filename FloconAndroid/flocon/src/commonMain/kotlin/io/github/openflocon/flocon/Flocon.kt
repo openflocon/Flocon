@@ -1,69 +1,34 @@
+@file:OptIn(FloconInternalApi::class)
+
 package io.github.openflocon.flocon
 
-import io.github.openflocon.flocon.FloconApp.Client
+import io.github.openflocon.flocon.client.FloconConnectionStates
+import io.github.openflocon.flocon.client.FloconConnections
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.model.FloconMessageFromServer
-import io.github.openflocon.flocon.model.toBonjourBody
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Flocon internal constructor(
     private val config: FloconConfig,
     private val plugins: List<FloconPlugin>,
-    private val encoder: FloconEncoder
+    private val encoder: FloconEncoder,
+    initialAddress: String? = null,
+    addressStore: FloconAddressStore? = null,
 ) {
 
+    private val connections = FloconConnections(
+        config = config,
+        plugins = plugins,
+        encoder = encoder,
+        initialAddress = initialAddress,
+        addressStore = addressStore,
+        onMessageReceived = ::onMessageReceived,
+    )
+
     init {
-        config.scope.launch {
-            start(
-                client = config.client,
-                context = config.context,
-            )
-        }
-    }
-
-    private suspend fun start(client: Client, context: FloconContext) {
-        // try to connect, it fail : try again in 3s
-        try {
-            client.connect(
-                onClosed = {
-                    FloconLogger.log("Client - Closed")
-                    // try again to connect
-                    config.scope.launch {
-                        start(
-                            client = client,
-                            context = context,
-                        )
-                    }
-                },
-                onMessageReceived = ::onMessageReceived
-            )
-
-            plugins.forEach { it.onConnectedToServer() }
-
-            (client as? FloconMessageSender)?.let {
-                // if success, just send a bonjour with the installed plugins
-                it.send("bonjour", method = "bonjour", body = plugins.toBonjourBody(encoder))
-                it.sendPendingMessages()
-            }
-        } catch (t: Throwable) {
-            if (t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
-                withContext(Dispatchers.Main) {
-                    displayClearTextError(context = context)
-                }
-            } else {
-                t.printStackTrace()
-                delay(3_000)
-                start(
-                    client = client,
-                    context = context,
-                )
-            }
-        }
+        connections.start()
     }
 
     private fun onMessageReceived(message: String) {
@@ -87,7 +52,25 @@ class Flocon internal constructor(
     companion object {
         var instance: Flocon? = null
             get() = field ?: error("Flocon is not initialized")
-            internal set
+            internal set(value) {
+                field = value
+                started = value
+            }
+
+        // `instance` throws when Flocon is not started
+        private var started: Flocon? = null
+
+        /** The state of the connection to the desktop app, see `Flocon.connectionState` in `flocon-connect`. */
+        @FloconInternalApi
+        val connectionStateFlow: StateFlow<FloconConnectionState> get() = FloconConnectionStates.state
+
+        /**
+         * Connects to the desktop app at the given address, in addition to the default one,
+         * see `Flocon.connect` in `flocon-connect`.
+         */
+        @FloconInternalApi
+        suspend fun connectToServer(address: String): FloconConnectResult =
+            started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
     }
 
 }

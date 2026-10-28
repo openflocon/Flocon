@@ -40,6 +40,35 @@ Flocon.analyticsPlugin.log(AnalyticsEvent("button_clicked", "events"))
 
 On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
 
+### On a real device: connect to your computer
+
+`localhost` only reaches your computer from an emulator or a simulator. On a real device, add the optional `flocon-connect` module (debug only), and give the IP address of your computer, for example from a debug menu:
+
+```kotlin
+debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
+```
+
+```kotlin
+import io.github.openflocon.flocon.connect
+import io.github.openflocon.flocon.connectionState
+
+startFlocon(FloconContext(this)) {
+    connect {
+        address = "192.168.1.20"   // optional: a computer with a fixed IP, also tried at start
+    }
+    install(FloconNetwork)
+}
+
+// later, for example when the user types the IP of the computer in a debug menu
+val result = Flocon.connect("192.168.1.20")   // IP only, the port is always 9023
+
+// follow the connection
+Flocon.connectionState.collect { state -> /* Connected, Connecting, Failed(reason)... */ }
+```
+
+Flocon keeps trying its default address and also connects to this one, sending what was logged in the meantime in order. The last address that worked is kept and tried again at the next launch. See the [setup guide](https://openflocon.github.io/Flocon/setup#connecting-to-another-address) for all the options.
+
 Coming from 1.x? See the 👉 **[migration guide](https://openflocon.github.io/Flocon/migration)**.
 
 ## 📖 Documentation

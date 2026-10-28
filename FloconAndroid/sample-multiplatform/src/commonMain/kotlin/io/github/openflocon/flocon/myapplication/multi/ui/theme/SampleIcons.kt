@@ -43,6 +43,7 @@ object SampleIcons {
         "M21 16l-5-5-8 8",
         "M9 8.5a1 1 0 1 0 0 .01",
     )
+    val Connection = icon("connection", "M5 12.5a10 10 0 0 1 14 0", "M8.5 16a5 5 0 0 1 7 0", "M12 19.5v.01")
     val Crash = icon("crash", "M12 3L2 20h20z", "M12 10v5M12 18v.01")
 
     private fun icon(name: String, vararg paths: String): ImageVector =

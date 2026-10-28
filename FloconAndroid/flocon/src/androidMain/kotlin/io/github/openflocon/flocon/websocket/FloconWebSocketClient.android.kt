@@ -1,16 +1,14 @@
 package io.github.openflocon.flocon.websocket
 
-import kotlin.Throws
 import io.github.openflocon.flocon.FloconLogger
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import java.io.EOFException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -24,9 +22,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .build()
 
-    private var webSocket: WebSocket? = null
-
-    private val queue = MessageQueue(capacity = 200)
+    private val webSocket = AtomicReference<WebSocket?>(null)
 
     @Throws(Throwable::class)
     override suspend fun connect(
@@ -36,14 +32,16 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         onClosed: () -> Unit,
     ) {
         // if already connected, do nothing
-        if (webSocket != null) return
+        if (webSocket.get() != null) return
+
+        val notifyClosed = onClosed
 
         return suspendCancellableCoroutine { continuation ->
             val connectionListener = object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     FloconLogger.log("✅ WebSocket Connection Opened!")
 
-                    this@FloconWebSocketClientImpl.webSocket = webSocket
+                    this@FloconWebSocketClientImpl.webSocket.set(webSocket)
                     if (continuation.isActive) {
                         continuation.resume(Unit)
                     }
@@ -55,17 +53,24 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
                     onMessageReceived(text)
                 }
 
+                override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                    FloconLogger.log("🔒 WebSocket closing: $code $reason")
+                    webSocket.close(code, null)
+                    connectionEnded(webSocket, notifyClosed)
+                }
+
+                override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                    connectionEnded(webSocket, notifyClosed)
+                }
+
                 override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                     FloconLogger.logError("❌ WebSocket Connection Failed: ${t.message}", t)
-                    if(response == null && t is EOFException) {
-                        runBlocking {
-                            disconnect()
-                        }
-                        onClosed()
-                    }
-                    // Connection failed, resume the coroutine with an exception
                     if (continuation.isActive) {
+                        // never opened: resume the coroutine with the exception
                         continuation.resumeWithException(t)
+                    } else {
+                        // an open connection dropped
+                        connectionEnded(webSocket, notifyClosed)
                     }
                 }
             }
@@ -86,33 +91,24 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         }
     }
 
-    override suspend fun sendMessage(message: String): Boolean {
-        // Once the connection is established, the main listener (socketListener)
-        // will be used for messages, closures, etc.
-        // We attach the main listener to the socket after a successful connection.
-        webSocket?.let {
-            // This is a workaround to replace the initial listener with the permanent one.
-            // OkHttp doesn't provide a direct method for this, so we have to handle it ourselves.
-            // A simpler approach would be to use a single listener and check the connection state.
-            // In our case, the 'connectionListener' is disposable, and the 'socketListener' takes over implicitly.
-        } ?: run {
-            // if not connected yet, just append the message
-            queue.add(message)
-        }
-        FloconLogger.log("WEBSOCKET ----> send $message")
-        return webSocket?.send(message) ?: false
+    /**
+     * Called when the server closes the connection or the connection drops.
+     *
+     * The identity check avoids notifying twice, or after an explicit [disconnect].
+     */
+    private fun connectionEnded(closedSocket: WebSocket, onClosed: () -> Unit) {
+        if (!webSocket.compareAndSet(closedSocket, null)) return
+        onClosed()
     }
 
-    override suspend fun sendPendingMessages() {
-        var message = queue.poll()
-        while (message != null) {
-            sendMessage(message)
-            message = queue.poll()
-        }
+    override suspend fun sendMessage(message: String): Boolean {
+        // not connected: the caller keeps the message
+        val socket = webSocket.get() ?: return false
+        FloconLogger.log("WEBSOCKET ----> send $message")
+        return socket.send(message)
     }
 
     override suspend fun disconnect() {
-        webSocket?.close(1000, "Client disconnecting")
-        webSocket = null
+        webSocket.getAndSet(null)?.close(1000, "Client disconnecting")
     }
 }
