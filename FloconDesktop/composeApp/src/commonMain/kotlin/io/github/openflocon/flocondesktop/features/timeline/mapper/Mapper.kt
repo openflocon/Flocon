@@ -30,8 +30,12 @@ private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
         statusCode = statusCode,
         duration = durationMs?.let(::formatElapsed),
         durationMs = durationMs,
+        httpActions = hasHttpActions(method),
     )
 }
+
+// the method of a gRPC call and of a WebSocket one is the name of their protocol
+internal fun hasHttpActions(method: String?): Boolean = method != "GRPC" && method != "WS"
 
 /**
  * "https://api.acme.io/v1/users?id=2" -> "api.acme.io" and "/v1/users?id=2"
