@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
+import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -35,6 +36,11 @@ internal interface SettingsDataSource {
 
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
+
+    val timelineSettings: Flow<TimelineSettingsLocal>
+
+    // the settings are one stored object: the changes are applied one after the other
+    suspend fun updateTimelineSettings(transform: (TimelineSettingsLocal) -> TimelineSettingsLocal)
 
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>

@@ -5,10 +5,12 @@ import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import io.github.openflocon.domain.settings.repository.MascotPreferencesRepository
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MascotPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
+import io.github.openflocon.flocondesktop.core.data.settings.TimelinePreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSourcePrefs
 import org.koin.core.module.dsl.bind
@@ -26,6 +28,9 @@ val coreDataModule =
         }
         singleOf(::MascotPreferencesRepositoryImpl) {
             bind<MascotPreferencesRepository>()
+        }
+        singleOf(::TimelinePreferencesRepositoryImpl) {
+            bind<TimelinePreferencesRepository>()
         }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()

@@ -4,6 +4,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 
 internal const val KIND_NETWORK = "network"
+internal const val KIND_NETWORK_RESPONSE = "network_response" // the response of a network call, at the time it arrived
 internal const val KIND_DATABASE = "database"
 internal const val KIND_ANALYTICS = "analytics"
 internal const val KIND_ACCESSIBILITY = "accessibility"
@@ -40,6 +41,7 @@ private fun buildUnion(
     deviceId: String,
     packageName: String,
     filter: TimelineFilterDomainModel,
+    includeNetworkResponses: Boolean = true, // false: one event per network call
 ): Union {
     val params = ArrayList<Any>()
     val text = filter.text?.takeIf { it.isNotBlank() }?.let { "%$it%" }
@@ -88,6 +90,23 @@ private fun buildUnion(
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
+                )
+            )
+        }
+        if (includeNetworkResponses && TimelineSource.Network in filter.sources) {
+            add(
+                branch(
+                    select = "'$KIND_NETWORK_RESPONSE' AS kind, callId AS id, " +
+                        "request_startTime + CAST(response_durationMs AS INTEGER) AS ts, " +
+                        "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
+                        "CASE type WHEN 'WEBSOCKET' THEN 'WS' WHEN 'GRPC' THEN 'GRPC' ELSE request_method END AS method, " +
+                        "COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode) AS statusCode, " +
+                        "response_durationMs AS durationMs",
+                    from = "FloconNetworkCallEntity",
+                    appInstanceColumn = "appInstance",
+                    textColumns = listOf("request_url", "request_method"),
+                    // a call without response yet has no response event
+                    extraCondition = "response_durationMs IS NOT NULL",
                 )
             )
         }
@@ -236,7 +255,8 @@ internal fun buildTimelineQuery(
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
             // an app start is below the events that happened at the same time
-            "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, u.id DESC",
+            // at the same time, the response is above its request
+            "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC",
         params = params,
     )
 }
@@ -254,6 +274,7 @@ internal fun buildTimelineSummaryQuery(
         deviceId = deviceId,
         packageName = packageName,
         filter = filter.copy(sources = TimelineSource.entries.toSet()),
+        includeNetworkResponses = false,
     )
     val params = ArrayList<Any>()
     val members = ArrayList<String>()

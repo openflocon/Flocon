@@ -23,6 +23,8 @@ import flocondesktop.composeapp.generated.resources.timeline_counter_sessions
 import flocondesktop.composeapp.generated.resources.timeline_live
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.pluralStringResource
@@ -36,6 +38,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TimelineHeader(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
+    settings: TimelineSettingsUiModel,
+    onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -90,6 +94,10 @@ internal fun TimelineHeader(
             highlight = colors.catCrash,
         )
         FeatureDocButton(doc = FeatureDoc.Timeline)
+        TimelineOverflowMenu(
+            settings = settings,
+            onAction = onAction,
+        )
     }
 }
 
