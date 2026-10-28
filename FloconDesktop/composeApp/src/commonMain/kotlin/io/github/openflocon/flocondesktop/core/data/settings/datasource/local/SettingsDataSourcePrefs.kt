@@ -8,6 +8,7 @@ import com.russhwolf.settings.coroutines.toFlowSettings
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
+import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -69,26 +72,22 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(MASCOT_ENABLED, enabled)
     }
 
-    override val timelineAutoScroll: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_AUTO_SCROLL)
-        .mapLatest { it ?: false }
+    private val timelineSettingsMutex = Mutex()
 
-    override suspend fun setTimelineAutoScroll(autoScroll: Boolean) {
-        settings.putBoolean(TIMELINE_AUTO_SCROLL, autoScroll)
+    override val timelineSettings: Flow<TimelineSettingsLocal> = flowSettings.getStringOrNullFlow(TIMELINE_SETTINGS)
+        .mapLatest { it.toTimelineSettings() }
+
+    override suspend fun updateTimelineSettings(transform: (TimelineSettingsLocal) -> TimelineSettingsLocal) {
+        timelineSettingsMutex.withLock {
+            val updated = transform(settings.getStringOrNull(TIMELINE_SETTINGS).toTimelineSettings())
+            settings.putString(TIMELINE_SETTINGS, json.encodeToString(TimelineSettingsLocal.serializer(), updated))
+        }
     }
 
-    override val timelineInvertList: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_INVERT_LIST)
-        .mapLatest { it ?: false }
-
-    override suspend fun setTimelineInvertList(invertList: Boolean) {
-        settings.putBoolean(TIMELINE_INVERT_LIST, invertList)
-    }
-
-    override val timelinePinPanel: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_PIN_PANEL)
-        .mapLatest { it ?: false }
-
-    override suspend fun setTimelinePinPanel(pinPanel: Boolean) {
-        settings.putBoolean(TIMELINE_PIN_PANEL, pinPanel)
-    }
+    // the defaults when nothing is stored, or when what is stored cannot be read
+    private fun String?.toTimelineSettings(): TimelineSettingsLocal = this
+        ?.let { runCatching { json.decodeFromString(TimelineSettingsLocal.serializer(), it) }.getOrNull() }
+        ?: TimelineSettingsLocal()
 
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
@@ -188,9 +187,7 @@ internal class SettingsDataSourcePrefs(
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
-        private const val TIMELINE_AUTO_SCROLL = "timeline_auto_scroll"
-        private const val TIMELINE_INVERT_LIST = "timeline_invert_list"
-        private const val TIMELINE_PIN_PANEL = "timeline_pin_panel"
+        private const val TIMELINE_SETTINGS = "timeline_settings"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"

@@ -16,6 +16,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -52,6 +53,7 @@ internal class TimelineViewModel(
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
+    private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
@@ -59,8 +61,14 @@ internal class TimelineViewModel(
     private val _filterText = MutableStateFlow("")
     val filterText: StateFlow<String> = _filterText.asStateFlow()
 
-    private val _selectedSources = MutableStateFlow(TimelineSource.entries.toSet())
-    val selectedSources: StateFlow<Set<TimelineSource>> = _selectedSources.asStateFlow()
+    // the sources displayed, saved in the settings. Read from the source, not from [selectedSources], to wait for the stored
+    // selection instead of loading all the sources first
+    private val storedSources: Flow<Set<TimelineSource>> = observeTimelineSettingsUseCase()
+        .map { it.selectedSources }
+        .distinctUntilChanged()
+
+    val selectedSources: StateFlow<Set<TimelineSource>> = storedSources
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSource.entries.toSet())
 
     // the device is connected
     val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
@@ -78,7 +86,7 @@ internal class TimelineViewModel(
     private val filter: Flow<TimelineFilterDomainModel> = combine(
         // no delay when the text is cleared, a short one while typing
         _filterText.debounce { if (it.isEmpty()) 0L else 300L },
-        _selectedSources,
+        storedSources,
     ) { text, sources ->
         TimelineFilterDomainModel(
             sources = sources,
@@ -120,8 +128,9 @@ internal class TimelineViewModel(
         when (action) {
             is TimelineAction.FilterTextChanged -> _filterText.update { action.text }
 
-            is TimelineAction.ToggleSource -> _selectedSources.update { current ->
-                if (action.source in current) current - action.source else current + action.source
+            is TimelineAction.ToggleSource -> viewModelScope.launch {
+                val current = selectedSources.value
+                setTimelineSelectedSourcesUseCase(if (action.source in current) current - action.source else current + action.source)
             }
 
             is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }

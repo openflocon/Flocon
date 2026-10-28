@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.timeline.usecase
 
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -24,6 +25,10 @@ class TimelineSettingsUseCasesTest {
 
         override suspend fun setPinPanel(pinPanel: Boolean) {
             state.value = state.value.copy(pinPanel = pinPanel)
+        }
+
+        override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
+            state.value = state.value.copy(selectedSources = sources)
         }
     }
 
@@ -66,6 +71,31 @@ class TimelineSettingsUseCasesTest {
         assertEquals(
             TimelineSettingsDomainModel(autoScroll = false, invertList = true, pinPanel = true),
             ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `every source is selected by default`() = runBlocking {
+        assertEquals(
+            TimelineSource.entries.toSet(),
+            ObserveTimelineSettingsUseCase(repository)().first().selectedSources,
+        )
+    }
+
+    @Test
+    fun `a source can be deselected then selected again, without changing the other options`() = runBlocking {
+        SetTimelineInvertListUseCase(repository)(true)
+        val select = SetTimelineSelectedSourcesUseCase(repository)
+
+        select(TimelineSource.entries.toSet() - TimelineSource.Database)
+        val deselected = ObserveTimelineSettingsUseCase(repository)().first()
+        assertEquals(TimelineSource.entries.toSet() - TimelineSource.Database, deselected.selectedSources)
+        assertEquals(true, deselected.invertList)
+
+        select(TimelineSource.entries.toSet())
+        assertEquals(
+            TimelineSource.entries.toSet(),
+            ObserveTimelineSettingsUseCase(repository)().first().selectedSources,
         )
     }
 }
