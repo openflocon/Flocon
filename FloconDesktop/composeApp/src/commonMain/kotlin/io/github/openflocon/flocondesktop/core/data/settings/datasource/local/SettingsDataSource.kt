@@ -36,6 +36,12 @@ internal interface SettingsDataSource {
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
 
+    val timelineAutoScroll: Flow<Boolean>
+    suspend fun setTimelineAutoScroll(autoScroll: Boolean)
+
+    val timelineInvertList: Flow<Boolean>
+    suspend fun setTimelineInvertList(invertList: Boolean)
+
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>

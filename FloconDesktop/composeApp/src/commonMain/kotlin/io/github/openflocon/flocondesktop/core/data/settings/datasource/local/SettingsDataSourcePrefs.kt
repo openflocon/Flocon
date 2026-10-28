@@ -69,6 +69,20 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(MASCOT_ENABLED, enabled)
     }
 
+    override val timelineAutoScroll: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_AUTO_SCROLL)
+        .mapLatest { it ?: false }
+
+    override suspend fun setTimelineAutoScroll(autoScroll: Boolean) {
+        settings.putBoolean(TIMELINE_AUTO_SCROLL, autoScroll)
+    }
+
+    override val timelineInvertList: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_INVERT_LIST)
+        .mapLatest { it ?: false }
+
+    override suspend fun setTimelineInvertList(invertList: Boolean) {
+        settings.putBoolean(TIMELINE_INVERT_LIST, invertList)
+    }
+
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
 
@@ -167,6 +181,8 @@ internal class SettingsDataSourcePrefs(
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
+        private const val TIMELINE_AUTO_SCROLL = "timeline_auto_scroll"
+        private const val TIMELINE_INVERT_LIST = "timeline_invert_list"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"

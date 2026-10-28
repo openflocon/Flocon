@@ -49,6 +49,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
@@ -71,6 +72,7 @@ fun TimelineScreen(
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
 
     TimelineContent(
@@ -81,6 +83,7 @@ fun TimelineScreen(
         selectedKey = selectedKey,
         summary = summary,
         isLive = isLive,
+        settings = settings,
         showEmptyState = showEmptyState,
         onAction = viewModel::onAction,
     )
@@ -94,6 +97,7 @@ internal fun TimelineContent(
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
+    settings: TimelineSettingsUiModel,
     showEmptyState: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -129,6 +133,8 @@ internal fun TimelineContent(
         TimelineHeader(
             summary = summary,
             isLive = isLive,
+            settings = settings,
+            onAction = onAction,
         )
 
         FlowRow(
@@ -174,6 +180,15 @@ internal fun TimelineContent(
         val hoveredCallKeys = hoveredRows.values.mapTo(mutableSetOf()) { it.callKey }
 
         val listState = rememberLazyListState()
+
+        // the newest event is the first of the list, whatever the direction: look at it, not at the count, so the older
+        // pages loaded while scrolling do not bring the list back to the top
+        val newestKey = if (rows.itemCount > 0) rows.peek(0)?.key else null
+        LaunchedEffect(settings.autoScroll, newestKey) {
+            if (settings.autoScroll && newestKey != null) {
+                listState.animateScrollToItem(0)
+            }
+        }
         // the bar between the two lines of a hovered network call: nothing to link while it waits for its response
         val railCall = hoveredRows.values.firstOrNull {
             it.source == TimelineSource.Network && (it.phase == TimelinePhase.Response || it.network?.duration != null)
@@ -182,6 +197,7 @@ internal fun TimelineContent(
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
+                reverseLayout = settings.invertList,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
             ) {
@@ -231,9 +247,9 @@ internal fun TimelineContent(
             }
             CallRail(
                 listState = listState,
-                // the response is the upper line of the list, sorted from the newest
-                upperKey = railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" },
-                lowerKey = railCall?.callKey,
+                // the response is the upper line of the list, sorted from the newest, the lower one when the list is inverted
+                upperKey = if (settings.invertList) railCall?.callKey else railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" },
+                lowerKey = if (settings.invertList) railCall?.let { "${it.callKey}:${TimelinePhase.Response.name}" } else railCall?.callKey,
                 modifier = Modifier.fillMaxSize(),
             )
         }
