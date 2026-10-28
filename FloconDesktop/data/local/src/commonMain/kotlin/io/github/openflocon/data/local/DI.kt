@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local
 
+import io.github.openflocon.data.local.accessibility.accessibilityLocalModule
 import io.github.openflocon.data.local.adb.adbModule
 import io.github.openflocon.data.local.adbcommander.adbCommanderModule
 import io.github.openflocon.data.local.analytics.analyticsModule
@@ -48,6 +49,7 @@ val dataLocalModule = module {
         }
     }
     includes(
+        accessibilityLocalModule,
         adbModule,
         adbCommanderModule,
         analyticsModule,

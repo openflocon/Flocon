@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.model
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 
 @Immutable
@@ -14,9 +15,14 @@ internal data class TimelineRowUiModel(
     val subtitle: String?,
     val network: TimelineNetworkUiModel? = null, // network calls only
     val sessionStart: Long? = null, // the start of the session of the event, null if none is known
+    val phase: TimelinePhase = TimelinePhase.Request, // network calls only: the request and the response are two rows
 ) {
-    // the ids of two sources can be the same
-    val key: String get() = "${source.name}:$id"
+    // the ids of two sources can be the same. Shared by the request and the response of a network call,
+    // to select and highlight them together
+    val callKey: String get() = "${source.name}:$id"
+
+    // unique in the list
+    val key: String get() = if (phase == TimelinePhase.Request) callKey else "$callKey:${phase.name}"
 }
 
 @Immutable
@@ -40,8 +46,24 @@ internal sealed interface TimelineItemUiModel {
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
 }
 
+@Immutable
+internal data class TimelineSettingsUiModel(
+    val autoScroll: Boolean,
+    val invertList: Boolean,
+    val pinPanel: Boolean,
+)
+
+internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
+    autoScroll = false,
+    invertList = false,
+    pinPanel = false,
+)
+
 internal sealed interface TimelineAction {
     data class FilterTextChanged(val text: String) : TimelineAction
     data class ToggleSource(val source: TimelineSource) : TimelineAction
     data class Open(val row: TimelineRowUiModel) : TimelineAction
+    data class ToggleAutoScroll(val value: Boolean) : TimelineAction
+    data class InvertList(val value: Boolean) : TimelineAction
+    data class PinPanel(val value: Boolean) : TimelineAction
 }

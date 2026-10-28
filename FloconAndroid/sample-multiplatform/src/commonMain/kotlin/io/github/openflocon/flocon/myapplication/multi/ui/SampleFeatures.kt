@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 
 import androidx.compose.runtime.mutableStateMapOf
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.analyticsPlugin
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty
@@ -48,6 +49,8 @@ enum class SampleFeature(
 
     AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),
     AnalyticsEvents(SampleScreen.Analytics, "Firebase-style events", "Two events from one sender", buttonLabel = "Send"),
+
+    Accessibility(SampleScreen.Accessibility, "Announce", "Announces \"Item added to the cart\" to the screen reader", buttonLabel = "Announce"),
 
     FeatureFlags(SampleScreen.FeatureFlags, "Register flags", "Firebase and Statsig flags, with variants and payloads", buttonLabel = "Register"),
 
@@ -132,6 +135,7 @@ object SampleFeatures {
         on(SampleFeature.Dashboard) {
             userFlow.update { it.copy(userName = "flo-${Random.nextInt(100)}") }
         }
+        on(SampleFeature.Accessibility) { Flocon.accessibilityPlugin.announce("Item added to the cart") }
         on(SampleFeature.FeatureFlags) { initializeFeatureFlags() }
         on(SampleFeature.Deeplink) {
             Flocon.deeplinksPlugin.register {

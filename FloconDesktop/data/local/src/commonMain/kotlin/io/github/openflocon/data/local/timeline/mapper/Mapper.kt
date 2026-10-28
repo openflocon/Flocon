@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.mapper
 
+import io.github.openflocon.data.local.timeline.datasource.KIND_ACCESSIBILITY
 import io.github.openflocon.data.local.timeline.datasource.KIND_ADB
 import io.github.openflocon.data.local.timeline.datasource.KIND_ANALYTICS
 import io.github.openflocon.data.local.timeline.datasource.KIND_APP_START
@@ -7,19 +8,22 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_CRASH
 import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
 import io.github.openflocon.data.local.timeline.datasource.KIND_DEEPLINK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
+import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.datasource.KIND_TABLE
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 
 private fun String.toTimelineSource(): TimelineSource = when (this) {
-    KIND_NETWORK -> TimelineSource.Network
+    KIND_NETWORK, KIND_NETWORK_RESPONSE -> TimelineSource.Network
     KIND_DATABASE -> TimelineSource.Database
     KIND_ANALYTICS -> TimelineSource.Analytics
+    KIND_ACCESSIBILITY -> TimelineSource.Accessibility
     KIND_CRASH -> TimelineSource.Crash
     KIND_TABLE -> TimelineSource.Table
     KIND_DEEPLINK -> TimelineSource.Deeplink
@@ -38,6 +42,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     method = method,
     statusCode = statusCode,
     durationMs = durationMs,
+    phase = if (kind == KIND_NETWORK_RESPONSE) TimelinePhase.Response else TimelinePhase.Request,
     sessionStart = sessionStart,
 )
 

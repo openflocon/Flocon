@@ -6,7 +6,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.AccessibilityScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.AnalyticsScreen
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.ConnectionScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.CrashScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.DashboardScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.DatabaseScreen
@@ -24,6 +26,7 @@ sealed interface SampleRoute {
     data object Network : SampleRoute
     data object Database : SampleRoute
     data object Analytics : SampleRoute
+    data object Accessibility : SampleRoute
     data object FeatureFlags : SampleRoute
     data object Preferences : SampleRoute
     data object Files : SampleRoute
@@ -31,6 +34,7 @@ sealed interface SampleRoute {
     data object Deeplinks : SampleRoute
     data object Images : SampleRoute
     data object Crash : SampleRoute
+    data object Connection : SampleRoute
 }
 
 val SampleScreen.route: SampleRoute
@@ -38,6 +42,7 @@ val SampleScreen.route: SampleRoute
         SampleScreen.Network -> SampleRoute.Network
         SampleScreen.Database -> SampleRoute.Database
         SampleScreen.Analytics -> SampleRoute.Analytics
+        SampleScreen.Accessibility -> SampleRoute.Accessibility
         SampleScreen.FeatureFlags -> SampleRoute.FeatureFlags
         SampleScreen.Preferences -> SampleRoute.Preferences
         SampleScreen.Files -> SampleRoute.Files
@@ -64,10 +69,16 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
         backStack = backStack,
         onBack = onBack,
         entryProvider = entryProvider {
-            entry<SampleRoute.Home> { HomeScreen(onOpen = { backStack.add(it.route) }) }
+            entry<SampleRoute.Home> {
+                HomeScreen(
+                    onOpen = { backStack.add(it.route) },
+                    onOpenConnection = { backStack.add(SampleRoute.Connection) },
+                )
+            }
             entry<SampleRoute.Network> { NetworkScreen(onBack) }
             entry<SampleRoute.Database> { DatabaseScreen(onBack) }
             entry<SampleRoute.Analytics> { AnalyticsScreen(onBack) }
+            entry<SampleRoute.Accessibility> { AccessibilityScreen(onBack) }
             entry<SampleRoute.FeatureFlags> { FeatureFlagsScreen(onBack) }
             entry<SampleRoute.Preferences> { PreferencesScreen(onBack) }
             entry<SampleRoute.Files> { FilesScreen(onBack) }
@@ -75,6 +86,7 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
             entry<SampleRoute.Deeplinks> { DeeplinksScreen(onBack) }
             entry<SampleRoute.Images> { ImagesScreen(onBack) }
             entry<SampleRoute.Crash> { CrashScreen(onBack) }
+            entry<SampleRoute.Connection> { ConnectionScreen(onBack) }
         },
     )
 }

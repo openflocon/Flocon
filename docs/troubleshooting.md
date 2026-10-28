@@ -14,6 +14,9 @@ The SDK talks to the desktop over TLS (`wss://localhost:9023`, `https://localhos
 - The SDK and Flocon Desktop must be on the same version: an older SDK still tries the removed `ws://` connection and cannot connect (see [Migration](migration.md)).
 - Web (wasmJs) only: the browser rejects self-signed certificates, open `https://localhost:9023` once in the browser and accept the certificate.
 
+!!! tip "Connecting to the IP of your computer (real device)"
+    `Flocon.connect("192.168.1.20")` (optional `flocon-connect` module) opens a TLS connection like the default one, nothing to allow in your `networkSecurityConfig`. See [Setup](setup.md).
+
 ---
 
 ## 2. ADB Connection Issues

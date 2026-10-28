@@ -1,3 +1,5 @@
+@file:OptIn(FloconInternalApi::class)
+
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconClient
@@ -16,6 +18,36 @@ class FloconConfiguration internal constructor(
     private val plugins: MutableMap<String, (FloconConfig, FloconEncoder) -> FloconPlugin> = mutableMapOf()
 
     private var serializerModule = SerializersModule {}
+
+    internal var bufferCapacity = DEFAULT_BUFFER_CAPACITY
+        private set
+
+    internal var initialAddress: String? = null
+        private set
+
+    internal var addressStore: FloconAddressStore? = null
+        private set
+
+    @FloconInternalApi
+    val context: FloconContext get() = config.context
+
+    /**
+     * Also tries to connect to [initialAddress] when Flocon starts, and to the last address kept in
+     * [store] if there is one (it wins), see `connect` in `flocon-connect`.
+     */
+    @FloconInternalApi
+    fun connectAtStart(initialAddress: String?, store: FloconAddressStore?) {
+        this.initialAddress = initialAddress
+        this.addressStore = store
+    }
+
+    /**
+     * Number of messages kept while no desktop app is reachable, see `connect` in `flocon-connect`.
+     */
+    @FloconInternalApi
+    fun keepMessages(capacity: Int) {
+        bufferCapacity = capacity
+    }
 
     /**
      * Install a plugin with the given [factory] and optional [configure] block.
@@ -44,6 +76,9 @@ class FloconConfiguration internal constructor(
 
     fun encoding() = serializerModule
 
+    internal companion object {
+        const val DEFAULT_BUFFER_CAPACITY = 5_000
+    }
 }
 
 @ConsistentCopyVisibility
@@ -74,10 +109,13 @@ fun startFlocon(
     val encoder = FloconEncoder(module = configuration.encoding())
 
     client.setupEncoder(encoder)
+    client.setupBuffer(capacity = configuration.bufferCapacity)
 
-    Flocon(
+    Flocon.instance = Flocon(
         config = config,
         plugins = configuration.build(encoder),
-        encoder = encoder
+        encoder = encoder,
+        initialAddress = configuration.initialAddress,
+        addressStore = configuration.addressStore,
     )
 }

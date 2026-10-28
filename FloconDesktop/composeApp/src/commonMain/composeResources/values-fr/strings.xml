@@ -44,12 +44,15 @@
     <string name="timeline_empty">Aucun événement pour le moment</string>
     <string name="timeline_source_network">Réseau</string>
     <string name="timeline_source_analytics">Analytics</string>
+    <string name="timeline_source_accessibility">Accessibilité</string>
     <string name="timeline_source_crash">Crash</string>
     <string name="timeline_source_database">Base de données</string>
     <string name="timeline_source_table">Table</string>
     <string name="timeline_source_adb">ADB</string>
     <string name="timeline_source_deeplink">Deeplink</string>
     <string name="timeline_source_app_start">Démarrage</string>
+    <string name="timeline_network_request">Requête</string>
+    <string name="timeline_network_response">Réponse</string>
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
     <plurals name="network_counter_requests">

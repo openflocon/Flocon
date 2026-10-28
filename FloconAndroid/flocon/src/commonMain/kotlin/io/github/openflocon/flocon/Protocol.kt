@@ -13,6 +13,16 @@ object Protocol {
             }
         }
 
+        object Accessibility {
+            const val Plugin = "accessibility"
+
+            object Method {
+                const val AddEvents = "addevents"
+                const val State = "state"
+                const val FocusedNode = "focusednode"
+            }
+        }
+
         object FeatureFlags {
             const val Plugin = "featureflags"
 
@@ -114,6 +124,16 @@ object Protocol {
     }
 
     object ToDevice {
+
+        object Accessibility {
+            const val Plugin = "Accessibility"
+
+            object Method {
+                const val GetFocusedNode = "getFocusedNode"
+                const val FocusNext = "focusNext"
+                const val FocusPrevious = "focusPrevious"
+            }
+        }
 
         object Analytics {
             const val Plugin = "Analytics"

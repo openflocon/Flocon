@@ -21,20 +21,28 @@ class TimelineQueryBuilderTest {
     // every source but the app starts, which are sessions and not events
     private val eventSources = TimelineSource.entries.size - 1
 
+    // a network call is two events, its request and its response
+    private val eventBranches = eventSources + 1
+
     @Test
     fun `every source is merged by a union sorted from the newest`() {
         val query = build()
 
         // the events of every source and the app starts
-        assertEquals(eventSources, Regex("UNION ALL").findAll(query.sql).count())
+        assertEquals(eventBranches, Regex("UNION ALL").findAll(query.sql).count())
         assertTrue(query.sql.contains("FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("FROM DatabaseQueryLogEntity"))
         assertTrue(query.sql.contains("FROM AnalyticsItemEntity"))
+        assertTrue(query.sql.contains("FROM AccessibilityEventEntity"))
         assertTrue(query.sql.contains("FROM CrashReportEntity"))
         assertTrue(query.sql.contains("FROM TableItemEntity JOIN TableEntity"))
         assertTrue(query.sql.contains("FROM DeeplinkEntity"))
         assertTrue(query.sql.contains("FROM AdbCommandHistoryEntity"))
-        assertTrue(query.sql.endsWith("ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, u.id DESC"))
+        assertTrue(
+            query.sql.endsWith(
+                "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC"
+            )
+        )
     }
 
     @Test
@@ -45,6 +53,17 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("response_http_responseHttpCode"))
         assertTrue(query.sql.contains("response_graphql_responseHttpCode"))
         assertTrue(query.sql.contains("response_durationMs AS durationMs"))
+    }
+
+    @Test
+    fun `a network call with a response has a second event at the time the response arrived`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network)))
+
+        assertEquals(1, Regex("UNION ALL").findAll(query.sql).count())
+        assertTrue(query.sql.contains("'$KIND_NETWORK_RESPONSE' AS kind, callId AS id"))
+        assertTrue(query.sql.contains("request_startTime + CAST(response_durationMs AS INTEGER) AS ts"))
+        // a call still waiting for its response has no response event
+        assertTrue(query.sql.contains("response_durationMs IS NOT NULL"))
     }
 
     @Test
@@ -116,17 +135,17 @@ class TimelineQueryBuilderTest {
         val query = build(TimelineFilterDomainModel(text = "login"))
 
         // every source filters on two columns
-        assertEquals(eventSources * 2, Regex("LIKE \\?").findAll(query.sql).count())
-        assertEquals(eventSources * 2, query.params.count { it == "%login%" })
+        assertEquals(eventBranches * 2, Regex("LIKE \\?").findAll(query.sql).count())
+        assertEquals(eventBranches * 2, query.params.count { it == "%login%" })
     }
 
     @Test
     fun `the session filter is only applied on the sources that store it`() {
         val query = build(TimelineFilterDomainModel(appInstance = 42L))
 
-        // network, database, analytics and the app starts
-        assertEquals(4, Regex("appInstance = \\?").findAll(query.sql).count())
-        assertEquals(4, query.params.count { it == 42L })
+        // network (request and response), database, analytics, accessibility and the app starts
+        assertEquals(6, Regex("appInstance = \\?").findAll(query.sql).count())
+        assertEquals(6, query.params.count { it == 42L })
     }
 
     @Test
@@ -155,6 +174,8 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("GROUP BY kind"))
         assertTrue(query.sql.contains("statusCode >= 400"))
+        // a network call is counted once, not for its response
+        assertFalse(query.sql.contains(KIND_NETWORK_RESPONSE))
         // the sessions are counted as the app starts
         assertTrue(query.sql.contains("SELECT '$KIND_APP_START' AS kind, COUNT(*) AS count"))
     }

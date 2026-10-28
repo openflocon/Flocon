@@ -35,7 +35,6 @@ internal class FloconWebSocketClientIOs() : FloconWebSocketClient {
     }
 
     private var session: DefaultClientWebSocketSession? = null
-    private val queue = MessageQueue(capacity = 200)
 
     override suspend fun connect(
         address: String,
@@ -98,8 +97,8 @@ internal class FloconWebSocketClientIOs() : FloconWebSocketClient {
     override suspend fun sendMessage(message: String): Boolean {
         val currentSession = session
         if (currentSession == null) {
-            queue.add(message)
-            FloconLogger.log("🕒 WebSocket not connected, message saved in the queue : $message")
+            // not connected: the caller keeps the message
+            FloconLogger.log("🕒 WebSocket not connected, message not sent : $message")
             return false
         }
 
@@ -110,14 +109,6 @@ internal class FloconWebSocketClientIOs() : FloconWebSocketClient {
         } catch (e: Exception) {
             FloconLogger.logError("❌ Failed to send : ${e.message}", e)
             false
-        }
-    }
-
-    override suspend fun sendPendingMessages() {
-        var message = queue.poll()
-        while (message != null) {
-            sendMessage(message)
-            message = queue.poll()
         }
     }
 

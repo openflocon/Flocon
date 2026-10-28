@@ -18,6 +18,7 @@ import io.github.openflocon.flocondesktop.app.version.VersionChecker
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
+import io.github.openflocon.flocondesktop.features.accessibility.accessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
@@ -134,6 +135,7 @@ private fun Content(
             releaseNotesRoutes()
             crashReporterRoutes()
             timelineRoutes()
+            accessibilityRoutes()
         }
     }
 }

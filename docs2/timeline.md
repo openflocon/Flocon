@@ -13,9 +13,10 @@ The timeline merges the events received by Flocon Desktop into **one chronologic
 
 From the desktop UI, you can:
 
-- **Follow the events in order**: network calls, analytics events, database queries, table rows, crashes, deeplinks, ADB commands and app starts.
+- **Follow the events in order**: network calls (a request line with a → arrow, then a response line with a ← arrow when it arrives; selecting or hovering one highlights both, and hovering shows a bar linking them), analytics events, database queries, table rows, crashes, deeplinks, ADB commands and app starts.
 - **Read the counters**: number of events, sessions, HTTP errors and crashes of what is displayed.
-- **Filter**: toggle the sources and search a text (`Ctrl+K` / `Cmd+K` focuses the search field).
+- **Options** (⋮ menu): auto scroll to the newest event, invert the direction of the list, pin the detail panel (it then stays next to the list instead of covering it).
+- **Filter**: toggle the sources (the selection is remembered) and search a text (`Ctrl+K` / `Cmd+K` focuses the search field).
 - **Open an event**: click a row to open its detail in a side panel (network call, analytics event, database query, table row, crash, deeplink, ADB command). App starts have nothing to open.
 
 ---

@@ -3,6 +3,7 @@ package io.github.openflocon.data.local.timeline.mapper
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,6 +31,27 @@ class MapperTest {
         assertEquals(200, event.statusCode)
         assertEquals(120.5, event.durationMs)
         assertEquals(1000L, event.sessionStart)
+        assertEquals(TimelinePhase.Request, event.phase)
+    }
+
+    @Test
+    fun `the response of a network call is a network event of the response phase`() {
+        val event = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1220L,
+            title = "https://a/login",
+            subtitle = "200",
+            appInstance = 1000L,
+            method = "POST",
+            statusCode = 200,
+            durationMs = 120.5,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.Network, event.source)
+        assertEquals(TimelinePhase.Response, event.phase)
+        assertEquals("c1", event.id)
     }
 
     @Test
@@ -50,6 +72,25 @@ class MapperTest {
         assertEquals(TimelineSource.Crash, event.source)
         assertNull(event.sessionStart)
         assertNull(event.statusCode)
+    }
+
+    @Test
+    fun `an accessibility row is an accessibility event`() {
+        val event = TimelineRowEntity(
+            kind = "accessibility",
+            id = "a1",
+            ts = 1200L,
+            title = "Add to cart",
+            subtitle = "VIEW_FOCUSED",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.Accessibility, event.source)
+        assertEquals("VIEW_FOCUSED", event.subtitle)
     }
 
     @Test

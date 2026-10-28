@@ -80,6 +80,7 @@ The desktop identifies a client by the triple `deviceId` + `appPackageName` + `a
 
 | Plugin               | `plugin` value      | Doc                                            |
 |----------------------|---------------------|------------------------------------------------|
+| Accessibility        | `Accessibility`     | [accessibility.md](accessibility.md)           |
 | Analytics            | `Analytics`         | [analytics.md](analytics.md)                   |
 | Crash Reporter       | `CrashReporter`     | [crash-reporter.md](crash-reporter.md)         |
 | Dashboard            | `Dashboard`         | [dashboard.md](dashboard.md)                   |
