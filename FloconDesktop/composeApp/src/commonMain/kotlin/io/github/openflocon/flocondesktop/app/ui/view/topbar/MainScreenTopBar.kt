@@ -62,6 +62,7 @@ fun MainScreenTopBar(
     onRecordClicked: () -> Unit,
     onRestartClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
@@ -99,6 +100,7 @@ fun MainScreenTopBar(
             onRestartClicked = onRestartClicked,
             onOpenFolderClicked = onOpenFolderClicked,
             devicesState = devicesState,
+            onDeviceInfoClicked = { devicesState.deviceSelected?.let(onClickDetail) },
         )
     }
 }

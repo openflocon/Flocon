@@ -326,5 +326,6 @@
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
     <string name="topbar_restart">Redémarrer l’app</string>
+    <string name="topbar_device_info">Infos de l’appareil</string>
     <string name="topbar_screenshot">Capture d’écran</string>
 </resources>

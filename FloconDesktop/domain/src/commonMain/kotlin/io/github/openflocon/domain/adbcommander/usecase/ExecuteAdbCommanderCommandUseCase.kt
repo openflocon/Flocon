@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.adbcommander.usecase
 
-import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
+import io.github.openflocon.domain.adb.usecase.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adbcommander.repository.AdbCommanderRepository
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
