@@ -40,7 +40,7 @@ Flocon.analyticsPlugin.log(AnalyticsEvent("button_clicked", "events"))
 
 On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
 
-The address of the desktop app is not known yet? Add `connectLater()` in the `startFlocon` block, then call `Flocon.connect("ws://192.168.1.20:9023")` when you have it: what was logged in the meantime is sent in order (see the [setup guide](https://openflocon.github.io/Flocon/setup#connecting-later)).
+Running on a real device, where `localhost` does not reach your computer? Call `Flocon.connect("ws://192.168.1.20:9023")` (from a debug menu, for example): Flocon keeps trying the default address and also connects to this one, sending what was logged in the meantime in order (see the [setup guide](https://openflocon.github.io/Flocon/setup#connecting-to-another-address)).
 
 Coming from 1.x? See the 👉 **[migration guide](https://openflocon.github.io/Flocon/migration)**.
 

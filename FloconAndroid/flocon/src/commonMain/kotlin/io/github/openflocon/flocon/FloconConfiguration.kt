@@ -17,22 +17,18 @@ class FloconConfiguration internal constructor(
 
     private var serializerModule = SerializersModule {}
 
-    internal var connectsAutomatically = true
-        private set
-
     internal var bufferCapacity = DEFAULT_BUFFER_CAPACITY
         private set
 
     /**
-     * Starts Flocon without connecting to the desktop app.
+     * Keeps what the plugins log in memory while no desktop app is reachable, to send it once one is.
      *
-     * Use it when the address of the desktop app is not known yet. What the plugins log is kept in
-     * memory, then sent when [Flocon.connect] is called.
+     * Flocon always tries the default address (localhost on an emulator). Use it when the address of
+     * the desktop app can only be known later, then give it with [Flocon.connect]: both are tried.
      *
      * @param bufferCapacity number of messages kept while not connected. Above it, the oldest are dropped.
      */
     fun connectLater(bufferCapacity: Int = DEFAULT_BUFFER_CAPACITY) {
-        connectsAutomatically = false
         this.bufferCapacity = bufferCapacity
     }
 
@@ -102,6 +98,5 @@ fun startFlocon(
         config = config,
         plugins = configuration.build(encoder),
         encoder = encoder,
-        connectsAutomatically = configuration.connectsAutomatically,
     )
 }

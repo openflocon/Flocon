@@ -35,11 +35,14 @@ class FloconOutboxTest {
 
     private val transport = FakeTransport()
 
-    private fun outbox(capacity: Int = 5_000) = FloconOutbox(capacity) { transport.send(it) }
+    private fun outbox(capacity: Int = 5_000) = FloconOutbox(capacity)
+    private val link = FloconOutbox.Link { transport.send(it) }
+    private suspend fun FloconOutbox.connected(handshake: String) = connected(link, handshake)
+    private suspend fun FloconOutbox.disconnected() = disconnected(link)
 
     @Test
     fun `keeps the messages until connected`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         outbox.enqueue("a")
         outbox.enqueue("b")
 
@@ -49,7 +52,7 @@ class FloconOutboxTest {
 
     @Test
     fun `flushes the handshake then the messages in order`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         val messages = (0 until 200).map { "m$it" }
         messages.forEach { outbox.enqueue(it) }
 
@@ -61,7 +64,7 @@ class FloconOutboxTest {
 
     @Test
     fun `sends right away once connected`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         outbox.connected(handshake = "hello")
         outbox.enqueue("a")
         outbox.enqueue("b")
@@ -71,7 +74,7 @@ class FloconOutboxTest {
 
     @Test
     fun `keeps the messages emitted while flushing`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         listOf("m0", "m1", "m2").forEach { outbox.enqueue(it) }
         transport.holdOn = "m1"
 
@@ -91,7 +94,7 @@ class FloconOutboxTest {
 
     @Test
     fun `drops the oldest messages above the capacity`() = runBlocking {
-        val outbox = outbox(capacity = 3)
+        val outbox = outbox(capacity = 3).also { it.add(link) }
         (1..5).forEach { outbox.enqueue("m$it") }
 
         assertEquals(3, outbox.bufferedCount())
@@ -103,7 +106,7 @@ class FloconOutboxTest {
 
     @Test
     fun `keeps at least one message`() = runBlocking {
-        val outbox = outbox(capacity = 0)
+        val outbox = outbox(capacity = 0).also { it.add(link) }
         outbox.enqueue("a")
         outbox.enqueue("b")
 
@@ -114,7 +117,7 @@ class FloconOutboxTest {
 
     @Test
     fun `keeps the messages of a lost connection for the next one`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         outbox.connected(handshake = "hello")
         outbox.enqueue("a")
         outbox.disconnected()
@@ -129,7 +132,7 @@ class FloconOutboxTest {
 
     @Test
     fun `puts back a message that could not be sent`() = runBlocking {
-        val outbox = outbox()
+        val outbox = outbox().also { it.add(link) }
         listOf("a", "b", "c").forEach { outbox.enqueue(it) }
         transport.failOnceOn = "b"
 
@@ -143,5 +146,60 @@ class FloconOutboxTest {
 
         outbox.connected(handshake = "hello again")
         assertEquals(listOf("hello", "a", "hello again", "b", "c", "d"), transport.sent.toList())
+    }
+
+    private class Desktop {
+        val sent = CopyOnWriteArrayList<String>()
+        val link = FloconOutbox.Link { sent += it; true }
+    }
+
+    @Test
+    fun `sends to every connected address`() = runBlocking {
+        val outbox = outbox()
+        val localhost = Desktop()
+        val remote = Desktop()
+        outbox.add(localhost.link)
+        outbox.add(remote.link)
+        outbox.enqueue("a")
+
+        outbox.connected(remote.link, handshake = "hello")
+        outbox.enqueue("b")
+        outbox.connected(localhost.link, handshake = "hi")
+        outbox.enqueue("c")
+
+        assertEquals(listOf("hello", "a", "b", "c"), remote.sent.toList())
+        assertEquals(listOf("hi", "a", "b", "c"), localhost.sent.toList())
+    }
+
+    @Test
+    fun `keeps a message while an address has not sent it`() = runBlocking {
+        val outbox = outbox()
+        val localhost = Desktop()
+        val remote = Desktop()
+        outbox.add(localhost.link)
+        outbox.add(remote.link)
+        outbox.connected(remote.link, handshake = "hello")
+        outbox.enqueue("a")
+
+        // localhost never connected: it still has to get "a" if it connects
+        assertEquals(1, outbox.bufferedCount())
+
+        outbox.remove(localhost.link)
+        assertEquals(0, outbox.bufferedCount())
+    }
+
+    @Test
+    fun `an address added late gets what is still kept`() = runBlocking {
+        val outbox = outbox()
+        val localhost = Desktop()
+        outbox.add(localhost.link)
+        outbox.enqueue("a")
+        outbox.enqueue("b")
+
+        val remote = Desktop()
+        outbox.add(remote.link)
+        outbox.connected(remote.link, handshake = "hello")
+
+        assertEquals(listOf("hello", "a", "b"), remote.sent.toList())
     }
 }

@@ -98,13 +98,13 @@ Initialize Flocon as early as possible in your application lifecycle:
 
 ---
 
-### Connecting later
+### Connecting to another address
 
-If the address of the desktop app is not known when the app starts (typed by the user, discovered on the network...), start Flocon without connecting, and give the address when you have it:
+By default Flocon tries the address it can guess (`localhost` on an emulator or a simulator) and keeps retrying every 3 seconds. On a real device, that address does not reach your computer: let the user type its address (in a debug menu, for example) and add it with `Flocon.connect`. Flocon keeps trying the default address and also connects to the one you give:
 
 ```kotlin
 startFlocon(FloconContext(this)) {
-    connectLater() // or connectLater(bufferCapacity = 10_000)
+    connectLater() // optional, or connectLater(bufferCapacity = 10_000)
     install(FloconNetwork)
     install(FloconAnalytics)
 }
@@ -113,11 +113,11 @@ startFlocon(FloconContext(this)) {
 Flocon.connect("ws://192.168.1.20:9023")
 ```
 
-Until then, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. The address can be `ws://host:port`, `host:port` or `host` (port `9023`).
+Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. The address can be `ws://host:port`, `host:port` or `host` (port `9023`).
 
-Up to 5000 messages are kept (`bufferCapacity`): above that, the oldest are dropped. The same buffer is used when the connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
+Up to 5000 messages are kept: above that, the oldest are dropped. `connectLater(bufferCapacity = ...)` changes this size. The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
 
-Follow the connection with `Flocon.connectionState`, a `StateFlow<FloconConnectionState>`:
+Follow the connection with `Flocon.connectionState`, a `StateFlow<FloconConnectionState>` (`Connected` as soon as one address is connected):
 
 ```kotlin
 Flocon.connectionState.collect { state ->
