@@ -83,6 +83,7 @@
     <string name="menu_item_database">Base de données</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
     <string name="adb_commander_input_placeholder">Saisir une commande ADB (ex. shell echo hello)</string>
+    <string name="adb_commander_unavailable_wifi">ADB n’est pas disponible pour les appareils connectés en wifi</string>
     <string name="adb_commander_clear_all">Tout effacer</string>
     <string name="adb_commander_no_history">Aucun historique de commandes</string>
     <string name="adb_commander_saved_commands">Commandes enregistrées</string>
