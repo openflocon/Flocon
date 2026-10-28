@@ -12,6 +12,7 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.displayClearTextError
+import io.github.openflocon.flocon.model.FloconConnectionType
 import io.github.openflocon.flocon.model.toBonjourBody
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -134,7 +135,8 @@ internal class FloconConnections(
             onMessageReceived = onMessageReceived,
         )
         // before the plugins: what they send on connection comes after the handshake
-        client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder))
+        val connectionType = if (link === client.defaultLink) FloconConnectionType.Default else FloconConnectionType.Wifi
+        client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder, connectionType))
         FloconConnectionStates.set(link, FloconConnectionState.Connected)
         // the address typed by the user, or given at start, comes back at the next launch
         if (link !== client.defaultLink) addressStore?.save(link.server.host)

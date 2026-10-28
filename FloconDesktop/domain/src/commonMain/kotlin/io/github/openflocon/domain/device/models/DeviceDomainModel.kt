@@ -4,6 +4,8 @@ data class DeviceDomainModel(
     val deviceId: DeviceId,
     val deviceName: String,
     val platform: String,
+    // how the SDK reached the desktop, sent in the bonjour message
+    val connectionType: DeviceConnectionType = DeviceConnectionType.Default,
 )
 
 fun DeviceDomainModel.isPlatformAndroid(): Boolean = platform == "android"

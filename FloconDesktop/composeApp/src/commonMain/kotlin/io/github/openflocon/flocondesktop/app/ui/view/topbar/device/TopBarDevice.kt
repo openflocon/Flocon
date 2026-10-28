@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -89,6 +90,9 @@ internal fun TopBarDevice(
                     style = FloconTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
                 )
+                if (device.isActive && device.isWifi) {
+                    WifiIcon()
+                }
             }
         }
     }
@@ -125,6 +129,9 @@ internal fun TopBarDeviceRow(
             color = if (device.isActive) colors.ink else colors.inkMuted,
             modifier = Modifier.weight(1f),
         )
+        if (device.isActive && device.isWifi) {
+            WifiIcon()
+        }
         if (selected) {
             FloconIcon(
                 imageVector = Icons.Outlined.Check,
@@ -188,6 +195,16 @@ internal fun TopBarDeviceGroupHeader(
     }
 }
 
+// the device is connected through the connect module, not through localhost
+@Composable
+private fun WifiIcon() {
+    FloconIcon(
+        imageVector = Icons.Outlined.Wifi,
+        tint = FloconTheme.colors.inkFaint,
+        modifier = Modifier.size(12.dp),
+    )
+}
+
 // connected: a plain dot, not connected: a ring
 @Composable
 private fun ConnectionDot(isActive: Boolean) {
@@ -211,6 +228,7 @@ private fun TopBarDevicePreview() {
                 Platform.entries.forEach { platform ->
                     TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = true))
                     TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = false))
+                    TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = true, isWifi = true))
                 }
             }
         }
@@ -226,6 +244,12 @@ private fun TopBarDeviceRowPreview() {
                 TopBarDeviceRow(
                     device = previewDeviceItemUiModel(platform = Platform.Android, isActive = true),
                     selected = true,
+                    onClick = {},
+                    deleteClick = {},
+                )
+                TopBarDeviceRow(
+                    device = previewDeviceItemUiModel(platform = Platform.ios, isActive = true, isWifi = true),
+                    selected = false,
                     onClick = {},
                     deleteClick = {},
                 )
