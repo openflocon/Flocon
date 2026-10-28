@@ -9,7 +9,7 @@ fun startFlocon(
 
 class FloconConfiguration internal constructor() {
     /** Does nothing. */
-    fun connectLater(bufferCapacity: Int = 5_000) {
+    fun connectLater(bufferCapacity: Int = DEFAULT_BUFFER_CAPACITY) {
         // no op
     }
 
@@ -18,6 +18,10 @@ class FloconConfiguration internal constructor() {
         configure: Config.() -> Unit = {}
     ) {
         // no op
+    }
+
+    internal companion object {
+        const val DEFAULT_BUFFER_CAPACITY = 5_000
     }
 }
 

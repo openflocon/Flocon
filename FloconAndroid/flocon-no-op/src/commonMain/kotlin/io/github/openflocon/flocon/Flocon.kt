@@ -11,10 +11,7 @@ class Flocon private constructor() {
         /** Always [FloconConnectionState.Idle]: nothing is started. */
         val connectionState: StateFlow<FloconConnectionState> = MutableStateFlow(FloconConnectionState.Idle)
 
-        /** Does nothing. */
-        @Throws(Throwable::class)
-        suspend fun connect(url: String) {
-            // no op
-        }
+        /** Does nothing, always [FloconConnectResult.NotStarted]. */
+        suspend fun connect(url: String): FloconConnectResult = FloconConnectResult.NotStarted
     }
 }

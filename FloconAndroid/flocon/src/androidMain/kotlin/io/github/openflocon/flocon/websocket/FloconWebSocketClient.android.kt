@@ -8,6 +8,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -21,8 +22,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .build()
 
-    @Volatile
-    private var webSocket: WebSocket? = null
+    private val webSocket = AtomicReference<WebSocket?>(null)
 
     @Throws(Throwable::class)
     override suspend fun connect(
@@ -32,7 +32,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
         onClosed: () -> Unit,
     ) {
         // if already connected, do nothing
-        if (webSocket != null) return
+        if (webSocket.get() != null) return
 
         val notifyClosed = onClosed
 
@@ -41,7 +41,7 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     FloconLogger.log("✅ WebSocket Connection Opened!")
 
-                    this@FloconWebSocketClientImpl.webSocket = webSocket
+                    this@FloconWebSocketClientImpl.webSocket.set(webSocket)
                     if (continuation.isActive) {
                         continuation.resume(Unit)
                     }
@@ -97,20 +97,18 @@ internal class FloconWebSocketClientImpl : FloconWebSocketClient {
      * The identity check avoids notifying twice, or after an explicit [disconnect].
      */
     private fun connectionEnded(closedSocket: WebSocket, onClosed: () -> Unit) {
-        if (webSocket !== closedSocket) return
-        webSocket = null
+        if (!webSocket.compareAndSet(closedSocket, null)) return
         onClosed()
     }
 
     override suspend fun sendMessage(message: String): Boolean {
         // not connected: the caller keeps the message
-        val socket = webSocket ?: return false
+        val socket = webSocket.get() ?: return false
         FloconLogger.log("WEBSOCKET ----> send $message")
         return socket.send(message)
     }
 
     override suspend fun disconnect() {
-        webSocket?.close(1000, "Client disconnecting")
-        webSocket = null
+        webSocket.getAndSet(null)?.close(1000, "Client disconnecting")
     }
 }

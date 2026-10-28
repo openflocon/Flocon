@@ -81,20 +81,26 @@ class Flocon internal constructor(
         plugins.forEach { it.onConnectedToServer() }
     }
 
-    private suspend fun connectTo(url: String) {
-        val server = parseFloconServer(url)
+    private suspend fun connectTo(url: String): FloconConnectResult {
+        val server = try {
+            parseFloconServer(url)
+        } catch (e: IllegalArgumentException) {
+            return FloconConnectResult.InvalidAddress(e.message ?: url)
+        }
         // stop the retries to the previous address
         connectJob?.cancelAndJoin()
         connectJob = null
         config.client.setServer(server)
         config.client.disconnect()
-        try {
+        return try {
             connectOnce(config.client)
+            FloconConnectResult.Connected
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (t: Throwable) {
-            mutableConnectionState.value = FloconConnectionState.Failed(t.message ?: t.toString())
-            throw t
+            val reason = t.message ?: t.toString()
+            mutableConnectionState.value = FloconConnectionState.Failed(reason)
+            FloconConnectResult.Failed(reason)
         }
     }
 
@@ -139,14 +145,11 @@ class Flocon internal constructor(
          *
          * @param url the address of the desktop app, such as `ws://192.168.1.20:9023`,
          * `192.168.1.20:9023` or `192.168.1.20` (port 9023).
-         * @throws IllegalStateException if Flocon is not started.
-         * @throws IllegalArgumentException if [url] is not readable.
-         * @throws Throwable the error of the connection attempt. The messages are kept, call it again to retry.
+         * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
+         * in every case, call it again to retry.
          */
-        @Throws(Throwable::class)
-        suspend fun connect(url: String) {
-            checkNotNull(instance).connectTo(url)
-        }
+        suspend fun connect(url: String): FloconConnectResult =
+            instance?.connectTo(url) ?: FloconConnectResult.NotStarted
     }
 
 }

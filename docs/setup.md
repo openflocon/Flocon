@@ -113,7 +113,7 @@ startFlocon(FloconContext(this)) {
 Flocon.connect("ws://192.168.1.20:9023")
 ```
 
-Until then, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It throws if the connection cannot be opened; the messages are kept, so you can call it again. The address can be `ws://host:port`, `host:port` or `host` (port `9023`).
+Until then, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. The address can be `ws://host:port`, `host:port` or `host` (port `9023`).
 
 Up to 5000 messages are kept (`bufferCapacity`): above that, the oldest are dropped. The same buffer is used when the connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
 
