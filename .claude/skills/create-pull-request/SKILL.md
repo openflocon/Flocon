@@ -16,5 +16,5 @@ Only run when the user explicitly asks for a PR.
    - Under `### Description`: what changed and why, and which parts are touched (SDK / Desktop / MCP / docs).
    - Keep the final `/gemini review` line.
    - No Claude attribution line.
-7. **Create**: write the body to a temp file, then `gh pr create --base main --title "<title>" --body-file <file>`.
+7. **Create** (always as a draft, unless the user explicitly asks for a ready-for-review PR): write the body to a temp file, then `gh pr create --draft --base main --title "<title>" --body-file <file>`.
 8. **After**: call the ccd_pr `get_status` tool, `bind_pr` if it doesn't report the PR, then offer Auto-fix. Don't poll CI and don't enable auto-merge unless asked.
