@@ -133,7 +133,9 @@ Up to 5000 messages are kept: above that, the oldest are dropped. `connectLater(
 - `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connectLater(address = "192.168.1.20")`). Same rules as `Flocon.connect`: no port nor scheme.
 - `rememberLastAddress` (`true` by default): the last address Flocon connected to (given here or typed with `Flocon.connect`) is kept in the app preferences (SharedPreferences on Android, UserDefaults on iOS, `java.util.prefs` on desktop, `localStorage` on web) and tried again at the next launch, next to the default address. It wins over `address`. Pass `false` to disable it.
 
-The saving and the retry at launch work when `connectLater()` is called in the `startFlocon` block. The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
+The saving and the retry at launch work when `connectLater()` is called in the `startFlocon` block.
+
+The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
 
 Follow the connection with `Flocon.connectionState`, a `StateFlow<FloconConnectionState>` (`Connected` as soon as one address is connected):
 
