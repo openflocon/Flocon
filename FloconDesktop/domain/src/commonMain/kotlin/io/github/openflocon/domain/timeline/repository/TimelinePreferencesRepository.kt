@@ -9,4 +9,6 @@ interface TimelinePreferencesRepository {
     suspend fun setAutoScroll(autoScroll: Boolean)
 
     suspend fun setInvertList(invertList: Boolean)
+
+    suspend fun setPinPanel(pinPanel: Boolean)
 }

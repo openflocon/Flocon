@@ -50,11 +50,13 @@ internal sealed interface TimelineItemUiModel {
 internal data class TimelineSettingsUiModel(
     val autoScroll: Boolean,
     val invertList: Boolean,
+    val pinPanel: Boolean,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     autoScroll = false,
     invertList = false,
+    pinPanel = false,
 )
 
 internal sealed interface TimelineAction {
@@ -63,4 +65,5 @@ internal sealed interface TimelineAction {
     data class Open(val row: TimelineRowUiModel) : TimelineAction
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
+    data class PinPanel(val value: Boolean) : TimelineAction
 }

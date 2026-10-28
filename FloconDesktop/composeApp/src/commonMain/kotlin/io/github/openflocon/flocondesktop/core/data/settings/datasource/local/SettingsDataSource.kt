@@ -42,6 +42,9 @@ internal interface SettingsDataSource {
     val timelineInvertList: Flow<Boolean>
     suspend fun setTimelineInvertList(invertList: Boolean)
 
+    val timelinePinPanel: Flow<Boolean>
+    suspend fun setTimelinePinPanel(pinPanel: Boolean)
+
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>

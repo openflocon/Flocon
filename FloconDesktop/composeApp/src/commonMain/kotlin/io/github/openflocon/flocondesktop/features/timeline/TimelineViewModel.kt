@@ -15,6 +15,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCas
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -23,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -49,6 +51,7 @@ internal class TimelineViewModel(
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
+    private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
@@ -64,8 +67,8 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
-        .map { TimelineSettingsUiModel(autoScroll = it.autoScroll, invertList = it.invertList) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSettingsUiModel(autoScroll = false, invertList = false))
+        .map { TimelineSettingsUiModel(autoScroll = it.autoScroll, invertList = it.invertList, pinPanel = it.pinPanel) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)
@@ -124,6 +127,8 @@ internal class TimelineViewModel(
             is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }
 
             is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
+
+            is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()

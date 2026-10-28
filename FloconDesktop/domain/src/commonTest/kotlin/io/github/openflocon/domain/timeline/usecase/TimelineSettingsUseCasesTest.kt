@@ -21,6 +21,10 @@ class TimelineSettingsUseCasesTest {
         override suspend fun setInvertList(invertList: Boolean) {
             state.value = state.value.copy(invertList = invertList)
         }
+
+        override suspend fun setPinPanel(pinPanel: Boolean) {
+            state.value = state.value.copy(pinPanel = pinPanel)
+        }
     }
 
     private val repository = FakeTimelinePreferencesRepository()
@@ -28,7 +32,7 @@ class TimelineSettingsUseCasesTest {
     @Test
     fun `both options are off by default`() = runBlocking {
         assertEquals(
-            TimelineSettingsDomainModel(autoScroll = false, invertList = false),
+            TimelineSettingsDomainModel(autoScroll = false, invertList = false, pinPanel = false),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }
@@ -50,6 +54,17 @@ class TimelineSettingsUseCasesTest {
 
         assertEquals(
             TimelineSettingsDomainModel(autoScroll = true, invertList = true),
+            ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `the panel is pinned without changing the other options`() = runBlocking {
+        SetTimelineInvertListUseCase(repository)(true)
+        SetTimelinePinPanelUseCase(repository)(true)
+
+        assertEquals(
+            TimelineSettingsDomainModel(autoScroll = false, invertList = true, pinPanel = true),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }

@@ -3,11 +3,13 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.invert_list
+import flocondesktop.composeapp.generated.resources.network_pin_panel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
@@ -32,6 +34,12 @@ internal fun TimelineOverflowMenu(
             text = stringResource(Res.string.invert_list),
             leadingIcon = Icons.AutoMirrored.Outlined.List,
             onCheckedChange = { checked -> onAction(TimelineAction.InvertList(checked)) }
+        )
+        FloconDropdownMenuItem(
+            checked = settings.pinPanel,
+            text = stringResource(Res.string.network_pin_panel),
+            leadingIcon = Icons.Sharp.PushPin,
+            onCheckedChange = { checked -> onAction(TimelineAction.PinPanel(checked)) }
         )
     }
 }

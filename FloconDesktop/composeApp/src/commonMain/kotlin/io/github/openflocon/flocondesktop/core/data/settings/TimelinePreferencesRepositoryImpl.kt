@@ -13,8 +13,9 @@ internal class TimelinePreferencesRepositoryImpl(
     override val settings: Flow<TimelineSettingsDomainModel> = combine(
         localSettingsDataSource.timelineAutoScroll,
         localSettingsDataSource.timelineInvertList,
-    ) { autoScroll, invertList ->
-        TimelineSettingsDomainModel(autoScroll = autoScroll, invertList = invertList)
+        localSettingsDataSource.timelinePinPanel,
+    ) { autoScroll, invertList, pinPanel ->
+        TimelineSettingsDomainModel(autoScroll = autoScroll, invertList = invertList, pinPanel = pinPanel)
     }
 
     override suspend fun setAutoScroll(autoScroll: Boolean) {
@@ -23,5 +24,9 @@ internal class TimelinePreferencesRepositoryImpl(
 
     override suspend fun setInvertList(invertList: Boolean) {
         localSettingsDataSource.setTimelineInvertList(invertList)
+    }
+
+    override suspend fun setPinPanel(pinPanel: Boolean) {
+        localSettingsDataSource.setTimelinePinPanel(pinPanel)
     }
 }

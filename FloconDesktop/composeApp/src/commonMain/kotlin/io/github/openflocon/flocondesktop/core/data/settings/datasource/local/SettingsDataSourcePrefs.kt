@@ -83,6 +83,13 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(TIMELINE_INVERT_LIST, invertList)
     }
 
+    override val timelinePinPanel: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TIMELINE_PIN_PANEL)
+        .mapLatest { it ?: false }
+
+    override suspend fun setTimelinePinPanel(pinPanel: Boolean) {
+        settings.putBoolean(TIMELINE_PIN_PANEL, pinPanel)
+    }
+
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
 
@@ -183,6 +190,7 @@ internal class SettingsDataSourcePrefs(
         private const val MASCOT_ENABLED = "mascot_enabled"
         private const val TIMELINE_AUTO_SCROLL = "timeline_auto_scroll"
         private const val TIMELINE_INVERT_LIST = "timeline_invert_list"
+        private const val TIMELINE_PIN_PANEL = "timeline_pin_panel"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"

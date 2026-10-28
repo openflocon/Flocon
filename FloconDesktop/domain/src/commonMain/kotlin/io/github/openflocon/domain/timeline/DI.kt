@@ -5,6 +5,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCas
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -14,4 +15,5 @@ internal val timelineDomainModule = module {
     factoryOf(::ObserveTimelineSettingsUseCase)
     factoryOf(::SetTimelineAutoScrollUseCase)
     factoryOf(::SetTimelineInvertListUseCase)
+    factoryOf(::SetTimelinePinPanelUseCase)
 }

@@ -19,6 +19,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScre
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
@@ -45,8 +46,14 @@ internal sealed interface NetworkRoutes : FloconRoute {
     data class Panel(
         val requestId: String,
         val tab: NetworkDetailTab? = null, // null: the default tab of the settings
+        val fromTimeline: Boolean = false,
     ) : NetworkRoutes,
-        PanelRoute
+        PanelRoute {
+
+        // opened from the timeline: its pin state is the one of the timeline
+        override val pinGroup: String?
+            get() = if (fromTimeline) PanelPinGroups.Timeline else null
+    }
 
     @Serializable
     data class WindowDetail(
