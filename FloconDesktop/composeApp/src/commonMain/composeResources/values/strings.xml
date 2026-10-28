@@ -400,6 +400,12 @@
     <string name="tabs_close_left">Close Tabs to the Left</string>
     <string name="tabs_close_others">Close Other Tabs</string>
     <string name="tabs_close_right">Close Tabs to the Right</string>
+    <string name="topbar_connect">connect a device</string>
+    <string name="connect_title">Connect a device</string>
+    <string name="connect_hint">Your phone and this computer must be on the same Wi-Fi network. Use one of these addresses in Flocon.connect(), or scan its QR code.</string>
+    <string name="connect_empty">No local network address found. Check that this computer is connected to a network.</string>
+    <string name="connect_show_qr">Show QR code</string>
+    <string name="connect_hide_qr">Hide QR code</string>
     <string name="topbar_open_folder">open flocon folder</string>
     <string name="topbar_record">Record</string>
     <string name="topbar_restart">restart</string>

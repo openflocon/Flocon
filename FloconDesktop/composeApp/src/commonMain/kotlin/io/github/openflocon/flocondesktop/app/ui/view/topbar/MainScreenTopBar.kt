@@ -19,6 +19,10 @@ import androidx.compose.material.icons.outlined.ArrowCircleUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +48,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
+import io.github.openflocon.flocondesktop.features.connect.view.ConnectDialog
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconIsland
 import org.jetbrains.compose.resources.painterResource
@@ -66,6 +71,11 @@ fun MainScreenTopBar(
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
+    var showConnectDialog by remember { mutableStateOf(false) }
+    if (showConnectDialog) {
+        ConnectDialog(onDismissRequest = { showConnectDialog = false })
+    }
+
     Row(
         modifier = modifier
             .floconIsland(
@@ -98,6 +108,7 @@ fun MainScreenTopBar(
             onRecordClicked = onRecordClicked,
             onRestartClicked = onRestartClicked,
             onOpenFolderClicked = onOpenFolderClicked,
+            onConnectClicked = { showConnectDialog = true },
             devicesState = devicesState,
         )
     }
