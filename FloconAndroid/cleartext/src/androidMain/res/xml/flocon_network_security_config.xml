@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lets Flocon connect to the desktop app with ws://, whatever its IP address: Android cannot
+     allow an IP range, and the address of the computer is typed by the user at runtime.
+     For debug builds only: add this module with debugImplementation. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

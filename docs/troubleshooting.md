@@ -36,13 +36,14 @@ If your app uses a custom `networkSecurityConfig`, ensure you explicitly permit 
     ```
 
 !!! tip "Connecting to the IP of your computer (real device)"
-    `Flocon.connect("192.168.1.20")` opens a cleartext `ws://` connection to that IP, which the configuration above does not allow (`cleartext communication ... not permitted`). Android cannot allow an IP range, so allow cleartext for your **debug** builds only, for example with a `base-config`:
+    `Flocon.connect("192.168.1.20")` opens a cleartext `ws://` connection to that IP, which the configuration above does not allow (`cleartext communication ... not permitted`). Android cannot allow an IP range, so the simplest is the optional `flocon-cleartext` module, which allows cleartext traffic to any address. Add it to your **debug** builds only:
 
-    ```xml
-    <network-security-config>
-        <base-config cleartextTrafficPermitted="true" />
-    </network-security-config>
+    ```kotlin
+    debugImplementation("io.github.openflocon:flocon-cleartext:<version>")
+    releaseImplementation("io.github.openflocon:flocon-cleartext-no-op:<version>")
     ```
+
+    If your app declares its own `networkSecurityConfig`, it takes precedence over the module: add the IPs of your computers to it instead (`<domain>192.168.1.20</domain>`, exact addresses only).
 
 ---
 

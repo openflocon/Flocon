@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- To be able to connect to the desktop websocket without ssl verification.
-     Cleartext is open to every address (sample only) because the IP of the computer typed in the
-     app (see FloconConnectionBar) is not known in advance: Android cannot allow an IP range. -->
-<network-security-config>
-    <base-config cleartextTrafficPermitted="true" />
-</network-security-config>

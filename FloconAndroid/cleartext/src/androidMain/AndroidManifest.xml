@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The `networkSecurityConfig` of the app, if it has one, takes precedence over this one. -->
+    <application android:networkSecurityConfig="@xml/flocon_network_security_config" />
+
+</manifest>

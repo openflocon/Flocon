@@ -27,6 +27,8 @@ dependencyResolutionManagement {
 include(":sample-multiplatform")
 include(":flocon")
 include(":flocon-no-op")
+include(":cleartext")
+include(":cleartext-no-op")
 include(":network:okhttp-interceptor")
 include(":network:okhttp-interceptor-no-op")
 include(":grpc:grpc-interceptor")
