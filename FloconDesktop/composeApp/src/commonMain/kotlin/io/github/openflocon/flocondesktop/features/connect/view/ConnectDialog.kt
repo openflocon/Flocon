@@ -71,7 +71,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private val SingleWidth = 420.dp
 private val MultiWidth = 680.dp
-private val QrSize = 240.dp
+private val QrSize = 216.dp
 
 @Composable
 fun ConnectDialog(
@@ -156,6 +156,7 @@ private fun SingleAddress(
                 modifier = Modifier.padding(FloconTheme.spacing.extraLarge),
             )
         } else {
+            ConnectMascotScene()
             AddressPreview(
                 address = address,
                 port = port,
@@ -208,14 +209,16 @@ private fun MultipleAddresses(
         }
         Box(Modifier.fillMaxHeight().width(1.dp).background(FloconTheme.colors.line))
         Box(modifier = Modifier.weight(1f)) {
-            AddressPreview(
-                address = selected,
-                port = uiState.port,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(FloconTheme.spacing.extraLarge)
-                    .padding(top = FloconTheme.spacing.large),
-            )
+            Column {
+                ConnectMascotScene()
+                AddressPreview(
+                    address = selected,
+                    port = uiState.port,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(FloconTheme.spacing.extraLarge),
+                )
+            }
             FloconIconButton(
                 onClick = onClose,
                 modifier = Modifier
