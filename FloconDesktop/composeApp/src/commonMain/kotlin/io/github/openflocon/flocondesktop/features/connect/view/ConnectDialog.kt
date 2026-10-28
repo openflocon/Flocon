@@ -1,14 +1,12 @@
 package io.github.openflocon.flocondesktop.features.connect.view
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.Text
@@ -52,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.connect_copied
 import flocondesktop.composeapp.generated.resources.connect_copy
 import flocondesktop.composeapp.generated.resources.connect_empty
 import flocondesktop.composeapp.generated.resources.connect_hint
@@ -69,7 +65,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -329,47 +324,36 @@ private fun CopyButton(
 ) {
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
-    val interactionSource = remember { MutableInteractionSource() }
-    val pressed by interactionSource.collectIsPressedAsState()
-    var copied by remember(ip) { mutableStateOf(false) }
-
-    val scale by animateFloatAsState(if (pressed) 0.94f else 1f)
-    val background by animateColorAsState(if (copied) FloconTheme.colors.statusSuccess else FloconTheme.colors.accent)
+    val scale = remember { Animatable(1f) }
 
     Row(
         modifier = modifier
-            .scale(scale)
+            .scale(scale.value)
             .clip(FloconTheme.shapes.medium)
-            .background(background)
-            .clickable(interactionSource = interactionSource, indication = null) {
+            .background(FloconTheme.colors.accent)
+            .clickable(interactionSource = null, indication = null) {
                 clipboardManager.setText(AnnotatedString(ip))
                 scope.launch {
-                    copied = true
-                    delay(1_500)
-                    copied = false
+                    scale.animateTo(0.88f, tween(durationMillis = 70))
+                    scale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioHighBouncy, stiffness = Spring.StiffnessMedium))
                 }
             }
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium)
-            .animateContentSize(),
+            .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        Crossfade(targetState = copied) { isCopied ->
-            FloconIcon(
-                imageVector = if (isCopied) Icons.Outlined.Check else Icons.Outlined.ContentCopy,
-                tint = FloconTheme.colors.accentInk,
-                modifier = Modifier.size(16.dp),
-            )
-        }
-        Crossfade(targetState = copied) { isCopied ->
-            Text(
-                text = stringResource(if (isCopied) Res.string.connect_copied else Res.string.connect_copy),
-                style = FloconTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = FloconTheme.colors.accentInk,
-            )
-        }
+        FloconIcon(
+            imageVector = Icons.Outlined.ContentCopy,
+            tint = FloconTheme.colors.accentInk,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = stringResource(Res.string.connect_copy),
+            style = FloconTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.accentInk,
+        )
     }
 }
 

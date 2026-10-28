@@ -331,7 +331,6 @@
     <string name="connect_title">Connecter</string>
     <string name="connect_scan">Scanner pour connecter</string>
     <string name="connect_copy">Copier l\'adresse</string>
-    <string name="connect_copied">Copié</string>
     <string name="connect_pick_network">Choisissez le réseau sur lequel est votre téléphone.</string>
     <string name="connect_hint">Même Wi-Fi que cet ordinateur, puis scannez, ou appelez Flocon.connect("%1$s")</string>
     <string name="connect_empty">Aucune adresse du réseau local trouvée. Vérifiez que cet ordinateur est connecté à un réseau.</string>
