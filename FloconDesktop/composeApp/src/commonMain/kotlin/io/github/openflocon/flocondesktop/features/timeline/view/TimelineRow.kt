@@ -56,6 +56,7 @@ import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
 import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
 import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
@@ -294,6 +295,9 @@ private fun NetworkTitle(
         PhaseArrow(phase = phase)
         if (network.method.isNotEmpty()) {
             MethodPill(method = network.method)
+        }
+        if (network.isImage) {
+            NetworkImageBadge()
         }
         Text(
             text = title,

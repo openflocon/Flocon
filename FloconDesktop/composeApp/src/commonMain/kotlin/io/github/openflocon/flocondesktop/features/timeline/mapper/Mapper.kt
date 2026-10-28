@@ -30,6 +30,7 @@ private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
         statusCode = statusCode,
         duration = durationMs?.let(::formatElapsed),
         durationMs = durationMs,
+        isImage = isImage,
     )
 }
 

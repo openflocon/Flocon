@@ -79,6 +79,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewMoc
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusCell
 import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -255,20 +256,7 @@ private fun RequestCell(
             Spacer(Modifier.width(8.dp))
         }
         if (state.isImage) {
-            Box(
-                modifier = Modifier
-                    .size(width = 20.dp, height = 18.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(colors.catNetwork.copy(alpha = 0.16f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Image,
-                    contentDescription = stringResource(Res.string.network_image_response),
-                    tint = colors.catNetwork,
-                    modifier = Modifier.size(12.dp),
-                )
-            }
+            NetworkImageBadge()
             Spacer(Modifier.width(8.dp))
         }
         Text(
