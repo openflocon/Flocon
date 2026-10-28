@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -39,6 +40,13 @@ internal fun callRailSpan(
 }
 
 /**
+ * The free space between the time and the category of a row, where the bar of a hovered call goes.
+ * Shared by the rows and the app start banners, so the bar is at the same place in every item.
+ */
+@Composable
+internal fun railGutter(): Dp = FloconTheme.spacing.medium
+
+/**
  * Drawn over the list: the bar and the two dots of the hovered call, going through the events between its request and its response.
  * [upperKey] is the key of the response, [lowerKey] the one of the request.
  */
@@ -52,6 +60,7 @@ internal fun CallRail(
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
     val sizes = FloconTheme.sizes
+    val gutter = railGutter()
     val color = colors.catNetwork
     val halo = colors.bg100
 
@@ -63,8 +72,8 @@ internal fun CallRail(
             lowerCenter = items.centerOf(lowerKey),
             viewportHeight = size.height,
         ) ?: return@Canvas
-        // in the gap between the time and the category of the rows
-        val x = (spacing.compact + sizes.timeColumn + spacing.small / 2).toPx()
+        // the center of the gutter between the time and the category of the rows
+        val x = (spacing.compact + sizes.timeColumn + spacing.small + gutter / 2).toPx()
 
         drawLine(
             color = color,

@@ -53,7 +53,7 @@ internal fun SessionHeader(
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
         // the banner starts where the highlight of the rows starts
-        Spacer(Modifier.width(FloconTheme.sizes.categoryColumn))
+        Spacer(Modifier.width(railGutter() + spacing.small + FloconTheme.sizes.categoryColumn))
         Row(
             modifier = Modifier
                 .weight(1f)
