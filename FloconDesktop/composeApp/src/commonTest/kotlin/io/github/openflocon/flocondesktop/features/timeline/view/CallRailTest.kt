@@ -34,4 +34,16 @@ class CallRailTest {
     fun `nothing is drawn when none of the two lines is displayed`() {
         assertNull(callRailSpan(upperCenter = null, lowerCenter = null, viewportHeight = 600f))
     }
+
+    @Test
+    fun `the center of an item of a list going down is measured from the top`() {
+        assertEquals(60f, itemCenter(offset = 40, size = 40, viewportHeight = 600f, reversed = false))
+    }
+
+    @Test
+    fun `the center of an item of an inverted list is measured from the bottom`() {
+        // the first item of an inverted list is at the bottom of the viewport
+        assertEquals(580f, itemCenter(offset = 0, size = 40, viewportHeight = 600f, reversed = true))
+        assertEquals(540f, itemCenter(offset = 40, size = 40, viewportHeight = 600f, reversed = true))
+    }
 }
