@@ -45,6 +45,8 @@ internal fun MethodPill(
         "WS" -> colors.catDatabase
         "PUT" -> colors.accent
         "DELETE" -> colors.catCrash
+        "PATCH" -> colors.catTable
+        "GRPC" -> colors.catDeeplink
         else -> null
     }
     Text(
