@@ -308,6 +308,20 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the crashes can be hidden by exception`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Crash),
+                facets = mapOf(TimelineFacet.CrashException to setOf("java.lang.OutOfMemoryError")),
+            )
+        )
+
+        assertTrue(query.sql.contains("exceptionType AS facetCrashException"))
+        assertTrue(query.sql.contains("exceptionType NOT IN (?)"))
+        assertEquals(sessionParams + listOf("device", "com.app", "java.lang.OutOfMemoryError"), query.params)
+    }
+
+    @Test
     fun `the facets of a source that is not selected are ignored`() {
         val query = build(
             TimelineFilterDomainModel(

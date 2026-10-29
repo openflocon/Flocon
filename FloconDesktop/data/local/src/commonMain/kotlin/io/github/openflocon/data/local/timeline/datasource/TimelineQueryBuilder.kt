@@ -238,6 +238,7 @@ private fun buildUnion(
                     from = "CrashReportEntity",
                     appInstanceColumn = null, // crashes do not store the session
                     textColumns = listOf("exceptionType", "exceptionMessage"),
+                    facetExpressions = mapOf(TimelineFacet.CrashException to "exceptionType"),
                 )
             )
         }
