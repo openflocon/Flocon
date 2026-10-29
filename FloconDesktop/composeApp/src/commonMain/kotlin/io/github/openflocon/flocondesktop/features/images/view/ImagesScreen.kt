@@ -103,9 +103,7 @@ private fun ImagesScreen(
         modifier = modifier
     ) {
         FloconPageTopBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .mascotPlatform(),
+            modifier = Modifier.fillMaxWidth(),
             title = stringResource(Res.string.menu_item_images),
             subtitle = (state as? ImagesStateUiModel.WithImages)?.images?.size?.let {
                 pluralStringResource(Res.plurals.images_counter, it, it)
@@ -146,7 +144,9 @@ private fun ImagesScreen(
                 val gridPadding = FloconTheme.spacing.small
 
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .mascotPlatform()
                 ) {
                     LazyVerticalGrid(
                         state = lazyListState,

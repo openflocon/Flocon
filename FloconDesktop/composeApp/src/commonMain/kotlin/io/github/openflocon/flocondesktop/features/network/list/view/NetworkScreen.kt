@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +44,6 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.networkKeyboardNavigation
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeader
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -116,8 +114,6 @@ fun NetworkScreen(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-                .clip(FloconTheme.shapes.large)
-                .floconIsland(FloconTheme.colors.bg100)
                 .networkKeyboardNavigation(
                     rows = rows,
                     uiState = uiState,
@@ -132,7 +128,6 @@ fun NetworkScreen(
                     enabled = uiState.contentState.selectedRequestId != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
-                .mascotPlatform()
         ) {
             NetworkTopBar(
                 requestCount = rows.itemCount,
@@ -140,12 +135,15 @@ fun NetworkScreen(
                 filterState = uiState.filterState,
                 settings = uiState.settings,
                 onAction = onAction,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = FloconTheme.spacing.small),
+                modifier = Modifier.fillMaxWidth(),
             )
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg100)
+                    .mascotPlatform()
             ) {
                 NetworkItemHeader(
                     columnWidths = columnWidths,
