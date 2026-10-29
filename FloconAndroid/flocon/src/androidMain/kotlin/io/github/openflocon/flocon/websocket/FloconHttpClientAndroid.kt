@@ -15,7 +15,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 internal class FloconHttpClientAndroid : FloconHttpClient {
 
     private val client by lazy {
-        OkHttpClient()
+        OkHttpClient.Builder()
+            .trustFloconDesktopCertificate()
+            .build()
     }
 
     override suspend fun send(
@@ -27,7 +29,7 @@ internal class FloconHttpClientAndroid : FloconHttpClient {
         appPackageName: String,
         appInstance: Long
     ): Boolean {
-        val uploadUrl = "http://$address:$port/upload"
+        val uploadUrl = "https://$address:$port/upload"
 
         val file = file.file
         // Corps du fichier (binaire)
