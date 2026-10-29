@@ -32,7 +32,6 @@ class FloconConnectConfig internal constructor() {
  * }
  * ```
  */
-@OptIn(FloconInternalApi::class)
 fun FloconConfiguration.connect(block: FloconConnectConfig.() -> Unit = {}) {
     val options = FloconConnectConfig().apply(block)
     keepMessages(capacity = options.bufferCapacity)
@@ -43,7 +42,6 @@ fun FloconConfiguration.connect(block: FloconConnectConfig.() -> Unit = {}) {
 }
 
 /** The state of the connection to the desktop app: `Connected` as soon as one address is connected. */
-@OptIn(FloconInternalApi::class)
 val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
     get() = connectionStateFlow
 
@@ -62,5 +60,4 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
  * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
  * in every case, call it again to retry.
  */
-@OptIn(FloconInternalApi::class)
 suspend fun Flocon.Companion.connect(address: String): FloconConnectResult = connectToServer(address)

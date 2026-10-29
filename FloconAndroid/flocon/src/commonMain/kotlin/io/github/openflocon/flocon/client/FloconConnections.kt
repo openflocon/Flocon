@@ -1,12 +1,9 @@
-@file:OptIn(FloconInternalApi::class)
-
 package io.github.openflocon.flocon.client
 
 import io.github.openflocon.flocon.FloconAddressStore
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconConnectResult
 import io.github.openflocon.flocon.FloconConnectionState
-import io.github.openflocon.flocon.FloconInternalApi
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.core.FloconEncoder
