@@ -42,12 +42,7 @@ On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
 
 ### On a real device: connect to your computer
 
-`localhost` only reaches your computer from an emulator or a simulator. On a real device, add the optional `flocon-connect` module (debug only), and give the IP address of your computer, for example from a debug menu:
-
-```kotlin
-debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
-```
+`localhost` only reaches your computer from an emulator or a simulator. On a real device, give the IP address of your computer, for example from a debug menu:
 
 ```kotlin
 import io.github.openflocon.flocon.connect

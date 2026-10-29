@@ -1,5 +1,3 @@
-@file:OptIn(FloconInternalApi::class)
-
 package io.github.openflocon.flocon
 
 @JsFun("(key) => localStorage.getItem(key)")

@@ -35,16 +35,6 @@ If your app uses a custom `networkSecurityConfig`, ensure you explicitly permit 
     </network-security-config>
     ```
 
-!!! tip "Connecting to the IP of your computer (real device)"
-    `Flocon.connect("192.168.1.20")` opens a cleartext `ws://` connection to that IP, which the configuration above does not allow (`cleartext communication ... not permitted`). Android cannot allow an IP range, so the optional `flocon-connect` module (which provides `connect` and `connectLater`) allows cleartext traffic to any address. Add it to your **debug** builds only:
-
-    ```kotlin
-    debugImplementation("io.github.openflocon:flocon-connect:<version>")
-    releaseImplementation("io.github.openflocon:flocon-connect-no-op:<version>")
-    ```
-
-    If your app declares its own `networkSecurityConfig`, it takes precedence over the module's: add the IPs of your computers to it instead (`<domain>192.168.1.20</domain>`, exact addresses only).
-
 ---
 
 ## 2. ADB Connection Issues

@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Connects the app to Flocon Desktop at an IP address (a real device cannot reach the computer through
- * localhost), with `Flocon.connect` of the flocon-connect module. The port is always 9023.
+ * localhost), with `Flocon.connect`. The port is always 9023.
  */
 @Composable
 fun ConnectionScreen(onBack: () -> Unit) {
@@ -150,7 +150,7 @@ fun ConnectionScreen(onBack: () -> Unit) {
 
         InfoCard(
             text = "Flocon keeps trying its default address (localhost on an emulator) and also connects to this " +
-                "one. The port is always 9023. Needs the flocon-connect module.",
+                "one. The port is always 9023.",
             tint = colors.accent,
         )
     }
