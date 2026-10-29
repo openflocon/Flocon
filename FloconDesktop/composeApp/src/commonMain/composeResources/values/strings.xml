@@ -413,7 +413,7 @@
     <string name="topbar_record">Record</string>
     <string name="topbar_restart">restart</string>
     <string name="topbar_screenshot">screenshot</string>
-    <string name="analytics_selector_caption">Table</string>
+    <string name="analytics_selector_caption">Provider</string>
     <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Provider</string>
     <string name="preferences_selector_caption">File</string>

@@ -52,13 +52,7 @@ internal fun SharedPreferenceSelector(
                 }
             }
             when (state) {
-                SharedPrefsStateUiModel.Empty ->
-                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
-                        Text(
-                            stringResource(Res.string.preferences_empty),
-                            style = FloconTheme.typography.bodySmall
-                        )
-                    }
+                SharedPrefsStateUiModel.Empty -> Unit
 
                 SharedPrefsStateUiModel.Loading ->
                     FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {

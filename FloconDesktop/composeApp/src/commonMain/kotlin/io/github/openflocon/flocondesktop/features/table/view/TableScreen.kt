@@ -115,11 +115,15 @@ fun TableScreen(
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_tables),
             headerActions = { FeatureDocButton(doc = FeatureDoc.Tables) },
-            selector = {
-                TableSelector(
-                    tablesState = deviceTables,
-                    onTableSelected = onTableSelected,
-                )
+            selector = if (deviceTables is TablesStateUiModel.Empty) {
+                null
+            } else {
+                {
+                    TableSelector(
+                        tablesState = deviceTables,
+                        onTableSelected = onTableSelected,
+                    )
+                }
             },
             filterBar = {
                 FilterBar(

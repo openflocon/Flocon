@@ -52,13 +52,7 @@ internal fun AnalyticsSelector(
                 }
             }
             when (analyticsState) {
-                AnalyticsStateUiModel.Empty ->
-                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
-                        Text(
-                            stringResource(Res.string.no_analytics),
-                            style = FloconTheme.typography.bodySmall
-                        )
-                    }
+                AnalyticsStateUiModel.Empty -> Unit
 
                 AnalyticsStateUiModel.Loading ->
                     FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {

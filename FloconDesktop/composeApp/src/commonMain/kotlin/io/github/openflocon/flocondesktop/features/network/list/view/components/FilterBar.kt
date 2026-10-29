@@ -81,7 +81,10 @@ fun FilterBar(
             )
         },
         containerColor = containerColor,
-        contentPadding = PaddingValues(horizontal = FloconTheme.spacing.small),
+        contentPadding = PaddingValues(
+            start = FloconTheme.spacing.extraSmall,
+            end = FloconTheme.spacing.small,
+        ),
         trailingComponent = {
             AnimatedVisibility(
                 visible = displayClearButton,

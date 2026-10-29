@@ -123,11 +123,15 @@ fun SharedPrefScreen(
                 .mascotPlatform(),
             title = stringResource(Res.string.preferences),
             headerActions = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
-            selector = {
-                SharedPreferenceSelector(
-                    state = deviceSharedPrefs,
-                    onSharedPrefSelected = onSharedPrefSelected,
-                )
+            selector = if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
+                null
+            } else {
+                {
+                    SharedPreferenceSelector(
+                        state = deviceSharedPrefs,
+                        onSharedPrefSelected = onSharedPrefSelected,
+                    )
+                }
             },
             filterBar = {
                 FilterBar(

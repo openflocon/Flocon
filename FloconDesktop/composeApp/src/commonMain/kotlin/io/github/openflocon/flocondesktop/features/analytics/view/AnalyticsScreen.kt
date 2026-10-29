@@ -147,11 +147,15 @@ fun AnalyticsScreen(
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_analytics),
             headerActions = { FeatureDocButton(doc = FeatureDoc.Analytics) },
-            selector = {
-                AnalyticsSelector(
-                    analyticsState = itemsState,
-                    onAnalyticsSelected = onAnalyticsSelected,
-                )
+            selector = if (itemsState is AnalyticsStateUiModel.Empty) {
+                null
+            } else {
+                {
+                    AnalyticsSelector(
+                        analyticsState = itemsState,
+                        onAnalyticsSelected = onAnalyticsSelected,
+                    )
+                }
             },
             filterBar = {
                 FilterBar(

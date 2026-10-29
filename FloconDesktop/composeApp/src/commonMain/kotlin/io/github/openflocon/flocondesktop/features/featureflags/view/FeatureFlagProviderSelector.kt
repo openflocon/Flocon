@@ -51,13 +51,7 @@ internal fun FeatureFlagProviderSelector(
                 }
             }
             when (providersState) {
-                FeatureFlagProvidersUiModel.Empty ->
-                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
-                        Text(
-                            stringResource(Res.string.no_feature_flags),
-                            style = FloconTheme.typography.bodySmall
-                        )
-                    }
+                FeatureFlagProvidersUiModel.Empty -> Unit
 
                 FeatureFlagProvidersUiModel.Loading ->
                     FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {

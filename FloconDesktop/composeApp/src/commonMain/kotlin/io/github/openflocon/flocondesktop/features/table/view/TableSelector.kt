@@ -52,10 +52,7 @@ internal fun TableSelector(
                 }
             }
             when (tablesState) {
-                TablesStateUiModel.Empty ->
-                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
-                        Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
-                    }
+                TablesStateUiModel.Empty -> Unit
 
                 TablesStateUiModel.Loading ->
                     FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {

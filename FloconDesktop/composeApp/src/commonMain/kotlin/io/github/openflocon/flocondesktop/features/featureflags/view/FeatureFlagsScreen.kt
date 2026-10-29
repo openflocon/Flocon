@@ -95,11 +95,15 @@ fun FeatureFlagsScreen(
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_feature_flags),
             headerActions = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
-            selector = {
-                FeatureFlagProviderSelector(
-                    providersState = providersState,
-                    onProviderSelected = onProviderSelected,
-                )
+            selector = if (providersState is FeatureFlagProvidersUiModel.Empty) {
+                null
+            } else {
+                {
+                    FeatureFlagProviderSelector(
+                        providersState = providersState,
+                        onProviderSelected = onProviderSelected,
+                    )
+                }
             },
             filterBar = {
                 FilterBar(
