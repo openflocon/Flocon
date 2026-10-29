@@ -8,10 +8,13 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -52,7 +55,7 @@ fun FilterBar(
     filterText: State<String>,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colors.bg300,
+    containerColor: Color = FloconTheme.colors.bg300.let { it.copy(alpha = it.alpha * 0.75f) },
 ) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
     val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
@@ -62,11 +65,19 @@ fun FilterBar(
         onValueChange = {
             onTextChangedCallback(it)
         },
-        placeholder = defaultPlaceHolder(placeholderText, color = FloconTheme.colors.inkMuted),
+        placeholder = {
+            Text(
+                text = placeholderText,
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.inkMuted,
+            )
+        },
         leadingComponent = {
             FloconIcon(
                 imageVector = Icons.Outlined.Search,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier
+                    .padding(end = FloconTheme.spacing.extraSmall)
+                    .size(18.dp)
             )
         },
         containerColor = containerColor,
@@ -91,7 +102,7 @@ fun FilterBar(
                 )
             }
         },
-        textStyle = FloconTheme.typography.bodySmall.copy(color = FloconTheme.colors.ink),
-        modifier = modifier
+        textStyle = FloconTheme.typography.bodyMedium.copy(color = FloconTheme.colors.ink),
+        modifier = modifier.height(FloconTheme.sizes.pageBarControlHeight)
     )
 }
