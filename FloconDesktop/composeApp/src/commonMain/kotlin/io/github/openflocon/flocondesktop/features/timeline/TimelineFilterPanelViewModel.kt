@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummar
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -30,8 +31,10 @@ internal class TimelineFilterPanelViewModel(
     private val selectedSources: StateFlow<Set<TimelineSource>> = filterStore.storedSources
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSource.entries.toSet())
 
-    // what the events of the screen are counted from
+    // the counts follow the text but not the facets: ticking a value must not make the others, or the sources, move or disappear
     private val summary: StateFlow<TimelineSummaryUiModel> = filterStore.filter
+        .map { it.copy(facets = emptyMap()) }
+        .distinctUntilChanged()
         .flatMapLatest { filter ->
             observeTimelineSummaryUseCase(filter).map { it.toUi(selected = filter.sources) }
         }

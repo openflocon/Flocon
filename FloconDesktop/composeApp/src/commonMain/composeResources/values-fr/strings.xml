@@ -61,6 +61,7 @@
     <string name="timeline_filters_clear_all">Tout effacer</string>
     <string name="timeline_filters_search">Chercher un filtre</string>
     <string name="timeline_filters_all">Tous</string>
+    <string name="timeline_filters_any">Tous</string>
     <string name="timeline_filters_with_events">Avec événements</string>
     <string name="timeline_filters_toggle">Filtres</string>
     <string name="timeline_filters_no_result">Aucun filtre ne correspond</string>

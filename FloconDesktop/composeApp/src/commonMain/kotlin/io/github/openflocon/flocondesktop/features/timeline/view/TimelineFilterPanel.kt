@@ -46,6 +46,7 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
 import flocondesktop.composeapp.generated.resources.timeline_filters_all
+import flocondesktop.composeapp.generated.resources.timeline_filters_any
 import flocondesktop.composeapp.generated.resources.timeline_filters_clear_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_no_result
 import flocondesktop.composeapp.generated.resources.timeline_filters_search
@@ -56,13 +57,16 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconPageSelector
 import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTab
@@ -269,50 +273,71 @@ private fun FacetGroup(
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = FloconTheme.colors
-    Column(
+    var expanded by remember { mutableStateOf(false) }
+    val any = stringResource(Res.string.timeline_filters_any)
+    val selectedValues = remember(group.values) { group.values.filter { it.selected }.joinToString { it.value } }
+
+    // the menu stays open while values are ticked: a group takes several values
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium),
+            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
     ) {
-        Text(
-            text = stringResource(group.facet.title()).uppercase(),
-            style = FloconTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = colors.inkFaint,
-            modifier = Modifier.padding(start = FloconTheme.spacing.small, top = FloconTheme.spacing.small, bottom = FloconTheme.spacing.extraSmall),
+        FloconPageSelector(
+            value = selectedValues.ifEmpty { any },
+            caption = stringResource(group.facet.title()),
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
         )
-        group.values.forEach { item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(CheckboxRowHeight)
-                    .clip(FloconTheme.shapes.small)
-                    .clickable { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            ) {
-                FloconCheckbox(
-                    checked = item.selected,
-                    onCheckedChange = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
-                )
-                Text(
-                    text = item.value,
-                    style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                    // a value without event yet is still there to be ticked, but faded
-                    color = if (item.count > 0 || item.selected) colors.ink else colors.inkFaint,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-                Text(
-                    text = item.count.toString(),
-                    style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-                    color = colors.inkFaint,
-                    modifier = Modifier.padding(end = FloconTheme.spacing.small),
+        FloconDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+        ) {
+            group.values.forEach { item ->
+                FacetValueRow(
+                    item = item,
+                    onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FacetValueRow(
+    item: TimelineFacetValueUiModel,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(CheckboxRowHeight)
+            .clickable(onClick = onToggle)
+            .padding(horizontal = FloconTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        FloconCheckbox(
+            checked = item.selected,
+            onCheckedChange = { onToggle() },
+        )
+        Text(
+            text = item.value,
+            style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+            // a value without event yet is still there to be ticked, but faded
+            color = if (item.count > 0 || item.selected) colors.ink else colors.inkFaint,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = item.count.toString(),
+            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+            color = colors.inkFaint,
+        )
     }
 }
 
