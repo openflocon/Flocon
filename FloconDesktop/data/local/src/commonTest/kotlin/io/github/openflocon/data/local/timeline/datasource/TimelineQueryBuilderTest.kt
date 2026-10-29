@@ -213,7 +213,7 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `a facet keeps the values selected, for the request and the response of a call`() {
+    fun `a facet hides the values unchecked, for the request and the response of a call`() {
         val query = build(
             TimelineFilterDomainModel(
                 sources = setOf(TimelineSource.Network),
@@ -225,8 +225,10 @@ class TimelineQueryBuilderTest {
         )
 
         // the request and the response events, each filtered
-        assertEquals(2, Regex("IN \\(\\?, \\?\\)").findAll(query.sql).count())
-        assertEquals(2, Regex("\\|\\| 'xx' IN \\(\\?\\)").findAll(query.sql).count())
+        assertEquals(2, Regex("NOT IN \\(\\?, \\?\\)").findAll(query.sql).count())
+        assertEquals(2, Regex("\\|\\| 'xx' NOT IN \\(\\?\\)").findAll(query.sql).count())
+        // an event without value, ex: a call without http code, is not hidden
+        assertEquals(2, Regex("\\|\\| 'xx' IS NULL OR").findAll(query.sql).count())
         // the sessions, then for the request and the response: device, package, method values, status values
         val branch = listOf<Any>("device", "com.app", "GET", "POST", "5xx")
         assertEquals(sessionParams + branch + branch, query.params)
@@ -243,20 +245,23 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `the statements selected are kept and the ones hidden are excluded`() {
+    fun `the statements unchecked are hidden`() {
         val query = build(
             TimelineFilterDomainModel(
                 sources = setOf(TimelineSource.Database),
-                facets = mapOf(
-                    TimelineFacet.DatabaseStatement to setOf("SELECT", "INSERT"),
-                    TimelineFacet.DatabaseHide to setOf("TRANSACTION"),
-                ),
+                facets = mapOf(TimelineFacet.DatabaseStatement to setOf("TRANSACTION", "PRAGMA")),
             )
         )
 
-        assertTrue(query.sql.contains(" IN (?, ?)"))
-        assertTrue(query.sql.contains(" NOT IN (?)"))
-        assertEquals(sessionParams + listOf("device", "com.app", "SELECT", "INSERT", "TRANSACTION"), query.params)
+        assertTrue(query.sql.contains(" NOT IN (?, ?)"))
+        assertEquals(sessionParams + listOf("device", "com.app", "TRANSACTION", "PRAGMA"), query.params)
+    }
+
+    @Test
+    fun `nothing is hidden by default`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network, TimelineSource.Database)))
+
+        assertFalse(query.sql.contains("NOT IN"))
     }
 
     @Test

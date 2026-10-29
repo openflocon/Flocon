@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_facet_accessibility_action
 import flocondesktop.composeapp.generated.resources.timeline_facet_analytics_table
-import flocondesktop.composeapp.generated.resources.timeline_facet_database_hide
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
@@ -277,16 +276,16 @@ private fun FacetGroup(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val any = stringResource(Res.string.timeline_filters_any)
-    val selectedValues = remember(group.values) { group.values.filter { it.selected }.joinToString { it.value } }
+    val shown = group.values.count { it.selected }
 
-    // the menu stays open while values are ticked: a group takes several values
+    // the menu stays open while values are unticked: a group takes several values
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
     ) {
         FloconPageSelector(
-            value = selectedValues.ifEmpty { any },
+            value = if (shown == group.values.size) any else "$shown/${group.values.size}",
             caption = stringResource(group.facet.title()),
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
@@ -329,8 +328,8 @@ private fun FacetValueRow(
         Text(
             text = item.value,
             style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-            // a value without event yet is still there to be ticked, but faded
-            color = if (item.count > 0 || item.selected) colors.ink else colors.inkFaint,
+            // a value without event yet is still there, but faded
+            color = if (item.count > 0) colors.ink else colors.inkFaint,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -466,7 +465,6 @@ private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.NetworkStatus -> Res.string.timeline_facet_network_status
     TimelineFacet.DatabaseName -> Res.string.timeline_facet_database_name
     TimelineFacet.DatabaseStatement -> Res.string.timeline_facet_database_statement
-    TimelineFacet.DatabaseHide -> Res.string.timeline_facet_database_hide
     TimelineFacet.AnalyticsTable -> Res.string.timeline_facet_analytics_table
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
 }

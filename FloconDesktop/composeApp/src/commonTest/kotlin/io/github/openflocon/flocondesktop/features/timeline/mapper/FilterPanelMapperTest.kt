@@ -64,7 +64,7 @@ class FilterPanelMapperTest {
         assertTrue(database.groups.none { it.facet == TimelineFacet.DatabaseName })
         // the statements are always known
         assertEquals(
-            listOf(TimelineFacet.DatabaseStatement, TimelineFacet.DatabaseHide),
+            listOf(TimelineFacet.DatabaseStatement),
             database.groups.map { it.facet },
         )
     }
@@ -84,7 +84,9 @@ class FilterPanelMapperTest {
 
         val status = panel.sections.first().groups.first { it.facet == TimelineFacet.NetworkStatus }.values
         assertEquals(listOf("2xx", "5xx"), status.map { it.value })
-        assertTrue(status.last().selected)
+        // every value is checked unless it was unchecked
+        assertTrue(status.first().selected)
+        assertFalse(status.last().selected)
     }
 
     @Test

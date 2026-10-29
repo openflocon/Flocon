@@ -4,15 +4,13 @@ package io.github.openflocon.domain.timeline.models
 private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
 
 /**
- * A way to narrow the events of one [source] down to some values, ex: the GET and POST calls of the network.
- * Nothing selected for a facet means no restriction.
+ * A way to narrow the events of one [source] down: every value is shown by default and the filter keeps the values
+ * that are not hidden, ex: hiding the GET calls of the network.
  * [knownValues] are always offered, even before an event has them. The other values come from the events received.
  */
 enum class TimelineFacet(
     val source: TimelineSource,
     val knownValues: List<String> = emptyList(),
-    // true: the values selected are hidden instead of kept
-    val exclude: Boolean = false,
 ) {
     NetworkMethod(
         source = TimelineSource.Network,
@@ -26,11 +24,6 @@ enum class TimelineFacet(
     DatabaseStatement(
         source = TimelineSource.Database,
         knownValues = DATABASE_STATEMENTS,
-    ),
-    DatabaseHide(
-        source = TimelineSource.Database,
-        knownValues = listOf("TRANSACTION", "PRAGMA"),
-        exclude = true,
     ),
     AnalyticsTable(TimelineSource.Analytics),
     AccessibilityAction(

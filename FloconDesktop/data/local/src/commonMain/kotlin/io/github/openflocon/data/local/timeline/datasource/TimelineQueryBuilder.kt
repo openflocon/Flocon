@@ -59,8 +59,7 @@ private const val FACET_B = "facetB"
 // the column of the union holding the value of a facet
 private fun TimelineFacet.column(): String = when (this) {
     TimelineFacet.NetworkStatus,
-    TimelineFacet.DatabaseStatement,
-    TimelineFacet.DatabaseHide -> FACET_B
+    TimelineFacet.DatabaseStatement -> FACET_B
 
     else -> FACET_A
 }
@@ -116,8 +115,8 @@ private fun buildUnion(
         facetExpressions.forEach { (facet, expression) ->
             val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && facet !in ignoredFacets }
             if (values != null) {
-                val operator = if (facet.exclude) "NOT IN" else "IN"
-                where.append(" AND $expression $operator (${values.joinToString { "?" }})")
+                // an event without value (ex: a call without http code yet) is not one of the values hidden
+                where.append(" AND ($expression IS NULL OR $expression NOT IN (${values.joinToString { "?" }}))")
                 params.addAll(values)
             }
         }
@@ -183,7 +182,6 @@ private fun buildUnion(
                     facetExpressions = mapOf(
                         TimelineFacet.DatabaseName to "dbName",
                         TimelineFacet.DatabaseStatement to DATABASE_STATEMENT,
-                        TimelineFacet.DatabaseHide to DATABASE_STATEMENT,
                     ),
                     orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_DATABASE_LOGS",
                 )

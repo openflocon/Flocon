@@ -69,7 +69,6 @@
     <string name="timeline_facet_network_status">Statut</string>
     <string name="timeline_facet_database_name">Base de données</string>
     <string name="timeline_facet_database_statement">Requête</string>
-    <string name="timeline_facet_database_hide">Masquer</string>
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>
     <plurals name="network_counter_requests">

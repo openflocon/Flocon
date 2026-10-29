@@ -13,17 +13,18 @@ import kotlinx.collections.immutable.toImmutableList
  * The sources with events come first. Every known value of a facet is listed, even without event.
  * With [onlyWithEvents], the sources and the facet values without event are hidden,
  * except the ones that are filtered on: they stay to be undone.
+ * All the values are checked by default: [facets] holds the values the user unchecked.
  */
 internal fun TimelineSummaryUiModel.toFilterPanel(
     selectedSources: Set<TimelineSource>,
-    facets: Map<TimelineFacet, Set<String>>,
+    facets: Map<TimelineFacet, Set<String>>, // the values hidden, by facet
     onlyWithEvents: Boolean,
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
         .map { source ->
             val groups = TimelineFacet.entries
                 .filter { it.source == source }
-                .mapNotNull { facet -> toGroup(facet, selected = facets[facet].orEmpty(), onlyWithEvents = onlyWithEvents) }
+                .mapNotNull { facet -> toGroup(facet, hidden = facets[facet].orEmpty(), onlyWithEvents = onlyWithEvents) }
             TimelineFilterSectionUiModel(
                 source = source,
                 count = sourceCounts[source] ?: 0,
@@ -49,17 +50,18 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     )
 }
 
+// every value is checked, so shown, unless it is one of the [hidden] values
 private fun TimelineSummaryUiModel.toGroup(
     facet: TimelineFacet,
-    selected: Set<String>,
+    hidden: Set<String>,
     onlyWithEvents: Boolean,
 ): TimelineFacetGroupUiModel? {
     val counts = facetCounts[facet].orEmpty()
     // the known values are always there, in their order, then the ones the events brought
-    val others = (counts.keys + selected - facet.knownValues.toSet()).sorted()
+    val others = (counts.keys + hidden - facet.knownValues.toSet()).sorted()
     val values = (facet.knownValues + others)
-        .map { value -> TimelineFacetValueUiModel(value = value, count = counts[value] ?: 0, selected = value in selected) }
-        .filter { !onlyWithEvents || it.count > 0 || it.selected }
+        .map { value -> TimelineFacetValueUiModel(value = value, count = counts[value] ?: 0, selected = value !in hidden) }
+        .filter { !onlyWithEvents || it.count > 0 || !it.selected }
     return if (values.isEmpty()) {
         null
     } else {
