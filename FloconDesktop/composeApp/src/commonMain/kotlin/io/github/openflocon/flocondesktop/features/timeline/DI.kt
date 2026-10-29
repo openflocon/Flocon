@@ -7,7 +7,9 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 internal val timelineModule = module {
+    singleOf(::TimelineFilterStore)
     viewModelOf(::TimelineViewModel)
+    viewModelOf(::TimelineFilterPanelViewModel)
     singleOf(::TimelinePanelPin) {
         bind<PanelPinRegistry>()
     }

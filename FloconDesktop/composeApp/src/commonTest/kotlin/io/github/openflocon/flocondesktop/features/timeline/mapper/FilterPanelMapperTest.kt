@@ -37,11 +37,31 @@ class FilterPanelMapperTest {
     }
 
     @Test
-    fun `the values of a facet are sorted and counted`() {
+    fun `every known value of a facet is listed, with its count`() {
         val network = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Network }
 
         val methods = network.groups.first { it.facet == TimelineFacet.NetworkMethod }.values
-        assertEquals(listOf("GET" to 2, "POST" to 1), methods.map { it.value to it.count })
+        assertEquals(TimelineFacet.NetworkMethod.knownValues, methods.map { it.value })
+        assertEquals(listOf("GET" to 2, "POST" to 1, "PUT" to 0), methods.take(3).map { it.value to it.count })
+    }
+
+    @Test
+    fun `the values brought by the events come after the known ones, sorted`() {
+        val withDatabases = summary.copy(
+            facetCounts = summary.facetCounts + (TimelineFacet.DatabaseName to mapOf("b.db" to 1, "a.db" to 3)),
+            sourceCounts = summary.sourceCounts + (TimelineSource.Database to 4),
+        )
+
+        val database = withDatabases.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
+
+        assertEquals(listOf("a.db", "b.db"), database.groups.single().values.map { it.value })
+    }
+
+    @Test
+    fun `a facet without known value is not listed before an event brings one`() {
+        val database = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
+
+        assertTrue(database.groups.isEmpty())
     }
 
     @Test

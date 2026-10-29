@@ -10,7 +10,8 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummar
 import kotlinx.collections.immutable.toImmutableList
 
 /**
- * The sources with events come first. With [onlyWithEvents], the sources and the facet values without event are hidden,
+ * The sources with events come first. Every known value of a facet is listed, even without event.
+ * With [onlyWithEvents], the sources and the facet values without event are hidden,
  * except the ones that are filtered on: they stay to be undone.
  */
 internal fun TimelineSummaryUiModel.toFilterPanel(
@@ -54,10 +55,11 @@ private fun TimelineSummaryUiModel.toGroup(
     onlyWithEvents: Boolean,
 ): TimelineFacetGroupUiModel? {
     val counts = facetCounts[facet].orEmpty()
-    val values = (counts.keys + selected)
+    // the known values are always there, in their order, then the ones the events brought
+    val others = (counts.keys + selected - facet.knownValues.toSet()).sorted()
+    val values = (facet.knownValues + others)
         .map { value -> TimelineFacetValueUiModel(value = value, count = counts[value] ?: 0, selected = value in selected) }
         .filter { !onlyWithEvents || it.count > 0 || it.selected }
-        .sortedBy { it.value }
     return if (values.isEmpty()) {
         null
     } else {

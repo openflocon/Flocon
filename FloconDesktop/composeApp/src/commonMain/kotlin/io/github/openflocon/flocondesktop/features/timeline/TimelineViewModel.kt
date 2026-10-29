@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -8,7 +9,6 @@ import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
-import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
@@ -17,38 +17,32 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
-import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
-import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.navigation.MainFloconNavigationState
-import kotlinx.coroutines.FlowPreview
+import io.github.openflocon.navigation.PanelRoute
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@OptIn(FlowPreview::class)
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
@@ -57,23 +51,13 @@ internal class TimelineViewModel(
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
-    private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
+    private val filterStore: TimelineFilterStore,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
 ) : ViewModel() {
 
-    private val _filterText = MutableStateFlow("")
-    val filterText: StateFlow<String> = _filterText.asStateFlow()
-
-    // the sources displayed, saved in the settings. Read from the source, not from [selectedSources], to wait for the stored
-    // selection instead of loading all the sources first
-    private val storedSources: Flow<Set<TimelineSource>> = observeTimelineSettingsUseCase()
-        .map { it.selectedSources }
-        .distinctUntilChanged()
-
-    val selectedSources: StateFlow<Set<TimelineSource>> = storedSources
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSource.entries.toSet())
+    val filterText: StateFlow<String> = filterStore.text
 
     // the device is connected
     val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
@@ -87,28 +71,18 @@ internal class TimelineViewModel(
     private val _selectedKey = MutableStateFlow<String?>(null)
     val selectedKey: StateFlow<String?> = _selectedKey.asStateFlow()
 
-    // the values kept by facet, not saved: they depend on what the app sent
-    private val selectedFacets = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
+    // the filter panel is a panel of the navigation, opened from the screen
+    val filterPanelOpen: StateFlow<Boolean> = snapshotFlow { navigationState.stack.lastOrNull { it is PanelRoute } is TimelineRoutes.Filters }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    private val showOnlyWithEvents = MutableStateFlow(false)
-
-    private val _panelOpen = MutableStateFlow(false)
-    val panelOpen: StateFlow<Boolean> = _panelOpen.asStateFlow()
-
-    // shared by the events and the counters, so they always describe the same filter
-    private val filter: Flow<TimelineFilterDomainModel> = combine(
-        // no delay when the text is cleared, a short one while typing
-        _filterText.debounce { if (it.isEmpty()) 0L else 300L },
-        storedSources,
-        selectedFacets,
-    ) { text, sources, facets ->
-        TimelineFilterDomainModel(
-            sources = sources,
-            text = text,
-            facets = facets,
-        )
+    // what the button of the filter panel counts: the values selected and the sources hidden
+    val activeFilterCount: StateFlow<Int> = combine(filterStore.facets, filterStore.storedSources) { facets, sources ->
+        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources }
     }
-        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
+    private val filter: Flow<TimelineFilterDomainModel> = filterStore.filter
 
     val summary: StateFlow<TimelineSummaryUiModel> = filter
         .flatMapLatest { filter ->
@@ -117,14 +91,8 @@ internal class TimelineViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSummaryUiModel.Empty)
 
-    val filterPanel: StateFlow<TimelineFilterPanelUiModel> = combine(summary, selectedSources, selectedFacets, showOnlyWithEvents) { summary, sources, facets, onlyWithEvents ->
-        summary.toFilterPanel(selectedSources = sources, facets = facets, onlyWithEvents = onlyWithEvents)
-    }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineFilterPanelUiModel.Empty)
-
     // nothing received at all: the filters are not the reason of the empty list
-    val showEmptyState: StateFlow<Boolean> = combine(summary, _filterText) { summary, filterText ->
+    val showEmptyState: StateFlow<Boolean> = combine(summary, filterStore.text) { summary, filterText ->
         filterText.isBlank() && summary.sourceCounts.values.sum() == 0
     }
         .distinctUntilChanged()
@@ -147,27 +115,12 @@ internal class TimelineViewModel(
 
     fun onAction(action: TimelineAction) {
         when (action) {
-            is TimelineAction.FilterTextChanged -> _filterText.update { action.text }
+            is TimelineAction.FilterTextChanged -> filterStore.setText(action.text)
 
-            is TimelineAction.ToggleSource -> viewModelScope.launch {
-                val current = selectedSources.value
-                setTimelineSelectedSourcesUseCase(if (action.source in current) current - action.source else current + action.source)
-            }
-
-            is TimelineAction.ToggleFacet -> selectedFacets.update { facets ->
-                val values = facets[action.facet].orEmpty()
-                val updated = if (action.value in values) values - action.value else values + action.value
-                if (updated.isEmpty()) facets - action.facet else facets + (action.facet to updated)
-            }
-
-            is TimelineAction.SetOnlyWithEvents -> showOnlyWithEvents.update { action.value }
-
-            is TimelineAction.TogglePanel -> _panelOpen.update { !it }
-
-            is TimelineAction.ClearFilters -> {
-                _filterText.update { "" }
-                selectedFacets.update { emptyMap() }
-                viewModelScope.launch { setTimelineSelectedSourcesUseCase(TimelineSource.entries.toSet()) }
+            is TimelineAction.ToggleFilterPanel -> if (filterPanelOpen.value) {
+                navigationState.closePanel()
+            } else {
+                navigationState.navigate(TimelineRoutes.Filters)
             }
 
             is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }

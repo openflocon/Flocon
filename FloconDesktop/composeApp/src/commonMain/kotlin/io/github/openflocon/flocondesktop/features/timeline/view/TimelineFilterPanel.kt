@@ -55,8 +55,8 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
@@ -72,6 +72,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+private val PreviewPanelWidth = 500.dp
+private val PreviewPanelHeight = 720.dp
 private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
 
@@ -83,7 +85,7 @@ private val CheckboxRowHeight = 28.dp
 @Composable
 internal fun TimelineFilterPanel(
     panel: TimelineFilterPanelUiModel,
-    onAction: (TimelineAction) -> Unit,
+    onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -94,15 +96,10 @@ internal fun TimelineFilterPanel(
         panel.sections.filter { it.matches(query.value, sourceLabels.getValue(it.source)) }
     }
 
-    Row(
-        modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .background(colors.bg100)
-            .border(1.dp, colors.line, FloconTheme.shapes.medium),
-    ) {
+    Row(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .width(FloconTheme.sizes.sidePanelWidth)
+                .weight(1f)
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
@@ -148,7 +145,7 @@ private fun PanelHeader(
     panel: TimelineFilterPanelUiModel,
     query: State<String>,
     onQueryChange: (String) -> Unit,
-    onAction: (TimelineAction) -> Unit,
+    onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -175,7 +172,7 @@ private fun PanelHeader(
                     .clip(FloconTheme.shapes.small)
                     .clickable {
                         onQueryChange("")
-                        onAction(TimelineAction.ClearFilters)
+                        onAction(TimelineFilterAction.ClearAll)
                     }
                     .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
             )
@@ -190,14 +187,14 @@ private fun PanelHeader(
             FloconTab(
                 text = "${stringResource(Res.string.timeline_filters_all)} ${panel.allCount}",
                 isSelected = !panel.onlyWithEvents,
-                onSelected = { onAction(TimelineAction.SetOnlyWithEvents(false)) },
+                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(false)) },
                 tabType = TabType.Start,
                 modifier = Modifier.weight(1f),
             )
             FloconTab(
                 text = "${stringResource(Res.string.timeline_filters_with_events)} ${panel.withEventsCount}",
                 isSelected = panel.onlyWithEvents,
-                onSelected = { onAction(TimelineAction.SetOnlyWithEvents(true)) },
+                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(true)) },
                 tabType = TabType.End,
                 modifier = Modifier.weight(1f),
             )
@@ -209,7 +206,7 @@ private fun PanelHeader(
 private fun FilterSection(
     section: TimelineFilterSectionUiModel,
     label: String,
-    onAction: (TimelineAction) -> Unit,
+    onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -254,7 +251,7 @@ private fun FilterSection(
             )
             FloconSwitch(
                 checked = section.enabled,
-                onCheckedChange = { onAction(TimelineAction.ToggleSource(section.source)) },
+                onCheckedChange = { onAction(TimelineFilterAction.ToggleSource(section.source)) },
             )
         }
         if (expanded) {
@@ -269,7 +266,7 @@ private fun FilterSection(
 @Composable
 private fun FacetGroup(
     group: TimelineFacetGroupUiModel,
-    onAction: (TimelineAction) -> Unit,
+    onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -291,18 +288,19 @@ private fun FacetGroup(
                     .fillMaxWidth()
                     .height(CheckboxRowHeight)
                     .clip(FloconTheme.shapes.small)
-                    .clickable { onAction(TimelineAction.ToggleFacet(group.facet, item.value)) },
+                    .clickable { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
                 FloconCheckbox(
                     checked = item.selected,
-                    onCheckedChange = { onAction(TimelineAction.ToggleFacet(group.facet, item.value)) },
+                    onCheckedChange = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
                 )
                 Text(
                     text = item.value,
                     style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                    color = colors.ink,
+                    // a value without event yet is still there to be ticked, but faded
+                    color = if (item.count > 0 || item.selected) colors.ink else colors.inkFaint,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -457,7 +455,10 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
         TimelineFilterPanel(
             panel = panel,
             onAction = {},
-            modifier = Modifier.height(720.dp),
+            modifier = Modifier
+                .width(PreviewPanelWidth)
+                .height(PreviewPanelHeight)
+                .background(FloconTheme.colors.bg100),
         )
     }
 }
