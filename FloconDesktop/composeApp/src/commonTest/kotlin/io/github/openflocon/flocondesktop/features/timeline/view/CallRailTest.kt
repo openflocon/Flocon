@@ -7,32 +7,41 @@ import kotlin.test.assertNull
 class CallRailTest {
 
     @Test
-    fun `the bar goes from the response to the request, with a dot on each`() {
+    fun `the bar goes from the first to the last linked event, with a dot on each`() {
         assertEquals(
-            CallRailSpan(top = 40f, bottom = 300f, topDot = true, bottomDot = true),
-            callRailSpan(upperCenter = 40f, lowerCenter = 300f, viewportHeight = 600f),
+            CallRailSpan(top = 40f, bottom = 300f, dots = listOf(40f, 120f, 300f)),
+            callRailSpan(centers = listOf(40f, 120f, 300f), leavesTop = false, leavesBottom = false, viewportHeight = 600f),
         )
     }
 
     @Test
-    fun `a request scrolled out below leaves the list at the bottom`() {
+    fun `an event scrolled out below leaves the list at the bottom`() {
         assertEquals(
-            CallRailSpan(top = 40f, bottom = 600f, topDot = true, bottomDot = false),
-            callRailSpan(upperCenter = 40f, lowerCenter = null, viewportHeight = 600f),
+            CallRailSpan(top = 40f, bottom = 600f, dots = listOf(40f)),
+            callRailSpan(centers = listOf(40f), leavesTop = false, leavesBottom = true, viewportHeight = 600f),
         )
     }
 
     @Test
-    fun `a response scrolled out above leaves the list at the top`() {
+    fun `an event scrolled out above leaves the list at the top`() {
         assertEquals(
-            CallRailSpan(top = 0f, bottom = 300f, topDot = false, bottomDot = true),
-            callRailSpan(upperCenter = null, lowerCenter = 300f, viewportHeight = 600f),
+            CallRailSpan(top = 0f, bottom = 300f, dots = listOf(300f)),
+            callRailSpan(centers = listOf(300f), leavesTop = true, leavesBottom = false, viewportHeight = 600f),
         )
     }
 
     @Test
-    fun `nothing is drawn when none of the two lines is displayed`() {
-        assertNull(callRailSpan(upperCenter = null, lowerCenter = null, viewportHeight = 600f))
+    fun `the bar crosses the list when the linked events are out of both sides`() {
+        assertEquals(
+            CallRailSpan(top = 0f, bottom = 600f, dots = emptyList()),
+            callRailSpan(centers = emptyList(), leavesTop = true, leavesBottom = true, viewportHeight = 600f),
+        )
+    }
+
+    @Test
+    fun `nothing is drawn when no linked event is displayed and the bar does not cross the list`() {
+        assertNull(callRailSpan(centers = emptyList(), leavesTop = true, leavesBottom = false, viewportHeight = 600f))
+        assertNull(callRailSpan(centers = emptyList(), leavesTop = false, leavesBottom = false, viewportHeight = 600f))
     }
 
     @Test
@@ -45,5 +54,11 @@ class CallRailTest {
         // the first item of an inverted list is at the bottom of the viewport
         assertEquals(580f, itemCenter(offset = 0, size = 40, viewportHeight = 600f, reversed = true))
         assertEquals(540f, itemCenter(offset = 40, size = 40, viewportHeight = 600f, reversed = true))
+    }
+
+    @Test
+    fun `the padding before the content moves the items, it is not part of their offset`() {
+        // an inverted list with a padding of 20 at the bottom: the first item is above it
+        assertEquals(560f, itemCenter(offset = 0, size = 40, viewportHeight = 600f, reversed = true, startPadding = 20))
     }
 }

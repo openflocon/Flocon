@@ -1,55 +1,60 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 /**
  * The vertical center of an item of the list, from the top of the list.
- * The offset of an item is measured from the start of the list: its bottom when the list is [reversed].
+ * The offset of an item is measured from the start of the list, without the padding before the content: [startPadding]
+ * (the bottom padding when the list is [reversed]). It is measured from the bottom when the list is [reversed].
  */
 internal fun itemCenter(
     offset: Int,
     size: Int,
     viewportHeight: Float,
     reversed: Boolean,
+    startPadding: Int = 0,
 ): Float {
-    val center = offset + size / 2f
+    val center = offset + startPadding + size / 2f
     return if (reversed) viewportHeight - center else center
 }
 
 /**
- * The vertical bar linking the request and the response of a call, from [top] to [bottom] in pixels of the list.
- * A dot is drawn on each end that is displayed: an end scrolled out of the list is only a bar leaving the list.
+ * The vertical bar linking some events, from [top] to [bottom] in pixels of the list.
+ * A dot is drawn on each of [dots]: an end scrolled out of the list has no dot, the bar only leaves the list.
  */
 internal data class CallRailSpan(
     val top: Float,
     val bottom: Float,
-    val topDot: Boolean,
-    val bottomDot: Boolean,
+    val dots: List<Float>,
 )
 
 /**
- * [upperCenter] and [lowerCenter] are the vertical centers of the two lines of the call in the list, null when the line is
- * not displayed. The response is the upper one: the list is sorted from the newest.
- * A request scrolled out below the list makes the bar leave the list at the bottom, a response scrolled out above at the top.
- * Null when there is nothing to draw: none of the two lines is displayed.
+ * [centers] are the vertical centers of the linked events displayed in the list. [leavesTop] and [leavesBottom] tell that
+ * some linked events are scrolled out above or below, where the bar goes.
+ * Null when there is nothing to draw: no linked event is displayed and the bar does not cross the list.
  */
 internal fun callRailSpan(
-    upperCenter: Float?,
-    lowerCenter: Float?,
+    centers: List<Float>,
+    leavesTop: Boolean,
+    leavesBottom: Boolean,
     viewportHeight: Float,
-): CallRailSpan? = when {
-    upperCenter != null && lowerCenter != null -> CallRailSpan(upperCenter, lowerCenter, topDot = true, bottomDot = true)
-    upperCenter != null -> CallRailSpan(upperCenter, viewportHeight, topDot = true, bottomDot = false)
-    lowerCenter != null -> CallRailSpan(0f, lowerCenter, topDot = false, bottomDot = true)
-    else -> null
+): CallRailSpan? {
+    if (centers.isEmpty()) {
+        return if (leavesTop && leavesBottom) CallRailSpan(top = 0f, bottom = viewportHeight, dots = emptyList()) else null
+    }
+    return CallRailSpan(
+        top = if (leavesTop) 0f else centers.min(),
+        bottom = if (leavesBottom) viewportHeight else centers.max(),
+        dots = centers,
+    )
 }
 
 /**
@@ -60,31 +65,49 @@ internal fun callRailSpan(
 internal fun railGutter(): Dp = FloconTheme.spacing.medium
 
 /**
- * Drawn over the list: the bar and the two dots of the hovered call, going through the events between its request and its response.
- * [upperKey] is the key of the response, [lowerKey] the one of the request.
+ * Drawn over the list: the bar and the dots of the hovered events, going through the events between them.
+ * [linkedIndices] are the indices in the list of the events linked to the hovered one: the request and the response of a call,
+ * or the same event repeated. [leavesAfterLoaded] tells that some are not loaded yet, further than the last loaded event.
  */
 @Composable
 internal fun CallRail(
     listState: LazyListState,
-    upperKey: String?,
-    lowerKey: String?,
+    linkedIndices: List<Int>,
+    leavesAfterLoaded: Boolean,
+    color: Color,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
     val sizes = FloconTheme.sizes
     val gutter = railGutter()
-    val color = colors.catNetwork
     val halo = colors.bg100
 
     Canvas(modifier = modifier) {
-        if (upperKey == null || lowerKey == null) return@Canvas
+        if (linkedIndices.isEmpty()) return@Canvas
         val layoutInfo = listState.layoutInfo
         val items = layoutInfo.visibleItemsInfo
+        val first = items.firstOrNull()?.index ?: return@Canvas
+        val last = items.last().index
         val reversed = layoutInfo.reverseLayout
+        val centers = linkedIndices.mapNotNull { index ->
+            items.firstOrNull { it.index == index }?.let {
+                itemCenter(
+                    offset = it.offset,
+                    size = it.size,
+                    viewportHeight = size.height,
+                    reversed = reversed,
+                    startPadding = layoutInfo.beforeContentPadding,
+                )
+            }
+        }
+        // the first items of the list are at the top, or at the bottom when it is reversed
+        val beforeStart = linkedIndices.any { it < first }
+        val afterEnd = linkedIndices.any { it > last } || leavesAfterLoaded
         val span = callRailSpan(
-            upperCenter = items.centerOf(upperKey, size.height, reversed),
-            lowerCenter = items.centerOf(lowerKey, size.height, reversed),
+            centers = centers,
+            leavesTop = if (reversed) afterEnd else beforeStart,
+            leavesBottom = if (reversed) beforeStart else afterEnd,
             viewportHeight = size.height,
         ) ?: return@Canvas
         // the center of the gutter between the time and the category of the rows
@@ -96,14 +119,9 @@ internal fun CallRail(
             end = Offset(x, span.bottom),
             strokeWidth = 2.dp.toPx(),
         )
-        listOf(span.top to span.topDot, span.bottom to span.bottomDot).forEach { (y, visible) ->
-            if (visible) {
-                drawCircle(color = halo, radius = 6.dp.toPx(), center = Offset(x, y))
-                drawCircle(color = color, radius = 4.dp.toPx(), center = Offset(x, y))
-            }
+        span.dots.forEach { y ->
+            drawCircle(color = halo, radius = 6.dp.toPx(), center = Offset(x, y))
+            drawCircle(color = color, radius = 4.dp.toPx(), center = Offset(x, y))
         }
     }
 }
-
-private fun List<LazyListItemInfo>.centerOf(key: String, viewportHeight: Float, reversed: Boolean): Float? = firstOrNull { it.key == key }
-    ?.let { itemCenter(offset = it.offset, size = it.size, viewportHeight = viewportHeight, reversed = reversed) }

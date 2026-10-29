@@ -21,7 +21,7 @@ internal const val MAX_DATABASE_LOGS = 20_000
 private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")
 
 // columns only the network calls fill
-private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs"
+private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage"
 
 internal class TimelineQuery(
     val sql: String,
@@ -34,7 +34,7 @@ private class Union(
 )
 
 /**
- * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs),
+ * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs, isImage),
  * merged by a UNION ALL. The app starts are not rows: they are the sessions, see [sessionsSql].
  */
 private fun buildUnion(
@@ -86,7 +86,7 @@ private fun buildUnion(
                         "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "CASE type WHEN 'WEBSOCKET' THEN 'WS' WHEN 'GRPC' THEN 'GRPC' ELSE request_method END AS method, " +
                         "COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode) AS statusCode, " +
-                        "response_durationMs AS durationMs",
+                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -101,7 +101,7 @@ private fun buildUnion(
                         "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "CASE type WHEN 'WEBSOCKET' THEN 'WS' WHEN 'GRPC' THEN 'GRPC' ELSE request_method END AS method, " +
                         "COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode) AS statusCode, " +
-                        "response_durationMs AS durationMs",
+                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -211,7 +211,7 @@ private fun sessionsSql(deviceId: String, packageName: String, params: MutableLi
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
-        "NULL AS method, NULL AS statusCode, NULL AS durationMs, NULL AS sessionStart WHERE 0"
+        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, NULL AS sessionStart WHERE 0"
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -251,7 +251,7 @@ internal fun buildTimelineQuery(
 
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, " +
+            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
             // an app start is below the events that happened at the same time
