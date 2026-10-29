@@ -50,7 +50,6 @@ fun NetworkTopBar(
                 placeholderText = stringResource(Res.string.filter),
                 onTextChange = { onAction(NetworkAction.FilterQuery(it)) },
                 modifier = Modifier.weight(1f),
-                containerColor = FloconTheme.colors.bg200,
             )
         },
         actions = {

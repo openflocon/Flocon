@@ -23,11 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
-private val SelectorIconSize = 16.dp
+private val SelectorIconSize = 18.dp
+private val SelectorChevronSize = 16.dp
 
 /**
  * Selector button of a page ([FloconPageTopBar] `selector` slot): same height and shape as the filter field,
- * a 1dp border over a slightly lighter background, then a leading [icon], a faint [caption], the [value] in
+ * a subtle 1dp border over a translucent light fill (a bit darker than the filter field), then a leading [icon], a faint [caption], the [value] in
  * semibold and a chevron. [onClick] usually opens a dropdown menu anchored on it.
  */
 @Composable
@@ -45,10 +46,10 @@ fun FloconPageSelector(
         modifier = modifier
             .height(FloconTheme.sizes.controlHeight)
             .clip(shape)
-            .background(colors.bg200)
-            .border(width = 1.dp, color = colors.lineStrong, shape = shape)
+            .background(colors.bg300.copy(alpha = 0.6f))
+            .border(width = 1.dp, color = colors.line, shape = shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = FloconTheme.spacing.compact),
+            .padding(horizontal = FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
@@ -72,7 +73,7 @@ fun FloconPageSelector(
         )
         FloconIcon(
             imageVector = Icons.Outlined.KeyboardArrowDown,
-            modifier = Modifier.size(SelectorIconSize),
+            modifier = Modifier.size(SelectorChevronSize),
         )
     }
 }

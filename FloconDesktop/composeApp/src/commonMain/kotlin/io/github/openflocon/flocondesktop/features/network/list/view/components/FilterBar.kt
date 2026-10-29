@@ -51,7 +51,7 @@ fun FilterBar(
     filterText: State<String>,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = FloconTheme.colors.bg200,
+    containerColor: Color = FloconTheme.colors.bg300,
 ) {
     val onTextChangedCallback by rememberUpdatedState(onTextChange)
     val displayClearButton by remember { derivedStateOf { filterText.value.isNotEmpty() } }
