@@ -45,8 +45,6 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
-private val PathMaxWidth = 280.dp
-
 @Composable
 fun FilesTopBar(
     current: FileUiModel?,
@@ -81,14 +79,20 @@ fun FilesTopBar(
                 enabled = hasParentFile,
                 onClick = onBack,
             )
-            if (!path.isNullOrEmpty()) {
+        },
+        chips = if (path.isNullOrEmpty()) {
+            null
+        } else {
+            {
                 Text(
                     text = path,
                     style = FloconTheme.typography.monoSmall,
                     color = FloconTheme.colors.inkFaint,
                     maxLines = 1,
                     overflow = TextOverflow.StartEllipsis,
-                    modifier = Modifier.widthIn(max = PathMaxWidth),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = FloconTheme.spacing.small),
                 )
             }
         },
