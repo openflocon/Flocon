@@ -96,6 +96,25 @@ class MapperTest {
     }
 
     @Test
+    fun `a webview row is a webview event`() {
+        val event = TimelineRowEntity(
+            kind = "webview",
+            id = "w1",
+            ts = 1200L,
+            title = "x is undefined",
+            subtitle = "error",
+            appInstance = null,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.WebView, event.source)
+        assertEquals("error", event.subtitle)
+    }
+
+    @Test
     fun `the summary is indexed by source and by session`() {
         val summary = toSummaryDomain(
             summaryRows = listOf(

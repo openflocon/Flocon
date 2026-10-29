@@ -54,6 +54,7 @@ import flocondesktop.composeapp.generated.resources.timeline_source_database
 import flocondesktop.composeapp.generated.resources.timeline_source_deeplink
 import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
+import flocondesktop.composeapp.generated.resources.timeline_source_webview
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
@@ -72,6 +73,7 @@ internal fun TimelineSource.label(): StringResource = when (this) {
     TimelineSource.Database -> Res.string.timeline_source_database
     TimelineSource.Analytics -> Res.string.timeline_source_analytics
     TimelineSource.Accessibility -> Res.string.timeline_source_accessibility
+    TimelineSource.WebView -> Res.string.timeline_source_webview
     TimelineSource.Crash -> Res.string.timeline_source_crash
     TimelineSource.Table -> Res.string.timeline_source_table
     TimelineSource.Deeplink -> Res.string.timeline_source_deeplink
@@ -80,11 +82,11 @@ internal fun TimelineSource.label(): StringResource = when (this) {
 }
 
 // the data of these sources are technical: they are displayed in mono
-private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, TimelineSource.Deeplink)
+private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, TimelineSource.Deeplink, TimelineSource.WebView)
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
 // the subtitle of these sources is a short name: it is a chip at the end of the line, so the row keeps one line
-private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analytics, TimelineSource.Deeplink, TimelineSource.Accessibility)
+private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analytics, TimelineSource.Deeplink, TimelineSource.Accessibility, TimelineSource.WebView)
 
 private const val HoverAlpha = 0.3f
 private const val SelectedBorderAlpha = 0.7f

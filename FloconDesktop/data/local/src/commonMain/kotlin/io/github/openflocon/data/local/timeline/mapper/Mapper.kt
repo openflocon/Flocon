@@ -10,6 +10,7 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_DEEPLINK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.datasource.KIND_TABLE
+import io.github.openflocon.data.local.timeline.datasource.KIND_WEBVIEW
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
@@ -24,6 +25,7 @@ private fun String.toTimelineSource(): TimelineSource = when (this) {
     KIND_DATABASE -> TimelineSource.Database
     KIND_ANALYTICS -> TimelineSource.Analytics
     KIND_ACCESSIBILITY -> TimelineSource.Accessibility
+    KIND_WEBVIEW -> TimelineSource.WebView
     KIND_CRASH -> TimelineSource.Crash
     KIND_TABLE -> TimelineSource.Table
     KIND_DEEPLINK -> TimelineSource.Deeplink

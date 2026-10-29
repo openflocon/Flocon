@@ -65,6 +65,11 @@ class DestinationTest {
     }
 
     @Test
+    fun `a webview event opens nothing`() {
+        assertNull(row(TimelineSource.WebView, id = "event-1").toDestination())
+    }
+
+    @Test
     fun `a crash opens its detail panel`() {
         assertEquals(
             TimelineDestination.Panel(CrashReporterRoutes.Panel(crashId = "crash-1", fromTimeline = true)),
@@ -111,14 +116,14 @@ class DestinationTest {
 
     @Test
     fun `every other source has a destination`() {
-        (TimelineSource.entries - TimelineSource.AppStart).forEach {
+        (TimelineSource.entries - TimelineSource.AppStart - TimelineSource.WebView).forEach {
             assertNotNull(row(it).toDestination(), "$it should open something")
         }
     }
 
     @Test
     fun `every panel opened from the timeline is pinned with the timeline, the same panel from its screen is not`() {
-        TimelineSource.entries.filter { it != TimelineSource.AppStart }.forEach { source ->
+        TimelineSource.entries.filter { it != TimelineSource.AppStart && it != TimelineSource.WebView }.forEach { source ->
             val route = (row(source, id = "3").toDestination() as TimelineDestination.Panel).route as PanelRoute
 
             assertEquals(PanelPinGroups.Timeline, route.pinGroup, "$source")
