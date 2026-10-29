@@ -24,7 +24,7 @@ private val floconKeyStore: KeyStore by lazy {
             domains = listOf("localhost")
             ipAddresses = listOf(InetAddress.getByName("127.0.0.1"))
             keySizeInBits = 2048
-            daysValid = 3650
+            daysValid = 36500
         }
     }
 }
