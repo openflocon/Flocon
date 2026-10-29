@@ -343,6 +343,5 @@
     <string name="analytics_selector_caption">Fournisseur</string>
     <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Fournisseur</string>
-    <string name="preferences_selector_caption">Fichier</string>
     <string name="preferences_empty">Aucune préférence</string>
 </resources>

@@ -28,16 +28,17 @@ private val SelectorChevronSize = 16.dp
 
 /**
  * Selector button of a page ([FloconPageTopBar] `selector` slot): same height and shape as the filter field,
- * a subtle 1dp border over a translucent light fill (a bit darker than the filter field), then a leading [icon], a faint [caption], the [value] in
- * semibold and a chevron. [onClick] usually opens a dropdown menu anchored on it.
+ * a subtle 1dp border over a translucent light fill (a bit darker than the filter field), then an optional leading
+ * [icon], an optional faint [caption], the [value] in semibold and a chevron. [onClick] usually opens a dropdown menu
+ * anchored on it.
  */
 @Composable
 fun FloconPageSelector(
-    icon: ImageVector,
-    caption: String,
     value: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    caption: String? = null,
 ) {
     val colors = FloconTheme.colors
     val shape = FloconTheme.shapes.medium
@@ -53,16 +54,20 @@ fun FloconPageSelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        FloconIcon(
-            imageVector = icon,
-            modifier = Modifier.size(SelectorIconSize),
-        )
-        Text(
-            text = caption,
-            style = FloconTheme.typography.bodySmall,
-            color = colors.inkFaint,
-            maxLines = 1,
-        )
+        if (icon != null) {
+            FloconIcon(
+                imageVector = icon,
+                modifier = Modifier.size(SelectorIconSize),
+            )
+        }
+        if (caption != null) {
+            Text(
+                text = caption,
+                style = FloconTheme.typography.bodySmall,
+                color = colors.inkFaint,
+                maxLines = 1,
+            )
+        }
         Text(
             text = value,
             style = FloconTheme.typography.bodyMedium,

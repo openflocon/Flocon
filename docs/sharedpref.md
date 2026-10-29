@@ -18,6 +18,9 @@ Features:
 - **DataStore Support**: Seamlessly browse and mutate `PreferencesDataStore` keys.
 - **Live Mutation**: Edit booleans, numbers, strings, and JSON objects in real-time.
 
+!!! note "Storage type"
+    In the desktop app, each registered storage is listed by its name only. A coming version of the Flocon client DSL will let you declare its type (`DataStore`, `SharedPreferences`, `Keychain`...), which the desktop will then display next to the name.
+
 ---
 
 ## Setup & Registration

@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.preferences_empty
-import flocondesktop.composeapp.generated.resources.preferences_selector_caption
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -60,8 +59,6 @@ internal fun SharedPreferenceSelector(
                     }
 
                 is SharedPrefsStateUiModel.WithContent -> FloconPageSelector(
-                    icon = Icons.Outlined.Description,
-                    caption = stringResource(Res.string.preferences_selector_caption),
                     value = state.selected.name,
                     onClick = onClick,
                 )
