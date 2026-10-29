@@ -20,3 +20,11 @@ data class AccessibilityFocusedNodeUiModel(
         val count: Int,
     )
 }
+
+fun previewAccessibilityFocusedNodeUiModel() = AccessibilityFocusedNodeUiModel(
+    title = "Add to cart",
+    className = "Button",
+    bounds = "[48,1530][1032,1674]",
+    screen = "CartActivity",
+    position = AccessibilityFocusedNodeUiModel.Position(number = 3, count = 12),
+)

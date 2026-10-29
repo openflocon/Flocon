@@ -52,6 +52,8 @@ interface AccessibilityRepository {
 
     suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
+    suspend fun activate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+
     suspend fun searchEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         type: String?,

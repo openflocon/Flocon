@@ -36,6 +36,10 @@ internal object ComposeFocusOrder {
                     composeView.accessibilityNodeProvider
                         ?.performAction(node.id, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null) == true
                 },
+                activate = {
+                    composeView.accessibilityNodeProvider
+                        ?.performAction(node.id, AccessibilityNodeInfo.ACTION_CLICK, null) == true
+                },
             )
         }
         return true

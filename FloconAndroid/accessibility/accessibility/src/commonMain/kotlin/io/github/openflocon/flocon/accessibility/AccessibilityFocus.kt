@@ -2,7 +2,7 @@ package io.github.openflocon.flocon.accessibility
 
 import io.github.openflocon.flocon.accessibility.model.AccessibilityFocusedNodeItem
 
-internal enum class AccessibilityFocusRequest { Current, Next, Previous }
+internal enum class AccessibilityFocusRequest { Current, Next, Previous, Activate }
 
 /**
  * Index of the element to focus to answer [request], in a focus order of [count] elements.
@@ -10,7 +10,7 @@ internal enum class AccessibilityFocusRequest { Current, Next, Previous }
  */
 internal fun targetFocusIndex(request: AccessibilityFocusRequest, currentIndex: Int, count: Int): Int? {
     val target = when (request) {
-        AccessibilityFocusRequest.Current -> currentIndex
+        AccessibilityFocusRequest.Current, AccessibilityFocusRequest.Activate -> currentIndex
         AccessibilityFocusRequest.Next -> if (currentIndex < 0) 0 else currentIndex + 1
         AccessibilityFocusRequest.Previous -> if (currentIndex < 0) count - 1 else currentIndex - 1
     }

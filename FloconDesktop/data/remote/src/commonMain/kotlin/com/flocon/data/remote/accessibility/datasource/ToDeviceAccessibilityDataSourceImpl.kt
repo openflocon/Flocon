@@ -23,6 +23,10 @@ class ToDeviceAccessibilityDataSourceImpl(
         send(deviceIdAndPackageName, Protocol.ToDevice.Accessibility.Method.FocusPrevious)
     }
 
+    override suspend fun activate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        send(deviceIdAndPackageName, Protocol.ToDevice.Accessibility.Method.Activate)
+    }
+
     private suspend fun send(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, method: String) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),

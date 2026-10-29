@@ -10,6 +10,7 @@
 | Desktop → Mobile | `GetFocusedNode` | empty |
 | Desktop → Mobile | `FocusNext`  | empty |
 | Desktop → Mobile | `FocusPrevious` | empty |
+| Desktop → Mobile | `Activate` | empty |
 
 ## `AddEvents` (Mobile → Desktop)
 
@@ -85,7 +86,7 @@ Body is a single `AccessibilityStateItem`. The SDK sends it when the plugin is i
 
 ## `FocusedNode` (Mobile → Desktop)
 
-The element the screen reader is on. Sent each time the accessibility focus changes (the body is then `{}` when the focus is cleared), and as the reply to `GetFocusedNode`, `FocusNext` and `FocusPrevious`. The body is a single `AccessibilityFocusedNodeItem`; every key is optional.
+The element the screen reader is on. Sent each time the accessibility focus changes (the body is then `{}` when the focus is cleared), and as the reply to `GetFocusedNode`, `FocusNext`, `FocusPrevious` and `Activate`. The body is a single `AccessibilityFocusedNodeItem`; every key is optional.
 
 ### `AccessibilityFocusedNodeItem`
 
@@ -98,6 +99,8 @@ The element the screen reader is on. Sent each time the accessibility focus chan
 | `hasNext`            | `Boolean`             | `true` when `FocusNext` has an element to go to. Omitted (`false`) otherwise                 |
 | `hasPrevious`        | `Boolean`             | `true` when `FocusPrevious` has an element to go to. Omitted (`false`) otherwise             |
 
-## `GetFocusedNode`, `FocusNext`, `FocusPrevious` (Desktop → Mobile)
+## `GetFocusedNode`, `FocusNext`, `FocusPrevious`, `Activate` (Desktop → Mobile)
 
 Empty body. `FocusNext` / `FocusPrevious` give the accessibility focus to the next / previous element of the focus order of the resumed screen, without wrapping, then reply with `FocusedNode`. The SDK builds the focus order itself (Views, and the merged semantics tree of Compose), so it can differ slightly from TalkBack's. It only works while an assistive technology is on: without one there is no accessibility focus. Android only, other platforms reply with an empty `FocusedNode`.
+
+`Activate` is the TalkBack double tap: the SDK clicks (`ACTION_CLICK`) the element that has the accessibility focus, then replies with `FocusedNode` describing that element, like `GetFocusedNode`. It does nothing when no element has the focus.

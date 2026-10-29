@@ -117,6 +117,10 @@ class AccessibilityRepositoryImpl(
         toDeviceAccessibilityDataSource.focusPrevious(deviceIdAndPackageName)
     }
 
+    override suspend fun activate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
+        toDeviceAccessibilityDataSource.activate(deviceIdAndPackageName)
+    }
+
     override suspend fun searchEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         type: String?,

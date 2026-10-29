@@ -83,11 +83,12 @@ internal class FloconAccessibilityPluginImpl(
             Protocol.ToDevice.Accessibility.Method.GetFocusedNode -> AccessibilityFocusRequest.Current
             Protocol.ToDevice.Accessibility.Method.FocusNext -> AccessibilityFocusRequest.Next
             Protocol.ToDevice.Accessibility.Method.FocusPrevious -> AccessibilityFocusRequest.Previous
+            Protocol.ToDevice.Accessibility.Method.Activate -> AccessibilityFocusRequest.Activate
             else -> return
         }
         try {
             val node = requestAccessibilityFocus(request, focusedBounds)
-            if (request != AccessibilityFocusRequest.Current) {
+            if (request == AccessibilityFocusRequest.Next || request == AccessibilityFocusRequest.Previous) {
                 // the focus event comes later, don't wait for it to know where we are on a quick succession of requests
                 focusedBounds = node.bounds ?: focusedBounds
             }
