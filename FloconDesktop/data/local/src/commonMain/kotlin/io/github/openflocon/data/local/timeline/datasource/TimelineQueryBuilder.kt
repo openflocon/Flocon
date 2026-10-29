@@ -25,8 +25,10 @@ private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLog
 // columns only the network calls fill
 private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage"
 
-// the values the facets filter on, one or two per source: the last columns of every member of the union
-private const val NO_FACETS = "NULL AS facetA, NULL AS facetB"
+// the column of the union holding the value of a facet: the facets are the last columns of every member of the union
+private fun TimelineFacet.column(): String = "facet$name"
+
+private val NO_FACETS = TimelineFacet.entries.joinToString { "NULL AS ${it.column()}" }
 
 private const val NETWORK_METHOD = "CASE type WHEN 'WEBSOCKET' THEN 'WS' WHEN 'GRPC' THEN 'GRPC' ELSE request_method END"
 private const val NETWORK_STATUS_CODE = "COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode)"
@@ -53,16 +55,17 @@ private val DATABASE_STATEMENT = buildString {
     append(" ELSE 'OTHER' END")
 }
 
-private const val FACET_A = "facetA"
-private const val FACET_B = "facetB"
+// a call waiting for its response has no response: PENDING. A gRPC or WebSocket call has no http code: OTHER
+private const val NETWORK_STATE = "CASE WHEN response_durationMs IS NULL THEN 'PENDING' " +
+    "WHEN response_responseError IS NOT NULL OR $NETWORK_STATUS_CODE >= 400 THEN 'ERROR' " +
+    "WHEN $NETWORK_STATUS_CODE IS NULL THEN 'OTHER' ELSE 'SUCCESS' END"
 
-// the column of the union holding the value of a facet
-private fun TimelineFacet.column(): String = when (this) {
-    TimelineFacet.NetworkStatus,
-    TimelineFacet.DatabaseStatement -> FACET_B
+// null while waiting for the response
+private const val NETWORK_SPEED = "CASE WHEN response_durationMs IS NULL THEN NULL " +
+    "WHEN response_durationMs < 100 THEN '<100ms' WHEN response_durationMs < 500 THEN '100-500ms' " +
+    "WHEN response_durationMs < 1000 THEN '500ms-1s' ELSE '>1s' END"
 
-    else -> FACET_A
-}
+private const val NETWORK_CONTENT = "CASE WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
 
 internal class TimelineQuery(
     val sql: String,
@@ -124,7 +127,9 @@ private fun buildUnion(
             where.append(textColumns.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$it LIKE ?" })
             repeat(textColumns.size) { params.add(text) }
         }
-        val selectQuery = "SELECT $select FROM $from $where"
+        // the value of each facet of the source, null for the facets of the other sources
+        val facetColumns = TimelineFacet.entries.joinToString { "${facetExpressions[it] ?: "NULL"} AS ${it.column()}" }
+        val selectQuery = "SELECT $select, $facetColumns FROM $from $where"
         // a UNION ALL member cannot have its own ORDER BY / LIMIT: wrap it
         return if (orderLimit != null) "SELECT * FROM ($selectQuery $orderLimit)" else selectQuery
     }
@@ -132,6 +137,10 @@ private fun buildUnion(
     val networkFacets = mapOf(
         TimelineFacet.NetworkMethod to NETWORK_METHOD,
         TimelineFacet.NetworkStatus to NETWORK_STATUS_CLASS,
+        TimelineFacet.NetworkState to NETWORK_STATE,
+        TimelineFacet.NetworkSpeed to NETWORK_SPEED,
+        TimelineFacet.NetworkContent to NETWORK_CONTENT,
+        TimelineFacet.NetworkHost to "request_domainFormatted",
     )
 
     val branches = buildList {
@@ -142,8 +151,7 @@ private fun buildUnion(
                         "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
-                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "$NETWORK_METHOD AS facetA, $NETWORK_STATUS_CLASS AS facetB",
+                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -159,8 +167,7 @@ private fun buildUnion(
                         "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
-                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "$NETWORK_METHOD AS facetA, $NETWORK_STATUS_CLASS AS facetB",
+                        "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -174,8 +181,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
-                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, " +
-                        "dbName AS facetA, $DATABASE_STATEMENT AS facetB",
+                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("sqlQuery", "dbName"),
@@ -191,8 +197,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_ANALYTICS' AS kind, itemId AS id, createdAt AS ts, " +
-                        "eventName AS title, analyticsTableId AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, " +
-                        "analyticsTableId AS facetA, NULL AS facetB",
+                        "eventName AS title, analyticsTableId AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AnalyticsItemEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("eventName", "analyticsTableId"),
@@ -204,8 +209,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_ACCESSIBILITY' AS kind, id AS id, createdAt AS ts, " +
-                        "COALESCE(text, contentDescription, type) AS title, type AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, " +
-                        "type AS facetA, NULL AS facetB",
+                        "COALESCE(text, contentDescription, type) AS title, type AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AccessibilityEventEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("text", "contentDescription"),
@@ -230,7 +234,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_CRASH' AS kind, crashId AS id, timestamp AS ts, " +
-                        "exceptionType AS title, exceptionMessage AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS",
+                        "exceptionType AS title, exceptionMessage AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "CrashReportEntity",
                     appInstanceColumn = null, // crashes do not store the session
                     textColumns = listOf("exceptionType", "exceptionMessage"),
@@ -242,7 +246,7 @@ private fun buildUnion(
                 branch(
                     // the device and the package are stored by the table, not by its items
                     select = "'$KIND_TABLE' AS kind, TableItemEntity.itemId AS id, TableItemEntity.createdAt AS ts, " +
-                        "TableEntity.name AS title, TableItemEntity.`values` AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS",
+                        "TableEntity.name AS title, TableItemEntity.`values` AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "TableItemEntity JOIN TableEntity ON TableEntity.id = TableItemEntity.tableId",
                     appInstanceColumn = null,
                     textColumns = listOf("TableEntity.name", "TableItemEntity.`values`"),
@@ -253,7 +257,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_DEEPLINK' AS kind, CAST(id AS TEXT) AS id, executedAt AS ts, " +
-                        "link AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS",
+                        "link AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "DeeplinkEntity",
                     appInstanceColumn = null,
                     textColumns = listOf("link", "label"),
@@ -266,7 +270,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_ADB' AS kind, CAST(id AS TEXT) AS id, executedAt AS ts, " +
-                        "command AS title, output AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS",
+                        "command AS title, output AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AdbCommandHistoryEntity",
                     appInstanceColumn = null,
                     textColumns = listOf("command", "output"),

@@ -67,6 +67,10 @@
     <string name="timeline_filters_no_result">Aucun filtre ne correspond</string>
     <string name="timeline_facet_network_method">Méthode</string>
     <string name="timeline_facet_network_status">Statut</string>
+    <string name="timeline_facet_network_state">État</string>
+    <string name="timeline_facet_network_speed">Durée</string>
+    <string name="timeline_facet_network_content">Contenu</string>
+    <string name="timeline_facet_network_host">Hôte</string>
     <string name="timeline_facet_database_name">Base de données</string>
     <string name="timeline_facet_database_statement">Requête</string>
     <string name="timeline_facet_analytics_table">Table</string>
