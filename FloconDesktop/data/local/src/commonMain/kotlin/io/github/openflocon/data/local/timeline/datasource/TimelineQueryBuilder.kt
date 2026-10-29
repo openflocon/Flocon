@@ -100,6 +100,7 @@ private fun buildUnion(
         scopedByPackage: Boolean = true, // false: the source only stores the device
         orderLimit: String? = null,
         extraCondition: String? = null,
+        timeColumn: String? = null, // the time of the event, to keep the current session only
         facetExpressions: Map<TimelineFacet, String> = emptyMap(), // what each facet of the source filters on
     ): String {
         val where = StringBuilder("WHERE deviceId = ?")
@@ -114,6 +115,9 @@ private fun buildUnion(
         if (appInstance != null && appInstanceColumn != null) {
             where.append(" AND $appInstanceColumn = ?")
             params.add(appInstance)
+        }
+        if (filter.currentSessionOnly && timeColumn != null) {
+            where.append(" AND $timeColumn >= ${latestSessionSql(deviceId, packageName, params)}")
         }
         facetExpressions.forEach { (facet, expression) ->
             val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && facet !in ignoredFacets }
@@ -155,6 +159,7 @@ private fun buildUnion(
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
+                    timeColumn = "request_startTime",
                     facetExpressions = networkFacets,
                 )
             )
@@ -171,6 +176,7 @@ private fun buildUnion(
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
+                    timeColumn = "request_startTime",
                     facetExpressions = networkFacets,
                     // a call without response yet has no response event
                     extraCondition = "response_durationMs IS NOT NULL",
@@ -185,6 +191,7 @@ private fun buildUnion(
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("sqlQuery", "dbName"),
+                    timeColumn = "timestamp",
                     facetExpressions = mapOf(
                         TimelineFacet.DatabaseName to "dbName",
                         TimelineFacet.DatabaseStatement to DATABASE_STATEMENT,
@@ -201,6 +208,7 @@ private fun buildUnion(
                     from = "AnalyticsItemEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("eventName", "analyticsTableId"),
+                    timeColumn = "createdAt",
                     facetExpressions = mapOf(TimelineFacet.AnalyticsTable to "analyticsTableId"),
                 )
             )
@@ -213,6 +221,7 @@ private fun buildUnion(
                     from = "AccessibilityEventEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("text", "contentDescription"),
+                    timeColumn = "createdAt",
                     facetExpressions = mapOf(TimelineFacet.AccessibilityAction to "type"),
                 )
             )
@@ -238,6 +247,7 @@ private fun buildUnion(
                     from = "CrashReportEntity",
                     appInstanceColumn = null, // crashes do not store the session
                     textColumns = listOf("exceptionType", "exceptionMessage"),
+                    timeColumn = "timestamp",
                     facetExpressions = mapOf(TimelineFacet.CrashException to "exceptionType"),
                 )
             )
@@ -251,6 +261,7 @@ private fun buildUnion(
                     from = "TableItemEntity JOIN TableEntity ON TableEntity.id = TableItemEntity.tableId",
                     appInstanceColumn = null,
                     textColumns = listOf("TableEntity.name", "TableItemEntity.`values`"),
+                    timeColumn = "TableItemEntity.createdAt",
                 )
             )
         }
@@ -262,6 +273,7 @@ private fun buildUnion(
                     from = "DeeplinkEntity",
                     appInstanceColumn = null,
                     textColumns = listOf("link", "label"),
+                    timeColumn = "executedAt",
                     // the other rows are the deeplinks declared by the app, not events
                     extraCondition = "isHistory = 1",
                 )
@@ -275,6 +287,7 @@ private fun buildUnion(
                     from = "AdbCommandHistoryEntity",
                     appInstanceColumn = null,
                     textColumns = listOf("command", "output"),
+                    timeColumn = "executedAt",
                     scopedByPackage = false, // adb commands are run on a device, not on an app
                 )
             )
@@ -295,6 +308,12 @@ private fun sessionsSql(deviceId: String, packageName: String, params: MutableLi
     params.add(packageName)
     "SELECT appInstance FROM $table WHERE deviceId = ? AND packageName = ?"
 }
+
+/**
+ * The start of the latest session, the time of the events of the current session are after it.
+ * Nothing known: 0, every event is kept.
+ */
+private fun latestSessionSql(deviceId: String, packageName: String, params: MutableList<Any>): String = "COALESCE((SELECT MAX(appInstance) FROM (${sessionsSql(deviceId, packageName, params)})), 0)"
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
@@ -329,6 +348,9 @@ internal fun buildTimelineQuery(
         if (appInstance != null) {
             where.append(" AND appInstance = ?")
             params.add(appInstance)
+        }
+        if (filter.currentSessionOnly) {
+            where.append(" AND appInstance = ${latestSessionSql(deviceId, packageName, params)}")
         }
         members.add(
             "SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts, '' AS title, " +

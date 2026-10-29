@@ -97,6 +97,15 @@ class FilterPanelMapperTest {
     }
 
     @Test
+    fun `the current session only is an active filter`() {
+        val panel = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false, currentSessionOnly = true)
+
+        assertTrue(panel.currentSessionOnly)
+        assertTrue(panel.hasActiveFilters)
+        assertEquals(1, panel.activeFilterCount)
+    }
+
+    @Test
     fun `the active filters are the facets selected and the sources hidden`() {
         val none = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false)
         assertFalse(none.hasActiveFilters)

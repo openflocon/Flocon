@@ -19,6 +19,7 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     selectedSources: Set<TimelineSource>,
     facets: Map<TimelineFacet, Set<String>>, // the values hidden, by facet
     onlyWithEvents: Boolean,
+    currentSessionOnly: Boolean = false,
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
         .map { source ->
@@ -36,13 +37,14 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
         .sortedByDescending { it.count > 0 } // stable: the other of the sources is kept
 
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
-    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources
+    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + if (currentSessionOnly) 1 else 0
 
     return TimelineFilterPanelUiModel(
         sections = sections
             .filter { !onlyWithEvents || it.count > 0 || it.activeFacetCount > 0 }
             .toImmutableList(),
         onlyWithEvents = onlyWithEvents,
+        currentSessionOnly = currentSessionOnly,
         allCount = sections.size,
         withEventsCount = sections.count { it.count > 0 },
         hasActiveFilters = activeFilterCount > 0,

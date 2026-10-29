@@ -77,8 +77,12 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     // what the button of the filter panel counts: the values selected and the sources hidden
-    val activeFilterCount: StateFlow<Int> = combine(filterStore.facets, filterStore.storedSources) { facets, sources ->
-        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources }
+    val activeFilterCount: StateFlow<Int> = combine(
+        filterStore.facets,
+        filterStore.storedSources,
+        filterStore.currentSessionOnly,
+    ) { facets, sources, currentSessionOnly ->
+        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources } + if (currentSessionOnly) 1 else 0
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 

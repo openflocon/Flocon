@@ -313,6 +313,26 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the current session only keeps the events since the latest app start`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash, TimelineSource.AppStart), currentSessionOnly = true))
+
+        // the crashes do not store their session: they are kept by time
+        assertTrue(query.sql.contains("timestamp >= COALESCE((SELECT MAX(appInstance) FROM ("))
+        // the app starts are reduced to the latest one
+        assertTrue(query.sql.contains("appInstance = COALESCE((SELECT MAX(appInstance) FROM ("))
+        // the sessions of the query, the crash branch and the latest session it is compared to,
+        // then the app starts and the latest session
+        assertEquals(sessionParams + listOf("device", "com.app") + sessionParams + sessionParams + sessionParams, query.params)
+    }
+
+    @Test
+    fun `every session is kept by default`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash)))
+
+        assertFalse(query.sql.contains("COALESCE((SELECT MAX(appInstance)"))
+    }
+
+    @Test
     fun `the facets of a source that is not selected are ignored`() {
         val query = build(
             TimelineFilterDomainModel(
