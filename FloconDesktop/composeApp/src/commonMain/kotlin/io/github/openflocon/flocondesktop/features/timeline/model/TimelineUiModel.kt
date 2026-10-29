@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 
 @Immutable
 internal data class TimelineRowUiModel(
@@ -33,6 +34,8 @@ internal data class TimelineNetworkUiModel(
     val statusCode: Int?, // null while waiting for the response, or without http code
     val duration: String?,
     val durationMs: Double? = null, // to color the slow calls
+    // a gRPC or a WebSocket call has no http request to copy as cURL, replay or mock
+    val httpActions: Boolean = true,
     val isImage: Boolean = false, // the response is an image
 )
 
@@ -68,6 +71,7 @@ internal sealed interface TimelineAction {
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
+    data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
 }
 
 internal fun previewTimelineRowUiModel(

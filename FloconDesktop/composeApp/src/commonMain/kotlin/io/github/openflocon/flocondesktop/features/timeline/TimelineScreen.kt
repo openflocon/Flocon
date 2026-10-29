@@ -75,6 +75,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.mascot.mascotPlatform
@@ -268,18 +269,23 @@ internal fun TimelineContent(
                             val delta = remember(item.row.timestamp, olderTimestamp) {
                                 olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
                             }
-                            TimelineRow(
+                            TimelineRowMenu(
                                 row = item.row,
-                                delta = delta,
-                                selected = item.row.callKey == selectedKey,
-                                hovered = item.row.callKey in hoveredCallKeys || item.row.linkKey() in hoveredLinkKeys,
-                                onHoverChange = { hovered ->
-                                    if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
-                                },
-                                onClick = { onAction(TimelineAction.Open(it)) },
-                                highlight = filterText.value,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                                onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                            ) {
+                                TimelineRow(
+                                    row = item.row,
+                                    delta = delta,
+                                    selected = item.row.callKey == selectedKey,
+                                    hovered = item.row.callKey in hoveredCallKeys || item.row.linkKey() in hoveredLinkKeys,
+                                    onHoverChange = { hovered ->
+                                        if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
+                                    },
+                                    onClick = { onAction(TimelineAction.Open(it)) },
+                                    highlight = filterText.value,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         }
 
                         is TimelineItemUiModel.DayHeader -> Text(
