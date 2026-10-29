@@ -29,7 +29,7 @@ class AccessibilityRemoteDataSourceImplTest {
     fun `the events are decoded, the optional fields may be absent`() {
         val events = dataSource.getEvents(
             message(
-                method = "addevents",
+                method = "add_events",
                 body = """
                     [
                       {"id":"1","type":"VIEW_FOCUSED","text":"Add to cart","contentDescription":null,"className":"android.widget.Button",
@@ -53,7 +53,7 @@ class AccessibilityRemoteDataSourceImplTest {
 
     @Test
     fun `an invalid body gives no event`() {
-        assertTrue(dataSource.getEvents(message("addevents", "not json")).isEmpty())
+        assertTrue(dataSource.getEvents(message("add_events", "not json")).isEmpty())
     }
 
     @Test
@@ -78,7 +78,7 @@ class AccessibilityRemoteDataSourceImplTest {
     fun `the focused node is decoded, the empty body is nothing focused`() {
         val focused = dataSource.getFocusedNode(
             message(
-                method = "focusednode",
+                method = "focused_node",
                 body = """{"found":true,"text":"Add to cart","className":"Button","bounds":"[0,0][100,48]","index":2,"count":12,"hasNext":true}""",
             )
         )
@@ -91,7 +91,7 @@ class AccessibilityRemoteDataSourceImplTest {
         assertTrue(focused.hasNext)
         assertEquals(false, focused.hasPrevious)
 
-        val nothing = dataSource.getFocusedNode(message(method = "focusednode", body = "{}"))
+        val nothing = dataSource.getFocusedNode(message(method = "focused_node", body = "{}"))
         assertNotNull(nothing)
         assertEquals(false, nothing.found)
     }

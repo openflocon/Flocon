@@ -1,6 +1,6 @@
 # Accessibility
 
-`plugin`: `Accessibility`
+`plugin`: `accessibility`
 
 | Direction        | `method`    | Body                       |
 |------------------|-------------|----------------------------|

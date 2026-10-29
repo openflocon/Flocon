@@ -1,6 +1,6 @@
 # Tables
 
-`plugin`: `Table`
+`plugin`: `table`
 
 | Direction        | `method`   | Body              |
 |------------------|------------|-------------------|

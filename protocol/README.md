@@ -44,7 +44,7 @@ On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tc
   "platform": "android",
   "versionName": "1.3.0",
   "plugin": "database",
-  "method": "getDatabases",
+  "method": "get_databases",
   "body": "[{\"id\":\"app_db\",\"name\":\"app_db\"}]"
 }
 ```
@@ -62,7 +62,7 @@ The desktop identifies a client by the triple `deviceId` + `appPackageName` + `a
 ```json
 {
   "plugin": "files",
-  "method": "listFiles",
+  "method": "list_files",
   "body": "{\"requestId\":\"7f1c…\",\"path\":\"files\",\"isConstantPath\":true,\"withFoldersSize\":false}"
 }
 ```
@@ -95,18 +95,18 @@ The desktop shows a wifi icon next to a device connected with `wifi`.
 
 | Plugin               | `plugin` value      | Doc                                            |
 |----------------------|---------------------|------------------------------------------------|
-| Accessibility        | `Accessibility`     | [accessibility.md](accessibility.md)           |
-| Analytics            | `Analytics`         | [analytics.md](analytics.md)                   |
-| Crash Reporter       | `CrashReporter`     | [crash-reporter.md](crash-reporter.md)         |
-| Dashboard            | `Dashboard`         | [dashboard.md](dashboard.md)                   |
+| Accessibility        | `accessibility`      | [accessibility.md](accessibility.md)           |
+| Analytics            | `analytics`          | [analytics.md](analytics.md)                   |
+| Crash Reporter       | `crash_reporter`       | [crash-reporter.md](crash-reporter.md)         |
+| Dashboard            | `dashboard`          | [dashboard.md](dashboard.md)                   |
 | Database             | `database`          | [database.md](database.md)                     |
-| Deeplinks            | `Deeplink`          | [deeplinks.md](deeplinks.md)                   |
+| Deeplinks            | `deeplink`           | [deeplinks.md](deeplinks.md)                   |
 | Device               | `device`            | [device.md](device.md)                         |
-| Feature Flags        | `featureflags`      | [feature-flags.md](feature-flags.md)           |
+| Feature Flags        | `feature_flags`      | [feature-flags.md](feature-flags.md)           |
 | Files                | `files`             | [files.md](files.md)                           |
 | Network              | `network`           | [network.md](network.md)                       |
-| Shared Preferences   | `sharedPreferences` | [shared-preferences.md](shared-preferences.md) |
-| Tables               | `Table`             | [tables.md](tables.md)                         |
-| WebView              | `WebView`           | [webview.md](webview.md)                       |
+| Shared Preferences   | `shared_preferences` | [shared-preferences.md](shared-preferences.md) |
+| Tables               | `table`              | [tables.md](tables.md)                         |
+| WebView              | `webview`            | [webview.md](webview.md)                       |
 
-> Plugin and method names are **case sensitive**.
+> Plugin and method names are `snake_case` (lowercase words separated by `_`), e.g. `add_items`.

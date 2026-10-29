@@ -19,7 +19,7 @@ interface FloconAccessibilityPlugin : FloconPlugin {
 
 object FloconAccessibility : FloconPluginFactory<FloconAccessibilityConfig, FloconAccessibilityPlugin> {
     override val name: String = "Accessibility"
-    override val pluginId: String = "Accessibility"
+    override val pluginId: String = "accessibility"
     override fun createConfig(context: FloconContext) = FloconAccessibilityConfig()
     override fun install(
         pluginConfig: FloconAccessibilityConfig,
@@ -29,7 +29,7 @@ object FloconAccessibility : FloconPluginFactory<FloconAccessibilityConfig, Floc
 }
 
 internal object FloconAccessibilityPluginNoOp : FloconAccessibilityPlugin {
-    override val key: String = "Accessibility"
+    override val key: String = "accessibility"
     override fun log(event: AccessibilityEvent) = Unit
     override fun log(events: List<AccessibilityEvent>) = Unit
     override fun announce(text: String) = Unit

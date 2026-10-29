@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
-    override val pluginId: String = FloconDeeplinks::class.simpleName!!
+    override val pluginId: String = Protocol.FromDevice.Deeplink.Plugin
     override fun createConfig(context: FloconContext): FloconDeeplinksConfig =
         FloconDeeplinksConfigImpl()
 

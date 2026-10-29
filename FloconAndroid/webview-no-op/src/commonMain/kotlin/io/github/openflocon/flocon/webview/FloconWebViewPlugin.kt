@@ -57,7 +57,7 @@ interface FloconWebViewPlugin : FloconPlugin {
 
 object FloconWebView : FloconPluginFactory<FloconWebViewConfig, FloconWebViewPlugin> {
     override val name: String = "WebView"
-    override val pluginId: String = "WebView"
+    override val pluginId: String = "webview"
     override fun createConfig(context: FloconContext) = FloconWebViewConfig()
     override fun install(
         pluginConfig: FloconWebViewConfig,
@@ -67,7 +67,7 @@ object FloconWebView : FloconPluginFactory<FloconWebViewConfig, FloconWebViewPlu
 }
 
 internal object FloconWebViewPluginNoOp : FloconWebViewPlugin {
-    override val key: String = "WebView"
+    override val key: String = "webview"
 
     override fun logConsole(
         webViewId: String,

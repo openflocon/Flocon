@@ -10,14 +10,14 @@ enum class DevicePlugin(val sdkNames: Set<String>) {
     // the images come from the network calls
     Images(setOf("network", "images")),
     Database(setOf("database")),
-    SharedPreferences(setOf("sharedpreferences")),
+    SharedPreferences(setOf("shared_preferences")),
     Files(setOf("files")),
     Dashboard(setOf("dashboard")),
     Analytics(setOf("analytics")),
     Tables(setOf("table")),
-    CrashReporter(setOf("crashreporter")),
+    CrashReporter(setOf("crash_reporter")),
     Deeplinks(setOf("deeplink")),
-    FeatureFlags(setOf("featureflags")),
+    FeatureFlags(setOf("feature_flags")),
     Accessibility(setOf("accessibility")),
     WebView(setOf("webview")),
     ;

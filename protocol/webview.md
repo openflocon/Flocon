@@ -1,12 +1,12 @@
 # WebView
 
-`plugin`: `WebView`
+`plugin`: `webview`
 
 | Direction        | `method`         | Body                  |
 |------------------|------------------|-----------------------|
-| Mobile → Desktop | `AddConsoleLogs` | `List<ConsoleLog>`    |
-| Mobile → Desktop | `AddPageEvents`  | `List<PageEvent>`     |
-| Mobile → Desktop | `AddBridgeCalls` | `List<BridgeCall>`    |
+| Mobile → Desktop | `add_console_logs` | `List<ConsoleLog>`    |
+| Mobile → Desktop | `add_page_events`  | `List<PageEvent>`     |
+| Mobile → Desktop | `add_bridge_calls` | `List<BridgeCall>`    |
 
 No message from desktop to mobile.
 
@@ -14,7 +14,7 @@ Requests made by the page (`fetch` / `XMLHttpRequest`) are not part of this plug
 
 Every item carries `web_view_id`, a stable id chosen by the app for each attached WebView, so the desktop can filter per WebView.
 
-## `AddConsoleLogs` (Mobile → Desktop)
+## `add_console_logs` (Mobile → Desktop)
 
 Body is a **JSON array** of `ConsoleLog`.
 
@@ -31,7 +31,7 @@ Body is a **JSON array** of `ConsoleLog`.
 | `line_number` | `Int?`    | Line in `source_id`                                        |
 | `created_at`  | `Long`    | Timestamp (ms)                                             |
 
-## `AddPageEvents` (Mobile → Desktop)
+## `add_page_events` (Mobile → Desktop)
 
 Body is a **JSON array** of `PageEvent`.
 
@@ -47,7 +47,7 @@ Body is a **JSON array** of `PageEvent`.
 | `status_code` | `Int?`    | HTTP status, for `http_error`                                                        |
 | `created_at`  | `Long`    | Timestamp (ms)                                                                       |
 
-## `AddBridgeCalls` (Mobile → Desktop)
+## `add_bridge_calls` (Mobile → Desktop)
 
 Body is a **JSON array** of `BridgeCall`: a call from the page to a native object exposed to JavaScript.
 

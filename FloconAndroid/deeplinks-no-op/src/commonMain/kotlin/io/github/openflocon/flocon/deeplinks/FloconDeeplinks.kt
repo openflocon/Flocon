@@ -37,7 +37,7 @@ interface FloconDeeplinksPlugin : FloconPlugin {
 
 object FloconDeeplinks : FloconPluginFactory<FloconDeeplinksConfig, FloconDeeplinksPlugin> {
     override val name: String = "Deeplinks"
-    override val pluginId: String = "FloconDeeplinks"
+    override val pluginId: String = "deeplink"
 
     override fun createConfig(context: FloconContext): FloconDeeplinksConfig = FloconDeeplinksConfigImpl()
 

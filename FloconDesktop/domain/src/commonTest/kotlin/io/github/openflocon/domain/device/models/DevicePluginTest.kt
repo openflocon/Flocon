@@ -28,7 +28,7 @@ class DevicePluginTest {
 
     @Test
     fun `feature flags need the feature flags plugin`() {
-        assertTrue(DevicePlugin.FeatureFlags.isInstalled(setOf("featureflags")))
+        assertTrue(DevicePlugin.FeatureFlags.isInstalled(setOf("feature_flags")))
         assertFalse(DevicePlugin.FeatureFlags.isInstalled(setOf("network")))
     }
 
