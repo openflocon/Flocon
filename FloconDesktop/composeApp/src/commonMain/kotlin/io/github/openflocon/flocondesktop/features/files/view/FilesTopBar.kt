@@ -4,7 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.files_counter
 import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.menu_item_files
 import flocondesktop.composeapp.generated.resources.with_folders_size
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
@@ -39,9 +41,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
-import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -52,7 +54,7 @@ fun FilesTopBar(
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
     updateWithFoldersSize: (Boolean) -> Unit,
-    filterBar: @Composable () -> Unit,
+    filterBar: @Composable RowScope.() -> Unit,
     options: FilesStateUiModel.Options,
     canSelect: Boolean,
     selecting: Boolean,
@@ -65,42 +67,29 @@ fun FilesTopBar(
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
 
+    val title = stringResource(Res.string.menu_item_files)
+    val path = when (val path = current?.path) {
+        is FilePathUiModel.Real -> path.absolutePath
+        is FilePathUiModel.Root -> current?.name.orEmpty()
+        null -> null
+    }
+    val count = numberOfFiles?.let { pluralStringResource(Res.plurals.files_counter, it, it) }
+    val subtitle = listOfNotNull(path, count).joinToString(separator = " · ").ifEmpty { null }
+
     FloconPageTopBar(
         modifier = modifier,
-        filterBar = {
-            FloconIconTonalButton(
-                onClick = onBack,
+        title = title,
+        subtitle = subtitle,
+        headerActions = { FeatureDocButton(doc = FeatureDoc.Files) },
+        leading = {
+            FloconIconButton(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 enabled = hasParentFile,
-                containerColor = FloconTheme.colors.bg200
-            ) {
-                FloconIcon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack
-                )
-            }
-
-            Text(
-                text = current?.name.orEmpty(),
-                style = FloconTheme.typography.bodyMedium,
-                maxLines = 1,
-                color = FloconTheme.colors.ink,
-                modifier = Modifier
-                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
+                onClick = onBack,
             )
-
-            numberOfFiles?.let { nb ->
-                Text(
-                    text = "$nb files",
-                    style = FloconTheme.typography.bodySmall,
-                    maxLines = 1,
-                    color = FloconTheme.colors.ink,
-                    modifier = Modifier
-                        .background(FloconTheme.colors.bg300, shape = FloconTheme.shapes.medium)
-                        .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
+        },
+        filterBar = filterBar,
+        actions = {
             AnimatedVisibility(canSelect) {
                 Selecting(
                     selecting = selecting,
@@ -111,9 +100,6 @@ fun FilesTopBar(
                 )
             }
 
-            filterBar()
-        },
-        actions = {
             FloconIconToggleButton(
                 value = options.withFoldersSize,
                 onValueChange = updateWithFoldersSize,
@@ -124,20 +110,18 @@ fun FilesTopBar(
                 )
             }
 
-            // Delete folder content button (hidden in selection mode)
-            FloconIconButton(
-                imageVector = Icons.Outlined.Delete,
-                enabled = isDirectory,
-                onClick = onDeleteContent,
-            )
-
             FloconIconButton(
                 imageVector = Icons.Outlined.Refresh,
                 enabled = isDirectory,
                 onClick = onRefresh,
             )
 
-            FeatureDocButton(doc = FeatureDoc.Files)
+            // Delete folder content button, last
+            FloconIconButton(
+                imageVector = Icons.Outlined.Delete,
+                enabled = isDirectory,
+                onClick = onDeleteContent,
+            )
         }
     )
 }

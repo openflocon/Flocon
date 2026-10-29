@@ -26,7 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.feature_flags_counter
 import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.menu_item_feature_flags
 import flocondesktop.composeapp.generated.resources.no_feature_flags
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
@@ -46,6 +48,7 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -90,11 +93,13 @@ fun FeatureFlagsScreen(
     ) {
         FloconPageTopBar(
             modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.menu_item_feature_flags),
+            subtitle = pluralStringResource(Res.plurals.feature_flags_counter, rows.size, rows.size),
+            headerActions = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
             selector = {
                 FeatureFlagProviderSelector(
                     providersState = providersState,
                     onProviderSelected = onProviderSelected,
-                    modifier = Modifier.fillMaxWidth(),
                 )
             },
             filterBar = {
@@ -105,14 +110,12 @@ fun FeatureFlagsScreen(
                     modifier = Modifier.weight(1f),
                 )
             },
-            actions = {
-                FeatureDocButton(doc = FeatureDoc.FeatureFlags)
+            chips = {
+                FeatureFlagStateFilters(
+                    selectedStates = selectedStates,
+                    onStateToggled = onStateToggled,
+                )
             },
-        )
-
-        FeatureFlagStateFilters(
-            selectedStates = selectedStates,
-            onStateToggled = onStateToggled,
         )
 
         Box(

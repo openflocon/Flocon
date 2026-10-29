@@ -80,6 +80,18 @@
         <item quantity="one">%1$d événement</item>
         <item quantity="other">%1$d événements</item>
     </plurals>
+    <plurals name="feature_flags_counter">
+        <item quantity="one">%1$d flag</item>
+        <item quantity="other">%1$d flags</item>
+    </plurals>
+    <plurals name="files_counter">
+        <item quantity="one">%1$d fichier</item>
+        <item quantity="other">%1$d fichiers</item>
+    </plurals>
+    <plurals name="images_counter">
+        <item quantity="one">%1$d image</item>
+        <item quantity="other">%1$d images</item>
+    </plurals>
     <string name="menu_item_dashboard">Tableau de bord</string>
     <string name="menu_item_database">Base de données</string>
     <string name="menu_item_adbCommander">ADB Commander</string>

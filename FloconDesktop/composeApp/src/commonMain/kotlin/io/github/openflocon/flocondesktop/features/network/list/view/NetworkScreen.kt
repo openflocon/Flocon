@@ -39,7 +39,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiS
 import io.github.openflocon.flocondesktop.features.network.list.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeader
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkRowsList
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTopBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkWindows
@@ -135,15 +134,8 @@ fun NetworkScreen(
                 )
                 .mascotPlatform()
         ) {
-            NetworkPageHeader(
-                requestCount = rows.itemCount,
-                modifier = Modifier.padding(
-                    top = FloconTheme.spacing.small,
-                    start = FloconTheme.spacing.small,
-                    end = FloconTheme.spacing.small
-                )
-            )
             NetworkTopBar(
+                requestCount = rows.itemCount,
                 filterText = filterText,
                 filterState = uiState.filterState,
                 settings = uiState.settings,
