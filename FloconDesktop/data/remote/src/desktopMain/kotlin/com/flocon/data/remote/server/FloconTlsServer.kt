@@ -24,7 +24,8 @@ private val floconKeyStore: KeyStore by lazy {
             domains = listOf("localhost")
             ipAddresses = listOf(InetAddress.getByName("127.0.0.1"))
             keySizeInBits = 2048
-            daysValid = 36500
+            // the certificate is generated in memory each time the desktop starts, so it only has to outlive one run
+            daysValid = 3650
         }
     }
 }
