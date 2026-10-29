@@ -121,8 +121,7 @@ fun SharedPrefScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.preferences),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
             selector = if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
                 null
             } else {

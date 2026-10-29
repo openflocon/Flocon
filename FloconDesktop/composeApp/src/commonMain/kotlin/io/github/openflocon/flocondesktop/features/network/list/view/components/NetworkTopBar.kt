@@ -39,8 +39,7 @@ fun NetworkTopBar(
 ) {
     FloconPageTopBar(
         modifier = modifier,
-        title = stringResource(Res.string.menu_item_network),
-        headerActions = { FeatureDocButton(doc = FeatureDoc.Network) },
+        trailing = { FeatureDocButton(doc = FeatureDoc.Network) },
         filterBar = {
             FilterBar(
                 filterText = filterText,

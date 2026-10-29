@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FormatSize
@@ -24,10 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
-import flocondesktop.composeapp.generated.resources.menu_item_files
 import flocondesktop.composeapp.generated.resources.with_folders_size
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
@@ -43,6 +44,8 @@ import io.github.openflocon.library.designsystem.components.FloconIconToggleButt
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
+
+private val PathMaxWidth = 280.dp
 
 @Composable
 fun FilesTopBar(
@@ -64,7 +67,6 @@ fun FilesTopBar(
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
 
-    val title = stringResource(Res.string.menu_item_files)
     val path = when (val path = current?.path) {
         is FilePathUiModel.Real -> path.absolutePath
         is FilePathUiModel.Root -> current?.name.orEmpty()
@@ -72,15 +74,23 @@ fun FilesTopBar(
     }
     FloconPageTopBar(
         modifier = modifier,
-        title = title,
-        subtitle = path?.ifEmpty { null },
-        headerActions = { FeatureDocButton(doc = FeatureDoc.Files) },
+        trailing = { FeatureDocButton(doc = FeatureDoc.Files) },
         leading = {
             FloconIconButton(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 enabled = hasParentFile,
                 onClick = onBack,
             )
+            if (!path.isNullOrEmpty()) {
+                Text(
+                    text = path,
+                    style = FloconTheme.typography.monoSmall,
+                    color = FloconTheme.colors.inkFaint,
+                    maxLines = 1,
+                    overflow = TextOverflow.StartEllipsis,
+                    modifier = Modifier.widthIn(max = PathMaxWidth),
+                )
+            }
         },
         filterBar = filterBar,
         actions = {

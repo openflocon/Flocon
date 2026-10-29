@@ -113,8 +113,7 @@ fun TableScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_tables),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.Tables) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.Tables) },
             selector = if (deviceTables is TablesStateUiModel.Empty) {
                 null
             } else {

@@ -57,8 +57,7 @@ private fun AdbCommanderScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_adbCommander),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.AdbCommander) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.AdbCommander) },
         )
 
         if (!uiState.adbAvailable) {

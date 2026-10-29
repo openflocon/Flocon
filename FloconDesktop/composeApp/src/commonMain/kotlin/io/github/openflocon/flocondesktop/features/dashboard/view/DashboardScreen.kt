@@ -95,8 +95,7 @@ fun DashboardScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .mascotPlatform(),
-                title = stringResource(Res.string.menu_item_dashboard),
-                headerActions = { FeatureDocButton(doc = FeatureDoc.Dashboard) },
+                trailing = { FeatureDocButton(doc = FeatureDoc.Dashboard) },
                 filterBar = {
                     Box(modifier = Modifier.weight(1f)) // to have actions on the right
                 },

@@ -100,7 +100,6 @@ fun AccessibilityScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_accessibility),
             leading = {
                 AccessibilityFocusControls(
                     canMoveFocus = canMoveFocus,

@@ -88,8 +88,7 @@ private fun DeeplinkScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_deeplinks),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.Deeplinks) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.Deeplinks) },
             filterBar = {
                 DeeplinkFreeformItem(
                     submit = submit,

@@ -93,8 +93,7 @@ fun FeatureFlagsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_feature_flags),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
             selector = if (providersState is FeatureFlagProvidersUiModel.Empty) {
                 null
             } else {

@@ -75,14 +75,13 @@ private fun CrashReportScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.crashes),
-            headerActions = {
-                FeatureDocButton(doc = FeatureDoc.CrashReporter)
+            actions = {
                 FloconIconButton(
                     imageVector = Icons.Outlined.Delete,
                     onClick = { onAction(CrashReporterAction.Clean) },
                 )
             },
+            trailing = { FeatureDocButton(doc = FeatureDoc.CrashReporter) },
         )
 
         if (showEmptyState) {

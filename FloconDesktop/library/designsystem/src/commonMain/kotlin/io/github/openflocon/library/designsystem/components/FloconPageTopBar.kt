@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
@@ -29,33 +31,26 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 /**
- * Common page header + filter bar.
+ * Common page header: one card holding the filter bar.
  *
  * Layout, top to bottom:
- * 1. header row (only when [title] or [headerActions] is set): [title] with an optional [subtitle] under it,
- *    and [headerActions] (documentation button...) on the right,
- * 2. bar row, inside its own rounded toolbar strip (one step lighter than the header card): [leading] actions,
- *    a divider (if [leading]), [selector], [filterBar] (takes the remaining width), then [actions],
- * 3. [chips] row, then [content].
- *
- * Without a header ([title] and [headerActions] null) the legacy layout is kept: the [selector] is on its own row
- * above the bar.
+ * 1. bar row: [leading] actions and a divider (if [leading]), [selector], [filterBar] (takes the remaining width),
+ *    [actions], then a divider and [trailing] (documentation button...) as the very last items,
+ * 2. [chips] row (optional),
+ * 3. [content].
  */
 @Composable
 fun FloconPageTopBar(
     modifier: Modifier = Modifier,
-    title: String? = null,
-    subtitle: String? = null,
-    headerActions: (@Composable RowScope.() -> Unit)? = null,
     leading: (@Composable RowScope.() -> Unit)? = null,
     selector: (@Composable RowScope.() -> Unit)? = null,
     filterBar: (@Composable RowScope.() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
+    trailing: (@Composable RowScope.() -> Unit)? = null,
     chips: (@Composable RowScope.() -> Unit)? = null,
     content: @Composable ColumnScope.(contentPadding: PaddingValues) -> Unit = {},
 ) {
-    val hasHeader = title != null || headerActions != null
-    val hasBar = leading != null || selector != null || filterBar != null || actions != null
+    val hasBar = leading != null || selector != null || filterBar != null || actions != null || trailing != null
 
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -65,43 +60,14 @@ fun FloconPageTopBar(
             .border(width = 1.dp, color = FloconTheme.colors.line, shape = FloconTheme.shapes.large)
             .padding(all = FloconTheme.spacing.small)
     ) {
-        if (hasHeader) {
-            PageHeaderRow(
-                title = title,
-                subtitle = subtitle,
-                headerActions = headerActions,
+        if (hasBar) {
+            PageBarRow(
+                leading = leading,
+                selector = selector,
+                filterBar = filterBar,
+                actions = actions,
+                trailing = trailing,
             )
-            if (hasBar) {
-                // the bar lives in its own toolbar strip, one step lighter than the header card
-                PageBarRow(
-                    leading = leading,
-                    selector = selector,
-                    filterBar = filterBar,
-                    actions = actions,
-                    modifier = Modifier
-                        .clip(FloconTheme.shapes.large)
-                        .background(FloconTheme.colors.bg200)
-                        .padding(all = FloconTheme.spacing.small),
-                )
-            }
-        } else {
-            if (selector != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
-                ) {
-                    selector()
-                }
-            }
-            if (leading != null || filterBar != null || actions != null) {
-                PageBarRow(
-                    leading = leading,
-                    selector = null,
-                    filterBar = filterBar,
-                    actions = actions,
-                )
-            }
         }
         if (chips != null) {
             Row(
@@ -122,6 +88,7 @@ private fun PageBarRow(
     selector: (@Composable RowScope.() -> Unit)?,
     filterBar: (@Composable RowScope.() -> Unit)?,
     actions: (@Composable RowScope.() -> Unit)?,
+    trailing: (@Composable RowScope.() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -154,6 +121,8 @@ private fun PageBarRow(
             ) {
                 filterBar()
             }
+        } else {
+            Spacer(Modifier.weight(1f))
         }
         if (actions != null) {
             Row(
@@ -163,53 +132,13 @@ private fun PageBarRow(
                 actions()
             }
         }
-    }
-}
-
-@Composable
-private fun PageHeaderRow(
-    title: String?,
-    subtitle: String?,
-    headerActions: (@Composable RowScope.() -> Unit)?,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = FloconTheme.spacing.small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-        ) {
-            if (title != null) {
-                Text(
-                    text = title,
-                    style = FloconTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = FloconTheme.colors.ink,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = FloconTheme.typography.monoMedium,
-                    color = FloconTheme.colors.inkFaint,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        if (headerActions != null) {
+        if (trailing != null) {
+            FloconVerticalDivider(modifier = Modifier.height(FloconTheme.sizes.controlHeight))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
-                headerActions()
+                trailing()
             }
         }
     }
@@ -220,8 +149,10 @@ private fun PageHeaderRow(
 private fun FloconPageTopBarPreview() {
     FloconTheme {
         FloconPageTopBar(
-            title = "Analytics",
-            headerActions = {
+            leading = {
+                FloconIconButton(imageVector = Icons.AutoMirrored.Filled.ArrowBack, onClick = {})
+            },
+            trailing = {
                 FloconIconButton(imageVector = Icons.Outlined.Info, onClick = {})
             },
             selector = {

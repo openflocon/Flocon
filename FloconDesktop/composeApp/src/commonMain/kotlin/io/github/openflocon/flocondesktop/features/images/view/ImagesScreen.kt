@@ -104,8 +104,7 @@ private fun ImagesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_images),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.Images) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.Images) },
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),

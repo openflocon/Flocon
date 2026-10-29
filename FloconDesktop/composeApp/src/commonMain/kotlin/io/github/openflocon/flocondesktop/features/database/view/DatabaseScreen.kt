@@ -79,8 +79,7 @@ fun DatabaseScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_database),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.Database) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.Database) },
         )
 
         if (deviceDataBases is DatabasesStateUiModel.Empty) {

@@ -145,8 +145,7 @@ fun AnalyticsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
-            title = stringResource(Res.string.menu_item_analytics),
-            headerActions = { FeatureDocButton(doc = FeatureDoc.Analytics) },
+            trailing = { FeatureDocButton(doc = FeatureDoc.Analytics) },
             selector = if (itemsState is AnalyticsStateUiModel.Empty) {
                 null
             } else {
