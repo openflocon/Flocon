@@ -96,6 +96,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [Feature Flags Viewer](https://openflocon.github.io/Flocon/featureflags)
     - [Accessibility Events](https://openflocon.github.io/Flocon/accessibility)
     - [Crash Reporter](https://openflocon.github.io/Flocon/crashreporter)
+    - [WebView Viewer](https://openflocon.github.io/Flocon/webview)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
 - 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events, feature flags and databases
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
