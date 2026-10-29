@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.accessibility.usecase.ActivateAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventsUseCase
@@ -46,6 +47,7 @@ class AccessibilityViewModel(
     observeCurrentDeviceAccessibilityFocusedNodeUseCase: ObserveCurrentDeviceAccessibilityFocusedNodeUseCase,
     private val focusNextAccessibilityNodeUseCase: FocusNextAccessibilityNodeUseCase,
     private val focusPreviousAccessibilityNodeUseCase: FocusPreviousAccessibilityNodeUseCase,
+    private val activateAccessibilityFocusedNodeUseCase: ActivateAccessibilityFocusedNodeUseCase,
     private val refreshAccessibilityFocusedNodeUseCase: RefreshAccessibilityFocusedNodeUseCase,
     private val resetCurrentDeviceAccessibilityEventsUseCase: ResetCurrentDeviceAccessibilityEventsUseCase,
     private val navigationState: MainFloconNavigationState,
@@ -123,6 +125,8 @@ class AccessibilityViewModel(
                 AccessibilityAction.OnFocusNextClicked -> focusNextAccessibilityNodeUseCase()
 
                 AccessibilityAction.OnFocusPreviousClicked -> focusPreviousAccessibilityNodeUseCase()
+
+                AccessibilityAction.OnActivateClicked -> activateAccessibilityFocusedNodeUseCase()
 
                 AccessibilityAction.OnRefreshFocusedNodeClicked -> refreshAccessibilityFocusedNodeUseCase()
             }

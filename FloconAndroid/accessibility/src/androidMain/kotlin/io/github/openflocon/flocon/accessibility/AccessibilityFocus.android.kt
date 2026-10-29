@@ -17,6 +17,7 @@ import kotlin.coroutines.suspendCoroutine
 internal class FocusTarget(
     val item: AccessibilityFocusedNodeItem,
     val focus: () -> Boolean,
+    val activate: () -> Boolean,
 )
 
 private var resumedActivity: WeakReference<Activity>? = null
@@ -56,7 +57,11 @@ private fun focusOnMainThread(
         return targets.getOrNull(currentIndex)?.item?.withPosition(currentIndex, targets.size)
     }
     val target = targets[index]
-    if (request != AccessibilityFocusRequest.Current) target.focus()
+    when (request) {
+        AccessibilityFocusRequest.Current -> Unit
+        AccessibilityFocusRequest.Activate -> target.activate()
+        AccessibilityFocusRequest.Next, AccessibilityFocusRequest.Previous -> target.focus()
+    }
     return target.item.withPosition(index, targets.size)
 }
 
@@ -76,6 +81,7 @@ private fun View.collectFocusTargets(screen: String, out: MutableList<FocusTarge
         out += FocusTarget(
             item = toFocusedNodeItem(screen),
             focus = { performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null) },
+            activate = { performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null) },
         )
     }
     if (this is ViewGroup) {

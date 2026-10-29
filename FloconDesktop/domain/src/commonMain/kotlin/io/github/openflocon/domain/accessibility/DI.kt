@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.accessibility
 
+import io.github.openflocon.domain.accessibility.usecase.ActivateAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventUseCase
@@ -21,5 +22,6 @@ internal val accessibilityModule = module {
     factoryOf(::ObserveCurrentDeviceAccessibilityFocusedNodeUseCase)
     factoryOf(::FocusNextAccessibilityNodeUseCase)
     factoryOf(::FocusPreviousAccessibilityNodeUseCase)
+    factoryOf(::ActivateAccessibilityFocusedNodeUseCase)
     factoryOf(::RefreshAccessibilityFocusedNodeUseCase)
 }

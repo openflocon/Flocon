@@ -19,9 +19,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_clear
@@ -33,6 +38,7 @@ import io.github.openflocon.flocondesktop.features.accessibility.model.Accessibi
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityBannerUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityFocusedNodeUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityRowUiModel
+import io.github.openflocon.flocondesktop.features.accessibility.model.previewAccessibilityFocusedNodeUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.previewAccessibilityRowUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -91,43 +97,14 @@ fun AccessibilityScreen(
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        modifier = modifier,
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+
+    Box(
+        modifier = modifier.onSizeChanged { containerSize = it },
     ) {
-        FloconPageTopBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .mascotPlatform(),
-            leading = {
-                AccessibilityFocusControls(
-                    canMoveFocus = canMoveFocus,
-                    onAction = onAction,
-                )
-            },
-            filterBar = {
-                FilterBar(
-                    filterText = filterText,
-                    placeholderText = stringResource(Res.string.accessibility_filter),
-                    onTextChange = onFilterTextChanged,
-                    modifier = Modifier.weight(1f),
-                )
-            },
-            actions = {
-                FloconIconButton(
-                    imageVector = Icons.Outlined.Delete,
-                    tooltip = stringResource(Res.string.accessibility_clear),
-                    onClick = onClearClicked,
-                )
-            },
-            chips = {
-                AccessibilityTypeFilters(
-                    types = types,
-                    selectedType = selectedType,
-                    onTypeSelected = onTypeSelected,
-                    modifier = Modifier.weight(1f),
-                )
-            },
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            modifier = Modifier.fillMaxSize(),
         ) {
             // nothing until the device sends its state
             if (banner != null) {
@@ -137,31 +114,55 @@ fun AccessibilityScreen(
                 )
             }
 
-            AccessibilityFocusedNodeCard(
-                focusedNode = focusedNode,
+            FloconPageTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                filterBar = {
+                    FilterBar(
+                        filterText = filterText,
+                        placeholderText = stringResource(Res.string.accessibility_filter),
+                        onTextChange = onFilterTextChanged,
+                        modifier = Modifier.weight(1f),
+                    )
+                },
+                actions = {
+                    FloconIconButton(
+                        imageVector = Icons.Outlined.Delete,
+                        tooltip = stringResource(Res.string.accessibility_clear),
+                        onClick = onClearClicked,
+                    )
+                },
+            )
+
+            AccessibilityTypeFilters(
+                types = types,
+                selectedType = selectedType,
+                onTypeSelected = onTypeSelected,
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .floconPanel()
-        ) {
-            if (rows.isEmpty()) {
-                Text(
-                    text = stringResource(Res.string.no_accessibility_events),
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            } else {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    AccessibilityHeader(modifier = Modifier.fillMaxWidth())
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg100)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.bg300,
+                        shape = FloconTheme.shapes.medium
+                    )
+            ) {
+                if (rows.isEmpty()) {
+                    Text(
+                        text = stringResource(Res.string.no_accessibility_events),
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colors.ink.copy(alpha = 0.6f),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                } else {
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
                     ) {
                         itemsIndexed(
@@ -178,14 +179,23 @@ fun AccessibilityScreen(
                             }
                         }
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier.fillMaxHeight()
+                            .align(Alignment.TopEnd)
+                    )
                 }
-                FloconVerticalScrollbar(
-                    adapter = scrollAdapter,
-                    modifier = Modifier.fillMaxHeight()
-                        .align(Alignment.TopEnd)
-                )
             }
         }
+
+        AccessibilityRemoteOverlay(
+            focusedNode = focusedNode,
+            canMoveFocus = canMoveFocus,
+            talkBackOn = banner is AccessibilityBannerUiModel.Running,
+            containerSize = containerSize,
+            onAction = onAction,
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
     }
 }
 
@@ -198,13 +208,7 @@ private fun AccessibilityScreenPreview() {
                 services = persistentListOf("TalkBack"),
                 touchExploration = true,
             ),
-            focusedNode = AccessibilityFocusedNodeUiModel(
-                title = "Add to cart",
-                className = "Button",
-                bounds = "[48,1530][1032,1674]",
-                screen = "CartActivity",
-                position = AccessibilityFocusedNodeUiModel.Position(number = 3, count = 12),
-            ),
+            focusedNode = previewAccessibilityFocusedNodeUiModel(),
             canMoveFocus = true,
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),
             selectedType = null,
