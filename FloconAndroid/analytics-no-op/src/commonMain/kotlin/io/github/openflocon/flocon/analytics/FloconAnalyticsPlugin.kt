@@ -30,7 +30,7 @@ class FloconAnalyticsSender internal constructor(
 
 object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyticsPlugin> {
     override val name: String = "Analytics"
-    override val pluginId: String = "Analytics"
+    override val pluginId: String = "analytics"
     override fun createConfig(context: FloconContext) = FloconAnalyticsConfig()
     override fun install(
         pluginConfig: FloconAnalyticsConfig,
@@ -40,7 +40,7 @@ object FloconAnalytics : FloconPluginFactory<FloconAnalyticsConfig, FloconAnalyt
 }
 
 internal object FloconAnalyticsPluginNoOp : FloconAnalyticsPlugin {
-    override val key: String = "Analytics"
+    override val key: String = "analytics"
     override fun log(analyticsItems: List<AnalyticsEvent>) = Unit
     override fun log(analyticsItem: AnalyticsEvent) = Unit
     override fun sender(analyticsTableId: String) = FloconAnalyticsSender(analyticsTableId)

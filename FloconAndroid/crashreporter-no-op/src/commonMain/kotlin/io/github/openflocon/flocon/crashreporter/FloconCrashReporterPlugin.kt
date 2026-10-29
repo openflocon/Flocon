@@ -17,7 +17,7 @@ interface FloconCrashReporterPlugin : FloconPlugin {
 
 object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, FloconCrashReporterPlugin> {
     override val name: String = "CrashReporter"
-    override val pluginId: String = "crashreporter"
+    override val pluginId: String = "crash_reporter"
 
     override fun createConfig(context: FloconContext) = FloconCrashReporterConfig()
 
@@ -31,7 +31,7 @@ object FloconCrashReporter : FloconPluginFactory<FloconCrashReporterConfig, Floc
 }
 
 internal object FloconCrashReporterNoOpImpl : FloconPlugin, FloconCrashReporterPlugin {
-    override val key: String = "crashreporter"
+    override val key: String = "crash_reporter"
 
     override fun setupCrashHandler() {
         // no op

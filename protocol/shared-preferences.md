@@ -1,16 +1,16 @@
 # Shared Preferences
 
-`plugin`: `sharedPreferences`
+`plugin`: `shared_preferences`
 
 | Direction        | `method`                   | Body                         |
 |------------------|----------------------------|------------------------------|
-| Desktop → Mobile | `getSharedPreferences`     | `""` (empty)                 |
-| Mobile → Desktop | `getSharedPreferences`     | `List<Preference>`           |
-| Desktop → Mobile | `getSharedPreferenceValue` | `GetValuesRequest`           |
-| Desktop → Mobile | `setSharedPreferenceValue` | `SetValueRequest`            |
-| Mobile → Desktop | `getSharedPreferenceValue` | `ValuesResult`               |
+| Desktop → Mobile | `get_shared_preferences`     | `""` (empty)                 |
+| Mobile → Desktop | `get_shared_preferences`     | `List<Preference>`           |
+| Desktop → Mobile | `get_shared_preference_value` | `GetValuesRequest`           |
+| Desktop → Mobile | `set_shared_preference_value` | `SetValueRequest`            |
+| Mobile → Desktop | `get_shared_preference_value` | `ValuesResult`               |
 
-## `getSharedPreferences`
+## `get_shared_preferences`
 
 Desktop → Mobile: empty body. Mobile → Desktop: list of preference files (also sent on connection and when a preference is registered), sorted by name.
 
@@ -27,7 +27,7 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of preference files (al
 ]
 ```
 
-## `getSharedPreferenceValue` (Desktop → Mobile)
+## `get_shared_preference_value` (Desktop → Mobile)
 
 ### `GetValuesRequest`
 
@@ -40,9 +40,9 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of preference files (al
 { "requestId": "9a7c…", "sharedPreferenceName": "session" }
 ```
 
-## `setSharedPreferenceValue` (Desktop → Mobile)
+## `set_shared_preference_value` (Desktop → Mobile)
 
-Updates one key, then the mobile answers with `getSharedPreferenceValue` (full content). Exactly one `*Value` key should be set.
+Updates one key, then the mobile answers with `get_shared_preference_value` (full content). Exactly one `*Value` key should be set.
 
 ### `SetValueRequest`
 
@@ -62,7 +62,7 @@ Updates one key, then the mobile answers with `getSharedPreferenceValue` (full c
 { "requestId": "9a7c…", "sharedPreferenceName": "session", "key": "isLogged", "booleanValue": false }
 ```
 
-## `getSharedPreferenceValue` (Mobile → Desktop)
+## `get_shared_preference_value` (Mobile → Desktop)
 
 ### `ValuesResult`
 
