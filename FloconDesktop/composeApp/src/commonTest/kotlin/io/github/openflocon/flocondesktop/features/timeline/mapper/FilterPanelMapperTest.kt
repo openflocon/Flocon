@@ -54,14 +54,19 @@ class FilterPanelMapperTest {
 
         val database = withDatabases.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
 
-        assertEquals(listOf("a.db", "b.db"), database.groups.single().values.map { it.value })
+        assertEquals(listOf("a.db", "b.db"), database.groups.first { it.facet == TimelineFacet.DatabaseName }.values.map { it.value })
     }
 
     @Test
     fun `a facet without known value is not listed before an event brings one`() {
         val database = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
 
-        assertTrue(database.groups.isEmpty())
+        assertTrue(database.groups.none { it.facet == TimelineFacet.DatabaseName })
+        // the statements are always known
+        assertEquals(
+            listOf(TimelineFacet.DatabaseStatement, TimelineFacet.DatabaseHide),
+            database.groups.map { it.facet },
+        )
     }
 
     @Test
