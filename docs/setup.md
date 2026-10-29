@@ -123,7 +123,11 @@ startFlocon(FloconContext(this)) {
 Flocon.connect("192.168.1.20")
 ```
 
-Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
+Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. The desktop shows a wifi icon next to a device connected this way. These devices have no adb link, so the features that rely on adb (screenshot, screen recording, deeplinks on Android, ADB Commander and their MCP tools) are disabled for them. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
+
+### Connecting with a QR code
+
+The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`. Scanning it from the SDK is not available yet.
 
 Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
 

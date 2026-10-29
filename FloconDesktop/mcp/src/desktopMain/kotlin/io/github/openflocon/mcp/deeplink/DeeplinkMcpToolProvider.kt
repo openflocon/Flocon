@@ -41,6 +41,7 @@ internal class DeeplinkMcpToolProvider(
             title = "Open deeplink",
             description = "Opens a deeplink on the device (adb on Android, the booted Simulator on iOS), in the mobile app. " +
                 "Unlike the other deeplink tools, this one acts on the device. " +
+                "Not available for Android devices connected over wifi (see connectionType in list_devices). " +
                 "Fill all the parameters of the link first (see list_deeplinks).",
             annotations = writeToolAnnotations(destructive = false, idempotent = false),
             handler = ::openDeeplink,

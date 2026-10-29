@@ -79,12 +79,16 @@ fun FeatureEmptyState(
     doc: FeatureDoc,
     modifier: Modifier = Modifier,
     illustrationSize: Int = 160,
+    // overrides the texts of the doc, for a page that is unusable in a given context (ex: adb over wifi)
+    title: String? = null,
+    description: String? = null,
+    showSetupButton: Boolean = true,
 ) {
     val uriHandler = LocalUriHandler.current
     val hasDevice = LocalHasDevice.current
     FloconEmptyState(
-        title = doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
-        description = doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
+        title = title ?: doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
+        description = description ?: doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
         modifier = modifier,
         illustration = {
             val scene = remember(doc) { doc.scene() }
@@ -105,21 +109,23 @@ fun FeatureEmptyState(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge),
             ) {
-                FloconButton(
-                    onClick = { runCatching { uriHandler.openUri(doc.setupUrl) } },
-                    containerColor = FloconTheme.colors.accent,
-                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
+                if (showSetupButton) {
+                    FloconButton(
+                        onClick = { runCatching { uriHandler.openUri(doc.setupUrl) } },
+                        containerColor = FloconTheme.colors.accent,
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
                     ) {
-                        FloconIcon(
-                            imageVector = Icons.Outlined.Description,
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Text(text = stringResource(Res.string.feature_doc_how_to_setup))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
+                        ) {
+                            FloconIcon(
+                                imageVector = Icons.Outlined.Description,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Text(text = stringResource(Res.string.feature_doc_how_to_setup))
+                        }
                     }
                 }
                 if (!hasDevice) {

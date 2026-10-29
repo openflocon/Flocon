@@ -6,6 +6,7 @@ import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.isPlatformAndroid
 import io.github.openflocon.domain.device.models.isPlatformDesktop
 import io.github.openflocon.domain.device.models.isPlatformIos
+import io.github.openflocon.domain.device.models.supportsAdb
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -29,38 +30,42 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
             }
         }
     }
+}
 
-    private fun computeCapabilities(
-        device: DeviceDomainModel,
-        app: DeviceAppDomainModel
-    ): DeviceCapabilitiesDomainModel? = if (device.isPlatformAndroid()) {
+internal fun computeCapabilities(
+    device: DeviceDomainModel,
+    app: DeviceAppDomainModel
+): DeviceCapabilitiesDomainModel? = when {
+    device.isPlatformAndroid() -> {
+        val adb = device.supportsAdb()
         DeviceCapabilitiesDomainModel(
-            screenshot = true,
-            recordScreen = true,
+            screenshot = adb,
+            recordScreen = adb,
             restart = true,
             sharedPreferences = true,
-            deeplinks = true,
+            deeplinks = adb,
+            adbAvailable = adb,
             files = true,
         )
-    } else if (device.isPlatformDesktop()) {
-        DeviceCapabilitiesDomainModel(
-            screenshot = false,
-            recordScreen = false,
-            restart = false,
-            sharedPreferences = false,
-            deeplinks = false,
-            files = false,
-        )
-    } else if (device.isPlatformIos()) {
-        DeviceCapabilitiesDomainModel(
-            screenshot = true, // iOS Simulator only, through `xcrun simctl io screenshot`
-            recordScreen = true, // iOS Simulator only, through `xcrun simctl io recordVideo`
-            restart = false,
-            sharedPreferences = false, // may be possible on next versions
-            deeplinks = true, // iOS Simulator only, through `xcrun simctl openurl`
-            files = false, // may be possible on next versions
-        )
-    } else {
-        null
     }
+
+    device.isPlatformDesktop() -> DeviceCapabilitiesDomainModel(
+        screenshot = false,
+        recordScreen = false,
+        restart = false,
+        sharedPreferences = false,
+        deeplinks = false,
+        files = false,
+    )
+
+    device.isPlatformIos() -> DeviceCapabilitiesDomainModel(
+        screenshot = true, // iOS Simulator only, through `xcrun simctl io screenshot`
+        recordScreen = true, // iOS Simulator only, through `xcrun simctl io recordVideo`
+        restart = false,
+        sharedPreferences = false, // may be possible on next versions
+        deeplinks = true, // iOS Simulator only, through `xcrun simctl openurl`
+        files = false, // may be possible on next versions
+    )
+
+    else -> null
 }

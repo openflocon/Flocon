@@ -3,11 +3,13 @@ package io.github.openflocon.data.local.device.datasource.local
 import io.github.openflocon.data.core.device.datasource.local.LocalDevicesDataSource
 import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.data.local.device.datasource.dao.DevicesDao
+import io.github.openflocon.data.local.device.datasource.mapper.toConnectionTypeString
 import io.github.openflocon.data.local.device.datasource.mapper.toDomainModel
 import io.github.openflocon.data.local.device.datasource.mapper.toEntity
 import io.github.openflocon.data.local.device.datasource.mapper.toInstalledPluginsString
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
@@ -88,6 +90,13 @@ class LocalDevicesDataSourceRoom(
         deviceId = deviceId,
         packageName = appPackageName,
     ).map { it?.floconVersionOnDevice }
+
+    override suspend fun saveConnectionType(deviceId: DeviceId, connectionType: DeviceConnectionType) {
+        dao.updateConnectionType(
+            deviceId = deviceId,
+            connectionType = connectionType.toConnectionTypeString(),
+        )
+    }
 
     override suspend fun saveInstalledPlugins(
         deviceId: DeviceId,

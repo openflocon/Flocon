@@ -89,6 +89,7 @@ private fun DeeplinkScreen(
             filterBar = {
                 DeeplinkFreeformItem(
                     submit = submit,
+                    enabled = state.canSend,
                     modifier = Modifier.fillMaxWidth(),
                 )
             },
@@ -152,6 +153,7 @@ private fun DeeplinkScreen(
                                 submit = submit,
                                 removeFromHistory = removeFromHistory,
                                 item = item,
+                                enabled = state.canSend,
                                 variableValues = variableValues,
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -174,6 +176,7 @@ private fun DeeplinkScreen(
                                 submit = submit,
                                 removeFromHistory = removeFromHistory,
                                 item = item,
+                                enabled = state.canSend,
                                 variableValues = variableValues,
                                 modifier = Modifier.fillMaxWidth(),
                             )

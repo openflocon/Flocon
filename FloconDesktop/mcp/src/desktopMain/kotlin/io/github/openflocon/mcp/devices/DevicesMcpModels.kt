@@ -12,6 +12,8 @@ internal data class DeviceMcpModel(
     val deviceId: String,
     val name: String,
     val platform: String,
+    // "default" (localhost) or "wifi" (address given to the connect module)
+    val connectionType: String,
     val isSelectedInFlocon: Boolean,
     val apps: List<DeviceAppMcpModel>,
 )

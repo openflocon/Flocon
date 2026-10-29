@@ -1,27 +1,21 @@
-@file:OptIn(FloconInternalApi::class)
-
 package io.github.openflocon.flocon.client
 
 import io.github.openflocon.flocon.FloconAddressStore
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconConnectResult
 import io.github.openflocon.flocon.FloconConnectionState
-import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconInternalApi
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.core.FloconEncoder
-import io.github.openflocon.flocon.displayClearTextError
+import io.github.openflocon.flocon.model.FloconConnectionType
 import io.github.openflocon.flocon.model.toBonjourBody
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 
 /**
  * The connections to the desktop app: the default address, always tried, and one more address
@@ -92,11 +86,11 @@ internal class FloconConnections(
 
     private fun launch(link: FloconLink) {
         FloconConnectionStates.set(link, FloconConnectionState.Connecting)
-        link.job = config.scope.launch { connectUntilSuccess(link, config.context) }
+        link.job = config.scope.launch { connectUntilSuccess(link) }
     }
 
     /** Connects to the desktop app, trying again every 3 seconds until it succeeds. */
-    private suspend fun connectUntilSuccess(link: FloconLink, context: FloconContext) {
+    private suspend fun connectUntilSuccess(link: FloconLink) {
         while (true) {
             try {
                 connectOnce(link)
@@ -105,12 +99,6 @@ internal class FloconConnections(
                 throw cancellation
             } catch (t: Throwable) {
                 FloconConnectionStates.set(link, FloconConnectionState.Failed(t.message ?: t.toString()))
-                if (t.message?.contains("CLEARTEXT communication to localhost not permitted by network security policy") == true) {
-                    withContext(Dispatchers.Main) {
-                        displayClearTextError(context = context)
-                    }
-                    return
-                }
                 t.printStackTrace()
                 delay(3_000)
             }
@@ -134,7 +122,8 @@ internal class FloconConnections(
             onMessageReceived = onMessageReceived,
         )
         // before the plugins: what they send on connection comes after the handshake
-        client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder))
+        val connectionType = if (link === client.defaultLink) FloconConnectionType.Default else FloconConnectionType.Wifi
+        client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder, connectionType))
         FloconConnectionStates.set(link, FloconConnectionState.Connected)
         // the address typed by the user, or given at start, comes back at the next launch
         if (link !== client.defaultLink) addressStore?.save(link.server.host)

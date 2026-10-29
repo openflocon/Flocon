@@ -10,6 +10,7 @@ import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.URLProtocol
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
@@ -18,6 +19,8 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 internal actual fun buildFloconWebSocketClient(): FloconWebSocketClient {
     return FloconWebSocketClientJvm()
@@ -25,7 +28,7 @@ internal actual fun buildFloconWebSocketClient(): FloconWebSocketClient {
 
 internal class FloconWebSocketClientJvm() : FloconWebSocketClient {
 
-    private val client = HttpClient(CIO.create()) {
+    private val client = HttpClient(CIO.create { https { trustManager = FloconTrustAllManager } }) {
         install(WebSockets)
         defaultRequest {
             header(HttpHeaders.UserAgent, "Flocon")
@@ -43,17 +46,20 @@ internal class FloconWebSocketClientJvm() : FloconWebSocketClient {
         if (session != null) return
 
         try {
-            FloconLogger.log("🔌 Trying to connect ws://$address:$port ...")
+            FloconLogger.log("🔌 Trying to connect wss://$address:$port ...")
 
             val wsSession = client.webSocketSession(
                 method = HttpMethod.Get,
                 host = address,
                 port = port,
-                path = "/"
-            )
+                path = "/",
+            ) {
+                url.protocol = URLProtocol.WSS
+                url.port = port
+            }
 
             session = wsSession
-            FloconLogger.log("✅ WebSocket connected at ws://$address:$port")
+            FloconLogger.log("✅ WebSocket connected at wss://$address:$port")
 
             // Lancer un job pour écouter les messages entrants
             CoroutineScope(Dispatchers.Default).launch {
@@ -108,7 +114,11 @@ internal class FloconWebSocketClientJvm() : FloconWebSocketClient {
     }
 
     override suspend fun disconnect() {
-        session?.close(CloseReason(CloseReason.Codes.NORMAL, "Client disconnecting"))
+        val current = session
         session = null
+        // closing a connection the desktop already dropped can wait forever: do not block the reconnection
+        withTimeoutOrNull(2.seconds) {
+            runCatching { current?.close(CloseReason(CloseReason.Codes.NORMAL, "Client disconnecting")) }
+        }
     }
 }

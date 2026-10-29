@@ -17,4 +17,5 @@
 - Never force-push, rebase or amend on a branch someone else owns. Use merge commits to bring `main` in.
 - PR title follows the commit format above (PRs are squash-merged, so the title becomes the commit).
 - Use `.github/PULL_REQUEST_TEMPLATE/pull_request_template.md`: fill in `### Description` (what changed and why, which parts: SDK / Desktop / MCP / docs) and keep the `/gemini review` line.
+- Open PRs as drafts by default (`gh pr create --draft`); mark them ready for review only when the user asks.
 - Only open a PR when asked to.

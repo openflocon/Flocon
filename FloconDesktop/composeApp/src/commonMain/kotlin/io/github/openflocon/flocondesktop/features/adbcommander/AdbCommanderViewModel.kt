@@ -18,6 +18,7 @@ import io.github.openflocon.domain.adbcommander.usecase.SaveFlowUseCase
 import io.github.openflocon.domain.adbcommander.usecase.UpdateFlowUseCase
 import io.github.openflocon.domain.adbcommander.usecase.UpdateSavedCommandUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.adbcommander.mapper.toUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
@@ -56,6 +57,7 @@ class AdbCommanderViewModel(
     private val deleteFlowUseCase: DeleteFlowUseCase,
     private val updateFlowUseCase: UpdateFlowUseCase,
     private val executeFlowUseCase: ExecuteFlowUseCase,
+    observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
 ) : ViewModel() {
 
     private val localState = MutableStateFlow(AdbCommanderUiState())
@@ -74,8 +76,10 @@ class AdbCommanderViewModel(
         observeSavedCommandsUseCase().mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
         observeCommandHistoryUseCase().mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
         domainFlows.mapLatest { list -> list.map { it.toUiModel() }.toImmutableList() },
-    ) { local, savedCommands, history, flows ->
+        observeCurrentDeviceCapabilitiesUseCase(),
+    ) { local, savedCommands, history, flows, capabilities ->
         local.copy(
+            adbAvailable = capabilities?.adbAvailable ?: true,
             savedCommands = savedCommands,
             history = history,
             flows = flows,

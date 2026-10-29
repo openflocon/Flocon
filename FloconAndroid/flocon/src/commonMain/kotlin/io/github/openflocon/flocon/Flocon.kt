@@ -1,5 +1,3 @@
-@file:OptIn(FloconInternalApi::class)
-
 package io.github.openflocon.flocon
 
 import io.github.openflocon.flocon.client.FloconConnectionStates
@@ -60,16 +58,14 @@ class Flocon internal constructor(
         // `instance` throws when Flocon is not started
         private var started: Flocon? = null
 
-        /** The state of the connection to the desktop app, see `Flocon.connectionState` in `flocon-connect`. */
-        @FloconInternalApi
-        val connectionStateFlow: StateFlow<FloconConnectionState> get() = FloconConnectionStates.state
+        /** The state of the connection to the desktop app. */
+        internal val connectionStateFlow: StateFlow<FloconConnectionState> get() = FloconConnectionStates.state
 
         /**
          * Connects to the desktop app at the given address, in addition to the default one,
-         * see `Flocon.connect` in `flocon-connect`.
+         * see `Flocon.connect`.
          */
-        @FloconInternalApi
-        suspend fun connectToServer(address: String): FloconConnectResult =
+        internal suspend fun connectToServer(address: String): FloconConnectResult =
             started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
     }
 

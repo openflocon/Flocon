@@ -14,6 +14,7 @@ data class AdbCommanderUiState(
     val history: ImmutableList<HistoryEntryUiModel> = persistentListOf(),
     val flowExecution: FlowExecutionUiModel? = null,
     val isExecuting: Boolean = false,
+    val adbAvailable: Boolean = true,
     val showFlowEditor: Boolean = false,
     val flowEditorState: FlowEditorState = FlowEditorState(),
 )

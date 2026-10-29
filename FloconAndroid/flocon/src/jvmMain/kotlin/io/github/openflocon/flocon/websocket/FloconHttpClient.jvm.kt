@@ -23,7 +23,7 @@ internal actual fun buildFloconHttpClient(): FloconHttpClient {
 internal class FloconHttpClientJvm() : FloconHttpClient {
 
     // client configurable selon la plateforme (Android, iOS, JVM, etc.)
-    private val client = HttpClient(CIO.create()) {
+    private val client = HttpClient(CIO.create { https { trustManager = FloconTrustAllManager } }) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -47,7 +47,7 @@ internal class FloconHttpClientJvm() : FloconHttpClient {
         appPackageName: String,
         appInstance: Long
     ): Boolean {
-        val uploadUrl = "http://$address:$port/upload"
+        val uploadUrl = "https://$address:$port/upload"
 
         try {
             val response: HttpResponse = client.submitFormWithBinaryData(

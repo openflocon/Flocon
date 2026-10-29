@@ -43,6 +43,7 @@ private val freeformItem = DeeplinkViewState(
 fun DeeplinkFreeformItem(
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     var value by remember { mutableStateOf("") }
 
@@ -77,6 +78,7 @@ fun DeeplinkFreeformItem(
                         ),
                     )
                 },
+                enabled = enabled,
                 containerColor = FloconTheme.colors.ink
             ) {
                 FloconIcon(

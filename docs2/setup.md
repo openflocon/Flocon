@@ -211,7 +211,7 @@ connection is made to the desktop app. Use `flocon-no-op` **and** the no-op of e
 === "Android Requirements"
     - An Android device or emulator (API 23+) with **USB Debugging** enabled.
     - Android SDK Tools with `adb` (Android Debug Bridge) installed and accessible in your system `PATH`.
-    - Allowed cleartext connection to `localhost` / `127.0.0.1` (see [Troubleshooting](troubleshooting.md)).
+    - Nothing to configure for the connection: it is encrypted (TLS), so your app does not need to allow cleartext traffic.
 
 === "Multiplatform Requirements"
     - A recent Kotlin version (the SDK is built with Kotlin 2.4).

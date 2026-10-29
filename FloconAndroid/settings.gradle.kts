@@ -5,7 +5,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
         google()
-        mavenCentral()
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") // Google mirror of Maven Central, avoids rate limits
         gradlePluginPortal()
     }
 }
@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
-        mavenCentral()
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") // Google mirror of Maven Central, avoids rate limits
         mavenLocal()
     }
 }
@@ -27,8 +27,6 @@ dependencyResolutionManagement {
 include(":sample-multiplatform")
 include(":flocon")
 include(":flocon-no-op")
-include(":connect")
-include(":connect-no-op")
 include(":network:okhttp-interceptor")
 include(":network:okhttp-interceptor-no-op")
 include(":grpc:grpc-interceptor")

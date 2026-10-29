@@ -43,7 +43,8 @@ internal class CaptureMcpToolProvider(
         server.addTypedToolWithResult(
             name = "take_screenshot",
             title = "Take screenshot",
-            description = "Takes a screenshot of the device screen (adb on Android, the booted Simulator on iOS) " +
+            description = "Takes a screenshot of the device screen (adb on Android, the booted Simulator on iOS). " +
+                "Not available for devices connected over wifi (see connectionType in list_devices). " +
                 "and saves it as a PNG in the Flocon documents folder (Screenshot/). " +
                 "The image is returned with the path so you can see the current screen.",
             annotations = writeToolAnnotations(destructive = false, idempotent = false),
@@ -67,6 +68,7 @@ internal class CaptureMcpToolProvider(
             name = "start_screen_recording",
             title = "Start screen recording",
             description = "Starts recording the device screen (adb on Android, the booted Simulator on iOS). " +
+                "Not available for devices connected over wifi (see connectionType in list_devices). " +
                 "Reproduce the scenario, then call stop_screen_recording to get the video. " +
                 "On Android, screenrecord stops by itself after 3 minutes. " +
                 "Only one recording can run per device.",
