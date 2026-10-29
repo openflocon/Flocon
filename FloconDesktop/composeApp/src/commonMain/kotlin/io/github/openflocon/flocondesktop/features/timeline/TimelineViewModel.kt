@@ -8,6 +8,7 @@ import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
@@ -21,8 +22,10 @@ import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOp
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
+import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
@@ -84,15 +87,25 @@ internal class TimelineViewModel(
     private val _selectedKey = MutableStateFlow<String?>(null)
     val selectedKey: StateFlow<String?> = _selectedKey.asStateFlow()
 
+    // the values kept by facet, not saved: they depend on what the app sent
+    private val selectedFacets = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
+
+    private val showOnlyWithEvents = MutableStateFlow(false)
+
+    private val _panelOpen = MutableStateFlow(false)
+    val panelOpen: StateFlow<Boolean> = _panelOpen.asStateFlow()
+
     // shared by the events and the counters, so they always describe the same filter
     private val filter: Flow<TimelineFilterDomainModel> = combine(
         // no delay when the text is cleared, a short one while typing
         _filterText.debounce { if (it.isEmpty()) 0L else 300L },
         storedSources,
-    ) { text, sources ->
+        selectedFacets,
+    ) { text, sources, facets ->
         TimelineFilterDomainModel(
             sources = sources,
             text = text,
+            facets = facets,
         )
     }
         .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
@@ -103,6 +116,12 @@ internal class TimelineViewModel(
         }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSummaryUiModel.Empty)
+
+    val filterPanel: StateFlow<TimelineFilterPanelUiModel> = combine(summary, selectedSources, selectedFacets, showOnlyWithEvents) { summary, sources, facets, onlyWithEvents ->
+        summary.toFilterPanel(selectedSources = sources, facets = facets, onlyWithEvents = onlyWithEvents)
+    }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineFilterPanelUiModel.Empty)
 
     // nothing received at all: the filters are not the reason of the empty list
     val showEmptyState: StateFlow<Boolean> = combine(summary, _filterText) { summary, filterText ->
@@ -133,6 +152,22 @@ internal class TimelineViewModel(
             is TimelineAction.ToggleSource -> viewModelScope.launch {
                 val current = selectedSources.value
                 setTimelineSelectedSourcesUseCase(if (action.source in current) current - action.source else current + action.source)
+            }
+
+            is TimelineAction.ToggleFacet -> selectedFacets.update { facets ->
+                val values = facets[action.facet].orEmpty()
+                val updated = if (action.value in values) values - action.value else values + action.value
+                if (updated.isEmpty()) facets - action.facet else facets + (action.facet to updated)
+            }
+
+            is TimelineAction.SetOnlyWithEvents -> showOnlyWithEvents.update { action.value }
+
+            is TimelineAction.TogglePanel -> _panelOpen.update { !it }
+
+            is TimelineAction.ClearFilters -> {
+                _filterText.update { "" }
+                selectedFacets.update { emptyMap() }
+                viewModelScope.launch { setTimelineSelectedSourcesUseCase(TimelineSource.entries.toSet()) }
             }
 
             is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }

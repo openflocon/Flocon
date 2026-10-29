@@ -52,11 +52,17 @@ internal class TimelineLocalDataSourceRoom(
             packageName = deviceIdAndPackageName.packageName,
             filter = filter,
         )
+        val facetCounts = buildTimelineFacetCountsQuery(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            filter = filter,
+        )
         return combine(
             timelineDao.observeSummary(summary.toRoomRawQuery()),
             timelineDao.observeSessionCounts(sessionCounts.toRoomRawQuery()),
-        ) { summaryRows, sessionRows ->
-            toSummaryDomain(summaryRows, sessionRows)
+            timelineDao.observeFacetCounts(facetCounts.toRoomRawQuery()),
+        ) { summaryRows, sessionRows, facetRows ->
+            toSummaryDomain(summaryRows, sessionRows, facetRows)
         }
     }
 

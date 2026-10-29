@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.model
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
@@ -67,6 +68,10 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
 internal sealed interface TimelineAction {
     data class FilterTextChanged(val text: String) : TimelineAction
     data class ToggleSource(val source: TimelineSource) : TimelineAction
+    data class ToggleFacet(val facet: TimelineFacet, val value: String) : TimelineAction
+    data class SetOnlyWithEvents(val value: Boolean) : TimelineAction
+    data object ClearFilters : TimelineAction
+    data object TogglePanel : TimelineAction
     data class Open(val row: TimelineRowUiModel) : TimelineAction
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction

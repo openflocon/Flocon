@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.test.Test
@@ -208,6 +209,62 @@ class TimelineQueryBuilderTest {
         )
 
         assertEquals(eventSources * 2, query.params.count { it == "%login%" })
+    }
+
+    @Test
+    fun `a facet keeps the values selected, for the request and the response of a call`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                facets = mapOf(
+                    TimelineFacet.NetworkMethod to setOf("GET", "POST"),
+                    TimelineFacet.NetworkStatus to setOf("5xx"),
+                ),
+            )
+        )
+
+        // the request and the response events, each filtered
+        assertEquals(2, Regex("IN \\(\\?, \\?\\)").findAll(query.sql).count())
+        assertEquals(2, Regex("\\|\\| 'xx' IN \\(\\?\\)").findAll(query.sql).count())
+        // the sessions, then for the request and the response: device, package, method values, status values
+        val branch = listOf<Any>("device", "com.app", "GET", "POST", "5xx")
+        assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `the facets of a source that is not selected are ignored`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Crash),
+                facets = mapOf(TimelineFacet.NetworkMethod to setOf("GET")),
+            )
+        )
+
+        assertFalse(query.params.contains("GET"))
+        assertFalse(query.sql.contains("request_url AS title"))
+    }
+
+    @Test
+    fun `the values of each facet are counted without the selection of the facet itself`() {
+        val query = buildTimelineFacetCountsQuery(
+            deviceId = "device",
+            packageName = "com.app",
+            filter = TimelineFilterDomainModel(
+                facets = mapOf(
+                    TimelineFacet.NetworkMethod to setOf("GET"),
+                    TimelineFacet.NetworkStatus to setOf("2xx"),
+                ),
+            ),
+        )
+
+        TimelineFacet.entries.forEach {
+            assertTrue(query.sql.contains("SELECT '${it.name}' AS facet"))
+        }
+        // each count ignores its own facet, and only applies the other one: 2xx for the methods, GET for the statuses
+        assertEquals(1, query.params.count { it == "GET" })
+        assertEquals(1, query.params.count { it == "2xx" })
+        // a network call is counted once, not for its response
+        assertFalse(query.sql.contains(KIND_NETWORK_RESPONSE))
     }
 
     @Test
