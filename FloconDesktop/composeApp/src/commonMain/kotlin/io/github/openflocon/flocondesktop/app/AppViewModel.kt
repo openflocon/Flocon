@@ -99,6 +99,7 @@ internal class AppViewModel(
             installedPlugins = installedPlugins,
             pinnedIds = preferences.pinnedItems,
             collapsedSectionIds = preferences.collapsedSections,
+            hiddenIds = preferences.hiddenItems,
         )
     }
         .stateInWhileSubscribed(

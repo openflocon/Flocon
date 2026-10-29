@@ -19,6 +19,7 @@ data class SettingsUiState(
     val mascotEnabled: Boolean,
     val selectedLogDomains: Set<LogDomain>,
     val selectedLogLevels: Set<LogLevel>,
+    val menuItems: ImmutableList<MenuItemVisibilityUiModel> = persistentListOf(),
 )
 
 fun previewSettingsUiState() = SettingsUiState(
@@ -34,4 +35,5 @@ fun previewSettingsUiState() = SettingsUiState(
     mascotEnabled = true,
     selectedLogDomains = LogDomain.entries.toSet(),
     selectedLogLevels = LogLevel.entries.toSet(),
+    menuItems = previewMenuItemVisibilities(),
 )

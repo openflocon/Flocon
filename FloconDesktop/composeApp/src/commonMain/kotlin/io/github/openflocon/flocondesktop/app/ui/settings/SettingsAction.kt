@@ -10,4 +10,7 @@ sealed interface SettingsAction {
     data class ThemeChange(val value: ThemeSetting) : SettingsAction
 
     data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
+
+    // shows or hides a plugin in the left panel
+    data class ToggleMenuItem(val itemId: String) : SettingsAction
 }

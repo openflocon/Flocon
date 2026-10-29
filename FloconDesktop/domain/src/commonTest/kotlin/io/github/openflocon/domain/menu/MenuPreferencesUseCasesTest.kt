@@ -3,6 +3,7 @@ package io.github.openflocon.domain.menu
 import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
+import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,12 @@ class MenuPreferencesUseCasesTest {
     private class FakeMenuPreferencesRepository : MenuPreferencesRepository {
         override val pinnedItems = MutableStateFlow<List<String>>(emptyList())
         override val collapsedSections = MutableStateFlow<Set<String>>(emptySet())
+
+        override val hiddenItems = MutableStateFlow<Set<String>>(emptySet())
+
+        override suspend fun setHiddenItems(items: Set<String>) {
+            hiddenItems.value = items
+        }
 
         override suspend fun setPinnedItems(items: List<String>) {
             pinnedItems.value = items
@@ -51,13 +58,27 @@ class MenuPreferencesUseCasesTest {
     }
 
     @Test
-    fun `preferences combine the pins and the collapsed sections`() = runBlocking {
+    fun `an item can be hidden then displayed again`() = runBlocking {
+        val toggle = ToggleHiddenMenuItemUseCase(repository)
+
+        toggle("Files")
+        toggle("Tables")
+        assertEquals(setOf("Files", "Tables"), repository.hiddenItems.value)
+
+        toggle("Files")
+        assertEquals(setOf("Tables"), repository.hiddenItems.value)
+    }
+
+    @Test
+    fun `preferences combine the pins, the collapsed sections and the hidden items`() = runBlocking {
         TogglePinnedMenuItemUseCase(repository)("Files")
         ToggleCollapsedMenuSectionUseCase(repository)("data")
+        ToggleHiddenMenuItemUseCase(repository)("Tables")
 
         val preferences = ObserveMenuPreferencesUseCase(repository)().first()
 
         assertEquals(listOf("Files"), preferences.pinnedItems)
         assertEquals(setOf("data"), preferences.collapsedSections)
+        assertEquals(setOf("Tables"), preferences.hiddenItems)
     }
 }

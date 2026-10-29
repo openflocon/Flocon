@@ -11,10 +11,12 @@ class ObserveMenuPreferencesUseCase(
     operator fun invoke(): Flow<MenuPreferencesDomainModel> = combine(
         menuPreferencesRepository.pinnedItems,
         menuPreferencesRepository.collapsedSections,
-    ) { pinned, collapsed ->
+        menuPreferencesRepository.hiddenItems,
+    ) { pinned, collapsed, hidden ->
         MenuPreferencesDomainModel(
             pinnedItems = pinned,
             collapsedSections = collapsed,
+            hiddenItems = hidden,
         )
     }
 }

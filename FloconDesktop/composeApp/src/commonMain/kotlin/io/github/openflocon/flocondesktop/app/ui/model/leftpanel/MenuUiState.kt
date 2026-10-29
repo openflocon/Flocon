@@ -159,8 +159,14 @@ private fun item(
     isPinnable = pinnable,
 )
 
+// the items the user can choose to hide in the settings
+internal fun hideableMenuItems(): List<MenuItem> = buildMenu().sections
+    .flatMap { it.items }
+    .filter { it.isPinnable }
+
 /**
  * - hides the items whose plugin is not installed in the SDK of the app ([installedPlugins] null = unknown, nothing is hidden)
+ * - hides the items the user turned off in the settings ([hiddenIds])
  * - moves the pinned items to the top, in the order they have been pinned
  * - marks the collapsed sections
  */
@@ -168,11 +174,13 @@ internal fun MenuState.applyPreferences(
     installedPlugins: Set<String>?,
     pinnedIds: List<String>,
     collapsedSectionIds: Set<String>,
+    hiddenIds: Set<String> = emptySet(),
 ): MenuState {
     val visibleSections = sections.map { section ->
         section.copy(
             items = section.items
                 .filter { it.requiredPlugin?.isInstalled(installedPlugins) ?: true }
+                .filterNot { it.isPinnable && it.screen.id in hiddenIds }
                 .toImmutableList(),
         )
     }

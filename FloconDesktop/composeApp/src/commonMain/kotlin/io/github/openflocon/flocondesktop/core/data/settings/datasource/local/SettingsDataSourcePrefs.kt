@@ -95,6 +95,13 @@ internal class SettingsDataSourcePrefs(
     override val collapsedMenuSections: Flow<Set<String>> = flowSettings.getStringOrNullFlow(COLLAPSED_MENU_SECTIONS)
         .mapLatest { it.toIdList().toSet() }
 
+    override val hiddenMenuItems: Flow<Set<String>> = flowSettings.getStringOrNullFlow(HIDDEN_MENU_ITEMS)
+        .mapLatest { it.toIdList().toSet() }
+
+    override suspend fun setHiddenMenuItems(items: Set<String>) {
+        settings.putString(HIDDEN_MENU_ITEMS, items.joinToString(ID_SEPARATOR))
+    }
+
     override suspend fun setPinnedMenuItems(items: List<String>) {
         settings.putString(PINNED_MENU_ITEMS, items.joinToString(ID_SEPARATOR))
     }
@@ -196,6 +203,7 @@ internal class SettingsDataSourcePrefs(
 
         private const val PINNED_MENU_ITEMS = "pinned_menu_items"
         private const val COLLAPSED_MENU_SECTIONS = "collapsed_menu_sections"
+        private const val HIDDEN_MENU_ITEMS = "hidden_menu_items"
         private const val ID_SEPARATOR = ","
     }
 }

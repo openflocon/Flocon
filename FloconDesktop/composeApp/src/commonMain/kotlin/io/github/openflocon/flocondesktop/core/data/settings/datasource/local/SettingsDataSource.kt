@@ -28,6 +28,8 @@ internal interface SettingsDataSource {
 
     val pinnedMenuItems: Flow<List<String>>
     val collapsedMenuSections: Flow<Set<String>>
+    val hiddenMenuItems: Flow<Set<String>>
+    suspend fun setHiddenMenuItems(items: Set<String>)
     suspend fun setPinnedMenuItems(items: List<String>)
     suspend fun setCollapsedMenuSections(sections: Set<String>)
 

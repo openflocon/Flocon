@@ -150,6 +150,8 @@
     <string name="settings_font_size_multiplier">Multiplicateur de taille de police : %1$sx</string>
     <string name="settings_mascot_hide">Renvoyer la mascotte dans sa niche</string>
     <string name="settings_mascot_show">Faire sortir la mascotte de sa niche</string>
+    <string name="settings_plugins_title">Plugins affichés</string>
+    <string name="settings_plugins_description">Choisissez les plugins affichés dans le panneau de gauche. Un plugin masqué reste disponible dans votre app, il n’est simplement plus affiché ici.</string>
     <string name="settings_mascot_title">Mascotte</string>
     <string name="settings_mascot_description">Un petit chien se promène en haut de la page et suit votre souris. Désactivez-le si vous préférez une interface calme.</string>
     <string name="settings_theme">Thème</string>

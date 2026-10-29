@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -35,6 +37,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
@@ -51,6 +54,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,6 +92,8 @@ import flocondesktop.composeapp.generated.resources.settings_mascot_show
 import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
+import flocondesktop.composeapp.generated.resources.settings_plugins_description
+import flocondesktop.composeapp.generated.resources.settings_plugins_title
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
 import flocondesktop.composeapp.generated.resources.settings_scale_description
 import flocondesktop.composeapp.generated.resources.settings_scale_title
@@ -131,6 +137,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
+    Plugins("Plugins", Icons.Outlined.Extension),
     Logs("Logs", Icons.AutoMirrored.Outlined.List),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
@@ -249,6 +256,11 @@ private fun SettingsScreen(
                     appScale = uiState.appScale,
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
+                    onAction = onAction,
+                )
+
+                SettingsTab.Plugins -> PluginsPane(
+                    items = uiState.menuItems,
                     onAction = onAction,
                 )
 
@@ -701,6 +713,53 @@ private fun AppearancePane(
                     checked = mascotEnabled,
                     onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PluginsPane(
+    items: ImmutableList<MenuItemVisibilityUiModel>,
+    onAction: (SettingsAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.verticalScroll(rememberScrollState()),
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.settings_plugins_title),
+            icon = Icons.Outlined.Extension,
+            description = stringResource(Res.string.settings_plugins_description),
+        ) {
+            items.forEach { item ->
+                key(item.id) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(FloconTheme.shapes.small)
+                            .background(FloconTheme.colors.bg200)
+                            .padding(FloconTheme.spacing.medium),
+                    ) {
+                        FloconIcon(
+                            imageVector = item.icon,
+                            tint = FloconTheme.colors.inkMuted,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Text(
+                            text = stringResource(item.name),
+                            style = FloconTheme.typography.bodyMedium,
+                            color = FloconTheme.colors.ink,
+                            modifier = Modifier.weight(1f),
+                        )
+                        FloconSwitch(
+                            checked = item.isVisible,
+                            onCheckedChange = { onAction(SettingsAction.ToggleMenuItem(item.id)) },
+                        )
+                    }
+                }
             }
         }
     }
