@@ -19,6 +19,8 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 internal actual fun buildFloconWebSocketClient(): FloconWebSocketClient {
     return FloconWebSocketClientJvm()
@@ -112,7 +114,11 @@ internal class FloconWebSocketClientJvm() : FloconWebSocketClient {
     }
 
     override suspend fun disconnect() {
-        session?.close(CloseReason(CloseReason.Codes.NORMAL, "Client disconnecting"))
+        val current = session
         session = null
+        // closing a connection the desktop already dropped can wait forever: do not block the reconnection
+        withTimeoutOrNull(2.seconds) {
+            runCatching { current?.close(CloseReason(CloseReason.Codes.NORMAL, "Client disconnecting")) }
+        }
     }
 }
