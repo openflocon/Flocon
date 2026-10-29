@@ -106,7 +106,6 @@ internal class FloconAccessibilityPluginImpl(
     }
 
     override fun log(events: List<AccessibilityEvent>) {
-        events.forEach(::trackFocus)
         events.takeIf { it.isNotEmpty() }
             ?.map(AccessibilityEvent::toItem)
             ?.let { toSend ->
@@ -120,6 +119,7 @@ internal class FloconAccessibilityPluginImpl(
                     FloconLogger.logError("error on sendAccessibilityEvents", t)
                 }
             }
+        events.forEach(::trackFocus)
     }
 
     override fun announce(text: String) {
