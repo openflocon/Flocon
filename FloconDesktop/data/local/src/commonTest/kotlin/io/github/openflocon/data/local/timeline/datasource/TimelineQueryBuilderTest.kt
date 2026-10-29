@@ -56,6 +56,15 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the network calls tell if their response is an image, the other events never are`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network, TimelineSource.Database)))
+
+        assertTrue(query.sql.contains("COALESCE(response_isImage, 0) AS isImage"))
+        assertTrue(query.sql.contains("0 AS isImage"))
+        assertTrue(query.sql.contains("u.isImage"))
+    }
+
+    @Test
     fun `a network call with a response has a second event at the time the response arrived`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network)))
 

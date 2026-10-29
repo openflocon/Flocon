@@ -84,55 +84,15 @@ class ColorsTransformation(
 ) : VisualTransformation {
 
     private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString = buildAnnotatedString {
-        val sqlKeywords = listOf(
-            "SELECT", "FROM", "WHERE", "AND", "OR", "INSERT", "INTO", "VALUES",
-            "UPDATE", "SET", "DELETE", "CREATE", "TABLE", "DROP", "ALTER",
-            "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "AS", "DISTINCT",
-            "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
-        )
-
-        // Regex to split the SQL text into tokens:
-        // - block comments /* ... */
-        // - string literals '...'
-        // - numbers
-        // - words and whitespace
-        // - any other characters
-        val regex = Regex(
-            """(/\*[\s\S]*?\*/|'[^']*'|\b\d+\b|\b\w+\b|\s+|.)""",
-            RegexOption.MULTILINE
-        )
-
-        val matches = regex.findAll(text.text)
-        for (match in matches) {
-            val token = match.value
-            val upper = token.uppercase()
-
-            when {
-                // Block comment: /* ... */
-                token.startsWith("/*") && token.endsWith("*/") -> withStyle(
-                    SpanStyle(color = colorPalette.comments)
-                ) { append(token) }
-
-                // String literal: '...'
-                token.startsWith("'") && token.endsWith("'") -> withStyle(
-                    SpanStyle(color = colorPalette.stringColor)
-                ) { append(token) }
-
-                // Numeric literal
-                token.matches(Regex("\\d+")) -> withStyle(
-                    SpanStyle(color = colorPalette.numberColor)
-                ) { append(token) }
-
-                // SQL keyword
-                sqlKeywords.contains(upper.trim()) -> withStyle(
-                    SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
-                ) { append(token) }
-
-                // Default text color
-                else -> withStyle(
-                    SpanStyle(color = colorPalette.textColor)
-                ) { append(token) }
+        for (token in sqlTokens(text.text)) {
+            val style = when (token.type) {
+                SqlTokenType.Comment -> SpanStyle(color = colorPalette.comments)
+                SqlTokenType.String -> SpanStyle(color = colorPalette.stringColor)
+                SqlTokenType.Number -> SpanStyle(color = colorPalette.numberColor)
+                SqlTokenType.Keyword -> SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
+                SqlTokenType.Text -> SpanStyle(color = colorPalette.textColor)
             }
+            withStyle(style) { append(token.text) }
         }
     }
 

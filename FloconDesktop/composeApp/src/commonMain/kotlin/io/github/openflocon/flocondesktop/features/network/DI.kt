@@ -10,6 +10,7 @@ import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBod
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportMocksProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.network.search.NetworkSearchViewModel
 import io.github.openflocon.flocondesktop.features.network.websocket.NetworkWebsocketMockViewModel
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
@@ -25,6 +26,7 @@ internal val networkModule = module {
     factoryOf(::MessagesServerDelegate)
     factoryOf(::HeaderDelegate)
     factoryOf(::OpenBodyDelegate)
+    factoryOf(::NetworkItemOptionsDelegate)
 
     viewModelOf(::NetworkMocksViewModel)
     factoryOf(::ExportMocksProcessor)
