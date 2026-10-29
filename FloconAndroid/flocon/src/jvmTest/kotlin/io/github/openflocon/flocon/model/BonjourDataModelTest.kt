@@ -25,7 +25,7 @@ class BonjourDataModelTest {
         )
 
         assertEquals(
-            "{\"plugins\":[\"network\",\"sharedpreferences\",\"table\",\"deeplink\"],\"connectionType\":\"default\"}",
+            "{\"plugins\":[\"network\",\"shared_preferences\",\"table\",\"deeplink\"],\"connectionType\":\"default\"}",
             plugins.toBonjourBody(FloconEncoder(), FloconConnectionType.Default),
         )
     }

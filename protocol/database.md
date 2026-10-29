@@ -4,13 +4,13 @@
 
 | Direction        | `method`       | Body                   |
 |------------------|----------------|------------------------|
-| Desktop → Mobile | `getDatabases` | `""` (empty)           |
-| Mobile → Desktop | `getDatabases` | `List<Database>`       |
+| Desktop → Mobile | `get_databases` | `""` (empty)           |
+| Mobile → Desktop | `get_databases` | `List<Database>`       |
 | Desktop → Mobile | `query`        | `QueryRequest`         |
 | Mobile → Desktop | `query`        | `QueryResult`          |
-| Mobile → Desktop | `logQuery`     | `QueryLog`             |
+| Mobile → Desktop | `log_query`     | `QueryLog`             |
 
-## `getDatabases`
+## `get_databases`
 
 Desktop → Mobile: empty body. Mobile → Desktop: list of available databases. Also sent by the mobile on connection and when a database is registered.
 
@@ -102,7 +102,7 @@ Error example (`result.body` decoded):
 { "message": "no such table: usr (code 1 SQLITE_ERROR)", "originalSql": "SELECT * FROM usr" }
 ```
 
-## `logQuery` (Mobile → Desktop)
+## `log_query` (Mobile → Desktop)
 
 Sent for each query executed by the app (when query logging is enabled).
 

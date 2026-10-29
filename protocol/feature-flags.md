@@ -1,6 +1,6 @@
 # Feature Flags
 
-`plugin`: `featureflags`
+`plugin`: `feature_flags`
 
 | Direction        | `method`   | Body           |
 |------------------|------------|----------------|

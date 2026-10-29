@@ -17,7 +17,7 @@ interface FloconDashboardPlugin : FloconPlugin {
 
 object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashboardPlugin> {
     override val name: String = "Dashboard"
-    override val pluginId: String = "Dashboard"
+    override val pluginId: String = "dashboard"
     override fun createConfig(context: FloconContext) = FloconDashboardConfig()
     override fun install(
         pluginConfig: FloconDashboardConfig,
@@ -27,7 +27,7 @@ object FloconDashboard : FloconPluginFactory<FloconDashboardConfig, FloconDashbo
 }
 
 internal object FloconDashboardPluginNoOp : FloconDashboardPlugin {
-    override val key: String = "Dashboard"
+    override val key: String = "dashboard"
     override fun registerDashboard(dashboardConfig: DashboardConfig) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
