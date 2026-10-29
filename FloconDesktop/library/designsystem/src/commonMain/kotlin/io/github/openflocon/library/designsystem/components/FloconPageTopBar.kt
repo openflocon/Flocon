@@ -221,7 +221,6 @@ private fun FloconPageTopBarPreview() {
     FloconTheme {
         FloconPageTopBar(
             title = "Analytics",
-            subtitle = "342 events",
             headerActions = {
                 FloconIconButton(imageVector = Icons.Outlined.Info, onClick = {})
             },

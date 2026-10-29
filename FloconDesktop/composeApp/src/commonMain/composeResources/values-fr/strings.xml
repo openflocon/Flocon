@@ -80,42 +80,6 @@
         <item quantity="one">%1$d événement</item>
         <item quantity="other">%1$d événements</item>
     </plurals>
-    <plurals name="feature_flags_counter">
-        <item quantity="one">%1$d flag</item>
-        <item quantity="other">%1$d flags</item>
-    </plurals>
-    <plurals name="files_counter">
-        <item quantity="one">%1$d fichier</item>
-        <item quantity="other">%1$d fichiers</item>
-    </plurals>
-    <plurals name="images_counter">
-        <item quantity="one">%1$d image</item>
-        <item quantity="other">%1$d images</item>
-    </plurals>
-    <plurals name="table_rows_counter">
-        <item quantity="one">%1$d ligne</item>
-        <item quantity="other">%1$d lignes</item>
-    </plurals>
-    <plurals name="deeplinks_counter">
-        <item quantity="one">%1$d deeplink</item>
-        <item quantity="other">%1$d deeplinks</item>
-    </plurals>
-    <plurals name="databases_counter">
-        <item quantity="one">%1$d base de données</item>
-        <item quantity="other">%1$d bases de données</item>
-    </plurals>
-    <plurals name="adb_commander_commands_counter">
-        <item quantity="one">%1$d commande enregistrée</item>
-        <item quantity="other">%1$d commandes enregistrées</item>
-    </plurals>
-    <plurals name="accessibility_events_counter">
-        <item quantity="one">%1$d événement</item>
-        <item quantity="other">%1$d événements</item>
-    </plurals>
-    <plurals name="crashes_counter">
-        <item quantity="one">%1$d crash</item>
-        <item quantity="other">%1$d crashs</item>
-    </plurals>
     <string name="menu_item_dashboard">Tableau de bord</string>
     <string name="menu_item_database">Base de données</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
@@ -381,8 +345,4 @@
     <string name="feature_flags_selector_caption">Fournisseur</string>
     <string name="preferences_selector_caption">Fichier</string>
     <string name="preferences_empty">Aucune préférence</string>
-    <plurals name="preferences_keys_counter">
-        <item quantity="one">clé</item>
-        <item quantity="other">clés</item>
-    </plurals>
 </resources>

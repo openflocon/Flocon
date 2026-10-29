@@ -73,7 +73,6 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.flowOf
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.max
@@ -147,7 +146,6 @@ fun AnalyticsScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_analytics),
-            subtitle = "${rows.itemCount} ${pluralStringResource(Res.plurals.timeline_counter_events, rows.itemCount)}",
             headerActions = { FeatureDocButton(doc = FeatureDoc.Analytics) },
             selector = {
                 AnalyticsSelector(

@@ -80,7 +80,6 @@ private fun FilesScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             current = state.current,
-            numberOfFiles = state.numberOfFiles,
             onBack = { onAction(FilesAction.NavigateUp) },
             onRefresh = { onAction(FilesAction.Refresh) },
             options = state.options,

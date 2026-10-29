@@ -130,7 +130,6 @@ fun NetworkScreen(
                 )
         ) {
             NetworkTopBar(
-                requestCount = rows.itemCount,
                 filterText = filterText,
                 filterState = uiState.filterState,
                 settings = uiState.settings,

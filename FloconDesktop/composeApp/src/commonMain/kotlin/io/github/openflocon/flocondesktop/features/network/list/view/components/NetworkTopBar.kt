@@ -27,12 +27,10 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NetworkTopBar(
-    requestCount: Int,
     filterText: State<String>,
     filterState: FilterUiState,
     settings: NetworkSettingsUiModel,
@@ -42,7 +40,6 @@ fun NetworkTopBar(
     FloconPageTopBar(
         modifier = modifier,
         title = stringResource(Res.string.menu_item_network),
-        subtitle = "$requestCount ${pluralStringResource(Res.plurals.network_counter_requests, requestCount)}",
         headerActions = { FeatureDocButton(doc = FeatureDoc.Network) },
         filterBar = {
             FilterBar(

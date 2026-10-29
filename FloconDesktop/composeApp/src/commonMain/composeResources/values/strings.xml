@@ -82,42 +82,6 @@
         <item quantity="one">%1$d event</item>
         <item quantity="other">%1$d events</item>
     </plurals>
-    <plurals name="feature_flags_counter">
-        <item quantity="one">%1$d flag</item>
-        <item quantity="other">%1$d flags</item>
-    </plurals>
-    <plurals name="files_counter">
-        <item quantity="one">%1$d file</item>
-        <item quantity="other">%1$d files</item>
-    </plurals>
-    <plurals name="images_counter">
-        <item quantity="one">%1$d image</item>
-        <item quantity="other">%1$d images</item>
-    </plurals>
-    <plurals name="table_rows_counter">
-        <item quantity="one">%1$d row</item>
-        <item quantity="other">%1$d rows</item>
-    </plurals>
-    <plurals name="deeplinks_counter">
-        <item quantity="one">%1$d deeplink</item>
-        <item quantity="other">%1$d deeplinks</item>
-    </plurals>
-    <plurals name="databases_counter">
-        <item quantity="one">%1$d database</item>
-        <item quantity="other">%1$d databases</item>
-    </plurals>
-    <plurals name="adb_commander_commands_counter">
-        <item quantity="one">%1$d saved command</item>
-        <item quantity="other">%1$d saved commands</item>
-    </plurals>
-    <plurals name="accessibility_events_counter">
-        <item quantity="one">%1$d event</item>
-        <item quantity="other">%1$d events</item>
-    </plurals>
-    <plurals name="crashes_counter">
-        <item quantity="one">%1$d crash</item>
-        <item quantity="other">%1$d crashes</item>
-    </plurals>
     <string name="menu_item_dashboard">Dashboard</string>
     <string name="menu_item_database">Database</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
@@ -454,8 +418,4 @@
     <string name="feature_flags_selector_caption">Provider</string>
     <string name="preferences_selector_caption">File</string>
     <string name="preferences_empty">No preferences</string>
-    <plurals name="preferences_keys_counter">
-        <item quantity="one">key</item>
-        <item quantity="other">keys</item>
-    </plurals>
 </resources>

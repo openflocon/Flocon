@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.adb_commander_commands_counter
 import flocondesktop.composeapp.generated.resources.adb_commander_unavailable_wifi
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
@@ -29,7 +28,6 @@ import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommand
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.navigation.mascot.mascotPlatform
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,15 +58,6 @@ private fun AdbCommanderScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_adbCommander),
-            subtitle = if (uiState.adbAvailable) {
-                pluralStringResource(
-                    Res.plurals.adb_commander_commands_counter,
-                    uiState.savedCommands.size,
-                    uiState.savedCommands.size,
-                )
-            } else {
-                null
-            },
             headerActions = { FeatureDocButton(doc = FeatureDoc.AdbCommander) },
         )
 

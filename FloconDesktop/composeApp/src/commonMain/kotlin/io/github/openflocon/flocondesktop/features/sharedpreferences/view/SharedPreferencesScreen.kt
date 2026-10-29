@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.preferences
-import flocondesktop.composeapp.generated.resources.preferences_keys_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -43,7 +42,6 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -124,7 +122,6 @@ fun SharedPrefScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.preferences),
-            subtitle = "${sharedPrefRows.size} ${pluralStringResource(Res.plurals.preferences_keys_counter, sharedPrefRows.size)}",
             headerActions = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
             selector = {
                 SharedPreferenceSelector(

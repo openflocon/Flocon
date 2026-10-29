@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_clear
-import flocondesktop.composeapp.generated.resources.accessibility_events_counter
 import flocondesktop.composeapp.generated.resources.accessibility_filter
 import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.no_accessibility_events
@@ -46,7 +45,6 @@ import io.github.openflocon.library.designsystem.components.rememberFloconScroll
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -103,7 +101,6 @@ fun AccessibilityScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_accessibility),
-            subtitle = pluralStringResource(Res.plurals.accessibility_events_counter, rows.size, rows.size),
             leading = {
                 AccessibilityFocusControls(
                     canMoveFocus = canMoveFocus,

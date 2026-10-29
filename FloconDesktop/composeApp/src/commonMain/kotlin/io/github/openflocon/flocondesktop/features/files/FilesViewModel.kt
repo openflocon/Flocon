@@ -109,7 +109,6 @@ class FilesViewModel(
         isSelecting = selecting.value,
         multiSelectedPaths = multiSelectedPaths.value,
         selectingAll = false,
-        numberOfFiles = null,
         canSelect = false,
         showEmptyState = roots.isEmpty(),
     )
@@ -154,7 +153,6 @@ class FilesViewModel(
                                 sorted
                                     ?: emptyList()
                                 ).map { it.toUi(options.withFoldersSize) },
-                            numberOfFiles = sorted?.size,
                             headerState = FilesHeaderStateUiModel(
                                 sortedBy = sortedBy,
                                 totalSizeFormatted = computeTotalSize(

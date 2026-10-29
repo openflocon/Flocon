@@ -37,7 +37,6 @@ import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.images_counter
 import flocondesktop.composeapp.generated.resources.images_filter
 import flocondesktop.composeapp.generated.resources.menu_item_images
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
@@ -54,7 +53,6 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -107,9 +105,6 @@ private fun ImagesScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_images),
-            subtitle = (state as? ImagesStateUiModel.WithImages)?.images?.size?.let {
-                pluralStringResource(Res.plurals.images_counter, it, it)
-            },
             headerActions = { FeatureDocButton(doc = FeatureDoc.Images) },
             filterBar = {
                 FilterBar(

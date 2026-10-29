@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.databases_counter
 import flocondesktop.composeapp.generated.resources.menu_item_database
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
@@ -35,7 +34,6 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -77,13 +75,11 @@ fun DatabaseScreen(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
-        val databasesCount = (deviceDataBases as? DatabasesStateUiModel.WithContent)?.databases?.size ?: 0
         FloconPageTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_database),
-            subtitle = pluralStringResource(Res.plurals.databases_counter, databasesCount, databasesCount),
             headerActions = { FeatureDocButton(doc = FeatureDoc.Database) },
         )
 

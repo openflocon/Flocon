@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.files_counter
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.menu_item_files
 import flocondesktop.composeapp.generated.resources.with_folders_size
@@ -43,13 +42,11 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FilesTopBar(
     current: FileUiModel?,
-    numberOfFiles: Int?,
     onBack: () -> Unit,
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
@@ -73,13 +70,10 @@ fun FilesTopBar(
         is FilePathUiModel.Root -> current?.name.orEmpty()
         null -> null
     }
-    val count = numberOfFiles?.let { pluralStringResource(Res.plurals.files_counter, it, it) }
-    val subtitle = listOfNotNull(path, count).joinToString(separator = " · ").ifEmpty { null }
-
     FloconPageTopBar(
         modifier = modifier,
         title = title,
-        subtitle = subtitle,
+        subtitle = path?.ifEmpty { null },
         headerActions = { FeatureDocButton(doc = FeatureDoc.Files) },
         leading = {
             FloconIconButton(
@@ -191,7 +185,6 @@ private fun FilesTopBarPreview_noParent() {
             canSelect = true,
             selecting = false,
             selectedCount = 0,
-            numberOfFiles = null,
         )
     }
 }
@@ -228,7 +221,6 @@ private fun FilesTopBarPreview() {
             canSelect = true,
             selecting = false,
             selectedCount = 0,
-            numberOfFiles = null,
         )
     }
 }

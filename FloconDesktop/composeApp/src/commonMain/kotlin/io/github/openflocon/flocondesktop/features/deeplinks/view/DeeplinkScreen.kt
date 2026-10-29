@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.deeplink_variables
-import flocondesktop.composeapp.generated.resources.deeplinks_counter
 import flocondesktop.composeapp.generated.resources.general_history
 import flocondesktop.composeapp.generated.resources.menu_item_deeplinks
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
@@ -47,7 +46,6 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.toImmutableMap
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -91,7 +89,6 @@ private fun DeeplinkScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_deeplinks),
-            subtitle = pluralStringResource(Res.plurals.deeplinks_counter, deepLinks.size, deepLinks.size),
             headerActions = { FeatureDocButton(doc = FeatureDoc.Deeplinks) },
             filterBar = {
                 DeeplinkFreeformItem(

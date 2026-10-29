@@ -26,7 +26,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
-import flocondesktop.composeapp.generated.resources.crashes_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -39,7 +38,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.navigation.mascot.mascotPlatform
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -78,7 +76,6 @@ private fun CrashReportScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.crashes),
-            subtitle = pluralStringResource(Res.plurals.crashes_counter, crashReports.itemCount, crashReports.itemCount),
             headerActions = {
                 FeatureDocButton(doc = FeatureDoc.CrashReporter)
                 FloconIconButton(

@@ -36,7 +36,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.export_csv
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.menu_item_tables
-import flocondesktop.composeapp.generated.resources.table_rows_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -58,7 +57,6 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -116,7 +114,6 @@ fun TableScreen(
                 .fillMaxWidth()
                 .mascotPlatform(),
             title = stringResource(Res.string.menu_item_tables),
-            subtitle = pluralStringResource(Res.plurals.table_rows_counter, tableItems.size, tableItems.size),
             headerActions = { FeatureDocButton(doc = FeatureDoc.Tables) },
             selector = {
                 TableSelector(
