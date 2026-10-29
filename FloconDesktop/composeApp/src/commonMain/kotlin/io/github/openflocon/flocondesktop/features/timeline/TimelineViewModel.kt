@@ -17,6 +17,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -54,8 +55,9 @@ internal class TimelineViewModel(
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
-    dispatcherProvider: DispatcherProvider,
+    private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
+    private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
 ) : ViewModel() {
 
     private val _filterText = MutableStateFlow("")
@@ -138,6 +140,10 @@ internal class TimelineViewModel(
             is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
 
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
+
+            is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
+                networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
+            }
 
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()

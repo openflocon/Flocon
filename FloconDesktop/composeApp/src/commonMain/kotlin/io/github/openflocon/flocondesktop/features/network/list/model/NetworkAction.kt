@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.list.model
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.features.network.list.model.header.OnFilterAction
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 
 sealed interface NetworkAction {
 
@@ -11,8 +12,6 @@ sealed interface NetworkAction {
     data object ClosePanel : NetworkAction
 
     data object Reset : NetworkAction
-
-    data class CreateMock(val item: NetworkItemViewState) : NetworkAction
 
     data object OpenMocks : NetworkAction
 
@@ -26,11 +25,8 @@ sealed interface NetworkAction {
     data object ExportCsv : NetworkAction
     data object ImportFromCsv : NetworkAction
 
-    data class CopyUrl(val item: NetworkItemViewState) : NetworkAction
-
-    data class CopyCUrl(val item: NetworkItemViewState) : NetworkAction
-
-    data class Replay(val item: NetworkItemViewState) : NetworkAction
+    // copy, replay, mock...: what the shared options of a call do
+    data class ItemOption(val id: String, val option: NetworkItemOption) : NetworkAction
 
     data class Remove(val item: NetworkItemViewState) : NetworkAction
 
@@ -57,8 +53,6 @@ sealed interface NetworkAction {
     data class Up(
         val itemIdToSelect: String,
     ) : NetworkAction
-
-    data class ShareAsMarkdown(val item: NetworkItemViewState) : NetworkAction
 
     data class Down(
         val itemIdToSelect: String,

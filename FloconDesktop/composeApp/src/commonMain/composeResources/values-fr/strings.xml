@@ -51,6 +51,7 @@
     <string name="timeline_source_adb">ADB</string>
     <string name="timeline_source_deeplink">Deeplink</string>
     <string name="timeline_source_app_start">Démarrage</string>
+    <string name="timeline_copy">Copier</string>
     <string name="timeline_network_request">Requête</string>
     <string name="timeline_network_response">Réponse</string>
     <string name="timeline_app_started">App démarrée</string>

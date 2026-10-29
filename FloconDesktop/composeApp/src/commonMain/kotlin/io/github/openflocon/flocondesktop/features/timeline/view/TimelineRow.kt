@@ -17,7 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,6 +44,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_app_started
+import flocondesktop.composeapp.generated.resources.timeline_copy
 import flocondesktop.composeapp.generated.resources.timeline_source_accessibility
 import flocondesktop.composeapp.generated.resources.timeline_source_adb
 import flocondesktop.composeapp.generated.resources.timeline_source_analytics
@@ -51,9 +56,14 @@ import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
+import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
+import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -73,9 +83,17 @@ internal fun TimelineSource.label(): StringResource = when (this) {
 private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, TimelineSource.Deeplink)
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
+// the subtitle of these sources is a short name: it is a chip at the end of the line, so the row keeps one line
+private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analytics, TimelineSource.Deeplink, TimelineSource.Accessibility)
+
+private const val HoverAlpha = 0.3f
+private const val SelectedBorderAlpha = 0.7f
+private const val HighlightAlpha = 0.35f
+private const val ErrorBoxAlpha = 0.12f
+
 /**
  * One event: time and delta | category | content | meta. Only the content and the meta are highlighted.
- * [delta] is the time since the previous event.
+ * [delta] is the time since the previous event, [highlight] the text of the filter, marked in the content.
  */
 @Composable
 internal fun TimelineRow(
@@ -86,6 +104,7 @@ internal fun TimelineRow(
     onClick: (TimelineRowUiModel) -> Unit,
     onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    highlight: String = "",
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
@@ -96,7 +115,6 @@ internal fun TimelineRow(
     DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
     val (color, soft) = row.source.categoryColors()
     val isCrash = row.source == TimelineSource.Crash
-    val highlighted = hovered || selected
 
     // the whole row reacts to the pointer, but only the part after the category is highlighted
     Row(
@@ -122,7 +140,15 @@ internal fun TimelineRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .background(if (highlighted) colors.bg300 else Color.Transparent, shape)
+                // hovering is a hint, selecting is the accent with a border: the two never look alike
+                .background(
+                    when {
+                        selected -> colors.accentSoft
+                        hovered -> colors.bg300.copy(alpha = HoverAlpha)
+                        else -> Color.Transparent
+                    },
+                    shape,
+                )
                 // a crash is never missed: the whole row is tinted, with a bar on its left
                 .then(
                     if (isCrash) {
@@ -139,18 +165,20 @@ internal fun TimelineRow(
                         Modifier
                     }
                 )
-                .then(if (selected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
+                .then(if (selected) Modifier.border(1.dp, colors.accent.copy(alpha = SelectedBorderAlpha), shape) else Modifier)
                 .padding(horizontal = spacing.compact, vertical = spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             RowContent(
                 row = row,
+                highlight = highlight,
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = FloconTheme.sizes.rowHeight),
             )
             RowMeta(row = row)
+            CopyButton(row = row, visible = rowHovered)
         }
     }
 }
@@ -184,12 +212,14 @@ private fun TimeColumn(
 @Composable
 private fun RowContent(
     row: TimelineRowUiModel,
+    highlight: String,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
+    val highlightColor = colors.accent.copy(alpha = HighlightAlpha)
     val isCrash = row.source == TimelineSource.Crash
     // the status and the provider are displayed on the right
-    val subtitle = row.subtitle.takeIf { row.network == null && row.source != TimelineSource.Analytics }
+    val subtitle = row.subtitle.takeIf { row.network == null && row.source !in chipSubtitles }
 
     Column(
         modifier = modifier,
@@ -197,22 +227,32 @@ private fun RowContent(
     ) {
         val network = row.network
         if (network != null) {
-            NetworkTitle(network, row.phase)
+            NetworkTitle(network, row.phase, highlight = highlight, highlightColor = highlightColor)
         } else {
             val base = FloconTheme.typography.bodyMedium
+            val title = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title
+            val text = remember(title, highlight, colors, row.source) {
+                val plain = if (row.source == TimelineSource.Database) {
+                    sqlTitle(title, keywordColor = colors.ink, textColor = colors.inkMuted)
+                } else {
+                    AnnotatedString(title)
+                }
+                highlightMatches(plain, highlight, highlightColor)
+            }
             Text(
-                text = if (row.source == TimelineSource.AppStart) stringResource(Res.string.timeline_app_started) else row.title,
+                text = text,
                 style = if (row.source in monoTitles) base.copy(fontFamily = FontFamily.Monospace) else base,
                 fontWeight = FontWeight.Medium,
                 color = if (isCrash) colors.catCrash else colors.ink,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                // the start of a link and its end both matter, the end of a query does not
+                overflow = if (row.source == TimelineSource.Deeplink) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
             )
         }
         if (subtitle != null) {
             val base = FloconTheme.typography.labelMedium
             Text(
-                text = subtitle,
+                text = remember(subtitle, highlight, highlightColor) { highlightMatches(AnnotatedString(subtitle), highlight, highlightColor) },
                 style = if (row.source in monoSubtitles) base.copy(fontFamily = FontFamily.Monospace) else base,
                 color = colors.inkMuted,
                 maxLines = 1,
@@ -226,21 +266,27 @@ private fun RowContent(
 private fun NetworkTitle(
     network: TimelineNetworkUiModel,
     phase: TimelinePhase,
+    highlight: String,
+    highlightColor: Color,
 ) {
     val colors = FloconTheme.colors
-    val isResponse = phase == TimelinePhase.Response
-    val title: AnnotatedString = buildAnnotatedString {
-        if (network.host != null) {
-            withStyle(SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)) { append(network.host) }
-            append(" ")
+    // the response is the quieter of the two lines, unless the call failed: an error is never missed
+    val error = network.statusCode?.let { it >= HTTP_ERROR } == true
+    val isResponse = phase == TimelinePhase.Response && !error
+    val title: AnnotatedString = remember(network, phase, highlight, colors) {
+        val styled = buildAnnotatedString {
+            if (network.host != null) {
+                withStyle(SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)) { append(network.host) }
+                append(" ")
+            }
+            val pathStyle = if (isResponse) {
+                SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)
+            } else {
+                SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)
+            }
+            withStyle(pathStyle) { append(network.path) }
         }
-        // the response is the quieter of the two lines
-        val pathStyle = if (isResponse) {
-            SpanStyle(color = colors.inkMuted, fontWeight = FontWeight.Normal)
-        } else {
-            SpanStyle(color = colors.ink, fontWeight = FontWeight.Medium)
-        }
-        withStyle(pathStyle) { append(network.path) }
+        highlightMatches(styled, highlight, highlightColor)
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -250,12 +296,28 @@ private fun NetworkTitle(
         if (network.method.isNotEmpty()) {
             MethodPill(method = network.method)
         }
+        if (network.isImage) {
+            NetworkImageBadge()
+        }
         Text(
             text = title,
             style = FloconTheme.typography.bodyMedium,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
+            // the host and the end of the path are the parts that tell the calls apart
+            overflow = TextOverflow.MiddleEllipsis,
+            modifier = Modifier
+                .weight(1f, fill = false)
+                // a failed call is boxed in red, whatever the family of its status
+                .then(
+                    if (error) {
+                        Modifier
+                            .background(colors.statusError.copy(alpha = ErrorBoxAlpha), FloconTheme.shapes.small)
+                            .border(1.dp, colors.statusError, FloconTheme.shapes.small)
+                            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny)
+                    } else {
+                        Modifier
+                    }
+                ),
         )
     }
 }
@@ -271,10 +333,16 @@ private fun RowMeta(row: TimelineRowUiModel) {
             // the request has nothing to tell yet: the status and the duration are the ones of the response
             if (row.phase == TimelinePhase.Request) return@Row
             network.duration?.let {
+                val level = durationLevel(network.durationMs)
                 Text(
                     text = it,
                     style = monoStyle(small = true),
-                    color = FloconTheme.colors.inkFaint,
+                    fontWeight = if (level == DurationLevel.Normal) null else FontWeight.SemiBold,
+                    color = when (level) {
+                        DurationLevel.Normal -> FloconTheme.colors.inkFaint
+                        DurationLevel.Slow -> FloconTheme.colors.statusWarning
+                        DurationLevel.VerySlow -> FloconTheme.colors.statusError
+                    },
                     maxLines = 1,
                 )
             }
@@ -284,8 +352,36 @@ private fun RowMeta(row: TimelineRowUiModel) {
                 // no http code (ex: gRPC): what the app reports, if anything
                 row.subtitle?.let { TagPill(text = it) }
             }
-        } else if (row.source == TimelineSource.Analytics) {
+        } else if (row.source in chipSubtitles) {
             row.subtitle?.let { TagPill(text = it) }
         }
     }
 }
+
+// the space is always taken, so the content does not move when the pointer comes in
+@Composable
+private fun CopyButton(
+    row: TimelineRowUiModel,
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val text = row.copyText() ?: return
+    Box(
+        modifier = modifier
+            .size(CopyButtonSize)
+            .then(if (visible) Modifier.clickable { copyToClipboard(text) } else Modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (visible) {
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = stringResource(Res.string.timeline_copy),
+                tint = FloconTheme.colors.inkMuted,
+                modifier = Modifier.size(14.dp),
+            )
+        }
+    }
+}
+
+private val CopyButtonSize = 20.dp
+private const val HTTP_ERROR = 400
