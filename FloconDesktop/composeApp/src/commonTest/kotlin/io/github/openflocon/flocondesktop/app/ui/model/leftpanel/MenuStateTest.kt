@@ -116,6 +116,16 @@ class MenuStateTest {
     }
 
     @Test
+    fun `the start screen can be the timeline or a plugin that is not hidden`() {
+        val candidates = startScreenCandidates(hiddenIds = setOf("Files")).map { it.screen }
+
+        assertTrue(SubScreen.Timeline in candidates)
+        assertTrue(SubScreen.Network in candidates)
+        assertTrue(SubScreen.Files !in candidates)
+        assertTrue(SubScreen.Settings !in candidates)
+    }
+
+    @Test
     fun `the timeline is at the top, outside of any section, whatever the installed plugins`() {
         val menu = buildMenu().applyPreferences(
             installedPlugins = emptySet(),

@@ -12,6 +12,7 @@ import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
+import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -25,7 +26,10 @@ import io.github.openflocon.domain.settings.usecase.SetMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
+import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
+import io.github.openflocon.flocondesktop.app.ui.model.id
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.hideableMenuItems
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.startScreenCandidates
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
@@ -55,6 +59,7 @@ class SettingsViewModel(
     private val setMascotEnabledUseCase: SetMascotEnabledUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val toggleHiddenMenuItemUseCase: ToggleHiddenMenuItemUseCase,
+    private val setStartScreenUseCase: SetStartScreenUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
@@ -90,6 +95,7 @@ class SettingsViewModel(
             Triple(domains, levels, menuPreferences)
         },
     ) { appScale, (theme, mascotEnabled), logs, forwardStatus, (domains, levels, menuPreferences) ->
+        val startScreenOptions = startScreenCandidates(menuPreferences.hiddenItems)
         SettingsUiState(
             appScale = appScale,
             theme = theme,
@@ -101,6 +107,12 @@ class SettingsViewModel(
             menuItems = hideableMenuItems()
                 .map { it.toVisibilityUiModel(menuPreferences.hiddenItems) }
                 .toImmutableList(),
+            startScreenOptions = startScreenOptions.map { it.toVisibilityUiModel(menuPreferences.hiddenItems) }.toImmutableList(),
+            // a hidden screen can't be the start one anymore: the default one is used
+            startScreenId = startScreenOptions
+                .firstOrNull { it.screen.id == menuPreferences.startScreen }
+                ?.screen?.id
+                ?: SubScreen.Timeline.id,
         )
     }
         .stateIn(
@@ -137,6 +149,13 @@ class SettingsViewModel(
             is SettingsAction.ThemeChange -> onThemeChange(action)
             is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
             is SettingsAction.ToggleMenuItem -> onToggleMenuItem(action)
+            is SettingsAction.StartScreenChange -> onStartScreenChange(action)
+        }
+    }
+
+    private fun onStartScreenChange(action: SettingsAction.StartScreenChange) {
+        viewModelScope.launch {
+            setStartScreenUseCase(action.screenId)
         }
     }
 

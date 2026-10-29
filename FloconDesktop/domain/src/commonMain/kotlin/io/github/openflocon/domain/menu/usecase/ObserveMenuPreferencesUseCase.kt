@@ -12,11 +12,13 @@ class ObserveMenuPreferencesUseCase(
         menuPreferencesRepository.pinnedItems,
         menuPreferencesRepository.collapsedSections,
         menuPreferencesRepository.hiddenItems,
-    ) { pinned, collapsed, hidden ->
+        menuPreferencesRepository.startScreen,
+    ) { pinned, collapsed, hidden, startScreen ->
         MenuPreferencesDomainModel(
             pinnedItems = pinned,
             collapsedSections = collapsed,
             hiddenItems = hidden,
+            startScreen = startScreen,
         )
     }
 }

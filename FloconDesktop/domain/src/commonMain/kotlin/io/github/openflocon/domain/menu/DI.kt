@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.menu
 
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
+import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
@@ -12,4 +13,5 @@ internal val menuModule = module {
     factoryOf(::TogglePinnedMenuItemUseCase)
     factoryOf(::ToggleCollapsedMenuSectionUseCase)
     factoryOf(::ToggleHiddenMenuItemUseCase)
+    factoryOf(::SetStartScreenUseCase)
 }

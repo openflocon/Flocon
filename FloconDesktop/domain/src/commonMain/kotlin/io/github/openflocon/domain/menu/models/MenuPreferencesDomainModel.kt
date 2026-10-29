@@ -4,4 +4,5 @@ data class MenuPreferencesDomainModel(
     val pinnedItems: List<String>,
     val collapsedSections: Set<String>,
     val hiddenItems: Set<String> = emptySet(),
+    val startScreen: String? = null,
 )

@@ -164,6 +164,10 @@ internal fun hideableMenuItems(): List<MenuItem> = buildMenu().sections
     .flatMap { it.items }
     .filter { it.isPinnable }
 
+// the screens the user can choose to start the app on: the timeline, and the plugins that are not hidden
+internal fun startScreenCandidates(hiddenIds: Set<String>): List<MenuItem> = buildMenu().topItems +
+    hideableMenuItems().filterNot { it.screen.id in hiddenIds }
+
 /**
  * - hides the items whose plugin is not installed in the SDK of the app ([installedPlugins] null = unknown, nothing is hidden)
  * - hides the items the user turned off in the settings ([hiddenIds])
