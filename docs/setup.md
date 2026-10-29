@@ -107,7 +107,7 @@ debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
 releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
 ```
 
-The connection to that address is encrypted (TLS), so no `networkSecurityConfig` change is needed.
+It also allows the cleartext `ws://` connection to any IP address (Android cannot allow an IP range), for debug builds only. If your app declares its own `networkSecurityConfig`, it takes precedence: see [Troubleshooting](troubleshooting.md).
 
 ```kotlin
 import io.github.openflocon.flocon.connect
@@ -123,7 +123,11 @@ startFlocon(FloconContext(this)) {
 Flocon.connect("192.168.1.20")
 ```
 
-Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
+Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. The desktop shows a wifi icon next to a device connected this way. These devices have no adb link, so the features that rely on adb (screenshot, screen recording, deeplinks on Android, ADB Commander and their MCP tools) are disabled for them. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
+
+### Connecting with a QR code
+
+The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`. Scanning it from the SDK is not available yet.
 
 Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
 
@@ -182,7 +186,7 @@ Download the latest release for your operating system:
 === "Android Requirements"
     - An Android device or emulator with **USB Debugging** enabled.
     - Android SDK Tools with `adb` (Android Debug Bridge) installed and accessible in your system `PATH`.
-    - Nothing to configure for the connection: it is encrypted (TLS), so your app does not need to allow cleartext traffic.
+    - Allowed cleartext connection to `localhost` / `127.0.0.1` (see [Troubleshooting](troubleshooting.md)).
 
 === "Multiplatform Requirements"
     - Kotlin **2.0.0** or newer.
