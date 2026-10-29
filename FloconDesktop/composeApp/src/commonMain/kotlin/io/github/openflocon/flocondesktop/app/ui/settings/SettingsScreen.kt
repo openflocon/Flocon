@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -35,7 +37,9 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
@@ -51,6 +55,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,9 +93,13 @@ import flocondesktop.composeapp.generated.resources.settings_mascot_show
 import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
+import flocondesktop.composeapp.generated.resources.settings_plugins_description
+import flocondesktop.composeapp.generated.resources.settings_plugins_title
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
 import flocondesktop.composeapp.generated.resources.settings_scale_description
 import flocondesktop.composeapp.generated.resources.settings_scale_title
+import flocondesktop.composeapp.generated.resources.settings_start_screen_description
+import flocondesktop.composeapp.generated.resources.settings_start_screen_title
 import flocondesktop.composeapp.generated.resources.settings_system_logs_title
 import flocondesktop.composeapp.generated.resources.settings_test
 import flocondesktop.composeapp.generated.resources.settings_theme
@@ -131,6 +140,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
+    Plugins("Plugins", Icons.Outlined.Extension),
     Logs("Logs", Icons.AutoMirrored.Outlined.List),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
@@ -249,6 +259,13 @@ private fun SettingsScreen(
                     appScale = uiState.appScale,
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
+                    onAction = onAction,
+                )
+
+                SettingsTab.Plugins -> PluginsPane(
+                    items = uiState.menuItems,
+                    startScreenOptions = uiState.startScreenOptions,
+                    startScreenId = uiState.startScreenId,
                     onAction = onAction,
                 )
 
@@ -702,6 +719,126 @@ private fun AppearancePane(
                     onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PluginsPane(
+    items: ImmutableList<MenuItemVisibilityUiModel>,
+    startScreenOptions: ImmutableList<MenuItemVisibilityUiModel>,
+    startScreenId: String?,
+    onAction: (SettingsAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+        modifier = modifier.verticalScroll(rememberScrollState()),
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.settings_start_screen_title),
+            icon = Icons.Outlined.Home,
+            description = stringResource(Res.string.settings_start_screen_description),
+        ) {
+            StartScreenDropdown(
+                options = startScreenOptions,
+                selectedId = startScreenId,
+                onSelect = { onAction(SettingsAction.StartScreenChange(it)) },
+            )
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_plugins_title),
+            icon = Icons.Outlined.Extension,
+            description = stringResource(Res.string.settings_plugins_description),
+        ) {
+            items.forEach { item ->
+                key(item.id) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(FloconTheme.shapes.small)
+                            .background(FloconTheme.colors.bg200)
+                            .padding(FloconTheme.spacing.medium),
+                    ) {
+                        FloconIcon(
+                            imageVector = item.icon,
+                            tint = FloconTheme.colors.inkMuted,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Text(
+                            text = stringResource(item.name),
+                            style = FloconTheme.typography.bodyMedium,
+                            color = FloconTheme.colors.ink,
+                            modifier = Modifier.weight(1f),
+                        )
+                        FloconSwitch(
+                            checked = item.isVisible,
+                            onCheckedChange = { onAction(SettingsAction.ToggleMenuItem(item.id)) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StartScreenDropdown(
+    options: ImmutableList<MenuItemVisibilityUiModel>,
+    selectedId: String?,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selected = options.firstOrNull { it.id == selectedId } ?: options.firstOrNull()
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                if (selected != null) {
+                    Text(
+                        text = stringResource(selected.name),
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colors.ink,
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
+                )
+            }
+        },
+    ) {
+        options.forEach { option ->
+            FloconDropdownMenuItem(
+                text = stringResource(option.name),
+                leadingIcon = if (option.id == selected?.id) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(option.id)
+                },
+            )
         }
     }
 }
