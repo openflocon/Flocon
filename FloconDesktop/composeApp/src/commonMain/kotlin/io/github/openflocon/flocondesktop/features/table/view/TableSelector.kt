@@ -3,11 +3,10 @@ package io.github.openflocon.flocondesktop.features.table.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.TableChart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,10 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.tables_empty
+import flocondesktop.composeapp.generated.resources.tables_selector_caption
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -26,8 +25,8 @@ import io.github.openflocon.library.designsystem.components.DropdownFilterField
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
-import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import io.github.openflocon.library.designsystem.components.FloconPageSelector
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -47,27 +46,28 @@ internal fun TableSelector(
             }
         },
         anchorContent = {
-            FloconButton(
-                onClick = {
-                    if (tablesState is TablesStateUiModel.WithContent) {
-                        expanded = true
-                    }
-                },
-                containerColor = FloconTheme.colors.bg200
-            ) {
-                when (tablesState) {
-                    TablesStateUiModel.Empty -> Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
-
-                    TablesStateUiModel.Loading -> FloconLinearProgressIndicator()
-
-                    is TablesStateUiModel.WithContent -> {
-                        Text(text = tablesState.selected.name, style = FloconTheme.typography.bodySmall)
-                        FloconIcon(
-                            imageVector = Icons.Outlined.KeyboardArrowDown,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
+            val onClick = {
+                if (tablesState is TablesStateUiModel.WithContent) {
+                    expanded = true
                 }
+            }
+            when (tablesState) {
+                TablesStateUiModel.Empty ->
+                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
+                        Text(stringResource(Res.string.tables_empty), style = FloconTheme.typography.bodySmall)
+                    }
+
+                TablesStateUiModel.Loading ->
+                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
+                        FloconLinearProgressIndicator()
+                    }
+
+                is TablesStateUiModel.WithContent -> FloconPageSelector(
+                    icon = Icons.Outlined.TableChart,
+                    caption = stringResource(Res.string.tables_selector_caption),
+                    value = tablesState.selected.name,
+                    onClick = onClick,
+                )
             }
         },
         modifier = modifier

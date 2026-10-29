@@ -92,6 +92,30 @@
         <item quantity="one">%1$d image</item>
         <item quantity="other">%1$d images</item>
     </plurals>
+    <plurals name="table_rows_counter">
+        <item quantity="one">%1$d ligne</item>
+        <item quantity="other">%1$d lignes</item>
+    </plurals>
+    <plurals name="deeplinks_counter">
+        <item quantity="one">%1$d deeplink</item>
+        <item quantity="other">%1$d deeplinks</item>
+    </plurals>
+    <plurals name="databases_counter">
+        <item quantity="one">%1$d base de données</item>
+        <item quantity="other">%1$d bases de données</item>
+    </plurals>
+    <plurals name="adb_commander_commands_counter">
+        <item quantity="one">%1$d commande enregistrée</item>
+        <item quantity="other">%1$d commandes enregistrées</item>
+    </plurals>
+    <plurals name="accessibility_events_counter">
+        <item quantity="one">%1$d événement</item>
+        <item quantity="other">%1$d événements</item>
+    </plurals>
+    <plurals name="crashes_counter">
+        <item quantity="one">%1$d crash</item>
+        <item quantity="other">%1$d crashs</item>
+    </plurals>
     <string name="menu_item_dashboard">Tableau de bord</string>
     <string name="menu_item_database">Base de données</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
@@ -353,5 +377,6 @@
     <string name="topbar_restart">Redémarrer l’app</string>
     <string name="topbar_screenshot">Capture d’écran</string>
     <string name="analytics_selector_caption">Table</string>
+    <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Fournisseur</string>
 </resources>

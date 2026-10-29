@@ -1,11 +1,8 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,28 +11,22 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crashes
+import flocondesktop.composeapp.generated.resources.crashes_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -45,7 +36,10 @@ import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashRepo
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportDetail
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -79,6 +73,21 @@ private fun CrashReportScreen(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
     ) {
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            title = stringResource(Res.string.crashes),
+            subtitle = pluralStringResource(Res.plurals.crashes_counter, crashReports.itemCount, crashReports.itemCount),
+            headerActions = {
+                FeatureDocButton(doc = FeatureDoc.CrashReporter)
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = { onAction(CrashReporterAction.Clean) },
+                )
+            },
+        )
+
         if (showEmptyState) {
             FeatureEmptyState(
                 doc = FeatureDoc.CrashReporter,
@@ -86,7 +95,6 @@ private fun CrashReportScreen(
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colors.bg100)
-                    .mascotPlatform()
             )
         } else {
             Row(Modifier.fillMaxSize()) {
@@ -110,7 +118,6 @@ private fun CrashReportScreen(
                             color = FloconTheme.colors.bg200,
                             shape = FloconTheme.shapes.medium
                         )
-                        .mascotPlatform()
                 ) {
                     selected?.let {
                         CrashReportDetail(
@@ -148,43 +155,12 @@ fun LeftPannel(
                 color = FloconTheme.colors.bg200,
                 shape = FloconTheme.shapes.medium
             )
-            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()
                 .padding(all = FloconTheme.spacing.extraSmall),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    stringResource(Res.string.crashes),
-                    color = FloconTheme.colors.ink,
-                    style = FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(top = FloconTheme.spacing.small)
-                        .padding(horizontal = FloconTheme.spacing.medium)
-                )
-                FeatureDocButton(doc = FeatureDoc.CrashReporter)
-                Box(
-                    modifier = Modifier.size(36.dp).clip(RoundedCornerShape(2.dp))
-                        .clickable {
-                            onAction(CrashReporterAction.Clean)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        Icons.Filled.Delete,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
-                    )
-                }
-            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(FloconTheme.spacing.medium),

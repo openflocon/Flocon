@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -33,9 +34,13 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.menu_item_tables
+import flocondesktop.composeapp.generated.resources.table_rows_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.table.TableViewModel
 import io.github.openflocon.flocondesktop.features.table.model.DeviceTableUiModel
 import io.github.openflocon.flocondesktop.features.table.model.TableAction
@@ -47,11 +52,13 @@ import io.github.openflocon.flocondesktop.features.table.model.previewTableConte
 import io.github.openflocon.flocondesktop.features.table.model.previewTablesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -88,7 +95,15 @@ fun TableScreen(
     modifier: Modifier = Modifier,
 ) {
     val columnsWidth = 150.dp
-    var tableItems by remember { mutableStateOf<List<TableRowUiModel>>(emptyList()) }
+    var filterText by remember { mutableStateOf("") }
+    val allItems = content.items()
+    val tableItems: List<TableRowUiModel> = remember(allItems, filterText) {
+        if (filterText.isBlank()) {
+            allItems
+        } else {
+            allItems.filter { it.contains(filterText) }
+        }
+    }
     val listState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
@@ -100,22 +115,27 @@ fun TableScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
+            title = stringResource(Res.string.menu_item_tables),
+            subtitle = pluralStringResource(Res.plurals.table_rows_counter, tableItems.size, tableItems.size),
+            headerActions = { FeatureDocButton(doc = FeatureDoc.Tables) },
             selector = {
                 TableSelector(
                     tablesState = deviceTables,
                     onTableSelected = onTableSelected,
-                    modifier = Modifier.fillMaxWidth(),
                 )
             },
             filterBar = {
-                TableFilterBar(
-                    tableItems = content.items(),
-                    onResetClicked = onResetClicked,
-                    onItemsChange = { tableItems = it },
+                FilterBar(
+                    placeholderText = stringResource(Res.string.filter),
+                    onTextChange = { filterText = it },
+                    modifier = Modifier.weight(1f),
                 )
             },
             actions = {
-                FeatureDocButton(doc = FeatureDoc.Tables)
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = onResetClicked,
+                )
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),

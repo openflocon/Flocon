@@ -17,15 +17,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.adb_commander_commands_counter
 import flocondesktop.composeapp.generated.resources.adb_commander_unavailable_wifi
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderViewModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderUiState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -47,52 +51,67 @@ private fun AdbCommanderScreen(
     onAction: (AdbCommanderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!uiState.adbAvailable) {
-        FeatureEmptyState(
-            doc = FeatureDoc.AdbCommander,
-            title = stringResource(Res.string.menu_item_adbCommander),
-            description = stringResource(Res.string.adb_commander_unavailable_wifi),
-            showSetupButton = false,
-            modifier = modifier
-                .fillMaxSize()
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .mascotPlatform(),
-        )
-        return
-    }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        Row(Modifier.fillMaxSize()) {
-            CommandLibraryPanel(
-                savedCommands = uiState.savedCommands,
-                flows = uiState.flows,
-                onAction = onAction,
-                modifier = Modifier.fillMaxHeight().width(340.dp),
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            title = stringResource(Res.string.menu_item_adbCommander),
+            subtitle = if (uiState.adbAvailable) {
+                pluralStringResource(
+                    Res.plurals.adb_commander_commands_counter,
+                    uiState.savedCommands.size,
+                    uiState.savedCommands.size,
+                )
+            } else {
+                null
+            },
+            headerActions = { FeatureDocButton(doc = FeatureDoc.AdbCommander) },
+        )
+
+        if (!uiState.adbAvailable) {
+            FeatureEmptyState(
+                doc = FeatureDoc.AdbCommander,
+                title = stringResource(Res.string.menu_item_adbCommander),
+                description = stringResource(Res.string.adb_commander_unavailable_wifi),
+                showSetupButton = false,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg100),
             )
-
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                CommandInput(
-                    commandInput = uiState.commandInput,
-                    history = uiState.history,
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                CommandLibraryPanel(
+                    savedCommands = uiState.savedCommands,
+                    flows = uiState.flows,
                     onAction = onAction,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxHeight().width(340.dp),
                 )
 
-                Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
+                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
 
-                RunnerContent(
-                    consoleOutput = uiState.consoleOutput,
-                    flowExecution = uiState.flowExecution,
-                    isExecuting = uiState.isExecuting,
-                    onAction = onAction,
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    CommandInput(
+                        commandInput = uiState.commandInput,
+                        history = uiState.history,
+                        onAction = onAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
+
+                    RunnerContent(
+                        consoleOutput = uiState.consoleOutput,
+                        flowExecution = uiState.flowExecution,
+                        isExecuting = uiState.isExecuting,
+                        onAction = onAction,
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                    )
+                }
             }
         }
     }
