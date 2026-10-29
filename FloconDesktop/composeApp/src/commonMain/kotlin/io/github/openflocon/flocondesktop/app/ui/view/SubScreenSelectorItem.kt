@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StackedBarChart
 import androidx.compose.material.icons.outlined.Storage
@@ -34,6 +35,7 @@ import flocondesktop.composeapp.generated.resources.menu_item_settings
 import flocondesktop.composeapp.generated.resources.menu_item_sharedPreferences
 import flocondesktop.composeapp.generated.resources.menu_item_tables
 import flocondesktop.composeapp.generated.resources.menu_item_timeline
+import flocondesktop.composeapp.generated.resources.menu_item_webview
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -56,6 +58,7 @@ fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.AdbCommander -> Res.string.menu_item_adbCommander
     SubScreen.CrashReporter -> Res.string.menu_item_crashReporter
     SubScreen.Timeline -> Res.string.menu_item_timeline
+    SubScreen.WebView -> Res.string.menu_item_webview
 }
 
 // Extension function to get the icon for each SubScreen
@@ -90,4 +93,6 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.Timeline -> Icons.Outlined.Timeline
 
     SubScreen.Accessibility -> Icons.Outlined.Accessibility
+
+    SubScreen.WebView -> Icons.Outlined.Language
 }

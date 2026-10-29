@@ -40,6 +40,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsRoutes
+import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
@@ -242,6 +243,7 @@ internal class AppViewModel(
             SubScreen.Tables -> TableRoutes.Main
             SubScreen.CrashReporter -> CrashReporterRoutes.Main
             SubScreen.Timeline -> TimelineRoutes.Main
+            SubScreen.WebView -> WebViewRoutes.Main
         }
 
         if (route !is SettingsRoutes) {

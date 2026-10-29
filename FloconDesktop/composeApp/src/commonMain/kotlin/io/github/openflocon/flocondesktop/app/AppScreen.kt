@@ -22,6 +22,7 @@ import io.github.openflocon.flocondesktop.features.accessibility.accessibilityRo
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
+import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.databaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.deeplinkRoutes
@@ -135,6 +136,7 @@ private fun Content(
             releaseNotesRoutes()
             crashReporterRoutes()
             timelineRoutes()
+            webViewRoutes()
             accessibilityRoutes()
         }
     }

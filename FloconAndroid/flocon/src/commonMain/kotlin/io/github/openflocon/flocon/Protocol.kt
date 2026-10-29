@@ -119,7 +119,15 @@ object Protocol {
             }
         }
 
+        object WebView {
+            const val Plugin = "webview"
 
+            object Method {
+                const val AddConsoleLogs = "addconsolelogs"
+                const val AddPageEvents = "addpageevents"
+                const val AddBridgeCalls = "addbridgecalls"
+            }
+        }
 
     }
 
@@ -206,6 +214,13 @@ object Protocol {
 
         object Table {
             const val Plugin = "Table"
+
+            object Method {
+            }
+        }
+
+        object WebView {
+            const val Plugin = "WebView"
 
             object Method {
             }

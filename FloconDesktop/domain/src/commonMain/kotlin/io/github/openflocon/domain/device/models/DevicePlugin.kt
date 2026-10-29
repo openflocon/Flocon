@@ -19,6 +19,7 @@ enum class DevicePlugin(val sdkNames: Set<String>) {
     Deeplinks(setOf("deeplink")),
     FeatureFlags(setOf("featureflags")),
     Accessibility(setOf("accessibility")),
+    WebView(setOf("webview")),
     ;
 
     /**
