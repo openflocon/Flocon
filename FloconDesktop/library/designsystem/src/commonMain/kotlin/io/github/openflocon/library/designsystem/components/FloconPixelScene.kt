@@ -30,14 +30,16 @@ class FloconPixelScope internal constructor(
     private val unit: Float,
     private val left: Float,
     private val top: Float,
+    private val gridWidth: Int = FloconPixelSceneWidth,
+    private val gridHeight: Int = FloconPixelSceneHeight,
     private val originX: Int = 0,
     private val originY: Int = 0,
 ) {
     fun pixels(x: Int, y: Int, width: Int, height: Int, color: Color) {
         val gridX = (originX + x).coerceAtLeast(0)
         val gridY = (originY + y).coerceAtLeast(0)
-        val right = (originX + x + width).coerceAtMost(FloconPixelSceneWidth)
-        val bottom = (originY + y + height).coerceAtMost(FloconPixelSceneHeight)
+        val right = (originX + x + width).coerceAtMost(gridWidth)
+        val bottom = (originY + y + height).coerceAtMost(gridHeight)
         if (right <= gridX || bottom <= gridY) return
         val l = floor(left + gridX * unit)
         val t = floor(top + gridY * unit)
@@ -49,18 +51,21 @@ class FloconPixelScope internal constructor(
     }
 
     /** Same grid, with its origin moved by ([dx], [dy]). */
-    fun offset(dx: Int, dy: Int): FloconPixelScope = FloconPixelScope(drawScope, unit, left, top, originX + dx, originY + dy)
+    fun offset(dx: Int, dy: Int): FloconPixelScope = FloconPixelScope(drawScope, unit, left, top, gridWidth, gridHeight, originX + dx, originY + dy)
 }
 
 /**
  * Small looping 8-bit animation on a [FloconPixelSceneWidth] x [FloconPixelSceneHeight] grid,
  * scaled to fit and centered. [draw] gets the current frame: [frames] are played in a loop, [frameMs] each.
+ * The grid is [gridWidth] x [gridHeight] pixels, a wider one is for a banner.
  */
 @Composable
 fun FloconPixelScene(
     frames: ImmutableList<Int>,
     frameMs: Long,
     modifier: Modifier = Modifier,
+    gridWidth: Int = FloconPixelSceneWidth,
+    gridHeight: Int = FloconPixelSceneHeight,
     draw: FloconPixelScope.(frame: Int) -> Unit,
 ) {
     var step by remember(frames) { mutableIntStateOf(0) }
@@ -71,9 +76,9 @@ fun FloconPixelScene(
         }
     }
     Canvas(modifier = modifier) {
-        val unit = min(size.width / FloconPixelSceneWidth, size.height / FloconPixelSceneHeight)
-        val left = (size.width - unit * FloconPixelSceneWidth) / 2f
-        val top = (size.height - unit * FloconPixelSceneHeight) / 2f
-        FloconPixelScope(this, unit, left, top).draw(frames[step])
+        val unit = min(size.width / gridWidth, size.height / gridHeight)
+        val left = (size.width - unit * gridWidth) / 2f
+        val top = (size.height - unit * gridHeight) / 2f
+        FloconPixelScope(this, unit, left, top, gridWidth, gridHeight).draw(frames[step])
     }
 }
