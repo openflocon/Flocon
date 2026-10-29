@@ -92,7 +92,9 @@ fun FeatureFlagsScreen(
         modifier = modifier,
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             title = stringResource(Res.string.menu_item_feature_flags),
             subtitle = pluralStringResource(Res.plurals.feature_flags_counter, rows.size, rows.size),
             headerActions = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
@@ -129,7 +131,6 @@ fun FeatureFlagsScreen(
                     color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
-                .mascotPlatform()
         ) {
             if (providersState is FeatureFlagProvidersUiModel.Empty) {
                 FeatureEmptyState(

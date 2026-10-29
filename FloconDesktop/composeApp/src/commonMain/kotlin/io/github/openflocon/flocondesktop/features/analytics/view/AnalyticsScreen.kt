@@ -143,7 +143,9 @@ fun AnalyticsScreen(
             )
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             title = stringResource(Res.string.menu_item_analytics),
             subtitle = "${rows.itemCount} ${pluralStringResource(Res.plurals.timeline_counter_events, rows.itemCount)}",
             headerActions = { FeatureDocButton(doc = FeatureDoc.Analytics) },
@@ -208,7 +210,6 @@ fun AnalyticsScreen(
                     color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
-                .mascotPlatform()
                 .onSizeChanged {
                     widthPx = max(widthPx, it.width.toFloat())
                 }

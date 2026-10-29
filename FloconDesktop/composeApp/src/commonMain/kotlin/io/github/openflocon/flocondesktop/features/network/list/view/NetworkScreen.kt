@@ -135,7 +135,9 @@ fun NetworkScreen(
                 filterState = uiState.filterState,
                 settings = uiState.settings,
                 onAction = onAction,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .mascotPlatform(),
             )
             Column(
                 modifier = Modifier
@@ -143,7 +145,6 @@ fun NetworkScreen(
                     .weight(1f)
                     .clip(FloconTheme.shapes.medium)
                     .background(FloconTheme.colors.bg100)
-                    .mascotPlatform()
             ) {
                 NetworkItemHeader(
                     columnWidths = columnWidths,

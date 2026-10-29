@@ -76,7 +76,9 @@ private fun FilesScreen(
         modifier = modifier.fillMaxSize()
     ) {
         FilesTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             current = state.current,
             numberOfFiles = state.numberOfFiles,
             onBack = { onAction(FilesAction.NavigateUp) },
@@ -103,8 +105,7 @@ private fun FilesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .mascotPlatform(),
+                .background(FloconTheme.colors.bg100),
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),
