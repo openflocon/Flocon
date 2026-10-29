@@ -80,7 +80,7 @@ class MenuStateTest {
     @Test
     fun `the feature flags are displayed when the plugin is installed`() {
         val menu = buildMenu().applyPreferences(
-            installedPlugins = setOf("featureflags"),
+            installedPlugins = setOf("feature_flags"),
             pinnedIds = emptyList(),
             collapsedSectionIds = emptySet(),
         )

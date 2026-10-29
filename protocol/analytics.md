@@ -1,6 +1,6 @@
 # Analytics
 
-`plugin`: `Analytics`
+`plugin`: `analytics`
 
 | Direction        | `method`   | Body                    |
 |------------------|------------|-------------------------|

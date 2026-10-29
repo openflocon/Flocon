@@ -33,10 +33,12 @@ import flocondesktop.composeapp.generated.resources.app_name
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
+import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
 import io.github.openflocon.flocondesktop.window.WindowStateSaver
+import io.github.openflocon.flocondesktop.window.rememberWindowTitleBar
 import io.github.openflocon.flocondesktop.window.windowBoundsProvider
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
 import org.jetbrains.compose.resources.painterResource
@@ -105,7 +107,10 @@ fun main() {
             title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.app_icon_window), // macOS-style margin so the dock icon matches other apps
         ) {
-            CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
+            CompositionLocalProvider(
+                LocalEscapeHandlerStack provides handlers,
+                LocalWindowTitleBar provides rememberWindowTitleBar(),
+            ) {
                 window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
                 App()
                 if (ACTIVATE_TRAY_NOTIFICATION) {

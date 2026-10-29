@@ -34,6 +34,7 @@ import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
+import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
@@ -80,14 +81,19 @@ data class MenuScene(
             FloconScaffold(
                 containerColor = Color.Transparent,
                 topBar = {
-                    Box(
-                        modifier = Modifier.padding(
-                            start = FloconTheme.spacing.medium,
-                            top = FloconTheme.spacing.medium,
-                            end = FloconTheme.spacing.medium,
-                        ),
-                    ) {
-                        topBarContent?.invoke()
+                    // the top bar replaces the window title bar: it moves the window and sits
+                    // below the window buttons
+                    val titleBar = LocalWindowTitleBar.current
+                    titleBar.DragArea {
+                        Box(
+                            modifier = Modifier.padding(
+                                start = FloconTheme.spacing.medium,
+                                top = FloconTheme.spacing.medium + titleBar.topInset,
+                                end = FloconTheme.spacing.medium,
+                            ),
+                        ) {
+                            topBarContent?.invoke()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()

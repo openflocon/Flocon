@@ -17,7 +17,7 @@ interface FloconPreferencesPlugin : FloconPlugin {
 
 object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPreferencesPlugin> {
     override val name: String = "Preferences"
-    override val pluginId: String = "sharedPreferences"
+    override val pluginId: String = "shared_preferences"
     override fun createConfig(context: FloconContext) = FloconPreferencesConfig()
     override fun install(
         pluginConfig: FloconPreferencesConfig,
@@ -29,7 +29,7 @@ object FloconPreferences : FloconPluginFactory<FloconPreferencesConfig, FloconPr
 }
 
 internal object FloconSharedPrefsPluginNoOpImpl : FloconPlugin, FloconPreferencesPlugin {
-    override val key: String = "sharedPreferences"
+    override val key: String = "shared_preferences"
 
     override suspend fun onMessageReceived(
         method: String,
