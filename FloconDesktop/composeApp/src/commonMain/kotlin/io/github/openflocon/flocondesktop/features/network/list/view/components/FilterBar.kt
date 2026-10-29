@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -61,14 +62,15 @@ fun FilterBar(
         onValueChange = {
             onTextChangedCallback(it)
         },
-        placeholder = defaultPlaceHolder(placeholderText),
+        placeholder = defaultPlaceHolder(placeholderText, color = FloconTheme.colors.inkMuted),
         leadingComponent = {
             FloconIcon(
                 imageVector = Icons.Outlined.Search,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(18.dp)
             )
         },
         containerColor = containerColor,
+        contentPadding = PaddingValues(horizontal = FloconTheme.spacing.small),
         trailingComponent = {
             AnimatedVisibility(
                 visible = displayClearButton,
