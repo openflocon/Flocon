@@ -100,7 +100,14 @@ Initialize Flocon as early as possible in your application lifecycle:
 
 ### Connecting to another address
 
-By default Flocon tries the address it can guess (`localhost` on an emulator or a simulator) and keeps retrying every 3 seconds. On a real device, that address does not reach your computer: let the user type its address (in a debug menu, for example) and add it with `Flocon.connect`. Flocon keeps trying the default address and also connects to the one you give. The connection is encrypted (`wss://`), so your app does not need to allow cleartext traffic to that address.
+By default Flocon tries the address it can guess (`localhost` on an emulator or a simulator) and keeps retrying every 3 seconds. On a real device, that address does not reach your computer: let the user type its address (in a debug menu, for example) and add it with `Flocon.connect`. Flocon keeps trying the default address and also connects to the one you give. This lives in the optional `flocon-connect` module:
+
+```kotlin
+debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
+```
+
+It also allows the cleartext `ws://` connection to any IP address (Android cannot allow an IP range), for debug builds only. If your app declares its own `networkSecurityConfig`, it takes precedence: see [Troubleshooting](troubleshooting.md).
 
 ```kotlin
 import io.github.openflocon.flocon.connect
