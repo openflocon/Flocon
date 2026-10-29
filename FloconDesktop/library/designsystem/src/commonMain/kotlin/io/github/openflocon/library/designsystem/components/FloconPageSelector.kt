@@ -65,7 +65,7 @@ fun FloconPageSelector(
         )
         Text(
             text = value,
-            style = FloconTheme.typography.bodySmall,
+            style = FloconTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             color = colors.ink,
             maxLines = 1,
