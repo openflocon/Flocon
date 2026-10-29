@@ -78,7 +78,7 @@ fun FloconPageTopBar(
                     modifier = Modifier
                         .clip(FloconTheme.shapes.large)
                         .background(FloconTheme.colors.bg200)
-                        .padding(all = FloconTheme.spacing.extraSmall),
+                        .padding(all = FloconTheme.spacing.small),
                 )
             }
         } else {
@@ -172,7 +172,8 @@ private fun PageHeaderRow(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(start = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
