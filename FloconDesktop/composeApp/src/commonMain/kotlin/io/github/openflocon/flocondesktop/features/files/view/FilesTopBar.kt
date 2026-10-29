@@ -4,9 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FormatSize
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
@@ -39,7 +41,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
-import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -47,12 +48,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun FilesTopBar(
     current: FileUiModel?,
-    numberOfFiles: Int?,
     onBack: () -> Unit,
     onDeleteContent: () -> Unit,
     onRefresh: () -> Unit,
     updateWithFoldersSize: (Boolean) -> Unit,
-    filterBar: @Composable () -> Unit,
+    filterBar: @Composable RowScope.() -> Unit,
     options: FilesStateUiModel.Options,
     canSelect: Boolean,
     selecting: Boolean,
@@ -65,42 +65,39 @@ fun FilesTopBar(
     val hasParentFile = current != null
     val isDirectory = current?.isDirectory == true
 
+    val path = when (val path = current?.path) {
+        is FilePathUiModel.Real -> path.absolutePath
+        is FilePathUiModel.Root -> current?.name.orEmpty()
+        null -> null
+    }
     FloconPageTopBar(
         modifier = modifier,
-        filterBar = {
-            FloconIconTonalButton(
-                onClick = onBack,
+        trailing = { FeatureDocButton(doc = FeatureDoc.Files) },
+        leading = {
+            FloconIconButton(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 enabled = hasParentFile,
-                containerColor = FloconTheme.colors.bg200
-            ) {
-                FloconIcon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack
-                )
-            }
-
-            Text(
-                text = current?.name.orEmpty(),
-                style = FloconTheme.typography.bodyMedium,
-                maxLines = 1,
-                color = FloconTheme.colors.ink,
-                modifier = Modifier
-                    .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
+                onClick = onBack,
             )
-
-            numberOfFiles?.let { nb ->
+        },
+        chips = if (path.isNullOrEmpty()) {
+            null
+        } else {
+            {
                 Text(
-                    text = "$nb files",
-                    style = FloconTheme.typography.bodySmall,
+                    text = path,
+                    style = FloconTheme.typography.monoSmall,
+                    color = FloconTheme.colors.inkFaint,
                     maxLines = 1,
-                    color = FloconTheme.colors.ink,
+                    overflow = TextOverflow.StartEllipsis,
                     modifier = Modifier
-                        .background(FloconTheme.colors.bg300, shape = FloconTheme.shapes.medium)
-                        .padding(vertical = FloconTheme.spacing.extraSmall, horizontal = FloconTheme.spacing.small),
+                        .weight(1f)
+                        .padding(horizontal = FloconTheme.spacing.small),
                 )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
+        },
+        filterBar = filterBar,
+        actions = {
             AnimatedVisibility(canSelect) {
                 Selecting(
                     selecting = selecting,
@@ -111,9 +108,6 @@ fun FilesTopBar(
                 )
             }
 
-            filterBar()
-        },
-        actions = {
             FloconIconToggleButton(
                 value = options.withFoldersSize,
                 onValueChange = updateWithFoldersSize,
@@ -124,20 +118,18 @@ fun FilesTopBar(
                 )
             }
 
-            // Delete folder content button (hidden in selection mode)
-            FloconIconButton(
-                imageVector = Icons.Outlined.Delete,
-                enabled = isDirectory,
-                onClick = onDeleteContent,
-            )
-
             FloconIconButton(
                 imageVector = Icons.Outlined.Refresh,
                 enabled = isDirectory,
                 onClick = onRefresh,
             )
 
-            FeatureDocButton(doc = FeatureDoc.Files)
+            // Delete folder content button, last
+            FloconIconButton(
+                imageVector = Icons.Outlined.Delete,
+                enabled = isDirectory,
+                onClick = onDeleteContent,
+            )
         }
     )
 }
@@ -207,7 +199,6 @@ private fun FilesTopBarPreview_noParent() {
             canSelect = true,
             selecting = false,
             selectedCount = 0,
-            numberOfFiles = null,
         )
     }
 }
@@ -244,7 +235,6 @@ private fun FilesTopBarPreview() {
             canSelect = true,
             selecting = false,
             selectedCount = 0,
-            numberOfFiles = null,
         )
     }
 }

@@ -40,7 +40,6 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabSta
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabViewAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
-import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -133,7 +132,6 @@ private fun DatabaseTabItem(
                         )
                     }
                 }
-                .mascotPlatform()
                 .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,

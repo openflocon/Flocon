@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
+import flocondesktop.composeapp.generated.resources.menu_item_dashboard
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -91,8 +92,10 @@ fun DashboardScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .mascotPlatform(),
+                trailing = { FeatureDocButton(doc = FeatureDoc.Dashboard) },
                 filterBar = {
                     Box(modifier = Modifier.weight(1f)) // to have actions on the right
                 },
@@ -101,8 +104,6 @@ fun DashboardScreen(
                         onArrangementClicked = onArrangementClicked,
                         arrangement = arrangement
                     )
-
-                    FeatureDocButton(doc = FeatureDoc.Dashboard)
 
                     FloconOverflow {
                         FloconDropdownMenuItem(
@@ -123,7 +124,6 @@ fun DashboardScreen(
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
                         .background(FloconTheme.colors.bg100)
-                        .mascotPlatform()
                 )
             } else {
                 Row(Modifier.fillMaxSize()) {
@@ -144,7 +144,6 @@ fun DashboardScreen(
                                 .fillMaxSize()
                                 .clip(FloconTheme.shapes.medium)
                                 .background(FloconTheme.colors.bg100)
-                                .mascotPlatform()
                                 .padding(all = FloconTheme.spacing.small),
                             viewState = state,
                             onClickButton = onClickButton,

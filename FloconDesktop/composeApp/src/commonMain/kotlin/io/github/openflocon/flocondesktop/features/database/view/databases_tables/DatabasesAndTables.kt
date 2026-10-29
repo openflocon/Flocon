@@ -4,34 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.databases_favorites
-import flocondesktop.composeapp.generated.resources.databases_title
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -53,7 +45,6 @@ fun DatabasesAndTables(
                 color = borderColor,
                 shape = FloconTheme.shapes.medium
             )
-            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()
@@ -65,39 +56,6 @@ fun DatabasesAndTables(
                     .padding(all = FloconTheme.spacing.extraSmall),
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            stringResource(Res.string.databases_title),
-                            color = FloconTheme.colors.ink,
-                            style = FloconTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        if (state is DatabasesStateUiModel.WithContent) {
-                            Text(
-                                state.databases.size.toString(),
-                                color = FloconTheme.colors.inkMuted,
-                                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                                modifier = Modifier
-                                    .background(FloconTheme.colors.bg300, CircleShape)
-                                    .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
-                            )
-                        }
-                    }
-                    FeatureDocButton(doc = FeatureDoc.Database)
-                }
                 when (state) {
                     DatabasesStateUiModel.Empty -> Unit
 

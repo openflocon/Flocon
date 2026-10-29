@@ -45,8 +45,6 @@ import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.adb_commander_execute
 import flocondesktop.composeapp.generated.resources.adb_commander_input_placeholder
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.HistoryEntryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -55,7 +53,6 @@ import io.github.openflocon.library.designsystem.components.FloconExposedDropdow
 import io.github.openflocon.library.designsystem.components.FloconExposedDropdownMenuBox
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
-import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -75,7 +72,6 @@ fun CommandInput(
                 color = FloconTheme.colors.bg100,
                 shape = FloconTheme.shapes.medium
             )
-            .mascotPlatform()
     ) {
         // Toolbar row
         Row(
@@ -169,11 +165,6 @@ fun CommandInput(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            FeatureDocButton(
-                doc = FeatureDoc.AdbCommander,
-                modifier = Modifier.align(Alignment.CenterVertically),
-            )
 
             // Clear/Delete icon
             Box(

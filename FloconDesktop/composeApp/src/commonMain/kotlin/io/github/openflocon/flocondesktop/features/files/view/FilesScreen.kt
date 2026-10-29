@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.files_filter
@@ -78,9 +76,10 @@ private fun FilesScreen(
         modifier = modifier.fillMaxSize()
     ) {
         FilesTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
             current = state.current,
-            numberOfFiles = state.numberOfFiles,
             onBack = { onAction(FilesAction.NavigateUp) },
             onRefresh = { onAction(FilesAction.Refresh) },
             options = state.options,
@@ -92,7 +91,7 @@ private fun FilesScreen(
                     filterText = filterText,
                     placeholderText = stringResource(Res.string.files_filter),
                     onTextChange = { onAction(FilesAction.FilterTextChanged(it)) },
-                    modifier = Modifier.width(250.dp),
+                    modifier = Modifier.weight(1f),
                 )
             },
             onDeleteContent = { onAction(FilesAction.DeleteContent) },
@@ -105,8 +104,7 @@ private fun FilesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .mascotPlatform(),
+                .background(FloconTheme.colors.bg100),
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),

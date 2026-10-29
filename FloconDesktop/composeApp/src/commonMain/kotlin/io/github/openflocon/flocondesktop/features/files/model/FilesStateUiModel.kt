@@ -6,7 +6,6 @@ import androidx.compose.runtime.Immutable
 data class FilesStateUiModel(
     val backStack: List<FileUiModel>,
     val current: FileUiModel?,
-    val numberOfFiles: Int?,
     val files: List<FileUiModel>,
     val headerState: FilesHeaderStateUiModel,
     val options: Options,
@@ -43,6 +42,5 @@ fun previewFilesStateUiModel() = FilesStateUiModel(
     isSelecting = false,
     multiSelectedPaths = emptySet(),
     selectingAll = false,
-    numberOfFiles = null,
     canSelect = false,
 )

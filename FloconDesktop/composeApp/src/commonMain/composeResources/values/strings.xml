@@ -193,6 +193,10 @@
     <string name="settings_font_size_multiplier">Font Size Multiplier : %1$sx</string>
     <string name="settings_mascot_hide">Send the mascot to its doghouse</string>
     <string name="settings_mascot_show">Let the mascot out of its doghouse</string>
+    <string name="settings_plugins_title">Displayed plugins</string>
+    <string name="settings_plugins_description">Choose which plugins appear in the left panel. A hidden plugin stays available in your app, it is just not displayed here.</string>
+    <string name="settings_start_screen_title">Start screen</string>
+    <string name="settings_start_screen_description">Choose the screen displayed when Flocon starts. If it is not available for the selected app, the first available screen is displayed.</string>
     <string name="settings_mascot_title">Mascot</string>
     <string name="settings_mascot_description">A little dog walks along the top of the page and follows your mouse. Turn it off if you prefer a quiet interface.</string>
     <string name="settings_theme">Theme</string>
@@ -413,4 +417,8 @@
     <string name="topbar_record">Record</string>
     <string name="topbar_restart">restart</string>
     <string name="topbar_screenshot">screenshot</string>
+    <string name="analytics_selector_caption">Provider</string>
+    <string name="tables_selector_caption">Table</string>
+    <string name="feature_flags_selector_caption">Provider</string>
+    <string name="preferences_empty">No preferences</string>
 </resources>
