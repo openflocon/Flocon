@@ -1,6 +1,6 @@
 # Deeplinks
 
-`plugin`: `Deeplink`
+`plugin`: `deeplink`
 
 | Direction        | `method`       | Body        |
 |------------------|----------------|-------------|

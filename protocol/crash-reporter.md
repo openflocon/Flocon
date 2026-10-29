@@ -1,16 +1,16 @@
 # Crash Reporter
 
-`plugin`: `CrashReporter`
+`plugin`: `crash_reporter`
 
 | Direction        | `method`      | Body                |
 |------------------|---------------|---------------------|
-| Mobile → Desktop | `reportCrash` | `List<CrashReport>` |
+| Mobile → Desktop | `report_crash` | `List<CrashReport>` |
 
 No message from desktop to mobile.
 
 Crashes are stored locally on the device when they happen, then sent on the next connection to the desktop (and deleted from the device).
 
-## `reportCrash` (Mobile → Desktop)
+## `report_crash` (Mobile → Desktop)
 
 Body is a **JSON array** of `CrashReport`.
 

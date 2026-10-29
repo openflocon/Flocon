@@ -4,15 +4,15 @@
 
 | Direction        | `method`                 | Body                     |
 |------------------|--------------------------|--------------------------|
-| Mobile → Desktop | `logNetworkCallRequest`  | `NetworkRequest`         |
-| Mobile → Desktop | `logNetworkCallResponse` | `NetworkResponse`        |
-| Mobile → Desktop | `logWebSocketEvent`      | `WebSocketEvent`         |
-| Mobile → Desktop | `registerWebSocketIds`   | `List<String>`           |
-| Desktop → Mobile | `setupMocks`             | `List<Mock>`             |
-| Desktop → Mobile | `setupBadNetworkConfig`  | `BadNetworkConfig`       |
-| Desktop → Mobile | `websocketMockMessage`   | `WebSocketMockMessage`   |
+| Mobile → Desktop | `log_network_call_request`  | `NetworkRequest`         |
+| Mobile → Desktop | `log_network_call_response` | `NetworkResponse`        |
+| Mobile → Desktop | `log_websocket_event`      | `WebSocketEvent`         |
+| Mobile → Desktop | `register_websocket_ids`   | `List<String>`           |
+| Desktop → Mobile | `setup_mocks`             | `List<Mock>`             |
+| Desktop → Mobile | `setup_bad_network_config`  | `BadNetworkConfig`       |
+| Desktop → Mobile | `websocket_mock_message`   | `WebSocketMockMessage`   |
 
-## `logNetworkCallRequest` (Mobile → Desktop)
+## `log_network_call_request` (Mobile → Desktop)
 
 Sent when a call starts. Request and response are linked by `floconCallId`.
 
@@ -46,7 +46,7 @@ GraphQL is not a separate type: the desktop detects it from an `http` request bo
 }
 ```
 
-## `logNetworkCallResponse` (Mobile → Desktop)
+## `log_network_call_response` (Mobile → Desktop)
 
 Sent when a call ends (success or failure), ~200 ms after the request message.
 
@@ -108,7 +108,7 @@ Failure:
 }
 ```
 
-## `logWebSocketEvent` (Mobile → Desktop)
+## `log_websocket_event` (Mobile → Desktop)
 
 ### `WebSocketEvent`
 
@@ -134,15 +134,15 @@ Failure:
 }
 ```
 
-## `registerWebSocketIds` (Mobile → Desktop)
+## `register_websocket_ids` (Mobile → Desktop)
 
-Ids of websockets that accept mocked messages (see `websocketMockMessage`). Sent on connection and on each new listener. Body is a **JSON array of strings**.
+Ids of websockets that accept mocked messages (see `websocket_mock_message`). Sent on connection and on each new listener. Body is a **JSON array of strings**.
 
 ```json
 ["chat", "notifications"]
 ```
 
-## `setupMocks` (Desktop → Mobile)
+## `setup_mocks` (Desktop → Mobile)
 
 Replaces **all** the mocks on the device (persisted by the mobile). Body is a **JSON array** of `Mock`; `[]` removes all mocks.
 
@@ -200,7 +200,7 @@ Either a **body response** (`httpCode` set) or an **exception** (`errorException
 ]
 ```
 
-## `setupBadNetworkConfig` (Desktop → Mobile)
+## `setup_bad_network_config` (Desktop → Mobile)
 
 Simulates a bad network (latency + random errors). Body `{}` disables it.
 
@@ -255,7 +255,7 @@ Either a **body error** (`errorCode` …) or an **exception** (`errorException` 
 }
 ```
 
-## `websocketMockMessage` (Desktop → Mobile)
+## `websocket_mock_message` (Desktop → Mobile)
 
 Injects a message into a registered websocket, as if received from the server.
 
@@ -263,7 +263,7 @@ Injects a message into a registered websocket, as if received from the server.
 
 | Key       | Type     | Description                            |
 |-----------|----------|----------------------------------------|
-| `id`      | `String` | Websocket id (from `registerWebSocketIds`) |
+| `id`      | `String` | Websocket id (from `register_websocket_ids`) |
 | `message` | `String` | Message content                        |
 
 ```json

@@ -18,7 +18,7 @@ interface FloconFeatureFlagsPlugin : FloconPlugin {
 
 object FloconFeatureFlags : FloconPluginFactory<FloconFeatureFlagsConfig, FloconFeatureFlagsPlugin> {
     override val name: String = "FeatureFlags"
-    override val pluginId: String = "featureflags"
+    override val pluginId: String = "feature_flags"
     override fun createConfig(context: FloconContext) = FloconFeatureFlagsConfig()
     override fun install(
         pluginConfig: FloconFeatureFlagsConfig,
@@ -28,7 +28,7 @@ object FloconFeatureFlags : FloconPluginFactory<FloconFeatureFlagsConfig, Flocon
 }
 
 internal object FloconFeatureFlagsPluginNoOp : FloconFeatureFlagsPlugin {
-    override val key: String = "featureflags"
+    override val key: String = "feature_flags"
     override fun register(provider: String, flags: List<FloconFeatureFlag>) = Unit
     override fun register(provider: String, vararg flags: FloconFeatureFlag) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit

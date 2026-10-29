@@ -17,7 +17,7 @@ interface FloconTablePlugin : FloconPlugin {
 
 object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
     override val name: String = "Table"
-    override val pluginId: String = "Table"
+    override val pluginId: String = "table"
     override fun createConfig(context: FloconContext) = FloconTableConfig()
     override fun install(
         pluginConfig: FloconTableConfig,
@@ -27,7 +27,7 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
 }
 
 internal object FloconTablePluginNoOp : FloconTablePlugin {
-    override val key: String = "Table"
+    override val key: String = "table"
     override fun registerItems(tableItems: List<TableItem>) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit

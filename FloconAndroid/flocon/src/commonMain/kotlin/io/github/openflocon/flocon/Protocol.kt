@@ -9,7 +9,7 @@ object Protocol {
             const val Plugin = "analytics"
 
             object Method {
-                const val AddItems = "additems"
+                const val AddItems = "add_items"
             }
         }
 
@@ -17,14 +17,14 @@ object Protocol {
             const val Plugin = "accessibility"
 
             object Method {
-                const val AddEvents = "addevents"
+                const val AddEvents = "add_events"
                 const val State = "state"
-                const val FocusedNode = "focusednode"
+                const val FocusedNode = "focused_node"
             }
         }
 
         object FeatureFlags {
-            const val Plugin = "featureflags"
+            const val Plugin = "feature_flags"
 
             object Method {
                 const val Register = "register"
@@ -43,8 +43,8 @@ object Protocol {
             const val Plugin = "device"
 
             object Method {
-                const val RegisterDevice = "registerdevice"
-                const val AppIcon = "appicon"
+                const val RegisterDevice = "register_device"
+                const val AppIcon = "app_icon"
             }
         }
 
@@ -53,8 +53,8 @@ object Protocol {
 
             object Method {
                 const val Query = "query"
-                const val GetDatabases = "getdatabases"
-                const val LogQuery = "logquery"
+                const val GetDatabases = "get_databases"
+                const val LogQuery = "log_query"
             }
         }
 
@@ -62,7 +62,7 @@ object Protocol {
             const val Plugin = "deeplink"
 
             object Method {
-                const val GetDeeplinks = "getdeeplinks"
+                const val GetDeeplinks = "get_deeplinks"
             }
         }
 
@@ -70,8 +70,8 @@ object Protocol {
             const val Plugin = "files"
 
             object Method {
-                const val ListFiles = "listfiles"
-                const val GetRoots = "getroots"
+                const val ListFiles = "list_files"
+                const val GetRoots = "get_roots"
             }
         }
 
@@ -79,7 +79,7 @@ object Protocol {
             const val Plugin = "images"
 
             object Method {
-                const val LogNetworkImage = "lognetworkcall"
+                const val LogNetworkImage = "log_network_call"
             }
         }
 
@@ -87,19 +87,19 @@ object Protocol {
             const val Plugin = "network"
 
             object Method {
-                const val LogNetworkCallRequest = "lognetworkcallrequest"
-                const val LogNetworkCallResponse = "lognetworkcallresponse"
-                const val LogWebSocketEvent = "logwebsocketevent"
-                const val RegisterWebSocketIds = "registerwebsocketids"
+                const val LogNetworkCallRequest = "log_network_call_request"
+                const val LogNetworkCallResponse = "log_network_call_response"
+                const val LogWebSocketEvent = "log_websocket_event"
+                const val RegisterWebSocketIds = "register_websocket_ids"
             }
         }
 
         object SharedPreferences {
-            const val Plugin = "sharedpreferences"
+            const val Plugin = "shared_preferences"
 
             object Method {
-                const val GetSharedPreferences = "getsharedpreferences"
-                const val GetSharedPreferenceValue = "getsharedpreferencevalue"
+                const val GetSharedPreferences = "get_shared_preferences"
+                const val GetSharedPreferenceValue = "get_shared_preference_value"
             }
         }
 
@@ -107,15 +107,15 @@ object Protocol {
             const val Plugin = "table"
 
             object Method {
-                const val AddItems = "additems"
+                const val AddItems = "add_items"
             }
         }
 
         object CrashReporter {
-            const val Plugin = "crashreporter"
+            const val Plugin = "crash_reporter"
 
             object Method {
-                const val ReportCrash = "reportcrash"
+                const val ReportCrash = "report_crash"
             }
         }
 
@@ -126,30 +126,30 @@ object Protocol {
     object ToDevice {
 
         object Accessibility {
-            const val Plugin = "Accessibility"
+            const val Plugin = "accessibility"
 
             object Method {
-                const val GetFocusedNode = "getFocusedNode"
-                const val FocusNext = "focusNext"
-                const val FocusPrevious = "focusPrevious"
+                const val GetFocusedNode = "get_focused_node"
+                const val FocusNext = "focus_next"
+                const val FocusPrevious = "focus_previous"
             }
         }
 
         object Analytics {
-            const val Plugin = "Analytics"
+            const val Plugin = "analytics"
 
             object Method {
             }
         }
 
         object Dashboard {
-            const val Plugin = "Dashboard"
+            const val Plugin = "dashboard"
 
             object Method {
-                const val OnClick = "onClick"
-                const val OnFormSubmitted = "onFormSubmitted"
-                const val OnTextFieldSubmitted = "onTextFieldSubmitted"
-                const val OnCheckBoxValueChanged = "onCheckBoxValueChanged"
+                const val OnClick = "on_click"
+                const val OnFormSubmitted = "on_form_submitted"
+                const val OnTextFieldSubmitted = "on_text_field_submitted"
+                const val OnCheckBoxValueChanged = "on_check_box_value_changed"
             }
         }
 
@@ -158,7 +158,7 @@ object Protocol {
 
             object Method {
                 const val Query = "query"
-                const val GetDatabases = "getDatabases"
+                const val GetDatabases = "get_databases"
             }
         }
 
@@ -166,8 +166,8 @@ object Protocol {
             const val Plugin = "device"
 
             object Method {
-                const val GetAppIcon = "getAppIcon"
-                const val RestartApp = "restartApp"
+                const val GetAppIcon = "get_app_icon"
+                const val RestartApp = "restart_app"
             }
         }
 
@@ -175,12 +175,12 @@ object Protocol {
             const val Plugin = "files"
 
             object Method {
-                const val GetRoots = "getRoots"
-                const val ListFiles = "listFiles"
-                const val DeleteFile = "deleteFile"
-                const val DeleteFiles = "deleteFiles"
-                const val DeleteFolderContent = "deleteFolderContent"
-                const val GetFile = "getFile"
+                const val GetRoots = "get_roots"
+                const val ListFiles = "list_files"
+                const val DeleteFile = "delete_file"
+                const val DeleteFiles = "delete_files"
+                const val DeleteFolderContent = "delete_folder_content"
+                const val GetFile = "get_file"
             }
         }
 
@@ -188,24 +188,24 @@ object Protocol {
             const val Plugin = "network"
 
             object Method {
-                const val SetupMocks = "setupMocks"
-                const val SetupBadNetworkConfig = "setupBadNetworkConfig"
-                const val WebsocketMockMessage = "websocketMockMessage"
+                const val SetupMocks = "setup_mocks"
+                const val SetupBadNetworkConfig = "setup_bad_network_config"
+                const val WebsocketMockMessage = "websocket_mock_message"
             }
         }
 
         object SharedPreferences {
-            const val Plugin = "sharedPreferences"
+            const val Plugin = "shared_preferences"
 
             object Method {
-                const val GetSharedPreferences = "getSharedPreferences"
-                const val GetSharedPreferenceValue = "getSharedPreferenceValue"
-                const val SetSharedPreferenceValue = "setSharedPreferenceValue"
+                const val GetSharedPreferences = "get_shared_preferences"
+                const val GetSharedPreferenceValue = "get_shared_preference_value"
+                const val SetSharedPreferenceValue = "set_shared_preference_value"
             }
         }
 
         object Table {
-            const val Plugin = "Table"
+            const val Plugin = "table"
 
             object Method {
             }

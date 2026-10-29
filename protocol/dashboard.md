@@ -1,14 +1,14 @@
 # Dashboard
 
-`plugin`: `Dashboard`
+`plugin`: `dashboard`
 
 | Direction        | `method`                 | Body                   |
 |------------------|--------------------------|------------------------|
 | Mobile → Desktop | `update`                 | `Dashboard`            |
-| Desktop → Mobile | `onClick`                | raw button id (String) |
-| Desktop → Mobile | `onFormSubmitted`        | `FormSubmitted`        |
-| Desktop → Mobile | `onTextFieldSubmitted`   | `TextFieldSubmitted`   |
-| Desktop → Mobile | `onCheckBoxValueChanged` | `CheckBoxValueChanged` |
+| Desktop → Mobile | `on_click`                | raw button id (String) |
+| Desktop → Mobile | `on_form_submitted`        | `FormSubmitted`        |
+| Desktop → Mobile | `on_text_field_submitted`   | `TextFieldSubmitted`   |
+| Desktop → Mobile | `on_check_box_value_changed` | `CheckBoxValueChanged` |
 
 Interactive element ids sent by the mobile are `<dashboardId>_<elementId>`. The desktop sends them back as-is in the callbacks.
 
@@ -36,7 +36,7 @@ Sent each time a dashboard changes, and for every known dashboard on (re)connect
 | Key             | Type     | Present for | Description                       |
 |-----------------|----------|-------------|-----------------------------------|
 | `containerType` | `String` | all         | `SECTION` or `FORM`               |
-| `formId`        | `String` | `FORM`      | Id sent back in `onFormSubmitted` |
+| `formId`        | `String` | `FORM`      | Id sent back in `on_form_submitted` |
 | `submitText`    | `String` | `FORM`      | Submit button text                |
 
 ### `Element`
@@ -54,7 +54,7 @@ An `Element` is a JSON object with **exactly one key**, the element type:
 | `markdown`  | `{ "label": String, "value": String }`        |
 | `html`      | `{ "label": String, "value": String }`        |
 
-`color` is an ARGB integer, omitted when not set. Inside a `FORM`, `textField` / `checkBox` values are collected by the desktop and sent with `onFormSubmitted` (keyed by element `id`).
+`color` is an ARGB integer, omitted when not set. Inside a `FORM`, `textField` / `checkBox` values are collected by the desktop and sent with `on_form_submitted` (keyed by element `id`).
 
 ### Example
 
@@ -84,7 +84,7 @@ An `Element` is a JSON object with **exactly one key**, the element type:
 }
 ```
 
-## `onClick` (Desktop → Mobile)
+## `on_click` (Desktop → Mobile)
 
 Body is **not JSON**: it is directly the button `id`.
 
@@ -92,7 +92,7 @@ Body is **not JSON**: it is directly the button `id`.
 user_logout
 ```
 
-## `onFormSubmitted` (Desktop → Mobile)
+## `on_form_submitted` (Desktop → Mobile)
 
 ### `FormSubmitted`
 
@@ -105,7 +105,7 @@ user_logout
 { "id": "user_edit", "values": { "user_name": "John" } }
 ```
 
-## `onTextFieldSubmitted` (Desktop → Mobile)
+## `on_text_field_submitted` (Desktop → Mobile)
 
 ### `TextFieldSubmitted`
 
@@ -118,7 +118,7 @@ user_logout
 { "id": "user_name", "value": "John" }
 ```
 
-## `onCheckBoxValueChanged` (Desktop → Mobile)
+## `on_check_box_value_changed` (Desktop → Mobile)
 
 ### `CheckBoxValueChanged`
 
