@@ -14,14 +14,11 @@ internal class WebViewRemoteDataSourceImpl(
     private val json: Json,
 ) : WebViewRemoteDataSource {
 
-    override fun getConsoleLogs(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> =
-        decode<WebViewConsoleLogDataModel>(message, "consoleLogs").map { it.toDomain() }
+    override fun getConsoleLogs(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> = decode<WebViewConsoleLogDataModel>(message, "consoleLogs").map { it.toDomain() }
 
-    override fun getPageEvents(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> =
-        decode<WebViewPageEventDataModel>(message, "pageEvents").map { it.toDomain() }
+    override fun getPageEvents(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> = decode<WebViewPageEventDataModel>(message, "pageEvents").map { it.toDomain() }
 
-    override fun getBridgeCalls(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> =
-        decode<WebViewBridgeCallDataModel>(message, "bridgeCalls").map { it.toDomain() }
+    override fun getBridgeCalls(message: FloconIncomingMessageDomainModel): List<WebViewEventDomainModel> = decode<WebViewBridgeCallDataModel>(message, "bridgeCalls").map { it.toDomain() }
 
     private inline fun <reified T> decode(message: FloconIncomingMessageDomainModel, what: String): List<T> = try {
         json.decodeFromString<List<T>>(message.body)

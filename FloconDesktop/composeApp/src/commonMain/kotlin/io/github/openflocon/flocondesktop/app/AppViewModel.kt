@@ -40,13 +40,13 @@ import io.github.openflocon.flocondesktop.features.dashboard.DashboardRoutes
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsRoutes
-import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.features.files.FilesRoutes
 import io.github.openflocon.flocondesktop.features.images.ImageRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
+import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
