@@ -67,6 +67,21 @@ The desktop identifies a client by the triple `deviceId` + `appPackageName` + `a
 }
 ```
 
+## Handshake (`bonjour`)
+
+Right after a connection is opened, before any other message, the SDK sends `plugin: "bonjour"`, `method: "bonjour"` with this body:
+
+| Key              | Type       | Description                                                                                          |
+|------------------|------------|------------------------------------------------------------------------------------------------------|
+| `plugins`        | `String[]` | Lowercase names of the plugins installed in the SDK (the desktop hides the other ones)               |
+| `connectionType` | `String`   | `default` for the default address (localhost: adb reverse, simulator), `wifi` for the address given to the connect module |
+
+```json
+{ "plugins": ["network", "database"], "connectionType": "wifi" }
+```
+
+The desktop shows a wifi icon next to a device connected with `wifi`.
+
 ## Conventions used in this folder
 
 - Examples of `body` are shown **decoded** (as real JSON) for readability. On the wire they are a JSON string inside the envelope.

@@ -2,6 +2,7 @@ package com.flocon.data.remote
 
 import com.flocon.data.remote.accessibility.accessibilityModule
 import com.flocon.data.remote.analytics.analyticsModule
+import com.flocon.data.remote.connect.connectModule
 import com.flocon.data.remote.crashreporter.crashReportModule
 import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
@@ -21,6 +22,7 @@ val dataRemoteModule = module {
     includes(
         accessibilityModule,
         analyticsModule,
+        connectModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,

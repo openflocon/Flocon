@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ internal fun TopBarSelector(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    shape: Shape = FloconTheme.shapes.medium,
+    shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = PaddingValues(),
     content: @Composable () -> Unit,
 ) {
@@ -75,7 +76,7 @@ internal fun TopBarSelector(
             imageVector = Icons.Outlined.KeyboardArrowDown,
             tint = colors.inkFaint,
             modifier = Modifier
-                .padding(end = FloconTheme.spacing.medium, start = FloconTheme.spacing.extraSmall)
+                .padding(end = 10.dp, start = FloconTheme.spacing.extraSmall)
                 .size(14.dp),
         )
     }

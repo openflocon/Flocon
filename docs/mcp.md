@@ -257,7 +257,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 
 | Tool | Description |
 |---|---|
-| `list_devices` | Devices and apps known by Flocon, the selected one, and whether they are connected. |
+| `list_devices` | Devices (with their `connectionType`: `default` or `wifi`) and apps known by Flocon, the selected one, and whether they are connected. |
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
 | `get_network_call` | Full details of a call: request & response headers and bodies (truncated if too long), GraphQL query, gRPC status, error, and the equivalent cURL command. |
 | `search_network_calls` | Searches a text in headers, bodies, url, method or status. |

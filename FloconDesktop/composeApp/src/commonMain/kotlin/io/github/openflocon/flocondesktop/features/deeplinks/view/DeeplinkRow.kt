@@ -54,6 +54,7 @@ fun DeeplinkRow(
     submit: (DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) -> Unit,
     removeFromHistory: (DeeplinkViewState) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     variableValues: ImmutableMap<String, String> = persistentMapOf(),
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
@@ -111,6 +112,7 @@ fun DeeplinkRow(
 
             FloconIconTonalButton(
                 onClick = { submit(item, values.toMap()) },
+                enabled = enabled,
                 containerColor = FloconTheme.colors.ink,
             ) {
                 FloconIcon(

@@ -83,6 +83,7 @@
     <string name="menu_item_database">Base de données</string>
     <string name="menu_item_adbCommander">ADB Commander</string>
     <string name="adb_commander_input_placeholder">Saisir une commande ADB (ex. shell echo hello)</string>
+    <string name="adb_commander_unavailable_wifi">ADB n’est pas disponible pour les appareils connectés en wifi</string>
     <string name="adb_commander_clear_all">Tout effacer</string>
     <string name="adb_commander_no_history">Aucun historique de commandes</string>
     <string name="adb_commander_saved_commands">Commandes enregistrées</string>
@@ -326,6 +327,14 @@
     <string name="tabs_close_left">Fermer les onglets à gauche</string>
     <string name="tabs_close_others">Fermer les autres onglets</string>
     <string name="tabs_close_right">Fermer les onglets à droite</string>
+    <string name="topbar_connect">Connecter un appareil</string>
+    <string name="connect_title">Connecter</string>
+    <string name="connect_scan">Scanner pour connecter</string>
+    <string name="connect_copy">Copier l\'adresse</string>
+    <string name="connect_pick_network">Choisissez le réseau sur lequel est votre téléphone.</string>
+    <string name="connect_hint">Même Wi-Fi que cet ordinateur, puis scannez, ou appelez Flocon.connect("%1$s")</string>
+    <string name="connect_empty">Aucune adresse du réseau local trouvée. Vérifiez que cet ordinateur est connecté à un réseau.</string>
+    <string name="connect_port">port %1$d</string>
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
     <string name="topbar_restart">Redémarrer l’app</string>

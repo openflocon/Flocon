@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +47,7 @@ internal fun TopBarDevice(
     val platformColor = device.platform.color()
 
     Row(
-        modifier = modifier.padding(FloconTheme.spacing.small),
+        modifier = modifier.padding(FloconTheme.spacing.compact),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -54,7 +56,7 @@ internal fun TopBarDevice(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(32.dp)
-                .clip(FloconTheme.shapes.medium)
+                .clip(RoundedCornerShape(6.dp))
                 .background(colors.bg300),
         ) {
             FloconIcon(
@@ -78,7 +80,7 @@ internal fun TopBarDevice(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
             ) {
-                ConnectionDot(isActive = device.isActive)
+                ConnectionDot(isActive = device.isActive, isWifi = device.isWifi)
                 Text(
                     text = if (device.isActive) {
                         stringResource(Res.string.devices_connected)
@@ -115,7 +117,7 @@ internal fun TopBarDeviceRow(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ConnectionDot(isActive = device.isActive)
+        ConnectionDot(isActive = device.isActive, isWifi = device.isWifi)
         Text(
             text = device.deviceName,
             style = FloconTheme.typography.bodyMedium,
@@ -188,10 +190,16 @@ internal fun TopBarDeviceGroupHeader(
     }
 }
 
-// connected: a plain dot, not connected: a ring
+// connected: a plain dot, or a wifi icon when connected through the connect module, not connected: a ring
 @Composable
-private fun ConnectionDot(isActive: Boolean) {
-    if (isActive) {
+private fun ConnectionDot(isActive: Boolean, isWifi: Boolean) {
+    if (isActive && isWifi) {
+        FloconIcon(
+            imageVector = Icons.Outlined.Wifi,
+            tint = FloconTheme.colors.statusSuccess,
+            modifier = Modifier.size(12.dp),
+        )
+    } else if (isActive) {
         FloconDot(color = FloconTheme.colors.statusSuccess)
     } else {
         Box(
@@ -211,6 +219,7 @@ private fun TopBarDevicePreview() {
                 Platform.entries.forEach { platform ->
                     TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = true))
                     TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = false))
+                    TopBarDevice(device = previewDeviceItemUiModel(platform = platform, isActive = true, isWifi = true))
                 }
             }
         }
@@ -226,6 +235,12 @@ private fun TopBarDeviceRowPreview() {
                 TopBarDeviceRow(
                     device = previewDeviceItemUiModel(platform = Platform.Android, isActive = true),
                     selected = true,
+                    onClick = {},
+                    deleteClick = {},
+                )
+                TopBarDeviceRow(
+                    device = previewDeviceItemUiModel(platform = Platform.ios, isActive = true, isWifi = true),
+                    selected = false,
                     onClick = {},
                     deleteClick = {},
                 )

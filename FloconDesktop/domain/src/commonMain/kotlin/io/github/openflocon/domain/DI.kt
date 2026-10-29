@@ -4,6 +4,7 @@ import io.github.openflocon.domain.accessibility.accessibilityModule
 import io.github.openflocon.domain.adb.adbModule
 import io.github.openflocon.domain.adbcommander.adbCommanderModule
 import io.github.openflocon.domain.analytics.analyticsModule
+import io.github.openflocon.domain.connect.connectModule
 import io.github.openflocon.domain.crashreporter.crashReporterDomainModule
 import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
@@ -29,6 +30,7 @@ val domainModule = module {
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        connectModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,

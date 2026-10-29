@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.delegates
 
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceCapabilitiesDomainModel
+import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceAppUiModel
@@ -24,6 +25,7 @@ internal fun DeviceDomainModel.mapToUi(
     deviceName = deviceName,
     id = deviceId,
     isActive = activeDevices.any { it.deviceId == deviceId },
+    isWifi = connectionType == DeviceConnectionType.Wifi,
     platform = mapToPlatformUi(platform),
     canScreenshot = currentDeviceCapabilities?.screenshot == true,
     canScreenRecord = currentDeviceCapabilities?.recordScreen == true,

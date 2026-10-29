@@ -223,6 +223,23 @@ internal val AnalyticsScene = FeatureSceneSpec(
     )
 }
 
+/** Adb is not available over wifi: the mascot cries, its tears run down and fall. */
+internal val AdbCommanderWifiScene = FeatureSceneSpec(
+    frames = persistentListOf(0, 1, 2, 3),
+    frameMs = 400L,
+) { frame ->
+    drawMascotSitting(
+        expression = FloconMascotExpression.Blink,
+        // nothing in the mouth, so no tongue
+        hold = { _, _ -> },
+    )
+    // tears: they slide down the cheek, the drops fall further each frame
+    pixels(22, 8, 1, 3, BlueLight)
+    pixels(24, 9, 1, 2, BlueLight)
+    pixels(22, 11 + frame, 1, 1, Blue)
+    pixels(21, 13 + frame, 1, 1, BlueLight)
+}
+
 /** It pulls the tablecloth to set the table. */
 internal val TablesScene = FeatureSceneSpec(
     frames = persistentListOf(0, 1),
