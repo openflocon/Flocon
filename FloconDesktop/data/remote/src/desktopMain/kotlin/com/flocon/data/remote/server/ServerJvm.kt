@@ -11,8 +11,6 @@ import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
 import io.ktor.server.application.install
 import io.ktor.server.engine.EmbeddedServer
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respondText
@@ -66,7 +64,7 @@ class ServerJvm(
         if (websocketServer != null && isStarted.get()) return
 
         val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
-            embeddedServer(Netty, port = port) {
+            embeddedTlsServer(port = port) {
                 install(WebSockets) {
                     timeout = 15.seconds
                     maxFrameSize = Long.MAX_VALUE
@@ -198,7 +196,7 @@ class ServerJvm(
             }
         }
 
-        this.httpServer = embeddedServer(Netty, port = port) {
+        this.httpServer = embeddedTlsServer(port = port) {
             routing {
                 post("/upload") {
                     val multipart = call.receiveMultipart()
@@ -263,7 +261,7 @@ class ServerJvm(
             }
         }.start(wait = false)
 
-        Logger.d("🚀 HTTP file upload server ready on http://127.0.0.1:$port/upload")
+        Logger.d("🚀 HTTP file upload server ready on https://127.0.0.1:$port/upload")
     }
 
     override fun stop() {

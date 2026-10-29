@@ -42,7 +42,7 @@ internal actual fun buildFloconHttpClient(): FloconHttpClient {
 internal class FloconHttpClientIOs() : FloconHttpClient {
 
     // client configurable selon la plateforme (Android, iOS, JVM, etc.)
-    private val client = HttpClient(Darwin.create()) {
+    private val client = HttpClient(Darwin.create { trustFloconDesktopCertificate() }) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -66,7 +66,7 @@ internal class FloconHttpClientIOs() : FloconHttpClient {
         appPackageName: String,
         appInstance: Long
     ): Boolean {
-        val uploadUrl = "http://$address:$port/upload"
+        val uploadUrl = "https://$address:$port/upload"
 
         return try {
             val fileBytes = readBytes(file.path) ?: return false

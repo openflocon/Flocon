@@ -97,6 +97,7 @@ class FloconMcpServerTest {
 
         val device = result["devices"]!!.jsonArray.single().jsonObject
         assertEquals("pixel", device["deviceId"]!!.jsonPrimitive.content)
+        assertEquals("default", device["connectionType"]!!.jsonPrimitive.content)
         assertEquals("io.flocon.sample", device["apps"]!!.jsonArray.single().jsonObject["packageName"]!!.jsonPrimitive.content)
     }
 

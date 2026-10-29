@@ -10,8 +10,10 @@ Source of truth:
 
 | Channel   | Direction        | Address                          | Usage                                  |
 |-----------|------------------|----------------------------------|----------------------------------------|
-| WebSocket | both             | `ws://<host>:9023/`              | All plugin messages (JSON text frames) |
-| HTTP      | mobile → desktop | `POST http://<host>:9024/upload` | File upload (see [files.md](files.md)) |
+| WebSocket | both             | `wss://<host>:9023/`              | All plugin messages (JSON text frames) |
+| HTTPS     | mobile → desktop | `POST https://<host>:9024/upload` | File upload (see [files.md](files.md)) |
+
+Both channels use TLS, so apps never need to allow cleartext traffic. The desktop serves a self-signed certificate (SAN `localhost` / `127.0.0.1`) that clients **must accept without verifying it** (trust-all, hostname check disabled): the TLS layer only encrypts the channel, it does not authenticate the desktop. The plain `ws://` / `http://` ports are no longer served.
 
 On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024`, so `<host>` is `localhost`.
 
@@ -64,6 +66,21 @@ The desktop identifies a client by the triple `deviceId` + `appPackageName` + `a
   "body": "{\"requestId\":\"7f1c…\",\"path\":\"files\",\"isConstantPath\":true,\"withFoldersSize\":false}"
 }
 ```
+
+## Handshake (`bonjour`)
+
+Right after a connection is opened, before any other message, the SDK sends `plugin: "bonjour"`, `method: "bonjour"` with this body:
+
+| Key              | Type       | Description                                                                                          |
+|------------------|------------|------------------------------------------------------------------------------------------------------|
+| `plugins`        | `String[]` | Lowercase names of the plugins installed in the SDK (the desktop hides the other ones)               |
+| `connectionType` | `String`   | `default` for the default address (localhost: adb reverse, simulator), `wifi` for the address given to the connect module |
+
+```json
+{ "plugins": ["network", "database"], "connectionType": "wifi" }
+```
+
+The desktop shows a wifi icon next to a device connected with `wifi`.
 
 ## Conventions used in this folder
 

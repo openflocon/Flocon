@@ -82,9 +82,11 @@ internal fun AboutScreen(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))
                     },
+                    containerColor = FloconTheme.colors.ink,
                 ) {
                     Text(
-                        text = "GitHub"
+                        text = "GitHub",
+                        color = FloconTheme.colors.bg000,
                     )
                 }
                 FlowRow(

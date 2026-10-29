@@ -69,6 +69,9 @@ interface DevicesDao {
     )
     suspend fun updateAppIcon(deviceId: String, packageName: String, iconEncoded: String)
 
+    @Query("UPDATE DeviceEntity SET connectionType = :connectionType WHERE deviceId = :deviceId")
+    suspend fun updateConnectionType(deviceId: String, connectionType: String)
+
     @Query(
         """
         UPDATE DeviceAppEntity

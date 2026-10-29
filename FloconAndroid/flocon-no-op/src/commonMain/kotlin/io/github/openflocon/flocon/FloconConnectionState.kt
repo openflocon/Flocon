@@ -1,7 +1,7 @@
 package io.github.openflocon.flocon
 
 /**
- * State of the connection to the Flocon desktop app, see `Flocon.connectionState` in `flocon-connect`.
+ * State of the connection to the Flocon desktop app.
  */
 sealed interface FloconConnectionState {
 
