@@ -55,9 +55,9 @@ fun FloconPageTopBar(
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
-            .clip(FloconTheme.shapes.large)
+            .clip(FloconTheme.shapes.medium)
             .background(FloconTheme.colors.bg100)
-            .border(width = 1.dp, color = FloconTheme.colors.line, shape = FloconTheme.shapes.large)
+            .border(width = 1.dp, color = FloconTheme.colors.line, shape = FloconTheme.shapes.medium)
             .padding(all = FloconTheme.spacing.small)
     ) {
         if (hasBar) {
