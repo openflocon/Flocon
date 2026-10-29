@@ -46,7 +46,7 @@ fun FloconPageSelector(
         modifier = modifier
             .height(FloconTheme.sizes.controlHeight)
             .clip(shape)
-            .background(colors.bg300.copy(alpha = 0.6f))
+            .background(colors.bg300.copy(alpha = colors.bg300.alpha * 0.6f))
             .border(width = 1.dp, color = colors.line, shape = shape)
             .clickable(onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.medium),

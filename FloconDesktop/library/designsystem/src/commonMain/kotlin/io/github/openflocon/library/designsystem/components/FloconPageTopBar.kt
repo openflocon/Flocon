@@ -56,11 +56,11 @@ fun FloconPageTopBar(
     val hasBar = leading != null || selector != null || filterBar != null || actions != null
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(if (hasHeader) FloconTheme.spacing.medium else FloconTheme.spacing.small),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier
             .clip(FloconTheme.shapes.large)
             .background(FloconTheme.colors.bg100)
-            .padding(all = if (hasHeader) FloconTheme.spacing.large else FloconTheme.spacing.small)
+            .padding(all = FloconTheme.spacing.small)
     ) {
         if (hasHeader) {
             PageHeaderRow(
@@ -78,7 +78,7 @@ fun FloconPageTopBar(
                     modifier = Modifier
                         .clip(FloconTheme.shapes.large)
                         .background(FloconTheme.colors.bg200)
-                        .padding(all = FloconTheme.spacing.small),
+                        .padding(all = FloconTheme.spacing.extraSmall),
                 )
             }
         } else {
