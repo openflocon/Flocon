@@ -182,6 +182,7 @@
     <string name="accessibility_remote_drag">Move the remote</string>
     <string name="accessibility_remote_collapse">Collapse the remote</string>
     <string name="accessibility_remote_expand">Show the TalkBack remote</string>
+    <string name="accessibility_remote_ok">OK</string>
     <string name="accessibility_remote_talkback_on">TalkBack on</string>
     <string name="accessibility_focus_none">No element has the accessibility focus (turn on TalkBack, then press next)</string>
     <string name="accessibility_focus_position">%1$d / %2$d</string>

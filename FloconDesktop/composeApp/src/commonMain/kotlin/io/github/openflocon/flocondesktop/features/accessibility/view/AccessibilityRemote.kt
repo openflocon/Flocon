@@ -20,10 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Accessibility
-import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.DragIndicator
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
@@ -61,6 +63,7 @@ import flocondesktop.composeapp.generated.resources.accessibility_focus_refresh
 import flocondesktop.composeapp.generated.resources.accessibility_remote_collapse
 import flocondesktop.composeapp.generated.resources.accessibility_remote_drag
 import flocondesktop.composeapp.generated.resources.accessibility_remote_expand
+import flocondesktop.composeapp.generated.resources.accessibility_remote_ok
 import flocondesktop.composeapp.generated.resources.accessibility_remote_talkback_on
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityFocusedNodeUiModel
@@ -76,7 +79,10 @@ import kotlin.math.roundToInt
 private val RemoteWidth = 232.dp
 private val RemoteRadius = 28.dp
 private val BubbleSize = 56.dp
-private val OkButtonSize = 48.dp
+private val OkButtonSize = 64.dp
+private val ArrowButtonWidth = 60.dp
+private val ArrowButtonHeight = 64.dp
+private val GetFocusedHeight = 44.dp
 private val ProgressHeight = 3.dp
 private val StatusDotSize = 6.dp
 
@@ -156,8 +162,8 @@ internal fun AccessibilityRemote(
         modifier = modifier
             .width(RemoteWidth)
             .clip(RoundedCornerShape(RemoteRadius))
-            .background(FloconTheme.colors.bg100)
-            .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(RemoteRadius))
+            .background(FloconTheme.colors.floating)
+            .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(RemoteRadius))
             .padding(FloconTheme.spacing.medium),
     ) {
         Row(
@@ -202,11 +208,13 @@ internal fun AccessibilityRemote(
                 .fillMaxWidth()
                 .clip(CircleShape)
                 .background(FloconTheme.colors.bg200)
-                .padding(FloconTheme.spacing.extraSmall),
+                .border(1.dp, FloconTheme.colors.line, CircleShape)
+                .padding(FloconTheme.spacing.compact),
         ) {
-            FloconIconButton(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            ArrowButton(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
                 tooltip = stringResource(Res.string.accessibility_focus_previous),
+                shape = RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp, topEnd = 14.dp, bottomEnd = 14.dp),
                 enabled = canMoveFocus,
                 onClick = { onAction(AccessibilityAction.OnFocusPreviousClicked) },
             )
@@ -214,19 +222,64 @@ internal fun AccessibilityRemote(
                 enabled = canMoveFocus,
                 onClick = { onAction(AccessibilityAction.OnActivateClicked) },
             )
-            FloconIconButton(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+            ArrowButton(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 tooltip = stringResource(Res.string.accessibility_focus_next),
+                shape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp, topStart = 14.dp, bottomStart = 14.dp),
                 enabled = canMoveFocus,
                 onClick = { onAction(AccessibilityAction.OnFocusNextClicked) },
             )
         }
 
-        FloconOutlinedButton(
-            onClick = { onAction(AccessibilityAction.OnRefreshFocusedNodeClicked) },
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small, Alignment.CenterHorizontally),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(GetFocusedHeight)
+                .clip(CircleShape)
+                .border(1.dp, FloconTheme.colors.lineStrong, CircleShape)
+                .clickable { onAction(AccessibilityAction.OnRefreshFocusedNodeClicked) }
+                .pointerHoverIcon(PointerIcon.Hand),
         ) {
-            Text(text = stringResource(Res.string.accessibility_focus_refresh))
+            FloconIcon(
+                imageVector = Icons.Outlined.CenterFocusWeak,
+                tint = FloconTheme.colors.ink,
+                modifier = Modifier.size(16.dp),
+            )
+            Text(
+                text = stringResource(Res.string.accessibility_focus_refresh),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.ink,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ArrowButton(
+    imageVector: ImageVector,
+    tooltip: String,
+    shape: Shape,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WithTooltip(tooltip) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .size(width = ArrowButtonWidth, height = ArrowButtonHeight)
+                .clip(shape)
+                .background(FloconTheme.colors.catAnalyticsSoft)
+                .clickable(enabled = enabled, onClick = onClick)
+                .pointerHoverIcon(PointerIcon.Hand),
+        ) {
+            FloconIcon(
+                imageVector = imageVector,
+                tint = FloconTheme.colors.catAnalytics.copy(alpha = if (enabled) 1f else 0.4f),
+                modifier = Modifier.size(28.dp),
+            )
         }
     }
 }
@@ -242,6 +295,7 @@ private fun RemoteScreen(
         modifier = modifier
             .clip(FloconTheme.shapes.large)
             .background(FloconTheme.colors.bg000)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
             .padding(FloconTheme.spacing.medium),
     ) {
         if (focusedNode == null) {
@@ -316,13 +370,14 @@ private fun OkButton(
             modifier = modifier
                 .size(OkButtonSize)
                 .clip(CircleShape)
-                .background(FloconTheme.colors.accent.copy(alpha = if (enabled) 1f else 0.4f))
+                .background(FloconTheme.colors.catAnalytics.copy(alpha = if (enabled) 1f else 0.4f))
                 .clickable(enabled = enabled, onClick = onClick)
                 .pointerHoverIcon(PointerIcon.Hand),
         ) {
-            FloconIcon(
-                imageVector = Icons.Outlined.Check,
-                tint = FloconTheme.colors.accentInk,
+            Text(
+                text = stringResource(Res.string.accessibility_remote_ok),
+                style = FloconTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                color = FloconTheme.colors.floating,
             )
         }
     }
