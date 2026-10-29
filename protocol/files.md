@@ -4,22 +4,22 @@
 
 | Direction        | `method`              | Body                   |
 |------------------|-----------------------|------------------------|
-| Desktop → Mobile | `getRoots`            | `GetRootsRequest`      |
-| Desktop → Mobile | `listFiles`           | `ListFilesRequest`     |
-| Desktop → Mobile | `deleteFile`          | `DeleteFileRequest`    |
-| Desktop → Mobile | `deleteFiles`         | `DeleteFilesRequest`   |
-| Desktop → Mobile | `deleteFolderContent` | `DeleteFolderContentRequest` |
-| Desktop → Mobile | `getFile`             | `GetFileRequest`       |
-| Mobile → Desktop | `getroots`            | `RootsResult`          |
-| Mobile → Desktop | `listFiles`           | `FilesResult`          |
-| Mobile → Desktop | HTTP `POST /upload`   | multipart (`getFile` response) |
+| Desktop → Mobile | `get_roots`            | `GetRootsRequest`      |
+| Desktop → Mobile | `list_files`           | `ListFilesRequest`     |
+| Desktop → Mobile | `delete_file`          | `DeleteFileRequest`    |
+| Desktop → Mobile | `delete_files`         | `DeleteFilesRequest`   |
+| Desktop → Mobile | `delete_folder_content` | `DeleteFolderContentRequest` |
+| Desktop → Mobile | `get_file`             | `GetFileRequest`       |
+| Mobile → Desktop | `get_roots`            | `RootsResult`          |
+| Mobile → Desktop | `list_files`           | `FilesResult`          |
+| Mobile → Desktop | HTTP `POST /upload`   | multipart (`get_file` response) |
 
 ### Root folders
 
 The mobile only gives access to its **root folders**: every path listed, downloaded or deleted must be a root folder or inside one
 (symbolic links are resolved, `..` cannot leave a root). A root folder itself is never deleted, only its content.
 
-The roots are the default folders of the platform, then the folders registered by the app (see [`getRoots`](#getroots-desktop-mobile)).
+The roots are the default folders of the platform, then the folders registered by the app (see [`get_roots`](#get_roots-desktop-mobile)).
 
 ### Constant paths
 
@@ -36,9 +36,9 @@ When `isConstantPath` / `isConstantParentPath` is `true`, the path is the `id` o
 | `home`               |                    |                       | `user.home`        |
 
 A registered folder has its absolute path as `id`. `files` and `caches` exist on every platform with a file system,
-so a desktop that does not send `getRoots` keeps working.
+so a desktop that does not send `get_roots` keeps working.
 
-## `getRoots` (Desktop → Mobile)
+## `get_roots` (Desktop → Mobile)
 
 ### `GetRootsRequest`
 
@@ -50,9 +50,9 @@ so a desktop that does not send `getRoots` keeps working.
 { "requestId": "a7f3…" }
 ```
 
-## `getroots` (Mobile → Desktop)
+## `get_roots` (Mobile → Desktop)
 
-Response to `getRoots`. Only the roots that exist as folders are sent. An older SDK does not answer it.
+Response to `get_roots`. Only the roots that exist as folders are sent. An older SDK does not answer it.
 
 ### `RootsResult`
 
@@ -81,7 +81,7 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
 }
 ```
 
-## `listFiles` (Desktop → Mobile)
+## `list_files` (Desktop → Mobile)
 
 ### `ListFilesRequest`
 
@@ -96,7 +96,7 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
 { "requestId": "b1e9…", "path": "files", "isConstantPath": true, "withFoldersSize": true }
 ```
 
-## `deleteFile` (Desktop → Mobile)
+## `delete_file` (Desktop → Mobile)
 
 ### `DeleteFileRequest`
 
@@ -116,7 +116,7 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
 }
 ```
 
-## `deleteFiles` (Desktop → Mobile)
+## `delete_files` (Desktop → Mobile)
 
 ### `DeleteFilesRequest`
 
@@ -139,7 +139,7 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
 }
 ```
 
-## `deleteFolderContent` (Desktop → Mobile)
+## `delete_folder_content` (Desktop → Mobile)
 
 ### `DeleteFolderContentRequest`
 
@@ -153,9 +153,9 @@ Response to `getRoots`. Only the roots that exist as folders are sent. An older 
 { "requestId": "b1e9…", "path": "caches", "isConstantPath": true }
 ```
 
-## `listFiles` (Mobile → Desktop)
+## `list_files` (Mobile → Desktop)
 
-Response to `listFiles`, `deleteFile`, `deleteFiles` and `deleteFolderContent` (content of the folder after the operation).
+Response to `list_files`, `delete_file`, `delete_files` and `delete_folder_content` (content of the folder after the operation).
 
 ### `FilesResult`
 
@@ -196,7 +196,7 @@ Response to `listFiles`, `deleteFile`, `deleteFiles` and `deleteFolderContent` (
 }
 ```
 
-## `getFile` (Desktop → Mobile)
+## `get_file` (Desktop → Mobile)
 
 ### `GetFileRequest`
 
