@@ -85,16 +85,16 @@ private fun DeeplinkScreen(
     ) {
         // Top bar: freeform input only
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Deeplinks) },
             filterBar = {
                 DeeplinkFreeformItem(
                     submit = submit,
                     enabled = state.canSend,
                     modifier = Modifier.fillMaxWidth(),
                 )
-            },
-            actions = {
-                FeatureDocButton(doc = FeatureDoc.Deeplinks)
             },
         )
 
@@ -104,8 +104,7 @@ private fun DeeplinkScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-                    .mascotPlatform(),
+                    .background(FloconTheme.colors.bg100),
             )
         } else {
             // Main body — two rows of equal weight
@@ -127,8 +126,7 @@ private fun DeeplinkScreen(
                             .weight(0.3f)
                             .fillMaxHeight()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .mascotPlatform(),
+                            .background(FloconTheme.colors.bg100),
                     ) {
                         items(state.variables) { item ->
                             DeeplinkVariableChip(
@@ -145,8 +143,7 @@ private fun DeeplinkScreen(
                             .weight(0.7f)
                             .fillMaxHeight()
                             .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .mascotPlatform(),
+                            .background(FloconTheme.colors.bg100),
                     ) {
                         items(deepLinks) { item ->
                             DeeplinkRow(

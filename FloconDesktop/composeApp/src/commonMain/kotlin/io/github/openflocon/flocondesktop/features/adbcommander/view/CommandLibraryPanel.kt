@@ -43,7 +43,6 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSection
-import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -66,7 +65,6 @@ fun CommandLibraryPanel(
                 color = borderColor,
                 shape = FloconTheme.shapes.medium
             )
-            .mascotPlatform()
     ) {
         Column(
             Modifier.fillMaxSize()

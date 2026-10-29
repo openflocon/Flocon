@@ -38,6 +38,7 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.images_filter
+import flocondesktop.composeapp.generated.resources.menu_item_images
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -103,6 +104,7 @@ private fun ImagesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Images) },
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),
@@ -118,7 +120,6 @@ private fun ImagesScreen(
                     imageVector = Icons.Outlined.Delete,
                     onClick = onReset,
                 )
-                FeatureDocButton(doc = FeatureDoc.Images)
             }
         )
         when (state) {
@@ -131,7 +132,6 @@ private fun ImagesScreen(
                         .fillMaxSize()
                         .clip(FloconTheme.shapes.medium)
                         .background(FloconTheme.colors.bg100)
-                        .mascotPlatform()
                 )
             }
 

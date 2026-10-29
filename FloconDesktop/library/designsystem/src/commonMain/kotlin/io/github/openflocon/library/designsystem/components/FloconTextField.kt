@@ -214,7 +214,6 @@ fun FloconTextFieldWithoutM3(
                         val outline = shape.createOutline(size, layoutDirection, this)
                         onDrawBehind { drawOutline(outline, color = containerColor) }
                     }
-                    .background(containerColor)
                     .padding(horizontal = FloconTheme.spacing.extraSmall)
                     .padding(contentPadding)
             ) {

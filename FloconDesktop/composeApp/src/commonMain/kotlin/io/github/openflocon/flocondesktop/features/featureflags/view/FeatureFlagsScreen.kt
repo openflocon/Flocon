@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.menu_item_feature_flags
 import flocondesktop.composeapp.generated.resources.no_feature_flags
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
@@ -89,13 +90,19 @@ fun FeatureFlagsScreen(
         modifier = modifier,
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
-            selector = {
-                FeatureFlagProviderSelector(
-                    providersState = providersState,
-                    onProviderSelected = onProviderSelected,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.FeatureFlags) },
+            selector = if (providersState is FeatureFlagProvidersUiModel.Empty) {
+                null
+            } else {
+                {
+                    FeatureFlagProviderSelector(
+                        providersState = providersState,
+                        onProviderSelected = onProviderSelected,
+                    )
+                }
             },
             filterBar = {
                 FilterBar(
@@ -105,14 +112,12 @@ fun FeatureFlagsScreen(
                     modifier = Modifier.weight(1f),
                 )
             },
-            actions = {
-                FeatureDocButton(doc = FeatureDoc.FeatureFlags)
+            chips = {
+                FeatureFlagStateFilters(
+                    selectedStates = selectedStates,
+                    onStateToggled = onStateToggled,
+                )
             },
-        )
-
-        FeatureFlagStateFilters(
-            selectedStates = selectedStates,
-            onStateToggled = onStateToggled,
         )
 
         Box(
@@ -126,7 +131,6 @@ fun FeatureFlagsScreen(
                     color = FloconTheme.colors.bg200,
                     shape = FloconTheme.shapes.medium
                 )
-                .mascotPlatform()
         ) {
             if (providersState is FeatureFlagProvidersUiModel.Empty) {
                 FeatureEmptyState(

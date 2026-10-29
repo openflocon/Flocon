@@ -37,7 +37,7 @@ internal fun AccessibilityTypeFilters(
 ) {
     Row(
         modifier = modifier.horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TypeFilter(
@@ -71,7 +71,7 @@ private fun TypeFilter(
             .background(if (selected) FloconTheme.colors.bg300 else Color.Transparent)
             .border(width = 1.dp, color = FloconTheme.colors.bg300, shape = shape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 6.dp)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.compact)
             .alpha(if (selected) 1f else 0.5f),
     )
 }
@@ -84,7 +84,7 @@ private fun AccessibilityTypeFiltersPreview() {
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),
             selectedType = "VIEW_FOCUSED",
             onTypeSelected = {},
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(FloconTheme.spacing.small),
         )
     }
 }
