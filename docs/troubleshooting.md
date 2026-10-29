@@ -11,7 +11,7 @@ The SDK talks to the desktop over TLS (`wss://localhost:9023`, `https://localhos
 
 ### 1. Check the connection
 - Flocon Desktop must be running: it serves a self-signed certificate that the SDK accepts without verifying it.
-- The SDK and Flocon Desktop must be on the same version: an older SDK still tries the removed `ws://` connection and cannot connect (see [Migration](migration.md)).
+- The SDK and Flocon Desktop must be on the same version: an older SDK still tries the removed `ws://` connection and cannot connect, update both together.
 - Web (wasmJs) only: the browser rejects self-signed certificates, open `https://localhost:9023` once in the browser and accept the certificate.
 
 !!! tip "Connecting to the IP of your computer (real device)"

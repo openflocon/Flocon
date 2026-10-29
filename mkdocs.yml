@@ -84,7 +84,6 @@ nav:
     - Installation & Setup: setup.md
     - macOS Setup: macos-install.md
     - Troubleshooting: troubleshooting.md
-    - Migration: migration.md
   - Features:
     - Networking:
       - HTTP & REST: network.md
