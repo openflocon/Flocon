@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.websocket
 
 import io.ktor.client.engine.darwin.DarwinClientEngineConfig
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.convert
 import platform.Foundation.NSURLAuthenticationMethodServerTrust
 import platform.Foundation.NSURLCredential
 import platform.Foundation.NSURLSessionAuthChallengePerformDefaultHandling
@@ -19,9 +20,9 @@ internal fun DarwinClientEngineConfig.trustFloconDesktopCertificate() {
     handleChallenge { _, _, challenge, completionHandler ->
         val serverTrust = challenge.protectionSpace.serverTrust
         if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust && serverTrust != null) {
-            completionHandler(NSURLSessionAuthChallengeUseCredential, NSURLCredential.credentialForTrust(serverTrust))
+            completionHandler(NSURLSessionAuthChallengeUseCredential.convert(), NSURLCredential.credentialForTrust(serverTrust))
         } else {
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, null)
+            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling.convert(), null)
         }
     }
 }
