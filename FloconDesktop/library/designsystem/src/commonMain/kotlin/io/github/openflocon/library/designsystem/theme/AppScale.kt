@@ -30,7 +30,7 @@ enum class AppScale(
         ),
         sizes = FloconSizes(
             controlHeight = 29.dp,
-            pageBarControlHeight = 32.dp,
+            pageBarControlHeight = 29.dp,
             rowHeight = 29.dp,
             headerHeight = 29.dp,
             menuItemHeight = 32.dp,
@@ -73,7 +73,7 @@ enum class AppScale(
         ),
         sizes = FloconSizes(
             controlHeight = 35.dp,
-            pageBarControlHeight = 40.dp,
+            pageBarControlHeight = 35.dp,
             rowHeight = 35.dp,
             headerHeight = 35.dp,
             menuItemHeight = 40.dp,

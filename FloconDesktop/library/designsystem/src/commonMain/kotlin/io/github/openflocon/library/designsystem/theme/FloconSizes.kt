@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class FloconSizes(
     val controlHeight: Dp = 32.dp,
-    val pageBarControlHeight: Dp = 36.dp,
+    val pageBarControlHeight: Dp = 32.dp,
     val rowHeight: Dp = 32.dp,
     val headerHeight: Dp = 32.dp,
     val menuItemHeight: Dp = 36.dp,
