@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,6 +44,24 @@ class FilterPanelMapperTest {
         val methods = network.groups.first { it.facet == TimelineFacet.NetworkMethod }.values
         assertEquals(TimelineFacet.NetworkMethod.knownValues, methods.map { it.value })
         assertEquals(listOf("GET" to 2, "POST" to 1, "PUT" to 0), methods.take(3).map { it.value to it.count })
+    }
+
+    @Test
+    fun `the methods and the status classes are displayed like in the network screen`() {
+        val network = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Network }
+
+        val methods = network.groups.first { it.facet == TimelineFacet.NetworkMethod }.values.associate { it.value to it.method }
+        assertEquals(NetworkMethodUi.Http.GET, methods["GET"])
+        assertEquals(NetworkMethodUi.WebSocket, methods["WS"])
+        assertEquals(NetworkMethodUi.Grpc, methods["GRPC"])
+        assertEquals("OPTIONS", (methods["OPTIONS"] as NetworkMethodUi.OTHER).text)
+
+        val families = network.groups.first { it.facet == TimelineFacet.NetworkStatus }.values.map { it.httpFamily }
+        assertEquals(listOf(1, 2, 3, 4, 5), families)
+
+        // the other facets are plain values
+        val state = network.groups.first { it.facet == TimelineFacet.NetworkState }.values
+        assertTrue(state.all { it.method == null && it.httpFamily == null })
     }
 
     @Test
