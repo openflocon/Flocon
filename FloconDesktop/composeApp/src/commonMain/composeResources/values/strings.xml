@@ -452,4 +452,10 @@
     <string name="analytics_selector_caption">Table</string>
     <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Provider</string>
+    <string name="preferences_selector_caption">File</string>
+    <string name="preferences_empty">No preferences</string>
+    <plurals name="preferences_keys_counter">
+        <item quantity="one">key</item>
+        <item quantity="other">keys</item>
+    </plurals>
 </resources>

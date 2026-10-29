@@ -6,13 +6,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,14 +18,19 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.preferences
+import flocondesktop.composeapp.generated.resources.preferences_keys_counter
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -38,9 +39,12 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -100,101 +104,97 @@ fun SharedPrefScreen(
     refreshClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var sharedPrefRows by remember { mutableStateOf<List<SharedPreferencesRowUiModel>>(emptyList()) }
+    val filterText = remember { mutableStateOf("") }
+    val sharedPrefRows: List<SharedPreferencesRowUiModel> = remember(rows, filterText.value) {
+        if (filterText.value.isBlank()) {
+            rows.rows
+        } else {
+            rows.rows.filter { it.contains(filterText.value) }
+        }
+    }
+    val lazyListState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
-        if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
-            FeatureEmptyState(
-                doc = FeatureDoc.SharedPreferences,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-                    .mascotPlatform()
-            )
-        } else {
-            Row(Modifier.fillMaxSize()) {
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            title = stringResource(Res.string.preferences),
+            subtitle = "${sharedPrefRows.size} ${pluralStringResource(Res.plurals.preferences_keys_counter, sharedPrefRows.size)}",
+            headerActions = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
+            selector = {
                 SharedPreferenceSelector(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(340.dp),
                     state = deviceSharedPrefs,
                     onSharedPrefSelected = onSharedPrefSelected,
                 )
-                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+            },
+            filterBar = {
+                FilterBar(
+                    filterText = filterText,
+                    placeholderText = stringResource(Res.string.filter),
+                    onTextChange = { filterText.value = it },
+                    modifier = Modifier.weight(1f),
+                )
+            },
+            actions = {
+                PreferenceAutoUpdate(
+                    state = autoUpdateState,
+                    onChange = onAutoUpdateChange,
+                    onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
+                    refreshClicked = refreshClicked,
+                )
+            },
+        )
 
-                SelectionContainer {
-                    val lazyListState = rememberLazyListState()
-                    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .border(
-                                width = 1.dp,
-                                color = FloconTheme.colors.bg200,
-                                shape = FloconTheme.shapes.medium
-                            )
-                            .mascotPlatform()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                SharedPreferencesFilterBar(
-                                    items = rows.rows,
-                                    modifier = Modifier.width(300.dp),
-                                    onItemsChange = {
-                                        sharedPrefRows = it
-                                    },
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(FloconTheme.shapes.medium)
+                .background(FloconTheme.colors.bg100)
+                .border(
+                    width = 1.dp,
+                    color = FloconTheme.colors.bg200,
+                    shape = FloconTheme.shapes.medium
+                )
+        ) {
+            SelectionContainer {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    when (rows) {
+                        SharedPreferencesRowsStateUiModel.Empty -> {}
+
+                        SharedPreferencesRowsStateUiModel.Loading -> {}
+
+                        is SharedPreferencesRowsStateUiModel.WithContent -> {
+                            items(sharedPrefRows) {
+                                SharedPreferenceRow(
+                                    model = it,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onValueChanged = changeValue,
+                                    onEditClicked = onEditClicked,
                                 )
-                                Spacer(modifier = Modifier.weight(1f))
-                                PreferenceAutoUpdate(
-                                    state = autoUpdateState,
-                                    onChange = onAutoUpdateChange,
-                                    onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
-                                    refreshClicked = refreshClicked,
-                                )
-                            }
-                            LazyColumn(
-                                state = lazyListState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                when (rows) {
-                                    SharedPreferencesRowsStateUiModel.Empty -> {}
-
-                                    SharedPreferencesRowsStateUiModel.Loading -> {}
-
-                                    is SharedPreferencesRowsStateUiModel.WithContent -> {
-                                        items(sharedPrefRows) {
-                                            SharedPreferenceRow(
-                                                model = it,
-                                                modifier = Modifier.fillMaxWidth(),
-                                                onValueChanged = changeValue,
-                                                onEditClicked = onEditClicked,
-                                            )
-                                        }
-                                    }
-                                }
                             }
                         }
-                        FloconVerticalScrollbar(
-                            adapter = scrollAdapter,
-                            modifier = Modifier.fillMaxHeight()
-                                .align(Alignment.TopEnd),
-                        )
                     }
                 }
             }
+            if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.SharedPreferences,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            FloconVerticalScrollbar(
+                adapter = scrollAdapter,
+                modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.TopEnd),
+            )
         }
     }
 }
