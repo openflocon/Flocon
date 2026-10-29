@@ -172,7 +172,8 @@ class TimelineQueryBuilderTest {
     fun `a blank text is ignored`() {
         val query = build(TimelineFilterDomainModel(text = "   "))
 
-        assertFalse(query.sql.contains("LIKE"))
+        // the text is bound as a parameter, the other LIKE are the statements of the database
+        assertFalse(query.sql.contains("LIKE ?"))
     }
 
     @Test
@@ -229,6 +230,33 @@ class TimelineQueryBuilderTest {
         // the sessions, then for the request and the response: device, package, method values, status values
         val branch = listOf<Any>("device", "com.app", "GET", "POST", "5xx")
         assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `a database statement is told from the first word of its query`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
+
+        assertTrue(query.sql.contains("WHEN UPPER(LTRIM(sqlQuery)) LIKE 'SELECT%' OR UPPER(LTRIM(sqlQuery)) LIKE 'WITH%' THEN 'SELECT'"))
+        assertTrue(query.sql.contains("LIKE 'BEGIN%'"))
+        assertTrue(query.sql.contains("THEN 'TRANSACTION'"))
+        assertTrue(query.sql.contains("ELSE 'OTHER' END AS facetB"))
+    }
+
+    @Test
+    fun `the statements selected are kept and the ones hidden are excluded`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Database),
+                facets = mapOf(
+                    TimelineFacet.DatabaseStatement to setOf("SELECT", "INSERT"),
+                    TimelineFacet.DatabaseHide to setOf("TRANSACTION"),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains(" IN (?, ?)"))
+        assertTrue(query.sql.contains(" NOT IN (?)"))
+        assertEquals(sessionParams + listOf("device", "com.app", "SELECT", "INSERT", "TRANSACTION"), query.params)
     }
 
     @Test

@@ -34,12 +34,34 @@ private const val NETWORK_STATUS_CODE = "COALESCE(response_http_responseHttpCode
 // 1xx, 2xx..., null without http code
 private const val NETWORK_STATUS_CLASS = "(CAST($NETWORK_STATUS_CODE AS INTEGER) / 100) || 'xx'"
 
+// the kind of a SQL statement, from its first word. Same values as TimelineFacet.DatabaseStatement
+private val DATABASE_STATEMENT = buildString {
+    append("CASE")
+    listOf(
+        "SELECT" to listOf("SELECT", "WITH"),
+        "INSERT" to listOf("INSERT", "REPLACE"),
+        "UPDATE" to listOf("UPDATE"),
+        "DELETE" to listOf("DELETE"),
+        "SCHEMA" to listOf("CREATE", "ALTER", "DROP"),
+        "PRAGMA" to listOf("PRAGMA"),
+        "TRANSACTION" to listOf("BEGIN", "COMMIT", "END", "ROLLBACK", "SAVEPOINT", "RELEASE"),
+    ).forEach { (statement, keywords) ->
+        append(" WHEN ")
+        append(keywords.joinToString(separator = " OR ") { "UPPER(LTRIM(sqlQuery)) LIKE '$it%'" })
+        append(" THEN '$statement'")
+    }
+    append(" ELSE 'OTHER' END")
+}
+
 private const val FACET_A = "facetA"
 private const val FACET_B = "facetB"
 
 // the column of the union holding the value of a facet
 private fun TimelineFacet.column(): String = when (this) {
-    TimelineFacet.NetworkStatus -> FACET_B
+    TimelineFacet.NetworkStatus,
+    TimelineFacet.DatabaseStatement,
+    TimelineFacet.DatabaseHide -> FACET_B
+
     else -> FACET_A
 }
 
@@ -94,7 +116,8 @@ private fun buildUnion(
         facetExpressions.forEach { (facet, expression) ->
             val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && facet !in ignoredFacets }
             if (values != null) {
-                where.append(" AND $expression IN (${values.joinToString { "?" }})")
+                val operator = if (facet.exclude) "NOT IN" else "IN"
+                where.append(" AND $expression $operator (${values.joinToString { "?" }})")
                 params.addAll(values)
             }
         }
@@ -153,11 +176,15 @@ private fun buildUnion(
                 branch(
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
                         "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, " +
-                        "dbName AS facetA, NULL AS facetB",
+                        "dbName AS facetA, $DATABASE_STATEMENT AS facetB",
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("sqlQuery", "dbName"),
-                    facetExpressions = mapOf(TimelineFacet.DatabaseName to "dbName"),
+                    facetExpressions = mapOf(
+                        TimelineFacet.DatabaseName to "dbName",
+                        TimelineFacet.DatabaseStatement to DATABASE_STATEMENT,
+                        TimelineFacet.DatabaseHide to DATABASE_STATEMENT,
+                    ),
                     orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_DATABASE_LOGS",
                 )
             )

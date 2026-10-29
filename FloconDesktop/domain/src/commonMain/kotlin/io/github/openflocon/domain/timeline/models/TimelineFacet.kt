@@ -1,5 +1,8 @@
 package io.github.openflocon.domain.timeline.models
 
+// the kinds of SQL statement, TRANSACTION being BEGIN, COMMIT, END, ROLLBACK, SAVEPOINT and RELEASE, SCHEMA being CREATE, ALTER and DROP
+private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
+
 /**
  * A way to narrow the events of one [source] down to some values, ex: the GET and POST calls of the network.
  * Nothing selected for a facet means no restriction.
@@ -8,6 +11,8 @@ package io.github.openflocon.domain.timeline.models
 enum class TimelineFacet(
     val source: TimelineSource,
     val knownValues: List<String> = emptyList(),
+    // true: the values selected are hidden instead of kept
+    val exclude: Boolean = false,
 ) {
     NetworkMethod(
         source = TimelineSource.Network,
@@ -18,6 +23,15 @@ enum class TimelineFacet(
         knownValues = listOf("1xx", "2xx", "3xx", "4xx", "5xx"),
     ),
     DatabaseName(TimelineSource.Database),
+    DatabaseStatement(
+        source = TimelineSource.Database,
+        knownValues = DATABASE_STATEMENTS,
+    ),
+    DatabaseHide(
+        source = TimelineSource.Database,
+        knownValues = listOf("TRANSACTION", "PRAGMA"),
+        exclude = true,
+    ),
     AnalyticsTable(TimelineSource.Analytics),
     AccessibilityAction(
         source = TimelineSource.Accessibility,
