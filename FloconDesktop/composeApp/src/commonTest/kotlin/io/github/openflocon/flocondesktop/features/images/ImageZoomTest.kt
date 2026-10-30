@@ -3,8 +3,8 @@ package io.github.openflocon.flocondesktop.features.images
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import io.github.openflocon.flocondesktop.features.images.mapper.formatImageZoom
-import io.github.openflocon.flocondesktop.features.images.view.ImageScrollPanPx
-import io.github.openflocon.flocondesktop.features.images.view.ImageZoomState
+import io.github.openflocon.flocondesktop.features.images.view.viewer.ImageScrollPanPx
+import io.github.openflocon.flocondesktop.features.images.view.viewer.ImageZoomState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

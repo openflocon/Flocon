@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.images.view
+package io.github.openflocon.flocondesktop.features.images.view.viewer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
