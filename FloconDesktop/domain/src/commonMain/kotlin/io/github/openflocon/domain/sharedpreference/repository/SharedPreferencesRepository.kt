@@ -39,4 +39,10 @@ interface SharedPreferencesRepository {
         key: String,
         value: SharedPreferenceRowDomainModel.Value,
     )
+
+    suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
+    )
 }

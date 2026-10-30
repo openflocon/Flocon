@@ -429,6 +429,9 @@
     <string name="preference_cancel">Cancel</string>
     <string name="preference_edit">Edit</string>
     <string name="preference_copy">Copy</string>
+    <string name="preference_delete">Delete</string>
+    <string name="preference_delete_title">Delete "%1$s"?</string>
+    <string name="preference_delete_message">The key is removed from the app. This can't be undone.</string>
     <string name="preference_read_only">read only</string>
     <string name="preferences_file_empty_title">%1$s is empty</string>
     <string name="preferences_file_empty_subtitle">The app hasn't written anything in this file yet.</string>
