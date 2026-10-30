@@ -12,59 +12,32 @@ It allows developers to connect a Kotlin Multiplatform or Android app to their c
 
 ## Getting Started
 
-Since 2.0, the SDK is split into one module per feature: add the core and the plugins you need, each with its `-no-op` version for release builds.
+`This library is lightweight, contributing just 140KB to the overall app size`
+
+in your module .kts
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
-```kotlin
+```
 debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
-
-// for example, the network inspector with OkHttp
-debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
-debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
 ```
 
 in your `Application.kt`
 ```kotlin
-startFlocon(FloconContext(this)) {
-    install(FloconNetwork)
-    install(FloconDatabase) { room() }
-    install(FloconAnalytics)
-}
+// android initialization
+Flocon.initialize(this)
 
-// then, anywhere in your app
-Flocon.analyticsPlugin.log(AnalyticsEvent("button_clicked", "events"))
+// desktop / ios
+Flocon.initialize()
 ```
 
-On desktop use `FloconContext(appName, packageName)`, on iOS `FloconContext()`.
+```toml
+[versions]
+flocon = "LASTEST_VERSION"
 
-### On a real device: connect to your computer
-
-`localhost` only reaches your computer from an emulator or a simulator. On a real device, give the IP address of your computer, for example from a debug menu:
-
-```kotlin
-import io.github.openflocon.flocon.connect
-import io.github.openflocon.flocon.connectionState
-
-startFlocon(FloconContext(this)) {
-    connect {
-        address = "192.168.1.20"   // optional: a computer with a fixed IP, also tried at start
-    }
-    install(FloconNetwork)
-}
-
-// later, for example when the user types the IP of the computer in a debug menu
-val result = Flocon.connect("192.168.1.20")   // IP only, the port is always 9023
-
-// follow the connection
-Flocon.connectionState.collect { state -> /* Connected, Connecting, Failed(reason)... */ }
+[libraries]
+flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
 ```
-
-Flocon keeps trying its default address and also connects to this one, sending what was logged in the meantime in order. The last address that worked is kept and tried again at the next launch. See the [setup guide](https://openflocon.github.io/Flocon/setup#connecting-to-another-address) for all the options.
-
-Coming from 1.x? See the 👉 **[migration guide](https://openflocon.github.io/Flocon/migration)**.
 
 ## 📖 Documentation
 
@@ -74,7 +47,6 @@ Visit the full documentation site for setup guides, feature details, and advance
 ### Table of Contents
 
 - 🚀 **[Getting Started](https://openflocon.github.io/Flocon/setup)**
-    - [Migrating to 2.0](https://openflocon.github.io/Flocon/migration)
     - [Installation Guide](https://openflocon.github.io/Flocon/setup#installation)
     - [Basic Usage](https://openflocon.github.io/Flocon/setup#usage)
     - [macOS Specifics](https://openflocon.github.io/Flocon/macos-install)
@@ -93,11 +65,8 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [Deeplink Launcher](https://openflocon.github.io/Flocon/deeplink)
     - [File Explorer](https://openflocon.github.io/Flocon/files)
     - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
-    - [Feature Flags Viewer](https://openflocon.github.io/Flocon/featureflags)
-    - [Accessibility Events](https://openflocon.github.io/Flocon/accessibility)
-    - [Crash Reporter](https://openflocon.github.io/Flocon/crashreporter)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
-- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events, feature flags and databases
+- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
 
 ---
@@ -111,8 +80,6 @@ Visit the full documentation site for setup guides, feature details, and advance
 | **Preferences** | ✅ | ❌ |
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
-| **Feature Flags** | ✅ | ✅ |
-| **Accessibility** | ✅ | ✅ (iOS automatic, JVM manual) |
 | **Deeplink & Files** | ✅ | ❌ |
 | **AI Agents (MCP)** | ✅ | ✅ |
 
@@ -121,7 +88,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 ## 🧰 Requirements
 
 - **Android**: Device/Emulator with USB debugging + ADB.
-- **KMP**: a recent Kotlin version in your app (the SDK is built with Kotlin 2.4).
+- **KMP**: Kotlin 2.0.0+ in your app.
 - **Desktop**: Flocon Desktop app (JVM-based).
 
 For detailed platform-specific requirements, see the [Setup Guide](https://openflocon.github.io/Flocon/setup).
