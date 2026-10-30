@@ -159,12 +159,17 @@ fun FilesTopBar(
                 )
             }
             RefreshButton(onClick = { onAction(FilesAction.Refresh) })
-            FilesOverflowMenu(
-                canSelect = state.canSelect && !state.isSelecting,
-                canDeleteContent = current?.isDirectory == true,
-                onMultiSelect = { onAction(FilesAction.MultiSelect) },
-                onDeleteContent = { onAction(FilesAction.DeleteContent) },
-            )
+            val canSelect = state.canSelect && !state.isSelecting
+            val canDeleteContent = current?.isDirectory == true
+            if (canSelect || canDeleteContent) {
+                FilesOverflowMenu(
+                    canSelect = canSelect,
+                    canDeleteContent = canDeleteContent,
+                    onMultiSelect = { onAction(FilesAction.MultiSelect) },
+                    onDeleteContent = { onAction(FilesAction.DeleteContent) },
+                )
+            }
+            DocumentationButton()
         },
     )
 }
@@ -471,7 +476,6 @@ private fun FilesOverflowMenu(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
 
     FloconDropdownMenu(
         expanded = expanded,
@@ -481,15 +485,7 @@ private fun FilesOverflowMenu(
         modifier = modifier,
         anchorContent = {
             WithTooltip(stringResource(Res.string.files_more_actions)) {
-                Box(
-                    modifier = Modifier
-                        .size(FloconTheme.sizes.pageBarControlHeight)
-                        .clip(RoundedCornerShape(ControlRadius))
-                        .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(ControlRadius))
-                        .clickable { expanded = true }
-                        .pointerHoverIcon(PointerIcon.Hand),
-                    contentAlignment = Alignment.Center,
-                ) {
+                BarIconBox(onClick = { expanded = true }) {
                     FloconIcon(
                         imageVector = Icons.Outlined.MoreHoriz,
                         tint = FloconTheme.colors.ink,
@@ -519,14 +515,39 @@ private fun FilesOverflowMenu(
                 },
             )
         }
-        FloconDropdownMenuItem(
-            text = stringResource(Res.string.feature_doc_open_documentation),
-            leadingIcon = Icons.Outlined.Info,
-            onClick = {
-                expanded = false
-                runCatching { uriHandler.openUri(FeatureDoc.Files.url) }
-            },
-        )
+    }
+}
+
+@Composable
+private fun DocumentationButton(modifier: Modifier = Modifier) {
+    val uriHandler = LocalUriHandler.current
+    WithTooltip(stringResource(Res.string.feature_doc_open_documentation), modifier = modifier) {
+        BarIconBox(onClick = { runCatching { uriHandler.openUri(FeatureDoc.Files.url) } }) {
+            FloconIcon(
+                imageVector = Icons.Outlined.Info,
+                tint = FloconTheme.colors.ink,
+                modifier = Modifier.size(ControlIconSize),
+            )
+        }
+    }
+}
+
+/** Square bordered control of the bar, holding a single icon. */
+@Composable
+private fun BarIconBox(
+    onClick: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(FloconTheme.sizes.pageBarControlHeight)
+            .clip(RoundedCornerShape(ControlRadius))
+            .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(ControlRadius))
+            .clickable(onClick = onClick)
+            .pointerHoverIcon(PointerIcon.Hand),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
     }
 }
 
