@@ -11,18 +11,19 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
-// the smallest visible part of the size bar, so that a tiny file still shows something
-private const val MinSizeRatio = 0.01f
+// the smallest visible part of the size bar (~2px), so that a tiny but not empty file still shows something
+private const val MinSizeRatio = 0.02f
 private const val MaxExtensionLabelLength = 4
 private const val NoExtensionLabel = "FILE"
 private const val EllipsisPrefix = "…"
 
 fun FileDomainModel.toUi(
     withFoldersSize: Boolean,
-    maxSize: Long? = null,
+    totalSize: Long? = null,
 ): FileUiModel {
     val type = fileTypeOf(name = name, isDirectory = isDirectory)
     val showSize = !isDirectory || withFoldersSize
@@ -32,7 +33,8 @@ fun FileDomainModel.toUi(
         path = path.toUi(),
         extensionLabel = extensionLabelOf(name = name, type = type),
         sizeFormatted = if (showSize) ByteFormatter.formatBytes(size) else null,
-        sizeRatio = if (showSize) sizeRatio(size = size, maxSize = maxSize) else null,
+        sizeRatio = if (showSize) sizeRatio(size = size, totalSize = totalSize) else null,
+        sizeShareFormatted = if (showSize) sizeShareFormatted(size = size, totalSize = totalSize) else null,
         dateFormatted = formatDate(lastModified),
         contextualActions = buildContextualActions(
             isConstant = this.path is FilePathDomainModel.Root,
@@ -41,18 +43,30 @@ fun FileDomainModel.toUi(
     )
 }
 
-/** Maps the content of a folder, the size bars are relative to its biggest displayed entry. */
+/**
+ * Maps the content of a folder, the size bars show the share of each entry in the total size of the displayed ones
+ * (only the files when the folder sizes are not computed).
+ */
 fun List<FileDomainModel>.toUi(withFoldersSize: Boolean): ImmutableList<FileUiModel> {
-    val maxSize = this
-        .filter { !it.isDirectory || withFoldersSize }
-        .maxOfOrNull { it.size }
-    return map { it.toUi(withFoldersSize = withFoldersSize, maxSize = maxSize) }.toImmutableList()
+    val sized = filter { !it.isDirectory || withFoldersSize }
+    val totalSize = if (sized.isEmpty()) null else sized.sumOf { it.size }
+    return map { it.toUi(withFoldersSize = withFoldersSize, totalSize = totalSize) }.toImmutableList()
 }
 
-internal fun sizeRatio(size: Long, maxSize: Long?): Float? = when {
-    maxSize == null -> null
-    maxSize <= 0L -> MinSizeRatio
-    else -> (size.toFloat() / maxSize).coerceIn(MinSizeRatio, 1f)
+internal fun sizeRatio(size: Long, totalSize: Long?): Float? = when {
+    totalSize == null -> null
+    size <= 0L || totalSize <= 0L -> 0f
+    else -> (size.toFloat() / totalSize).coerceIn(MinSizeRatio, 1f)
+}
+
+internal fun sizeShareFormatted(size: Long, totalSize: Long?): String? {
+    if (totalSize == null || totalSize <= 0L) return null
+    val percent = size * 100.0 / totalSize
+    return when {
+        size <= 0L -> "0%"
+        percent < 1.0 -> "<1%"
+        else -> "${percent.roundToInt()}%"
+    }
 }
 
 // "a.json" -> "json", none for "profileInstalled", ".hidden" or "trailing."
@@ -151,6 +165,7 @@ fun FileRootDomainModel.toUi(): FileUiModel = FileUiModel(
     extensionLabel = "",
     sizeFormatted = null,
     sizeRatio = null,
+    sizeShareFormatted = null,
     dateFormatted = null,
     contextualActions = buildContextualActions(
         isConstant = true,

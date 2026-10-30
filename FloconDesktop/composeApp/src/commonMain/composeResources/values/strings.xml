@@ -447,6 +447,7 @@
     <string name="files_column_modified">Modified</string>
     <string name="files_actions">Actions</string>
     <string name="files_size_unknown">—</string>
+    <string name="files_size_share">%1$s of the folder</string>
     <string name="files_sort_by">Sort by</string>
     <string name="files_sort_default">Default</string>
     <plurals name="files_footer_items">

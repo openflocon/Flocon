@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.files_actions
+import flocondesktop.composeapp.generated.resources.files_size_share
 import flocondesktop.composeapp.generated.resources.files_size_unknown
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
@@ -148,6 +149,7 @@ fun FileItemRow(
             FileSizeCell(
                 sizeFormatted = file.sizeFormatted,
                 sizeRatio = file.sizeRatio,
+                sizeShareFormatted = file.sizeShareFormatted,
                 modifier = Modifier.width(FilesListColumns.size),
             )
 
@@ -199,16 +201,32 @@ internal fun FileTypeTile(
     }
 }
 
-/** Size bar (relative to the biggest entry of the folder) and the size, or a dash when the size is unknown. */
+/**
+ * Size bar (share of the total size of the folder) and the size, or a dash when the size is unknown.
+ * The share is also given as a percentage in the tooltip.
+ */
 @Composable
 private fun FileSizeCell(
     sizeFormatted: String?,
     sizeRatio: Float?,
+    sizeShareFormatted: String?,
     modifier: Modifier = Modifier,
+) {
+    WithTooltip(
+        tooltip = sizeShareFormatted?.let { stringResource(Res.string.files_size_share, it) },
+        modifier = modifier,
+    ) {
+        FileSizeCellContent(sizeFormatted = sizeFormatted, sizeRatio = sizeRatio)
+    }
+}
+
+@Composable
+private fun FileSizeCellContent(
+    sizeFormatted: String?,
+    sizeRatio: Float?,
 ) {
     val colors = FloconTheme.colors
     Row(
-        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {

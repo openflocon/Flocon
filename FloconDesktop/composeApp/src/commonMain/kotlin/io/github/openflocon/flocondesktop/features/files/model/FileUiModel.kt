@@ -14,8 +14,10 @@ data class FileUiModel(
     val dateFormatted: String?,
     // null when unknown (folders without the "folder sizes" option, roots)
     val sizeFormatted: String?,
-    // size relative to the biggest entry of the folder, between 0 and 1, null when the size is not displayed
+    // share of the total size of the displayed entries, between 0 and 1, null when the size is not displayed
     val sizeRatio: Float?,
+    // the same share as a percentage for the tooltip of the bar ("61%", "<1%")
+    val sizeShareFormatted: String?,
     val contextualActions: ImmutableList<ContextualAction>,
 ) {
 
@@ -54,6 +56,7 @@ fun previewFileUiModel(
     extensionLabel = extensionLabel,
     sizeFormatted = sizeFormatted,
     sizeRatio = sizeRatio,
+    sizeShareFormatted = sizeRatio?.let { "${(it * 100).toInt()}%" },
     contextualActions = persistentListOf(),
     dateFormatted = "30/10/2026 11:53:12",
 )

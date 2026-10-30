@@ -67,28 +67,37 @@ class FileUiMapperTest {
     }
 
     @Test
-    fun `size bars are relative to the biggest displayed entry`() {
+    fun `size bars are the share of the total size of the displayed entries`() {
         val files = listOf(
-            file("big.bin", size = 1_000),
+            file("big.bin", size = 750),
             file("small.bin", size = 250),
-            file("folder", size = 10_000, isDirectory = true),
+            file("folder", size = 1_000, isDirectory = true),
         )
 
         val withoutFolderSizes = files.toUi(withFoldersSize = false)
-        assertEquals(1f, withoutFolderSizes[0].sizeRatio)
+        assertEquals(0.75f, withoutFolderSizes[0].sizeRatio)
+        assertEquals("75%", withoutFolderSizes[0].sizeShareFormatted)
         assertEquals(0.25f, withoutFolderSizes[1].sizeRatio)
         assertNull(withoutFolderSizes[2].sizeRatio)
         assertNull(withoutFolderSizes[2].sizeFormatted)
 
         val withFolderSizes = files.toUi(withFoldersSize = true)
-        assertEquals(0.1f, withFolderSizes[0].sizeRatio)
-        assertEquals(1f, withFolderSizes[2].sizeRatio)
+        assertEquals(0.375f, withFolderSizes[0].sizeRatio)
+        assertEquals(0.5f, withFolderSizes[2].sizeRatio)
+        assertEquals("50%", withFolderSizes[2].sizeShareFormatted)
     }
 
     @Test
-    fun `tiny files still show a bit of bar`() {
-        val ui = listOf(file("big.bin", size = 1_000_000), file("tiny", size = 1)).toUi(withFoldersSize = false)
-        assertEquals(0.01f, ui[1].sizeRatio)
+    fun `tiny files still show a bit of bar, empty ones none`() {
+        val ui = listOf(
+            file("big.bin", size = 1_000_000),
+            file("tiny", size = 1),
+            file("empty", size = 0),
+        ).toUi(withFoldersSize = false)
+        assertEquals(0.02f, ui[1].sizeRatio)
+        assertEquals("<1%", ui[1].sizeShareFormatted)
+        assertEquals(0f, ui[2].sizeRatio)
+        assertEquals("0%", ui[2].sizeShareFormatted)
     }
 
     private fun file(name: String, size: Long, isDirectory: Boolean = false) = FileDomainModel(

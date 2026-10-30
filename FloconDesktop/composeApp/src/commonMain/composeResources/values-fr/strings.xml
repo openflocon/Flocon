@@ -374,6 +374,7 @@
     <string name="files_column_modified">Modifié</string>
     <string name="files_actions">Actions</string>
     <string name="files_size_unknown">—</string>
+    <string name="files_size_share">%1$s du dossier</string>
     <string name="files_sort_by">Trier par</string>
     <string name="files_sort_default">Par défaut</string>
     <plurals name="files_footer_items">
