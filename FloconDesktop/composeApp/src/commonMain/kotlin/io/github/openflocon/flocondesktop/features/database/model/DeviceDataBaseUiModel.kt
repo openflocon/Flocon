@@ -18,6 +18,7 @@ data class TableUiModel(
         val name: String,
         val type: String,
         val isPrimaryKey: Boolean,
+        val isNotNull: Boolean = false,
     )
 }
 

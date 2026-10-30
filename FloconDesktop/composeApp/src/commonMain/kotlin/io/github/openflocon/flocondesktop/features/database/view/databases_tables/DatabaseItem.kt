@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material.icons.outlined.Preview
 import androidx.compose.material.icons.outlined.Visibility
@@ -24,8 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -53,7 +59,16 @@ internal fun DatabaseItem(
     onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    val groupBackground = if (state.isSelected) {
+        FloconTheme.colors.ink.copy(alpha = 0.05f)
+    } else {
+        Color.Transparent
+    }
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(groupBackground),
+    ) {
         DatabaseEntry(
             modifier = Modifier.fillMaxWidth(),
             onSelect = onSelect,
@@ -62,7 +77,21 @@ internal fun DatabaseItem(
             onSeeAllQueriesClicked = onSeeAllQueriesClicked,
         )
         state.tables?.let { tables ->
-            Column(modifier = Modifier.fillMaxWidth()) {
+            val guideColor = FloconTheme.colors.line
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.small)
+                    .drawBehind {
+                        drawLine(
+                            color = guideColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 1.dp.toPx(),
+                        )
+                    }
+                    .padding(start = FloconTheme.spacing.small),
+            ) {
                 tables.fastForEach {
                     TableEntry(
                         item = it,
@@ -92,11 +121,8 @@ private fun DatabaseEntry(
     onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val (background, textColor) = if (state.isSelected) {
-        FloconTheme.colors.accentSoft to FloconTheme.colors.accent
-    } else {
-        Color.Transparent to FloconTheme.colors.ink
-    }
+    val textColor = FloconTheme.colors.ink
+    val iconColor = if (state.isSelected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
 
     ContextualMenu(
         persistentListOf(
@@ -110,8 +136,7 @@ private fun DatabaseEntry(
     ) {
         Row(
             modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(background)
+                .clip(RoundedCornerShape(10.dp))
                 .combinedClickable(
                     onClick = {
                         onSelect(state.id)
@@ -123,16 +148,25 @@ private fun DatabaseEntry(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                modifier = Modifier.width(14.dp),
+                modifier = Modifier.size(14.dp).graphicsLayer {
+                    rotationZ = if (state.isSelected) 90f else 0f
+                },
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
+            )
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
+            Image(
+                modifier = Modifier.size(16.dp),
                 imageVector = Icons.Outlined.Dataset,
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(textColor),
+                colorFilter = ColorFilter.tint(iconColor),
             )
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
             Text(
                 state.name,
                 color = textColor,
-                style = FloconTheme.typography.bodyMedium,
+                style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -148,7 +182,7 @@ private fun DatabaseEntry(
                         modifier = Modifier.width(16.dp),
                         imageVector = Icons.Outlined.Preview,
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(textColor),
+                        colorFilter = ColorFilter.tint(iconColor),
                     )
                 }
             }

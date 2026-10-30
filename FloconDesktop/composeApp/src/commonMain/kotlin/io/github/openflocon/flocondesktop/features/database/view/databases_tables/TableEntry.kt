@@ -21,6 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -70,7 +72,21 @@ internal fun TableEntry(
         }
 
         AnimatedVisibility(isOpened, modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            val guideColor = FloconTheme.colors.line
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = FloconTheme.spacing.large, bottom = FloconTheme.spacing.extraSmall)
+                    .drawBehind {
+                        drawLine(
+                            color = guideColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 1.dp.toPx(),
+                        )
+                    }
+                    .padding(start = FloconTheme.spacing.small),
+            ) {
                 item.columns.fastForEach {
                     ColumnItem(
                         model = it,
@@ -93,7 +109,7 @@ private fun TableEntryContent(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(8.dp))
             .combinedClickable(
                 onClick = {
                     updateIsOpened(!isOpened)
@@ -102,10 +118,10 @@ private fun TableEntryContent(
                     onTableDoubleClicked(item)
                 }
             )
-            .padding(horizontal = FloconTheme.spacing.medium)
-            .padding(vertical = FloconTheme.spacing.extraSmall),
+            .padding(horizontal = FloconTheme.spacing.small)
+            .padding(vertical = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         val color = FloconTheme.colors.ink
         Image(
@@ -113,13 +129,13 @@ private fun TableEntryContent(
             modifier = Modifier.size(14.dp).graphicsLayer {
                 rotationZ = if (isOpened) 90f else 0f
             },
-            colorFilter = ColorFilter.tint(color),
+            colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
             contentDescription = null,
         )
         Image(
             imageVector = Icons.Outlined.TableRows,
             modifier = Modifier.size(14.dp),
-            colorFilter = ColorFilter.tint(color),
+            colorFilter = ColorFilter.tint(if (isOpened) color else FloconTheme.colors.inkMuted),
             contentDescription = null,
         )
         Text(

@@ -185,6 +185,8 @@
     <string name="badquality_trigger_probability">Probabilité de déclenchement</string>
     <string name="badquality_weight">Poids</string>
     <string name="database_see_all_queries">Voir toutes les requêtes</string>
+    <string name="database_column_primary_key">Clé primaire</string>
+    <string name="database_column_not_null_short">NN</string>
     <string name="deeplink_send_error">Erreur lors de l’envoi du deeplink</string>
     <string name="deeplink_panel_link">Lien</string>
     <string name="deeplink_panel_copy_link">Copier le lien</string>
