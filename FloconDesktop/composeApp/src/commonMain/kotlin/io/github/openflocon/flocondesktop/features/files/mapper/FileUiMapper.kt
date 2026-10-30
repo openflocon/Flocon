@@ -1,10 +1,5 @@
 package io.github.openflocon.flocondesktop.features.files.mapper
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Drafts
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
@@ -19,28 +14,80 @@ import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
-fun FileUiModel.icon(): ImageVector = if (this.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Drafts
+// the smallest visible part of the size bar, so that a tiny file still shows something
+private const val MinSizeRatio = 0.01f
+private const val MaxExtensionLabelLength = 4
+private const val NoExtensionLabel = "FILE"
 
-fun FileDomainModel.toUi(withFoldersSize: Boolean): FileUiModel = FileUiModel(
-    name = name,
-    type = if (this.isDirectory) {
-        FileTypeUiModel.Folder
-    } else {
-        FileTypeUiModel.Other // TODO
-    },
-    path = path.toUi(),
-    sizeFormatted = if (this.isDirectory && withFoldersSize.not()) null else ByteFormatter.formatBytes(size),
-    icon = if (this.isDirectory) {
-        Icons.Outlined.Folder
-    } else {
-        Icons.Outlined.Description
-    },
-    dateFormatted = formatDate(lastModified),
-    contextualActions = buildContextualActions(
-        isConstant = this.path is FilePathDomainModel.Root,
-        isFolder = this.isDirectory,
-    ),
-)
+fun FileDomainModel.toUi(
+    withFoldersSize: Boolean,
+    maxSize: Long? = null,
+): FileUiModel {
+    val type = fileTypeOf(name = name, isDirectory = isDirectory)
+    val showSize = !isDirectory || withFoldersSize
+    return FileUiModel(
+        name = name,
+        type = type,
+        path = path.toUi(),
+        extensionLabel = extensionLabelOf(name = name, type = type),
+        sizeFormatted = if (showSize) ByteFormatter.formatBytes(size) else null,
+        sizeRatio = if (showSize) sizeRatio(size = size, maxSize = maxSize) else null,
+        dateFormatted = formatDate(lastModified),
+        contextualActions = buildContextualActions(
+            isConstant = this.path is FilePathDomainModel.Root,
+            isFolder = this.isDirectory,
+        ),
+    )
+}
+
+/** Maps the content of a folder, the size bars are relative to its biggest displayed entry. */
+fun List<FileDomainModel>.toUi(withFoldersSize: Boolean): ImmutableList<FileUiModel> {
+    val maxSize = this
+        .filter { !it.isDirectory || withFoldersSize }
+        .maxOfOrNull { it.size }
+    return map { it.toUi(withFoldersSize = withFoldersSize, maxSize = maxSize) }.toImmutableList()
+}
+
+internal fun sizeRatio(size: Long, maxSize: Long?): Float? = when {
+    maxSize == null -> null
+    maxSize <= 0L -> MinSizeRatio
+    else -> (size.toFloat() / maxSize).coerceIn(MinSizeRatio, 1f)
+}
+
+// "a.json" -> "json", none for "profileInstalled", ".hidden" or "trailing."
+internal fun extensionOf(name: String): String? {
+    val dot = name.lastIndexOf('.')
+    return if (dot <= 0 || dot == name.lastIndex) null else name.substring(dot + 1).lowercase()
+}
+
+internal fun fileTypeOf(name: String, isDirectory: Boolean): FileTypeUiModel {
+    if (isDirectory) return FileTypeUiModel.Folder
+    return when (extensionOf(name)) {
+        "json" -> FileTypeUiModel.Json
+        "pb", "proto", "preferences_pb" -> FileTypeUiModel.Proto
+        "db", "sqlite", "sqlite3", "db3", "db-wal", "db-shm", "db-journal" -> FileTypeUiModel.Database
+        "png", "jpg", "jpeg", "gif", "webp", "bmp", "heic", "svg" -> FileTypeUiModel.Image
+        "mp4", "mov", "webm", "mkv", "3gp", "avi" -> FileTypeUiModel.Video
+        "txt", "log", "xml", "csv", "md", "yml", "yaml", "properties", "html" -> FileTypeUiModel.Text
+        else -> FileTypeUiModel.Other
+    }
+}
+
+internal fun extensionLabelOf(name: String, type: FileTypeUiModel): String = when (type) {
+    FileTypeUiModel.Folder -> ""
+
+    FileTypeUiModel.Json -> "{ }"
+
+    FileTypeUiModel.Proto -> "PB"
+
+    FileTypeUiModel.Database -> "DB"
+
+    FileTypeUiModel.Image,
+    FileTypeUiModel.Video,
+    FileTypeUiModel.Text,
+    FileTypeUiModel.Other,
+    -> extensionOf(name)?.uppercase()?.take(MaxExtensionLabelLength) ?: NoExtensionLabel
+}
 
 private fun formatDate(date: Instant): String? = try {
     val formateur = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
@@ -74,8 +121,9 @@ fun FileRootDomainModel.toUi(): FileUiModel = FileUiModel(
     name = name,
     type = FileTypeUiModel.Folder,
     path = FilePathUiModel.Root(id),
+    extensionLabel = "",
     sizeFormatted = null,
-    icon = Icons.Outlined.Folder,
+    sizeRatio = null,
     dateFormatted = null,
     contextualActions = buildContextualActions(
         isConstant = true,

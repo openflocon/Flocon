@@ -1,54 +1,71 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop.features.files.view
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Drafts
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.isShiftPressed
-import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_copy_path
-import flocondesktop.composeapp.generated.resources.general_delete
-import flocondesktop.composeapp.generated.resources.general_delete_content
-import flocondesktop.composeapp.generated.resources.general_open
+import flocondesktop.composeapp.generated.resources.files_actions
+import flocondesktop.composeapp.generated.resources.files_size_unknown
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
+import io.github.openflocon.flocondesktop.features.files.model.previewFileUiModels
+import io.github.openflocon.flocondesktop.features.files.view.header.FileTileSize
+import io.github.openflocon.flocondesktop.features.files.view.header.FilesListColumns
+import io.github.openflocon.flocondesktop.features.files.view.header.filesBottomLine
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconSurface
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
+import io.github.openflocon.library.designsystem.components.WithTooltip
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+private val TileRadius = 8.dp
+private val TileIconSize = 17.dp
+private val TileLabelSize = 10.sp
+private val SizeBarWidth = 110.dp
+private val SizeBarHeight = 4.dp
+private val ActionButtonSize = 30.dp
+private val ActionIconSize = 14.dp
+private val ChevronSize = 16.dp
+private const val HoverAlpha = 0.04f
+
 @Composable
 fun FileItemRow(
     file: FileUiModel,
@@ -60,171 +77,210 @@ fun FileItemRow(
     onSelectFile: (path: String, selected: Boolean, index: Int, shiftHeld: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shiftPressed = remember { mutableStateOf(false) }
-    val onContextualActionCallback by rememberUpdatedState(onContextualAction)
-
-    val openLabel = stringResource(Res.string.general_open)
-    val copyPathLabel = stringResource(Res.string.general_copy_path)
-    val deleteContentLabel = stringResource(Res.string.general_delete_content)
-    val deleteLabel = stringResource(Res.string.general_delete)
+    val interactionSource = remember { MutableInteractionSource() }
+    val hovered by interactionSource.collectIsHoveredAsState()
+    var actionsExpanded by remember { mutableStateOf(false) }
+    val colors = FloconTheme.colors
 
     ContextualMenu(
-        items = remember(file, openLabel, copyPathLabel, deleteContentLabel, deleteLabel) {
-            file.contextualActions.map { action ->
-                FloconContextMenuItem.Item(
-                    label = when (action.id) {
-                        FileUiModel.ContextualAction.Action.Open -> openLabel
-                        FileUiModel.ContextualAction.Action.CopyPath -> copyPathLabel
-                        FileUiModel.ContextualAction.Action.DeleteContent -> deleteContentLabel
-                        FileUiModel.ContextualAction.Action.Delete -> deleteLabel
-                    },
-                    onClick = {
-                        onContextualActionCallback(
-                            file,
-                            action.id,
-                        )
-                    }
-                )
-            }.toImmutableList()
-        },
+        items = rememberFileContextMenuItems(file, onContextualAction),
     ) {
         Row(
             modifier = modifier
-                .onPointerEvent(PointerEventType.Press) {
-                    shiftPressed.value = it.keyboardModifiers.isShiftPressed
-                }
-                .combinedClickable(
-                    onClick = {
-                        if (multiSelect) {
-                            val path = (file.path as? FilePathUiModel.Real)?.absolutePath
-                            if (path != null) {
-                                onSelectFile(path, !multiSelected, index, shiftPressed.value)
-                            }
-                        } else {
-                            onClick(file)
-                        }
+                .fillMaxWidth()
+                .height(FloconTheme.sizes.rowHeight + FloconTheme.spacing.medium + FloconTheme.spacing.small)
+                .background(
+                    when {
+                        multiSelected -> colors.accentSoft
+                        hovered || actionsExpanded -> colors.ink.copy(alpha = HoverAlpha)
+                        else -> Color.Transparent
                     },
-                    onDoubleClick = {
-                        // Always allow navigation/opening on double-click
-                        onClick(file)
-                    }
                 )
-                .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
+                .filesBottomLine()
+                .hoverable(interactionSource)
+                .fileClickable(
+                    file = file,
+                    index = index,
+                    multiSelect = multiSelect,
+                    multiSelected = multiSelected,
+                    interactionSource = interactionSource,
+                    onClick = onClick,
+                    onSelectFile = onSelectFile,
+                )
+                .padding(horizontal = FilesListColumns.horizontalPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AnimatedVisibility(multiSelect) {
-                Row {
+            if (multiSelect) {
+                Box(Modifier.width(FilesListColumns.checkbox), contentAlignment = Alignment.CenterStart) {
                     FloconCheckbox(
                         checked = multiSelected,
                         onCheckedChange = { selected ->
                             val path = (file.path as? FilePathUiModel.Real)?.absolutePath
                             if (path != null) {
-                                onSelectFile(path, selected, index, shiftPressed.value)
+                                onSelectFile(path, selected, index, false)
                             }
                         },
-                        uncheckedColor = FloconTheme.colors.bg200
                     )
-                    Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
                 }
             }
 
-            FloconIcon(
-                imageVector = file.icon,
-                modifier = Modifier.size(24.dp)
-            )
-
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.large))
+            Box(Modifier.width(FilesListColumns.tile), contentAlignment = Alignment.CenterStart) {
+                FileTypeTile(type = file.type, extensionLabel = file.extensionLabel)
+            }
 
             Text(
                 text = file.name,
-                modifier = Modifier.weight(1f),
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                color = colors.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = FloconTheme.spacing.medium),
             )
 
             Text(
-                text = file.dateFormatted ?: "",
+                text = file.dateFormatted.orEmpty(),
                 style = FloconTheme.typography.bodySmall,
+                color = colors.inkMuted,
                 maxLines = 1,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(150.dp),
-                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.width(FilesListColumns.modified),
             )
 
-            Text(
-                text = file.sizeFormatted ?: "",
-                textAlign = TextAlign.End,
-                style = FloconTheme.typography.bodySmall,
-                maxLines = 1,
-                modifier = Modifier.width(100.dp),
-                color = FloconTheme.colors.inkMuted.copy(alpha = 0.6f),
-                overflow = TextOverflow.Ellipsis,
+            FileSizeCell(
+                sizeFormatted = file.sizeFormatted,
+                sizeRatio = file.sizeRatio,
+                modifier = Modifier.width(FilesListColumns.size),
             )
 
-            // Flèche si c'est un dossier (pour indiquer qu'on peut y naviguer)
-            if (file.isDirectory) {
-                Icon(
-                    imageVector = Icons.Outlined.ChevronRight,
-                    modifier = Modifier.size(24.dp),
-                    tint = FloconTheme.colors.ink,
-                    contentDescription = null,
-                )
-            } else {
-                Spacer(modifier = Modifier.size(FloconTheme.spacing.extraLarge))
+            Box(
+                modifier = Modifier.width(FilesListColumns.trailing),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                if (file.isDirectory) {
+                    FloconIcon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        tint = colors.inkFaint,
+                        modifier = Modifier.size(ChevronSize),
+                    )
+                } else if (hovered || actionsExpanded) {
+                    Box {
+                        RowActionsButton(onClick = { actionsExpanded = true })
+                        FileActionsMenu(
+                            file = file,
+                            expanded = actionsExpanded,
+                            onDismissRequest = { actionsExpanded = false },
+                            onContextualAction = onContextualAction,
+                        )
+                    }
+                }
             }
         }
     }
 }
 
-@Preview
+/** Rounded colored tile of the type of an entry: a folder icon, or the short label of the extension of a file. */
 @Composable
-private fun FileItemRowPreview_folder() {
-    val file = FileUiModel(
-        name = "MyFile",
-        type = FileTypeUiModel.Folder,
-        path = FilePathUiModel.Root(id = "caches"),
-        icon = Icons.Outlined.Folder,
-        sizeFormatted = "1 MB",
-        contextualActions = persistentListOf(),
-        dateFormatted = "2022-01-01 12:10",
-    )
-    FloconTheme {
-        FileItemRow(
-            file = file,
-            index = 0,
-            multiSelect = false,
-            multiSelected = false,
-            onClick = {},
-            onContextualAction = { _, _ -> },
-            onSelectFile = { _, _, _, _ -> },
-        )
+internal fun FileTypeTile(
+    type: FileTypeUiModel,
+    extensionLabel: String,
+    modifier: Modifier = Modifier,
+) {
+    val typeColors = filesPalette.of(type)
+    Box(
+        modifier = modifier
+            .size(FileTileSize)
+            .clip(RoundedCornerShape(TileRadius))
+            .background(typeColors.tile),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (type == FileTypeUiModel.Folder) {
+            FloconIcon(
+                imageVector = Icons.Filled.Folder,
+                tint = typeColors.ink,
+                modifier = Modifier.size(TileIconSize),
+            )
+        } else {
+            // the tile is not scaled: neither is its label
+            Text(
+                text = extensionLabel,
+                style = FloconTheme.typography.monoSmall.copy(fontSize = TileLabelSize, fontWeight = FontWeight.Medium),
+                color = typeColors.ink,
+                maxLines = 1,
+            )
+        }
     }
 }
 
-@Preview
+/** Size bar (relative to the biggest entry of the folder) and the size, or a dash when the size is unknown. */
 @Composable
-private fun FileItemRowPreview_file() {
-    val file = FileUiModel(
-        name = "MyFile",
-        type = FileTypeUiModel.Other,
-        path = FilePathUiModel.Real("absolutePath"),
-        icon = Icons.Outlined.Drafts,
-        sizeFormatted = "1 MB",
-        contextualActions = persistentListOf(),
-        dateFormatted = "2022-01-01 12:10",
-    )
-    FloconTheme {
-        FileItemRow(
-            file = file,
-            index = 0,
-            multiSelect = true,
-            multiSelected = true,
-            onClick = {},
-            onContextualAction = { _, _ -> },
-            onSelectFile = { _, _, _, _ -> },
-        )
+private fun FileSizeCell(
+    sizeFormatted: String?,
+    sizeRatio: Float?,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+    ) {
+        if (sizeFormatted == null) {
+            Text(
+                text = stringResource(Res.string.files_size_unknown),
+                style = FloconTheme.typography.monoMedium,
+                color = colors.inkFaint,
+            )
+        } else {
+            if (sizeRatio != null) {
+                Box(
+                    modifier = Modifier
+                        .width(SizeBarWidth)
+                        .height(SizeBarHeight)
+                        .clip(RoundedCornerShape(SizeBarHeight / 2))
+                        .background(colors.line),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(sizeRatio)
+                            .height(SizeBarHeight)
+                            .clip(RoundedCornerShape(SizeBarHeight / 2))
+                            .background(filesPalette.sizeBar),
+                    )
+                }
+            }
+            Text(
+                text = sizeFormatted,
+                style = FloconTheme.typography.monoMedium,
+                color = colors.ink.copy(alpha = 0.85f),
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowActionsButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WithTooltip(stringResource(Res.string.files_actions)) {
+        Box(
+            modifier = modifier
+                .size(ActionButtonSize)
+                .clip(RoundedCornerShape(6.dp))
+                .background(FloconTheme.colors.bg300)
+                .clickable(onClick = onClick)
+                .pointerHoverIcon(PointerIcon.Hand),
+            contentAlignment = Alignment.Center,
+        ) {
+            FloconIcon(
+                imageVector = Icons.Outlined.MoreHoriz,
+                tint = FloconTheme.colors.ink,
+                modifier = Modifier.size(ActionIconSize),
+            )
+        }
     }
 }
 
@@ -232,38 +288,33 @@ private fun FileItemRowPreview_file() {
 @Composable
 private fun FileItemRowPreview() {
     FloconTheme {
-        FloconSurface {
-            Column {
+        Column(Modifier.background(FloconTheme.colors.bg100)) {
+            previewFileUiModels().forEachIndexed { index, file ->
                 FileItemRow(
-                    file = FileUiModel(
-                        name = "MyFile",
-                        type = FileTypeUiModel.Folder,
-                        path = FilePathUiModel.Root(id = "caches"),
-                        icon = Icons.Outlined.Folder,
-                        sizeFormatted = "1 MB",
-                        contextualActions = persistentListOf(),
-                        dateFormatted = "2022-01-01 12:10",
-                    ),
-                    index = 0,
+                    file = file,
+                    index = index,
                     multiSelect = false,
                     multiSelected = false,
                     onClick = {},
                     onContextualAction = { _, _ -> },
                     onSelectFile = { _, _, _, _ -> },
                 )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun FileItemRowMultiSelectPreview() {
+    FloconTheme {
+        Column(Modifier.background(FloconTheme.colors.bg100)) {
+            previewFileUiModels().take(3).forEachIndexed { index, file ->
                 FileItemRow(
-                    file = FileUiModel(
-                        name = "MyFile",
-                        type = FileTypeUiModel.Other,
-                        path = FilePathUiModel.Real("absolutePath"),
-                        icon = Icons.Outlined.Drafts,
-                        sizeFormatted = "1 MB",
-                        contextualActions = persistentListOf(),
-                        dateFormatted = "2022-01-01 12:10",
-                    ),
-                    index = 1,
+                    file = file,
+                    index = index,
                     multiSelect = true,
-                    multiSelected = false,
+                    multiSelected = index == 2,
                     onClick = {},
                     onContextualAction = { _, _ -> },
                     onSelectFile = { _, _, _, _ -> },

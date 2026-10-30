@@ -31,10 +31,15 @@ import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
+import io.github.openflocon.flocondesktop.features.files.model.FilesFooterUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesViewModeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -68,6 +73,9 @@ class FilesViewModel(
 
     private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
 
+    // list or grid, kept in memory while the app is running
+    private val viewMode = MutableStateFlow(FilesViewModeUiModel.List)
+
     // Multi-selection state
     private val selecting = MutableStateFlow(false)
     private val multiSelectedPaths = MutableStateFlow<Set<String>>(emptySet())
@@ -99,15 +107,21 @@ class FilesViewModel(
 
     private fun defaultValue(roots: List<FileRootDomainModel> = this.roots.value) = FilesStateUiModel(
         current = null,
-        backStack = emptyList(),
-        files = roots.map { it.toUi() },
+        backStack = persistentListOf(),
+        files = roots.map { it.toUi() }.toImmutableList(),
         headerState = FilesHeaderStateUiModel(
             sortedBy = sortedBy.value,
             totalSizeFormatted = null,
         ),
+        footer = FilesFooterUiModel(
+            itemCount = roots.size,
+            folderCount = roots.size,
+            path = null,
+        ),
         options = options.value,
+        viewMode = viewMode.value,
         isSelecting = selecting.value,
-        multiSelectedPaths = multiSelectedPaths.value,
+        multiSelectedPaths = multiSelectedPaths.value.toImmutableSet(),
         selectingAll = false,
         canSelect = false,
         showEmptyState = roots.isEmpty(),
@@ -127,10 +141,17 @@ class FilesViewModel(
             selecting,
             multiSelectedPaths,
             roots,
+            viewMode,
         )
-            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths, roots) ->
+            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths, roots, viewMode) ->
                 if (selectedFile == null) {
-                    flowOf(defaultValue(roots).copy(isSelecting = selecting, multiSelectedPaths = multiSelectedPaths))
+                    flowOf(
+                        defaultValue(roots).copy(
+                            isSelecting = selecting,
+                            multiSelectedPaths = multiSelectedPaths.toImmutableSet(),
+                            viewMode = viewMode,
+                        ),
+                    )
                 } else {
                     combines(
                         observeFolderContentUseCase(
@@ -146,13 +167,11 @@ class FilesViewModel(
                             files
                         }
                         val sorted = filtered?.let { sort(it, sortedBy) }
+                        val displayed = sorted.orEmpty()
                         FilesStateUiModel(
-                            backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) },
+                            backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) }.toImmutableList(),
                             current = selectedFile.current.toUi(options.withFoldersSize),
-                            files = (
-                                sorted
-                                    ?: emptyList()
-                                ).map { it.toUi(options.withFoldersSize) },
+                            files = displayed.toUi(options.withFoldersSize),
                             headerState = FilesHeaderStateUiModel(
                                 sortedBy = sortedBy,
                                 totalSizeFormatted = computeTotalSize(
@@ -160,10 +179,16 @@ class FilesViewModel(
                                     sorted
                                 )
                             ),
+                            footer = FilesFooterUiModel(
+                                itemCount = displayed.size,
+                                folderCount = displayed.count { it.isDirectory },
+                                path = devicePathOf(selectedFile.current.path, roots),
+                            ),
                             canSelect = true,
                             options = options,
+                            viewMode = viewMode,
                             isSelecting = selecting,
-                            multiSelectedPaths = multiSelectedPaths,
+                            multiSelectedPaths = multiSelectedPaths.toImmutableSet(),
                             selectingAll = multiSelectedPaths.isNotEmpty() && multiSelectedPaths.size == sorted?.size
                         )
                     }
@@ -171,6 +196,15 @@ class FilesViewModel(
             }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
+
+    // the roots are only known by their id: their absolute path comes with the list of the roots
+    private fun devicePathOf(
+        path: FilePathDomainModel,
+        roots: List<FileRootDomainModel>,
+    ): String? = when (path) {
+        is FilePathDomainModel.Real -> path.absolutePath
+        is FilePathDomainModel.Root -> roots.firstOrNull { it.id == path.id }?.path
+    }?.takeIf { it.isNotBlank() }
 
     private fun computeTotalSize(
         withFoldersSize: Boolean,
@@ -234,6 +268,27 @@ class FilesViewModel(
         onClearMultiSelect()
     }
 
+    private fun onNavigateToRoot() {
+        selectedFile.value = null
+        _filterText.value = ""
+        onClearMultiSelect()
+    }
+
+    private fun onNavigateToBackStackEntry(index: Int) {
+        selectedFile.update {
+            if (it == null || index !in it.backStack.indices) {
+                it // no op
+            } else {
+                it.copy(
+                    backStack = it.backStack.take(index),
+                    current = it.backStack[index],
+                )
+            }
+        }
+        _filterText.value = ""
+        onClearMultiSelect()
+    }
+
     private fun onFilterTextChanged(value: String) {
         _filterText.value = value
     }
@@ -266,6 +321,9 @@ class FilesViewModel(
                 onClearMultiSelect()
             }
 
+            FileTypeUiModel.Json,
+            FileTypeUiModel.Proto,
+            FileTypeUiModel.Database,
             FileTypeUiModel.Image,
             FileTypeUiModel.Video,
             FileTypeUiModel.Text,
@@ -353,6 +411,9 @@ class FilesViewModel(
         when (action) {
             is FilesAction.FileClicked -> onFileClicked(action.file)
             is FilesAction.NavigateUp -> onNavigateUp()
+            is FilesAction.NavigateToRoot -> onNavigateToRoot()
+            is FilesAction.NavigateToBackStackEntry -> onNavigateToBackStackEntry(action.index)
+            is FilesAction.ChangeViewMode -> viewMode.value = action.viewMode
             is FilesAction.ContextualAction -> onContextualAction(action.file, action.action)
             is FilesAction.Refresh -> onRefresh()
             is FilesAction.DeleteContent -> onDeleteContent()

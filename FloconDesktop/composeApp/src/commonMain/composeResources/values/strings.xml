@@ -444,4 +444,32 @@
     <string name="preference_status_modified">● Modified</string>
     <string name="preference_status_modified_valid">● Modified · valid JSON</string>
     <string name="preference_status_invalid">● Invalid JSON</string>
+    <string name="files_column_modified">Modified</string>
+    <string name="files_actions">Actions</string>
+    <string name="files_size_unknown">—</string>
+    <string name="files_sort_by">Sort by</string>
+    <string name="files_sort_default">Default</string>
+    <plurals name="files_footer_items">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <plurals name="files_footer_folders">
+        <item quantity="one">%1$d folder</item>
+        <item quantity="other">%1$d folders</item>
+    </plurals>
+    <string name="files_footer_counts">%1$s · %2$s</string>
+    <string name="files_footer_total">Total</string>
+    <string name="files_back">Back</string>
+    <string name="files_breadcrumb_root">App</string>
+    <string name="files_breadcrumb_separator">/</string>
+    <string name="files_delete_selection">Delete the selection</string>
+    <string name="files_exit_selection">Exit the selection</string>
+    <string name="files_folder_sizes">Folder sizes</string>
+    <string name="files_folder_sizes_tooltip">Compute the size of the folders (can be costly on the device)</string>
+    <string name="files_more_actions">More actions</string>
+    <string name="files_refresh">Refresh</string>
+    <string name="files_select_multiple">Select multiple files</string>
+    <string name="files_selected_count">%1$d selected</string>
+    <string name="files_view_list">List view</string>
+    <string name="files_view_grid">Grid view</string>
 </resources>

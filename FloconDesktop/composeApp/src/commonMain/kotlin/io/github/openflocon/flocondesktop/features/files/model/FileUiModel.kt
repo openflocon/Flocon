@@ -1,9 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.model
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -12,12 +9,17 @@ data class FileUiModel(
     val name: String,
     val type: FileTypeUiModel,
     val path: FilePathUiModel,
-    val icon: ImageVector,
+    // short label of the extension displayed on the tile / badge of a file ("{ }", "PB", "PNG"...), empty for a folder
+    val extensionLabel: String,
     val dateFormatted: String?,
+    // null when unknown (folders without the "folder sizes" option, roots)
     val sizeFormatted: String?,
+    // size relative to the biggest entry of the folder, between 0 and 1, null when the size is not displayed
+    val sizeRatio: Float?,
     val contextualActions: ImmutableList<ContextualAction>,
 ) {
 
+    @Immutable
     data class ContextualAction(
         val id: Action,
         val text: String,
@@ -31,17 +33,67 @@ data class FileUiModel(
     }
 
     val isDirectory = type == FileTypeUiModel.Folder
+
+    // unique in a folder, used as a key by the lazy lists
+    val id: String = when (path) {
+        is FilePathUiModel.Real -> path.absolutePath
+        is FilePathUiModel.Root -> path.id
+    }
 }
 
 fun previewFileUiModel(
     name: String,
     type: FileTypeUiModel = FileTypeUiModel.Folder,
+    extensionLabel: String = "",
+    sizeFormatted: String? = "100 MB",
+    sizeRatio: Float? = 0.5f,
 ) = FileUiModel(
     name = name,
     type = type,
-    path = FilePathUiModel.Root(id = "caches"),
-    sizeFormatted = "100 MB",
-    icon = Icons.Outlined.Folder,
+    path = FilePathUiModel.Real(absolutePath = "/data/user/0/io.openflocon.sample/files/$name"),
+    extensionLabel = extensionLabel,
+    sizeFormatted = sizeFormatted,
+    sizeRatio = sizeRatio,
     contextualActions = persistentListOf(),
-    dateFormatted = "2022-01-01 12:10",
+    dateFormatted = "30/10/2026 11:53:12",
+)
+
+fun previewFileUiModels(): ImmutableList<FileUiModel> = persistentListOf(
+    previewFileUiModel(name = "preferences_pb", sizeFormatted = null, sizeRatio = null),
+    previewFileUiModel(name = "crash_logs", sizeFormatted = null, sizeRatio = null),
+    previewFileUiModel(
+        name = "user_settings.preferences_pb",
+        type = FileTypeUiModel.Proto,
+        extensionLabel = "PB",
+        sizeFormatted = "4.1 KB",
+        sizeRatio = 1f,
+    ),
+    previewFileUiModel(
+        name = "flocon_network_mocks.json",
+        type = FileTypeUiModel.Json,
+        extensionLabel = "{ }",
+        sizeFormatted = "2.0 KB",
+        sizeRatio = 0.5f,
+    ),
+    previewFileUiModel(
+        name = "avatar_cache.png",
+        type = FileTypeUiModel.Image,
+        extensionLabel = "PNG",
+        sizeFormatted = "3.1 KB",
+        sizeRatio = 0.75f,
+    ),
+    previewFileUiModel(
+        name = "app.db",
+        type = FileTypeUiModel.Database,
+        extensionLabel = "DB",
+        sizeFormatted = "1.2 KB",
+        sizeRatio = 0.3f,
+    ),
+    previewFileUiModel(
+        name = "profileInstalled",
+        type = FileTypeUiModel.Text,
+        extensionLabel = "FILE",
+        sizeFormatted = "24 B",
+        sizeRatio = 0.01f,
+    ),
 )
