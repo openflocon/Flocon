@@ -26,6 +26,7 @@ import io.github.openflocon.domain.files.usecase.RefreshFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.UpdateWithFoldersSizeUseCase
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import io.github.openflocon.flocondesktop.features.files.mapper.shortDevicePath
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
 import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
@@ -120,6 +121,7 @@ class FilesViewModel(
             itemCount = roots.size,
             folderCount = roots.size,
             path = null,
+            displayPath = null,
         ),
         options = options.value,
         viewMode = viewMode.value,
@@ -185,11 +187,14 @@ class FilesViewModel(
                                     sorted
                                 )
                             ),
-                            footer = FilesFooterUiModel(
-                                itemCount = displayed.size,
-                                folderCount = displayed.count { it.isDirectory },
-                                path = devicePathOf(selectedFile.current.path, roots),
-                            ),
+                            footer = devicePathOf(selectedFile.current.path, roots).let { path ->
+                                FilesFooterUiModel(
+                                    itemCount = displayed.size,
+                                    folderCount = displayed.count { it.isDirectory },
+                                    path = path,
+                                    displayPath = path?.let { shortDevicePath(it, roots.map { root -> root.path }) },
+                                )
+                            },
                             canSelect = true,
                             options = options,
                             viewMode = viewMode,

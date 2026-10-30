@@ -113,24 +113,26 @@ internal fun FilesFooter(
         footer.path?.let { path ->
             FooterPath(
                 path = path,
+                displayPath = footer.displayPath ?: path,
                 onClick = { onCopyPath(path) },
             )
         }
     }
 }
 
-/** Full device path, copied to the clipboard on click. */
+/** Short device path; the full one is shown in the tooltip and copied to the clipboard on click. */
 @Composable
 private fun FooterPath(
     path: String,
+    displayPath: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val color by animateColorAsState(if (hovered) colors.ink else colors.inkFaint)
-    WithTooltip(stringResource(Res.string.files_footer_copy_path), modifier = modifier) {
+    val color by animateColorAsState(if (hovered) colors.ink else colors.inkMuted)
+    WithTooltip(stringResource(Res.string.files_footer_copy_path, path), modifier = modifier) {
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(PathRadius))
@@ -142,7 +144,7 @@ private fun FooterPath(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             Text(
-                text = path,
+                text = displayPath,
                 style = FloconTheme.typography.monoMedium,
                 color = color,
                 maxLines = 1,

@@ -35,6 +35,8 @@ data class FilesFooterUiModel(
     val folderCount: Int,
     // absolute path of the current folder on the device, null on the root screen or when unknown
     val path: String?,
+    // the same path without the folder of the app on the device ("…/files/datastore"), shown in the bar
+    val displayPath: String?,
 )
 
 fun previewFilesStateUiModel(
@@ -48,6 +50,7 @@ fun previewFilesStateUiModel(
         itemCount = 7,
         folderCount = 2,
         path = "/data/user/0/io.openflocon.sample/files/datastore",
+        displayPath = "…/files/datastore",
     ),
     options = FilesStateUiModel.Options(
         withFoldersSize = false,

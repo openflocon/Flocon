@@ -5,6 +5,7 @@ import io.github.openflocon.domain.files.models.FilePathDomainModel
 import io.github.openflocon.flocondesktop.features.files.mapper.extensionLabelOf
 import io.github.openflocon.flocondesktop.features.files.mapper.extensionOf
 import io.github.openflocon.flocondesktop.features.files.mapper.fileTypeOf
+import io.github.openflocon.flocondesktop.features.files.mapper.shortDevicePath
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import kotlin.test.Test
@@ -13,6 +14,29 @@ import kotlin.test.assertNull
 import kotlin.time.Instant
 
 class FileUiMapperTest {
+
+    @Test
+    fun `device path drops the folder shared by all the roots of the app`() {
+        val android = listOf(
+            "/data/user/0/com.app/files",
+            "/data/user/0/com.app/cache",
+            "/data/user/0/com.app/shared_prefs",
+        )
+        assertEquals("…/files/datastore", shortDevicePath("/data/user/0/com.app/files/datastore", android))
+
+        val container = "/Users/me/Library/Developer/CoreSimulator/Devices/D9/data/Containers/Data/Application/86BA"
+        val ios = listOf("$container/Documents", "$container/Library/Caches", container)
+        assertEquals("…/Library/Application Support", shortDevicePath("$container/Library/Application Support", ios))
+        assertEquals("…/86BA", shortDevicePath(container, ios))
+    }
+
+    @Test
+    fun `device path is kept when it can not be shortened`() {
+        assertEquals("/other/place", shortDevicePath("/other/place", listOf("/data/a", "/data/b")))
+        assertEquals("/a/b", shortDevicePath("/a/b", listOf("/a", "/b")))
+        assertEquals("/a/b", shortDevicePath("/a/b", emptyList()))
+        assertEquals("…/files/x", shortDevicePath("/data/app/files/x", listOf("/data/app/files")))
+    }
 
     @Test
     fun `extension is the part after the last dot, none for hidden or extension less files`() {

@@ -18,6 +18,7 @@ import kotlin.time.toJavaInstant
 private const val MinSizeRatio = 0.01f
 private const val MaxExtensionLabelLength = 4
 private const val NoExtensionLabel = "FILE"
+private const val EllipsisPrefix = "…"
 
 fun FileDomainModel.toUi(
     withFoldersSize: Boolean,
@@ -72,6 +73,32 @@ internal fun fileTypeOf(name: String, isDirectory: Boolean): FileTypeUiModel {
         else -> FileTypeUiModel.Other
     }
 }
+
+/**
+ * Removes the folder of the app on the device from [path]: the folder all the [rootPaths] announced by the app share
+ * ("/data/user/0/com.app/files/datastore" -> "…/files/datastore"), or the parent of the root when there is only one.
+ * The path is returned as is when it is not inside that folder.
+ */
+internal fun shortDevicePath(path: String, rootPaths: List<String>): String {
+    val roots = rootPaths.filter { it.isNotBlank() }.map { it.trimEnd('/') }
+    val appFolder = when (roots.size) {
+        0 -> return path
+        1 -> roots.single().substringBeforeLast('/', missingDelimiterValue = "")
+        else -> commonFolderOf(roots)
+    }
+    return when {
+        appFolder.isEmpty() -> path
+        path == appFolder -> "$EllipsisPrefix/${appFolder.substringAfterLast('/')}"
+        path.startsWith("$appFolder/") -> EllipsisPrefix + path.removePrefix(appFolder)
+        else -> path
+    }
+}
+
+// longest folder shared by all the paths, "" when they only share "/"
+private fun commonFolderOf(paths: List<String>): String = paths
+    .map { it.split('/') }
+    .reduce { common, segments -> common.zip(segments).takeWhile { (a, b) -> a == b }.map { it.first } }
+    .joinToString("/")
 
 internal fun extensionLabelOf(name: String, type: FileTypeUiModel): String = when (type) {
     FileTypeUiModel.Folder -> ""
