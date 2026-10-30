@@ -90,8 +90,8 @@ fun main() {
     val dogDatabase = dogDatabase()
     val foodDatabase = foodDatabase()
 
-    Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = dogDatabase)
-    Flocon.databasePlugin.register(id = "food", displayName = "food", database = foodDatabase)
+    Flocon.databasePlugin.register(id = "dogs_jvm", displayName = "dogs", database = dogDatabase)
+    Flocon.databasePlugin.register(id = "food_jvm", displayName = "food", database = foodDatabase)
 
     initializeDatabases(dogDatabase = dogDatabase, foodDatabase = foodDatabase)
 

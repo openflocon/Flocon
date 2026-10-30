@@ -24,13 +24,13 @@ object Databases {
         Room.databaseBuilder<DogDatabase>(name = "dogs_database.db")
             .setDriver(driver)
             .build()
-            .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
+            .also { Flocon.databasePlugin.register(id = "dogs_wasm", displayName = "dogs", database = it) }
     }
 
     val foodDatabase: FoodDatabase by lazy {
         Room.databaseBuilder<FoodDatabase>(name = "food_database.db")
             .setDriver(driver)
             .build()
-            .also { Flocon.databasePlugin.register(id = "food", displayName = "food", database = it) }
+            .also { Flocon.databasePlugin.register(id = "food_wasm", displayName = "food", database = it) }
     }
 }

@@ -23,7 +23,7 @@ object Databases {
                 .setDriver(NativeSQLiteDriver())
                 .build()
             dogDatabase = instance
-            Flocon.databasePlugin.register(id = "Dog Database", displayName = "Dog Database", database = instance)
+            Flocon.databasePlugin.register(id = "dogs_ios", displayName = "Dog Database", database = instance)
             instance
         }
     }
@@ -37,7 +37,7 @@ object Databases {
                 .setDriver(NativeSQLiteDriver())
                 .build()
             foodDatabase = instance
-            Flocon.databasePlugin.register(id = "Food Database", displayName = "Food Database", database = instance)
+            Flocon.databasePlugin.register(id = "food_ios", displayName = "Food Database", database = instance)
             instance
         }
     }
