@@ -81,6 +81,7 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         changeValue = viewModel::onValueChanged,
         onEditClicked = viewModel::onEditClicked,
         onCopyClicked = viewModel::onCopyClicked,
+        onDeleteClicked = viewModel::onDeleteClicked,
         autoUpdateState = autoUpdateState,
         onAutoUpdateChange = viewModel::onAutoUpdateChange,
         onAutoUpdateDelayChanged = viewModel::onAutoUpdateDelayChanged,
@@ -96,6 +97,7 @@ fun SharedPrefScreen(
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onDeleteClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     autoUpdateState: PreferenceAutoUpdate,
     onAutoUpdateChange: (Boolean) -> Unit,
     onAutoUpdateDelayChanged: (delay: Int) -> Unit,
@@ -112,6 +114,8 @@ fun SharedPrefScreen(
     }
     // UI only: the collapsible rows (json, long text) currently expanded, by key
     var expandedKeys by remember(deviceSharedPrefs) { mutableStateOf(emptySet<String>()) }
+    // UI only: the row waiting for the delete confirmation
+    var rowToDelete by remember { mutableStateOf<SharedPreferencesRowUiModel?>(null) }
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
@@ -180,6 +184,7 @@ fun SharedPrefScreen(
                                 onValueChanged = changeValue,
                                 onEditClicked = onEditClicked,
                                 onCopyClicked = onCopyClicked,
+                                onDeleteClicked = { row -> rowToDelete = row },
                             )
                         }
                     }
@@ -207,6 +212,17 @@ fun SharedPrefScreen(
                 }
             }
         }
+    }
+
+    rowToDelete?.let { row ->
+        SharedPreferenceDeleteDialog(
+            key = row.key,
+            onConfirm = {
+                onDeleteClicked(row)
+                rowToDelete = null
+            },
+            onDismiss = { rowToDelete = null },
+        )
     }
 }
 
@@ -254,6 +270,7 @@ private fun SharedPrefScreenPreview() {
             changeValue = { _, _ -> },
             onEditClicked = {},
             onCopyClicked = {},
+            onDeleteClicked = {},
             autoUpdateState = PreferenceAutoUpdate.Disabled,
             onAutoUpdateChange = {},
             onAutoUpdateDelayChanged = {},

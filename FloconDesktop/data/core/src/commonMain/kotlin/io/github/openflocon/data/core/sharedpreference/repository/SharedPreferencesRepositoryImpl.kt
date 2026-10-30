@@ -128,4 +128,18 @@ class SharedPreferencesRepositoryImpl(
             )
         }
     }
+
+    override suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
+    ) {
+        withContext(dispatcherProvider.data) {
+            remote.removeSharedPrefField(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                sharedPreference = sharedPreference,
+                key = key,
+            )
+        }
+    }
 }

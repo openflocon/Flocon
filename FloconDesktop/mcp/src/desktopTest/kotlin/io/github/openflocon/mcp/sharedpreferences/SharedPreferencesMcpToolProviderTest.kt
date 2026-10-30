@@ -169,4 +169,10 @@ private class FakeSharedPreferencesRepository(
         key: String,
         value: Value,
     ) = error("not used")
+
+    override suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
+    ) = error("not used")
 }

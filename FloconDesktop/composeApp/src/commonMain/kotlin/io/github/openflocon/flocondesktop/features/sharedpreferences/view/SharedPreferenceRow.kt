@@ -56,6 +56,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,10 +86,12 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.preference_cancel
 import flocondesktop.composeapp.generated.resources.preference_copy
 import flocondesktop.composeapp.generated.resources.preference_decrement
+import flocondesktop.composeapp.generated.resources.preference_delete
 import flocondesktop.composeapp.generated.resources.preference_edit
 import flocondesktop.composeapp.generated.resources.preference_increment
 import flocondesktop.composeapp.generated.resources.preference_read_only
 import flocondesktop.composeapp.generated.resources.preference_save
+import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceValueTypeUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.asString
@@ -100,8 +103,10 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previ
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringSetRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.WithTooltip
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
 private val ActionSize = 30.dp
@@ -112,6 +117,37 @@ private val MonoSmall = 12.sp
 
 @Composable
 fun SharedPreferenceRow(
+    model: SharedPreferencesRowUiModel,
+    isExpanded: Boolean,
+    onToggleExpanded: (key: String) -> Unit,
+    onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onDeleteClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val deleteLabel = stringResource(Res.string.preference_delete)
+    val onDelete by rememberUpdatedState(onDeleteClicked)
+    val menuItems = remember(model, deleteLabel) {
+        persistentListOf<FloconContextMenuItem>(
+            FloconContextMenuItem.Item(label = deleteLabel, onClick = { onDelete(model) }),
+        )
+    }
+    ContextualMenu(items = menuItems) {
+        SharedPreferenceRowContent(
+            model = model,
+            isExpanded = isExpanded,
+            onToggleExpanded = onToggleExpanded,
+            onValueChanged = onValueChanged,
+            onEditClicked = onEditClicked,
+            onCopyClicked = onCopyClicked,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun SharedPreferenceRowContent(
     model: SharedPreferencesRowUiModel,
     isExpanded: Boolean,
     onToggleExpanded: (key: String) -> Unit,
@@ -650,6 +686,7 @@ private fun PreviewRow(model: SharedPreferencesRowUiModel, isExpanded: Boolean =
                 onValueChanged = { _, _ -> },
                 onEditClicked = {},
                 onCopyClicked = {},
+                onDeleteClicked = {},
             )
         }
     }

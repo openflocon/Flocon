@@ -36,6 +36,10 @@ data class FloconSharedPreference(
         editor.apply()
     }
 
+    override suspend fun remove(columnName: String) {
+        sharedPreferences.edit().remove(columnName).apply()
+    }
+
     override suspend fun columns(): List<String> {
         return sharedPreferences.all.keys.toList()
     }

@@ -58,6 +58,17 @@ class FloconDatastorePreference(
         }
     }
 
+    override suspend fun remove(columnName: String) {
+        try {
+            dataStore.edit { preferences ->
+                val key = preferences.asMap().keys.find { it.name == columnName } ?: return@edit
+                preferences.remove(key)
+            }
+        } catch (t: Throwable) {
+            FloconLogger.logError(t.message ?: "cannot remove datastore preference", t)
+        }
+    }
+
     override suspend fun columns(): List<String> {
         return try {
             dataStore.data.first().asMap().map { it.key.name }

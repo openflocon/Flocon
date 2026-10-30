@@ -356,6 +356,9 @@
     <string name="preference_cancel">Annuler</string>
     <string name="preference_edit">Modifier</string>
     <string name="preference_copy">Copier</string>
+    <string name="preference_delete">Supprimer</string>
+    <string name="preference_delete_title">Supprimer « %1$s » ?</string>
+    <string name="preference_delete_message">La clé est supprimée de l'app. Cette action est définitive.</string>
     <string name="preference_read_only">lecture seule</string>
     <string name="preferences_file_empty_title">%1$s est vide</string>
     <string name="preferences_file_empty_subtitle">L'application n'a encore rien écrit dans ce fichier.</string>

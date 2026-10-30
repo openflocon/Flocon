@@ -10,6 +10,7 @@ import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDo
 import io.github.openflocon.domain.sharedpreference.usecase.EditSharedPrefFieldUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.RemoveSharedPrefFieldUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -39,6 +40,7 @@ class SharedPreferencesViewModel(
     private val sharedPrefSelectorDelegate: SharedPrefSelectorDelegate,
     private val observeCurrentDeviceSharedPreferenceValuesUseCase: ObserveCurrentDeviceSharedPreferenceValuesUseCase,
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
+    private val removeSharedPrefFieldUseCase: RemoveSharedPrefFieldUseCase,
     private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
     private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
@@ -192,6 +194,13 @@ class SharedPreferencesViewModel(
 
     fun onEditClicked(row: SharedPreferencesRowUiModel) {
         navigationState.navigate(SharedPreferencesRoutes.Edit(row.key))
+    }
+
+    // the device answers with the refreshed values, like after an edit
+    fun onDeleteClicked(row: SharedPreferencesRowUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            removeSharedPrefFieldUseCase(row.key)
+        }
     }
 
     fun onCopyClicked(row: SharedPreferencesRowUiModel) {

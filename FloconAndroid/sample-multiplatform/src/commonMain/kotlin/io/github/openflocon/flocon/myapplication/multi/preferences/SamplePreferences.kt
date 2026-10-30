@@ -20,12 +20,23 @@ object SamplePreferences : FloconPreference {
 
     private val values = mutableMapOf<String, FloconPreferenceValue>()
 
+    // default keys deleted from the desktop app, until they are set again
+    private val removed = mutableSetOf<String>()
+
     override suspend fun set(columnName: String, value: FloconPreferenceValue) {
         if (columnName == COUNTER) value.intValue?.let { counter = it }
         values[columnName] = value
+        removed -= columnName
     }
 
-    override suspend fun columns(): List<String> = (listOf(COUNTER, "username") + values.keys).distinct()
+    override suspend fun remove(columnName: String) {
+        if (columnName == COUNTER) counter = 0
+        values -= columnName
+        removed += columnName
+    }
+
+    override suspend fun columns(): List<String> =
+        (listOf(COUNTER, "username") + values.keys).distinct() - removed
 
     override suspend fun get(columnName: String): FloconPreferenceValue? = when (columnName) {
         COUNTER -> FloconPreferenceValue(intValue = counter)
