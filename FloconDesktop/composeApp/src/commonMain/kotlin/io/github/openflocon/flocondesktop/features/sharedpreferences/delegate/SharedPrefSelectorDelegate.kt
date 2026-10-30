@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences.delegate
 
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
-import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.usecase.AskForDeviceSharedPreferencesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
@@ -12,6 +11,7 @@ import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableD
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.toUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,16 +39,12 @@ class SharedPrefSelectorDelegate(
             if (sharedPrefs.isEmpty()) {
                 SharedPrefsStateUiModel.Empty
             } else {
+                val selectedOrFirst = selected ?: sharedPrefs.first().also {
+                    selectCurrentDeviceSharedPrefUseCase(it.id)
+                }
                 SharedPrefsStateUiModel.WithContent(
-                    preferences = sharedPrefs.map { toUi(it) },
-                    selected =
-                    toUi(
-                        selected ?: run {
-                            sharedPrefs.first().also {
-                                selectCurrentDeviceSharedPrefUseCase(it.id)
-                            }
-                        },
-                    ),
+                    preferences = sharedPrefs.map { it.toUi() },
+                    selected = selectedOrFirst.toUi(),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
@@ -57,11 +53,6 @@ class SharedPrefSelectorDelegate(
                 SharingStarted.WhileSubscribed(5_000),
                 SharedPrefsStateUiModel.Loading,
             )
-
-    fun toUi(sharedPref: DeviceSharedPreferenceDomainModel) = DeviceSharedPrefUiModel(
-        id = sharedPref.id,
-        name = sharedPref.name,
-    )
 
     fun onSharedPreferenceSelected(sharedPref: DeviceSharedPrefUiModel) {
         coroutineScope.launch(dispatcherProvider.viewModel) {

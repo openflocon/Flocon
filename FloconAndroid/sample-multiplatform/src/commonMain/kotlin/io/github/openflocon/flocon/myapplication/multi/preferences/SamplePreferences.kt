@@ -12,6 +12,9 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceVal
 object SamplePreferences : FloconPreference {
     override val name: String = "Sample preferences"
 
+    // free value, any storage name can be displayed by the desktop app
+    override val type: String = "In memory"
+
     /** Backed by a Compose state, so the screen follows the edits made from the desktop app. */
     var counter: Int by mutableIntStateOf(0)
 

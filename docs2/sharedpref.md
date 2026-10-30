@@ -92,6 +92,7 @@ You can expose any proprietary storage system (such as EncryptedSharedPreference
 ```kotlin
 class MyCustomPreference : FloconPreference {
     override val name: String = "Encrypted Vault"
+    override val type: String = "EncryptedSharedPreferences"
 
     override suspend fun columns(): List<String> = listOf("token", "is_authenticated")
 
@@ -106,3 +107,24 @@ class MyCustomPreference : FloconPreference {
 
 Flocon.preferencesPlugin.register(MyCustomPreference())
 ```
+
+---
+
+### Preference type
+
+Each preference tells the desktop app which storage it comes from. The type is displayed with its icon next to the name in the preference selector (known types have their own icon, the others a generic one) (and returned by the MCP `list_shared_preferences` tool).
+
+The built-in preferences set it for you. For your own `FloconPreference`, override `type` with one of the `FloconPreferenceType` constants or any free value (defaults to `"Custom"`):
+
+| Constant | Value | Platform |
+|---|---|---|
+| `FloconPreferenceType.SharedPreferences` | `SharedPreferences` | Android |
+| `FloconPreferenceType.DataStore` | `DataStore` | Android, iOS, JVM |
+| `FloconPreferenceType.UserDefaults` | `UserDefaults` | iOS |
+| `FloconPreferenceType.Keychain` | `Keychain` | iOS |
+| `FloconPreferenceType.JavaPreferences` | `Java Preferences` | JVM |
+| `FloconPreferenceType.LocalStorage` | `LocalStorage` | Wasm |
+| `FloconPreferenceType.Custom` | `Custom` | default |
+
+!!! note "Swift"
+    Kotlin default getters are not inherited by Swift classes: a Swift class implementing `FloconPreference` must declare `type`.

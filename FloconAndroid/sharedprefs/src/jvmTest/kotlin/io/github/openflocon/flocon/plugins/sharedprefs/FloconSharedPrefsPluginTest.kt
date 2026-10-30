@@ -5,6 +5,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceType
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -21,7 +22,10 @@ class FloconSharedPrefsPluginTest {
         override fun sendPendingMessages() {}
     }
 
-    private class InMemoryPreference(override val name: String) : FloconPreference {
+    private class InMemoryPreference(
+        override val name: String,
+        override val type: String = FloconPreferenceType.Custom,
+    ) : FloconPreference {
         val values = mutableMapOf("age" to FloconPreferenceValue(intValue = 34))
         override suspend fun set(columnName: String, value: FloconPreferenceValue) {
             values[columnName] = value
@@ -45,7 +49,19 @@ class FloconSharedPrefsPluginTest {
         val (pluginName, method, body) = sender.messages.single()
         assertEquals(Protocol.FromDevice.SharedPreferences.Plugin, pluginName)
         assertEquals(Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences, method)
-        assertEquals("[{\"name\":\"user\"}]", body)
+        assertEquals("[{\"name\":\"user\",\"type\":\"Custom\"}]", body)
+    }
+
+    @Test
+    fun `register sends the type of each preference`() {
+        plugin.register(InMemoryPreference(name = "settings", type = FloconPreferenceType.DataStore))
+        plugin.register(InMemoryPreference(name = "room", type = "Room"))
+
+        val (_, _, body) = sender.messages.last()
+        assertEquals(
+            "[{\"name\":\"room\",\"type\":\"Room\"},{\"name\":\"settings\",\"type\":\"DataStore\"}]",
+            body,
+        )
     }
 
     @Test

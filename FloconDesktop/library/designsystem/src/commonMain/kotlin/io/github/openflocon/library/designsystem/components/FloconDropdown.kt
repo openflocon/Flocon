@@ -105,6 +105,7 @@ fun FloconDropdownMenuItem(
     secondaryAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
 ) {
     FloconMenuItem(
         text = text,
@@ -113,6 +114,7 @@ fun FloconDropdownMenuItem(
         secondaryAction = secondaryAction,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
+        leadingContent = leadingContent,
     )
 }
 

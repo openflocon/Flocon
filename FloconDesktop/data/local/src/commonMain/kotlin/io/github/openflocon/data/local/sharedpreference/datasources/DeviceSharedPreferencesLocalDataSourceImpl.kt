@@ -42,11 +42,14 @@ internal class DeviceSharedPreferencesLocalDataSourceImpl : DeviceSharedPreferen
     ) {
         deviceSharedPreferences.update {
             val actual = it[deviceIdAndPackageName]
+            // keyed by id, so a preference sent again replaces the previous one
             val newList = buildList {
                 actual?.let(::addAll)
                 addAll(sharedPreferences)
             }
-                .distinct()
+                .associateBy { it.id }
+                .values
+                .toList()
             it + (deviceIdAndPackageName to newList)
         }
 

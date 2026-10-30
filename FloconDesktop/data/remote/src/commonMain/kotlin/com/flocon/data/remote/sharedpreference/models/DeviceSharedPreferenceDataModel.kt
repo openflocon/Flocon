@@ -6,11 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DeviceSharedPreferenceDataModel(
     val name: String,
+    val type: String? = null,
 )
 
 fun toDeviceSharedPreferenceDomain(list: List<DeviceSharedPreferenceDataModel>): List<DeviceSharedPreferenceDomainModel> = list.map {
     DeviceSharedPreferenceDomainModel(
         id = it.name,
         name = it.name,
+        type = it.type,
     )
 }

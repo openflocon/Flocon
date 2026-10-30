@@ -14,6 +14,8 @@ internal data class SharedPreferencesMcpResult(
 internal data class SharedPreferenceMcpModel(
     val sharedPreferenceId: String,
     val name: String,
+    /** storage of the preference (SharedPreferences, DataStore, UserDefaults, Keychain... or a free value), null for older SDKs */
+    val type: String?,
 )
 
 @Serializable

@@ -60,6 +60,8 @@ internal fun SharedPreferenceSelector(
 
                 is SharedPrefsStateUiModel.WithContent -> FloconPageSelector(
                     value = state.selected.name,
+                    leadingContent = { PreferenceTypeIcon(state.selected.typeKind) },
+                    caption = state.selected.type,
                     onClick = onClick,
                 )
             }
@@ -80,17 +82,28 @@ internal fun SharedPreferenceSelector(
             if (state is SharedPrefsStateUiModel.WithContent) {
                 val filteredItems = remember(filterText, state.preferences) {
                     state.preferences.filter {
-                        it.name.contains(filterText, ignoreCase = true)
+                        it.name.contains(filterText, ignoreCase = true) ||
+                            it.type?.contains(filterText, ignoreCase = true) == true
                     }
                 }
 
                 filteredItems.fastForEach { preference ->
                     FloconDropdownMenuItem(
                         text = preference.name,
+                        leadingContent = { PreferenceTypeIcon(preference.typeKind) },
                         onClick = {
                             onSharedPrefSelected(preference)
                             expanded = false
-                        }
+                        },
+                        secondaryAction = preference.type?.let { type ->
+                            {
+                                Text(
+                                    text = type,
+                                    style = FloconTheme.typography.bodySmall,
+                                    color = FloconTheme.colors.inkFaint,
+                                )
+                            }
+                        },
                     )
                 }
             }

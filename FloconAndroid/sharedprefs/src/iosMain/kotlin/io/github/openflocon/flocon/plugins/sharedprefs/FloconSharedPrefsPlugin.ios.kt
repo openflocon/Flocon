@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.plugins.sharedprefs
 
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceType
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import platform.Foundation.NSUserDefaults
 
@@ -17,6 +18,8 @@ private class UserDefaultsPreference(
 ) : FloconPreference {
 
     override val name: String = "UserDefaults"
+
+    override val type: String = FloconPreferenceType.UserDefaults
 
     private fun app(): Map<String, Any?> = defaults.dictionaryRepresentation()
         .mapNotNull { (key, value) -> (key as? String)?.let { it to value } }

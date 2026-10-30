@@ -168,7 +168,7 @@ internal class FloconSharedPrefsPluginImpl(
     private fun sendAllSharedPrefs() {
         val descriptors = preferences.value.values
             .sortedBy { it.name }
-            .map { PreferencesDescriptor(it.name) }
+            .map { PreferencesDescriptor(name = it.name, type = it.type) }
 
         try {
             sender.send(
