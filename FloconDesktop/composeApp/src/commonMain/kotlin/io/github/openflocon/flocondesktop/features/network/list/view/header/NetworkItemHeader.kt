@@ -109,12 +109,11 @@ fun NetworkItemHeader(
                 )
             }
         }
-        // the request column takes the remaining space: its right border resizes the status column
-        ResizableHeaderCell(
+        // the request column takes the remaining space: the columns on its right are resized from their left border
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .onSizeChanged { columnWidths.requestWidth = with(density) { it.width.toDp() } },
-            onResize = { columnWidths.resize(ResizableColumn.Status, -it) },
         ) {
             HeaderDropdown(
                 label = stringResource(Res.string.network_header_request),
@@ -132,7 +131,8 @@ fun NetworkItemHeader(
         }
         ResizableHeaderCell(
             modifier = Modifier.width(columnWidths.statusCodeWidth),
-            onResize = { columnWidths.resize(ResizableColumn.Status, it) },
+            handleAlignment = Alignment.CenterStart,
+            onResize = { columnWidths.resize(ResizableColumn.Status, -it) },
         ) {
             HeaderDropdown(
                 label = stringResource(Res.string.network_header_status),
@@ -149,7 +149,8 @@ fun NetworkItemHeader(
         }
         ResizableHeaderCell(
             modifier = Modifier.width(columnWidths.timeWidth),
-            onResize = { columnWidths.resize(ResizableColumn.Time, it) },
+            handleAlignment = Alignment.CenterStart,
+            onResize = { columnWidths.resize(ResizableColumn.Time, -it) },
         ) {
             HeaderDropdown(
                 label = stringResource(Res.string.network_header_time),
@@ -171,6 +172,7 @@ fun NetworkItemHeader(
 private fun ResizableHeaderCell(
     onResize: (Dp) -> Unit,
     modifier: Modifier = Modifier,
+    handleAlignment: Alignment = Alignment.CenterEnd,
     content: @Composable () -> Unit,
 ) {
     Box(modifier = modifier) {
@@ -178,7 +180,7 @@ private fun ResizableHeaderCell(
         // sized to the cell, so the handle's fillMaxHeight doesn't stretch the header
         Box(
             modifier = Modifier.matchParentSize(),
-            contentAlignment = Alignment.CenterEnd,
+            contentAlignment = handleAlignment,
         ) {
             ColumnResizeHandle(onResize = onResize)
         }
