@@ -55,7 +55,7 @@ class FilterPanelMapperTest {
         assertEquals("OPTIONS", (methods["OPTIONS"] as NetworkMethodUi.OTHER).text)
 
         // the methods and the status are displayed as tags side by side, a hidden value is unchecked
-        val hiddenPost = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkMethod to setOf("POST")), onlyWithEvents = false)
+        val hiddenPost = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkMethod to setOf("POST")))
             .sections.first { it.source == TimelineSource.Network }.groups.first { it.facet == TimelineFacet.NetworkMethod }
         assertTrue(hiddenPost.asTags)
         assertEquals(false, hiddenPost.values.first { it.method == NetworkMethodUi.Http.POST }.selected)
@@ -66,7 +66,7 @@ class FilterPanelMapperTest {
         assertEquals(listOf(1, 2, 3, 4, 5), families)
 
         // the other facets are plain values
-        val database = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
+        val database = summary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Database }
         val statements = database.groups.first { it.facet == TimelineFacet.DatabaseStatement }
         assertTrue(statements.values.all { it.method == null && it.httpFamily == null })
         assertEquals(false, statements.asTags)
