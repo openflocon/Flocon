@@ -23,6 +23,13 @@ For every downloaded image, Flocon displays:
 
 Use the toolbar icons to switch between the **grid** (one card per image) and the **list** (one compact row per image).
 
+Click an image to open it in the **full-screen viewer**:
+
+- Browse with the arrows, the filmstrip at the bottom, or the `←` / `→` keys; `Esc` closes it
+- Zoom with a trackpad pinch (macOS), `⌘`/`Ctrl` + mouse wheel, a double click, the `+` / `-` keys or the toolbar buttons; `0` goes back to fit
+- When zoomed, scroll or drag to move around the image
+- Copy the URL or open it in your browser from the toolbar
+
 This is invaluable for debugging missing placeholders, CDN resolution failures, image compression artifacts, or unexpected network cache misses.
 
 ---
