@@ -114,7 +114,6 @@ internal fun FilesFooter(
             FooterPath(
                 path = path,
                 onClick = { onCopyPath(path) },
-                modifier = Modifier.weight(1f, fill = false),
             )
         }
     }
