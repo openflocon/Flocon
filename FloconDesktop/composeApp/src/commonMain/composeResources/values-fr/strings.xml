@@ -361,4 +361,6 @@
     <string name="preferences_file_empty_subtitle">L'application n'a encore rien écrit dans ce fichier.</string>
     <string name="preferences_no_match_title">Aucune clé ne correspond à “%1$s”</string>
     <string name="preferences_clear_filter">Effacer le filtre</string>
+    <string name="preference_increment">Incrémenter</string>
+    <string name="preference_decrement">Décrémenter</string>
 </resources>

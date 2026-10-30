@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
@@ -80,7 +81,8 @@ fun PreferenceAutoUpdate(
         modifier = modifier
             .height(FloconTheme.sizes.pageBarControlHeight)
             .clip(shape)
-            .background(colors.bg300)
+            // same fill as the filter bar next to it
+            .background(colors.bg300.let { it.copy(alpha = it.alpha * 0.75f) })
             .border(1.dp, colors.lineStrong, shape),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -88,7 +90,7 @@ fun PreferenceAutoUpdate(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(if (isLive) colors.accentSoft else colors.bg300)
+                .background(if (isLive) colors.accentSoft else Color.Transparent)
                 .clickable { onChange(!isLive) }
                 .pointerHoverIcon(PointerIcon.Hand)
                 .padding(horizontal = FloconTheme.spacing.medium),
@@ -98,20 +100,26 @@ fun PreferenceAutoUpdate(
             Box(
                 modifier = Modifier
                     .size(HaloSize)
-                    .background(if (isLive) colors.accent.copy(alpha = 0.25f) else colors.bg300, CircleShape),
+                    .background(if (isLive) colors.accent.copy(alpha = 0.25f) else Color.Transparent, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Box(
                     Modifier
                         .size(DotSize)
-                        .background(if (isLive) colors.accent else colors.inkFaint, CircleShape),
+                        .then(
+                            if (isLive) {
+                                Modifier.background(colors.accent, CircleShape)
+                            } else {
+                                Modifier.border(1.5.dp, colors.inkMuted, CircleShape)
+                            },
+                        ),
                 )
             }
             Text(
                 text = stringResource(Res.string.auto_update_live),
                 style = FloconTheme.typography.labelMedium,
-                fontWeight = if (isLive) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (isLive) colors.accent else colors.inkMuted,
+                fontWeight = if (isLive) FontWeight.SemiBold else FontWeight.Medium,
+                color = if (isLive) colors.accent else colors.ink,
             )
         }
 

@@ -434,4 +434,6 @@
     <string name="preferences_file_empty_subtitle">The app hasn't written anything in this file yet.</string>
     <string name="preferences_no_match_title">No key matches “%1$s”</string>
     <string name="preferences_clear_filter">Clear filter</string>
+    <string name="preference_increment">Increment</string>
+    <string name="preference_decrement">Decrement</string>
 </resources>

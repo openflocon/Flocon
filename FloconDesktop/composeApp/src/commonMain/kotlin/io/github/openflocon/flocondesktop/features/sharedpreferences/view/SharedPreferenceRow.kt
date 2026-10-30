@@ -2,15 +2,21 @@
 
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -18,19 +24,25 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -52,6 +65,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +77,9 @@ import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.preference_cancel
 import flocondesktop.composeapp.generated.resources.preference_copy
+import flocondesktop.composeapp.generated.resources.preference_decrement
 import flocondesktop.composeapp.generated.resources.preference_edit
+import flocondesktop.composeapp.generated.resources.preference_increment
 import flocondesktop.composeapp.generated.resources.preference_read_only
 import flocondesktop.composeapp.generated.resources.preference_save
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceValueTypeUiModel
@@ -78,7 +94,6 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previ
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringSetRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import org.jetbrains.compose.resources.stringResource
 
@@ -113,7 +128,7 @@ fun SharedPreferenceRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(if (isDirty) colors.accentSoft.copy(alpha = 0.4f) else Color.Transparent)
+            .background(if (isDirty) colors.accent.copy(alpha = 0.05f) else Color.Transparent)
             .drawBehind {
                 val y = size.height - 0.5f
                 drawLine(lineColor, Offset(0f, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
@@ -168,6 +183,11 @@ fun SharedPreferenceRow(
                             isDirty = isDirty,
                             onSave = { onValueChanged(model, text) },
                             onCancel = { text = originalText },
+                            onStep = if (value is SharedPreferencesRowUiModel.Value.IntValue || value is SharedPreferencesRowUiModel.Value.LongValue) {
+                                { delta -> text.trim().toLongOrNull()?.let { text = (it + delta).toString() } }
+                            } else {
+                                null
+                            },
                             modifier = if (value is SharedPreferencesRowUiModel.Value.StringValue) {
                                 Modifier.fillMaxWidth()
                             } else {
@@ -304,6 +324,34 @@ private fun ActionButton(
 }
 
 @Composable
+private fun PreferenceSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    val colors = FloconTheme.colors
+    val thumbOffset by animateDpAsState(if (checked) 18.dp else 2.dp)
+    val trackColor by animateColorAsState(if (checked) colors.accent else colors.bg300)
+    val thumbColor by animateColorAsState(if (checked) colors.accentInk else colors.inkMuted)
+    val shape = RoundedCornerShape(50)
+    Box(
+        modifier = Modifier
+            .size(width = 36.dp, height = 20.dp)
+            .background(trackColor, shape)
+            .border(1.dp, if (checked) colors.accent else colors.lineStrong, shape)
+            .clip(shape)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .pointerHoverIcon(PointerIcon.Hand),
+    ) {
+        Box(
+            Modifier
+                .offset(x = thumbOffset - 1.dp, y = 1.dp)
+                .size(16.dp)
+                .background(thumbColor, CircleShape),
+        )
+    }
+}
+
+@Composable
 private fun BooleanValue(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
@@ -313,7 +361,7 @@ private fun BooleanValue(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        FloconSwitch(
+        PreferenceSwitch(
             checked = local,
             onCheckedChange = {
                 local = it
@@ -428,6 +476,8 @@ private fun PreferenceValueField(
     onSave: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
+    // +1 / -1 for the numeric fields
+    onStep: ((delta: Int) -> Unit)? = null,
 ) {
     val colors = FloconTheme.colors
     val shape = RoundedCornerShape(FieldRadius)
@@ -455,24 +505,66 @@ private fun PreferenceValueField(
                             isDirty
                         }
 
+                        Key.DirectionUp -> {
+                            onStep?.invoke(1)
+                            onStep != null
+                        }
+
+                        Key.DirectionDown -> {
+                            onStep?.invoke(-1)
+                            onStep != null
+                        }
+
                         else -> false
                     }
                 }
             },
         decorationBox = { inner ->
-            Box(
-                contentAlignment = Alignment.CenterStart,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(ActionSize)
                     .background(colors.bg000, shape)
                     .border(1.dp, if (isDirty) colors.accent else colors.line, shape)
-                    .padding(horizontal = FloconTheme.spacing.small),
+                    .padding(start = FloconTheme.spacing.small),
             ) {
-                inner()
+                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) { inner() }
+                if (onStep != null) {
+                    Column(Modifier.width(18.dp)) {
+                        StepButton(Icons.Filled.KeyboardArrowUp, stringResource(Res.string.preference_increment)) { onStep(1) }
+                        StepButton(Icons.Filled.KeyboardArrowDown, stringResource(Res.string.preference_decrement)) { onStep(-1) }
+                    }
+                }
             }
         },
     )
+}
+
+@Composable
+private fun ColumnScope.StepButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val hovered by interaction.collectIsHoveredAsState()
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
+            .hoverable(interaction)
+            .clickable(onClick = onClick)
+            .pointerHoverIcon(PointerIcon.Hand),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = if (hovered) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
+            modifier = Modifier.size(10.dp),
+        )
+    }
 }
 
 @Composable
