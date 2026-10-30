@@ -90,7 +90,7 @@ floconRegisterPreference(MyCustomPreference())
 
 ### Preference type
 
-Each preference tells the desktop app which storage it comes from. The type is displayed next to its name in the preference selector (and returned by the MCP `list_shared_preferences` tool).
+Each preference tells the desktop app which storage it comes from. The type is displayed with its icon next to the name in the preference selector (known types have their own icon, the others a generic one) (and returned by the MCP `list_shared_preferences` tool).
 
 The built-in preferences set it for you. For your own `FloconPreference`, override `type` with one of the `FloconPreferenceType` constants or any free value (defaults to `"Custom"`):
 
