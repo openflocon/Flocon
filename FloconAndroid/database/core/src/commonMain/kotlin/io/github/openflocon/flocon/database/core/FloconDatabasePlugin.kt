@@ -10,9 +10,15 @@ interface FloconDatabasePlugin : FloconPlugin {
 
     val providers: List<FloconDatabaseProvider>
 
+    /**
+     * @throws IllegalArgumentException if another database is already registered with the same [FloconDatabaseModel.id]
+     */
     fun register(floconDatabaseModel: FloconDatabaseModel)
 
-    fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>)
+    /**
+     * @param dbId the id the database was registered with (see [register]), the queries are shown with this database in the desktop app
+     */
+    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>)
 
 }
 
@@ -23,7 +29,7 @@ private class NoOpDatabasePlugin : FloconDatabasePlugin {
     override val key: String = ""
     override val providers: List<FloconDatabaseProvider> = emptyList()
     override fun register(floconDatabaseModel: FloconDatabaseModel) = Unit
-    override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }

@@ -206,7 +206,7 @@ class DatabaseMcpToolProviderTest {
         appInstance: Long,
         isTransaction: Boolean = false,
     ) = DatabaseQueryLogDomainModel(
-        dbName = "app.db",
+        dbId = "/data/databases/app.db",
         sqlQuery = sql,
         bindArgs = args,
         timestamp = timestamp,
@@ -248,29 +248,29 @@ private class FakeDatabaseRepository(
     }
 
     private fun filteredLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,
     ) = logs
-        .filter { it.dbName == dbName }
+        .filter { it.dbId == dbId }
         .filter { showTransactions || !it.isTransaction }
         .filter { appInstance == null || it.appInstance == appInstance }
         .filter { log -> filters.all { log.sqlQuery.contains(it.text) || log.bindArgs.orEmpty().any { arg -> arg.contains(it.text) } } }
 
     override suspend fun getLatestQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         appInstance: Long?,
         limit: Int,
-    ): List<DatabaseQueryLogDomainModel> = filteredLogs(dbName, showTransactions, filters, appInstance)
+    ): List<DatabaseQueryLogDomainModel> = filteredLogs(dbId, showTransactions, filters, appInstance)
         .sortedByDescending { it.timestamp }
         .take(limit)
 
     override suspend fun getQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -306,7 +306,7 @@ private class FakeDatabaseRepository(
     override suspend fun getFavorite(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, databaseId: String, id: Long): DatabaseFavoriteQueryDomainModel? = error("not used")
 
     override fun observeQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -315,7 +315,7 @@ private class FakeDatabaseRepository(
     ): Flow<List<DatabaseQueryLogDomainModel>> = error("not used")
 
     override fun countQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

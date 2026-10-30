@@ -187,13 +187,13 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
-                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
+                        "sqlQuery AS title, dbId AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
-                    textColumns = listOf("sqlQuery", "dbName"),
+                    textColumns = listOf("sqlQuery", "dbId"),
                     timeColumn = "timestamp",
                     facetExpressions = mapOf(
-                        TimelineFacet.DatabaseName to "dbName",
+                        TimelineFacet.DatabaseName to "dbId",
                         TimelineFacet.DatabaseStatement to DATABASE_STATEMENT,
                     ),
                     orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_DATABASE_LOGS",

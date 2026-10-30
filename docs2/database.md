@@ -74,25 +74,30 @@ To register a Room database (in-memory databases included) with a display name:
 val dogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
 
 Flocon.databasePlugin.register(
+    id = "inmemory_dogs",
     displayName = "In-Memory Dogs",
     database = dogDatabase,
 )
 ```
 
-`register(displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
+The `id` is required, stable and **unique**: registering two different databases with the same id throws an
+`IllegalArgumentException`. It is the id the desktop app uses for everything on this database (browsing, queries,
+query logs), so the query logs of a database must be sent with the same id (see below).
+
+`register(id, displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
 
 ### Room 3 on the web (Wasm)
 
 Room 3 runs on Wasm with `WebWorkerSQLiteDriver` (`androidx.sqlite:sqlite-web`), which talks to a SQLite
 Web Worker. There is no file system, so the databases are not discovered: register each Room database
-with `register(displayName, database)` (the plugin still has to be installed with `install(FloconDatabase) { room() }`):
+with `register(id, displayName, database)` (the plugin still has to be installed with `install(FloconDatabase) { room() }`):
 
 ```kotlin
 val dogDatabase = Room.databaseBuilder<DogDatabase>(name = "dogs.db")
     .setDriver(WebWorkerSQLiteDriver(createWorker()))
     .build()
 
-Flocon.databasePlugin.register(displayName = "dogs", database = dogDatabase)
+Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = dogDatabase)
 ```
 
 See `FloconAndroid/sample/wasm` for a complete setup (worker, npm package and KSP for wasmJs).
@@ -127,9 +132,13 @@ Flocon can display all SQL queries executed by your app in real-time — great f
         DogDatabase::class.java,
         "dogs_database"
     )
-        .floconLogs() // io.github.openflocon.flocon.database.room.extensions.floconLogs
+        .floconLogs(id = "dogs") // io.github.openflocon.flocon.database.room.extensions.floconLogs
         .build()
+        .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
     ```
+
+    The `id` given to `floconLogs` must be the one the database is registered with, otherwise the desktop app
+    cannot show the queries with the database.
 
     Room 3 has no query callback: use the manual logging.
 
@@ -137,7 +146,7 @@ Flocon can display all SQL queries executed by your app in real-time — great f
 
     ```kotlin
     Flocon.databasePlugin.logQuery(
-        dbName = "my_custom_db",
+        dbId = "my_custom_db", // the id the database was registered with
         sqlQuery = "SELECT * FROM users WHERE id = ?",
         bindArgs = listOf(42)
     )
@@ -149,7 +158,7 @@ Flocon can display all SQL queries executed by your app in real-time — great f
     ```kotlin
     Room.databaseBuilder(context, DogDatabase::class.java, "dogs_database")
         .setQueryCallback({ sqlQuery, bindArgs ->
-            Flocon.databasePlugin.logQuery("dogs_database", sqlQuery, bindArgs)
+            Flocon.databasePlugin.logQuery("dogs", sqlQuery, bindArgs)
             myOwnLogger.log(sqlQuery)
         }, Executors.newSingleThreadExecutor())
         .build()

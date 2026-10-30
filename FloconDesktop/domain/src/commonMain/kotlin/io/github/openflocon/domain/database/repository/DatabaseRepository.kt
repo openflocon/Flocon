@@ -79,7 +79,7 @@ interface DatabaseRepository {
     ): DatabaseFavoriteQueryDomainModel?
 
     fun observeQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -88,14 +88,14 @@ interface DatabaseRepository {
     ): Flow<List<DatabaseQueryLogDomainModel>>
 
     fun countQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): Flow<Int>
 
     suspend fun getQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -107,7 +107,7 @@ interface DatabaseRepository {
      * @param appInstance only the logs of this app session, all the sessions when null
      */
     suspend fun getLatestQueryLogs(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,

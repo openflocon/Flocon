@@ -15,7 +15,7 @@ fun DatabaseTab(
 ) {
     if (tab.isQueryLogs) {
         DatabaseQueryLogs(
-            dbName = tab.databaseName,
+            dbId = tab.databaseId,
             modifier = modifier.fillMaxSize()
         )
     } else {

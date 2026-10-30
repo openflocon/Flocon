@@ -12,11 +12,13 @@ import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecut
 
 /**
  * Registers a Room database, to browse it from the desktop app
+ *
+ * @param id unique and stable, also the one to give to the query logs of this database
  */
-fun FloconDatabasePlugin.register(displayName: String, database: RoomDatabase) {
+fun FloconDatabasePlugin.register(id: String, displayName: String, database: RoomDatabase) {
     register(
         FloconRoom3DatabaseModel(
-            id = displayName,
+            id = id,
             displayName = displayName,
             database = database
         )

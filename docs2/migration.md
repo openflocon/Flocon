@@ -96,8 +96,8 @@ Every plugin is now accessed with `Flocon.xxxPlugin`:
 | `floconTable("name").log("key" toParam "value")` | `Flocon.tablePlugin.table("name") { column("key", "value") }` |
 | `floconDashboard(id) { ... }` | `Flocon.dashboardPlugin.dashboard(id, scope) { ... }` |
 | `floconRegisterPreference(preference)` | `Flocon.preferencesPlugin.register(preference)` |
-| `floconRegisterDatabase(...)` | `Flocon.databasePlugin.register("name", roomDatabase)` |
-| `floconLogDatabaseQuery(...)` | `Flocon.databasePlugin.logQuery(...)` or `RoomDatabase.Builder.floconLogs()` |
+| `floconRegisterDatabase(...)` | `Flocon.databasePlugin.register("id", "name", roomDatabase)` (the id is required and unique) |
+| `floconLogDatabaseQuery(...)` | `Flocon.databasePlugin.logQuery(dbId, ...)` or `RoomDatabase.Builder.floconLogs(id)`, with the id the database is registered with |
 | `floconLogWebSocketEvent(event)` | `Flocon.networkPlugin.logWebSocket(event)` |
 
 The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, `databasePlugin`,

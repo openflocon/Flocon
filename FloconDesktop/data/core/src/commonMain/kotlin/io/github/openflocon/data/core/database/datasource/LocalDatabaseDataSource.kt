@@ -69,7 +69,7 @@ interface LocalDatabaseDataSource {
 
     fun observeQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         limit: Int,
@@ -78,21 +78,21 @@ interface LocalDatabaseDataSource {
 
     fun countQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): Flow<Int>
 
     suspend fun getQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel>
 
     suspend fun getLatestQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,

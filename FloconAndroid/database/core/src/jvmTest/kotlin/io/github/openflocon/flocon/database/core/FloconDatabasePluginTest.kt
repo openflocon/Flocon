@@ -3,11 +3,13 @@ package io.github.openflocon.flocon.database.core
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class FloconDatabasePluginTest {
 
@@ -29,13 +31,30 @@ class FloconDatabasePluginTest {
 
     @Test
     fun `logQuery sends the query`() {
-        plugin.logQuery(dbName = "dogs", sqlQuery = "SELECT * FROM dog WHERE id = ?", bindArgs = listOf(1))
+        plugin.logQuery(dbId = "dogs", sqlQuery = "SELECT * FROM dog WHERE id = ?", bindArgs = listOf(1))
 
         val (pluginName, method, body) = sender.messages.single()
         assertEquals(Protocol.FromDevice.Database.Plugin, pluginName)
         assertEquals(Protocol.FromDevice.Database.Method.LogQuery, method)
-        assertContains(body, "\"dbName\":\"dogs\"")
+        assertContains(body, "\"dbId\":\"dogs\"")
         assertContains(body, "\"bindArgs\":[\"1\"]")
+    }
+
+    @Test
+    fun `register refuses a second database with the same id`() {
+        plugin.register(FloconFileDatabaseModel(id = "dogs", displayName = "dogs", absolutePath = "/a"))
+
+        assertFailsWith<IllegalArgumentException> {
+            plugin.register(FloconFileDatabaseModel(id = "dogs", displayName = "other", absolutePath = "/b"))
+        }
+    }
+
+    @Test
+    fun `register accepts the same database twice`() {
+        val database = FloconFileDatabaseModel(id = "dogs", displayName = "dogs", absolutePath = "/a")
+
+        plugin.register(database)
+        plugin.register(database)
     }
 
     @Test

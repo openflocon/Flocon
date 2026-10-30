@@ -23,6 +23,7 @@ object Databases {
                 .build()
             dogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "dogs",
                 displayName = "dogs",
                 database = instance
             )
@@ -41,6 +42,7 @@ object Databases {
             ).build()
             foodDatabase = instance
             Flocon.databasePlugin.register(
+                id = "food",
                 displayName = "food",
                 database = instance
             )
@@ -59,6 +61,7 @@ object Databases {
             ).build()
             inMemoryDogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "inmemory_dogs",
                 displayName = "inmemory_dogs",
                 database = instance
             )

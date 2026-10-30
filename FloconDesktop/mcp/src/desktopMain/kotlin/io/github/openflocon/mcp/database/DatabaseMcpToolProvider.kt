@@ -124,7 +124,6 @@ internal class DatabaseMcpToolProvider(
         val includeOldSessions = input.includeOldSessions
         val limit = input.limit.coerceIn(1, MAX_LOGS_LIMIT)
 
-        // the logs are stored by database name
         val databaseName = databaseRepository.getDatabaseById(databaseId)?.name ?: databaseId
 
         val showTransactions = input.includeTransactions
@@ -133,7 +132,7 @@ internal class DatabaseMcpToolProvider(
 
         // apps can log millions of queries: filtered and limited by the database, without counting them
         val logs = databaseRepository.getLatestQueryLogs(
-            dbName = databaseName,
+            dbId = databaseId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = target,

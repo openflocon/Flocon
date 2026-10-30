@@ -99,13 +99,17 @@ internal class FloconDatabasePluginImpl(
 
     override fun register(floconDatabaseModel: FloconDatabaseModel) {
         registeredDatabases.update { currentList ->
+            val existing = currentList.firstOrNull { it.id == floconDatabaseModel.id }
+            require(existing == null || existing == floconDatabaseModel) {
+                "A database is already registered with the id \"${floconDatabaseModel.id}\", the ids must be unique"
+            }
             val dbMap = currentList.associateBy { it.id }.toMutableMap()
             dbMap[floconDatabaseModel.id] = floconDatabaseModel
             dbMap.values.toList()
         }
     }
 
-    override fun logQuery(dbName: String, sqlQuery: String, bindArgs: List<Any?>) {
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
         scope.launch {
             try {
                 sender.send(
@@ -113,7 +117,7 @@ internal class FloconDatabasePluginImpl(
                     method = Protocol.FromDevice.Database.Method.LogQuery,
                     body = encoder.encode(
                         DatabaseQueryLogModel(
-                            dbName = dbName,
+                            dbId = dbId,
                             sqlQuery = sqlQuery,
                             bindArgs = bindArgs.map { it.toString() },
                             timestamp = currentTimeMillis()
