@@ -78,6 +78,9 @@ internal fun SharedPreferenceRowDomainModel.toUi(): SharedPreferencesRowUiModel 
 private const val LONG_TEXT_LENGTH = 80
 private const val PREVIEW_MAX_LENGTH = 300
 
+// a pretty printed json of at most this many lines is displayed open, not collapsible
+private const val SHORT_JSON_MAX_LINES = 5
+
 private val prettyJson = Json {
     prettyPrint = true
     prettyPrintIndent = "  "
@@ -103,11 +106,13 @@ private fun toCollapsible(text: String, json: JsonElement?): SharedPreferencesRo
             is JsonObject -> json.size
             else -> 0
         }
+        val pretty = prettyJson.encodeToString(JsonElement.serializer(), json)
         SharedPreferencesRowUiModel.Collapsible(
             preview = Json.encodeToString(JsonElement.serializer(), json).take(PREVIEW_MAX_LENGTH),
             sizeLabel = "${itemsLabel(count)} · $bytes",
-            expandedText = prettyJson.encodeToString(JsonElement.serializer(), json),
+            expandedText = pretty,
             isJson = true,
+            alwaysOpen = pretty.lines().size <= SHORT_JSON_MAX_LINES,
         )
     } else {
         SharedPreferencesRowUiModel.Collapsible(

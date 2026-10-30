@@ -5,6 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -81,16 +84,24 @@ fun PreferenceAutoUpdate(
         modifier = modifier
             .height(FloconTheme.sizes.pageBarControlHeight)
             .clip(shape)
-            // same fill as the filter bar next to it
-            .background(colors.bg300.let { it.copy(alpha = it.alpha * 0.75f) })
+            .background(colors.bg300)
             .border(1.dp, colors.lineStrong, shape),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Live
+        val liveInteraction = remember { MutableInteractionSource() }
+        val liveHovered by liveInteraction.collectIsHoveredAsState()
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(if (isLive) colors.accentSoft else Color.Transparent)
+                .background(
+                    when {
+                        isLive -> colors.accentSoft
+                        liveHovered -> colors.ink.copy(alpha = 0.06f)
+                        else -> Color.Transparent
+                    },
+                )
+                .hoverable(liveInteraction)
                 .clickable { onChange(!isLive) }
                 .pointerHoverIcon(PointerIcon.Hand)
                 .padding(horizontal = FloconTheme.spacing.medium),
@@ -110,7 +121,7 @@ fun PreferenceAutoUpdate(
                             if (isLive) {
                                 Modifier.background(colors.accent, CircleShape)
                             } else {
-                                Modifier.border(1.5.dp, colors.inkMuted, CircleShape)
+                                Modifier.border(1.5.dp, colors.accent, CircleShape)
                             },
                         ),
                 )
@@ -118,7 +129,7 @@ fun PreferenceAutoUpdate(
             Text(
                 text = stringResource(Res.string.auto_update_live),
                 style = FloconTheme.typography.labelMedium,
-                fontWeight = if (isLive) FontWeight.SemiBold else FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = if (isLive) colors.accent else colors.ink,
             )
         }

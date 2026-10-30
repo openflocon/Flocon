@@ -114,6 +114,7 @@ fun SharedPreferenceRow(
     val colors = FloconTheme.colors
     val value = model.value
     val collapsible = model.collapsible
+    val isOpen = collapsible != null && (collapsible.alwaysOpen || isExpanded)
     val originalText = remember(value) { value.asString() }
     var text by remember(value) { mutableStateOf(originalText) }
     val isEditableText = collapsible == null && (
@@ -138,7 +139,7 @@ fun SharedPreferenceRow(
             modifier = Modifier
                 .heightIn(min = FloconTheme.sizes.rowHeight + FloconTheme.spacing.compact * 2)
                 .then(
-                    if (collapsible != null) {
+                    if (collapsible != null && !collapsible.alwaysOpen) {
                         Modifier
                             .clickable { onToggleExpanded(model.key) }
                             .pointerHoverIcon(PointerIcon.Hand)
@@ -175,7 +176,7 @@ fun SharedPreferenceRow(
                             value.value.forEach { Chip(it) }
                         }
 
-                        collapsible != null -> CollapsedValue(collapsible, isExpanded)
+                        collapsible != null -> CollapsedValue(collapsible, isOpen, showChevron = !collapsible.alwaysOpen)
 
                         else -> PreferenceValueField(
                             value = text,
@@ -206,7 +207,7 @@ fun SharedPreferenceRow(
                     RowActions(
                         model = model,
                         isDirty = isDirty,
-                        isExpanded = isExpanded,
+                        isExpanded = isOpen,
                         onCancel = { text = originalText },
                         onSave = { onValueChanged(model, text) },
                         onEditClicked = onEditClicked,
@@ -215,7 +216,7 @@ fun SharedPreferenceRow(
             },
         )
 
-        if (collapsible != null && isExpanded) {
+        if (collapsible != null && isOpen) {
             PreferenceGridRow(
                 modifier = Modifier.padding(bottom = FloconTheme.spacing.medium),
                 key = { Box(Modifier.weight(KeyColumnWeight)) },
@@ -394,6 +395,7 @@ private fun Chip(text: String) {
 private fun CollapsedValue(
     collapsible: SharedPreferencesRowUiModel.Collapsible,
     isExpanded: Boolean,
+    showChevron: Boolean,
 ) {
     val colors = FloconTheme.colors
     Row(
@@ -401,11 +403,13 @@ private fun CollapsedValue(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        FloconIcon(
-            imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Filled.ChevronRight,
-            tint = colors.inkMuted,
-            modifier = Modifier.size(16.dp),
-        )
+        if (showChevron) {
+            FloconIcon(
+                imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Filled.ChevronRight,
+                tint = colors.inkMuted,
+                modifier = Modifier.size(16.dp),
+            )
+        }
         if (!isExpanded) {
             Text(
                 text = collapsible.preview,

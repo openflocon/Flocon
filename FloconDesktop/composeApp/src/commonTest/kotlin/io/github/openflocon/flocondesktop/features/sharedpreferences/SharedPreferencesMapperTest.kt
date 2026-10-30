@@ -89,4 +89,16 @@ class SharedPreferencesMapperTest {
         assertEquals("3s", PreferenceAutoUpdate.Enabled(3000).delayLabel)
         assertEquals(listOf("1s", "2s", "5s", "10s"), autoUpdateDelayPresets().map { it.label })
     }
+
+    @Test
+    fun `short json starts open, long json is collapsible`() {
+        // 3 lines pretty printed
+        assertTrue(string("""{"a":1}""").collapsible!!.alwaysOpen)
+        // 5 lines: still open
+        assertTrue(string("""{"a":1,"b":2,"c":3}""").collapsible!!.alwaysOpen)
+        // 6 lines: collapsible
+        assertFalse(string("""{"a":1,"b":2,"c":3,"d":4}""").collapsible!!.alwaysOpen)
+        // long text is never open
+        assertFalse(string("a".repeat(100)).collapsible!!.alwaysOpen)
+    }
 }

@@ -42,6 +42,8 @@ data class SharedPreferencesRowUiModel(
         // the pretty printed json, or the raw text
         val expandedText: String,
         val isJson: Boolean,
+        // short json: displayed open, no chevron nor expand / collapse
+        val alwaysOpen: Boolean = false,
     )
 
     fun contains(text: String): Boolean = key.contains(text, ignoreCase = true) || value.asString().contains(text, ignoreCase = true)
