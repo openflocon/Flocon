@@ -51,7 +51,11 @@ fun FloconPageSelector(
             .background(colors.bg300.copy(alpha = colors.bg300.alpha * 0.55f))
             .border(width = 1.dp, color = colors.line, shape = shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = FloconTheme.spacing.medium),
+            .padding(
+                // a leading tile carries its own background: keep the same inset around it as above and below
+                start = if (leadingContent != null) FloconTheme.spacing.extraSmall else FloconTheme.spacing.medium,
+                end = FloconTheme.spacing.medium,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
