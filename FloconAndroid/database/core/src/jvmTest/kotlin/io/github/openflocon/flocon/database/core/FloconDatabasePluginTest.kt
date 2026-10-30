@@ -50,6 +50,16 @@ class FloconDatabasePluginTest {
     }
 
     @Test
+    fun `register sends the databases to the desktop with their id and name`() {
+        plugin.register(FloconFileDatabaseModel(id = "dogs_room3", displayName = "dogs", absolutePath = "/a"))
+
+        val (_, method, body) = sender.messages.single()
+        assertEquals(Protocol.FromDevice.Database.Method.GetDatabases, method)
+        assertContains(body, "\"id\":\"dogs_room3\"")
+        assertContains(body, "\"name\":\"dogs\"")
+    }
+
+    @Test
     fun `register accepts the same database twice`() {
         val database = FloconFileDatabaseModel(id = "dogs", displayName = "dogs", absolutePath = "/a")
 

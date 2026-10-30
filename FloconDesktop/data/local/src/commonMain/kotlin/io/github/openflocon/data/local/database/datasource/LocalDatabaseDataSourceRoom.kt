@@ -191,6 +191,7 @@ internal class LocalDatabaseDataSourceRoom(
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
                 dbId = log.dbId,
+                dbName = log.dbName,
                 sqlQuery = log.sqlQuery,
                 bindArgs = log.bindArgs?.let { json.encodeToString(it) },
                 timestamp = log.timestamp,
@@ -223,6 +224,7 @@ internal class LocalDatabaseDataSourceRoom(
             list.map { entity ->
                 DatabaseQueryLogDomainModel(
                     dbId = entity.dbId,
+                    dbName = entity.dbName,
                     sqlQuery = entity.sqlQuery,
                     bindArgs = entity.bindArgs?.let {
                         json.decodeFromString(it)
@@ -267,6 +269,7 @@ internal class LocalDatabaseDataSourceRoom(
         return databaseQueryLogDao.getLogs(query).map { entity ->
             DatabaseQueryLogDomainModel(
                 dbId = entity.dbId,
+                dbName = entity.dbName,
                 sqlQuery = entity.sqlQuery,
                 bindArgs = entity.bindArgs?.let {
                     json.decodeFromString(it)
@@ -299,6 +302,7 @@ internal class LocalDatabaseDataSourceRoom(
         return databaseQueryLogDao.getLogs(query).map { entity ->
             DatabaseQueryLogDomainModel(
                 dbId = entity.dbId,
+                dbName = entity.dbName,
                 sqlQuery = entity.sqlQuery,
                 bindArgs = entity.bindArgs?.let {
                     json.decodeFromString(it)
@@ -314,6 +318,7 @@ internal class LocalDatabaseDataSourceRoom(
         entity?.let {
             DatabaseQueryLogDomainModel(
                 dbId = it.dbId,
+                dbName = it.dbName,
                 sqlQuery = it.sqlQuery,
                 bindArgs = it.bindArgs?.let { args ->
                     json.decodeFromString(args)

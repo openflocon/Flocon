@@ -207,6 +207,7 @@ class DatabaseMcpToolProviderTest {
         isTransaction: Boolean = false,
     ) = DatabaseQueryLogDomainModel(
         dbId = "/data/databases/app.db",
+        dbName = "app.db",
         sqlQuery = sql,
         bindArgs = args,
         timestamp = timestamp,

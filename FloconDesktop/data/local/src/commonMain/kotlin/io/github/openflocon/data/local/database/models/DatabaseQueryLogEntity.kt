@@ -13,6 +13,8 @@ import androidx.room.PrimaryKey
 data class DatabaseQueryLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val dbId: String,
+    // display only, the logs are always read by dbId
+    val dbName: String,
     val sqlQuery: String,
     val bindArgs: String?,
     val timestamp: Long,

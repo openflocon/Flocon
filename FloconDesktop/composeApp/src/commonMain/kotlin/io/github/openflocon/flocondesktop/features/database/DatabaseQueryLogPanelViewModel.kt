@@ -29,7 +29,7 @@ class DatabaseQueryLogPanelViewModel(
         .filterNotNull()
         .map {
             DatabaseQueryLogPanelUiModel(
-                dbName = it.dbId,
+                dbName = it.dbName,
                 sql = it.toFullSql(),
                 rawSql = it.sqlQuery,
                 arguments = it.bindArgs.orEmpty(),

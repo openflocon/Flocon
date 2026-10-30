@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 90,
-    "identityHash": "6ab31e731dc7c18c42c4077afbc2587f",
+    "identityHash": "f51284ee7103296d25133cdd0e513368",
     "entities": [
       {
         "tableName": "FloconNetworkCallEntity",
@@ -2028,7 +2028,7 @@
       },
       {
         "tableName": "DatabaseQueryLogEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dbId` TEXT NOT NULL, `sqlQuery` TEXT NOT NULL, `bindArgs` TEXT, `timestamp` INTEGER NOT NULL, `isTransaction` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dbId` TEXT NOT NULL, `dbName` TEXT NOT NULL, `sqlQuery` TEXT NOT NULL, `bindArgs` TEXT, `timestamp` INTEGER NOT NULL, `isTransaction` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, `packageName` TEXT NOT NULL, `appInstance` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -2039,6 +2039,12 @@
           {
             "fieldPath": "dbId",
             "columnName": "dbId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dbName",
+            "columnName": "dbName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -2459,7 +2465,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ab31e731dc7c18c42c4077afbc2587f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f51284ee7103296d25133cdd0e513368')"
     ]
   }
 }

@@ -84,7 +84,11 @@ internal class FloconDatabasePluginImpl(
             dbMap.values.toList()
         }
 
-        val all = updatedDatabases.map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
+        sendDatabases(updatedDatabases)
+    }
+
+    private fun sendDatabases(databases: List<FloconDatabaseModel>) {
+        val all = databases.map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
 
         try {
             sender.send(
@@ -107,6 +111,8 @@ internal class FloconDatabasePluginImpl(
             dbMap[floconDatabaseModel.id] = floconDatabaseModel
             dbMap.values.toList()
         }
+        // the desktop shows the database, and the name of its logs, as soon as it is registered
+        sendDatabases(registeredDatabases.value)
     }
 
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {

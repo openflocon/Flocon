@@ -99,8 +99,10 @@ class DatabaseRepositoryImpl(
                     queryDatabaseDataSource.getQueryLogs(
                         message,
                     )?.let {
+                        // the name is only displayed, it falls back to the id when the database is not listed (yet)
+                        val dbName = deviceDatabasesDataSource.getDatabaseById(it.dbId)?.name ?: it.dbId
                         localDatabaseDataSource.saveQueryLog(
-                            it,
+                            it.copy(dbName = dbName),
                             deviceIdAndPackageName = deviceIdAndPackageName
                         )
                     }
