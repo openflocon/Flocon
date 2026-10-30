@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -27,9 +28,6 @@ internal class TimelineFilterPanelViewModel(
     private val filterStore: TimelineFilterStore,
     dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
-
-    private val selectedSources: StateFlow<Set<TimelineSource>> = filterStore.storedSources
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineSource.entries.toSet())
 
     // the counts follow the text but not the facets: ticking a value must not make the others, or the sources, move or disappear
     private val summary: StateFlow<TimelineSummaryUiModel> = filterStore.filter
@@ -44,13 +42,11 @@ internal class TimelineFilterPanelViewModel(
         summary,
         filterStore.storedSources,
         filterStore.facets,
-        filterStore.onlyWithEvents,
         filterStore.currentSessionOnly,
-    ) { summary, sources, facets, onlyWithEvents, currentSessionOnly ->
+    ) { summary, sources, facets, currentSessionOnly ->
         summary.toFilterPanel(
             selectedSources = sources,
             facets = facets,
-            onlyWithEvents = onlyWithEvents,
             currentSessionOnly = currentSessionOnly,
         )
     }
@@ -60,13 +56,12 @@ internal class TimelineFilterPanelViewModel(
     fun onAction(action: TimelineFilterAction) {
         when (action) {
             is TimelineFilterAction.ToggleSource -> viewModelScope.launch {
-                val current = selectedSources.value
+                // read from the settings each time: a state flow nobody collects keeps its first value, the source could never come back
+                val current = filterStore.storedSources.first()
                 setTimelineSelectedSourcesUseCase(if (action.source in current) current - action.source else current + action.source)
             }
 
             is TimelineFilterAction.ToggleFacet -> filterStore.toggleFacet(action.facet, action.value)
-
-            is TimelineFilterAction.SetOnlyWithEvents -> filterStore.setOnlyWithEvents(action.value)
 
             is TimelineFilterAction.SetCurrentSessionOnly -> filterStore.setCurrentSessionOnly(action.value)
 

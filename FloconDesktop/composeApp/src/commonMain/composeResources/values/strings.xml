@@ -68,10 +68,8 @@
     <string name="timeline_filters_title">Filters</string>
     <string name="timeline_filters_clear_all">Clear all</string>
     <string name="timeline_filters_search">Search a filter</string>
-    <string name="timeline_filters_all">All</string>
     <string name="timeline_filters_any">All</string>
     <string name="timeline_filters_current_session">Current session only</string>
-    <string name="timeline_filters_with_events">With events</string>
     <string name="timeline_filters_toggle">Filters</string>
     <string name="timeline_filters_no_result">No filter matches</string>
     <string name="timeline_facet_network_method">Method</string>

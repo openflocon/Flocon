@@ -36,10 +36,6 @@ internal class TimelineFilterStore(
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
         field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
 
-    // the filter panel only lists what has events
-    val onlyWithEvents: StateFlow<Boolean>
-        field = MutableStateFlow(false)
-
     // the events of the latest session only
     val currentSessionOnly: StateFlow<Boolean>
         field = MutableStateFlow(false)
@@ -76,10 +72,6 @@ internal class TimelineFilterStore(
             val updated = if (value in values) values - value else values + value
             if (updated.isEmpty()) facets - facet else facets + (facet to updated)
         }
-    }
-
-    fun setOnlyWithEvents(value: Boolean) {
-        onlyWithEvents.update { value }
     }
 
     fun setCurrentSessionOnly(value: Boolean) {

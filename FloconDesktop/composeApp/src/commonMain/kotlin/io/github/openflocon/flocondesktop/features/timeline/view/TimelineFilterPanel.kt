@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,14 +53,12 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_network_metho
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_speed
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_state
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
-import flocondesktop.composeapp.generated.resources.timeline_filters_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
 import flocondesktop.composeapp.generated.resources.timeline_filters_clear_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_current_session
 import flocondesktop.composeapp.generated.resources.timeline_filters_no_result
 import flocondesktop.composeapp.generated.resources.timeline_filters_search
 import flocondesktop.composeapp.generated.resources.timeline_filters_title
-import flocondesktop.composeapp.generated.resources.timeline_filters_with_events
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
@@ -76,12 +75,9 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconPageSelector
-import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.FloconSwitch
-import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
-import io.github.openflocon.library.designsystem.components.TabType
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -90,6 +86,7 @@ private val PreviewPanelWidth = 500.dp
 private val PreviewPanelHeight = 720.dp
 private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
+private const val GroupsPerRow = 2
 
 /**
  * The filters of the timeline: a section by source, to show it or not and to narrow it down by facet,
@@ -197,22 +194,6 @@ private fun PanelHeader(
             onTextChange = onQueryChange,
             modifier = Modifier.fillMaxWidth(),
         )
-        FloconSegmentedRow {
-            FloconTab(
-                text = "${stringResource(Res.string.timeline_filters_all)} ${panel.allCount}",
-                isSelected = !panel.onlyWithEvents,
-                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(false)) },
-                tabType = TabType.Start,
-                modifier = Modifier.weight(1f),
-            )
-            FloconTab(
-                text = "${stringResource(Res.string.timeline_filters_with_events)} ${panel.withEventsCount}",
-                isSelected = panel.onlyWithEvents,
-                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(true)) },
-                tabType = TabType.End,
-                modifier = Modifier.weight(1f),
-            )
-        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -284,8 +265,22 @@ private fun FilterSection(
             )
         }
         if (expanded) {
-            section.groups.forEach { group ->
-                FacetGroup(group = group, onAction = onAction)
+            // two groups by row: a dropdown does not need the whole width
+            section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                ) {
+                    rowGroups.forEach { group ->
+                        FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
+                    }
+                    // a lonely group keeps the width of the others
+                    if (rowGroups.size < GroupsPerRow) {
+                        Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+                    }
+                }
             }
         }
         FloconDividerLine()
@@ -303,11 +298,7 @@ private fun FacetGroup(
     val shown = group.values.count { it.selected }
 
     // the menu stays open while values are unticked: a group takes several values
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-    ) {
+    Box(modifier = modifier) {
         FloconPageSelector(
             value = if (shown == group.values.size) any else "$shown/${group.values.size}",
             caption = stringResource(group.facet.title()),
@@ -519,7 +510,6 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
             previewTimelineSummaryUiModel().toFilterPanel(
                 selectedSources = TimelineSource.entries.toSet(),
                 facets = mapOf(TimelineFacet.NetworkStatus to setOf("5xx")),
-                onlyWithEvents = false,
             )
         }
         TimelineFilterPanel(

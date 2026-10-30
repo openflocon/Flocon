@@ -45,6 +45,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -81,8 +82,8 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -200,23 +201,26 @@ internal fun TimelineContent(
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
-            FloconIconToggleButton(
-                value = filterPanelOpen,
-                tooltip = stringResource(Res.string.timeline_filters_toggle),
-                onValueChange = { onAction(TimelineAction.ToggleFilterPanel) },
+            // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
+            FloconButton(
+                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
+                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
+                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-                ) {
-                    FloconIcon(imageVector = Icons.Outlined.FilterList)
-                    if (activeFilterCount > 0) {
-                        Text(
-                            text = activeFilterCount.toString(),
-                            style = FloconTheme.typography.labelSmall,
-                            color = colors.accent,
-                        )
-                    }
+                FloconIcon(imageVector = Icons.Outlined.FilterList)
+                Text(
+                    text = stringResource(Res.string.timeline_filters_toggle),
+                    style = FloconTheme.typography.labelLarge,
+                    maxLines = 1,
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+                if (activeFilterCount > 0) {
+                    Text(
+                        text = activeFilterCount.toString(),
+                        style = FloconTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.accent,
+                    )
                 }
             }
         }

@@ -35,10 +35,7 @@ internal data class TimelineFilterSectionUiModel(
 @Immutable
 internal data class TimelineFilterPanelUiModel(
     val sections: ImmutableList<TimelineFilterSectionUiModel>,
-    val onlyWithEvents: Boolean,
     val currentSessionOnly: Boolean,
-    val allCount: Int, // sources, displayed or not
-    val withEventsCount: Int,
     // something is filtered: used to offer to clear it
     val hasActiveFilters: Boolean,
     // facets selected, or sources hidden: the badge of the button opening the panel
@@ -47,10 +44,7 @@ internal data class TimelineFilterPanelUiModel(
     companion object {
         val Empty = TimelineFilterPanelUiModel(
             sections = persistentListOf(),
-            onlyWithEvents = false,
             currentSessionOnly = false,
-            allCount = 0,
-            withEventsCount = 0,
             hasActiveFilters = false,
             activeFilterCount = 0,
         )
