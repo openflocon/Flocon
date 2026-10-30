@@ -212,34 +212,38 @@ fun AnalyticsScreen(
                     .fillMaxSize()
                     .horizontalScroll(rememberScrollState())
             ) {
-                LazyColumn(
-                    state = listState,
-                    reverseLayout = screenState.invertList,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .onSizeChanged {
-                            widthPx = max(widthPx, it.width.toFloat())
-                        },
-                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
-                ) {
-                    items(
-                        count = rows.itemCount,
-                        key = rows.itemKey { it.id },
-                    ) { index ->
-                        val item = rows[index]
-                        if (item != null) {
-                            AnalyticsRow(
-                                model = item,
-                                modifier = Modifier.fillMaxWidth(),
-                                onAction = onAction,
-                            )
-                            if (index != rows.itemSnapshotList.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.width(dpWidth)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    AnalyticsHeader(modifier = Modifier.width(dpWidth))
+                    LazyColumn(
+                        state = listState,
+                        reverseLayout = screenState.invertList,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .onSizeChanged {
+                                widthPx = max(widthPx, it.width.toFloat())
+                            },
+                        contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
+                    ) {
+                        items(
+                            count = rows.itemCount,
+                            key = rows.itemKey { it.id },
+                        ) { index ->
+                            val item = rows[index]
+                            if (item != null) {
+                                AnalyticsRow(
+                                    model = item,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onAction = onAction,
                                 )
+                                if (index != rows.itemSnapshotList.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.width(dpWidth)
+                                    )
+                                }
+                            } else {
+                                Box(Modifier) // display nothing during load
                             }
-                        } else {
-                            Box(Modifier) // display nothing during load
                         }
                     }
                 }

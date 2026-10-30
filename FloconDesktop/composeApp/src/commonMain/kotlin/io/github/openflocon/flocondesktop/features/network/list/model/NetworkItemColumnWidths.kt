@@ -20,7 +20,7 @@ class NetworkItemColumnWidths(
     methodWidth: Dp = 90.dp,
     domainWidth: Dp = 200.dp,
     statusCodeWidth: Dp = 104.dp,
-    timeWidth: Dp = 90.dp,
+    timeWidth: Dp = 100.dp,
 ) {
     var dateWidth by mutableStateOf(dateWidth)
         private set

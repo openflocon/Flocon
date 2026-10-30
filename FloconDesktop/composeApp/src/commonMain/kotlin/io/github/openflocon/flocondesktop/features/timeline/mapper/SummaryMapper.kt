@@ -22,6 +22,7 @@ internal fun TimelineSummaryDomainModel.toUi(selected: Set<TimelineSource>): Tim
         crashCount = sources[TimelineSource.Crash]?.takeIf { TimelineSource.Crash in selected }?.count ?: 0,
         range = if (first != null && last != null) "${first.toClock()} - ${last.toClock()}" else null,
         sessionEventCounts = sessionEventCounts,
+        facetCounts = facetCounts,
     )
 }
 

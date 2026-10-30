@@ -43,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
@@ -51,6 +51,9 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiM
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
+import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -167,22 +170,15 @@ fun DatabaseResult(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(FloconTheme.colors.bg100)
-                                    .height(FloconTheme.sizes.headerHeight)
+                                    .floconTableHeader()
                                     .padding(horizontal = FloconTheme.spacing.small),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 result.columns
-                                    .fastForEachIndexed { index, item ->
-                                        Text(
-                                            item,
-                                            style = FloconTheme.typography.bodySmall.copy(
-                                                fontWeight = FontWeight.Medium,
-                                                fontFamily = FontFamily.Monospace,
-                                            ),
-                                            color = FloconTheme.colors.inkFaint,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
+                                    .fastForEach { item ->
+                                        FloconTableHeaderLabel(
+                                            text = item,
+                                            uppercase = false,
                                             modifier = Modifier
                                                 .width(columnsWidth)
                                                 .padding(all = FloconTheme.spacing.extraSmall),
@@ -277,7 +273,7 @@ private fun ResultHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colors.bg100)
+            .floconTableHeaderBackground()
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
