@@ -2,6 +2,13 @@
 
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +26,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,11 +72,19 @@ internal fun DatabaseItem(
     modifier: Modifier = Modifier,
     isFiltering: Boolean = false,
 ) {
-    val groupBackground = if (state.isSelected) {
-        FloconTheme.colors.ink.copy(alpha = 0.05f)
-    } else {
-        Color.Transparent
+    // a database is "selected" by default as soon as the list arrives, but it is only opened by a click
+    var expanded by remember { mutableStateOf(false) }
+    LaunchedEffect(state.isSelected) {
+        if (!state.isSelected) expanded = false
     }
+    val isExpanded = state.isSelected && (expanded || isFiltering)
+    val groupBackground by animateColorAsState(
+        if (isExpanded) {
+            FloconTheme.colors.ink.copy(alpha = 0.05f)
+        } else {
+            Color.Transparent
+        },
+    )
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
@@ -72,12 +92,21 @@ internal fun DatabaseItem(
     ) {
         DatabaseEntry(
             modifier = Modifier.fillMaxWidth(),
-            onSelect = onSelect,
+            isExpanded = isExpanded,
+            onClicked = {
+                onSelect(state.id)
+                expanded = if (state.isSelected) !expanded else true
+            },
             state = state,
             onDatabaseDoubleClicked = onDatabaseDoubleClicked,
             onSeeAllQueriesClicked = onSeeAllQueriesClicked,
         )
-        state.tables?.let { tables ->
+        AnimatedVisibility(
+            visible = isExpanded && state.tables != null,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            val tables = state.tables ?: return@AnimatedVisibility
             val guideColor = FloconTheme.colors.line
             Column(
                 modifier = Modifier
@@ -117,14 +146,16 @@ internal fun DatabaseItem(
 
 @Composable
 private fun DatabaseEntry(
-    onSelect: (DeviceDataBaseId) -> Unit,
+    isExpanded: Boolean,
+    onClicked: () -> Unit,
     state: DeviceDataBaseUiModel,
     onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
     onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val textColor = FloconTheme.colors.ink
-    val iconColor = if (state.isSelected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
+    val iconColor = if (isExpanded) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
+    val chevronRotation by animateFloatAsState(if (isExpanded) 90f else 0f)
 
     ContextualMenu(
         persistentListOf(
@@ -141,9 +172,7 @@ private fun DatabaseEntry(
                 .height(FloconTheme.sizes.rowHeight)
                 .clip(RoundedCornerShape(10.dp))
                 .combinedClickable(
-                    onClick = {
-                        onSelect(state.id)
-                    },
+                    onClick = onClicked,
                     onDoubleClick = {
                         onDatabaseDoubleClicked(state)
                     }
@@ -152,7 +181,7 @@ private fun DatabaseEntry(
         ) {
             Image(
                 modifier = Modifier.size(14.dp).graphicsLayer {
-                    rotationZ = if (state.isSelected) 90f else 0f
+                    rotationZ = chevronRotation
                 },
                 painter = painterResource(Res.drawable.ic_db_chevron),
                 contentDescription = null,

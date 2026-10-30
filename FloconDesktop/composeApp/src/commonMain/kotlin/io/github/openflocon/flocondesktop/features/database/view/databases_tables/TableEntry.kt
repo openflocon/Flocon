@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -111,11 +113,15 @@ private fun TableEntryContent(
     item: TableUiModel,
     modifier: Modifier = Modifier,
 ) {
+    val background by animateColorAsState(
+        if (isOpened) FloconTheme.colors.ink.copy(alpha = 0.06f) else Color.Transparent,
+    )
+    val chevronRotation by animateFloatAsState(if (isOpened) 90f else 0f)
     Row(
         modifier = modifier
             .height(FloconTheme.sizes.rowHeight)
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isOpened) FloconTheme.colors.ink.copy(alpha = 0.06f) else Color.Transparent)
+            .background(background)
             .combinedClickable(
                 onClick = {
                     updateIsOpened(!isOpened)
@@ -132,7 +138,7 @@ private fun TableEntryContent(
         Image(
             painter = painterResource(Res.drawable.ic_db_chevron),
             modifier = Modifier.size(14.dp).graphicsLayer {
-                rotationZ = if (isOpened) 90f else 0f
+                rotationZ = chevronRotation
             },
             colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
             contentDescription = null,
