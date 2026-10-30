@@ -81,6 +81,7 @@ interface TimelineDao {
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
             AccessibilityEventEntity::class,
+            CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
         ]
     )

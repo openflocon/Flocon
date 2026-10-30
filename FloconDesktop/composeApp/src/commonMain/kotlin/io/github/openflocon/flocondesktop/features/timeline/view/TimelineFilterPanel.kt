@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -43,18 +44,25 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_facet_accessibility_action
 import flocondesktop.composeapp.generated.resources.timeline_facet_analytics_table
+import flocondesktop.composeapp.generated.resources.timeline_facet_crash_exception
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_host
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_speed
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_state
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
 import flocondesktop.composeapp.generated.resources.timeline_filters_clear_all
+import flocondesktop.composeapp.generated.resources.timeline_filters_current_session
 import flocondesktop.composeapp.generated.resources.timeline_filters_no_result
 import flocondesktop.composeapp.generated.resources.timeline_filters_search
 import flocondesktop.composeapp.generated.resources.timeline_filters_title
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -67,6 +75,7 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconPageSelector
+import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import kotlinx.coroutines.launch
@@ -185,6 +194,21 @@ private fun PanelHeader(
             onTextChange = onQueryChange,
             modifier = Modifier.fillMaxWidth(),
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.timeline_filters_current_session),
+                style = FloconTheme.typography.bodyMedium,
+                color = colors.ink,
+                modifier = Modifier.weight(1f),
+            )
+            FloconSwitch(
+                checked = panel.currentSessionOnly,
+                onCheckedChange = { onAction(TimelineFilterAction.SetCurrentSessionOnly(it)) },
+            )
+        }
     }
 }
 
@@ -316,15 +340,29 @@ private fun FacetValueRow(
             checked = item.selected,
             onCheckedChange = { onToggle() },
         )
-        Text(
-            text = item.value,
-            style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-            // a value without event yet is still there, but faded
-            color = if (item.count > 0) colors.ink else colors.inkFaint,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
+        // a value without event yet is still there, but faded
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .alpha(if (item.count > 0) 1f else 0.4f),
+        ) {
+            val method = item.method
+            val httpFamily = item.httpFamily
+            when {
+                // the same tags as the network screen
+                method != null -> MethodTag(method = method)
+
+                httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
+
+                else -> Text(
+                    text = item.value,
+                    style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                    color = colors.ink,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
         Text(
             text = item.count.toString(),
             style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
@@ -454,9 +492,14 @@ private fun String.initials(): String {
 private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.NetworkMethod -> Res.string.timeline_facet_network_method
     TimelineFacet.NetworkStatus -> Res.string.timeline_facet_network_status
+    TimelineFacet.NetworkState -> Res.string.timeline_facet_network_state
+    TimelineFacet.NetworkSpeed -> Res.string.timeline_facet_network_speed
+    TimelineFacet.NetworkContent -> Res.string.timeline_facet_network_content
+    TimelineFacet.NetworkHost -> Res.string.timeline_facet_network_host
     TimelineFacet.DatabaseName -> Res.string.timeline_facet_database_name
     TimelineFacet.DatabaseStatement -> Res.string.timeline_facet_database_statement
     TimelineFacet.AnalyticsTable -> Res.string.timeline_facet_analytics_table
+    TimelineFacet.CrashException -> Res.string.timeline_facet_crash_exception
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
 }
 

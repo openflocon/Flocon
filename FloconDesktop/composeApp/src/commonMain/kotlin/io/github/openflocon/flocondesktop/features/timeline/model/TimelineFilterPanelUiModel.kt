@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -11,6 +12,8 @@ internal data class TimelineFacetValueUiModel(
     val value: String,
     val count: Int,
     val selected: Boolean,
+    val method: NetworkMethodUi? = null, // an http method, displayed like in the network screen
+    val httpFamily: Int? = null, // the first digit of a status class, to color it like in the network screen
 )
 
 @Immutable
@@ -32,6 +35,7 @@ internal data class TimelineFilterSectionUiModel(
 @Immutable
 internal data class TimelineFilterPanelUiModel(
     val sections: ImmutableList<TimelineFilterSectionUiModel>,
+    val currentSessionOnly: Boolean,
     // something is filtered: used to offer to clear it
     val hasActiveFilters: Boolean,
     // facets selected, or sources hidden: the badge of the button opening the panel
@@ -40,6 +44,7 @@ internal data class TimelineFilterPanelUiModel(
     companion object {
         val Empty = TimelineFilterPanelUiModel(
             sections = persistentListOf(),
+            currentSessionOnly = false,
             hasActiveFilters = false,
             activeFilterCount = 0,
         )

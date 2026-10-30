@@ -69,11 +69,17 @@
     <string name="timeline_filters_clear_all">Clear all</string>
     <string name="timeline_filters_search">Search a filter</string>
     <string name="timeline_filters_any">All</string>
+    <string name="timeline_filters_current_session">Current session only</string>
     <string name="timeline_filters_toggle">Filters</string>
     <string name="timeline_filters_no_result">No filter matches</string>
     <string name="timeline_facet_network_method">Method</string>
     <string name="timeline_facet_network_status">Status</string>
+    <string name="timeline_facet_network_state">State</string>
+    <string name="timeline_facet_network_speed">Duration</string>
+    <string name="timeline_facet_network_content">Content</string>
+    <string name="timeline_facet_network_host">Host</string>
     <string name="timeline_facet_database_name">Database</string>
+    <string name="timeline_facet_crash_exception">Exception</string>
     <string name="timeline_facet_database_statement">Statement</string>
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>

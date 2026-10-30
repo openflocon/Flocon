@@ -235,22 +235,47 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `every member of the union has the facet columns`() {
-        val query = build()
-
-        // 1 per member: the events of every source, the response of the network calls and the app starts
-        assertEquals(eventBranches + 1, Regex("AS facetA\\b").findAll(query.sql).count())
-        assertEquals(eventBranches + 1, Regex("AS facetB\\b").findAll(query.sql).count())
-    }
-
-    @Test
     fun `a database statement is told from the first word of its query`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
 
         assertTrue(query.sql.contains("WHEN UPPER(LTRIM(sqlQuery)) LIKE 'SELECT%' OR UPPER(LTRIM(sqlQuery)) LIKE 'WITH%' THEN 'SELECT'"))
         assertTrue(query.sql.contains("LIKE 'BEGIN%'"))
         assertTrue(query.sql.contains("THEN 'TRANSACTION'"))
-        assertTrue(query.sql.contains("ELSE 'OTHER' END AS facetB"))
+        assertTrue(query.sql.contains("ELSE 'OTHER' END AS facetDatabaseStatement"))
+    }
+
+    @Test
+    fun `every member of the union has the same facet columns`() {
+        val query = build()
+
+        // 1 per member: the events of every source, the response of the network calls and the app starts
+        TimelineFacet.entries.forEach {
+            assertEquals(eventBranches + 1, Regex("AS facet${it.name}\\b").findAll(query.sql).count(), it.name)
+        }
+    }
+
+    @Test
+    fun `the network calls can be told by state, duration, content and host`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                facets = mapOf(
+                    TimelineFacet.NetworkState to setOf("PENDING"),
+                    TimelineFacet.NetworkSpeed to setOf(">1s"),
+                    TimelineFacet.NetworkContent to setOf("IMAGE"),
+                    TimelineFacet.NetworkHost to setOf("ads.acme.io"),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains("WHEN response_durationMs IS NULL THEN 'PENDING'"))
+        assertTrue(query.sql.contains("WHEN response_durationMs < 100 THEN '<100ms'"))
+        assertTrue(query.sql.contains("THEN 'IMAGE' ELSE 'OTHER' END"))
+        assertTrue(query.sql.contains("request_domainFormatted NOT IN (?)"))
+        // a call still waiting for its response has no duration: it is not hidden by the duration
+        assertTrue(query.sql.contains("IS NULL OR CASE WHEN response_durationMs IS NULL THEN NULL"))
+        val branch = listOf<Any>("device", "com.app", "PENDING", ">1s", "IMAGE", "ads.acme.io")
+        assertEquals(sessionParams + branch + branch, query.params)
     }
 
     @Test
@@ -271,6 +296,40 @@ class TimelineQueryBuilderTest {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network, TimelineSource.Database)))
 
         assertFalse(query.sql.contains("NOT IN"))
+    }
+
+    @Test
+    fun `the crashes can be hidden by exception`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Crash),
+                facets = mapOf(TimelineFacet.CrashException to setOf("java.lang.OutOfMemoryError")),
+            )
+        )
+
+        assertTrue(query.sql.contains("exceptionType AS facetCrashException"))
+        assertTrue(query.sql.contains("exceptionType NOT IN (?)"))
+        assertEquals(sessionParams + listOf("device", "com.app", "java.lang.OutOfMemoryError"), query.params)
+    }
+
+    @Test
+    fun `the current session only keeps the events since the latest app start`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash, TimelineSource.AppStart), currentSessionOnly = true))
+
+        // the crashes do not store their session: they are kept by time
+        assertTrue(query.sql.contains("timestamp >= COALESCE((SELECT MAX(appInstance) FROM ("))
+        // the app starts are reduced to the latest one
+        assertTrue(query.sql.contains("appInstance = COALESCE((SELECT MAX(appInstance) FROM ("))
+        // the sessions of the query, the crash branch and the latest session it is compared to,
+        // then the app starts and the latest session
+        assertEquals(sessionParams + listOf("device", "com.app") + sessionParams + sessionParams + sessionParams, query.params)
+    }
+
+    @Test
+    fun `every session is kept by default`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash)))
+
+        assertFalse(query.sql.contains("COALESCE((SELECT MAX(appInstance)"))
     }
 
     @Test
@@ -302,9 +361,10 @@ class TimelineQueryBuilderTest {
         TimelineFacet.entries.forEach {
             assertTrue(query.sql.contains("SELECT '${it.name}' AS facet"))
         }
-        // each count ignores its own facet, and only applies the other one: 2xx for the methods, GET for the statuses
-        assertEquals(1, query.params.count { it == "GET" })
-        assertEquals(1, query.params.count { it == "2xx" })
+        // each count ignores its own facet and applies the others of the source: GET is applied to every network count but the methods
+        val otherNetworkFacets = TimelineFacet.entries.count { it.source == TimelineSource.Network } - 1
+        assertEquals(otherNetworkFacets, query.params.count { it == "GET" })
+        assertEquals(otherNetworkFacets, query.params.count { it == "2xx" })
         // a network call is counted once, not for its response
         assertFalse(query.sql.contains(KIND_NETWORK_RESPONSE))
     }

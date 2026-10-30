@@ -20,12 +20,32 @@ enum class TimelineFacet(
         source = TimelineSource.Network,
         knownValues = listOf("1xx", "2xx", "3xx", "4xx", "5xx"),
     ),
+
+    // PENDING: no response yet. OTHER: a response without http code, ex: gRPC
+    NetworkState(
+        source = TimelineSource.Network,
+        knownValues = listOf("SUCCESS", "ERROR", "PENDING", "OTHER"),
+    ),
+
+    // the time the response took, nothing while waiting for it
+    NetworkSpeed(
+        source = TimelineSource.Network,
+        knownValues = listOf("<100ms", "100-500ms", "500ms-1s", ">1s"),
+    ),
+    NetworkContent(
+        source = TimelineSource.Network,
+        knownValues = listOf("IMAGE", "OTHER"),
+    ),
+    NetworkHost(TimelineSource.Network),
     DatabaseName(TimelineSource.Database),
     DatabaseStatement(
         source = TimelineSource.Database,
         knownValues = DATABASE_STATEMENTS,
     ),
     AnalyticsTable(TimelineSource.Analytics),
+
+    // the class of the exception, ex: java.lang.IllegalStateException
+    CrashException(TimelineSource.Crash),
     AccessibilityAction(
         source = TimelineSource.Accessibility,
         knownValues = listOf(

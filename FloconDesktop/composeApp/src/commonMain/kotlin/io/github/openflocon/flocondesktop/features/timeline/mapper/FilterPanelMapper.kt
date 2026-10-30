@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
@@ -16,6 +18,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun TimelineSummaryUiModel.toFilterPanel(
     selectedSources: Set<TimelineSource>,
     facets: Map<TimelineFacet, Set<String>>, // the values hidden, by facet
+    currentSessionOnly: Boolean = false,
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
         .map { source ->
@@ -33,13 +36,21 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
         .sortedByDescending { it.count > 0 } // stable: the other of the sources is kept
 
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
-    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources
+    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + if (currentSessionOnly) 1 else 0
 
     return TimelineFilterPanelUiModel(
         sections = sections.toImmutableList(),
+        currentSessionOnly = currentSessionOnly,
         hasActiveFilters = activeFilterCount > 0,
         activeFilterCount = activeFilterCount,
     )
+}
+
+// the methods of the facet are the ones of the timeline query: WS and GRPC for the calls that are not http
+private fun String.toMethodUi(): NetworkMethodUi = when (this) {
+    "WS" -> NetworkMethodUi.WebSocket
+    "GRPC" -> NetworkMethodUi.Grpc
+    else -> toHttpMethodUi(this)
 }
 
 // every value is checked, so shown, unless it is one of the [hidden] values
@@ -51,7 +62,15 @@ private fun TimelineSummaryUiModel.toGroup(
     // the known values are always there, in their order, then the ones the events brought
     val others = (counts.keys + hidden - facet.knownValues.toSet()).sorted()
     val values = (facet.knownValues + others)
-        .map { value -> TimelineFacetValueUiModel(value = value, count = counts[value] ?: 0, selected = value !in hidden) }
+        .map { value ->
+            TimelineFacetValueUiModel(
+                value = value,
+                count = counts[value] ?: 0,
+                selected = value !in hidden,
+                method = value.takeIf { facet == TimelineFacet.NetworkMethod }?.toMethodUi(),
+                httpFamily = value.takeIf { facet == TimelineFacet.NetworkStatus }?.firstOrNull()?.digitToIntOrNull(),
+            )
+        }
     return if (values.isEmpty()) {
         null
     } else {

@@ -79,6 +79,7 @@ internal sealed interface TimelineAction {
 internal sealed interface TimelineFilterAction {
     data class ToggleSource(val source: TimelineSource) : TimelineFilterAction
     data class ToggleFacet(val facet: TimelineFacet, val value: String) : TimelineFilterAction
+    data class SetCurrentSessionOnly(val value: Boolean) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction
 }
 

@@ -42,8 +42,13 @@ internal class TimelineFilterPanelViewModel(
         summary,
         filterStore.storedSources,
         filterStore.facets,
-    ) { summary, sources, facets ->
-        summary.toFilterPanel(selectedSources = sources, facets = facets)
+        filterStore.currentSessionOnly,
+    ) { summary, sources, facets, currentSessionOnly ->
+        summary.toFilterPanel(
+            selectedSources = sources,
+            facets = facets,
+            currentSessionOnly = currentSessionOnly,
+        )
     }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineFilterPanelUiModel.Empty)
@@ -57,6 +62,8 @@ internal class TimelineFilterPanelViewModel(
             }
 
             is TimelineFilterAction.ToggleFacet -> filterStore.toggleFacet(action.facet, action.value)
+
+            is TimelineFilterAction.SetCurrentSessionOnly -> filterStore.setCurrentSessionOnly(action.value)
 
             is TimelineFilterAction.ClearAll -> {
                 filterStore.clear()

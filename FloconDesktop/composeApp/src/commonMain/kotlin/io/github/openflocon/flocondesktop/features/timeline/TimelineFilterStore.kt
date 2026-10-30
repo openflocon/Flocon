@@ -36,6 +36,10 @@ internal class TimelineFilterStore(
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
         field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
 
+    // the events of the latest session only
+    val currentSessionOnly: StateFlow<Boolean>
+        field = MutableStateFlow(false)
+
     // read from the settings to wait for the stored selection instead of loading all the sources first
     val storedSources = observeTimelineSettingsUseCase()
         .map { it.selectedSources }
@@ -47,11 +51,13 @@ internal class TimelineFilterStore(
         text.debounce { if (it.isEmpty()) 0L else 300L },
         storedSources,
         facets,
-    ) { text, sources, facets ->
+        currentSessionOnly,
+    ) { text, sources, facets, currentSessionOnly ->
         TimelineFilterDomainModel(
             sources = sources,
             text = text,
             facets = facets,
+            currentSessionOnly = currentSessionOnly,
         )
     }
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
@@ -68,9 +74,14 @@ internal class TimelineFilterStore(
         }
     }
 
-    // the text and the facets, the sources are a setting
+    fun setCurrentSessionOnly(value: Boolean) {
+        currentSessionOnly.update { value }
+    }
+
+    // the text, the facets and the session, the sources are a setting
     fun clear() {
         text.update { "" }
         facets.update { emptyMap() }
+        currentSessionOnly.update { false }
     }
 }
