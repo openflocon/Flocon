@@ -2,8 +2,16 @@
 
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -98,6 +106,7 @@ import io.github.openflocon.library.designsystem.components.WithTooltip
 import org.jetbrains.compose.resources.stringResource
 
 private val ActionSize = 30.dp
+private const val ActionsAnimationMs = 160
 private val FieldRadius = 7.dp
 private val IntFieldWidth = 160.dp
 private val MonoSmall = 12.sp
@@ -124,12 +133,16 @@ fun SharedPreferenceRow(
             value is SharedPreferencesRowUiModel.Value.FloatValue
         )
     val isDirty = isEditableText && text != originalText
+    val rowTint by animateColorAsState(
+        targetValue = if (isDirty) colors.accent.copy(alpha = 0.05f) else Color.Transparent,
+        animationSpec = tween(ActionsAnimationMs),
+    )
     val lineColor = colors.line
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(if (isDirty) colors.accent.copy(alpha = 0.05f) else Color.Transparent)
+            .background(rowTint)
             .drawBehind {
                 val y = size.height - 0.5f
                 drawLine(lineColor, Offset(0f, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
@@ -246,8 +259,17 @@ private fun RowScope.RowActions(
     val value = model.value
     val clipboard = LocalClipboardManager.current
 
-    when {
-        isDirty -> {
+    // only the editable rows can be dirty, and they have no other action: the buttons slide in from the right
+    AnimatedVisibility(
+        visible = isDirty,
+        enter = fadeIn(tween(ActionsAnimationMs)) +
+            scaleIn(tween(ActionsAnimationMs), initialScale = 0.8f) +
+            slideInHorizontally(tween(ActionsAnimationMs)) { it / 2 },
+        exit = fadeOut(tween(ActionsAnimationMs)) +
+            scaleOut(tween(ActionsAnimationMs), targetScale = 0.8f) +
+            slideOutHorizontally(tween(ActionsAnimationMs)) { it / 2 },
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact)) {
             ActionButton(
                 icon = Icons.Outlined.Close,
                 tooltip = stringResource(Res.string.preference_cancel),
@@ -265,6 +287,10 @@ private fun RowScope.RowActions(
                 borderColor = colors.accent,
             )
         }
+    }
+
+    when {
+        isDirty -> Unit
 
         value is SharedPreferencesRowUiModel.Value.StringSetValue -> Text(
             text = stringResource(Res.string.preference_read_only),
