@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class FloconSharedPrefsPluginTest {
 
@@ -26,9 +27,15 @@ class FloconSharedPrefsPluginTest {
         override val name: String,
         override val type: String = FloconPreferenceType.Custom,
     ) : FloconPreference {
-        val values = mutableMapOf("age" to FloconPreferenceValue(intValue = 34))
+        val values = mutableMapOf(
+            "age" to FloconPreferenceValue(intValue = 34),
+            "token" to FloconPreferenceValue(stringValue = "abc"),
+        )
         override suspend fun set(columnName: String, value: FloconPreferenceValue) {
             values[columnName] = value
+        }
+        override suspend fun remove(columnName: String) {
+            values -= columnName
         }
         override suspend fun columns(): List<String> = values.keys.toList()
         override suspend fun get(columnName: String): FloconPreferenceValue? = values[columnName]
@@ -89,6 +96,40 @@ class FloconSharedPrefsPluginTest {
 
         assertEquals(35, preference.values["age"]?.intValue)
         assertContains(sender.messages.last().third, "{\"key\":\"age\",\"intValue\":35}")
+    }
+
+    @Test
+    fun `removeSharedPreferenceValue removes the key and sends the values`() = runTest {
+        plugin.register(preference)
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.SharedPreferences.Method.RemoveSharedPreferenceValue,
+            body = "{\"requestId\":\"1\",\"sharedPreferenceName\":\"user\",\"key\":\"token\"}",
+        )
+
+        assertFalse("token" in preference.values)
+        val (_, method, body) = sender.messages.last()
+        assertEquals(Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferenceValue, method)
+        assertContains(body, "{\"key\":\"age\",\"intValue\":34}")
+        assertFalse(body.contains("token"))
+    }
+
+    @Test
+    fun `removeSharedPreferenceValue keeps the key when remove is not implemented`() = runTest {
+        val readOnly = object : FloconPreference {
+            override val name: String = "readOnly"
+            override suspend fun set(columnName: String, value: FloconPreferenceValue) = Unit
+            override suspend fun columns(): List<String> = listOf("age")
+            override suspend fun get(columnName: String) = FloconPreferenceValue(intValue = 34)
+        }
+        plugin.register(readOnly)
+
+        plugin.onMessageReceived(
+            method = Protocol.ToDevice.SharedPreferences.Method.RemoveSharedPreferenceValue,
+            body = "{\"requestId\":\"1\",\"sharedPreferenceName\":\"readOnly\",\"key\":\"age\"}",
+        )
+
+        assertContains(sender.messages.last().third, "{\"key\":\"age\",\"intValue\":34}")
     }
 
     @Test

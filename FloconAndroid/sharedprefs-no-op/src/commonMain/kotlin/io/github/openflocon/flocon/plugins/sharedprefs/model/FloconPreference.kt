@@ -14,6 +14,12 @@ interface FloconPreference {
         value: FloconPreferenceValue,
     )
 
+    /**
+     * Removes the key, when deleted from the desktop app.
+     * Does nothing by default, override it to support deleting a key.
+     */
+    suspend fun remove(columnName: String) = Unit
+
     suspend fun columns(): List<String>
 
     suspend fun get(

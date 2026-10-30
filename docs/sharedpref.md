@@ -17,6 +17,7 @@ Features:
 - **Auto-Discovery**: Automatically finds and lists default `SharedPreferences` files on Android.
 - **DataStore Support**: Seamlessly browse and mutate `PreferencesDataStore` keys.
 - **Live Mutation**: Edit booleans, numbers, strings, and JSON objects in real-time.
+- **Delete a key**: Right-click a row and choose **Delete**, then confirm. The key is removed from the app (SharedPreferences, DataStore and iOS UserDefaults).
 
 ---
 
@@ -79,6 +80,11 @@ class MyCustomPreference : FloconPreference {
 
     override suspend fun set(columnName: String, value: FloconPreferenceValue) {
         writeSecureKey(columnName, value.stringValue)
+    }
+
+    // optional: called when a key is deleted from the desktop (does nothing by default)
+    override suspend fun remove(columnName: String) {
+        deleteSecureKey(columnName)
     }
 }
 

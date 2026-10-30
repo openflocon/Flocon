@@ -51,4 +51,8 @@ private class UserDefaultsPreference(
             ?: return
         defaults.setObject(newValue, forKey = columnName)
     }
+
+    override suspend fun remove(columnName: String) {
+        defaults.removeObjectForKey(columnName)
+    }
 }

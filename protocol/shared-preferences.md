@@ -8,6 +8,7 @@
 | Mobile → Desktop | `get_shared_preferences`     | `List<Preference>`           |
 | Desktop → Mobile | `get_shared_preference_value` | `GetValuesRequest`           |
 | Desktop → Mobile | `set_shared_preference_value` | `SetValueRequest`            |
+| Desktop → Mobile | `remove_shared_preference_value` | `RemoveValueRequest`      |
 | Mobile → Desktop | `get_shared_preference_value` | `ValuesResult`               |
 
 ## `get_shared_preferences`
@@ -61,6 +62,22 @@ Updates one key, then the mobile answers with `get_shared_preference_value` (ful
 
 ```json
 { "requestId": "9a7c…", "sharedPreferenceName": "session", "key": "isLogged", "booleanValue": false }
+```
+
+## `remove_shared_preference_value` (Desktop → Mobile)
+
+Removes one key, then the mobile answers with `get_shared_preference_value` (full content). Older SDKs ignore this method.
+
+### `RemoveValueRequest`
+
+| Key                    | Type     | Description       |
+|------------------------|----------|-------------------|
+| `requestId`            | `String` | Request id        |
+| `sharedPreferenceName` | `String` | Preference `name` |
+| `key`                  | `String` | Key to remove     |
+
+```json
+{ "requestId": "9a7c…", "sharedPreferenceName": "session", "key": "token" }
 ```
 
 ## `get_shared_preference_value` (Mobile → Desktop)

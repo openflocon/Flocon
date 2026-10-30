@@ -24,6 +24,10 @@ class FloconDatastorePreference(
         // no op
     }
 
+    override suspend fun remove(columnName: String) {
+        // no op
+    }
+
     override suspend fun columns(): List<String> {
         return emptyList() // no op
     }
