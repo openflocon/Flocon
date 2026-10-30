@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -11,6 +12,8 @@ internal data class TimelineFacetValueUiModel(
     val value: String,
     val count: Int,
     val selected: Boolean,
+    val method: NetworkMethodUi? = null, // an http method, displayed like in the network screen
+    val httpFamily: Int? = null, // the first digit of a status class, to color it like in the network screen
 )
 
 @Immutable
