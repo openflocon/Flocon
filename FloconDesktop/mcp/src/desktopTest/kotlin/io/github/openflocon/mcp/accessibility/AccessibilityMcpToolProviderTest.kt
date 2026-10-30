@@ -250,8 +250,8 @@ private class FakeAccessibilityRepository(
 
     override suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = moveFocus(-1)
 
-    override suspend fun activate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-        // the device answers with the element that is focused: nothing changes
+    override suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean) {
+        // the device answers with its new state: nothing changes
     }
 
     private fun moveFocus(step: Int) {

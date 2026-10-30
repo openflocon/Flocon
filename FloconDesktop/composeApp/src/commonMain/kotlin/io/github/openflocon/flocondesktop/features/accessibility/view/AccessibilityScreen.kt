@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.accessibility.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,11 +64,13 @@ fun AccessibilityScreen(modifier: Modifier = Modifier) {
     val banner by viewModel.banner.collectAsStateWithLifecycle()
     val focusedNode by viewModel.focusedNode.collectAsStateWithLifecycle()
     val canMoveFocus by viewModel.canMoveFocus.collectAsStateWithLifecycle()
+    val talkBackOn by viewModel.talkBackOn.collectAsStateWithLifecycle()
 
     AccessibilityScreen(
         banner = banner,
         focusedNode = focusedNode,
         canMoveFocus = canMoveFocus,
+        talkBackOn = talkBackOn,
         types = types,
         selectedType = selectedType,
         onTypeSelected = viewModel::onTypeSelected,
@@ -84,6 +88,7 @@ fun AccessibilityScreen(
     banner: AccessibilityBannerUiModel?,
     focusedNode: AccessibilityFocusedNodeUiModel?,
     canMoveFocus: Boolean,
+    talkBackOn: Boolean,
     types: ImmutableList<String>,
     selectedType: String?,
     onTypeSelected: (String?) -> Unit,
@@ -191,7 +196,7 @@ fun AccessibilityScreen(
         AccessibilityRemoteOverlay(
             focusedNode = focusedNode,
             canMoveFocus = canMoveFocus,
-            talkBackOn = banner is AccessibilityBannerUiModel.Running,
+            talkBackOn = talkBackOn,
             containerSize = containerSize,
             onAction = onAction,
             modifier = Modifier.align(Alignment.BottomEnd),
@@ -210,6 +215,7 @@ private fun AccessibilityScreenPreview() {
             ),
             focusedNode = previewAccessibilityFocusedNodeUiModel(),
             canMoveFocus = true,
+            talkBackOn = true,
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),
             selectedType = null,
             onTypeSelected = {},

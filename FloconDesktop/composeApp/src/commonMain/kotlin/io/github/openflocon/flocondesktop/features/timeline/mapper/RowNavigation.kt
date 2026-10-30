@@ -41,10 +41,17 @@ internal fun TimelineRowUiModel.copyText(): String? = when (source) {
  * Events that are the same thing happening again (the same analytics event, the same deeplink...) share a link key:
  * they are linked when one is hovered. Null for the events with nothing to link: the app start, the database queries
  * (a query is often repeated, linking them would only add noise), the WebView events (same for a console message),
- * and the network calls, which are linked by their request and their response.
+ * the accessibility events (the same element is focused or clicked again and again), and the network calls, which
+ * are linked by their request and their response.
  */
 internal fun TimelineRowUiModel.linkKey(): String? = when (source) {
-    TimelineSource.AppStart, TimelineSource.Network, TimelineSource.Database, TimelineSource.WebView -> null
+    TimelineSource.AppStart,
+    TimelineSource.Network,
+    TimelineSource.Database,
+    TimelineSource.WebView,
+    TimelineSource.Accessibility,
+    -> null
+
     else -> "${source.name}:$title".takeIf { title.isNotBlank() }
 }
 
