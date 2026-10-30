@@ -53,6 +53,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
 import io.github.openflocon.library.designsystem.components.floconTableHeader
+import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -272,7 +273,7 @@ private fun ResultHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colors.bg100)
+            .floconTableHeaderBackground()
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
