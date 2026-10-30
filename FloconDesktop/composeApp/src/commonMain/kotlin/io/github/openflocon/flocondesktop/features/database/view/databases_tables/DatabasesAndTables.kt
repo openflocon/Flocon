@@ -43,7 +43,7 @@ fun DatabasesAndTables(
     var filter by rememberSaveable { mutableStateOf("") }
 
     Surface(
-        color = FloconTheme.colors.bg100,
+        color = FloconTheme.colors.islandSidebar,
         modifier = modifier
             .floconPanel()
     ) {

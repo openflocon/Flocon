@@ -67,7 +67,7 @@ internal fun ColumnItem(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .background(FloconTheme.colors.bg300)
+                    .background(FloconTheme.colors.ink.copy(alpha = 0.08f))
                     .padding(horizontal = FloconTheme.spacing.extraSmall),
             ) {
                 Text(

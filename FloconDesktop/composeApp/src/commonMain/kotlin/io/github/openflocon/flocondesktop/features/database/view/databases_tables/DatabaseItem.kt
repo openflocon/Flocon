@@ -61,7 +61,7 @@ internal fun DatabaseItem(
     isFiltering: Boolean = false,
 ) {
     val groupBackground = if (state.isSelected) {
-        FloconTheme.colors.bg200
+        FloconTheme.colors.ink.copy(alpha = 0.05f)
     } else {
         Color.Transparent
     }

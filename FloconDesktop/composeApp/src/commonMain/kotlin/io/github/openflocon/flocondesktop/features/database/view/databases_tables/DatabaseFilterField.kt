@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +30,8 @@ internal fun DatabaseFilterField(
         onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(FloconTheme.sizes.controlHeight),
+            .height(FloconTheme.sizes.controlHeight)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium),
         placeholder = defaultPlaceHolder(
             stringResource(Res.string.database_filter_placeholder),
             color = FloconTheme.colors.inkFaint,
@@ -43,6 +45,6 @@ internal fun DatabaseFilterField(
             )
         },
         contentPadding = PaddingValues(horizontal = FloconTheme.spacing.small),
-        containerColor = FloconTheme.colors.bg200,
+        containerColor = FloconTheme.colors.bg000.copy(alpha = 0.3f),
     )
 }

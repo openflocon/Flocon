@@ -115,7 +115,7 @@ private fun TableEntryContent(
         modifier = modifier
             .height(FloconTheme.sizes.rowHeight)
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isOpened) FloconTheme.colors.bg300 else Color.Transparent)
+            .background(if (isOpened) FloconTheme.colors.ink.copy(alpha = 0.06f) else Color.Transparent)
             .combinedClickable(
                 onClick = {
                     updateIsOpened(!isOpened)
