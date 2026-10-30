@@ -23,7 +23,6 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.size.SizeResolver
 import io.github.openflocon.flocondesktop.common.ui.isInPreview
-import io.github.openflocon.flocondesktop.features.images.mapper.formatImageDimensions
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -55,7 +54,7 @@ internal fun rememberImageDimensions(model: ImagesUiModel): State<String?> {
                 .build()
             val result = SingletonImageLoader.get(platformContext).execute(request)
             result.image?.let {
-                dimensions.value = formatImageDimensions(width = it.width, height = it.height)
+                dimensions.value = "${it.width}×${it.height}"
             }
         }
     }

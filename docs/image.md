@@ -16,19 +16,8 @@ Flocon captures and displays **images downloaded over the network** at runtime �
 For every downloaded image, Flocon displays:
 
 - **Thumbnail Preview**: Direct visual preview rendered inside the desktop app
-- **Format**: JPG, PNG, WEBP, GIF, SVG… shown as a badge on the image
-- **Origin URL**: Full remote source address (host and path)
-- **Size & Weight**: Decoded dimensions (e.g. `600×400`) and downloaded size (e.g. `142 KB`)
-- **Timing**: Timestamp, images are listed in load order
-
-Use the toolbar icons to switch between the **grid** (one card per image) and the **list** (one compact row per image).
-
-Click an image to open it in the **full-screen viewer**:
-
-- Browse with the arrows, the filmstrip at the bottom, or the `←` / `→` keys; `Esc` closes it
-- Zoom with a trackpad pinch (macOS), `⌘`/`Ctrl` + mouse wheel, a double click, the `+` / `-` keys or the toolbar buttons; `0` goes back to fit
-- When zoomed, scroll or drag to move around the image
-- Copy the URL or open it in your browser from the toolbar
+- **Origin URL**: Full remote source address
+- **Timing**: Timestamp and load ordering
 
 This is invaluable for debugging missing placeholders, CDN resolution failures, image compression artifacts, or unexpected network cache misses.
 
