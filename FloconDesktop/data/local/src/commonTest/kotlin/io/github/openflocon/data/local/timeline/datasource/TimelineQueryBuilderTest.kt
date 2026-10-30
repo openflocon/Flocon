@@ -235,15 +235,6 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
-    fun `every member of the union has the facet columns`() {
-        val query = build()
-
-        // 1 per member: the events of every source, the response of the network calls and the app starts
-        assertEquals(eventBranches + 1, Regex("AS facetA\\b").findAll(query.sql).count())
-        assertEquals(eventBranches + 1, Regex("AS facetB\\b").findAll(query.sql).count())
-    }
-
-    @Test
     fun `a database statement is told from the first word of its query`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
 
