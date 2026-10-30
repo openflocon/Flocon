@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
@@ -10,23 +12,25 @@ import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceShar
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferenceToEdit
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.asString
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import kotlin.math.max
 
 class SharedPreferencesViewModel(
@@ -36,10 +40,8 @@ class SharedPreferencesViewModel(
     private val observeCurrentDeviceSharedPreferenceValuesUseCase: ObserveCurrentDeviceSharedPreferenceValuesUseCase,
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
     private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
+    private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
-
-    private val _elementToEdit = MutableStateFlow<SharedPreferenceToEdit?>(null)
-    val elementToEdit = _elementToEdit.asStateFlow()
 
     val sharedPrefs: StateFlow<SharedPrefsStateUiModel> =
         sharedPrefSelectorDelegate.deviceSharedPrefs
@@ -50,12 +52,7 @@ class SharedPreferencesViewModel(
                     SharedPreferencesRowsStateUiModel.Empty
                 } else {
                     SharedPreferencesRowsStateUiModel.WithContent(
-                        it.map {
-                            SharedPreferencesRowUiModel(
-                                key = it.key,
-                                value = it.value.toUi(),
-                            )
-                        }.toImmutableList(),
+                        it.map { row -> row.toUi() }.toImmutableList(),
                     )
                 }
             }
@@ -193,19 +190,14 @@ class SharedPreferencesViewModel(
         }
     }
 
-    fun onEditClicked(
-        row: SharedPreferencesRowUiModel,
-        stringValue: SharedPreferencesRowUiModel.Value.StringValue
-    ) {
-        _elementToEdit.update { SharedPreferenceToEdit(row, stringValue) }
+    fun onEditClicked(row: SharedPreferencesRowUiModel) {
+        navigationState.navigate(SharedPreferencesRoutes.Edit(row.key))
     }
 
-    fun cancelEdition() {
-        _elementToEdit.update { null }
-    }
-
-    fun onEditDone(row: SharedPreferencesRowUiModel, stringValue: String) {
-        onValueChanged(row, stringValue)
-        _elementToEdit.update { null }
+    fun onCopyClicked(row: SharedPreferencesRowUiModel) {
+        viewModelScope.launch {
+            copyToClipboard(row.value.asString())
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
     }
 }
