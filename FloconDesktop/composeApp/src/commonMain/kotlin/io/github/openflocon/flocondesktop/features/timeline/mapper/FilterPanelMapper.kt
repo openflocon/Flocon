@@ -74,6 +74,10 @@ private fun TimelineSummaryUiModel.toGroup(
     return if (values.isEmpty()) {
         null
     } else {
-        TimelineFacetGroupUiModel(facet = facet, values = values.toImmutableList())
+        TimelineFacetGroupUiModel(
+            facet = facet,
+            values = values.toImmutableList(),
+            asTags = facet == TimelineFacet.NetworkMethod || facet == TimelineFacet.NetworkStatus,
+        )
     }
 }

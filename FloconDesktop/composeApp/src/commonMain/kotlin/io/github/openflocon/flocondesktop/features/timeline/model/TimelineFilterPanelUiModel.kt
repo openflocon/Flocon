@@ -20,6 +20,8 @@ internal data class TimelineFacetValueUiModel(
 internal data class TimelineFacetGroupUiModel(
     val facet: TimelineFacet,
     val values: ImmutableList<TimelineFacetValueUiModel>,
+    // the values are displayed as tags side by side, like the methods and the status of the network screen
+    val asTags: Boolean = false,
 )
 
 // one source of the filter panel: its switch and the facets to narrow it down

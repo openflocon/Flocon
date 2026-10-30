@@ -1,5 +1,12 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,8 +30,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -36,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -74,7 +83,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconPageSelector
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
@@ -87,6 +95,11 @@ private val PreviewPanelHeight = 720.dp
 private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
 private const val GroupsPerRow = 2
+private const val HiddenTagAlpha = 0.3f
+private const val DisabledGroupsAlpha = 0.5f
+private const val ExpandedChevronRotation = 180f
+private const val SelectorBackgroundAlpha = 0.55f
+private val SelectorChevronSize = 16.dp
 
 /**
  * The filters of the timeline: a section by source, to show it or not and to narrow it down by facet,
@@ -138,6 +151,8 @@ internal fun TimelineFilterPanel(
                         section = section,
                         label = sourceLabels.getValue(section.source),
                         onAction = onAction,
+                        // the sections slide when the order changes: a source gets its first event
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
@@ -223,6 +238,10 @@ private fun FilterSection(
     val (color, _) = section.source.categoryColors()
     var expanded by remember(section.source) { mutableStateOf(section.groups.isNotEmpty()) }
     val canExpand = section.groups.isNotEmpty()
+    val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
+    val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
+    // the filters of a source switched off are still there, to be set before switching it on
+    val groupsAlpha by animateFloatAsState(if (section.enabled) 1f else DisabledGroupsAlpha)
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -236,7 +255,8 @@ private fun FilterSection(
             Box(Modifier.size(16.dp), contentAlignment = Alignment.Center) {
                 if (canExpand) {
                     FloconIcon(
-                        imageVector = if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                        imageVector = Icons.Outlined.ExpandMore,
+                        modifier = Modifier.rotate(chevronRotation),
                     )
                 }
             }
@@ -245,7 +265,7 @@ private fun FilterSection(
                 text = label,
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = if (section.enabled) colors.ink else colors.inkMuted,
+                color = labelColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -264,21 +284,27 @@ private fun FilterSection(
                 onCheckedChange = { onAction(TimelineFilterAction.ToggleSource(section.source)) },
             )
         }
-        if (expanded) {
-            // two groups by row: a dropdown does not need the whole width
-            section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                ) {
-                    rowGroups.forEach { group ->
-                        FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
-                    }
-                    // a lonely group keeps the width of the others
-                    if (rowGroups.size < GroupsPerRow) {
-                        Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Column(modifier = Modifier.alpha(groupsAlpha)) {
+                // two groups by row: a dropdown does not need the whole width
+                section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    ) {
+                        rowGroups.forEach { group ->
+                            FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
+                        }
+                        // a lonely group keeps the width of the others
+                        if (rowGroups.size < GroupsPerRow) {
+                            Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+                        }
                     }
                 }
             }
@@ -299,9 +325,9 @@ private fun FacetGroup(
 
     // the menu stays open while values are unticked: a group takes several values
     Box(modifier = modifier) {
-        FloconPageSelector(
-            value = if (shown == group.values.size) any else "$shown/${group.values.size}",
+        FacetSelector(
             caption = stringResource(group.facet.title()),
+            value = if (shown == group.values.size) any else "$shown/${group.values.size}",
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -310,13 +336,63 @@ private fun FacetGroup(
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
         ) {
-            group.values.forEach { item ->
-                FacetValueRow(
-                    item = item,
-                    onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
+            if (group.asTags) {
+                FacetTags(
+                    values = group.values,
+                    onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, it)) },
                 )
+            } else {
+                group.values.forEach { item ->
+                    FacetValueRow(
+                        item = item,
+                        onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
+                    )
+                }
             }
         }
+    }
+}
+
+// like the page selectors, but half of the width: the caption on the left, the value and the arrow on the right
+@Composable
+private fun FacetSelector(
+    caption: String,
+    value: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val shape = FloconTheme.shapes.medium
+    Row(
+        modifier = modifier
+            .height(FloconTheme.sizes.pageBarControlHeight)
+            .clip(shape)
+            .background(colors.bg300.copy(alpha = colors.bg300.alpha * SelectorBackgroundAlpha))
+            .border(width = 1.dp, color = colors.line, shape = shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = FloconTheme.spacing.medium),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        Text(
+            text = caption,
+            style = FloconTheme.typography.bodySmall,
+            color = colors.inkFaint,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = value,
+            style = FloconTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = colors.ink,
+            maxLines = 1,
+        )
+        FloconIcon(
+            imageVector = Icons.Outlined.KeyboardArrowDown,
+            modifier = Modifier.size(SelectorChevronSize),
+        )
     }
 }
 
@@ -340,29 +416,14 @@ private fun FacetValueRow(
             checked = item.selected,
             onCheckedChange = { onToggle() },
         )
-        // a value without event yet is still there, but faded
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .alpha(if (item.count > 0) 1f else 0.4f),
-        ) {
-            val method = item.method
-            val httpFamily = item.httpFamily
-            when {
-                // the same tags as the network screen
-                method != null -> MethodTag(method = method)
-
-                httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
-
-                else -> Text(
-                    text = item.value,
-                    style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                    color = colors.ink,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
+        Text(
+            text = item.value,
+            style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+            color = colors.ink,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
         Text(
             text = item.count.toString(),
             style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
@@ -371,11 +432,45 @@ private fun FacetValueRow(
     }
 }
 
+/**
+ * The values as the tags of the network screen, side by side: a hidden value is faded, like in the method filter of the network screen.
+ */
+@Composable
+private fun FacetTags(
+    values: List<TimelineFacetValueUiModel>,
+    onToggle: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    FlowRow(
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        values.forEach { item ->
+            val alpha by animateFloatAsState(if (item.selected) 1f else HiddenTagAlpha)
+            val method = item.method
+            val httpFamily = item.httpFamily
+            Box(
+                modifier = Modifier
+                    .alpha(alpha)
+                    .clip(FloconTheme.shapes.small)
+                    .clickable { onToggle(item.value) },
+            ) {
+                when {
+                    method != null -> MethodTag(method = method)
+                    httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
+                    else -> FloconStatusPill(text = item.value, color = colors.inkMuted)
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun FloconDividerLine(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .padding(top = FloconTheme.spacing.small)
             .fillMaxWidth()
             .height(1.dp)
             .background(FloconTheme.colors.line)
