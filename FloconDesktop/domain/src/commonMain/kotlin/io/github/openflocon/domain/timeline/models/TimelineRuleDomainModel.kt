@@ -23,6 +23,9 @@ data class TimelineStatusMatcher(
     val from: Int,
     val to: Int,
 ) {
+    // "404" or "500-503", what the user typed and what the rule stores
+    fun label(): String = if (from == to) "$from" else "$from-$to"
+
     companion object {
         /**
          * "404" or "500-503" (spaces allowed). Null for anything else: unknown text, reversed range.
