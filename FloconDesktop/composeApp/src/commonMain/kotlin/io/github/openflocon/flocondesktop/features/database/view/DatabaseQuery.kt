@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -204,6 +205,9 @@ fun DatabaseQuery(
                     .toggleable(
                         value = autoUpdate,
                         role = Role.Switch,
+                        // no hover / press highlight (it is tinted with the accent color)
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
                         onValueChange = {
                             onAction(DatabaseTabAction.UpdateAutoUpdate(it))
                         },
@@ -212,7 +216,7 @@ fun DatabaseQuery(
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FloconSwitch(checked = autoUpdate)
+                FloconSwitch(checked = autoUpdate, scale = 0.95f)
                 Text(
                     stringResource(Res.string.auto_update),
                     color = if (autoUpdate) colors.ink else colors.inkMuted,
