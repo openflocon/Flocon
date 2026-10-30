@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,8 +43,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
-
-private val TabIndicatorHeight = 2.dp
 
 @Composable
 fun DatabaseTabs(
@@ -116,21 +115,14 @@ private fun DatabaseTabItem(
             }
         }
     ) {
-        val indicatorColor = FloconTheme.colors.accent
+        // the selected tab has the color of the box under it
+        val background = if (state == selected) FloconTheme.colors.bg100 else Color.Transparent
         Row(
             modifier = modifier
                 .clip(shape)
+                .background(background)
                 .clickable {
                     onAction(DatabaseTabViewAction.OnTabSelected(state))
-                }
-                .drawBehind {
-                    if (state == selected) {
-                        drawRect(
-                            color = indicatorColor,
-                            topLeft = Offset(0f, size.height - TabIndicatorHeight.toPx()),
-                            size = Size(size.width, TabIndicatorHeight.toPx()),
-                        )
-                    }
                 }
                 .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
