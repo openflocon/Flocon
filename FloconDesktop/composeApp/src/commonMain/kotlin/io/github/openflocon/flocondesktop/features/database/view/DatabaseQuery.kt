@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,7 +50,7 @@ import flocondesktop.composeapp.generated.resources.database_run_query
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.theme.FloconColors
 import kotlinx.collections.immutable.ImmutableList
@@ -197,18 +199,23 @@ fun DatabaseQuery(
             }
 
             Row(
+                modifier = Modifier
+                    .height(FloconTheme.sizes.controlHeight)
+                    .toggleable(
+                        value = autoUpdate,
+                        role = Role.Switch,
+                        onValueChange = {
+                            onAction(DatabaseTabAction.UpdateAutoUpdate(it))
+                        },
+                    )
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FloconCheckbox(
-                    checked = autoUpdate,
-                    onCheckedChange = {
-                        onAction(DatabaseTabAction.UpdateAutoUpdate(it))
-                    },
-                )
+                FloconSwitch(checked = autoUpdate)
                 Text(
                     stringResource(Res.string.auto_update),
-                    color = colors.inkMuted,
+                    color = if (autoUpdate) colors.ink else colors.inkMuted,
                     style = FloconTheme.typography.bodyMedium
                 )
             }
