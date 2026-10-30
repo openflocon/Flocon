@@ -146,8 +146,7 @@ fun NetworkScreen(
                 NetworkItemHeader(
                     columnWidths = columnWidths,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(FloconTheme.colors.bg000.copy(alpha = 0.5f)),
+                        .fillMaxWidth(),
                     clickOnSort = { type, sort ->
                         onAction(NetworkAction.HeaderAction.ClickOnSort(type, sort))
                     },

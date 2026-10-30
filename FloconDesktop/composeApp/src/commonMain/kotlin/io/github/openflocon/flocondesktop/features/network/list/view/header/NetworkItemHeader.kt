@@ -36,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.MethodFilterDropdownContent
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -50,6 +51,7 @@ fun NetworkItemHeader(
     val density = LocalDensity.current
     Row(
         modifier = modifier
+            .floconTableHeaderBackground()
             .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.compact)
             .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),

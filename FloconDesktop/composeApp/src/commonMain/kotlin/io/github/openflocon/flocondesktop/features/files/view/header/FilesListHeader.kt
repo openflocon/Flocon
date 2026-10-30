@@ -93,8 +93,7 @@ internal fun FilesListHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .floconTableHeader(FloconTheme.sizes.headerHeight + FloconTheme.spacing.small)
-            .filesBottomLine()
+            .floconTableHeader()
             .padding(horizontal = FilesListColumns.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
