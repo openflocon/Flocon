@@ -15,9 +15,13 @@ Flocon captures and displays **images downloaded over the network** at runtime �
 
 For every downloaded image, Flocon displays:
 
-- **Thumbnail Preview**: Direct visual preview rendered inside the desktop app
-- **Origin URL**: Full remote source address
-- **Timing**: Timestamp and load ordering
+- **Thumbnail Preview**: Direct visual preview rendered inside the desktop app, over a checkerboard so transparent images stay visible
+- **Format**: JPG, PNG, WEBP, GIF, SVG… shown as a badge on the image
+- **Origin URL**: Full remote source address (host and path)
+- **Size & Weight**: Decoded dimensions (e.g. `600×400`) and downloaded size (e.g. `142 KB`)
+- **Timing**: Timestamp, images are listed in load order
+
+Use the toolbar icons to switch between the **grid** (one card per image) and the **list** (one compact row per image).
 
 This is invaluable for debugging missing placeholders, CDN resolution failures, image compression artifacts, or unexpected network cache misses.
 

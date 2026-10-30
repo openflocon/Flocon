@@ -9,13 +9,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,25 +41,35 @@ import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_delete
+import flocondesktop.composeapp.generated.resources.images_display_grid
+import flocondesktop.composeapp.generated.resources.images_display_list
 import flocondesktop.composeapp.generated.resources.images_filter
 import flocondesktop.composeapp.generated.resources.menu_item_images
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
+import io.github.openflocon.flocondesktop.features.images.model.ImagesDisplayModeUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private val GridMinCellSize = 250.dp
 
 @Composable
 fun ImagesScreen(
@@ -62,6 +77,7 @@ fun ImagesScreen(
 ) {
     val viewModel: ImagesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val displayMode by viewModel.displayMode.collectAsStateWithLifecycle()
     var clickedImage by remember { mutableStateOf<ImagesUiModel?>(null) }
 
     DisposableEffect(viewModel) {
@@ -73,6 +89,8 @@ fun ImagesScreen(
 
     ImagesScreen(
         state = state,
+        displayMode = displayMode,
+        onDisplayModeChanged = viewModel::onDisplayModeChanged,
         onReset = viewModel::reset,
         onClickImage = { clickedImage = it },
         resetClickedImage = { clickedImage = null },
@@ -85,6 +103,8 @@ fun ImagesScreen(
 @Composable
 private fun ImagesScreen(
     state: ImagesStateUiModel,
+    displayMode: ImagesDisplayModeUiModel,
+    onDisplayModeChanged: (ImagesDisplayModeUiModel) -> Unit,
     onReset: () -> Unit,
     onFilterChanged: (text: String) -> Unit,
     onClickImage: (ImagesUiModel) -> Unit,
@@ -92,8 +112,6 @@ private fun ImagesScreen(
     clickedImage: ImagesUiModel?,
     modifier: Modifier = Modifier,
 ) {
-    val lazyListState = rememberLazyGridState()
-    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
     var currentFilter by remember { mutableStateOf("") }
 
     Column(
@@ -116,8 +134,23 @@ private fun ImagesScreen(
                 )
             },
             actions = {
+                FloconIconToggleButton(
+                    value = displayMode == ImagesDisplayModeUiModel.Grid,
+                    onValueChange = { onDisplayModeChanged(ImagesDisplayModeUiModel.Grid) },
+                    tooltip = stringResource(Res.string.images_display_grid),
+                ) {
+                    FloconIcon(imageVector = Icons.Outlined.GridView)
+                }
+                FloconIconToggleButton(
+                    value = displayMode == ImagesDisplayModeUiModel.List,
+                    onValueChange = { onDisplayModeChanged(ImagesDisplayModeUiModel.List) },
+                    tooltip = stringResource(Res.string.images_display_list),
+                ) {
+                    FloconIcon(imageVector = Icons.AutoMirrored.Outlined.ViewList)
+                }
                 FloconIconButton(
                     imageVector = Icons.Outlined.Delete,
+                    tooltip = stringResource(Res.string.images_delete),
                     onClick = onReset,
                 )
             }
@@ -134,38 +167,18 @@ private fun ImagesScreen(
                 )
             }
 
-            is ImagesStateUiModel.WithImages -> {
-                val gridPadding = FloconTheme.spacing.small
+            is ImagesStateUiModel.WithImages -> when (displayMode) {
+                ImagesDisplayModeUiModel.Grid -> ImagesGrid(
+                    images = state.images,
+                    onClickImage = onClickImage,
+                    modifier = Modifier.fillMaxSize(),
+                )
 
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    LazyVerticalGrid(
-                        state = lazyListState,
-                        columns = GridCells.Adaptive(minSize = 250.dp),
-                        horizontalArrangement = Arrangement.spacedBy(gridPadding),
-                        verticalArrangement = Arrangement.spacedBy(gridPadding),
-                        contentPadding = PaddingValues(all = gridPadding),
-                        modifier = Modifier
-                            .matchParentSize()
-                            .floconPanel()
-                    ) {
-                        items(state.images) {
-                            ImageItem(
-                                model = it,
-                                onClick = onClickImage,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            )
-                        }
-                    }
-                    FloconVerticalScrollbar(
-                        adapter = scrollAdapter,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .align(Alignment.CenterEnd)
-                    )
-                }
+                ImagesDisplayModeUiModel.List -> ImagesList(
+                    images = state.images,
+                    onClickImage = onClickImage,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
     }
@@ -173,6 +186,80 @@ private fun ImagesScreen(
         ImageDialog(
             model = it,
             onDismiss = { resetClickedImage() },
+        )
+    }
+}
+
+@Composable
+private fun ImagesGrid(
+    images: ImmutableList<ImagesUiModel>,
+    onClickImage: (ImagesUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val gridState = rememberLazyGridState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(gridState)
+    val gridPadding = FloconTheme.spacing.small
+
+    Box(modifier = modifier) {
+        LazyVerticalGrid(
+            state = gridState,
+            columns = GridCells.Adaptive(minSize = GridMinCellSize),
+            horizontalArrangement = Arrangement.spacedBy(gridPadding),
+            verticalArrangement = Arrangement.spacedBy(gridPadding),
+            contentPadding = PaddingValues(all = gridPadding),
+            modifier = Modifier
+                .matchParentSize()
+                .floconPanel(),
+        ) {
+            items(items = images, key = { it.id }) {
+                ImageItem(
+                    model = it,
+                    onClick = onClickImage,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+        FloconVerticalScrollbar(
+            adapter = scrollAdapter,
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.CenterEnd),
+        )
+    }
+}
+
+@Composable
+private fun ImagesList(
+    images: ImmutableList<ImagesUiModel>,
+    onClickImage: (ImagesUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val listState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(listState)
+
+    Box(modifier = modifier) {
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
+            modifier = Modifier
+                .matchParentSize()
+                .floconPanel(),
+        ) {
+            itemsIndexed(items = images, key = { _, item -> item.id }) { index, item ->
+                if (index > 0) {
+                    FloconHorizontalDivider()
+                }
+                ImageListItem(
+                    model = item,
+                    onClick = onClickImage,
+                )
+            }
+        }
+        FloconVerticalScrollbar(
+            adapter = scrollAdapter,
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.CenterEnd),
         )
     }
 }
@@ -219,9 +306,28 @@ fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
 
 @Composable
 @androidx.compose.ui.tooling.preview.Preview
+private fun ImagesListScreenPreview() {
+    FloconTheme {
+        ImagesScreen(
+            displayMode = ImagesDisplayModeUiModel.List,
+            onDisplayModeChanged = {},
+            onReset = {},
+            onClickImage = {},
+            resetClickedImage = {},
+            onFilterChanged = {},
+            clickedImage = null,
+            state = previewImagesStateUiModel(),
+        )
+    }
+}
+
+@Composable
+@androidx.compose.ui.tooling.preview.Preview
 private fun ImagesScreenPreview() {
     FloconTheme {
         ImagesScreen(
+            displayMode = ImagesDisplayModeUiModel.Grid,
+            onDisplayModeChanged = {},
             onReset = {},
             onClickImage = {},
             resetClickedImage = {},

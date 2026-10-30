@@ -8,7 +8,9 @@ import io.github.openflocon.domain.images.usecase.ObserveImagesUseCase
 import io.github.openflocon.domain.images.usecase.ResetCurrentDeviceImagesUseCase
 import io.github.openflocon.flocondesktop.features.images.mapper.filterBy
 import io.github.openflocon.flocondesktop.features.images.mapper.toUi
+import io.github.openflocon.flocondesktop.features.images.model.ImagesDisplayModeUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,9 @@ class ImagesViewModel(
 
     private val filter = MutableStateFlow("")
 
+    private val _displayMode = MutableStateFlow(ImagesDisplayModeUiModel.Grid)
+    val displayMode: StateFlow<ImagesDisplayModeUiModel> = _displayMode
+
     val state: StateFlow<ImagesStateUiModel> =
         combine(
             observeImagesUseCase(),
@@ -40,7 +45,7 @@ class ImagesViewModel(
                 ImagesStateUiModel.WithImages(
                     images = it.map { image ->
                         image.toUi()
-                    },
+                    }.toImmutableList(),
                 )
             }
         }.flowOn(dispatcherProvider.viewModel)
@@ -50,6 +55,10 @@ class ImagesViewModel(
     }
 
     fun onNotVisible() {
+    }
+
+    fun onDisplayModeChanged(mode: ImagesDisplayModeUiModel) {
+        _displayMode.value = mode
     }
 
     fun onFilterChanged(text: String) {

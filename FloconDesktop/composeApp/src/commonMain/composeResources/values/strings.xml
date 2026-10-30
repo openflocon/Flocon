@@ -316,6 +316,14 @@
     <string name="images_close_preview">Close Preview</string>
     <string name="images_filter">Filter images</string>
     <string name="images_preview">Image preview</string>
+    <string name="images_display_grid">Grid view</string>
+    <string name="images_display_list">List view</string>
+    <string name="images_delete">Clear images</string>
+    <string name="images_label_url">URL</string>
+    <string name="images_label_size">Size</string>
+    <string name="images_label_weight">Weight</string>
+    <string name="images_label_time">Time</string>
+    <string name="images_thumbnail">Image thumbnail</string>
     <string name="mock_add_header">Add Header</string>
     <string name="mock_additional_delay">Additional Delay (ms)</string>
     <string name="mock_display_name">Display name</string>
