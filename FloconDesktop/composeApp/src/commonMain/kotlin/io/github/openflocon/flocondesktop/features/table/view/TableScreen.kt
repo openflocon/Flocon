@@ -53,8 +53,10 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenuIt
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.floconPanel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -163,19 +165,18 @@ fun TableScreen(
 
                         is TableContentStateUiModel.WithContent -> {
                             Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .background(FloconTheme.colors.bg200)
-                                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .floconTableHeader()
+                                    .padding(horizontal = FloconTheme.spacing.small),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 content.columns.columns.fastForEach { column ->
-                                    Text(
+                                    FloconTableHeaderLabel(
                                         text = column,
-                                        modifier =
-                                        Modifier
+                                        modifier = Modifier
                                             .width(columnsWidth)
                                             .padding(horizontal = FloconTheme.spacing.extraSmall),
-                                        style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = FloconTheme.colors.inkMuted,
                                     )
                                 }
                             }
