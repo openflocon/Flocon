@@ -10,16 +10,18 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -52,6 +55,7 @@ import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
+import flocondesktop.composeapp.generated.resources.timeline_filters_toggle
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
@@ -72,12 +76,13 @@ import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelin
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
-import io.github.openflocon.flocondesktop.features.timeline.view.SourceChip
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,23 +97,25 @@ fun TimelineScreen(
     val viewModel: TimelineViewModel = koinViewModel()
     val rows = viewModel.items.collectAsLazyPagingItems()
     val filterText = viewModel.filterText.collectAsStateWithLifecycle()
-    val selectedSources by viewModel.selectedSources.collectAsStateWithLifecycle()
     val selectedKey by viewModel.selectedKey.collectAsStateWithLifecycle()
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
+    val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
+    val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
         rows = rows,
         filterText = filterText,
-        selectedSources = selectedSources,
         selectedKey = selectedKey,
         summary = summary,
         isLive = isLive,
         settings = settings,
         showEmptyState = showEmptyState,
+        filterPanelOpen = filterPanelOpen,
+        activeFilterCount = activeFilterCount,
         onAction = viewModel::onAction,
     )
 }
@@ -117,12 +124,13 @@ fun TimelineScreen(
 internal fun TimelineContent(
     rows: LazyPagingItems<TimelineItemUiModel>,
     filterText: State<String>,
-    selectedSources: Set<TimelineSource>,
     selectedKey: String?,
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
     showEmptyState: Boolean,
+    filterPanelOpen: Boolean,
+    activeFilterCount: Int,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -177,28 +185,39 @@ internal fun TimelineContent(
             onAction = onAction,
         )
 
-        FlowRow(
+        Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FilterBar(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
                 modifier = Modifier
-                    .width(FloconTheme.sizes.sidePanelWidth)
+                    .weight(1f)
                     .focusRequester(searchFocus)
                     .onFocusChanged { searchFocused = it.isFocused },
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
-            TimelineSource.entries.forEach { source ->
-                SourceChip(
-                    source = source,
-                    count = summary.sourceCounts[source] ?: 0,
-                    selected = source in selectedSources,
-                    onClick = { onAction(TimelineAction.ToggleSource(source)) },
-                )
+            FloconIconToggleButton(
+                value = filterPanelOpen,
+                tooltip = stringResource(Res.string.timeline_filters_toggle),
+                onValueChange = { onAction(TimelineAction.ToggleFilterPanel) },
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+                ) {
+                    FloconIcon(imageVector = Icons.Outlined.FilterList)
+                    if (activeFilterCount > 0) {
+                        Text(
+                            text = activeFilterCount.toString(),
+                            style = FloconTheme.typography.labelSmall,
+                            color = colors.accent,
+                        )
+                    }
+                }
             }
         }
 
@@ -365,12 +384,13 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
         TimelineContent(
             rows = rows,
             filterText = remember { mutableStateOf("") },
-            selectedSources = TimelineSource.entries.toSet(),
             selectedKey = selected,
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
             showEmptyState = false,
+            filterPanelOpen = false,
+            activeFilterCount = 2,
             onAction = {},
             modifier = Modifier.height(PreviewScreenHeight),
         )

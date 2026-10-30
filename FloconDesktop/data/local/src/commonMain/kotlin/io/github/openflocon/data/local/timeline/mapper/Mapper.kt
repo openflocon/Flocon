@@ -11,10 +11,12 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.datasource.KIND_TABLE
 import io.github.openflocon.data.local.timeline.datasource.KIND_WEBVIEW
+import io.github.openflocon.data.local.timeline.models.TimelineFacetCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
@@ -52,6 +54,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
 internal fun toSummaryDomain(
     summaryRows: List<TimelineSummaryRowEntity>,
     sessionRows: List<TimelineSessionCountEntity>,
+    facetRows: List<TimelineFacetCountEntity> = emptyList(),
 ): TimelineSummaryDomainModel = TimelineSummaryDomainModel(
     sources = summaryRows.associate { row ->
         row.kind.toTimelineSource() to TimelineSourceSummaryDomainModel(
@@ -62,4 +65,8 @@ internal fun toSummaryDomain(
         )
     },
     sessionEventCounts = sessionRows.associate { it.sessionStart to it.count },
+    facetCounts = facetRows
+        .mapNotNull { row -> TimelineFacet.entries.firstOrNull { it.name == row.facet }?.let { it to row } }
+        .groupBy({ it.first }, { it.second })
+        .mapValues { (_, rows) -> rows.associate { it.value to it.count } },
 )

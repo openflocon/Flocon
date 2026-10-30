@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.test.Test
@@ -171,7 +172,8 @@ class TimelineQueryBuilderTest {
     fun `a blank text is ignored`() {
         val query = build(TimelineFilterDomainModel(text = "   "))
 
-        assertFalse(query.sql.contains("LIKE"))
+        // the text is bound as a parameter, the other LIKE are the statements of the database
+        assertFalse(query.sql.contains("LIKE ?"))
     }
 
     @Test
@@ -208,6 +210,103 @@ class TimelineQueryBuilderTest {
         )
 
         assertEquals(eventSources * 2, query.params.count { it == "%login%" })
+    }
+
+    @Test
+    fun `a facet hides the values unchecked, for the request and the response of a call`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                facets = mapOf(
+                    TimelineFacet.NetworkMethod to setOf("GET", "POST"),
+                    TimelineFacet.NetworkStatus to setOf("5xx"),
+                ),
+            )
+        )
+
+        // the request and the response events, each filtered
+        assertEquals(2, Regex("NOT IN \\(\\?, \\?\\)").findAll(query.sql).count())
+        assertEquals(2, Regex("\\|\\| 'xx' NOT IN \\(\\?\\)").findAll(query.sql).count())
+        // an event without value, ex: a call without http code, is not hidden
+        assertEquals(2, Regex("\\|\\| 'xx' IS NULL OR").findAll(query.sql).count())
+        // the sessions, then for the request and the response: device, package, method values, status values
+        val branch = listOf<Any>("device", "com.app", "GET", "POST", "5xx")
+        assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `every member of the union has the facet columns`() {
+        val query = build()
+
+        // 1 per member: the events of every source, the response of the network calls and the app starts
+        assertEquals(eventBranches + 1, Regex("AS facetA\\b").findAll(query.sql).count())
+        assertEquals(eventBranches + 1, Regex("AS facetB\\b").findAll(query.sql).count())
+    }
+
+    @Test
+    fun `a database statement is told from the first word of its query`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
+
+        assertTrue(query.sql.contains("WHEN UPPER(LTRIM(sqlQuery)) LIKE 'SELECT%' OR UPPER(LTRIM(sqlQuery)) LIKE 'WITH%' THEN 'SELECT'"))
+        assertTrue(query.sql.contains("LIKE 'BEGIN%'"))
+        assertTrue(query.sql.contains("THEN 'TRANSACTION'"))
+        assertTrue(query.sql.contains("ELSE 'OTHER' END AS facetB"))
+    }
+
+    @Test
+    fun `the statements unchecked are hidden`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Database),
+                facets = mapOf(TimelineFacet.DatabaseStatement to setOf("TRANSACTION", "PRAGMA")),
+            )
+        )
+
+        assertTrue(query.sql.contains(" NOT IN (?, ?)"))
+        assertEquals(sessionParams + listOf("device", "com.app", "TRANSACTION", "PRAGMA"), query.params)
+    }
+
+    @Test
+    fun `nothing is hidden by default`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network, TimelineSource.Database)))
+
+        assertFalse(query.sql.contains("NOT IN"))
+    }
+
+    @Test
+    fun `the facets of a source that is not selected are ignored`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Crash),
+                facets = mapOf(TimelineFacet.NetworkMethod to setOf("GET")),
+            )
+        )
+
+        assertFalse(query.params.contains("GET"))
+        assertFalse(query.sql.contains("request_url AS title"))
+    }
+
+    @Test
+    fun `the values of each facet are counted without the selection of the facet itself`() {
+        val query = buildTimelineFacetCountsQuery(
+            deviceId = "device",
+            packageName = "com.app",
+            filter = TimelineFilterDomainModel(
+                facets = mapOf(
+                    TimelineFacet.NetworkMethod to setOf("GET"),
+                    TimelineFacet.NetworkStatus to setOf("2xx"),
+                ),
+            ),
+        )
+
+        TimelineFacet.entries.forEach {
+            assertTrue(query.sql.contains("SELECT '${it.name}' AS facet"))
+        }
+        // each count ignores its own facet, and only applies the other one: 2xx for the methods, GET for the statuses
+        assertEquals(1, query.params.count { it == "GET" })
+        assertEquals(1, query.params.count { it == "2xx" })
+        // a network call is counted once, not for its response
+        assertFalse(query.sql.contains(KIND_NETWORK_RESPONSE))
     }
 
     @Test

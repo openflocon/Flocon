@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.model
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 
 @Immutable
@@ -16,6 +17,8 @@ internal data class TimelineSummaryUiModel(
     val range: String?,
     // number of displayed events of each session, by start of the session
     val sessionEventCounts: Map<Long, Int>,
+    // events of each value of a facet, to filter on it
+    val facetCounts: Map<TimelineFacet, Map<String, Int>> = emptyMap(),
 ) {
     companion object {
         val Empty = TimelineSummaryUiModel(
@@ -48,4 +51,10 @@ internal fun previewTimelineSummaryUiModel() = TimelineSummaryUiModel(
     crashCount = 1,
     range = "12:00:00 - 12:03:41",
     sessionEventCounts = mapOf(0L to 16),
+    facetCounts = mapOf(
+        TimelineFacet.NetworkMethod to mapOf("GET" to 5, "POST" to 2, "WS" to 1),
+        TimelineFacet.NetworkStatus to mapOf("1xx" to 1, "2xx" to 5, "5xx" to 2),
+        TimelineFacet.AccessibilityAction to mapOf("CLICK" to 1),
+        TimelineFacet.DatabaseName to mapOf("app.db" to 1),
+    ),
 )
