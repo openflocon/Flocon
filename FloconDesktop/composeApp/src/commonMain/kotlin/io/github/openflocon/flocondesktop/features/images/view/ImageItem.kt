@@ -23,9 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -45,7 +42,6 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 
 private val LabelWidth = 56.dp
-private val CheckerSize = 8.dp
 private val BadgeAlpha = 0.7f
 
 @Composable
@@ -76,10 +72,7 @@ fun ImageItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4f / 3f)
-                .checkerboard(
-                    first = FloconTheme.colors.bg000,
-                    second = FloconTheme.colors.bg200,
-                ),
+                .background(Color.Black),
         ) {
             if (isInPreview) {
                 Box(
@@ -183,24 +176,6 @@ internal fun ImageFormatBadge(
             .background(FloconTheme.colors.floating.copy(alpha = BadgeAlpha))
             .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
     )
-}
-
-private fun Modifier.checkerboard(first: Color, second: Color): Modifier = drawBehind {
-    val cell = CheckerSize.toPx()
-    drawRect(color = first)
-    val columns = (size.width / cell).toInt() + 1
-    val rows = (size.height / cell).toInt() + 1
-    for (row in 0 until rows) {
-        for (column in 0 until columns) {
-            if ((row + column) % 2 == 1) {
-                drawRect(
-                    color = second,
-                    topLeft = Offset(column * cell, row * cell),
-                    size = Size(cell, cell),
-                )
-            }
-        }
-    }
 }
 
 @Preview

@@ -15,7 +15,7 @@ Flocon captures and displays **images downloaded over the network** at runtime �
 
 For every downloaded image, Flocon displays:
 
-- **Thumbnail Preview**: Direct visual preview rendered inside the desktop app, over a checkerboard so transparent images stay visible
+- **Thumbnail Preview**: Direct visual preview rendered inside the desktop app
 - **Format**: JPG, PNG, WEBP, GIF, SVG… shown as a badge on the image
 - **Origin URL**: Full remote source address (host and path)
 - **Size & Weight**: Decoded dimensions (e.g. `600×400`) and downloaded size (e.g. `142 KB`)
