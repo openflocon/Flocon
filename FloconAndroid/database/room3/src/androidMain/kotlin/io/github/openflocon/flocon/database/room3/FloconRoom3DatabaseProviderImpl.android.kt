@@ -54,7 +54,8 @@ internal actual class FloconRoom3DatabaseProviderImpl actual constructor(
                 if (file.isFile &&
                     !file.name.endsWith("-wal") && // Write-Ahead Log
                     !file.name.endsWith("-shm") && // Shared-Memory
-                    !file.name.endsWith("-journal") // Older journaling mode
+                    !file.name.endsWith("-journal") && // Older journaling mode
+                    !file.name.endsWith(".lck") // Lock files (e.g. created by KMP Room)
                 ) {
                     foundDatabases.add(
                         FloconFileDatabaseModel(

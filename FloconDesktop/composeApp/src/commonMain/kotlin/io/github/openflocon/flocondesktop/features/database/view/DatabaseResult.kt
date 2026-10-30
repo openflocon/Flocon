@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -94,6 +95,7 @@ fun DatabaseResult(
                 var selectedItem by remember(result) {
                     mutableStateOf<DetailResultItem?>(null)
                 }
+                val horizontalScrollState = rememberScrollState()
 
                 Column(
                     modifier = Modifier
@@ -116,10 +118,17 @@ fun DatabaseResult(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    ResultColumnsHeader(
+                        columns = result.columns,
+                        columnsWidth = columnsWidth,
+                        scrollState = horizontalScrollState,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .horizontalScroll(rememberScrollState())
+                            .horizontalScroll(horizontalScrollState)
                             .onPreviewKeyEvent { event ->
                                 if (event.type != KeyEventType.KeyDown) {
                                     return@onPreviewKeyEvent false
@@ -166,26 +175,6 @@ fun DatabaseResult(
                                 }
                             }
                     ) {
-                        stickyHeader {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .floconTableHeader()
-                                    .padding(horizontal = FloconTheme.spacing.small),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                result.columns
-                                    .fastForEach { item ->
-                                        FloconTableHeaderLabel(
-                                            text = item,
-                                            uppercase = false,
-                                            modifier = Modifier
-                                                .width(columnsWidth)
-                                                .padding(all = FloconTheme.spacing.extraSmall),
-                                        )
-                                    }
-                            }
-                        }
                         itemsIndexed(result.rows) { index, row ->
                             val selected = index == selectedItem?.index
 
@@ -266,6 +255,32 @@ private fun DatabaseResultRow(
 }
 
 @Composable
+private fun ResultColumnsHeader(
+    columns: List<String>,
+    columnsWidth: Dp,
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .floconTableHeader()
+            .horizontalScroll(scrollState)
+            .padding(horizontal = FloconTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        columns.fastForEach { column ->
+            FloconTableHeaderLabel(
+                text = column,
+                uppercase = false,
+                modifier = Modifier
+                    .width(columnsWidth)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+            )
+        }
+    }
+}
+
+@Composable
 private fun ResultHeader(
     result: QueryResultUiModel.Values,
     onExportCsvClicked: () -> Unit,
@@ -295,7 +310,7 @@ private fun ResultHeader(
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
                 modifier = Modifier.fillMaxSize(),
-                colorFilter = ColorFilter.tint(FloconTheme.colors.inkFaint),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                 contentDescription = null,
             )
         }

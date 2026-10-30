@@ -10,15 +10,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_sidebar_title
 import flocondesktop.composeapp.generated.resources.databases_favorites
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
+import io.github.openflocon.flocondesktop.features.database.model.filterByQuery
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconPanel
 import kotlinx.collections.immutable.ImmutableList
@@ -32,9 +40,10 @@ fun DatabasesAndTables(
     modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.line
+    var filter by rememberSaveable { mutableStateOf("") }
 
     Surface(
-        color = FloconTheme.colors.bg100,
+        color = FloconTheme.colors.islandSidebar,
         modifier = modifier
             .floconPanel()
     ) {
@@ -43,10 +52,30 @@ fun DatabasesAndTables(
         ) {
             Column(
                 Modifier.fillMaxWidth()
+                    .padding(all = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            ) {
+                DatabaseFilterField(
+                    value = filter,
+                    onValueChange = { filter = it },
+                )
+                Text(
+                    stringResource(Res.string.database_sidebar_title),
+                    color = FloconTheme.colors.inkFaint,
+                    style = FloconTheme.typography.bodySmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.8.sp,
+                    ),
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+            }
+            Column(
+                Modifier.fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(all = FloconTheme.spacing.extraSmall),
-                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
+                    .padding(horizontal = FloconTheme.spacing.small)
+                    .padding(bottom = FloconTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)
             ) {
                 when (state) {
                     DatabasesStateUiModel.Empty -> Unit
@@ -54,9 +83,13 @@ fun DatabasesAndTables(
                     DatabasesStateUiModel.Loading -> Unit
 
                     is DatabasesStateUiModel.WithContent -> {
-                        state.databases.forEach {
+                        val databases = remember(state.databases, filter) {
+                            state.databases.filterByQuery(filter)
+                        }
+                        databases.forEach {
                             DatabaseItem(
                                 state = it,
+                                isFiltering = filter.isNotBlank(),
                                 onSelect = {
                                     onAction(DatabaseScreenAction.OnDatabaseSelected(it))
                                 },

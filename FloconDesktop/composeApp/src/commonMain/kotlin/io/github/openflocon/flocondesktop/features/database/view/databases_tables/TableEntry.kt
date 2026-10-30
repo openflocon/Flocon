@@ -1,18 +1,19 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -28,10 +32,13 @@ import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_insert_new_values
+import flocondesktop.composeapp.generated.resources.ic_db_chevron
+import flocondesktop.composeapp.generated.resources.ic_db_table
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -42,8 +49,9 @@ internal fun TableEntry(
     onDeleteContentClicked: (TableUiModel) -> Unit,
     onInsertContentClicked: (TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    isFiltering: Boolean = false,
 ) {
-    var isOpened by remember(item.name) { mutableStateOf(false) }
+    var isOpened by remember(item.name, isFiltering) { mutableStateOf(isFiltering) }
     Column(modifier = modifier) {
         ContextualMenu(
             modifier = Modifier.fillMaxWidth(),
@@ -70,7 +78,21 @@ internal fun TableEntry(
         }
 
         AnimatedVisibility(isOpened, modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            val guideColor = FloconTheme.colors.line
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = FloconTheme.spacing.large)
+                    .drawBehind {
+                        drawLine(
+                            color = guideColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 1.dp.toPx(),
+                        )
+                    }
+                    .padding(start = FloconTheme.spacing.small),
+            ) {
                 item.columns.fastForEach {
                     ColumnItem(
                         model = it,
@@ -91,9 +113,15 @@ private fun TableEntryContent(
     item: TableUiModel,
     modifier: Modifier = Modifier,
 ) {
+    val background by animateColorAsState(
+        if (isOpened) FloconTheme.colors.ink.copy(alpha = 0.06f) else Color.Transparent,
+    )
+    val chevronRotation by animateFloatAsState(if (isOpened) 90f else 0f)
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .height(FloconTheme.sizes.rowHeight)
+            .clip(RoundedCornerShape(8.dp))
+            .background(background)
             .combinedClickable(
                 onClick = {
                     updateIsOpened(!isOpened)
@@ -102,24 +130,23 @@ private fun TableEntryContent(
                     onTableDoubleClicked(item)
                 }
             )
-            .padding(horizontal = FloconTheme.spacing.medium)
-            .padding(vertical = FloconTheme.spacing.extraSmall),
+            .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         val color = FloconTheme.colors.ink
         Image(
-            imageVector = Icons.Outlined.ChevronRight,
+            painter = painterResource(Res.drawable.ic_db_chevron),
             modifier = Modifier.size(14.dp).graphicsLayer {
-                rotationZ = if (isOpened) 90f else 0f
+                rotationZ = chevronRotation
             },
-            colorFilter = ColorFilter.tint(color),
+            colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
             contentDescription = null,
         )
         Image(
-            imageVector = Icons.Outlined.TableRows,
+            painter = painterResource(Res.drawable.ic_db_table),
             modifier = Modifier.size(14.dp),
-            colorFilter = ColorFilter.tint(color),
+            colorFilter = ColorFilter.tint(if (isOpened) color else FloconTheme.colors.inkMuted),
             contentDescription = null,
         )
         Text(
