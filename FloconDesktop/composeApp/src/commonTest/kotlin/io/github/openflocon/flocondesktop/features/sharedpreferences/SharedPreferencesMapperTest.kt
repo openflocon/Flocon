@@ -87,7 +87,7 @@ class SharedPreferencesMapperTest {
         assertEquals("10s", delayLabel(10_000))
         assertEquals("1500ms", delayLabel(1500))
         assertEquals("3s", PreferenceAutoUpdate.Enabled(3000).delayLabel)
-        assertEquals(listOf("1s", "2s", "5s", "10s"), autoUpdateDelayPresets().map { it.label })
+        assertEquals(listOf("1s", "2s", "3s", "5s", "10s"), autoUpdateDelayPresets().map { it.label })
     }
 
     @Test

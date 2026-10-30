@@ -17,6 +17,7 @@ private fun autoUpdateDelay(delayMs: Int) = AutoUpdateDelayUiModel(delayMs = del
 fun autoUpdateDelayPresets(): ImmutableList<AutoUpdateDelayUiModel> = persistentListOf(
     autoUpdateDelay(1_000),
     autoUpdateDelay(2_000),
+    autoUpdateDelay(3_000),
     autoUpdateDelay(5_000),
     autoUpdateDelay(10_000),
 )

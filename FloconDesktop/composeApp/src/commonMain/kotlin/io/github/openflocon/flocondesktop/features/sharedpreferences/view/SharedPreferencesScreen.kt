@@ -80,6 +80,7 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         rows = rows,
         changeValue = viewModel::onValueChanged,
         onEditClicked = viewModel::onEditClicked,
+        onCopyClicked = viewModel::onCopyClicked,
         autoUpdateState = autoUpdateState,
         onAutoUpdateChange = viewModel::onAutoUpdateChange,
         onAutoUpdateDelayChanged = viewModel::onAutoUpdateDelayChanged,
@@ -94,6 +95,7 @@ fun SharedPrefScreen(
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     autoUpdateState: PreferenceAutoUpdate,
     onAutoUpdateChange: (Boolean) -> Unit,
     onAutoUpdateDelayChanged: (delay: Int) -> Unit,
@@ -177,6 +179,7 @@ fun SharedPrefScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 onValueChanged = changeValue,
                                 onEditClicked = onEditClicked,
+                                onCopyClicked = onCopyClicked,
                             )
                         }
                     }
@@ -250,6 +253,7 @@ private fun SharedPrefScreenPreview() {
             rows = previewSharedPreferencesRowsStateUiModel(),
             changeValue = { _, _ -> },
             onEditClicked = {},
+            onCopyClicked = {},
             autoUpdateState = PreferenceAutoUpdate.Disabled,
             onAutoUpdateChange = {},
             onAutoUpdateDelayChanged = {},

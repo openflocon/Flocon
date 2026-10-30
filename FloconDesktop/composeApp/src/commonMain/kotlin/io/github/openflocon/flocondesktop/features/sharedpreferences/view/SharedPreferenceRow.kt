@@ -72,7 +72,6 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -118,6 +117,7 @@ fun SharedPreferenceRow(
     onToggleExpanded: (key: String) -> Unit,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -224,6 +224,7 @@ fun SharedPreferenceRow(
                         onCancel = { text = originalText },
                         onSave = { onValueChanged(model, text) },
                         onEditClicked = onEditClicked,
+                        onCopyClicked = onCopyClicked,
                     )
                 }
             },
@@ -254,10 +255,10 @@ private fun RowScope.RowActions(
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
 ) {
     val colors = FloconTheme.colors
     val value = model.value
-    val clipboard = LocalClipboardManager.current
 
     // only the editable rows can be dirty, and they have no other action: the buttons slide in from the right
     AnimatedVisibility(
@@ -305,7 +306,7 @@ private fun RowScope.RowActions(
                 ActionButton(
                     icon = Icons.Outlined.ContentCopy,
                     tooltip = stringResource(Res.string.preference_copy),
-                    onClick = { clipboard.setText(AnnotatedString(value.value)) },
+                    onClick = { onCopyClicked(model) },
                     containerColor = colors.bg300,
                     contentColor = colors.ink,
                     borderColor = colors.lineStrong,
@@ -648,6 +649,7 @@ private fun PreviewRow(model: SharedPreferencesRowUiModel, isExpanded: Boolean =
                 onToggleExpanded = {},
                 onValueChanged = { _, _ -> },
                 onEditClicked = {},
+                onCopyClicked = {},
             )
         }
     }

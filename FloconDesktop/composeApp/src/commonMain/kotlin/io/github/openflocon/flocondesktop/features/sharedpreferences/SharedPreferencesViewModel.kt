@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.features.sharedpreferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
@@ -13,7 +15,9 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Devic
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.asString
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -26,6 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import kotlin.math.max
 
 class SharedPreferencesViewModel(
@@ -187,5 +192,12 @@ class SharedPreferencesViewModel(
 
     fun onEditClicked(row: SharedPreferencesRowUiModel) {
         navigationState.navigate(SharedPreferencesRoutes.Edit(row.key))
+    }
+
+    fun onCopyClicked(row: SharedPreferencesRowUiModel) {
+        viewModelScope.launch {
+            copyToClipboard(row.value.asString())
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
     }
 }
