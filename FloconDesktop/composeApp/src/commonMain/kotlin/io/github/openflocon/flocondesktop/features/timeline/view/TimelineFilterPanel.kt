@@ -44,7 +44,11 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_accessibility
 import flocondesktop.composeapp.generated.resources.timeline_facet_analytics_table
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_host
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_speed
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_state
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
 import flocondesktop.composeapp.generated.resources.timeline_filters_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
@@ -463,6 +467,10 @@ private fun String.initials(): String {
 private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.NetworkMethod -> Res.string.timeline_facet_network_method
     TimelineFacet.NetworkStatus -> Res.string.timeline_facet_network_status
+    TimelineFacet.NetworkState -> Res.string.timeline_facet_network_state
+    TimelineFacet.NetworkSpeed -> Res.string.timeline_facet_network_speed
+    TimelineFacet.NetworkContent -> Res.string.timeline_facet_network_content
+    TimelineFacet.NetworkHost -> Res.string.timeline_facet_network_host
     TimelineFacet.DatabaseName -> Res.string.timeline_facet_database_name
     TimelineFacet.DatabaseStatement -> Res.string.timeline_facet_database_statement
     TimelineFacet.AnalyticsTable -> Res.string.timeline_facet_analytics_table
