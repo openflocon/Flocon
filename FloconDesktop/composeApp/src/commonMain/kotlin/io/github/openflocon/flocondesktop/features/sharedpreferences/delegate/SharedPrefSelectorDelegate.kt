@@ -61,6 +61,7 @@ class SharedPrefSelectorDelegate(
     fun toUi(sharedPref: DeviceSharedPreferenceDomainModel) = DeviceSharedPrefUiModel(
         id = sharedPref.id,
         name = sharedPref.name,
+        type = sharedPref.type,
     )
 
     fun onSharedPreferenceSelected(sharedPref: DeviceSharedPrefUiModel) {

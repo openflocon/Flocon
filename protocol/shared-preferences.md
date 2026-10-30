@@ -16,14 +16,15 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of preference files (al
 
 ### `Preference`
 
-| Key    | Type     | Description               |
-|--------|----------|---------------------------|
-| `name` | `String` | Preference file / store name |
+| Key    | Type      | Description                                                                                             |
+|--------|-----------|---------------------------------------------------------------------------------------------------------|
+| `name` | `String`  | Preference file / store name                                                                            |
+| `type` | `String?` | Storage, displayed by the desktop: `SharedPreferences`, `DataStore`, `UserDefaults`, `Keychain`, `Java Preferences`, `LocalStorage`, `Custom` or any free value. Absent for older SDKs |
 
 ```json
 [
-  { "name": "com.example.app_preferences" },
-  { "name": "session" }
+  { "name": "com.example.app_preferences", "type": "SharedPreferences" },
+  { "name": "session", "type": "DataStore" }
 ]
 ```
 

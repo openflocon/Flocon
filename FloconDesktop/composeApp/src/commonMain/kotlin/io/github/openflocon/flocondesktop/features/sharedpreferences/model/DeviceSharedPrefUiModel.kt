@@ -5,9 +5,11 @@ import io.github.openflocon.domain.database.models.DeviceDataBaseId
 data class DeviceSharedPrefUiModel(
     val id: DeviceDataBaseId,
     val name: String,
+    val type: String?,
 )
 
 fun previewDeviceSharedPrefUiModel(id: String = "id") = DeviceSharedPrefUiModel(
     id = id,
     name = "sharedPref_$id",
+    type = "SharedPreferences",
 )
