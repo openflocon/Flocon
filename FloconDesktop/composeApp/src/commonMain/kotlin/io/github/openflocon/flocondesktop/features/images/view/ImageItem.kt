@@ -174,6 +174,8 @@ internal fun ImageFormatBadge(
         modifier = modifier
             .clip(FloconTheme.shapes.small)
             .background(FloconTheme.colors.floating.copy(alpha = BadgeAlpha))
+            // keeps the badge visible on a black image
+            .border(1.dp, FloconTheme.colors.lineStrong, FloconTheme.shapes.small)
             .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
     )
 }

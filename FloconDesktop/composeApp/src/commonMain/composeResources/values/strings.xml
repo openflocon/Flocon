@@ -337,6 +337,9 @@
     <string name="images_viewer_zoom_reset">Fit to window</string>
     <string name="images_viewer_copy_url">Copy URL</string>
     <string name="images_viewer_open_in_browser">Open in browser</string>
+    <string name="images_viewer_download">Download image</string>
+    <string name="images_download_saved">Image saved</string>
+    <string name="images_download_failed">Could not save the image</string>
     <string name="images_viewer_close">Close</string>
     <string name="images_viewer_previous">Previous image</string>
     <string name="images_viewer_next">Next image</string>

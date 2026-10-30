@@ -2,6 +2,9 @@ package io.github.openflocon.flocondesktop.features.images
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_download_failed
+import flocondesktop.composeapp.generated.resources.images_download_saved
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.images.usecase.ObserveImagesUseCase
@@ -13,6 +16,9 @@ import io.github.openflocon.flocondesktop.features.images.mapper.toUi
 import io.github.openflocon.flocondesktop.features.images.model.ImageViewerUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesDisplayModeUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
+import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
+import io.github.openflocon.flocondesktop.features.images.processor.DownloadImageProcessor
+import io.github.openflocon.flocondesktop.features.images.processor.DownloadImageResult
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,12 +31,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class ImagesViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val observeImagesUseCase: ObserveImagesUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val resetCurrentDeviceImagesUseCase: ResetCurrentDeviceImagesUseCase,
+    private val downloadImageProcessor: DownloadImageProcessor,
 ) : ViewModel() {
 
     private val filter = MutableStateFlow("")
@@ -90,6 +98,18 @@ class ImagesViewModel(
 
     fun onCopyImageUrl(url: String) {
         copyToClipboard(url)
+    }
+
+    fun onDownloadImage(model: ImagesUiModel) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val result = runCatching { downloadImageProcessor(model) }
+                .getOrElse { DownloadImageResult.Failed }
+            when (result) {
+                is DownloadImageResult.Saved -> feedbackDisplayer.displayMessage(getString(Res.string.images_download_saved))
+                DownloadImageResult.Failed -> feedbackDisplayer.displayMessage(getString(Res.string.images_download_failed))
+                DownloadImageResult.Cancelled -> Unit
+            }
+        }
     }
 
     fun onVisible() {

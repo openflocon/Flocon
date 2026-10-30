@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -76,6 +77,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.images_thumbnail
 import flocondesktop.composeapp.generated.resources.images_viewer_close
 import flocondesktop.composeapp.generated.resources.images_viewer_copy_url
+import flocondesktop.composeapp.generated.resources.images_viewer_download
 import flocondesktop.composeapp.generated.resources.images_viewer_next
 import flocondesktop.composeapp.generated.resources.images_viewer_open_in_browser
 import flocondesktop.composeapp.generated.resources.images_viewer_previous
@@ -111,6 +113,7 @@ fun ImageViewer(
     model: ImageViewerUiModel,
     onImageSelected: (id: String) -> Unit,
     onCopyUrl: (url: String) -> Unit,
+    onDownload: (model: ImagesUiModel) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -125,6 +128,7 @@ fun ImageViewer(
             onImageSelected = onImageSelected,
             onCopyUrl = { onCopyUrl(model.current.url) },
             onOpenInBrowser = { uriHandler.openUri(model.current.url) },
+            onDownload = { onDownload(model.current) },
             onClose = onClose,
             modifier = modifier.fillMaxSize(),
         )
@@ -137,6 +141,7 @@ private fun ImageViewerContent(
     onImageSelected: (id: String) -> Unit,
     onCopyUrl: () -> Unit,
     onOpenInBrowser: () -> Unit,
+    onDownload: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -173,6 +178,7 @@ private fun ImageViewerContent(
             zoomState = zoomState,
             onCopyUrl = onCopyUrl,
             onOpenInBrowser = onOpenInBrowser,
+            onDownload = onDownload,
             onClose = onClose,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -301,6 +307,7 @@ private fun ImageViewerTopBar(
     zoomState: ImageZoomState,
     onCopyUrl: () -> Unit,
     onOpenInBrowser: () -> Unit,
+    onDownload: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -344,6 +351,11 @@ private fun ImageViewerTopBar(
                 imageVector = Icons.Outlined.OpenInBrowser,
                 tooltip = stringResource(Res.string.images_viewer_open_in_browser),
                 onClick = onOpenInBrowser,
+            )
+            FloconIconButton(
+                imageVector = Icons.Outlined.Download,
+                tooltip = stringResource(Res.string.images_viewer_download),
+                onClick = onDownload,
             )
             FloconIconButton(
                 imageVector = Icons.Outlined.Close,
@@ -530,6 +542,7 @@ private fun ImageViewerTopBarPreview() {
             zoomState = ImageZoomState(),
             onCopyUrl = {},
             onOpenInBrowser = {},
+            onDownload = {},
             onClose = {},
         )
     }
@@ -558,6 +571,7 @@ private fun ImageViewerContentPreview() {
             onImageSelected = {},
             onCopyUrl = {},
             onOpenInBrowser = {},
+            onDownload = {},
             onClose = {},
             modifier = Modifier
                 .width(900.dp)

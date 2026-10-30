@@ -87,6 +87,7 @@ fun ImagesScreen(
         viewer = viewer,
         onImageSelected = viewModel::onImageSelected,
         onCopyImageUrl = viewModel::onCopyImageUrl,
+        onDownloadImage = viewModel::onDownloadImage,
         onViewerClosed = viewModel::onViewerClosed,
         modifier = modifier,
     )
@@ -103,6 +104,7 @@ private fun ImagesScreen(
     viewer: ImageViewerUiModel?,
     onImageSelected: (id: String) -> Unit,
     onCopyImageUrl: (url: String) -> Unit,
+    onDownloadImage: (ImagesUiModel) -> Unit,
     onViewerClosed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -180,6 +182,7 @@ private fun ImagesScreen(
             model = it,
             onImageSelected = onImageSelected,
             onCopyUrl = onCopyImageUrl,
+            onDownload = onDownloadImage,
             onClose = onViewerClosed,
         )
     }
@@ -272,6 +275,7 @@ private fun ImagesListScreenPreview() {
             viewer = null,
             onImageSelected = {},
             onCopyImageUrl = {},
+            onDownloadImage = {},
             onViewerClosed = {},
             state = previewImagesStateUiModel(),
         )
@@ -291,6 +295,7 @@ private fun ImagesScreenPreview() {
             viewer = null,
             onImageSelected = {},
             onCopyImageUrl = {},
+            onDownloadImage = {},
             onViewerClosed = {},
             state = previewImagesStateUiModel(),
         )
