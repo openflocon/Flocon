@@ -20,15 +20,12 @@ import io.github.openflocon.flocondesktop.features.network.badquality.edition.mo
 import io.github.openflocon.flocondesktop.features.network.badquality.list.mapper.toLineUi
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -42,13 +39,6 @@ class BadQualityNetworkViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
-
-    enum class Event {
-        Close,
-    }
-
-    private val _events = Channel<BadQualityNetworkViewModel.Event>()
-    val events: Flow<Event> = _events.receiveAsFlow()
 
     val items = observeAllNetworkBadQualitiesUseCase()
         .distinctUntilChanged()

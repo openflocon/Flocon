@@ -151,7 +151,7 @@ private fun TableEntryContent(
         )
         Text(
             item.name,
-            style = FloconTheme.typography.bodyMedium,
+            style = FloconTheme.typography.listItem,
             color = color,
         )
     }

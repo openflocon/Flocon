@@ -57,7 +57,7 @@ fun FeatureFlagRow(
                 .padding(end = 12.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Medium),
             color = FloconTheme.colors.ink,
         )
         Box(
@@ -76,7 +76,7 @@ fun FeatureFlagRow(
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                style = FloconTheme.typography.listItemMono,
                 color = FloconTheme.colors.ink.copy(alpha = 0.5f),
             )
         }

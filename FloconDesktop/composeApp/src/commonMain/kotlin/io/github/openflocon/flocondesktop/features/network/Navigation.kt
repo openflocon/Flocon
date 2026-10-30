@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.metadata
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
+import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityScreen
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.NetworkJsonScreen
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
@@ -41,6 +42,9 @@ internal sealed interface NetworkRoutes : FloconRoute {
 
     @Serializable
     data class Mocks(val id: String?) : NetworkRoutes
+
+    @Serializable
+    data object BadNetworkQuality : NetworkRoutes
 
     @Serializable
     data class Panel(
@@ -116,6 +120,13 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkMocksWindow(
             fromNetworkCallId = it.id
         )
+    }
+    entry<NetworkRoutes.BadNetworkQuality>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Bad network")
+        )
+    ) {
+        BadNetworkQualityScreen()
     }
     entry<NetworkRoutes.WindowDetail>(
         metadata = WindowSceneStrategy.window()

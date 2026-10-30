@@ -206,7 +206,7 @@ private fun DatabaseEntry(
             Text(
                 state.name,
                 color = textColor,
-                style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)

@@ -68,7 +68,7 @@ internal fun FavoriteQueryItem(
         Text(
             state.title,
             color = textColor,
-            style = FloconTheme.typography.bodyMedium,
+            style = FloconTheme.typography.listItem,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
