@@ -20,6 +20,7 @@ import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.Preferen
 import io.github.openflocon.flocon.plugins.sharedprefs.model.fromdevice.SharedPreferenceValueResultDataModel
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceEditSharedPreferenceValueMessage
 import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceGetSharedPreferenceValueMessage
+import io.github.openflocon.flocon.plugins.sharedprefs.model.todevice.ToDeviceRemoveSharedPreferenceValueMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -110,6 +111,23 @@ internal class FloconSharedPrefsPluginImpl(
                     FloconLogger.logError("SharedPreferences edit error", t)
                 }
             }
+
+            Protocol.ToDevice.SharedPreferences.Method.RemoveSharedPreferenceValue -> {
+                val message = encoder.decode<ToDeviceRemoveSharedPreferenceValueMessage>(body) ?: return
+                val preference = preferences.value[message.sharedPreferenceName] ?: return
+
+                try {
+                    preference.remove(columnName = message.key)
+
+                    // then send the shared pref content
+                    sendPreferenceValues(
+                        preference = preference,
+                        requestId = message.requestId,
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("SharedPreferences remove error", t)
+                }
+            }
         }
     }
 
@@ -168,7 +186,7 @@ internal class FloconSharedPrefsPluginImpl(
     private fun sendAllSharedPrefs() {
         val descriptors = preferences.value.values
             .sortedBy { it.name }
-            .map { PreferencesDescriptor(it.name) }
+            .map { PreferencesDescriptor(name = it.name, type = it.type) }
 
         try {
             sender.send(

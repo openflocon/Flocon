@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.adbcommander.view
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,10 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.adb_commander_automation_flows
 import flocondesktop.composeapp.generated.resources.adb_commander_new_flow
@@ -43,7 +40,7 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSection
-import io.github.openflocon.navigation.mascot.mascotPlatform
+import io.github.openflocon.library.designsystem.components.floconPanel
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,13 +57,7 @@ fun CommandLibraryPanel(
     Surface(
         color = FloconTheme.colors.bg100,
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = FloconTheme.shapes.medium
-            )
-            .mascotPlatform()
+            .floconPanel()
     ) {
         Column(
             Modifier.fillMaxSize()

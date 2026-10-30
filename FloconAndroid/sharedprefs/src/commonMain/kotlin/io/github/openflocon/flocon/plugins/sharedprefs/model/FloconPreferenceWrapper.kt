@@ -5,4 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class PreferencesDescriptor(
     val name: String,
+    val type: String? = null,
 )

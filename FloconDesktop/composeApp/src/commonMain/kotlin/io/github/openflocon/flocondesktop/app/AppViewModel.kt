@@ -28,6 +28,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.id
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.applyPreferences
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.buildMenu
+import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.startScreenCandidates
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
@@ -54,6 +55,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -100,6 +102,7 @@ internal class AppViewModel(
             installedPlugins = installedPlugins,
             pinnedIds = preferences.pinnedItems,
             collapsedSectionIds = preferences.collapsedSections,
+            hiddenIds = preferences.hiddenItems,
         )
     }
         .stateInWhileSubscribed(
@@ -141,6 +144,14 @@ internal class AppViewModel(
             menuNavigator.requests.collect { screen ->
                 onSelectMenu(AppAction.SelectMenu(screen))
             }
+        }
+
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            // the screen chosen in the settings, if it is still displayed
+            val preferences = observeMenuPreferencesUseCase().first()
+            startScreenCandidates(preferences.hiddenItems)
+                .firstOrNull { it.screen.id == preferences.startScreen }
+                ?.let { onSelectMenu(AppAction.SelectMenu(it.screen)) }
         }
 
         viewModelScope.launch(dispatcherProvider.viewModel) {

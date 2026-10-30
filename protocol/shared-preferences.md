@@ -8,6 +8,7 @@
 | Mobile → Desktop | `get_shared_preferences`     | `List<Preference>`           |
 | Desktop → Mobile | `get_shared_preference_value` | `GetValuesRequest`           |
 | Desktop → Mobile | `set_shared_preference_value` | `SetValueRequest`            |
+| Desktop → Mobile | `remove_shared_preference_value` | `RemoveValueRequest`      |
 | Mobile → Desktop | `get_shared_preference_value` | `ValuesResult`               |
 
 ## `get_shared_preferences`
@@ -16,14 +17,15 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of preference files (al
 
 ### `Preference`
 
-| Key    | Type     | Description               |
-|--------|----------|---------------------------|
-| `name` | `String` | Preference file / store name |
+| Key    | Type      | Description                                                                                             |
+|--------|-----------|---------------------------------------------------------------------------------------------------------|
+| `name` | `String`  | Preference file / store name                                                                            |
+| `type` | `String?` | Storage, displayed by the desktop: `SharedPreferences`, `DataStore`, `UserDefaults`, `Keychain`, `Java Preferences`, `LocalStorage`, `Custom` or any free value. Absent for older SDKs |
 
 ```json
 [
-  { "name": "com.example.app_preferences" },
-  { "name": "session" }
+  { "name": "com.example.app_preferences", "type": "SharedPreferences" },
+  { "name": "session", "type": "DataStore" }
 ]
 ```
 
@@ -60,6 +62,22 @@ Updates one key, then the mobile answers with `get_shared_preference_value` (ful
 
 ```json
 { "requestId": "9a7c…", "sharedPreferenceName": "session", "key": "isLogged", "booleanValue": false }
+```
+
+## `remove_shared_preference_value` (Desktop → Mobile)
+
+Removes one key, then the mobile answers with `get_shared_preference_value` (full content). Older SDKs ignore this method.
+
+### `RemoveValueRequest`
+
+| Key                    | Type     | Description       |
+|------------------------|----------|-------------------|
+| `requestId`            | `String` | Request id        |
+| `sharedPreferenceName` | `String` | Preference `name` |
+| `key`                  | `String` | Key to remove     |
+
+```json
+{ "requestId": "9a7c…", "sharedPreferenceName": "session", "key": "token" }
 ```
 
 ## `get_shared_preference_value` (Mobile → Desktop)

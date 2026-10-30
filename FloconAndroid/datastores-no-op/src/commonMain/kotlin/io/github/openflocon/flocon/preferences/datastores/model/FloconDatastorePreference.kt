@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.preferences.datastores.model
 
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceType
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 
 interface FloconDatastoreMapper {
@@ -14,10 +15,16 @@ class FloconDatastorePreference(
     @Suppress("UNUSED_PARAMETER") mapper: FloconDatastoreMapper? = null,
 ) : FloconPreference {
 
+    override val type: String = FloconPreferenceType.DataStore
+
     override suspend fun set(
         columnName: String,
         value: FloconPreferenceValue
     ) {
+        // no op
+    }
+
+    override suspend fun remove(columnName: String) {
         // no op
     }
 

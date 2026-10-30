@@ -211,6 +211,7 @@ object Protocol {
                 const val GetSharedPreferences = "get_shared_preferences"
                 const val GetSharedPreferenceValue = "get_shared_preference_value"
                 const val SetSharedPreferenceValue = "set_shared_preference_value"
+                const val RemoveSharedPreferenceValue = "remove_shared_preference_value"
             }
         }
 

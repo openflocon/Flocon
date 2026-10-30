@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.accessibility.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,13 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_clear
 import flocondesktop.composeapp.generated.resources.accessibility_filter
+import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.no_accessibility_events
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityViewModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
@@ -42,7 +39,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -96,23 +95,16 @@ fun AccessibilityScreen(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier,
     ) {
-        // nothing until the device sends its state
-        if (banner != null) {
-            AccessibilityBannerView(
-                banner = banner,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        AccessibilityFocusedNodeCard(
-            focusedNode = focusedNode,
-            canMoveFocus = canMoveFocus,
-            onAction = onAction,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            leading = {
+                AccessibilityFocusControls(
+                    canMoveFocus = canMoveFocus,
+                    onAction = onAction,
+                )
+            },
             filterBar = {
                 FilterBar(
                     filterText = filterText,
@@ -128,26 +120,34 @@ fun AccessibilityScreen(
                     onClick = onClearClicked,
                 )
             },
-        )
+            chips = {
+                AccessibilityTypeFilters(
+                    types = types,
+                    selectedType = selectedType,
+                    onTypeSelected = onTypeSelected,
+                    modifier = Modifier.weight(1f),
+                )
+            },
+        ) {
+            // nothing until the device sends its state
+            if (banner != null) {
+                AccessibilityBannerView(
+                    banner = banner,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
-        AccessibilityTypeFilters(
-            types = types,
-            selectedType = selectedType,
-            onTypeSelected = onTypeSelected,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            AccessibilityFocusedNodeCard(
+                focusedNode = focusedNode,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg300,
-                    shape = FloconTheme.shapes.medium
-                )
+                .floconPanel()
         ) {
             if (rows.isEmpty()) {
                 Text(

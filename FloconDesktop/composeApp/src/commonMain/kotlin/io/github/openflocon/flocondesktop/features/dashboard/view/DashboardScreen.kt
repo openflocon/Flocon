@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.dashboard_action_delete
+import flocondesktop.composeapp.generated.resources.menu_item_dashboard
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -35,6 +34,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -91,8 +91,10 @@ fun DashboardScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             FloconPageTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                selector = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .mascotPlatform(),
+                trailing = { FeatureDocButton(doc = FeatureDoc.Dashboard) },
                 filterBar = {
                     Box(modifier = Modifier.weight(1f)) // to have actions on the right
                 },
@@ -101,8 +103,6 @@ fun DashboardScreen(
                         onArrangementClicked = onArrangementClicked,
                         arrangement = arrangement
                     )
-
-                    FeatureDocButton(doc = FeatureDoc.Dashboard)
 
                     FloconOverflow {
                         FloconDropdownMenuItem(
@@ -121,9 +121,7 @@ fun DashboardScreen(
                     doc = FeatureDoc.Dashboard,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100)
-                        .mascotPlatform()
+                        .floconPanel()
                 )
             } else {
                 Row(Modifier.fillMaxSize()) {
@@ -142,9 +140,7 @@ fun DashboardScreen(
                         DashboardContent(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .clip(FloconTheme.shapes.medium)
-                                .background(FloconTheme.colors.bg100)
-                                .mascotPlatform()
+                                .floconPanel()
                                 .padding(all = FloconTheme.spacing.small),
                             viewState = state,
                             onClickButton = onClickButton,

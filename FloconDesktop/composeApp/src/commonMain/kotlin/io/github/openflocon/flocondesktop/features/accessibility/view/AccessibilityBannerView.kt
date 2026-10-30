@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_banner_not_enabled
 import flocondesktop.composeapp.generated.resources.accessibility_banner_not_supported
@@ -50,8 +49,8 @@ internal fun AccessibilityBannerView(
         color = FloconTheme.colors.ink,
         modifier = modifier
             .clip(FloconTheme.shapes.medium)
-            .background(FloconTheme.colors.bg100)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .background(FloconTheme.colors.bg200)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
     )
 }
 

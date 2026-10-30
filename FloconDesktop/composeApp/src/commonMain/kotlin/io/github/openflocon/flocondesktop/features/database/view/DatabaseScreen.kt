@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +14,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_item_database
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.database.DatabaseViewModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavoriteQueryUiModel
@@ -27,9 +28,12 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabSta
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTables
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -70,14 +74,19 @@ fun DatabaseScreen(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Database) },
+        )
+
         if (deviceDataBases is DatabasesStateUiModel.Empty) {
             FeatureEmptyState(
                 doc = FeatureDoc.Database,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-                    .mascotPlatform()
+                    .floconPanel()
             )
         } else {
             Row(Modifier.fillMaxSize()) {

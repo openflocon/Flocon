@@ -3,10 +3,22 @@ package io.github.openflocon.flocon.plugins.sharedprefs.model
 interface FloconPreference {
     val name: String
 
+    /**
+     * Storage behind this preference, displayed next to its name in the desktop app.
+     * Use one of [FloconPreferenceType] or any free value ("MMKV", "Realm"...).
+     */
+    val type: String get() = FloconPreferenceType.Custom
+
     suspend fun set(
         columnName: String,
         value: FloconPreferenceValue,
     )
+
+    /**
+     * Removes the key, when deleted from the desktop app.
+     * Does nothing by default, override it to support deleting a key.
+     */
+    suspend fun remove(columnName: String) = Unit
 
     suspend fun columns(): List<String>
 
@@ -23,3 +35,27 @@ data class FloconPreferenceValue(
     val longValue: Long? = null,
     val setStringValue: Set<String>? = null,
 )
+
+/**
+ * Suggested values for [FloconPreference.type]. Any other string is accepted.
+ */
+object FloconPreferenceType {
+    // Android
+    const val SharedPreferences = "SharedPreferences"
+
+    // Android, iOS, JVM
+    const val DataStore = "DataStore"
+
+    // iOS
+    const val UserDefaults = "UserDefaults"
+    const val Keychain = "Keychain"
+
+    // JVM
+    const val JavaPreferences = "Java Preferences"
+
+    // Wasm
+    const val LocalStorage = "LocalStorage"
+
+    // default value
+    const val Custom = "Custom"
+}

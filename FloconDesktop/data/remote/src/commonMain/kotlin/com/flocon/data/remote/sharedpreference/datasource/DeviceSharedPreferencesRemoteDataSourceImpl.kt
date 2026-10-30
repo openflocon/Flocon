@@ -10,6 +10,7 @@ import com.flocon.data.remote.sharedpreference.mapper.toSharedPreferenceValuesRe
 import com.flocon.data.remote.sharedpreference.models.DeviceSharedPreferenceDataModel
 import com.flocon.data.remote.sharedpreference.models.ToDeviceEditSharedPreferenceValueMessage
 import com.flocon.data.remote.sharedpreference.models.ToDeviceGetSharedPreferenceValueMessage
+import com.flocon.data.remote.sharedpreference.models.ToDeviceRemoveSharedPreferenceValueMessage
 import com.flocon.data.remote.sharedpreference.models.toDeviceSharedPreferenceDomain
 import io.github.openflocon.data.core.sharedpreference.datasource.DeviceSharedPreferencesRemoteDataSource
 import io.github.openflocon.domain.Protocol
@@ -82,6 +83,28 @@ class DeviceSharedPreferencesRemoteDataSourceImpl(
                         booleanValue = (value as? SharedPreferenceRowDomainModel.Value.BooleanValue)?.value,
                         longValue = (value as? SharedPreferenceRowDomainModel.Value.LongValue)?.value,
                         setStringValue = (value as? SharedPreferenceRowDomainModel.Value.StringSetValue)?.value?.toList(),
+                    ),
+                ),
+            ),
+        )
+    }
+
+    override suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
+    ) {
+        val requestId = newRequestId()
+        server.sendMessageToClient(
+            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
+            message = FloconOutgoingMessageDataModel(
+                plugin = Protocol.ToDevice.SharedPreferences.Plugin,
+                method = Protocol.ToDevice.SharedPreferences.Method.RemoveSharedPreferenceValue,
+                body = Json.encodeToString(
+                    ToDeviceRemoveSharedPreferenceValueMessage(
+                        requestId = requestId,
+                        sharedPreferenceName = sharedPreference.id,
+                        key = key,
                     ),
                 ),
             ),

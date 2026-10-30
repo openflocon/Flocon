@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
+import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceType
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import kotlinx.coroutines.flow.first
 
@@ -24,6 +25,8 @@ class FloconDatastorePreference(
     private val dataStore: DataStore<Preferences>,
     private val mapper: FloconDatastoreMapper? = null // if we encrypted the datastore
 ) : FloconPreference {
+
+    override val type: String = FloconPreferenceType.DataStore
 
     override suspend fun set(
         columnName: String,
@@ -52,6 +55,17 @@ class FloconDatastorePreference(
             }
         } catch (t: Throwable) {
             FloconLogger.logError(t.message ?: "cannot edit datastore preference columns", t)
+        }
+    }
+
+    override suspend fun remove(columnName: String) {
+        try {
+            dataStore.edit { preferences ->
+                val key = preferences.asMap().keys.find { it.name == columnName } ?: return@edit
+                preferences.remove(key)
+            }
+        } catch (t: Throwable) {
+            FloconLogger.logError(t.message ?: "cannot remove datastore preference", t)
         }
     }
 

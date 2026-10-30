@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
@@ -43,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeepli
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.toImmutableMap
@@ -85,16 +85,16 @@ private fun DeeplinkScreen(
     ) {
         // Top bar: freeform input only
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Deeplinks) },
             filterBar = {
                 DeeplinkFreeformItem(
                     submit = submit,
                     enabled = state.canSend,
                     modifier = Modifier.fillMaxWidth(),
                 )
-            },
-            actions = {
-                FeatureDocButton(doc = FeatureDoc.Deeplinks)
             },
         )
 
@@ -103,9 +103,7 @@ private fun DeeplinkScreen(
                 doc = FeatureDoc.Deeplinks,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-                    .mascotPlatform(),
+                    .floconPanel(),
             )
         } else {
             // Main body — two rows of equal weight
@@ -126,9 +124,7 @@ private fun DeeplinkScreen(
                         modifier = Modifier
                             .weight(0.3f)
                             .fillMaxHeight()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .mascotPlatform(),
+                            .floconPanel(),
                     ) {
                         items(state.variables) { item ->
                             DeeplinkVariableChip(
@@ -144,9 +140,7 @@ private fun DeeplinkScreen(
                         modifier = Modifier
                             .weight(0.7f)
                             .fillMaxHeight()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .mascotPlatform(),
+                            .floconPanel(),
                     ) {
                         items(deepLinks) { item ->
                             DeeplinkRow(
@@ -167,8 +161,7 @@ private fun DeeplinkScreen(
                     modifier = Modifier
                         .weight(0.5f)
                         .fillMaxWidth()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100)
+                        .floconPanel()
                 ) {
                     items(history) { item ->
                         SelectionContainer {

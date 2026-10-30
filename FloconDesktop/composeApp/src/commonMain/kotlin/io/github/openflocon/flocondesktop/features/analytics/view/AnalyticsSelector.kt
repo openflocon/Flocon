@@ -3,11 +3,10 @@ package io.github.openflocon.flocondesktop.features.analytics.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.TableChart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,9 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.analytics_selector_caption
 import flocondesktop.composeapp.generated.resources.no_analytics
 import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStateUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
@@ -26,8 +25,8 @@ import io.github.openflocon.library.designsystem.components.DropdownFilterField
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
-import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import io.github.openflocon.library.designsystem.components.FloconPageSelector
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -47,31 +46,25 @@ internal fun AnalyticsSelector(
             }
         },
         anchorContent = {
-            FloconButton(
-                onClick = {
-                    if (analyticsState is AnalyticsStateUiModel.WithContent) {
-                        expanded = true
-                    }
-                },
-                containerColor = FloconTheme.colors.bg200
-            ) {
-                when (analyticsState) {
-                    AnalyticsStateUiModel.Empty ->
-                        Text(
-                            stringResource(Res.string.no_analytics),
-                            style = FloconTheme.typography.bodySmall
-                        )
-
-                    AnalyticsStateUiModel.Loading -> FloconLinearProgressIndicator()
-
-                    is AnalyticsStateUiModel.WithContent -> {
-                        Text(text = analyticsState.selected.name, style = FloconTheme.typography.bodySmall)
-                        FloconIcon(
-                            imageVector = Icons.Outlined.KeyboardArrowDown,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
+            val onClick = {
+                if (analyticsState is AnalyticsStateUiModel.WithContent) {
+                    expanded = true
                 }
+            }
+            when (analyticsState) {
+                AnalyticsStateUiModel.Empty -> Unit
+
+                AnalyticsStateUiModel.Loading ->
+                    FloconButton(onClick = onClick, containerColor = FloconTheme.colors.bg200) {
+                        FloconLinearProgressIndicator()
+                    }
+
+                is AnalyticsStateUiModel.WithContent -> FloconPageSelector(
+                    icon = Icons.Outlined.TableChart,
+                    caption = stringResource(Res.string.analytics_selector_caption),
+                    value = analyticsState.selected.name,
+                    onClick = onClick,
+                )
             }
         },
         modifier = modifier

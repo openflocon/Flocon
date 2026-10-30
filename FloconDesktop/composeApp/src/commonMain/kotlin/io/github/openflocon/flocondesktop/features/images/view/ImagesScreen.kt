@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -38,6 +37,7 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.images_filter
+import flocondesktop.composeapp.generated.resources.menu_item_images
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -50,6 +50,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -103,6 +104,7 @@ private fun ImagesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Images) },
             filterBar = {
                 FilterBar(
                     placeholderText = stringResource(Res.string.images_filter),
@@ -118,7 +120,6 @@ private fun ImagesScreen(
                     imageVector = Icons.Outlined.Delete,
                     onClick = onReset,
                 )
-                FeatureDocButton(doc = FeatureDoc.Images)
             }
         )
         when (state) {
@@ -129,9 +130,7 @@ private fun ImagesScreen(
                     doc = FeatureDoc.Images,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100)
-                        .mascotPlatform()
+                        .floconPanel()
                 )
             }
 
@@ -149,8 +148,7 @@ private fun ImagesScreen(
                         contentPadding = PaddingValues(all = gridPadding),
                         modifier = Modifier
                             .matchParentSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
+                            .floconPanel()
                     ) {
                         items(state.images) {
                             ImageItem(

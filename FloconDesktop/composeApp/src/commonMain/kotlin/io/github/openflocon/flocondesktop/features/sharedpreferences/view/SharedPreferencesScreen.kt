@@ -6,17 +6,18 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -25,11 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.filter
+import flocondesktop.composeapp.generated.resources.preferences
+import flocondesktop.composeapp.generated.resources.preferences_clear_filter
+import flocondesktop.composeapp.generated.resources.preferences_file_empty_subtitle
+import flocondesktop.composeapp.generated.resources.preferences_file_empty_title
+import flocondesktop.composeapp.generated.resources.preferences_no_match_title
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesViewModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
@@ -38,16 +48,21 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconEmptyState
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
     val viewModel: SharedPreferencesViewModel = koinViewModel()
     val deviceSharedPrefs by viewModel.sharedPrefs.collectAsStateWithLifecycle()
-    val elementToEdit by viewModel.elementToEdit.collectAsStateWithLifecycle()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val autoUpdateState by viewModel.autoUpdateState.collectAsStateWithLifecycle()
 
@@ -64,27 +79,14 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         rows = rows,
         changeValue = viewModel::onValueChanged,
-        onEditClicked = { row, stringValue ->
-            viewModel.onEditClicked(row, stringValue)
-        },
+        onEditClicked = viewModel::onEditClicked,
+        onCopyClicked = viewModel::onCopyClicked,
+        onDeleteClicked = viewModel::onDeleteClicked,
         autoUpdateState = autoUpdateState,
         onAutoUpdateChange = viewModel::onAutoUpdateChange,
         onAutoUpdateDelayChanged = viewModel::onAutoUpdateDelayChanged,
         refreshClicked = viewModel::refreshClicked,
     )
-
-    elementToEdit?.let {
-        SharedPreferenceEditScreen(
-            row = it.row,
-            stringValue = it.stringValue,
-            cancel = {
-                viewModel.cancelEdition()
-            },
-            save = { row, stringValue ->
-                viewModel.onEditDone(row, stringValue)
-            }
-        )
-    }
 }
 
 @Composable
@@ -93,110 +95,168 @@ fun SharedPrefScreen(
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
-    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onCopyClicked: (row: SharedPreferencesRowUiModel) -> Unit,
+    onDeleteClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     autoUpdateState: PreferenceAutoUpdate,
     onAutoUpdateChange: (Boolean) -> Unit,
     onAutoUpdateDelayChanged: (delay: Int) -> Unit,
     refreshClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var sharedPrefRows by remember { mutableStateOf<List<SharedPreferencesRowUiModel>>(emptyList()) }
+    val filterText = remember { mutableStateOf("") }
+    val sharedPrefRows: List<SharedPreferencesRowUiModel> = remember(rows, filterText.value) {
+        if (filterText.value.isBlank()) {
+            rows.rows
+        } else {
+            rows.rows.filter { it.contains(filterText.value) }
+        }
+    }
+    // UI only: the collapsible rows (json, long text) currently expanded, by key
+    var expandedKeys by remember(deviceSharedPrefs) { mutableStateOf(emptySet<String>()) }
+    // UI only: the row waiting for the delete confirmation
+    var rowToDelete by remember { mutableStateOf<SharedPreferencesRowUiModel?>(null) }
+    val lazyListState = rememberLazyListState()
+    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         modifier = modifier.fillMaxSize()
     ) {
-        if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
-            FeatureEmptyState(
-                doc = FeatureDoc.SharedPreferences,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
-                    .mascotPlatform()
-            )
-        } else {
-            Row(Modifier.fillMaxSize()) {
-                SharedPreferenceSelector(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(340.dp),
-                    state = deviceSharedPrefs,
-                    onSharedPrefSelected = onSharedPrefSelected,
+        FloconPageTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
+            selector = if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
+                null
+            } else {
+                {
+                    SharedPreferenceSelector(
+                        state = deviceSharedPrefs,
+                        onSharedPrefSelected = onSharedPrefSelected,
+                    )
+                }
+            },
+            filterBar = {
+                FilterBar(
+                    filterText = filterText,
+                    placeholderText = stringResource(Res.string.filter),
+                    onTextChange = { filterText.value = it },
+                    modifier = Modifier.weight(1f),
                 )
-                Spacer(modifier = Modifier.width(FloconTheme.spacing.medium))
+            },
+            actions = {
+                PreferenceAutoUpdate(
+                    state = autoUpdateState,
+                    onChange = onAutoUpdateChange,
+                    onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
+                    refreshClicked = refreshClicked,
+                )
+            },
+        )
 
-                SelectionContainer {
-                    val lazyListState = rememberLazyListState()
-                    val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
-                    Box(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .floconPanel()
+        ) {
+            if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
+                FeatureEmptyState(
+                    doc = FeatureDoc.SharedPreferences,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                SharedPreferencesHeader()
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    LazyColumn(
+                        state = lazyListState,
                         modifier = Modifier.fillMaxSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
-                            .border(
-                                width = 1.dp,
-                                color = FloconTheme.colors.bg200,
-                                shape = FloconTheme.shapes.medium
-                            )
-                            .mascotPlatform()
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(vertical = FloconTheme.spacing.small, horizontal = FloconTheme.spacing.large),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                SharedPreferencesFilterBar(
-                                    items = rows.rows,
-                                    modifier = Modifier.width(300.dp),
-                                    onItemsChange = {
-                                        sharedPrefRows = it
-                                    },
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                PreferenceAutoUpdate(
-                                    state = autoUpdateState,
-                                    onChange = onAutoUpdateChange,
-                                    onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
-                                    refreshClicked = refreshClicked,
-                                )
-                            }
-                            LazyColumn(
-                                state = lazyListState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                when (rows) {
-                                    SharedPreferencesRowsStateUiModel.Empty -> {}
-
-                                    SharedPreferencesRowsStateUiModel.Loading -> {}
-
-                                    is SharedPreferencesRowsStateUiModel.WithContent -> {
-                                        items(sharedPrefRows) {
-                                            SharedPreferenceRow(
-                                                model = it,
-                                                modifier = Modifier.fillMaxWidth(),
-                                                onValueChanged = changeValue,
-                                                onEditClicked = onEditClicked,
-                                            )
-                                        }
-                                    }
-                                }
-                            }
+                        items(sharedPrefRows, key = { it.key }) {
+                            SharedPreferenceRow(
+                                model = it,
+                                isExpanded = it.key in expandedKeys,
+                                onToggleExpanded = { key ->
+                                    expandedKeys = if (key in expandedKeys) expandedKeys - key else expandedKeys + key
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                onValueChanged = changeValue,
+                                onEditClicked = onEditClicked,
+                                onCopyClicked = onCopyClicked,
+                                onDeleteClicked = { row -> rowToDelete = row },
+                            )
                         }
-                        FloconVerticalScrollbar(
-                            adapter = scrollAdapter,
-                            modifier = Modifier.fillMaxHeight()
-                                .align(Alignment.TopEnd),
+                    }
+                    if (rows !is SharedPreferencesRowsStateUiModel.Loading && rows.rows.isEmpty() && deviceSharedPrefs is SharedPrefsStateUiModel.WithContent) {
+                        SharedPreferencesEmptyState(
+                            title = stringResource(Res.string.preferences_file_empty_title, deviceSharedPrefs.selected.name),
+                            subtitle = stringResource(Res.string.preferences_file_empty_subtitle),
+                            icon = Icons.Outlined.Inbox,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (filterText.value.isNotBlank() && rows.rows.isNotEmpty() && sharedPrefRows.isEmpty()) {
+                        SharedPreferencesEmptyState(
+                            title = stringResource(Res.string.preferences_no_match_title, filterText.value),
+                            subtitle = null,
+                            icon = Icons.Outlined.Search,
+                            modifier = Modifier.fillMaxSize(),
+                            onClearFilter = { filterText.value = "" },
                         )
                     }
+                    FloconVerticalScrollbar(
+                        adapter = scrollAdapter,
+                        modifier = Modifier.fillMaxHeight()
+                            .align(Alignment.TopEnd),
+                    )
                 }
             }
         }
     }
+
+    rowToDelete?.let { row ->
+        SharedPreferenceDeleteDialog(
+            key = row.key,
+            onConfirm = {
+                onDeleteClicked(row)
+                rowToDelete = null
+            },
+            onDismiss = { rowToDelete = null },
+        )
+    }
+}
+
+@Composable
+private fun SharedPreferencesEmptyState(
+    title: String,
+    subtitle: String?,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    onClearFilter: (() -> Unit)? = null,
+) {
+    FloconEmptyState(
+        title = title,
+        description = subtitle.orEmpty(),
+        modifier = modifier,
+        illustration = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(FloconTheme.colors.bg300, RoundedCornerShape(12.dp))
+                    .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(12.dp)),
+            ) {
+                FloconIcon(icon, tint = FloconTheme.colors.inkMuted, modifier = Modifier.size(24.dp))
+            }
+        },
+        action = onClearFilter?.let {
+            {
+                FloconButton(onClick = it) {
+                    Text(stringResource(Res.string.preferences_clear_filter))
+                }
+            }
+        },
+    )
 }
 
 @Composable
@@ -208,7 +268,9 @@ private fun SharedPrefScreenPreview() {
             onSharedPrefSelected = {},
             rows = previewSharedPreferencesRowsStateUiModel(),
             changeValue = { _, _ -> },
-            onEditClicked = { _, _ -> },
+            onEditClicked = {},
+            onCopyClicked = {},
+            onDeleteClicked = {},
             autoUpdateState = PreferenceAutoUpdate.Disabled,
             onAutoUpdateChange = {},
             onAutoUpdateDelayChanged = {},

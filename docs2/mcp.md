@@ -319,7 +319,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `start_screen_recording` | Starts recording the device screen. One recording per device; on Android, `screenrecord` stops by itself after 3 minutes. |
 | `stop_screen_recording` | Stops the recording and returns the path of the mp4 saved in `ScreenRecord/`. Without target, stops the only running recording. |
 | `open_flocon_folder` | Opens the Flocon documents folder (screenshots, screen records, exports), or a sub folder (`Screenshot`, `ScreenRecord`), in the file manager of the computer, and returns its path. |
-| `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId`. |
+| `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId` and storage `type` (SharedPreferences, DataStore, UserDefaults, Keychain...). |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
