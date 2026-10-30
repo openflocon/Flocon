@@ -5,17 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
@@ -24,11 +21,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.files_column_modified
 import flocondesktop.composeapp.generated.resources.name
@@ -41,6 +35,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUi
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
+import io.github.openflocon.library.designsystem.components.floconTableHeaderTextColor
 import org.jetbrains.compose.resources.stringResource
 
 // the type tile of a row, not scaled (like the icons)
@@ -96,8 +93,7 @@ internal fun FilesListHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(FloconTheme.sizes.headerHeight + FloconTheme.spacing.small)
-            .filesBottomLine()
+            .floconTableHeader()
             .padding(horizontal = FilesListColumns.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -166,13 +162,10 @@ private fun HeaderCell(
 }
 
 @Composable
-private fun RowScope.HeaderLabel(title: String, highlighted: Boolean) {
-    Text(
-        text = title.uppercase(),
-        style = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em),
-        color = if (highlighted) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+private fun HeaderLabel(title: String, highlighted: Boolean) {
+    FloconTableHeaderLabel(
+        text = title,
+        color = if (highlighted) FloconTheme.colors.ink else floconTableHeaderTextColor,
     )
 }
 
@@ -185,7 +178,7 @@ internal fun SortArrow(sortedBy: SortedByUiModel, modifier: Modifier = Modifier)
     }
     FloconIcon(
         imageVector = icon,
-        tint = FloconTheme.colors.inkMuted,
+        tint = floconTableHeaderTextColor,
         modifier = modifier.size(SortArrowSize),
     )
 }

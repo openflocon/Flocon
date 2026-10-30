@@ -157,22 +157,25 @@ fun AccessibilityScreen(
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
-                ) {
-                    itemsIndexed(
-                        items = rows,
-                        key = { _, item -> item.id },
-                    ) { index, item ->
-                        AccessibilityRowView(
-                            model = item,
-                            onAction = onAction,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        if (index != rows.lastIndex) {
-                            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Column(modifier = Modifier.fillMaxSize()) {
+                    AccessibilityHeader(modifier = Modifier.fillMaxWidth())
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
+                    ) {
+                        itemsIndexed(
+                            items = rows,
+                            key = { _, item -> item.id },
+                        ) { index, item ->
+                            AccessibilityRowView(
+                                model = item,
+                                onAction = onAction,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            if (index != rows.lastIndex) {
+                                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                            }
                         }
                     }
                 }

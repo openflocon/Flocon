@@ -23,7 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.analytics_column_event
+import flocondesktop.composeapp.generated.resources.analytics_column_properties
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
+import flocondesktop.composeapp.generated.resources.date
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
@@ -32,6 +35,8 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsRowU
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -155,6 +160,27 @@ private fun SharedPreferenceRowPreview() {
             modifier = Modifier.fillMaxWidth(),
             model = previewAnalyticsRowUiModel(),
             onAction = {},
+        )
+    }
+}
+
+@Composable
+fun AnalyticsHeader(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.floconTableHeader(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.date),
+            modifier = Modifier.width(110.dp),
+            textAlign = TextAlign.Center,
+        )
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.analytics_column_event),
+            modifier = Modifier.width(200.dp),
+        )
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.analytics_column_properties),
         )
     }
 }

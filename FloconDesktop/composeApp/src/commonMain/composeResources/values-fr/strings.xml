@@ -57,6 +57,24 @@
     <string name="timeline_network_response">Réponse</string>
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
+    <string name="timeline_filters_title">Filtres</string>
+    <string name="timeline_filters_clear_all">Tout effacer</string>
+    <string name="timeline_filters_search">Chercher un filtre</string>
+    <string name="timeline_filters_any">Tous</string>
+    <string name="timeline_filters_current_session">Session en cours uniquement</string>
+    <string name="timeline_filters_toggle">Filtres</string>
+    <string name="timeline_filters_no_result">Aucun filtre ne correspond</string>
+    <string name="timeline_facet_network_method">Méthode</string>
+    <string name="timeline_facet_network_status">Statut</string>
+    <string name="timeline_facet_network_state">État</string>
+    <string name="timeline_facet_network_speed">Durée</string>
+    <string name="timeline_facet_network_content">Contenu</string>
+    <string name="timeline_facet_network_host">Hôte</string>
+    <string name="timeline_facet_database_name">Base de données</string>
+    <string name="timeline_facet_crash_exception">Exception</string>
+    <string name="timeline_facet_database_statement">Requête</string>
+    <string name="timeline_facet_analytics_table">Table</string>
+    <string name="timeline_facet_accessibility_action">Action</string>
     <plurals name="network_counter_requests">
         <item quantity="one">requête</item>
         <item quantity="other">requêtes</item>
@@ -127,7 +145,7 @@
     <string name="network_header_host">Hôte</string>
     <string name="network_header_method">Méthode</string>
     <string name="network_header_request">Requête</string>
-    <string name="network_header_request_time">Heure de la requête</string>
+    <string name="network_header_request_time">Date</string>
     <string name="network_header_status">Statut</string>
     <string name="network_header_time">Durée</string>
     <string name="new_client_version">Nouvelle version du client disponible : %1$s</string>
@@ -409,4 +427,13 @@
     <string name="files_selected_count">%1$d sélectionné(s)</string>
     <string name="files_view_list">Vue liste</string>
     <string name="files_view_grid">Vue grille</string>
+    <string name="feature_flags_column_name">Flag</string>
+    <string name="feature_flags_column_variant">Variante</string>
+    <string name="feature_flags_column_payload">Payload</string>
+    <string name="accessibility_column_type">Type</string>
+    <string name="accessibility_column_text">Texte</string>
+    <string name="accessibility_column_class">Classe</string>
+    <string name="analytics_column_event">Événement</string>
+    <string name="analytics_column_properties">Propriétés</string>
+    <string name="images_column_format">Format</string>
 </resources>

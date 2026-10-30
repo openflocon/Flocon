@@ -24,6 +24,13 @@ data class TimelineSummaryRowEntity(
     val lastTs: Long?,
 )
 
+// result row of the facet counts query: one per facet and value
+data class TimelineFacetCountEntity(
+    val facet: String,
+    val value: String,
+    val count: Int,
+)
+
 // result row of the session counts query
 data class TimelineSessionCountEntity(
     val sessionStart: Long,
