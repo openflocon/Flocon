@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -81,6 +82,7 @@ private val PreviewPanelWidth = 500.dp
 private val PreviewPanelHeight = 720.dp
 private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
+private const val GroupsPerRow = 2
 
 /**
  * The filters of the timeline: a section by source, to show it or not and to narrow it down by facet,
@@ -260,8 +262,22 @@ private fun FilterSection(
             )
         }
         if (expanded) {
-            section.groups.forEach { group ->
-                FacetGroup(group = group, onAction = onAction)
+            // two groups by row: a dropdown does not need the whole width
+            section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                ) {
+                    rowGroups.forEach { group ->
+                        FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
+                    }
+                    // a lonely group keeps the width of the others
+                    if (rowGroups.size < GroupsPerRow) {
+                        Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+                    }
+                }
             }
         }
         FloconDividerLine()
@@ -279,11 +295,7 @@ private fun FacetGroup(
     val shown = group.values.count { it.selected }
 
     // the menu stays open while values are unticked: a group takes several values
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-    ) {
+    Box(modifier = modifier) {
         FloconPageSelector(
             value = if (shown == group.values.size) any else "$shown/${group.values.size}",
             caption = stringResource(group.facet.title()),
