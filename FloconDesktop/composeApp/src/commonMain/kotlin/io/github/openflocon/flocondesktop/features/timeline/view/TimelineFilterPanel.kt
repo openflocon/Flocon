@@ -47,13 +47,11 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
-import flocondesktop.composeapp.generated.resources.timeline_filters_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
 import flocondesktop.composeapp.generated.resources.timeline_filters_clear_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_no_result
 import flocondesktop.composeapp.generated.resources.timeline_filters_search
 import flocondesktop.composeapp.generated.resources.timeline_filters_title
-import flocondesktop.composeapp.generated.resources.timeline_filters_with_events
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
@@ -69,11 +67,8 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconPageSelector
-import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
 import io.github.openflocon.library.designsystem.components.FloconSwitch
-import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
-import io.github.openflocon.library.designsystem.components.TabType
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -190,22 +185,6 @@ private fun PanelHeader(
             onTextChange = onQueryChange,
             modifier = Modifier.fillMaxWidth(),
         )
-        FloconSegmentedRow {
-            FloconTab(
-                text = "${stringResource(Res.string.timeline_filters_all)} ${panel.allCount}",
-                isSelected = !panel.onlyWithEvents,
-                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(false)) },
-                tabType = TabType.Start,
-                modifier = Modifier.weight(1f),
-            )
-            FloconTab(
-                text = "${stringResource(Res.string.timeline_filters_with_events)} ${panel.withEventsCount}",
-                isSelected = panel.onlyWithEvents,
-                onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(true)) },
-                tabType = TabType.End,
-                modifier = Modifier.weight(1f),
-            )
-        }
     }
 }
 
@@ -488,7 +467,6 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
             previewTimelineSummaryUiModel().toFilterPanel(
                 selectedSources = TimelineSource.entries.toSet(),
                 facets = mapOf(TimelineFacet.NetworkStatus to setOf("5xx")),
-                onlyWithEvents = false,
             )
         }
         TimelineFilterPanel(
