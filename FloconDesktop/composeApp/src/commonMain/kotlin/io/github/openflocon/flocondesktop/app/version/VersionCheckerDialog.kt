@@ -18,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.close
 import flocondesktop.composeapp.generated.resources.download
+import io.github.openflocon.flocondesktop.app.AboveDialogsZIndex
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
@@ -35,7 +37,9 @@ internal fun BoxScope.VersionChecker() {
     val state by viewmodel.state.collectAsStateWithLifecycle()
     state?.let {
         VersionCheckerDialog(
-            modifier = Modifier.align(Alignment.BottomEnd),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .zIndex(AboveDialogsZIndex),
             state = it,
             onDesktopDismiss = viewmodel::hideDesktopNewVersionDialog,
             onClientDismiss = viewmodel::hideClientNewVersionDialog,

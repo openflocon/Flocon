@@ -17,6 +17,7 @@ import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDe
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
+import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkMockEditionScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
@@ -42,6 +43,13 @@ internal sealed interface NetworkRoutes : FloconRoute {
 
     @Serializable
     data class Mocks(val id: String?) : NetworkRoutes
+
+    // both null: a new mock, mockId: an existing one, fromNetworkCallId: a mock generated from a network call
+    @Serializable
+    data class MockEdition(
+        val mockId: String? = null,
+        val fromNetworkCallId: String? = null,
+    ) : NetworkRoutes
 
     @Serializable
     data object BadNetworkQuality : NetworkRoutes
@@ -119,6 +127,16 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     ) {
         NetworkMocksWindow(
             fromNetworkCallId = it.id
+        )
+    }
+    entry<NetworkRoutes.MockEdition>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Mock")
+        )
+    ) {
+        NetworkMockEditionScreen(
+            mockId = it.mockId,
+            fromNetworkCallId = it.fromNetworkCallId,
         )
     }
     entry<NetworkRoutes.BadNetworkQuality>(

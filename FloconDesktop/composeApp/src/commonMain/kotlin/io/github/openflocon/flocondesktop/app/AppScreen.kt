@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
@@ -41,6 +42,9 @@ import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import org.koin.compose.viewmodel.koinViewModel
 
+/** Above the big dialogs of the navigation (drawn at the depth of their entry in the stack): messages stay readable. */
+internal const val AboveDialogsZIndex = 1_000f
+
 @Composable
 fun AppScreen(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<AppViewModel>()
@@ -57,7 +61,7 @@ fun AppScreen(modifier: Modifier = Modifier) {
             updateChip = updateChip,
             onUpdateChipClicked = { uriHandler.openUri(it.link) },
         )
-        FeedbackHost()
+        FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
         VersionChecker()
     }
 }

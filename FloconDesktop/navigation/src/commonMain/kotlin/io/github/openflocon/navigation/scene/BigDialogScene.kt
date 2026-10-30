@@ -35,7 +35,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.contains
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
@@ -44,6 +46,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.scene.BigDialogSceneStrategy.Companion.BIG_DIALOG
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -61,7 +64,7 @@ private data class BigDialogScene(
     private val alpha = Animatable(initialValue = 0f)
     private val scale = Animatable(initialValue = 0.9f)
 
-    override val key: Any = BigDialogSceneStrategy.BIG_DIALOG
+    override val key: Any = entry.contentKey
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
     override val content: @Composable (() -> Unit) = {
         LaunchedEffect(Unit) {
@@ -74,11 +77,20 @@ private data class BigDialogScene(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
+                // the navigation display draws the overlay scenes in the order they were added, the oldest on top:
+                // a dialog opened over another one would stay hidden. The deeper the entry, the higher it is drawn.
+                .zIndex(previousEntries.size.toFloat())
                 .fillMaxSize()
                 .graphicsLayer {
                     this.alpha = this@BigDialogScene.alpha.value
                 }
-                .background(Color.Black.copy(alpha = 0.7f))
+                .then(
+                    if (previousEntries.any { it.metadata.contains(BIG_DIALOG) }) {
+                        Modifier
+                    } else {
+                        Modifier.background(Color.Black.copy(alpha = 0.7f))
+                    }
+                )
                 .clickable(
                     onClick = onBack,
                     indication = null,
