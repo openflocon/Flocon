@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -20,6 +21,8 @@ internal data class TimelineFacetValueUiModel(
 internal data class TimelineFacetGroupUiModel(
     val facet: TimelineFacet,
     val values: ImmutableList<TimelineFacetValueUiModel>,
+    // the methods, in the state of the method filter of the network screen, to display the same dropdown
+    val methodFilter: MethodFilterState? = null,
 )
 
 // one source of the filter panel: its switch and the facets to narrow it down

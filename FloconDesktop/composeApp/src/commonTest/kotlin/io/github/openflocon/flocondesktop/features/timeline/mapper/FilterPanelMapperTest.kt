@@ -54,12 +54,22 @@ class FilterPanelMapperTest {
         assertEquals(NetworkMethodUi.Grpc, methods["GRPC"])
         assertEquals("OPTIONS", (methods["OPTIONS"] as NetworkMethodUi.OTHER).text)
 
+        // the state of the method filter of the network screen, one item by method: checked unless hidden
+        val hiddenPost = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkMethod to setOf("POST")), onlyWithEvents = false)
+            .sections.first { it.source == TimelineSource.Network }.groups.first { it.facet == TimelineFacet.NetworkMethod }
+        val methodFilter = hiddenPost.methodFilter!!
+        assertEquals(TimelineFacet.NetworkMethod.knownValues.size, methodFilter.items.size)
+        assertEquals(false, methodFilter.items.first { it.method == NetworkMethodUi.Http.POST }.isSelected)
+        assertEquals(true, methodFilter.items.first { it.method == NetworkMethodUi.Http.GET }.isSelected)
+
         val families = network.groups.first { it.facet == TimelineFacet.NetworkStatus }.values.map { it.httpFamily }
         assertEquals(listOf(1, 2, 3, 4, 5), families)
 
         // the other facets are plain values
-        val state = network.groups.first { it.facet == TimelineFacet.NetworkState }.values
-        assertTrue(state.all { it.method == null && it.httpFamily == null })
+        val database = summary.toFilterPanel(all, emptyMap(), onlyWithEvents = false).sections.first { it.source == TimelineSource.Database }
+        val statements = database.groups.first { it.facet == TimelineFacet.DatabaseStatement }
+        assertTrue(statements.values.all { it.method == null && it.httpFamily == null })
+        assertEquals(null, statements.methodFilter)
     }
 
     @Test

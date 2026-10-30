@@ -4,6 +4,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.MethodFilterState
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
@@ -74,6 +75,13 @@ private fun TimelineSummaryUiModel.toGroup(
     return if (values.isEmpty()) {
         null
     } else {
-        TimelineFacetGroupUiModel(facet = facet, values = values.toImmutableList())
+        TimelineFacetGroupUiModel(
+            facet = facet,
+            values = values.toImmutableList(),
+            methodFilter = MethodFilterState(
+                isEnabled = true,
+                items = values.mapNotNull { value -> value.method?.let { MethodFilterState.Item(method = it, isSelected = value.selected) } },
+            ).takeIf { facet == TimelineFacet.NetworkMethod },
+        )
     }
 }

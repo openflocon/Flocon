@@ -63,6 +63,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.network.list.view.filters.MethodFilterDropdownContent
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -310,11 +311,24 @@ private fun FacetGroup(
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
         ) {
-            group.values.forEach { item ->
-                FacetValueRow(
-                    item = item,
-                    onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
+            val methodFilter = group.methodFilter
+            if (methodFilter != null) {
+                // the dropdown of the method column of the network screen
+                MethodFilterDropdownContent(
+                    filterState = methodFilter,
+                    onItemClicked = { method ->
+                        group.values.firstOrNull { it.method == method }?.let {
+                            onAction(TimelineFilterAction.ToggleFacet(group.facet, it.value))
+                        }
+                    },
                 )
+            } else {
+                group.values.forEach { item ->
+                    FacetValueRow(
+                        item = item,
+                        onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
+                    )
+                }
             }
         }
     }
