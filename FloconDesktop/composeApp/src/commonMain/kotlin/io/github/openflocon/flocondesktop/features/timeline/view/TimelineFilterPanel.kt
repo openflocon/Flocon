@@ -54,6 +54,7 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_network_statu
 import flocondesktop.composeapp.generated.resources.timeline_filters_all
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
 import flocondesktop.composeapp.generated.resources.timeline_filters_clear_all
+import flocondesktop.composeapp.generated.resources.timeline_filters_current_session
 import flocondesktop.composeapp.generated.resources.timeline_filters_no_result
 import flocondesktop.composeapp.generated.resources.timeline_filters_search
 import flocondesktop.composeapp.generated.resources.timeline_filters_title
@@ -207,6 +208,21 @@ private fun PanelHeader(
                 onSelected = { onAction(TimelineFilterAction.SetOnlyWithEvents(true)) },
                 tabType = TabType.End,
                 modifier = Modifier.weight(1f),
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.timeline_filters_current_session),
+                style = FloconTheme.typography.bodyMedium,
+                color = colors.ink,
+                modifier = Modifier.weight(1f),
+            )
+            FloconSwitch(
+                checked = panel.currentSessionOnly,
+                onCheckedChange = { onAction(TimelineFilterAction.SetCurrentSessionOnly(it)) },
             )
         }
     }
