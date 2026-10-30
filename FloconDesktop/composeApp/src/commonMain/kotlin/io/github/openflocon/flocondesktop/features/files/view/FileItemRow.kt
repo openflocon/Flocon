@@ -128,7 +128,7 @@ fun FileItemRow(
 
             Text(
                 text = file.name,
-                style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Medium),
                 color = colors.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -139,7 +139,7 @@ fun FileItemRow(
 
             Text(
                 text = file.dateFormatted.orEmpty(),
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = colors.inkMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -233,7 +233,7 @@ private fun FileSizeCellContent(
         if (sizeFormatted == null) {
             Text(
                 text = stringResource(Res.string.files_size_unknown),
-                style = FloconTheme.typography.monoMedium,
+                style = FloconTheme.typography.listItemMono,
                 color = colors.inkFaint,
             )
         } else {
@@ -256,7 +256,7 @@ private fun FileSizeCellContent(
             }
             Text(
                 text = sizeFormatted,
-                style = FloconTheme.typography.monoMedium,
+                style = FloconTheme.typography.listItemMono,
                 color = colors.ink.copy(alpha = 0.85f),
                 maxLines = 1,
             )
