@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -37,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.previewFileUiModels
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
 
 // the drawings are not scaled, like the icons
 internal val FileGridCellMinWidth = 120.dp
@@ -47,6 +47,8 @@ private val FolderWidth = 76.dp
 private val FolderHeight = 62.dp
 private val PageWidth = 54.dp
 private val PageHeight = 70.dp
+private val PageIconSize = 22.dp
+private val PageIconTop = 20.dp
 private val BadgeBottom = 8.dp
 private val BadgeRadius = 4.dp
 private val BadgeTextSize = 9.sp
@@ -164,7 +166,7 @@ internal fun FolderIllustration(modifier: Modifier = Modifier) {
     )
 }
 
-/** A page with a folded corner and a few lines, the extension of the file in a badge colored by its type. */
+/** A page with a folded corner and the icon of the family of the file, the extension of the file in a badge colored by its type. */
 @Composable
 internal fun FileIllustration(
     type: FileTypeUiModel,
@@ -172,6 +174,7 @@ internal fun FileIllustration(
     modifier: Modifier = Modifier,
 ) {
     val palette = filesPalette
+    val typeColors = palette.of(type)
     val vector = remember(palette) {
         ImageVector.Builder(
             defaultWidth = PageWidth,
@@ -187,12 +190,6 @@ internal fun FileIllustration(
                 pathData = addPathNodes("M36 1v12a3 3 0 0 0 3 3h12z"),
                 fill = SolidColor(palette.pageFold),
             )
-            .addPath(
-                pathData = addPathNodes("M10 24h26M10 30h32M10 36h22M10 42h30"),
-                stroke = SolidColor(palette.pageLines),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-            )
             .build()
     }
     Box(
@@ -202,6 +199,14 @@ internal fun FileIllustration(
             painter = rememberVectorPainter(vector),
             contentDescription = null,
             modifier = Modifier.size(width = PageWidth, height = PageHeight),
+        )
+        FloconIcon(
+            imageVector = type.icon(),
+            tint = typeColors.deep,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = PageIconTop)
+                .size(PageIconSize),
         )
         Text(
             text = extensionLabel,
@@ -213,7 +218,7 @@ internal fun FileIllustration(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = BadgeBottom)
                 .clip(RoundedCornerShape(BadgeRadius))
-                .background(palette.of(type).ink)
+                .background(typeColors.ink)
                 .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
         )
     }

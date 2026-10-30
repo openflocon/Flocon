@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.Text
@@ -38,7 +37,6 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.files_actions
 import flocondesktop.composeapp.generated.resources.files_size_unknown
@@ -57,8 +55,7 @@ import io.github.openflocon.library.designsystem.components.WithTooltip
 import org.jetbrains.compose.resources.stringResource
 
 private val TileRadius = 8.dp
-private val TileIconSize = 17.dp
-private val TileLabelSize = 10.sp
+private val TileIconSize = 18.dp
 private val SizeBarWidth = 110.dp
 private val SizeBarHeight = 4.dp
 private val ActionButtonSize = 30.dp
@@ -125,7 +122,7 @@ fun FileItemRow(
             }
 
             Box(Modifier.width(FilesListColumns.tile), contentAlignment = Alignment.CenterStart) {
-                FileTypeTile(type = file.type, extensionLabel = file.extensionLabel)
+                FileTypeTile(type = file.type)
             }
 
             Text(
@@ -180,11 +177,10 @@ fun FileItemRow(
     }
 }
 
-/** Rounded colored tile of the type of an entry: a folder icon, or the short label of the extension of a file. */
+/** Rounded tile of the type of an entry: the icon of its family, tinted with the ink of the type on a soft background. */
 @Composable
 internal fun FileTypeTile(
     type: FileTypeUiModel,
-    extensionLabel: String,
     modifier: Modifier = Modifier,
 ) {
     val typeColors = filesPalette.of(type)
@@ -195,21 +191,11 @@ internal fun FileTypeTile(
             .background(typeColors.tile),
         contentAlignment = Alignment.Center,
     ) {
-        if (type == FileTypeUiModel.Folder) {
-            FloconIcon(
-                imageVector = Icons.Filled.Folder,
-                tint = typeColors.ink,
-                modifier = Modifier.size(TileIconSize),
-            )
-        } else {
-            // the tile is not scaled: neither is its label
-            Text(
-                text = extensionLabel,
-                style = FloconTheme.typography.monoSmall.copy(fontSize = TileLabelSize, fontWeight = FontWeight.Medium),
-                color = typeColors.ink,
-                maxLines = 1,
-            )
-        }
+        FloconIcon(
+            imageVector = type.icon(),
+            tint = typeColors.ink,
+            modifier = Modifier.size(TileIconSize),
+        )
     }
 }
 
