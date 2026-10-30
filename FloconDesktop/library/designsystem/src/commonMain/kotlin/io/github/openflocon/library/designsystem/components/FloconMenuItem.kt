@@ -37,7 +37,8 @@ fun FloconMenuItem(
     modifier: Modifier = Modifier,
     secondaryAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
-    trailingIcon: ImageVector? = null
+    trailingIcon: ImageVector? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
 
@@ -52,8 +53,10 @@ fun FloconMenuItem(
             )
             .padding(horizontal = FloconTheme.spacing.small)
     ) {
-        leadingIcon?.let { FloconMenuIcon(leadingIcon) } ?: run {
-            Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
+        when {
+            leadingContent != null -> leadingContent()
+            leadingIcon != null -> FloconMenuIcon(leadingIcon)
+            else -> Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
         }
         MenuItemText(text)
         secondaryAction?.invoke()

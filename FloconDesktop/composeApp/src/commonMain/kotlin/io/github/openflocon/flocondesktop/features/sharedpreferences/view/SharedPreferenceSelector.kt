@@ -60,7 +60,7 @@ internal fun SharedPreferenceSelector(
 
                 is SharedPrefsStateUiModel.WithContent -> FloconPageSelector(
                     value = state.selected.name,
-                    icon = state.selected.typeIcon,
+                    leadingContent = { PreferenceTypeIcon(state.selected.typeKind) },
                     caption = state.selected.type,
                     onClick = onClick,
                 )
@@ -90,7 +90,7 @@ internal fun SharedPreferenceSelector(
                 filteredItems.fastForEach { preference ->
                     FloconDropdownMenuItem(
                         text = preference.name,
-                        leadingIcon = preference.typeIcon,
+                        leadingContent = { PreferenceTypeIcon(preference.typeKind) },
                         onClick = {
                             onSharedPrefSelected(preference)
                             expanded = false

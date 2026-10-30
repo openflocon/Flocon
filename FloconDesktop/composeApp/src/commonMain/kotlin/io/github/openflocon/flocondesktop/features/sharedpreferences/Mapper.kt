@@ -1,17 +1,9 @@
 package io.github.openflocon.flocondesktop.features.sharedpreferences
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.Coffee
-import androidx.compose.material.icons.outlined.Key
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.PhoneIphone
-import androidx.compose.material.icons.outlined.Storage
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceTypeUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 
 internal fun SharedPreferenceRowDomainModel.Value.toUi(): SharedPreferencesRowUiModel.Value = when (this) {
@@ -44,16 +36,16 @@ internal fun DeviceSharedPreferenceDomainModel.toUi(): DeviceSharedPrefUiModel =
     id = id,
     name = name,
     type = type,
-    typeIcon = preferenceTypeIcon(type),
+    typeKind = preferenceTypeKind(type),
 )
 
 // the type is a free value sent by the app: known storages get their own icon, the others a generic one
-private fun preferenceTypeIcon(type: String?): ImageVector = when (type?.lowercase()) {
-    "sharedpreferences" -> Icons.Outlined.Android
-    "datastore" -> Icons.Outlined.Storage
-    "userdefaults" -> Icons.Outlined.PhoneIphone
-    "keychain" -> Icons.Outlined.Key
-    "java preferences" -> Icons.Outlined.Coffee
-    "localstorage" -> Icons.Outlined.Language
-    else -> Icons.Outlined.Tune
+private fun preferenceTypeKind(type: String?): PreferenceTypeUiModel = when (type?.lowercase()) {
+    "sharedpreferences" -> PreferenceTypeUiModel.SharedPreferences
+    "datastore" -> PreferenceTypeUiModel.DataStore
+    "userdefaults" -> PreferenceTypeUiModel.UserDefaults
+    "keychain" -> PreferenceTypeUiModel.Keychain
+    "java preferences" -> PreferenceTypeUiModel.JavaPreferences
+    "localstorage" -> PreferenceTypeUiModel.LocalStorage
+    else -> PreferenceTypeUiModel.Custom
 }
