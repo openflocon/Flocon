@@ -163,7 +163,10 @@ class FilesViewModel(
                         ),
                         snapshotFlow { _filterText.value },
                         observeWithFoldersSizeUseCase(),
-                    ).map { (files, filter, withFoldersSize) ->
+                    ).map { (rawFiles, filter, withFoldersSize) ->
+                        // the local table can hold the same path twice (overlapping refreshes): one entry per path,
+                        // the lists are keyed by it
+                        val files = rawFiles?.distinctBy { it.path }
                         val filtered = if (filter.isNotBlank()) {
                             files?.filter { it.name.contains(filter, ignoreCase = true) }
                         } else {
