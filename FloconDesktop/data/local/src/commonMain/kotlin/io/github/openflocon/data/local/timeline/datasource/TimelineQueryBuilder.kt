@@ -218,7 +218,7 @@ private fun buildUnion(
                 branch(
                     // a page event without message is told by its url, then by its type
                     select = "'$KIND_WEBVIEW' AS kind, eventId AS id, timestamp AS ts, " +
-                        "COALESCE(message, url, label) AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
+                        "COALESCE(message, url, label) AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS",
                     from = "WebViewEventEntity",
                     appInstanceColumn = null, // the events do not store the session
                     // the text displayed in the row, and the WebView
