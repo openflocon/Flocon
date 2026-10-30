@@ -30,7 +30,6 @@ internal fun ImageViewerFilmstrip(
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
-    val lineColor = FloconTheme.colors.line
 
     LaunchedEffect(currentIndex) {
         listState.animateScrollToItem(currentIndex)
@@ -41,7 +40,6 @@ internal fun ImageViewerFilmstrip(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier
             .background(FloconTheme.colors.floating)
-            .drawTopLine(lineColor)
             .padding(horizontal = FloconTheme.spacing.large, vertical = FloconTheme.spacing.medium),
     ) {
         LazyRow(

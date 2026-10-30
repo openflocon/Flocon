@@ -35,6 +35,7 @@ import io.github.openflocon.flocondesktop.features.images.model.ImageViewerUiMod
 import io.github.openflocon.flocondesktop.features.images.model.previewImageViewerUiModel
 import io.github.openflocon.flocondesktop.features.images.view.rememberImageDimensions
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -84,6 +85,7 @@ internal fun ImageViewerContent(
             onClose = onClose,
             modifier = Modifier.fillMaxWidth(),
         )
+        FloconHorizontalDivider()
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -116,6 +118,7 @@ internal fun ImageViewerContent(
                 )
             }
         }
+        FloconHorizontalDivider()
         ImageViewerFilmstrip(
             images = model.images,
             currentIndex = model.currentIndex,

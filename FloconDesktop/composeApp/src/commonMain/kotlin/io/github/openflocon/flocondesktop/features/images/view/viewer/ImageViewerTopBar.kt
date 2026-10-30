@@ -41,7 +41,6 @@ internal fun ImageViewerTopBar(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lineColor = FloconTheme.colors.line
     // the viewer covers the whole window: keep the bar below the window buttons
     val titleBarInset = LocalWindowTitleBar.current.topInset
 
@@ -50,7 +49,6 @@ internal fun ImageViewerTopBar(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier
             .background(FloconTheme.colors.floating)
-            .drawBottomLine(lineColor)
             .padding(
                 start = FloconTheme.spacing.large,
                 top = FloconTheme.spacing.medium + titleBarInset,
