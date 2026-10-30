@@ -2,6 +2,7 @@ package com.flocon.sample.ios
 
 import androidx.room3.Room
 import androidx.sqlite.driver.NativeSQLiteDriver
+import io.github.openflocon.flocon.database.room3.floconLogs
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
@@ -20,7 +21,7 @@ object Databases {
         return dogDatabase ?: run {
             val instance = Room.databaseBuilder<DogDatabase>(name = dbFile)
                 .fallbackToDestructiveMigration(dropAllTables = true)
-                .setDriver(NativeSQLiteDriver())
+                .setDriver(NativeSQLiteDriver().floconLogs(id = "dogs_ios"))
                 .build()
             dogDatabase = instance
             Flocon.databasePlugin.register(id = "dogs_ios", displayName = "Dog Database", database = instance)
@@ -34,7 +35,7 @@ object Databases {
         val dbFile = "${documentDirectory()}/food_database.db"
         return foodDatabase ?: run {
             val instance = Room.databaseBuilder<FoodDatabase>(name = dbFile)
-                .setDriver(NativeSQLiteDriver())
+                .setDriver(NativeSQLiteDriver().floconLogs(id = "food_ios"))
                 .build()
             foodDatabase = instance
             Flocon.databasePlugin.register(id = "food_ios", displayName = "Food Database", database = instance)

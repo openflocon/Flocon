@@ -140,7 +140,19 @@ Flocon can display all SQL queries executed by your app in real-time — great f
     The `id` given to `floconLogs` must be the one the database is registered with, otherwise the desktop app
     cannot show the queries with the database.
 
-    Room 3 has no query callback: use the manual logging.
+=== "Room 3"
+
+    Room 3 has no query callback: wrap its SQLite driver instead.
+
+    ```kotlin
+    Room.databaseBuilder<DogDatabase>(context, "dogs_database")
+        .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs")) // io.github.openflocon.flocon.database.room3.floconLogs
+        .build()
+        .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
+    ```
+
+    Wraps any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
+    is logged when it runs, with its arguments. Same rule as Room 2: the `id` is the one the database is registered with.
 
 === "Manual Query Logging"
 
