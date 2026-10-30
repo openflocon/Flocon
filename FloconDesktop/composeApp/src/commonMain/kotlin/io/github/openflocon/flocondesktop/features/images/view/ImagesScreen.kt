@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -51,6 +50,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -130,8 +130,7 @@ private fun ImagesScreen(
                     doc = FeatureDoc.Images,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100)
+                        .floconPanel()
                 )
             }
 
@@ -149,8 +148,7 @@ private fun ImagesScreen(
                         contentPadding = PaddingValues(all = gridPadding),
                         modifier = Modifier
                             .matchParentSize()
-                            .clip(FloconTheme.shapes.medium)
-                            .background(FloconTheme.colors.bg100)
+                            .floconPanel()
                     ) {
                         items(state.images) {
                             ImageItem(

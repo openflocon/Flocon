@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +17,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
@@ -37,6 +34,7 @@ import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashRepor
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,8 +87,7 @@ private fun CrashReportScreen(
                 doc = FeatureDoc.CrashReporter,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
+                    .floconPanel()
             )
         } else {
             Row(Modifier.fillMaxSize()) {
@@ -108,12 +105,7 @@ private fun CrashReportScreen(
                     color = FloconTheme.colors.bg100,
                     contentColor = FloconTheme.colors.ink,
                     modifier = Modifier.fillMaxSize()
-                        .clip(FloconTheme.shapes.medium)
-                        .border(
-                            width = 1.dp,
-                            color = FloconTheme.colors.bg200,
-                            shape = FloconTheme.shapes.medium
-                        )
+                        .floconPanel()
                 ) {
                     selected?.let {
                         CrashReportDetail(
@@ -145,12 +137,7 @@ fun LeftPannel(
         color = FloconTheme.colors.bg100,
         contentColor = FloconTheme.colors.ink,
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = FloconTheme.colors.bg200,
-                shape = FloconTheme.shapes.medium
-            )
+            .floconPanel()
     ) {
         Column(
             Modifier.fillMaxSize()
