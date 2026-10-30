@@ -35,12 +35,6 @@ class AccessibilityFocusTest {
     }
 
     @Test
-    fun `activate stays on the focused element, or nothing`() {
-        assertEquals(1, targetFocusIndex(AccessibilityFocusRequest.Activate, currentIndex = 1, count = 3))
-        assertNull(targetFocusIndex(AccessibilityFocusRequest.Activate, currentIndex = -1, count = 3))
-    }
-
-    @Test
     fun `an empty screen has nothing to focus`() {
         AccessibilityFocusRequest.entries.forEach {
             assertNull(targetFocusIndex(it, currentIndex = -1, count = 0))

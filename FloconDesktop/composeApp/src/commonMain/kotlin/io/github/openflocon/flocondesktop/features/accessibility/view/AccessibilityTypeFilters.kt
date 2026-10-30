@@ -47,7 +47,7 @@ internal fun AccessibilityTypeFilters(
         )
         types.forEach { type ->
             TypeFilter(
-                label = type,
+                label = accessibilityTypeLabel(type),
                 selected = type == selectedType,
                 onClick = { onTypeSelected(type) },
             )

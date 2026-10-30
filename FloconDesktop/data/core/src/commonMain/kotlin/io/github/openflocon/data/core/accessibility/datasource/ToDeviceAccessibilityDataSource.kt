@@ -9,5 +9,5 @@ interface ToDeviceAccessibilityDataSource {
 
     suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
-    suspend fun activate(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
+    suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean)
 }

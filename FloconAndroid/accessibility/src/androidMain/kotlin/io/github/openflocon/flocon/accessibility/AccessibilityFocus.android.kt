@@ -17,8 +17,18 @@ import kotlin.coroutines.suspendCoroutine
 internal class FocusTarget(
     val item: AccessibilityFocusedNodeItem,
     val focus: () -> Boolean,
-    val activate: () -> Boolean,
+    /** Whether the screen reader has its focus on this element right now. */
+    val hasAccessibilityFocus: () -> Boolean,
 )
+
+/**
+ * The element of the screen of [root] that has the accessibility focus, described like the remote does.
+ * Null when none has it.
+ */
+internal fun findAccessibilityFocusedItem(root: View, screen: String): AccessibilityFocusedNodeItem? {
+    val targets = buildList { root.collectFocusTargets(screen, this) }
+    return targets.firstOrNull { it.hasAccessibilityFocus() }?.item
+}
 
 private var resumedActivity: WeakReference<Activity>? = null
 
@@ -59,7 +69,6 @@ private fun focusOnMainThread(
     val target = targets[index]
     when (request) {
         AccessibilityFocusRequest.Current -> Unit
-        AccessibilityFocusRequest.Activate -> target.activate()
         AccessibilityFocusRequest.Next, AccessibilityFocusRequest.Previous -> target.focus()
     }
     return target.item.withPosition(index, targets.size)
@@ -81,7 +90,7 @@ private fun View.collectFocusTargets(screen: String, out: MutableList<FocusTarge
         out += FocusTarget(
             item = toFocusedNodeItem(screen),
             focus = { performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null) },
-            activate = { performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null) },
+            hasAccessibilityFocus = { createAccessibilityNodeInfo().isAccessibilityFocused },
         )
     }
     if (this is ViewGroup) {
@@ -99,15 +108,18 @@ private fun View.isFocusTarget(): Boolean {
 private fun View.toFocusedNodeItem(screen: String): AccessibilityFocusedNodeItem {
     val onScreen = IntArray(2)
     getLocationOnScreen(onScreen)
+    val text = (this as? TextView)?.text?.toString()?.takeIf { it.isNotBlank() }
+    val contentDescription = contentDescription?.toString()?.takeIf { it.isNotBlank() }
     return AccessibilityFocusedNodeItem(
         found = true,
-        text = (this as? TextView)?.text?.toString()?.takeIf { it.isNotBlank() },
-        contentDescription = contentDescription?.toString()?.takeIf { it.isNotBlank() },
+        text = text,
+        contentDescription = contentDescription,
         className = javaClass.name,
         screen = screen,
         bounds = "[${onScreen[0]},${onScreen[1]}][${onScreen[0] + width},${onScreen[1] + height}]",
         extras = buildMap {
             put("source", "view")
+            putAll(toNodeDetails(label = text ?: contentDescription).toExtras())
             if (id != View.NO_ID) {
                 try {
                     put("viewId", resources.getResourceEntryName(id))

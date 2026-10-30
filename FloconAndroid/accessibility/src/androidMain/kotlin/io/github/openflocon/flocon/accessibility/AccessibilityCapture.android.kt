@@ -26,6 +26,7 @@ internal actual fun startAccessibilityCapture(
     onState: (AccessibilityStateItem) -> Unit,
 ) {
     val application = context.context.applicationContext as? Application ?: return
+    onApplicationForTalkBackSwitch(application)
 
     val accessibilityManager = application.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
     if (accessibilityManager != null) {
@@ -78,6 +79,7 @@ private fun AccessibilityManager.toState() = AccessibilityStateItem(
     touchExploration = isTouchExplorationEnabled,
     services = getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
         .map { it.id },
+    canToggleTalkBack = canToggleTalkBack(),
 )
 
 /** The getter is public from API 29, before that it is only reachable by reflection. */
@@ -104,6 +106,9 @@ private class FloconAccessibilityDelegate(
     private val screen: String,
     private val onEvent: (AccessibilityEvent) -> Unit,
 ) : View.AccessibilityDelegate() {
+
+    /** The last element that got the accessibility focus, to describe the "focus cleared" events. */
+    private var lastFocused: AccessibilityEvent? = null
 
     override fun sendAccessibilityEvent(host: View, eventType: Int) {
         previous?.sendAccessibilityEvent(host, eventType) ?: super.sendAccessibilityEvent(host, eventType)
@@ -151,7 +156,20 @@ private class FloconAccessibilityDelegate(
         event: AndroidAccessibilityEvent,
     ): Boolean {
         try {
-            onEvent(event.toFloconEvent(screen))
+            val converted = event.toFloconEvent(screen)
+            onEvent(
+                when (event.eventType) {
+                    // the focus is already on the element when the event is sent, but the event cannot name it yet
+                    AndroidAccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ->
+                        converted.describedByFocusedElement(host.rootView, screen).also { lastFocused = it }
+
+                    // the element has already lost the focus: it is the last one that had it
+                    AndroidAccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED ->
+                        converted.describingLostFocus(lastFocused)
+
+                    else -> converted
+                },
+            )
         } catch (t: Throwable) {
             FloconLogger.logError("error on mapping accessibility event", t)
         }
@@ -165,31 +183,77 @@ private class FloconAccessibilityDelegate(
 }
 
 private fun AndroidAccessibilityEvent.toFloconEvent(screen: String): AccessibilityEvent {
+    // many events (the accessibility focus ones, Compose) carry no text: the label is on the element they come from
+    val source = readSource(
+        eventText = text?.takeIf { it.isNotEmpty() }?.joinToString(" ")?.takeIf { it.isNotBlank() },
+        eventContentDescription = contentDescription?.toString()?.takeIf { it.isNotBlank() },
+    )
     return AccessibilityEvent(
         type = AndroidAccessibilityEvent.eventTypeToString(eventType).removePrefix("TYPE_"),
-        text = text?.takeIf { it.isNotEmpty() }?.joinToString(" "),
-        contentDescription = contentDescription?.toString(),
+        text = source?.text ?: text?.takeIf { it.isNotEmpty() }?.joinToString(" "),
+        contentDescription = source?.contentDescription ?: contentDescription?.toString(),
         className = className?.toString(),
         screen = screen,
-        bounds = boundsOfSource(),
+        bounds = source?.bounds,
         extras = buildMap {
             packageName?.let { put("packageName", it.toString()) }
+            source?.let { putAll(it.extras) }
         },
     )
 }
 
+/**
+ * The accessibility events of an element carry no text (and Compose ones no source): the label, the bounds and the
+ * details are the ones of the element that has the accessibility focus, as the remote shows them.
+ */
+private fun AccessibilityEvent.describedByFocusedElement(root: View, screen: String): AccessibilityEvent {
+    val item = try {
+        findAccessibilityFocusedItem(root, screen)
+    } catch (t: Throwable) {
+        FloconLogger.logError("error on describing the focused element", t)
+        null
+    } ?: return this
+
+    return copy(
+        text = text ?: item.text,
+        contentDescription = contentDescription ?: item.contentDescription,
+        className = item.className ?: className,
+        bounds = item.bounds ?: bounds,
+        extras = extras + item.extras,
+    )
+}
+
+/** What is known of the element an event comes from. */
+private class EventSource(
+    val text: String?,
+    val contentDescription: String?,
+    val bounds: String,
+    val extras: Map<String, String>,
+)
+
+/**
+ * The element the event comes from: the text and content description of the event, else the ones of the element,
+ * its bounds and what a screen reader knows about it. Null for the events without a source (announcements...).
+ */
 @Suppress("DEPRECATION")
-private fun AndroidAccessibilityEvent.boundsOfSource(): String? {
+private fun AndroidAccessibilityEvent.readSource(eventText: String?, eventContentDescription: String?): EventSource? {
     return try {
         val node = source ?: return null
-        val rect = Rect()
         try {
+            val text = eventText ?: node.text?.toString()?.takeIf { it.isNotBlank() }
+            val contentDescription = eventContentDescription ?: node.contentDescription?.toString()?.takeIf { it.isNotBlank() }
+            val rect = Rect()
             node.getBoundsInScreen(rect)
+            EventSource(
+                text = text,
+                contentDescription = contentDescription,
+                bounds = "[${rect.left},${rect.top}][${rect.right},${rect.bottom}]",
+                extras = node.toNodeDetails(label = text ?: contentDescription).toExtras(),
+            )
         } finally {
             // the node is a copy owned by the caller, recycling is a no-op since API 33
             node.recycle()
         }
-        "[${rect.left},${rect.top}][${rect.right},${rect.bottom}]"
     } catch (t: Throwable) {
         null
     }

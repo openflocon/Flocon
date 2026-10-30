@@ -54,7 +54,7 @@ fun AccessibilityRowView(
             color = FloconTheme.colors.ink.copy(alpha = 0.4f),
         )
         Text(
-            text = model.type,
+            text = accessibilityTypeLabel(model.type),
             modifier = Modifier
                 .width(TypeWidth)
                 .padding(end = 12.dp),
