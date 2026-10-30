@@ -107,5 +107,6 @@ The desktop shows a wifi icon next to a device connected with `wifi`.
 | Network              | `network`           | [network.md](network.md)                       |
 | Shared Preferences   | `shared_preferences` | [shared-preferences.md](shared-preferences.md) |
 | Tables               | `table`              | [tables.md](tables.md)                         |
+| WebView              | `webview`            | [webview.md](webview.md)                       |
 
 > Plugin and method names are `snake_case` (lowercase words separated by `_`), e.g. `add_items`.

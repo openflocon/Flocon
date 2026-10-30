@@ -138,6 +138,7 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
     ),
     previewTimelineRowUiModel(source = TimelineSource.Analytics, id = "a1", title = "screen_view", subtitle = "Firebase"),
     previewTimelineRowUiModel(source = TimelineSource.Accessibility, id = "ac1", title = "Pay now", subtitle = "Button"),
+    previewTimelineRowUiModel(source = TimelineSource.WebView, id = "w1", title = "Uncaught TypeError: x is undefined", subtitle = "error"),
     previewTimelineRowUiModel(
         source = TimelineSource.Crash,
         id = "c1",

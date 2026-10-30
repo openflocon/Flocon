@@ -1,18 +1,24 @@
 package io.github.openflocon.flocondesktop.features.files.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 @Immutable
 data class FilesStateUiModel(
-    val backStack: List<FileUiModel>,
+    val backStack: ImmutableList<FileUiModel>,
     val current: FileUiModel?,
-    val files: List<FileUiModel>,
+    val files: ImmutableList<FileUiModel>,
     val headerState: FilesHeaderStateUiModel,
+    val footer: FilesFooterUiModel,
     val options: Options,
+    val viewMode: FilesViewModeUiModel,
     val canSelect: Boolean,
     val isSelecting: Boolean,
     val selectingAll: Boolean,
-    val multiSelectedPaths: Set<String>,
+    val multiSelectedPaths: ImmutableSet<String>,
     // on the root, when the app announced no folder
     val showEmptyState: Boolean = false,
 ) {
@@ -22,25 +28,36 @@ data class FilesStateUiModel(
     )
 }
 
-fun previewFilesStateUiModel() = FilesStateUiModel(
-    current = previewFileUiModel(
-        name = "Caches",
-    ),
-    backStack = emptyList(),
-    files = listOf(
-        previewFileUiModel(
-            name = "Caches",
-        ),
-        previewFileUiModel(
-            name = "Files",
-        ),
-    ),
+/** Bottom bar of the list: counts, total size and the path of the folder on the device. */
+@Immutable
+data class FilesFooterUiModel(
+    val itemCount: Int,
+    val folderCount: Int,
+    // absolute path of the current folder on the device, null on the root screen or when unknown
+    val path: String?,
+    // the same path without the folder of the app on the device ("…/files/datastore"), shown in the bar
+    val displayPath: String?,
+)
+
+fun previewFilesStateUiModel(
+    viewMode: FilesViewModeUiModel = FilesViewModeUiModel.List,
+) = FilesStateUiModel(
+    current = previewFileUiModel(name = "datastore"),
+    backStack = persistentListOf(previewFileUiModel(name = "Files")),
+    files = previewFileUiModels(),
     headerState = previewFilesHeaderStateUiModel(),
+    footer = FilesFooterUiModel(
+        itemCount = 7,
+        folderCount = 2,
+        path = "/data/user/0/io.openflocon.sample/files/datastore",
+        displayPath = "…/files/datastore",
+    ),
     options = FilesStateUiModel.Options(
         withFoldersSize = false,
     ),
+    viewMode = viewMode,
     isSelecting = false,
-    multiSelectedPaths = emptySet(),
+    multiSelectedPaths = persistentSetOf(),
     selectingAll = false,
-    canSelect = false,
+    canSelect = true,
 )

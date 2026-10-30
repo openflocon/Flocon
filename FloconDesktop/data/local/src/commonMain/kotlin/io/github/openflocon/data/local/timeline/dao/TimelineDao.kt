@@ -16,6 +16,7 @@ import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.data.local.webview.models.WebViewEventEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -25,6 +26,7 @@ interface TimelineDao {
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
             AccessibilityEventEntity::class,
+            WebViewEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,
@@ -42,6 +44,7 @@ interface TimelineDao {
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
             AccessibilityEventEntity::class,
+            WebViewEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,
@@ -59,6 +62,7 @@ interface TimelineDao {
             FloconNetworkCallEntity::class,
             AnalyticsItemEntity::class,
             AccessibilityEventEntity::class,
+            WebViewEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
             TableEntity::class,

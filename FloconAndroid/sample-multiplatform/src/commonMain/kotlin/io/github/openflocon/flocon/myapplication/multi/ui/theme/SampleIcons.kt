@@ -26,7 +26,13 @@ object SampleIcons {
         "M5 9l7 1.5L19 9",
         "M12 10.5V15l-3 5M12 15l3 5",
     )
-    val FeatureFlags = icon("flags", "M5 21V4M5 4h11l-2 4 2 4H5")
+    val WebView = icon(
+        "webview",
+        "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
+        "M3 12h18",
+        "M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z",
+    )
+    val FeatureFlags = icon("flags","M5 21V4M5 4h11l-2 4 2 4H5")
     val Preferences = icon(
         "preferences",
         "M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z",

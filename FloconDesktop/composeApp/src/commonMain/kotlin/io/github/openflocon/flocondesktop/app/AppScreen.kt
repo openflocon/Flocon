@@ -32,6 +32,7 @@ import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
+import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
@@ -135,6 +136,7 @@ private fun Content(
             releaseNotesRoutes()
             crashReporterRoutes()
             timelineRoutes()
+            webViewRoutes()
             accessibilityRoutes()
         }
     }

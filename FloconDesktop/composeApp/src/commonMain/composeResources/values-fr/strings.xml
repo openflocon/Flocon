@@ -45,6 +45,7 @@
     <string name="timeline_source_network">Réseau</string>
     <string name="timeline_source_analytics">Analytics</string>
     <string name="timeline_source_accessibility">Accessibilité</string>
+    <string name="timeline_source_webview">WebView</string>
     <string name="timeline_source_crash">Crash</string>
     <string name="timeline_source_database">Base de données</string>
     <string name="timeline_source_table">Table</string>
@@ -374,4 +375,34 @@
     <string name="preference_status_modified">● Modifié</string>
     <string name="preference_status_modified_valid">● Modifié · JSON valide</string>
     <string name="preference_status_invalid">● JSON invalide</string>
+    <string name="files_column_modified">Modifié</string>
+    <string name="files_actions">Actions</string>
+    <string name="files_size_unknown">—</string>
+    <string name="files_size_share">%1$s du dossier</string>
+    <string name="files_sort_by">Trier par</string>
+    <string name="files_sort_default">Par défaut</string>
+    <plurals name="files_footer_items">
+        <item quantity="one">%1$d élément</item>
+        <item quantity="other">%1$d éléments</item>
+    </plurals>
+    <plurals name="files_footer_folders">
+        <item quantity="one">%1$d dossier</item>
+        <item quantity="other">%1$d dossiers</item>
+    </plurals>
+    <string name="files_footer_counts">%1$s · %2$s</string>
+    <string name="files_footer_total">Total</string>
+    <string name="files_footer_copy_path">Copier %1$s</string>
+    <string name="files_back">Retour</string>
+    <string name="files_breadcrumb_root">App</string>
+    <string name="files_breadcrumb_separator">/</string>
+    <string name="files_delete_selection">Supprimer la sélection</string>
+    <string name="files_exit_selection">Quitter la sélection</string>
+    <string name="files_folder_sizes">Taille des dossiers</string>
+    <string name="files_folder_sizes_tooltip">Calculer la taille des dossiers (peut être coûteux sur l\'appareil)</string>
+    <string name="files_more_actions">Plus d\'actions</string>
+    <string name="files_refresh">Rafraîchir</string>
+    <string name="files_select_multiple">Sélectionner plusieurs fichiers</string>
+    <string name="files_selected_count">%1$d sélectionné(s)</string>
+    <string name="files_view_list">Vue liste</string>
+    <string name="files_view_grid">Vue grille</string>
 </resources>

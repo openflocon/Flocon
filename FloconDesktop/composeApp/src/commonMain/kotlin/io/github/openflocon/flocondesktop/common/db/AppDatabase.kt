@@ -57,13 +57,15 @@ import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.data.local.timeline.dao.TimelineDao
+import io.github.openflocon.data.local.webview.dao.WebViewEventDao
+import io.github.openflocon.data.local.webview.models.WebViewEventEntity
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 88,
+    version = 89,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -95,6 +97,7 @@ import kotlinx.coroutines.Dispatchers
         AdbCommandHistoryEntity::class,
         AdbFlowEntity::class,
         AdbFlowStepEntity::class,
+        WebViewEventEntity::class,
     ]
 )
 @TypeConverters(
@@ -126,6 +129,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val databaseQueryLogDao: DatabaseQueryLogDao
     abstract val adbCommanderDao: AdbCommanderDao
     abstract val timelineDao: TimelineDao
+    abstract val webViewEventDao: WebViewEventDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()

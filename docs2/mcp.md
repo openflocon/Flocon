@@ -308,6 +308,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_images` | Images loaded by the app (url, load time), newest first. Filters: text, start timestamp. Optionally the headers. |
 | `list_crash_reports` | Crashes reported by the app (exception type and message), newest first. Filters: text, start timestamp. |
 | `get_crash_report` | Full details of a crash, including its stack trace. |
+| `list_webview_events` | What happened in the WebViews of the app, newest first: JS console messages, page events (loads, navigation, errors) and bridge calls. Filters: kind (`console`, `page`, `bridge`), text, start timestamp. |
 | `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
 | `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
 | `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |

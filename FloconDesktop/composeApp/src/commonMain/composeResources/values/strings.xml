@@ -43,10 +43,17 @@
     <string name="menu_item_accessibility">Accessibility</string>
     <string name="menu_item_crashReporter">Crashes</string>
     <string name="menu_item_timeline">Timeline</string>
+    <string name="menu_item_webview">WebViews</string>
+    <string name="webview_filter_all">All</string>
+    <string name="webview_filter_console">Console</string>
+    <string name="webview_filter_pages">Pages</string>
+    <string name="webview_filter_bridge">Bridge</string>
+    <string name="webview_empty">No WebView event yet. Attach a WebView with Flocon.webViewPlugin.attach(webView, "id").</string>
     <string name="timeline_empty">No event yet</string>
     <string name="timeline_source_network">Network</string>
     <string name="timeline_source_analytics">Analytics</string>
     <string name="timeline_source_accessibility">Accessibility</string>
+    <string name="timeline_source_webview">WebView</string>
     <string name="timeline_source_crash">Crash</string>
     <string name="timeline_source_database">Database</string>
     <string name="timeline_source_table">Table</string>
@@ -464,4 +471,34 @@
     <string name="preference_status_modified">● Modified</string>
     <string name="preference_status_modified_valid">● Modified · valid JSON</string>
     <string name="preference_status_invalid">● Invalid JSON</string>
+    <string name="files_column_modified">Modified</string>
+    <string name="files_actions">Actions</string>
+    <string name="files_size_unknown">—</string>
+    <string name="files_size_share">%1$s of the folder</string>
+    <string name="files_sort_by">Sort by</string>
+    <string name="files_sort_default">Default</string>
+    <plurals name="files_footer_items">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <plurals name="files_footer_folders">
+        <item quantity="one">%1$d folder</item>
+        <item quantity="other">%1$d folders</item>
+    </plurals>
+    <string name="files_footer_counts">%1$s · %2$s</string>
+    <string name="files_footer_total">Total</string>
+    <string name="files_footer_copy_path">Copy %1$s</string>
+    <string name="files_back">Back</string>
+    <string name="files_breadcrumb_root">App</string>
+    <string name="files_breadcrumb_separator">/</string>
+    <string name="files_delete_selection">Delete the selection</string>
+    <string name="files_exit_selection">Exit the selection</string>
+    <string name="files_folder_sizes">Folder sizes</string>
+    <string name="files_folder_sizes_tooltip">Compute the size of the folders (can be costly on the device)</string>
+    <string name="files_more_actions">More actions</string>
+    <string name="files_refresh">Refresh</string>
+    <string name="files_select_multiple">Select multiple files</string>
+    <string name="files_selected_count">%1$d selected</string>
+    <string name="files_view_list">List view</string>
+    <string name="files_view_grid">Grid view</string>
 </resources>

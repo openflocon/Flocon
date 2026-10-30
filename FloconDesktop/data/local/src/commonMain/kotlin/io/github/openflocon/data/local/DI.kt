@@ -18,6 +18,7 @@ import io.github.openflocon.data.local.network.networkModule
 import io.github.openflocon.data.local.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.local.table.tableModule
 import io.github.openflocon.data.local.timeline.timelineLocalModule
+import io.github.openflocon.data.local.webview.webViewLocalModule
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -65,5 +66,6 @@ val dataLocalModule = module {
         tableModule,
         crashReporterLocalModule,
         timelineLocalModule,
+        webViewLocalModule,
     )
 }

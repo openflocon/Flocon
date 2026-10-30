@@ -52,6 +52,12 @@ enum class SampleFeature(
 
     Accessibility(SampleScreen.Accessibility, "Announce", "Announces \"Item added to the cart\" to the screen reader", buttonLabel = "Announce"),
 
+    WebViewConsole(SampleScreen.WebView, "Console messages", "console.log, info, warn and error from the page", buttonLabel = "Log", platforms = SamplePlatform.AndroidOnly),
+    WebViewJsError(SampleScreen.WebView, "Uncaught JS error", "Throws a TypeError in the page", buttonLabel = "Throw", platforms = SamplePlatform.AndroidOnly),
+    WebViewBridge(SampleScreen.WebView, "Bridge call", "The page calls the native object \"FloconSample\"", buttonLabel = "Call", platforms = SamplePlatform.AndroidOnly),
+    WebViewNotFound(SampleScreen.WebView, "HTTP 404", "Loads a page that does not exist", buttonLabel = "Load", platforms = SamplePlatform.AndroidOnly),
+    WebViewReload(SampleScreen.WebView, "Reload the sample page", "Back to the local page used by the other rows", buttonLabel = "Reload", platforms = SamplePlatform.AndroidOnly),
+
     FeatureFlags(SampleScreen.FeatureFlags, "Register flags", "Firebase and Statsig flags, with variants and payloads", buttonLabel = "Register"),
 
     DataStore(SampleScreen.Preferences, "DataStore", "Update the age stored in a DataStore", buttonLabel = "Update", platforms = SamplePlatform.AndroidOnly),
