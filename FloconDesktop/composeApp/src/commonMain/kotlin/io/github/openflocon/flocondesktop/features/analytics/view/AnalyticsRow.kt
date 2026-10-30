@@ -18,8 +18,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
@@ -71,8 +73,10 @@ fun AnalyticsRow(
                 text = model.dateFormatted,
                 modifier = Modifier.width(110.dp),
                 textAlign = TextAlign.Center,
-                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
-                color = FloconTheme.colors.ink.copy(alpha = 0.4f),
+                style = FloconTheme.typography.listItemMono,
+                fontWeight = FontWeight.Medium,
+                color = FloconTheme.colors.ink,
+                maxLines = 1,
             )
 
             Text(
@@ -80,27 +84,31 @@ fun AnalyticsRow(
                 modifier = Modifier.width(200.dp),
                 style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
                 model.properties.fastForEach {
                     Row(
                         Modifier
-                            .background(
-                                shape = FloconTheme.shapes.extraLarge,
-                                color = FloconTheme.colors.bg200
-                            )
-                            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
+                            .clip(FloconTheme.shapes.small)
+                            .background(FloconTheme.colors.bg200)
+                            .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
                     ) {
                         Text(
                             text = it.name + " :",
-                            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
+                            style = FloconTheme.typography.monoSmall,
                             color = FloconTheme.colors.inkMuted,
+                            maxLines = 1,
                         )
                         Text(
                             text = it.value,
-                            style = FloconTheme.typography.listItem,
-                            color = FloconTheme.colors.inkMuted,
+                            style = FloconTheme.typography.monoSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = FloconTheme.colors.ink,
+                            maxLines = 1,
                         )
                     }
                 }
