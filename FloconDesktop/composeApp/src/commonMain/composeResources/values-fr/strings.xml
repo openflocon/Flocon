@@ -199,7 +199,6 @@
     <string name="badquality_no_error">Aucune erreur pour le moment. Ajoutez une erreur HTTP ou une exception à renvoyer lorsque la probabilité d’erreur se déclenche.</string>
     <string name="badquality_select_exception">Sélectionner l’exception</string>
     <string name="badquality_subtitle">Simule une connexion dégradée : latence et erreurs sur les requêtes correspondantes.</string>
-    <string name="badquality_title">Mauvaise qualité réseau</string>
     <string name="badquality_trigger_probability">Probabilité de déclenchement</string>
     <string name="badquality_weight">Poids</string>
     <string name="database_see_all_queries">Voir toutes les requêtes</string>

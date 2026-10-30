@@ -19,7 +19,6 @@ sealed interface NetworkAction {
 
     data class UpdateDisplayOldSessions(val value: Boolean) : NetworkAction
     data object OpenBadNetworkQuality : NetworkAction
-    data object CloseBadNetworkQuality : NetworkAction
     data object CloseWebsocketMocks : NetworkAction
 
     data object ExportCsv : NetworkAction

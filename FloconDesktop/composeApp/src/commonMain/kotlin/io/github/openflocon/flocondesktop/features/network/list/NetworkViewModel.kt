@@ -96,7 +96,6 @@ class NetworkViewModel(
     private val contentState = MutableStateFlow(
         ContentUiState(
             selectedRequestId = null,
-            badNetworkQualityDisplayed = false,
             websocketMocksDisplayed = false,
             selecting = false,
             multiSelectedIds = emptySet()
@@ -205,8 +204,6 @@ class NetworkViewModel(
             is NetworkAction.OpenMocks -> openMocks(callId = null)
 
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
-
-            is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
 
             is NetworkAction.ItemOption -> onItemOption(action)
 
@@ -394,15 +391,7 @@ class NetworkViewModel(
     }
 
     private fun openBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(badNetworkQualityDisplayed = true)
-        }
-    }
-
-    private fun closeBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(badNetworkQualityDisplayed = false)
-        }
+        navigationState.navigate(NetworkRoutes.BadNetworkQuality)
     }
 
     private fun onClosePanel() {
