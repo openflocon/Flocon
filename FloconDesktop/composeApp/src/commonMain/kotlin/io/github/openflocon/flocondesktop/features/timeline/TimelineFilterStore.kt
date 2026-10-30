@@ -60,8 +60,8 @@ internal class TimelineFilterStore(
     }
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
-    fun setText(text: String) {
-        text.update { text }
+    fun setText(value: String) {
+        text.update { value }
     }
 
     fun toggleFacet(facet: TimelineFacet, value: String) {
