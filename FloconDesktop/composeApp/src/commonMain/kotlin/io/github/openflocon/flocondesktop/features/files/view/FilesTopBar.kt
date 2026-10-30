@@ -3,6 +3,10 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -261,34 +265,48 @@ private fun BreadcrumbSegment(
     }
 }
 
-/** Segmented [list | grid] buttons. */
+/** Segmented [list | grid] buttons, the selected background slides like a switch. */
 @Composable
 private fun ViewModeToggle(
     viewMode: FilesViewModeUiModel,
     onViewModeChange: (FilesViewModeUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    val segmentWidth = FloconTheme.sizes.controlHeight
+    val indicatorOffset by animateDpAsState(
+        targetValue = if (viewMode == FilesViewModeUiModel.Grid) segmentWidth else 0.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
+    )
+    Box(
         modifier = modifier
             .height(FloconTheme.sizes.pageBarControlHeight)
             .clip(RoundedCornerShape(ControlRadius))
             .background(FloconTheme.colors.bg200)
             .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(ControlRadius))
             .padding(SegmentPadding),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        ViewModeSegment(
-            icon = Icons.AutoMirrored.Outlined.List,
-            tooltip = stringResource(Res.string.files_view_list),
-            selected = viewMode == FilesViewModeUiModel.List,
-            onClick = { onViewModeChange(FilesViewModeUiModel.List) },
+        Box(
+            modifier = Modifier
+                .offset(x = indicatorOffset)
+                .fillMaxHeight()
+                .width(segmentWidth)
+                .clip(RoundedCornerShape(SegmentRadius))
+                .background(FloconTheme.colors.bg300),
         )
-        ViewModeSegment(
-            icon = Icons.Outlined.GridView,
-            tooltip = stringResource(Res.string.files_view_grid),
-            selected = viewMode == FilesViewModeUiModel.Grid,
-            onClick = { onViewModeChange(FilesViewModeUiModel.Grid) },
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ViewModeSegment(
+                icon = Icons.AutoMirrored.Outlined.List,
+                tooltip = stringResource(Res.string.files_view_list),
+                selected = viewMode == FilesViewModeUiModel.List,
+                onClick = { onViewModeChange(FilesViewModeUiModel.List) },
+            )
+            ViewModeSegment(
+                icon = Icons.Outlined.GridView,
+                tooltip = stringResource(Res.string.files_view_grid),
+                selected = viewMode == FilesViewModeUiModel.Grid,
+                onClick = { onViewModeChange(FilesViewModeUiModel.Grid) },
+            )
+        }
     }
 }
 
@@ -305,14 +323,14 @@ private fun ViewModeSegment(
                 .fillMaxHeight()
                 .width(FloconTheme.sizes.controlHeight)
                 .clip(RoundedCornerShape(SegmentRadius))
-                .background(if (selected) FloconTheme.colors.bg300 else Color.Transparent)
                 .clickable(onClick = onClick)
                 .pointerHoverIcon(PointerIcon.Hand),
             contentAlignment = Alignment.Center,
         ) {
+            val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
             FloconIcon(
                 imageVector = icon,
-                tint = if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
+                tint = tint,
                 modifier = Modifier.size(ControlIconSize),
             )
         }
