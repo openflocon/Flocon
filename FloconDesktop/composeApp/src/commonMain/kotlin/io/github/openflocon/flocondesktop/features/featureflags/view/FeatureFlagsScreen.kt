@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.featureflags.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
@@ -43,6 +39,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
@@ -124,13 +121,7 @@ fun FeatureFlagsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg200,
-                    shape = FloconTheme.shapes.medium
-                )
+                .floconPanel()
         ) {
             if (providersState is FeatureFlagProvidersUiModel.Empty) {
                 FeatureEmptyState(

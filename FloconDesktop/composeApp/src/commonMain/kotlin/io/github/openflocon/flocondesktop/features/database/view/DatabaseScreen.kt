@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
@@ -31,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabasesState
 import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabasesAndTables
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -87,8 +86,7 @@ fun DatabaseScreen(
                 doc = FeatureDoc.Database,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(FloconTheme.shapes.medium)
-                    .background(FloconTheme.colors.bg100)
+                    .floconPanel()
             )
         } else {
             Row(Modifier.fillMaxSize()) {

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view.logs
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +70,7 @@ import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -127,16 +127,7 @@ fun DatabaseQueryLogs(
 
         Box(
             modifier = Modifier.fillMaxSize().padding(top = FloconTheme.spacing.medium)
-                .clip(FloconTheme.shapes.medium)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg200,
-                    shape = FloconTheme.shapes.medium
-                )
-                .background(
-                    color = FloconTheme.colors.bg100,
-                    shape = FloconTheme.shapes.medium
-                )
+                .floconPanel()
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

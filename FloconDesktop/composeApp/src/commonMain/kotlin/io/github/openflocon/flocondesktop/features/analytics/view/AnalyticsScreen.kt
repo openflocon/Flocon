@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -70,6 +67,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.flowOf
@@ -204,13 +202,7 @@ fun AnalyticsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg200,
-                    shape = FloconTheme.shapes.medium
-                )
+                .floconPanel()
                 .onSizeChanged {
                     widthPx = max(widthPx, it.width.toFloat())
                 }
