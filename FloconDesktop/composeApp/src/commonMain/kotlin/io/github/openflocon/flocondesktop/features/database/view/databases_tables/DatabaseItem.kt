@@ -4,6 +4,7 @@ package io.github.openflocon.flocondesktop.features.database.view.databases_tabl
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -78,6 +79,12 @@ internal fun DatabaseItem(
         if (!state.isSelected) expanded = false
     }
     val isExpanded = state.isSelected && (expanded || isFiltering)
+    // the tables are dropped as soon as another database is selected: keep the last ones so the collapse can be animated
+    var lastTables by remember { mutableStateOf(state.tables) }
+    LaunchedEffect(state.tables) {
+        if (state.tables != null) lastTables = state.tables
+    }
+    val displayedTables = state.tables ?: lastTables
     val groupBackground by animateColorAsState(
         if (isExpanded) {
             FloconTheme.colors.ink.copy(alpha = 0.05f)
@@ -102,15 +109,16 @@ internal fun DatabaseItem(
             onSeeAllQueriesClicked = onSeeAllQueriesClicked,
         )
         AnimatedVisibility(
-            visible = isExpanded && state.tables != null,
+            visible = isExpanded && displayedTables != null,
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut(),
         ) {
-            val tables = state.tables ?: return@AnimatedVisibility
+            val tables = displayedTables ?: return@AnimatedVisibility
             val guideColor = FloconTheme.colors.line
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .animateContentSize()
                     .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall)
                     .drawBehind {
                         drawLine(
