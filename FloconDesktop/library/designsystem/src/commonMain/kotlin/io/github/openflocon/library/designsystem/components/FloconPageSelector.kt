@@ -52,9 +52,10 @@ fun FloconPageSelector(
             .border(width = 1.dp, color = colors.line, shape = shape)
             .clickable(onClick = onClick)
             .padding(
-                // a leading tile carries its own background: keep the same inset around it as above and below
+                // a leading tile carries its own background: keep the same inset around it as above and below,
+                // and balance the end (the chevron glyph already has some inner space)
                 start = if (leadingContent != null) FloconTheme.spacing.extraSmall else FloconTheme.spacing.medium,
-                end = FloconTheme.spacing.medium,
+                end = if (leadingContent != null) FloconTheme.spacing.compact else FloconTheme.spacing.medium,
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
