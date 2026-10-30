@@ -51,8 +51,8 @@ import flocondesktop.composeapp.generated.resources.database_run_query
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconSwitch
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.FloconToggleSwitch
 import io.github.openflocon.library.designsystem.theme.FloconColors
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -216,7 +216,7 @@ fun DatabaseQuery(
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FloconSwitch(checked = autoUpdate, scale = 0.95f)
+                FloconToggleSwitch(checked = autoUpdate, width = 44.dp, height = 24.dp)
                 Text(
                     stringResource(Res.string.auto_update),
                     color = if (autoUpdate) colors.ink else colors.inkMuted,

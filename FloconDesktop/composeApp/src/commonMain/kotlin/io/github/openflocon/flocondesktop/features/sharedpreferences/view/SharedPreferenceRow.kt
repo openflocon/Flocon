@@ -105,6 +105,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previ
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconToggleSwitch
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -388,35 +389,6 @@ private fun ActionButton(
 }
 
 @Composable
-private fun PreferenceSwitch(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    val colors = FloconTheme.colors
-    val thumbOffset by animateDpAsState(if (checked) 18.dp else 2.dp)
-    val trackColor by animateColorAsState(if (checked) colors.accent else colors.bg300)
-    val thumbColor by animateColorAsState(if (checked) colors.accentInk else colors.inkMuted)
-    val shape = RoundedCornerShape(50)
-    Box(
-        modifier = Modifier
-            .size(width = 36.dp, height = 20.dp)
-            .background(trackColor, shape)
-            .border(1.dp, if (checked) colors.accent else colors.lineStrong, shape)
-            .clip(shape)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
-            .pointerHoverIcon(PointerIcon.Hand),
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        Box(
-            Modifier
-                .offset(x = thumbOffset)
-                .size(16.dp)
-                .background(thumbColor, CircleShape),
-        )
-    }
-}
-
-@Composable
 private fun BooleanValue(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
@@ -426,7 +398,7 @@ private fun BooleanValue(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        PreferenceSwitch(
+        FloconToggleSwitch(
             checked = local,
             onCheckedChange = {
                 local = it

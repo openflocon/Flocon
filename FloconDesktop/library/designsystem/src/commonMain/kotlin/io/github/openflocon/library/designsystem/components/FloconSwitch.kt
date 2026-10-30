@@ -13,10 +13,9 @@ import io.github.openflocon.library.designsystem.FloconTheme
 fun FloconSwitch(
     checked: Boolean,
     modifier: Modifier = Modifier,
-    onCheckedChange: ((Boolean) -> Unit)? = null,
-    scale: Float = 0.8f,
+    onCheckedChange: ((Boolean) -> Unit)? = null
 ) {
-    CompositionLocalProvider(LocalDensity provides Density(scale)) {
+    CompositionLocalProvider(LocalDensity provides Density(0.8f)) {
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
