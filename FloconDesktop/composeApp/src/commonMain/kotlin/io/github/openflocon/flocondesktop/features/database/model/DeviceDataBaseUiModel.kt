@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.model
 
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 data class DeviceDataBaseUiModel(
     val id: DeviceDataBaseId,
@@ -45,3 +46,19 @@ fun previewDeviceDataBaseUiModel(id: String = "id") = DeviceDataBaseUiModel(
     isSelected = false,
     tables = null,
 )
+
+fun List<DeviceDataBaseUiModel>.filterByQuery(query: String): List<DeviceDataBaseUiModel> {
+    val trimmed = query.trim()
+    if (trimmed.isEmpty()) return this
+    return mapNotNull { database ->
+        if (database.name.contains(trimmed, ignoreCase = true)) {
+            database
+        } else {
+            val tables = database.tables?.filter { table ->
+                table.name.contains(trimmed, ignoreCase = true) ||
+                    table.columns.any { it.name.contains(trimmed, ignoreCase = true) }
+            }
+            if (tables.isNullOrEmpty()) null else database.copy(tables = tables.toImmutableList())
+        }
+    }
+}

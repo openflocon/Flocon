@@ -9,17 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VpnKey
-import androidx.compose.material.icons.outlined.Notes
-import androidx.compose.material.icons.outlined.Tag
-import androidx.compose.material.icons.outlined.ViewColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,8 +24,13 @@ import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.database_column_not_null_short
 import flocondesktop.composeapp.generated.resources.database_column_primary_key
+import flocondesktop.composeapp.generated.resources.ic_db_key
+import flocondesktop.composeapp.generated.resources.ic_db_number
+import flocondesktop.composeapp.generated.resources.ic_db_text
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -48,12 +48,11 @@ internal fun ColumnItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
+        val icon = model.icon()
         Image(
-            imageVector = model.icon(),
+            painter = painterResource(icon.drawable),
             modifier = Modifier.size(14.dp),
-            colorFilter = ColorFilter.tint(
-                if (model.isPrimaryKey) FloconTheme.colors.accent else FloconTheme.colors.inkMuted,
-            ),
+            colorFilter = ColorFilter.tint(icon.tint),
             contentDescription = if (model.isPrimaryKey) stringResource(Res.string.database_column_primary_key) else null,
         )
         Text(
@@ -68,12 +67,12 @@ internal fun ColumnItem(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .background(FloconTheme.colors.line)
-                    .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
+                    .background(FloconTheme.colors.bg300)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
             ) {
                 Text(
                     stringResource(Res.string.database_column_not_null_short),
-                    style = FloconTheme.typography.bodyMedium.copy(fontSize = 9.sp),
+                    style = FloconTheme.typography.bodyMedium.copy(fontSize = 9.sp, lineHeight = 14.sp),
                     color = FloconTheme.colors.inkMuted,
                 )
             }
@@ -91,15 +90,17 @@ internal fun ColumnItem(
     }
 }
 
-private fun TableUiModel.ColumnUiModel.icon(): ImageVector {
-    if (isPrimaryKey) return Icons.Filled.VpnKey
+private class ColumnIcon(val drawable: DrawableResource, val tint: Color)
+
+@Composable
+private fun TableUiModel.ColumnUiModel.icon(): ColumnIcon {
+    val colors = FloconTheme.colors
+    if (isPrimaryKey) return ColumnIcon(Res.drawable.ic_db_key, colors.accent)
     val sqlType = type.uppercase()
     return when {
-        NUMBER_TYPES.any { sqlType.contains(it) } -> Icons.Outlined.Tag
-        TEXT_TYPES.any { sqlType.contains(it) } -> Icons.Outlined.Notes
-        else -> Icons.Outlined.ViewColumn
+        NUMBER_TYPES.any { sqlType.contains(it) } -> ColumnIcon(Res.drawable.ic_db_number, colors.catNetwork)
+        else -> ColumnIcon(Res.drawable.ic_db_text, colors.catDatabase)
     }
 }
 
 private val NUMBER_TYPES = listOf("INT", "REAL", "FLOA", "DOUB", "NUMERIC", "DECIMAL")
-private val TEXT_TYPES = listOf("CHAR", "TEXT", "CLOB")

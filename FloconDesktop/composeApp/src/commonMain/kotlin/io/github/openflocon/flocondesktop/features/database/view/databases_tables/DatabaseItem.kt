@@ -12,15 +12,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Dataset
-import androidx.compose.material.icons.outlined.Preview
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.database_see_all_queries
+import flocondesktop.composeapp.generated.resources.ic_db_chevron
+import flocondesktop.composeapp.generated.resources.ic_db_database
+import flocondesktop.composeapp.generated.resources.ic_db_eye
 import io.github.openflocon.domain.database.models.DeviceDataBaseId
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
@@ -45,6 +44,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -58,9 +58,10 @@ internal fun DatabaseItem(
     onInsertContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
     onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
     modifier: Modifier = Modifier,
+    isFiltering: Boolean = false,
 ) {
     val groupBackground = if (state.isSelected) {
-        FloconTheme.colors.ink.copy(alpha = 0.05f)
+        FloconTheme.colors.bg200
     } else {
         Color.Transparent
     }
@@ -81,7 +82,7 @@ internal fun DatabaseItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.small)
+                    .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall)
                     .drawBehind {
                         drawLine(
                             color = guideColor,
@@ -96,6 +97,7 @@ internal fun DatabaseItem(
                     TableEntry(
                         item = it,
                         modifier = Modifier.fillMaxWidth(),
+                        isFiltering = isFiltering,
                         onTableDoubleClicked = {
                             onTableDoubleClicked(state.id, it)
                         },
@@ -136,6 +138,7 @@ private fun DatabaseEntry(
     ) {
         Row(
             modifier = modifier
+                .height(FloconTheme.sizes.rowHeight)
                 .clip(RoundedCornerShape(10.dp))
                 .combinedClickable(
                     onClick = {
@@ -144,21 +147,21 @@ private fun DatabaseEntry(
                     onDoubleClick = {
                         onDatabaseDoubleClicked(state)
                     }
-                ).padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                ).padding(horizontal = FloconTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
                 modifier = Modifier.size(14.dp).graphicsLayer {
                     rotationZ = if (state.isSelected) 90f else 0f
                 },
-                imageVector = Icons.Outlined.ChevronRight,
+                painter = painterResource(Res.drawable.ic_db_chevron),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
             )
             Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
             Image(
                 modifier = Modifier.size(16.dp),
-                imageVector = Icons.Outlined.Dataset,
+                painter = painterResource(Res.drawable.ic_db_database),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(iconColor),
             )
@@ -180,7 +183,7 @@ private fun DatabaseEntry(
                 ) {
                     Image(
                         modifier = Modifier.width(16.dp),
-                        imageVector = Icons.Outlined.Preview,
+                        painter = painterResource(Res.drawable.ic_db_eye),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(iconColor),
                     )

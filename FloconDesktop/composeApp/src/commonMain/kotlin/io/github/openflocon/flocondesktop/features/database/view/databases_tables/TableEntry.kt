@@ -2,17 +2,16 @@ package io.github.openflocon.flocondesktop.features.database.view.databases_tabl
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -30,10 +30,13 @@ import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_insert_new_values
+import flocondesktop.composeapp.generated.resources.ic_db_chevron
+import flocondesktop.composeapp.generated.resources.ic_db_table
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -44,8 +47,9 @@ internal fun TableEntry(
     onDeleteContentClicked: (TableUiModel) -> Unit,
     onInsertContentClicked: (TableUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    isFiltering: Boolean = false,
 ) {
-    var isOpened by remember(item.name) { mutableStateOf(false) }
+    var isOpened by remember(item.name, isFiltering) { mutableStateOf(isFiltering) }
     Column(modifier = modifier) {
         ContextualMenu(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +80,7 @@ internal fun TableEntry(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = FloconTheme.spacing.large, bottom = FloconTheme.spacing.extraSmall)
+                    .padding(start = FloconTheme.spacing.large)
                     .drawBehind {
                         drawLine(
                             color = guideColor,
@@ -109,7 +113,9 @@ private fun TableEntryContent(
 ) {
     Row(
         modifier = modifier
+            .height(FloconTheme.sizes.rowHeight)
             .clip(RoundedCornerShape(8.dp))
+            .background(if (isOpened) FloconTheme.colors.bg300 else Color.Transparent)
             .combinedClickable(
                 onClick = {
                     updateIsOpened(!isOpened)
@@ -118,14 +124,13 @@ private fun TableEntryContent(
                     onTableDoubleClicked(item)
                 }
             )
-            .padding(horizontal = FloconTheme.spacing.small)
-            .padding(vertical = FloconTheme.spacing.small),
+            .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         val color = FloconTheme.colors.ink
         Image(
-            imageVector = Icons.Outlined.ChevronRight,
+            painter = painterResource(Res.drawable.ic_db_chevron),
             modifier = Modifier.size(14.dp).graphicsLayer {
                 rotationZ = if (isOpened) 90f else 0f
             },
@@ -133,7 +138,7 @@ private fun TableEntryContent(
             contentDescription = null,
         )
         Image(
-            imageVector = Icons.Outlined.TableRows,
+            painter = painterResource(Res.drawable.ic_db_table),
             modifier = Modifier.size(14.dp),
             colorFilter = ColorFilter.tint(if (isOpened) color else FloconTheme.colors.inkMuted),
             contentDescription = null,
