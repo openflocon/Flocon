@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
@@ -51,6 +53,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class FilesViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -401,6 +404,13 @@ class FilesViewModel(
         }
     }
 
+    private fun onCopyPath(path: String) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            copyToClipboard(path)
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
+    }
+
     fun onVisible() {
     }
 
@@ -416,6 +426,7 @@ class FilesViewModel(
             is FilesAction.ChangeViewMode -> viewMode.value = action.viewMode
             is FilesAction.ContextualAction -> onContextualAction(action.file, action.action)
             is FilesAction.Refresh -> onRefresh()
+            is FilesAction.CopyPath -> onCopyPath(action.path)
             is FilesAction.DeleteContent -> onDeleteContent()
             is FilesAction.FilterTextChanged -> onFilterTextChanged(action.value)
             is FilesAction.ClickOnSort -> clickOnSort(action.column, action.sortedBy)

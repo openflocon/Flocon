@@ -142,6 +142,7 @@ private fun FilesScreen(
             FilesFooter(
                 footer = state.footer,
                 totalSizeFormatted = state.headerState.totalSizeFormatted,
+                onCopyPath = { onAction(FilesAction.CopyPath(it)) },
             )
         }
     }

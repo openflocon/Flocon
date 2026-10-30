@@ -386,6 +386,7 @@
     </plurals>
     <string name="files_footer_counts">%1$s · %2$s</string>
     <string name="files_footer_total">Total</string>
+    <string name="files_footer_copy_path">Copier le chemin</string>
     <string name="files_back">Retour</string>
     <string name="files_breadcrumb_root">App</string>
     <string name="files_breadcrumb_separator">/</string>

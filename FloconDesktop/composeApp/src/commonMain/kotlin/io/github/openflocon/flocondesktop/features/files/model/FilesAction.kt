@@ -16,6 +16,7 @@ sealed interface FilesAction {
         val action: FileUiModel.ContextualAction.Action,
     ) : FilesAction
     data object Refresh : FilesAction
+    data class CopyPath(val path: String) : FilesAction
     data object DeleteContent : FilesAction
     data class FilterTextChanged(val value: String) : FilesAction
     data class ClickOnSort(
