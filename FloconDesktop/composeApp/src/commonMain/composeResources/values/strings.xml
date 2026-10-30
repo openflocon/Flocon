@@ -421,4 +421,17 @@
     <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Provider</string>
     <string name="preferences_empty">No preferences</string>
+    <string name="preferences_column_key">Key</string>
+    <string name="preferences_column_type">Type</string>
+    <string name="preferences_column_value">Value</string>
+    <string name="auto_update_live">Live</string>
+    <string name="preference_save">Save</string>
+    <string name="preference_cancel">Cancel</string>
+    <string name="preference_edit">Edit</string>
+    <string name="preference_copy">Copy</string>
+    <string name="preference_read_only">read only</string>
+    <string name="preferences_file_empty_title">%1$s is empty</string>
+    <string name="preferences_file_empty_subtitle">The app hasn't written anything in this file yet.</string>
+    <string name="preferences_no_match_title">No key matches “%1$s”</string>
+    <string name="preferences_clear_filter">Clear filter</string>
 </resources>

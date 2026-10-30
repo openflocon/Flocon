@@ -1,289 +1,563 @@
+@file:OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop.features.sharedpreferences.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Send
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.preference_cancel
+import flocondesktop.composeapp.generated.resources.preference_copy
+import flocondesktop.composeapp.generated.resources.preference_edit
+import flocondesktop.composeapp.generated.resources.preference_read_only
+import flocondesktop.composeapp.generated.resources.preference_save
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceValueTypeUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.asString
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesBooleanRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesFloatRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesIntRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesJsonRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesLongRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringRowUiModel
+import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewSharedPreferencesStringSetRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIcon
-import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
-import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.FloconSwitch
+import io.github.openflocon.library.designsystem.components.WithTooltip
+import org.jetbrains.compose.resources.stringResource
+
+private val ActionSize = 30.dp
+private val FieldRadius = 7.dp
+private val IntFieldWidth = 160.dp
+private val MonoSmall = 12.sp
 
 @Composable
 fun SharedPreferenceRow(
     model: SharedPreferencesRowUiModel,
+    isExpanded: Boolean,
+    onToggleExpanded: (key: String) -> Unit,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
     onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = FloconTheme.colors.bg200
-    val textFieldBackgroundColor = FloconTheme.colors.bg000
+    val colors = FloconTheme.colors
+    val value = model.value
+    val collapsible = model.collapsible
+    val originalText = remember(value) { value.asString() }
+    var text by remember(value) { mutableStateOf(originalText) }
+    val isEditableText = collapsible == null && (
+        value is SharedPreferencesRowUiModel.Value.StringValue ||
+            value is SharedPreferencesRowUiModel.Value.IntValue ||
+            value is SharedPreferencesRowUiModel.Value.LongValue ||
+            value is SharedPreferencesRowUiModel.Value.FloatValue
+        )
+    val isDirty = isEditableText && text != originalText
+    val lineColor = colors.line
 
-    Row(
+    Column(
         modifier = modifier
-            .height(IntrinsicSize.Min)
-            .border(
-                width = 1.dp,
-                color = borderColor,
-            )
-            .padding(horizontal = FloconTheme.spacing.small),
-        verticalAlignment = Alignment.CenterVertically,
+            .fillMaxWidth()
+            .background(if (isDirty) colors.accentSoft.copy(alpha = 0.4f) else Color.Transparent)
+            .drawBehind {
+                val y = size.height - 0.5f
+                drawLine(lineColor, Offset(0f, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
+            },
     ) {
-        Text(
-            model.key,
-            style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colors.ink.copy(alpha = 0.7f),
+        PreferenceGridRow(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.compact),
-        )
-
-        VerticalDivider(
-            color = borderColor,
-            thickness = 1.dp,
-        )
-
-        Row(
-            Modifier
-                .weight(1f)
-                .padding(start = FloconTheme.spacing.compact)
-                .padding(vertical = FloconTheme.spacing.compact),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        ) {
-            when (model.value) {
-                is SharedPreferencesRowUiModel.Value.BooleanValue -> {
-                    var value by remember(model.value) { mutableStateOf(model.value.value) }
-
-                    FloconCheckbox(
-                        modifier = Modifier.height(36.dp),
-                        checked = value,
-                        uncheckedColor = FloconTheme.colors.bg200,
-                        onCheckedChange = {
-                            value = it
-                            onValueChanged(model, it.toString())
-                        },
-                    )
-                }
-
-                is SharedPreferencesRowUiModel.Value.FloatValue -> {
-                    var value by remember(model.value) { mutableStateOf(model.value.value.toString()) }
-                    FloconTextField(
-                        value = value,
-                        onValueChange = { value = it },
-                        modifier = Modifier.weight(1f),
-                        containerColor = textFieldBackgroundColor,
-                    )
-                    SharedPreferenceSendButton(
-                        onClick = {
-                            onValueChanged(model, value)
-                        },
-                    )
-                }
-
-                is SharedPreferencesRowUiModel.Value.IntValue -> {
-                    var value by remember(model.value) { mutableIntStateOf(model.value.value) }
-                    FloconTextField(
-                        value = value.toString(),
-                        containerColor = textFieldBackgroundColor,
-                        onValueChange = {
-                            try {
-                                value = it.toInt()
-                            } catch (t: Throwable) {
-                                t.printStackTrace()
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    SharedPreferenceSendButton(
-                        onClick = {
-                            onValueChanged(model, value.toString())
-                        },
-                    )
-                }
-
-                is SharedPreferencesRowUiModel.Value.LongValue -> {
-                    var value by remember(model.value) { mutableLongStateOf(model.value.value) }
-
-                    FloconTextField(
-                        modifier = Modifier.weight(1f),
-                        value = value.toString(),
-                        containerColor = textFieldBackgroundColor,
-                        onValueChange = {
-                            try {
-                                value = it.toLong()
-                            } catch (t: Throwable) {
-                                t.printStackTrace()
-                            }
-                        }
-                    )
-
-                    SharedPreferenceSendButton(
-                        onClick = {
-                            onValueChanged(model, value.toString())
-                        },
-                    )
-                }
-
-                is SharedPreferencesRowUiModel.Value.StringSetValue -> {
-                    // no editable
-                    Text(
-                        model.value.value.toString(),
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colors.ink,
-                        modifier = Modifier
-                            .padding(horizontal = FloconTheme.spacing.extraSmall),
-                    )
-                }
-
-                is SharedPreferencesRowUiModel.Value.StringValue -> {
-                    val textValue = model.value.value
-                    if (textValue.length > 80 || textValue.contains("\n")) {
-                        Text(
-                            text = textValue,
-                            maxLines = 5,
-                            style = FloconTheme.typography.bodySmall,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                                .background(
-                                    textFieldBackgroundColor,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(FloconTheme.spacing.small)
-                        )
-                        SharedPreferenceSendButton(
-                            icon = Icons.Default.Edit,
-                            onClick = {
-                                onEditClicked(model, model.value)
-                            },
-                        )
+                .heightIn(min = FloconTheme.sizes.rowHeight + FloconTheme.spacing.compact * 2)
+                .then(
+                    if (collapsible != null) {
+                        Modifier
+                            .clickable { onToggleExpanded(model.key) }
+                            .pointerHoverIcon(PointerIcon.Hand)
                     } else {
-                        var value by remember(model.value) { mutableStateOf(model.value.value) }
-                        FloconTextField(
-                            value = value,
-                            onValueChange = { value = it },
-                            textStyle = FloconTheme.typography.bodySmall,
-                            modifier = Modifier.weight(1f),
-                            containerColor = textFieldBackgroundColor,
+                        Modifier
+                    },
+                )
+                .padding(vertical = FloconTheme.spacing.compact),
+            key = {
+                Text(
+                    text = model.key,
+                    style = FloconTheme.typography.monoSmall,
+                    color = colors.ink,
+                    modifier = Modifier.weight(KeyColumnWeight),
+                )
+            },
+            type = {
+                Box(Modifier.width(FloconTheme.sizes.columnSmall)) {
+                    TypeBadge(model.type)
+                }
+            },
+            value = {
+                Box(Modifier.weight(ValueColumnWeight), contentAlignment = Alignment.CenterStart) {
+                    when {
+                        value is SharedPreferencesRowUiModel.Value.BooleanValue -> BooleanValue(
+                            checked = value.value,
+                            onCheckedChange = { onValueChanged(model, it.toString()) },
                         )
 
-                        SharedPreferenceSendButton(
-                            onClick = { onValueChanged(model, value) },
+                        value is SharedPreferencesRowUiModel.Value.StringSetValue -> FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                        ) {
+                            value.value.forEach { Chip(it) }
+                        }
+
+                        collapsible != null -> CollapsedValue(collapsible, isExpanded)
+
+                        else -> PreferenceValueField(
+                            value = text,
+                            onValueChange = { text = it },
+                            isDirty = isDirty,
+                            onSave = { onValueChanged(model, text) },
+                            onCancel = { text = originalText },
+                            modifier = if (value is SharedPreferencesRowUiModel.Value.StringValue) {
+                                Modifier.fillMaxWidth()
+                            } else {
+                                Modifier.width(IntFieldWidth)
+                            },
                         )
                     }
                 }
-            }
+            },
+            actions = {
+                Row(
+                    modifier = Modifier.width(FloconTheme.sizes.columnSmall),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact, Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RowActions(
+                        model = model,
+                        isDirty = isDirty,
+                        isExpanded = isExpanded,
+                        onCancel = { text = originalText },
+                        onSave = { onValueChanged(model, text) },
+                        onEditClicked = onEditClicked,
+                    )
+                }
+            },
+        )
+
+        if (collapsible != null && isExpanded) {
+            PreferenceGridRow(
+                modifier = Modifier.padding(bottom = FloconTheme.spacing.medium),
+                key = { Box(Modifier.weight(KeyColumnWeight)) },
+                type = { Box(Modifier.width(FloconTheme.sizes.columnSmall)) },
+                value = {
+                    ExpandedCode(
+                        collapsible = collapsible,
+                        modifier = Modifier.weight(ValueColumnWeight),
+                    )
+                },
+                actions = { Box(Modifier.width(FloconTheme.sizes.columnSmall)) },
+            )
         }
     }
 }
 
 @Composable
-private fun SharedPreferenceSendButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.AutoMirrored.Outlined.Send,
+private fun RowScope.RowActions(
+    model: SharedPreferencesRowUiModel,
+    isDirty: Boolean,
+    isExpanded: Boolean,
+    onCancel: () -> Unit,
+    onSave: () -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
 ) {
-    FloconIconTonalButton(
-        onClick = onClick,
-        containerColor = FloconTheme.colors.ink,
-        modifier = modifier
+    val colors = FloconTheme.colors
+    val value = model.value
+    val clipboard = LocalClipboardManager.current
+
+    when {
+        isDirty -> {
+            ActionButton(
+                icon = Icons.Outlined.Close,
+                tooltip = stringResource(Res.string.preference_cancel),
+                onClick = onCancel,
+                containerColor = colors.bg300,
+                contentColor = colors.ink,
+                borderColor = colors.lineStrong,
+            )
+            ActionButton(
+                icon = Icons.Outlined.Check,
+                tooltip = stringResource(Res.string.preference_save),
+                onClick = onSave,
+                containerColor = colors.accent,
+                contentColor = colors.accentInk,
+                borderColor = colors.accent,
+            )
+        }
+
+        value is SharedPreferencesRowUiModel.Value.StringSetValue -> Text(
+            text = stringResource(Res.string.preference_read_only),
+            style = FloconTheme.typography.labelSmall,
+            color = colors.inkMuted,
+            textAlign = TextAlign.End,
+            maxLines = 1,
+        )
+
+        value is SharedPreferencesRowUiModel.Value.StringValue && model.collapsible != null -> {
+            if (isExpanded) {
+                ActionButton(
+                    icon = Icons.Outlined.ContentCopy,
+                    tooltip = stringResource(Res.string.preference_copy),
+                    onClick = { clipboard.setText(AnnotatedString(value.value)) },
+                    containerColor = colors.bg300,
+                    contentColor = colors.ink,
+                    borderColor = colors.lineStrong,
+                )
+            }
+            ActionButton(
+                icon = Icons.Outlined.Edit,
+                tooltip = stringResource(Res.string.preference_edit),
+                onClick = { onEditClicked(model, value) },
+                containerColor = colors.bg300,
+                contentColor = colors.ink,
+                borderColor = colors.lineStrong,
+            )
+        }
+
+        else -> Unit
+    }
+}
+
+@Composable
+private fun ActionButton(
+    icon: ImageVector,
+    tooltip: String,
+    onClick: () -> Unit,
+    containerColor: Color,
+    contentColor: Color,
+    borderColor: Color,
+) {
+    val shape = RoundedCornerShape(FieldRadius)
+    WithTooltip(tooltip) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(ActionSize)
+                .background(containerColor, shape)
+                .border(1.dp, borderColor, shape)
+                .clickable(onClick = onClick)
+                .pointerHoverIcon(PointerIcon.Hand),
+        ) {
+            FloconIcon(icon, tint = contentColor, modifier = Modifier.size(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun BooleanValue(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    var local by remember(checked) { mutableStateOf(checked) }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        FloconIcon(imageVector = icon)
+        FloconSwitch(
+            checked = local,
+            onCheckedChange = {
+                local = it
+                onCheckedChange(it)
+            },
+        )
+        Text(
+            text = local.toString(),
+            style = FloconTheme.typography.monoSmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+    }
+}
+
+@Composable
+private fun Chip(text: String) {
+    val colors = FloconTheme.colors
+    Text(
+        text = text,
+        style = FloconTheme.typography.monoSmall.copy(fontSize = 11.sp),
+        color = colors.ink,
+        modifier = Modifier
+            .background(colors.bg300, RoundedCornerShape(50))
+            .border(1.dp, colors.lineStrong, RoundedCornerShape(50))
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
+    )
+}
+
+@Composable
+private fun CollapsedValue(
+    collapsible: SharedPreferencesRowUiModel.Collapsible,
+    isExpanded: Boolean,
+) {
+    val colors = FloconTheme.colors
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        FloconIcon(
+            imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Filled.ChevronRight,
+            tint = colors.inkMuted,
+            modifier = Modifier.size(16.dp),
+        )
+        if (!isExpanded) {
+            Text(
+                text = collapsible.preview,
+                style = FloconTheme.typography.monoSmall,
+                color = colors.inkMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+        }
+        Text(
+            text = collapsible.sizeLabel,
+            style = FloconTheme.typography.labelSmall,
+            color = colors.inkMuted,
+            maxLines = 1,
+            modifier = Modifier
+                .background(colors.bg300, RoundedCornerShape(50))
+                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
+        )
+    }
+}
+
+@Composable
+private fun ExpandedCode(
+    collapsible: SharedPreferencesRowUiModel.Collapsible,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val code = remember(collapsible.expandedText, collapsible.isJson, colors) {
+        if (collapsible.isJson) {
+            highlightJson(
+                collapsible.expandedText,
+                JsonHighlightColors(
+                    key = colors.catNetwork,
+                    string = colors.catDatabase,
+                    number = colors.catAccessibility,
+                    punctuation = colors.ink,
+                ),
+            )
+        } else {
+            AnnotatedString(collapsible.expandedText)
+        }
+    }
+    Box(
+        modifier = modifier
+            .background(colors.bg000, RoundedCornerShape(8.dp))
+            .padding(FloconTheme.spacing.medium),
+    ) {
+        SelectionContainer {
+            Text(
+                text = code,
+                color = colors.ink,
+                style = FloconTheme.typography.monoSmall.copy(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = MonoSmall,
+                    lineHeight = 18.sp,
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreferenceValueField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    isDirty: Boolean,
+    onSave: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val shape = RoundedCornerShape(FieldRadius)
+
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        textStyle = FloconTheme.typography.monoSmall.copy(color = colors.ink, fontSize = MonoSmall),
+        cursorBrush = SolidColor(colors.accent),
+        modifier = modifier
+            .height(ActionSize)
+            .onPreviewKeyEvent {
+                if (it.type != KeyEventType.KeyDown) {
+                    false
+                } else {
+                    when (it.key) {
+                        Key.Enter, Key.NumPadEnter -> {
+                            if (isDirty) onSave()
+                            true
+                        }
+
+                        Key.Escape -> {
+                            if (isDirty) onCancel()
+                            isDirty
+                        }
+
+                        else -> false
+                    }
+                }
+            },
+        decorationBox = { inner ->
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ActionSize)
+                    .background(colors.bg000, shape)
+                    .border(1.dp, if (isDirty) colors.accent else colors.line, shape)
+                    .padding(horizontal = FloconTheme.spacing.small),
+            ) {
+                inner()
+            }
+        },
+    )
+}
+
+@Composable
+private fun TypeBadge(
+    type: PreferenceValueTypeUiModel,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val (strong, soft) = when (type) {
+        PreferenceValueTypeUiModel.Str -> colors.catDatabase to colors.catDatabaseSoft
+
+        PreferenceValueTypeUiModel.Int,
+        PreferenceValueTypeUiModel.Long,
+        PreferenceValueTypeUiModel.Float,
+        -> colors.catNetwork to colors.catNetworkSoft
+
+        PreferenceValueTypeUiModel.Bool -> colors.accent to colors.accentSoft
+
+        PreferenceValueTypeUiModel.Json -> colors.catDeeplink to colors.catDeeplinkSoft
+
+        PreferenceValueTypeUiModel.Set -> colors.catAccessibility to colors.catAccessibilitySoft
+    }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .height(20.dp)
+            .background(soft, RoundedCornerShape(5.dp))
+            .padding(horizontal = 7.dp),
+    ) {
+        Text(
+            text = type.label,
+            style = FloconTheme.typography.monoSmall.copy(
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.06.em,
+            ),
+            color = strong,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun PreviewRow(model: SharedPreferencesRowUiModel, isExpanded: Boolean = false) {
+    FloconTheme {
+        Box(Modifier.background(FloconTheme.colors.bg100)) {
+            SharedPreferenceRow(
+                model = model,
+                isExpanded = isExpanded,
+                onToggleExpanded = {},
+                onValueChanged = { _, _ -> },
+                onEditClicked = { _, _ -> },
+            )
+        }
     }
 }
 
 @Preview
 @Composable
-private fun SharedPreferenceRowPreview() {
-    FloconTheme {
-        SharedPreferenceRow(
-            modifier = Modifier.fillMaxWidth(),
-            model = previewSharedPreferencesStringRowUiModel(),
-            onValueChanged = { _, _ -> },
-            onEditClicked = { _, _ -> },
-        )
-    }
-}
+private fun SharedPreferenceRowPreview() = PreviewRow(previewSharedPreferencesStringRowUiModel())
 
 @Preview
 @Composable
-private fun SharedPreferenceRowPreview_int() {
-    FloconTheme {
-        SharedPreferenceRow(
-            modifier = Modifier.fillMaxWidth(),
-            model = previewSharedPreferencesIntRowUiModel(),
-            onValueChanged = { _, _ -> },
-            onEditClicked = { _, _ -> },
-        )
-    }
-}
+private fun SharedPreferenceRowIntPreview() = PreviewRow(previewSharedPreferencesIntRowUiModel())
 
-@Preview()
+@Preview
 @Composable
-private fun SharedPreferenceRowPreview_float() {
-    FloconTheme {
-        SharedPreferenceRow(
-            modifier = Modifier.fillMaxWidth(),
-            model = previewSharedPreferencesFloatRowUiModel(),
-            onValueChanged = { _, _ -> },
-            onEditClicked = { _, _ -> },
-        )
-    }
-}
+private fun SharedPreferenceRowFloatPreview() = PreviewRow(previewSharedPreferencesFloatRowUiModel())
 
-@Preview()
+@Preview
 @Composable
-private fun SharedPreferenceRowPreview_boolean() {
-    FloconTheme {
-        SharedPreferenceRow(
-            modifier = Modifier.fillMaxWidth(),
-            model = previewSharedPreferencesBooleanRowUiModel(),
-            onValueChanged = { _, _ -> },
-            onEditClicked = { _, _ -> },
-        )
-    }
-}
+private fun SharedPreferenceRowBooleanPreview() = PreviewRow(previewSharedPreferencesBooleanRowUiModel())
 
-@Preview()
+@Preview
 @Composable
-private fun SharedPreferenceRowPreview_long() {
-    FloconTheme {
-        SharedPreferenceRow(
-            modifier = Modifier.fillMaxWidth(),
-            model = previewSharedPreferencesLongRowUiModel(),
-            onValueChanged = { _, _ -> },
-            onEditClicked = { _, _ -> },
-        )
-    }
-}
+private fun SharedPreferenceRowLongPreview() = PreviewRow(previewSharedPreferencesLongRowUiModel())
+
+@Preview
+@Composable
+private fun SharedPreferenceRowSetPreview() = PreviewRow(previewSharedPreferencesStringSetRowUiModel())
+
+@Preview
+@Composable
+private fun SharedPreferenceRowJsonPreview() = PreviewRow(previewSharedPreferencesJsonRowUiModel())
+
+@Preview
+@Composable
+private fun SharedPreferenceRowJsonExpandedPreview() = PreviewRow(previewSharedPreferencesJsonRowUiModel(), isExpanded = true)

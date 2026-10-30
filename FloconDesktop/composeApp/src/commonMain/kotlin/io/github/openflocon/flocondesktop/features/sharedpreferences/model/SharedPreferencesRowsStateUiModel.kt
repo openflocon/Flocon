@@ -25,10 +25,11 @@ sealed interface SharedPreferencesRowsStateUiModel {
 }
 
 fun previewSharedPreferencesRowsStateUiModel(): SharedPreferencesRowsStateUiModel = SharedPreferencesRowsStateUiModel.WithContent(
-    rows =
-    persistentListOf(
-        previewSharedPreferencesStringRowUiModel(),
-        previewSharedPreferencesStringRowUiModel(),
-        previewSharedPreferencesStringRowUiModel(),
+    rows = persistentListOf(
+        previewSharedPreferencesStringRowUiModel().copy(key = "user_name"),
+        previewSharedPreferencesBooleanRowUiModel().copy(key = "notifications_enabled"),
+        previewSharedPreferencesIntRowUiModel().copy(key = "launch_count"),
+        previewSharedPreferencesStringSetRowUiModel().copy(key = "visited_screens"),
+        previewSharedPreferencesJsonRowUiModel(),
     ),
 )

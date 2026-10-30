@@ -50,12 +50,7 @@ class SharedPreferencesViewModel(
                     SharedPreferencesRowsStateUiModel.Empty
                 } else {
                     SharedPreferencesRowsStateUiModel.WithContent(
-                        it.map {
-                            SharedPreferencesRowUiModel(
-                                key = it.key,
-                                value = it.value.toUi(),
-                            )
-                        }.toImmutableList(),
+                        it.map { row -> row.toUi() }.toImmutableList(),
                     )
                 }
             }

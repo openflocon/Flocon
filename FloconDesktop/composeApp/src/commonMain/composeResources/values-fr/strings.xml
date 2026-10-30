@@ -348,4 +348,17 @@
     <string name="tables_selector_caption">Table</string>
     <string name="feature_flags_selector_caption">Fournisseur</string>
     <string name="preferences_empty">Aucune préférence</string>
+    <string name="preferences_column_key">Clé</string>
+    <string name="preferences_column_type">Type</string>
+    <string name="preferences_column_value">Valeur</string>
+    <string name="auto_update_live">Live</string>
+    <string name="preference_save">Enregistrer</string>
+    <string name="preference_cancel">Annuler</string>
+    <string name="preference_edit">Modifier</string>
+    <string name="preference_copy">Copier</string>
+    <string name="preference_read_only">lecture seule</string>
+    <string name="preferences_file_empty_title">%1$s est vide</string>
+    <string name="preferences_file_empty_subtitle">L'application n'a encore rien écrit dans ce fichier.</string>
+    <string name="preferences_no_match_title">Aucune clé ne correspond à “%1$s”</string>
+    <string name="preferences_clear_filter">Effacer le filtre</string>
 </resources>
