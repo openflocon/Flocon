@@ -405,4 +405,13 @@
     <string name="files_selected_count">%1$d sélectionné(s)</string>
     <string name="files_view_list">Vue liste</string>
     <string name="files_view_grid">Vue grille</string>
+    <string name="feature_flags_column_name">Flag</string>
+    <string name="feature_flags_column_variant">Variante</string>
+    <string name="feature_flags_column_payload">Payload</string>
+    <string name="accessibility_column_type">Type</string>
+    <string name="accessibility_column_text">Texte</string>
+    <string name="accessibility_column_class">Classe</string>
+    <string name="analytics_column_event">Événement</string>
+    <string name="analytics_column_properties">Propriétés</string>
+    <string name="images_column_format">Format</string>
 </resources>

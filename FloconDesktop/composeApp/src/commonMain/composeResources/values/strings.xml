@@ -504,4 +504,13 @@
     <string name="files_selected_count">%1$d selected</string>
     <string name="files_view_list">List view</string>
     <string name="files_view_grid">Grid view</string>
+    <string name="feature_flags_column_name">Flag</string>
+    <string name="feature_flags_column_variant">Variant</string>
+    <string name="feature_flags_column_payload">Payload</string>
+    <string name="accessibility_column_type">Type</string>
+    <string name="accessibility_column_text">Text</string>
+    <string name="accessibility_column_class">Class</string>
+    <string name="analytics_column_event">Event</string>
+    <string name="analytics_column_properties">Properties</string>
+    <string name="images_column_format">Format</string>
 </resources>

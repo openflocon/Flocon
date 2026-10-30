@@ -237,21 +237,24 @@ private fun ImagesList(
     val scrollAdapter = rememberFloconScrollbarAdapter(listState)
 
     Box(modifier = modifier) {
-        LazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
-            modifier = Modifier
-                .matchParentSize()
-                .floconPanel(),
-        ) {
-            itemsIndexed(items = images, key = { _, item -> item.id }) { index, item ->
-                if (index > 0) {
-                    FloconHorizontalDivider()
+        Column(modifier = Modifier.matchParentSize().floconPanel()) {
+            ImageListHeader()
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+            ) {
+                itemsIndexed(items = images, key = { _, item -> item.id }) { index, item ->
+                    if (index > 0) {
+                        FloconHorizontalDivider()
+                    }
+                    ImageListItem(
+                        model = item,
+                        onClick = onClickImage,
+                    )
                 }
-                ImageListItem(
-                    model = item,
-                    onClick = onClickImage,
-                )
             }
         }
         FloconVerticalScrollbar(

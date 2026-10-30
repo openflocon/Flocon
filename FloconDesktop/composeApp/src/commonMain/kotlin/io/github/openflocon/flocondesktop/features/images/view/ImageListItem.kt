@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,19 +25,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.images_column_format
+import flocondesktop.composeapp.generated.resources.images_label_size
+import flocondesktop.composeapp.generated.resources.images_label_time
+import flocondesktop.composeapp.generated.resources.images_label_url
+import flocondesktop.composeapp.generated.resources.images_label_weight
 import flocondesktop.composeapp.generated.resources.images_thumbnail
 import io.github.openflocon.flocondesktop.common.ui.isInPreview
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
 import io.github.openflocon.flocondesktop.features.images.model.previewImagesUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
 import org.jetbrains.compose.resources.stringResource
 
-private val TimeWidth = 104.dp
-private val ThumbnailWidth = 64.dp
+internal val TimeWidth = 104.dp
+internal val ThumbnailWidth = 64.dp
 private val ThumbnailHeight = 43.dp
-private val DimensionsWidth = 88.dp
-private val FormatWidth = 48.dp
-private val WeightWidth = 72.dp
+internal val DimensionsWidth = 88.dp
+internal val FormatWidth = 48.dp
+internal val WeightWidth = 72.dp
 
 @Composable
 fun ImageListItem(
@@ -99,6 +107,41 @@ fun ImageListItem(
             text = model.weight.orEmpty(),
             color = FloconTheme.colors.inkMuted,
             align = TextAlign.End,
+            modifier = Modifier.width(WeightWidth),
+        )
+    }
+}
+
+@Composable
+internal fun ImageListHeader(modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        modifier = modifier
+            .fillMaxWidth()
+            .floconTableHeader()
+            .padding(horizontal = FloconTheme.spacing.medium),
+    ) {
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.images_label_time),
+            modifier = Modifier.width(TimeWidth),
+        )
+        Spacer(Modifier.width(ThumbnailWidth))
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.images_label_url),
+            modifier = Modifier.weight(1f),
+        )
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.images_label_size),
+            modifier = Modifier.width(DimensionsWidth),
+        )
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.images_column_format),
+            modifier = Modifier.width(FormatWidth),
+        )
+        FloconTableHeaderLabel(
+            text = stringResource(Res.string.images_label_weight),
+            textAlign = TextAlign.End,
             modifier = Modifier.width(WeightWidth),
         )
     }
