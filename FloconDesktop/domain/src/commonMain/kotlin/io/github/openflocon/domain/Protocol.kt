@@ -128,6 +128,16 @@ object Protocol {
             }
         }
 
+        object WebView {
+            const val Plugin = "webview"
+
+            object Method {
+                const val AddConsoleLogs = "add_console_logs"
+                const val AddPageEvents = "add_page_events"
+                const val AddBridgeCalls = "add_bridge_calls"
+            }
+        }
+
     }
 
     object ToDevice {

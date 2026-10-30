@@ -33,6 +33,8 @@ import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleWebView
+import io.github.openflocon.flocon.webview.FloconWebView
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
@@ -74,6 +76,7 @@ class MainActivity : ComponentActivity() {
             install(FloconAnalytics)
             install(FloconAccessibility)
             install(FloconFeatureFlags)
+            install(FloconWebView)
             install(FloconDatabase) {
                 room()
             }
@@ -111,6 +114,7 @@ class MainActivity : ComponentActivity() {
         AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
         AndroidTestContext.grpcSayHello = { GrpcController.sayHello() }
         registerAndroidSampleFeatures(applicationContext)
+        registerAndroidSampleWebView()
         SampleFeatures.on(SampleFeature.Accessibility) {
             val announcement = "Item added to the cart"
             // announced to TalkBack and captured automatically when it is on

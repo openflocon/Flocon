@@ -19,6 +19,7 @@ import io.github.openflocon.flocon.myapplication.multi.ui.screens.HomeScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.ImagesScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.NetworkScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.PreferencesScreen
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.WebViewScreen
 
 /** A destination of the sample: the home, then one route per plugin screen. */
 sealed interface SampleRoute {
@@ -27,6 +28,7 @@ sealed interface SampleRoute {
     data object Database : SampleRoute
     data object Analytics : SampleRoute
     data object Accessibility : SampleRoute
+    data object WebView : SampleRoute
     data object FeatureFlags : SampleRoute
     data object Preferences : SampleRoute
     data object Files : SampleRoute
@@ -43,6 +45,7 @@ val SampleScreen.route: SampleRoute
         SampleScreen.Database -> SampleRoute.Database
         SampleScreen.Analytics -> SampleRoute.Analytics
         SampleScreen.Accessibility -> SampleRoute.Accessibility
+        SampleScreen.WebView -> SampleRoute.WebView
         SampleScreen.FeatureFlags -> SampleRoute.FeatureFlags
         SampleScreen.Preferences -> SampleRoute.Preferences
         SampleScreen.Files -> SampleRoute.Files
@@ -79,6 +82,7 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
             entry<SampleRoute.Database> { DatabaseScreen(onBack) }
             entry<SampleRoute.Analytics> { AnalyticsScreen(onBack) }
             entry<SampleRoute.Accessibility> { AccessibilityScreen(onBack) }
+            entry<SampleRoute.WebView> { WebViewScreen(onBack) }
             entry<SampleRoute.FeatureFlags> { FeatureFlagsScreen(onBack) }
             entry<SampleRoute.Preferences> { PreferencesScreen(onBack) }
             entry<SampleRoute.Files> { FilesScreen(onBack) }

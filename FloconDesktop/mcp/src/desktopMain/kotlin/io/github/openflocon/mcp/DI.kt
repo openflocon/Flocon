@@ -24,6 +24,7 @@ import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
 import io.github.openflocon.mcp.table.TableMcpToolProvider
+import io.github.openflocon.mcp.webview.WebViewMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -54,4 +55,5 @@ val mcpModule = module {
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
     singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
     singleOf(::TableMcpToolProvider) bind McpToolProvider::class
+    singleOf(::WebViewMcpToolProvider) bind McpToolProvider::class
 }

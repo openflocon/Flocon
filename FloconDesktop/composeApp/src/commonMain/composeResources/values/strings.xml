@@ -43,10 +43,17 @@
     <string name="menu_item_accessibility">Accessibility</string>
     <string name="menu_item_crashReporter">Crashes</string>
     <string name="menu_item_timeline">Timeline</string>
+    <string name="menu_item_webview">WebViews</string>
+    <string name="webview_filter_all">All</string>
+    <string name="webview_filter_console">Console</string>
+    <string name="webview_filter_pages">Pages</string>
+    <string name="webview_filter_bridge">Bridge</string>
+    <string name="webview_empty">No WebView event yet. Attach a WebView with Flocon.webViewPlugin.attach(webView, "id").</string>
     <string name="timeline_empty">No event yet</string>
     <string name="timeline_source_network">Network</string>
     <string name="timeline_source_analytics">Analytics</string>
     <string name="timeline_source_accessibility">Accessibility</string>
+    <string name="timeline_source_webview">WebView</string>
     <string name="timeline_source_crash">Crash</string>
     <string name="timeline_source_database">Database</string>
     <string name="timeline_source_table">Table</string>

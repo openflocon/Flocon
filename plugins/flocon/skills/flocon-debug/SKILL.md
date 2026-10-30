@@ -1,6 +1,6 @@
 ---
 name: flocon-debug
-description: Use when debugging a mobile app (Android, iOS, KMP) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes or SQLite databases.
+description: Use when debugging a mobile app (Android, iOS, KMP) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
 ---
 
 # Debugging a mobile app with Flocon
@@ -25,6 +25,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Check a file written by the app | `list_files` ("files" / "caches" directories), `read_file` |
 | Read a custom dashboard of the app | `list_dashboards`, `get_dashboard` for its elements and values |
 | Investigate a crash | `list_crash_reports` for the exception type and message, `get_crash_report` for the full stack trace |
+| Debug a WebView (JS console errors, failed page loads, calls from the page to native code) | `list_webview_events` (filters: `kind` console / page / bridge, text, start timestamp); the requests made by the page are not captured yet |
 | Check analytics events | `count_analytics_events` for an overview per event name, `list_analytics_events` for the properties, `list_analytics_tables` |
 | Check the deeplinks of the app | `list_deeplinks` (declared links and parameters), `list_deeplink_history`, `open_deeplink` (opens a link on the device, fill its parameters first) |
 | See the current screen, or keep a visual trace | `take_screenshot` (saves a PNG and returns the image) |

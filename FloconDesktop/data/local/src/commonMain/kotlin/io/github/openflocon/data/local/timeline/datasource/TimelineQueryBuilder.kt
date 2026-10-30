@@ -8,6 +8,7 @@ internal const val KIND_NETWORK_RESPONSE = "network_response" // the response of
 internal const val KIND_DATABASE = "database"
 internal const val KIND_ANALYTICS = "analytics"
 internal const val KIND_ACCESSIBILITY = "accessibility"
+internal const val KIND_WEBVIEW = "webview"
 internal const val KIND_CRASH = "crash"
 internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
@@ -141,6 +142,19 @@ private fun buildUnion(
                     from = "AccessibilityEventEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("text", "contentDescription"),
+                )
+            )
+        }
+        if (TimelineSource.WebView in filter.sources) {
+            add(
+                branch(
+                    // a page event without message is told by its url, then by its type
+                    select = "'$KIND_WEBVIEW' AS kind, eventId AS id, timestamp AS ts, " +
+                        "COALESCE(message, url, label) AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
+                    from = "WebViewEventEntity",
+                    appInstanceColumn = null, // the events do not store the session
+                    // the text displayed in the row, and the WebView
+                    textColumns = listOf("COALESCE(message, url, label)", "webViewId"),
                 )
             )
         }

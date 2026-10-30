@@ -47,6 +47,7 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.SharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
+import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -253,6 +254,7 @@ internal class AppViewModel(
             SubScreen.Tables -> TableRoutes.Main
             SubScreen.CrashReporter -> CrashReporterRoutes.Main
             SubScreen.Timeline -> TimelineRoutes.Main
+            SubScreen.WebView -> WebViewRoutes.Main
         }
 
         if (route !is SettingsRoutes) {

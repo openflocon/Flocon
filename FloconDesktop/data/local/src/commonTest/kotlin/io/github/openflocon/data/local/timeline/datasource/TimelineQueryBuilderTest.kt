@@ -126,6 +126,16 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the webview events are scoped by the device and the app, and keep no session`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.WebView), appInstance = 1000L))
+
+        assertTrue(query.sql.contains("FROM WebViewEventEntity"))
+        assertTrue(query.sql.contains("'$KIND_WEBVIEW' AS kind"))
+        // the events do not store the session: the filter on the session is not applied to them
+        assertEquals(sessionParams + listOf<Any>("device", "com.app"), query.params)
+    }
+
+    @Test
     fun `the adb commands are only scoped by the device`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Adb)))
 

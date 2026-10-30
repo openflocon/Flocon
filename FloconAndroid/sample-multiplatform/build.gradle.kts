@@ -82,6 +82,7 @@ kotlin {
             implementation(projects.analytics)
             implementation(projects.crashreporter)
             implementation(projects.tables)
+            implementation(projects.webview)
         }
 
     }

@@ -24,9 +24,10 @@ private fun TimelinePhase.toNetworkTab(): NetworkDetailTab = when (this) {
     TimelinePhase.Response -> NetworkDetailTab.Response
 }
 
-// null: nothing to open for this event. The request line of a call opens its request tab, the response line its response tab
+// null: nothing to open for this event (an app start, a WebView event: its screen has no detail panel).
+// The request line of a call opens its request tab, the response line its response tab
 internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (source) {
-    TimelineSource.AppStart -> null
+    TimelineSource.AppStart, TimelineSource.WebView -> null
     TimelineSource.Network -> TimelineDestination.Panel(NetworkRoutes.Panel(requestId = id, tab = phase.toNetworkTab(), fromTimeline = true))
     TimelineSource.Analytics -> TimelineDestination.Panel(AnalyticsRoutes.Detail(id = id, fromTimeline = true))
     TimelineSource.Accessibility -> TimelineDestination.Panel(AccessibilityRoutes.Detail(id = id, fromTimeline = true))
