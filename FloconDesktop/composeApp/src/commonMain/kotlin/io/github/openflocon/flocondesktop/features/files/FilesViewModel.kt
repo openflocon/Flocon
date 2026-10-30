@@ -11,6 +11,7 @@ import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
@@ -47,6 +48,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -69,6 +72,7 @@ class FilesViewModel(
     private val observeWithFoldersSizeUseCase: ObserveWithFoldersSizeUseCase,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val refreshFileRootsUseCase: RefreshFileRootsUseCase,
+    private val observeIsCurrentDeviceAndAppIsActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeFileRootsUseCase: ObserveFileRootsUseCase,
 ) : ViewModel() {
 
@@ -106,6 +110,13 @@ class FilesViewModel(
             observeCurrentDeviceIdAndPackageNameUseCase()
                 .distinctUntilChanged()
                 .collect { refreshFileRootsUseCase() }
+        }
+        // the same app reconnecting (cable plugged again, wifi back) keeps its instance: reload what is displayed
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            observeIsCurrentDeviceAndAppIsActiveUseCase()
+                .drop(1) // the screen opening is already handled above
+                .filter { isActive -> isActive }
+                .collect { onRefresh() }
         }
     }
 
