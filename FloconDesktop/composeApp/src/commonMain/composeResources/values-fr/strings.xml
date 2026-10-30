@@ -127,7 +127,7 @@
     <string name="network_header_host">Hôte</string>
     <string name="network_header_method">Méthode</string>
     <string name="network_header_request">Requête</string>
-    <string name="network_header_request_time">Heure de la requête</string>
+    <string name="network_header_request_time">Date</string>
     <string name="network_header_status">Statut</string>
     <string name="network_header_time">Durée</string>
     <string name="new_client_version">Nouvelle version du client disponible : %1$s</string>

@@ -137,7 +137,7 @@
     <string name="network_header_request">Request</string>
     <string name="network_header_request_time">Request Time</string>
     <string name="network_header_status">Status</string>
-    <string name="network_header_time">Time</string>
+    <string name="network_header_time">Duration</string>
     <string name="new_client_version">New client version available: %1$s</string>
     <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %1$s)</string>
     <string name="new_desktop_version">New desktop version available: %1$s</string>
