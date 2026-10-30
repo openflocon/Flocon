@@ -151,7 +151,7 @@ Flocon can display all SQL queries executed by your app in real-time — great f
         .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
     ```
 
-    Works with any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...). Each statement
+    Wraps any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
     is logged when it runs, with its arguments. Same rule as Room 2: the `id` is the one the database is registered with.
 
 === "Manual Query Logging"
