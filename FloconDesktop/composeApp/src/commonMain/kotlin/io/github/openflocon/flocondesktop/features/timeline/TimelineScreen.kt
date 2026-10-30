@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Text
@@ -218,12 +217,9 @@ internal fun TimelineContent(
                 if (activeFilterCount > 0) {
                     Text(
                         text = activeFilterCount.toString(),
-                        style = FloconTheme.typography.labelSmall,
+                        style = FloconTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = colors.accentInk,
-                        modifier = Modifier
-                            .background(colors.accent, CircleShape)
-                            .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+                        color = colors.accent,
                     )
                 }
             }
