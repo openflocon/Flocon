@@ -1,6 +1,12 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +30,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Text
@@ -39,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -90,6 +96,8 @@ private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
 private const val GroupsPerRow = 2
 private const val HiddenTagAlpha = 0.3f
+private const val DisabledGroupsAlpha = 0.5f
+private const val ExpandedChevronRotation = 180f
 private const val SelectorBackgroundAlpha = 0.55f
 private val SelectorChevronSize = 16.dp
 
@@ -143,6 +151,8 @@ internal fun TimelineFilterPanel(
                         section = section,
                         label = sourceLabels.getValue(section.source),
                         onAction = onAction,
+                        // the sections slide when the order changes: a source gets its first event
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
@@ -228,6 +238,10 @@ private fun FilterSection(
     val (color, _) = section.source.categoryColors()
     var expanded by remember(section.source) { mutableStateOf(section.groups.isNotEmpty()) }
     val canExpand = section.groups.isNotEmpty()
+    val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
+    val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
+    // the filters of a source switched off are still there, to be set before switching it on
+    val groupsAlpha by animateFloatAsState(if (section.enabled) 1f else DisabledGroupsAlpha)
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -241,7 +255,8 @@ private fun FilterSection(
             Box(Modifier.size(16.dp), contentAlignment = Alignment.Center) {
                 if (canExpand) {
                     FloconIcon(
-                        imageVector = if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                        imageVector = Icons.Outlined.ExpandMore,
+                        modifier = Modifier.rotate(chevronRotation),
                     )
                 }
             }
@@ -250,7 +265,7 @@ private fun FilterSection(
                 text = label,
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = if (section.enabled) colors.ink else colors.inkMuted,
+                color = labelColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -269,21 +284,27 @@ private fun FilterSection(
                 onCheckedChange = { onAction(TimelineFilterAction.ToggleSource(section.source)) },
             )
         }
-        if (expanded) {
-            // two groups by row: a dropdown does not need the whole width
-            section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                ) {
-                    rowGroups.forEach { group ->
-                        FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
-                    }
-                    // a lonely group keeps the width of the others
-                    if (rowGroups.size < GroupsPerRow) {
-                        Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Column(modifier = Modifier.alpha(groupsAlpha)) {
+                // two groups by row: a dropdown does not need the whole width
+                section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    ) {
+                        rowGroups.forEach { group ->
+                            FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
+                        }
+                        // a lonely group keeps the width of the others
+                        if (rowGroups.size < GroupsPerRow) {
+                            Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+                        }
                     }
                 }
             }
@@ -450,7 +471,6 @@ private fun FacetTags(
 private fun FloconDividerLine(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .padding(top = FloconTheme.spacing.small)
             .fillMaxWidth()
             .height(1.dp)
             .background(FloconTheme.colors.line)
