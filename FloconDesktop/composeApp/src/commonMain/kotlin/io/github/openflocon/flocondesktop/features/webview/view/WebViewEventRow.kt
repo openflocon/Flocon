@@ -38,36 +38,36 @@ internal fun WebViewEventRow(
         ) {
             Text(
                 text = event.label,
-                style = FloconTheme.typography.bodyMedium,
+                style = FloconTheme.typography.listItem,
                 color = if (event.isError) FloconTheme.colors.statusError else FloconTheme.colors.ink,
             )
             Text(
                 text = stringResource(event.kind.titleRes()),
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
             Text(
                 text = event.webViewId,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
             Text(
                 text = event.dateFormatted,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
         }
         event.message?.let {
             Text(
                 text = it,
-                style = FloconTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                style = FloconTheme.typography.listItemMono,
                 color = FloconTheme.colors.ink,
             )
         }
         event.details?.let {
             Text(
                 text = it,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
         }

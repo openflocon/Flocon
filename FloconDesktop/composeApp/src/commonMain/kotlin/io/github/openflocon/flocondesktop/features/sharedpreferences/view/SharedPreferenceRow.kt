@@ -201,7 +201,7 @@ private fun SharedPreferenceRowContent(
             key = {
                 Text(
                     text = model.key,
-                    style = FloconTheme.typography.monoMedium.copy(fontWeight = FontWeight.Medium),
+                    style = FloconTheme.typography.listItemMono.copy(fontWeight = FontWeight.Medium),
                     color = colors.ink,
                     modifier = Modifier.weight(KeyColumnWeight),
                 )

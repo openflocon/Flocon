@@ -30,6 +30,9 @@ data class FloconTypography(
     val labelSmall: TextStyle,
     val monoMedium: TextStyle,
     val monoSmall: TextStyle,
+    // the text of a list row (network, analytics, databases, files, preferences, flags...), one size everywhere
+    val listItem: TextStyle,
+    val listItemMono: TextStyle,
 )
 
 fun Typography.toFloconTypography() = FloconTypography(
@@ -50,6 +53,8 @@ fun Typography.toFloconTypography() = FloconTypography(
     labelSmall = labelSmall,
     monoMedium = labelMedium.copy(fontFamily = FontFamily.Monospace),
     monoSmall = labelSmall.copy(fontFamily = FontFamily.Monospace),
+    listItem = bodySmall.copy(fontSize = labelMedium.fontSize),
+    listItemMono = bodySmall.copy(fontSize = labelMedium.fontSize, fontFamily = FontFamily.Monospace),
 )
 
 val LocalFloconTypography = staticCompositionLocalOf { Typography().toFloconTypography() }

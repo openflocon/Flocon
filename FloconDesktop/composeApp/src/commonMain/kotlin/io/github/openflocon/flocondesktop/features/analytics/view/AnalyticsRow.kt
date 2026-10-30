@@ -71,14 +71,14 @@ fun AnalyticsRow(
                 text = model.dateFormatted,
                 modifier = Modifier.width(110.dp),
                 textAlign = TextAlign.Center,
-                style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
+                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
                 color = FloconTheme.colors.ink.copy(alpha = 0.4f),
             )
 
             Text(
                 text = model.eventName,
                 modifier = Modifier.width(200.dp),
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink,
             )
 
@@ -94,12 +94,12 @@ fun AnalyticsRow(
                     ) {
                         Text(
                             text = it.name + " :",
-                            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
+                            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
                             color = FloconTheme.colors.inkMuted,
                         )
                         Text(
                             text = it.value,
-                            style = FloconTheme.typography.bodySmall,
+                            style = FloconTheme.typography.listItem,
                             color = FloconTheme.colors.inkMuted,
                         )
                     }
@@ -110,7 +110,7 @@ fun AnalyticsRow(
                         modifier =
                         Modifier
                             .padding(horizontal = FloconTheme.spacing.extraSmall),
-                        style = FloconTheme.typography.bodySmall,
+                        style = FloconTheme.typography.listItem,
                         color = FloconTheme.colors.ink,
                     )
                 }

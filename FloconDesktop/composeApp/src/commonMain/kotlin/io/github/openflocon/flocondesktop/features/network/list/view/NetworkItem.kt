@@ -47,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.filter
@@ -157,7 +156,7 @@ fun NetworkItem(
             ) {
                 Text(
                     state.dateFormatted,
-                    style = FloconTheme.typography.monoMedium,
+                    style = FloconTheme.typography.listItemMono,
                     fontWeight = FontWeight.Medium,
                     color = colors.ink,
                     maxLines = 1,
@@ -177,8 +176,7 @@ fun NetworkItem(
                 text = state.domain,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
-                fontSize = 12.sp,
+                style = FloconTheme.typography.listItem,
                 color = colors.inkFaint,
                 modifier = Modifier
                     .width(columnWidths.domainWidth)
@@ -201,7 +199,7 @@ fun NetworkItem(
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = FloconTheme.typography.monoMedium,
+                    style = FloconTheme.typography.listItemMono,
                     color = colors.inkFaint,
                     maxLines = 1,
                 )
@@ -260,8 +258,7 @@ private fun RequestCell(
             text = requestText(text = state.type.query, queryColor = colors.inkFaint),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall,
-            fontSize = 12.sp,
+            style = FloconTheme.typography.listItem,
             color = colors.ink,
             // the path gives way to the error message only when both do not fit
             modifier = Modifier
@@ -276,8 +273,7 @@ private fun RequestCell(
                 text = message,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
-                fontSize = 12.sp,
+                style = FloconTheme.typography.listItem,
                 color = colors.statusError,
                 modifier = Modifier
                     .padding(start = 10.dp)

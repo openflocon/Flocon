@@ -57,7 +57,7 @@ internal fun ColumnItem(
         )
         Text(
             model.name,
-            style = FloconTheme.typography.bodyMedium,
+            style = FloconTheme.typography.listItem,
             color = FloconTheme.colors.ink,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

@@ -50,7 +50,7 @@ fun AccessibilityRowView(
                 .width(TimeWidth)
                 .padding(end = 12.dp),
             maxLines = 1,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Light),
+            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
             color = FloconTheme.colors.ink.copy(alpha = 0.4f),
         )
         Text(
@@ -60,7 +60,7 @@ fun AccessibilityRowView(
                 .padding(end = 12.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Medium),
             color = FloconTheme.colors.ink,
         )
         Row(
@@ -74,7 +74,7 @@ fun AccessibilityRowView(
                     text = stringResource(Res.string.accessibility_missing_label),
                     modifier = Modifier.padding(end = 8.dp),
                     maxLines = 1,
-                    style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                    style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Medium),
                     color = FloconTheme.colors.statusWarning,
                 )
             }
@@ -83,7 +83,7 @@ fun AccessibilityRowView(
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
+                style = FloconTheme.typography.listItem,
                 color = FloconTheme.colors.ink,
             )
         }
@@ -92,7 +92,7 @@ fun AccessibilityRowView(
             modifier = Modifier.width(ClassNameWidth),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall,
+            style = FloconTheme.typography.listItem,
             color = FloconTheme.colors.ink.copy(alpha = 0.5f),
         )
     }
