@@ -80,6 +80,7 @@
     <string name="timeline_facet_network_content">Content</string>
     <string name="timeline_facet_network_host">Host</string>
     <string name="timeline_facet_database_name">Database</string>
+    <string name="timeline_facet_crash_exception">Exception</string>
     <string name="timeline_facet_database_statement">Statement</string>
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>

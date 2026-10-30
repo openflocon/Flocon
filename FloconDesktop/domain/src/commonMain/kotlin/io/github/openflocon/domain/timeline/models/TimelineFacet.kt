@@ -43,6 +43,9 @@ enum class TimelineFacet(
         knownValues = DATABASE_STATEMENTS,
     ),
     AnalyticsTable(TimelineSource.Analytics),
+
+    // the class of the exception, ex: java.lang.IllegalStateException
+    CrashException(TimelineSource.Crash),
     AccessibilityAction(
         source = TimelineSource.Accessibility,
         knownValues = listOf(

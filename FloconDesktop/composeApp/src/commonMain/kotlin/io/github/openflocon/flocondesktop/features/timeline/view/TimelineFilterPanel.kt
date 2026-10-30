@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_facet_accessibility_action
 import flocondesktop.composeapp.generated.resources.timeline_facet_analytics_table
+import flocondesktop.composeapp.generated.resources.timeline_facet_crash_exception
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
@@ -474,6 +475,7 @@ private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.DatabaseName -> Res.string.timeline_facet_database_name
     TimelineFacet.DatabaseStatement -> Res.string.timeline_facet_database_statement
     TimelineFacet.AnalyticsTable -> Res.string.timeline_facet_analytics_table
+    TimelineFacet.CrashException -> Res.string.timeline_facet_crash_exception
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
 }
 
