@@ -106,6 +106,8 @@ room {
 compose.desktop {
     application {
         mainClass = "io.github.openflocon.flocondesktop.MainKt"
+        // macOS trackpad pinch (see PinchZoomEffect): the gesture API of the JDK is not exported by default
+        jvmArgs += listOf("--add-exports=java.desktop/com.apple.eawt.event=ALL-UNNAMED")
 
         buildTypes.release {
             proguard {

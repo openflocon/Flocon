@@ -88,6 +88,8 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenuIt
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconOption
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconToggle
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.ImmutableList
@@ -95,7 +97,6 @@ import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
 private val ControlRadius = 8.dp
-private val SegmentRadius = 6.dp
 private val ControlIconSize = 15.dp
 private val SegmentPadding = 2.dp
 private val SwitchWidth = 26.dp
@@ -143,9 +144,17 @@ fun FilesTopBar(
                 modifier = Modifier.width(FloconTheme.sizes.sidePanelWidth),
             )
             FloconVerticalDivider(modifier = Modifier.height(FloconTheme.sizes.controlHeight))
-            ViewModeToggle(
-                viewMode = state.viewMode,
-                onViewModeChange = { onAction(FilesAction.ChangeViewMode(it)) },
+            val listTooltip = stringResource(Res.string.files_view_list)
+            val gridTooltip = stringResource(Res.string.files_view_grid)
+            FloconSegmentedIconToggle(
+                options = remember(listTooltip, gridTooltip) {
+                    persistentListOf(
+                        FloconSegmentedIconOption(icon = Icons.AutoMirrored.Outlined.List, tooltip = listTooltip),
+                        FloconSegmentedIconOption(icon = Icons.Outlined.GridView, tooltip = gridTooltip),
+                    )
+                },
+                selectedIndex = state.viewMode.ordinal,
+                onSelect = { onAction(FilesAction.ChangeViewMode(FilesViewModeUiModel.entries[it])) },
             )
             FolderSizesToggle(
                 checked = state.options.withFoldersSize,
@@ -267,78 +276,6 @@ private fun BreadcrumbSegment(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-    }
-}
-
-/** Segmented [list | grid] buttons, the selected background slides like a switch. */
-@Composable
-private fun ViewModeToggle(
-    viewMode: FilesViewModeUiModel,
-    onViewModeChange: (FilesViewModeUiModel) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val segmentWidth = FloconTheme.sizes.controlHeight
-    val indicatorOffset by animateDpAsState(
-        targetValue = if (viewMode == FilesViewModeUiModel.Grid) segmentWidth else 0.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
-    )
-    Box(
-        modifier = modifier
-            .height(FloconTheme.sizes.pageBarControlHeight)
-            .clip(RoundedCornerShape(ControlRadius))
-            .background(FloconTheme.colors.bg200)
-            .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(ControlRadius))
-            .padding(SegmentPadding),
-    ) {
-        Box(
-            modifier = Modifier
-                .offset(x = indicatorOffset)
-                .fillMaxHeight()
-                .width(segmentWidth)
-                .clip(RoundedCornerShape(SegmentRadius))
-                .background(FloconTheme.colors.bg300),
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            ViewModeSegment(
-                icon = Icons.AutoMirrored.Outlined.List,
-                tooltip = stringResource(Res.string.files_view_list),
-                selected = viewMode == FilesViewModeUiModel.List,
-                onClick = { onViewModeChange(FilesViewModeUiModel.List) },
-            )
-            ViewModeSegment(
-                icon = Icons.Outlined.GridView,
-                tooltip = stringResource(Res.string.files_view_grid),
-                selected = viewMode == FilesViewModeUiModel.Grid,
-                onClick = { onViewModeChange(FilesViewModeUiModel.Grid) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun ViewModeSegment(
-    icon: ImageVector,
-    tooltip: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    WithTooltip(tooltip) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(FloconTheme.sizes.controlHeight)
-                .clip(RoundedCornerShape(SegmentRadius))
-                .clickable(onClick = onClick)
-                .pointerHoverIcon(PointerIcon.Hand),
-            contentAlignment = Alignment.Center,
-        ) {
-            val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
-            FloconIcon(
-                imageVector = icon,
-                tint = tint,
-                modifier = Modifier.size(ControlIconSize),
-            )
-        }
     }
 }
 
