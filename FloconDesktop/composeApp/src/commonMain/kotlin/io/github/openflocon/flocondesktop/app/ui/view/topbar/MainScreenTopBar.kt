@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.app_icon_small
 import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import flocondesktop.composeapp.generated.resources.app_name
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -52,7 +50,6 @@ import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.features.connect.view.ConnectDialog
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconIsland
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -160,12 +157,11 @@ private fun Title(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
+        AnimatedAppLogo(
+            contentDescription = stringResource(Res.string.app_logo_content_description),
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(Res.drawable.app_icon_small),
-            contentDescription = stringResource(Res.string.app_logo_content_description),
         )
 
         Column(
