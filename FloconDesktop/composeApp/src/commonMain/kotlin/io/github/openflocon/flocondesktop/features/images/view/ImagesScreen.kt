@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ViewList
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.runtime.Composable
@@ -46,15 +46,16 @@ import io.github.openflocon.flocondesktop.features.images.model.previewImagesSta
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
-import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
-import io.github.openflocon.library.designsystem.components.FloconIconToggleButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconOption
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconToggle
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -127,20 +128,19 @@ private fun ImagesScreen(
                 )
             },
             actions = {
-                FloconIconToggleButton(
-                    value = displayMode == ImagesDisplayModeUiModel.Grid,
-                    onValueChange = { onDisplayModeChanged(ImagesDisplayModeUiModel.Grid) },
-                    tooltip = stringResource(Res.string.images_display_grid),
-                ) {
-                    FloconIcon(imageVector = Icons.Outlined.GridView)
-                }
-                FloconIconToggleButton(
-                    value = displayMode == ImagesDisplayModeUiModel.List,
-                    onValueChange = { onDisplayModeChanged(ImagesDisplayModeUiModel.List) },
-                    tooltip = stringResource(Res.string.images_display_list),
-                ) {
-                    FloconIcon(imageVector = Icons.AutoMirrored.Outlined.ViewList)
-                }
+                // same [list | grid] toggle as the Files screen
+                val listTooltip = stringResource(Res.string.images_display_list)
+                val gridTooltip = stringResource(Res.string.images_display_grid)
+                FloconSegmentedIconToggle(
+                    options = remember(listTooltip, gridTooltip) {
+                        persistentListOf(
+                            FloconSegmentedIconOption(icon = Icons.AutoMirrored.Outlined.List, tooltip = listTooltip),
+                            FloconSegmentedIconOption(icon = Icons.Outlined.GridView, tooltip = gridTooltip),
+                        )
+                    },
+                    selectedIndex = displayMode.ordinal,
+                    onSelect = { onDisplayModeChanged(ImagesDisplayModeUiModel.entries[it]) },
+                )
                 FloconIconButton(
                     imageVector = Icons.Outlined.Delete,
                     tooltip = stringResource(Res.string.images_delete),
