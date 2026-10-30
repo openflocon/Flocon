@@ -15,6 +15,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -229,6 +230,8 @@ private data class PanelScene(
                                 .fillMaxHeight()
                                 .width(PANEL_WIDTH)
                                 .floconIsland(islandColor)
+                                // the panel floats over the screen: its empty areas must not click through
+                                .clickable(onClick = {}, indication = null, interactionSource = null)
                                 .mascotPlatform(predicate = { transitionState.currentState.second })
                         ) { target ->
                             panelEntries[target]?.Content()

@@ -140,10 +140,9 @@ private fun EditHeader(
 ) {
     val type = stringResource(if (state.isJson) Res.string.preference_type_json else Res.string.preference_type_text)
     Row(
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        // leave room for the close button of the panel frame
-        modifier = Modifier.fillMaxWidth().padding(end = 48.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
             Text(
