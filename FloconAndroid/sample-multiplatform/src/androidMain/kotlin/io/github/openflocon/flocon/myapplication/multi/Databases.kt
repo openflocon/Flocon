@@ -69,7 +69,7 @@ object Databases {
             inMemoryDogDatabase = instance
             Flocon.databasePlugin.register(
                 id = "dogs_room3_memory",
-                displayName = "dogs in-memory (room3)",
+                displayName = "dogs (inMemory)",
                 database = instance
             )
             instance
