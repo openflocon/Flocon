@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.files_filter
@@ -36,6 +34,7 @@ import io.github.openflocon.flocondesktop.features.files.view.header.FilesListHe
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -103,8 +102,7 @@ private fun FilesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100),
+                .floconPanel(),
         ) {
             FilesListHeader(
                 modifier = Modifier.fillMaxWidth(),

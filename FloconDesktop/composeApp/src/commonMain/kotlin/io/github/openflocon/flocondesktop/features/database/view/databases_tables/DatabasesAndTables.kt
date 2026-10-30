@@ -1,7 +1,5 @@
 package io.github.openflocon.flocondesktop.features.database.view.databases_tables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +11,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.databases_favorites
@@ -24,6 +20,7 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseFavori
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenAction
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.floconPanel
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -39,12 +36,7 @@ fun DatabasesAndTables(
     Surface(
         color = FloconTheme.colors.bg100,
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = FloconTheme.shapes.medium
-            )
+            .floconPanel()
     ) {
         Column(
             Modifier.fillMaxSize()

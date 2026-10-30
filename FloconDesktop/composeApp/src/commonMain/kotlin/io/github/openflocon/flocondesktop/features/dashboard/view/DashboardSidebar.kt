@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +42,7 @@ import io.github.openflocon.flocondesktop.features.dashboard.model.DeviceDashboa
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.floconPanel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -52,17 +52,10 @@ fun DashboardSidebar(
     onDeleteClicked: (DeviceDashboardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = FloconTheme.colors.bg200
-
     Surface(
         color = FloconTheme.colors.bg100,
         modifier = modifier
-            .clip(FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = FloconTheme.shapes.medium
-            )
+            .floconPanel()
     ) {
         Column(
             Modifier.fillMaxSize()
