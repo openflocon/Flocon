@@ -16,12 +16,12 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 private val BarsHeight = 40.dp
-private const val OutsideRangeAlpha = 0.18f
-private const val InsideRangeAlpha = 0.55f
+private const val BarAlpha = 0.55f
 
 /**
- * One bar per bucket, as high as its value. The buckets from [start] (included) to [end] (excluded), the positions of a
- * [FloconRangeSlider] of the same size, are the ones in the range: the other bars are faded.
+ * One bar per bucket, as high as its value. Only the buckets from [start] (included) to [end] (excluded), the positions
+ * of a [FloconRangeSlider] of the same size, are drawn: the bars out of the range are clipped.
+ * The bars keep the height of the highest bucket of all, so they don't grow when the range gets smaller.
  */
 @Composable
 fun FloconHistogram(
@@ -48,12 +48,13 @@ fun FloconHistogram(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.BottomCenter,
             ) {
-                if (value > 0) {
+                // the bars out of the range are clipped, not faded
+                if (value > 0 && index in start until end) {
                     Box(
                         Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(value.toFloat() / highest)
-                            .background(colors.accent.copy(alpha = if (index in start until end) InsideRangeAlpha else OutsideRangeAlpha)),
+                            .background(colors.accent.copy(alpha = BarAlpha)),
                     )
                 }
             }
