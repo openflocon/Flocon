@@ -324,6 +324,15 @@
     <string name="images_label_weight">Weight</string>
     <string name="images_label_time">Time</string>
     <string name="images_thumbnail">Image thumbnail</string>
+    <string name="images_viewer_zoom_fit">Fit</string>
+    <string name="images_viewer_zoom_in">Zoom in</string>
+    <string name="images_viewer_zoom_out">Zoom out</string>
+    <string name="images_viewer_zoom_reset">Fit to window</string>
+    <string name="images_viewer_copy_url">Copy URL</string>
+    <string name="images_viewer_open_in_browser">Open in browser</string>
+    <string name="images_viewer_close">Close</string>
+    <string name="images_viewer_previous">Previous image</string>
+    <string name="images_viewer_next">Next image</string>
     <string name="mock_add_header">Add Header</string>
     <string name="mock_additional_delay">Additional Delay (ms)</string>
     <string name="mock_display_name">Display name</string>

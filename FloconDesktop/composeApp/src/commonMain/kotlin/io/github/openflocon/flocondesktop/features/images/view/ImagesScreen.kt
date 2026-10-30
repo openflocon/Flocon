@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.images.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -16,12 +14,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.GridView
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -30,16 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.PlatformContext
-import coil3.compose.AsyncImage
-import coil3.network.NetworkHeaders
-import coil3.network.httpHeaders
-import coil3.request.ImageRequest
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.images_delete
 import flocondesktop.composeapp.generated.resources.images_display_grid
@@ -50,6 +38,7 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.images.ImagesViewModel
+import io.github.openflocon.flocondesktop.features.images.model.ImageViewerUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesDisplayModeUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesStateUiModel
 import io.github.openflocon.flocondesktop.features.images.model.ImagesUiModel
@@ -78,7 +67,7 @@ fun ImagesScreen(
     val viewModel: ImagesViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val displayMode by viewModel.displayMode.collectAsStateWithLifecycle()
-    var clickedImage by remember { mutableStateOf<ImagesUiModel?>(null) }
+    val viewer by viewModel.viewer.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -92,10 +81,12 @@ fun ImagesScreen(
         displayMode = displayMode,
         onDisplayModeChanged = viewModel::onDisplayModeChanged,
         onReset = viewModel::reset,
-        onClickImage = { clickedImage = it },
-        resetClickedImage = { clickedImage = null },
+        onClickImage = { viewModel.onImageSelected(it.id) },
         onFilterChanged = viewModel::onFilterChanged,
-        clickedImage = clickedImage,
+        viewer = viewer,
+        onImageSelected = viewModel::onImageSelected,
+        onCopyImageUrl = viewModel::onCopyImageUrl,
+        onViewerClosed = viewModel::onViewerClosed,
         modifier = modifier,
     )
 }
@@ -108,8 +99,10 @@ private fun ImagesScreen(
     onReset: () -> Unit,
     onFilterChanged: (text: String) -> Unit,
     onClickImage: (ImagesUiModel) -> Unit,
-    resetClickedImage: () -> Unit,
-    clickedImage: ImagesUiModel?,
+    viewer: ImageViewerUiModel?,
+    onImageSelected: (id: String) -> Unit,
+    onCopyImageUrl: (url: String) -> Unit,
+    onViewerClosed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var currentFilter by remember { mutableStateOf("") }
@@ -182,10 +175,12 @@ private fun ImagesScreen(
             }
         }
     }
-    clickedImage?.let {
-        ImageDialog(
+    viewer?.let {
+        ImageViewer(
             model = it,
-            onDismiss = { resetClickedImage() },
+            onImageSelected = onImageSelected,
+            onCopyUrl = onCopyImageUrl,
+            onClose = onViewerClosed,
         )
     }
 }
@@ -265,46 +260,6 @@ private fun ImagesList(
 }
 
 @Composable
-fun ImageDialog(model: ImagesUiModel, onDismiss: () -> Unit) {
-    Dialog(
-        onDismissRequest = onDismiss,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            SelectionContainer {
-                Column(
-                    modifier = Modifier
-                        .background(Color.Black)
-                        .fillMaxWidth()
-                        .padding(all = FloconTheme.spacing.medium),
-                ) {
-                    Text(text = model.downloadedAt, color = Color.White, fontSize = FloconTheme.typography.labelLarge.fontSize)
-                    Text(text = model.url, color = Color.Gray, fontSize = FloconTheme.typography.labelSmall.fontSize)
-                }
-            }
-            AsyncImage(
-                model = remember(model) {
-                    ImageRequest.Builder(PlatformContext.INSTANCE)
-                        .data(model.url)
-                        .httpHeaders(
-                            NetworkHeaders.Builder().apply {
-                                model.headers.forEach { (key, value) ->
-                                    add(key, value)
-                                }
-                            }.build()
-                        )
-                        .build()
-                },
-                contentDescription = "",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-    }
-}
-
-@Composable
 @androidx.compose.ui.tooling.preview.Preview
 private fun ImagesListScreenPreview() {
     FloconTheme {
@@ -313,9 +268,11 @@ private fun ImagesListScreenPreview() {
             onDisplayModeChanged = {},
             onReset = {},
             onClickImage = {},
-            resetClickedImage = {},
             onFilterChanged = {},
-            clickedImage = null,
+            viewer = null,
+            onImageSelected = {},
+            onCopyImageUrl = {},
+            onViewerClosed = {},
             state = previewImagesStateUiModel(),
         )
     }
@@ -330,9 +287,11 @@ private fun ImagesScreenPreview() {
             onDisplayModeChanged = {},
             onReset = {},
             onClickImage = {},
-            resetClickedImage = {},
             onFilterChanged = {},
-            clickedImage = null,
+            viewer = null,
+            onImageSelected = {},
+            onCopyImageUrl = {},
+            onViewerClosed = {},
             state = previewImagesStateUiModel(),
         )
     }
