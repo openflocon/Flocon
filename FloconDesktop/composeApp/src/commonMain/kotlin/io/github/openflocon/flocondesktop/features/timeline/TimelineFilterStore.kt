@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,16 +29,16 @@ internal class TimelineFilterStore(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val textState = MutableStateFlow("")
-    val text: StateFlow<String> = textState.asStateFlow()
+    val text: StateFlow<String>
+        field = MutableStateFlow("")
 
     // the values kept by facet
-    private val facetsState = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
-    val facets: StateFlow<Map<TimelineFacet, Set<String>>> = facetsState.asStateFlow()
+    val facets: StateFlow<Map<TimelineFacet, Set<String>>>
+        field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
 
     // the filter panel only lists what has events
-    private val onlyWithEventsState = MutableStateFlow(false)
-    val onlyWithEvents: StateFlow<Boolean> = onlyWithEventsState.asStateFlow()
+    val onlyWithEvents: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     // read from the settings to wait for the stored selection instead of loading all the sources first
     val storedSources = observeTimelineSettingsUseCase()
@@ -62,11 +61,11 @@ internal class TimelineFilterStore(
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
     fun setText(text: String) {
-        textState.update { text }
+        text.update { text }
     }
 
     fun toggleFacet(facet: TimelineFacet, value: String) {
-        facetsState.update { facets ->
+        facets.update { facets ->
             val values = facets[facet].orEmpty()
             val updated = if (value in values) values - value else values + value
             if (updated.isEmpty()) facets - facet else facets + (facet to updated)
@@ -74,12 +73,12 @@ internal class TimelineFilterStore(
     }
 
     fun setOnlyWithEvents(value: Boolean) {
-        onlyWithEventsState.update { value }
+        onlyWithEvents.update { value }
     }
 
     // the text and the facets, the sources are a setting
     fun clear() {
-        textState.update { "" }
-        facetsState.update { emptyMap() }
+        text.update { "" }
+        facets.update { emptyMap() }
     }
 }
