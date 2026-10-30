@@ -3,28 +3,28 @@ package io.github.openflocon.flocon.database.room3
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.SQLiteDriver
 import androidx.sqlite.SQLiteStatement
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.database.core.databasePlugin
 
-actual fun SQLiteDriver.floconLogs(id: String): SQLiteDriver = FloconLoggingSQLiteDriver(delegate = this, dbId = id)
+actual fun SQLiteDriver.floconLogs(id: String): SQLiteDriver = FloconLoggingSQLiteDriver(delegate = this, dbId = id, logger = DatabasePluginQueryLogger)
 
 internal class FloconLoggingSQLiteDriver(
     private val delegate: SQLiteDriver,
     private val dbId: String,
+    private val logger: QueryLogger,
 ) : SQLiteDriver {
 
     override val hasConnectionPool: Boolean
         get() = delegate.hasConnectionPool
 
-    override fun open(fileName: String): SQLiteConnection = FloconLoggingConnection(delegate.open(fileName), dbId)
+    override fun open(fileName: String): SQLiteConnection = FloconLoggingConnection(delegate.open(fileName), dbId, logger)
 }
 
 private class FloconLoggingConnection(
     private val delegate: SQLiteConnection,
     private val dbId: String,
+    private val logger: QueryLogger,
 ) : SQLiteConnection by delegate {
 
-    override fun prepare(sql: String): SQLiteStatement = FloconLoggingStatement(delegate.prepare(sql), dbId, sql)
+    override fun prepare(sql: String): SQLiteStatement = FloconLoggingStatement(delegate.prepare(sql), dbId, sql, logger)
 }
 
 /**
@@ -34,6 +34,7 @@ private class FloconLoggingStatement(
     private val delegate: SQLiteStatement,
     private val dbId: String,
     private val sql: String,
+    private val logger: QueryLogger,
 ) : SQLiteStatement by delegate {
 
     private val bindArgs = mutableMapOf<Int, Any?>()
@@ -67,7 +68,7 @@ private class FloconLoggingStatement(
     override fun step(): Boolean {
         if (!logged) {
             logged = true
-            Flocon.databasePlugin.logQuery(dbId = dbId, sqlQuery = sql, bindArgs = bindArgs.entries.sortedBy { it.key }.map { it.value })
+            logger.log(dbId = dbId, sql = sql, bindArgs = bindArgs.entries.sortedBy { it.key }.map { it.value })
         }
         return delegate.step()
     }
