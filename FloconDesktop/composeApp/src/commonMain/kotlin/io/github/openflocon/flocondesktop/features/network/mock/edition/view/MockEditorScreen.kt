@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.sebastianneubauer.jsontree.TreeState
@@ -56,7 +54,6 @@ import flocondesktop.composeapp.generated.resources.mock_additional_delay
 import flocondesktop.composeapp.generated.resources.mock_display_name
 import flocondesktop.composeapp.generated.resources.mock_display_name_placeholder
 import flocondesktop.composeapp.generated.resources.mock_edition_subtitle
-import flocondesktop.composeapp.generated.resources.mock_edition_title
 import flocondesktop.composeapp.generated.resources.mock_expectation
 import flocondesktop.composeapp.generated.resources.mock_http_code
 import flocondesktop.composeapp.generated.resources.mock_invalid_regex
@@ -74,9 +71,6 @@ import flocondesktop.composeapp.generated.resources.network_body
 import flocondesktop.composeapp.generated.resources.network_header_method
 import flocondesktop.composeapp.generated.resources.network_headers
 import flocondesktop.composeapp.generated.resources.network_response
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindow
-import io.github.openflocon.flocondesktop.common.ui.window.FloconWindowState
-import io.github.openflocon.flocondesktop.common.ui.window.createFloconWindowState
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.view.NetworkExceptionSelector
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.createEditable
 import io.github.openflocon.flocondesktop.features.network.mock.edition.mapper.editableToUi
@@ -108,47 +102,6 @@ private enum class TestPatternStatus {
 }
 
 @Composable
-fun NetworkEditionWindow(
-    instanceId: String,
-    state: SelectedMockUiModel,
-    onCloseRequest: () -> Unit,
-    onCancel: () -> Unit,
-    onSave: (MockNetworkUiModel) -> Unit,
-) {
-    val windowState: FloconWindowState = remember(instanceId) {
-        createFloconWindowState(
-            size = DpSize(900.dp, 800.dp)
-        )
-    }
-    key(windowState, instanceId) {
-        FloconWindow(
-            title = stringResource(Res.string.mock_edition_title),
-            state = windowState,
-            onCloseRequest = onCloseRequest,
-        ) {
-            NetworkEditionContent(
-                state = state,
-                onCancel = onCancel,
-                onSave = onSave,
-            )
-        }
-    }
-}
-
-@Composable
-fun NetworkEditionContent(
-    onCancel: () -> Unit,
-    onSave: (MockNetworkUiModel) -> Unit,
-    state: SelectedMockUiModel,
-) {
-    MockEditorScreen(
-        initialMock = state,
-        onSave = onSave,
-        onCancel = onCancel,
-    )
-}
-
-@Composable
 fun MockEditorScreen(
     initialMock: SelectedMockUiModel,
     onSave: (MockNetworkUiModel) -> Unit,
@@ -172,31 +125,16 @@ fun MockEditorScreen(
         }
     }
 
+    // the title and the background are the ones of the big dialog
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(FloconTheme.colors.bg100),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = FloconTheme.spacing.large)
-                .padding(top = FloconTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-        ) {
-            Text(
-                text = stringResource(Res.string.mock_edition_title),
-                style = FloconTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = FloconTheme.colors.ink,
-            )
-            Text(
-                text = stringResource(Res.string.mock_edition_subtitle),
-                style = FloconTheme.typography.bodyMedium,
-                color = FloconTheme.colors.inkMuted,
-            )
-        }
+        Text(
+            text = stringResource(Res.string.mock_edition_subtitle),
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colors.inkMuted,
+        )
 
         error?.let {
             Box(

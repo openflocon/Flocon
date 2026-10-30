@@ -7,6 +7,7 @@ import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailV
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
+import io.github.openflocon.flocondesktop.features.network.mock.NetworkMockEditionViewModel
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportMocksProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
@@ -29,6 +30,7 @@ internal val networkModule = module {
     factoryOf(::NetworkItemOptionsDelegate)
 
     viewModelOf(::NetworkMocksViewModel)
+    viewModelOf(::NetworkMockEditionViewModel)
     factoryOf(::ExportMocksProcessor)
     factoryOf(::ImportMocksProcessor)
     factoryOf(::ImportNetworkCallsFromCsvUseCase)

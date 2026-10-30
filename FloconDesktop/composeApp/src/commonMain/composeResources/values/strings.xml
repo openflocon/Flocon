@@ -369,7 +369,6 @@
     <string name="mock_display_name">Display name</string>
     <string name="mock_display_name_placeholder">Enter a display name</string>
     <string name="mock_edition_subtitle">Define which requests are intercepted and what they get back.</string>
-    <string name="mock_edition_title">Mock Edition</string>
     <string name="mock_expectation">Expectation</string>
     <string name="mock_http_code">HTTP Code</string>
     <string name="mock_invalid_regex">Invalid Regex syntax</string>

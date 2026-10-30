@@ -270,7 +270,6 @@
     <string name="mock_display_name">Nom d’affichage</string>
     <string name="mock_display_name_placeholder">Saisir un nom d’affichage</string>
     <string name="mock_edition_subtitle">Définissez les requêtes interceptées et ce qu’elles renvoient.</string>
-    <string name="mock_edition_title">Édition d’un mock</string>
     <string name="mock_expectation">Attente</string>
     <string name="mock_http_code">Code HTTP</string>
     <string name="mock_invalid_regex">Syntaxe de regex invalide</string>
