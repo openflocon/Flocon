@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,8 +19,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
@@ -40,6 +43,8 @@ import io.github.openflocon.library.designsystem.components.floconTableHeader
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
+
+private val DateColumnWidth = 150.dp
 
 @Composable
 fun AnalyticsRow(
@@ -67,18 +72,28 @@ fun AnalyticsRow(
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val inkFaint = FloconTheme.colors.inkFaint
+            val date = remember(model.dateFormatted, inkFaint) {
+                buildAnnotatedString {
+                    append(model.dateFormatted.substringBefore('.'))
+                    withStyle(SpanStyle(color = inkFaint)) {
+                        append(model.dateFormatted.substring(model.dateFormatted.indexOf('.').coerceAtLeast(0)))
+                    }
+                }
+            }
             Text(
-                text = model.dateFormatted,
-                modifier = Modifier.width(110.dp),
-                textAlign = TextAlign.Center,
-                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
-                color = FloconTheme.colors.ink.copy(alpha = 0.4f),
+                text = date,
+                modifier = Modifier
+                    .width(DateColumnWidth)
+                    .padding(horizontal = FloconTheme.spacing.medium),
+                style = FloconTheme.typography.listItemMono,
+                color = FloconTheme.colors.ink,
             )
 
             Text(
                 text = model.eventName,
                 modifier = Modifier.width(200.dp),
-                style = FloconTheme.typography.listItem,
+                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Medium),
                 color = FloconTheme.colors.ink,
             )
 
@@ -87,20 +102,21 @@ fun AnalyticsRow(
                     Row(
                         Modifier
                             .background(
-                                shape = FloconTheme.shapes.extraLarge,
+                                shape = FloconTheme.shapes.small,
                                 color = FloconTheme.colors.bg200
                             )
                             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
                     ) {
                         Text(
-                            text = it.name + " :",
-                            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.Light),
-                            color = FloconTheme.colors.inkMuted,
+                            text = it.name,
+                            style = FloconTheme.typography.listItemMono,
+                            color = FloconTheme.colors.inkFaint,
                         )
+                        Spacer(Modifier.width(FloconTheme.spacing.small))
                         Text(
                             text = it.value,
-                            style = FloconTheme.typography.listItem,
-                            color = FloconTheme.colors.inkMuted,
+                            style = FloconTheme.typography.listItemMono,
+                            color = FloconTheme.colors.ink,
                         )
                     }
                 }
@@ -172,8 +188,9 @@ fun AnalyticsHeader(modifier: Modifier = Modifier) {
     ) {
         FloconTableHeaderLabel(
             text = stringResource(Res.string.date),
-            modifier = Modifier.width(110.dp),
-            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .width(DateColumnWidth)
+                .padding(horizontal = FloconTheme.spacing.medium),
         )
         FloconTableHeaderLabel(
             text = stringResource(Res.string.analytics_column_event),
