@@ -101,4 +101,23 @@ class SharedPreferencesMapperTest {
         // long text is never open
         assertFalse(string("a".repeat(100)).collapsible!!.alwaysOpen)
     }
+
+    @Test
+    fun `json validation`() {
+        assertTrue(isValidJson("""{"a":1}"""))
+        assertTrue(isValidJson("""[1,2]"""))
+        assertFalse(isValidJson("""{"a":"""))
+        assertFalse(isValidJson("plain text"))
+        assertFalse(isValidJson("123"))
+    }
+
+    @Test
+    fun `json formatting`() {
+        val raw = """{"a":1,"b":[true]}"""
+        assertEquals("{\n  \"a\": 1,\n  \"b\": [\n    true\n  ]\n}", formatJson(raw, pretty = true))
+        assertEquals(raw, formatJson(formatJson(raw, pretty = true), pretty = false))
+        // invalid: unchanged
+        assertEquals("{oops", formatJson("{oops", pretty = true))
+        assertEquals("{oops", formatJson("{oops", pretty = false))
+    }
 }

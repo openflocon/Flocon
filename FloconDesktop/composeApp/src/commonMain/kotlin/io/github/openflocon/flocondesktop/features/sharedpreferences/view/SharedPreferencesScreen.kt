@@ -63,7 +63,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
     val viewModel: SharedPreferencesViewModel = koinViewModel()
     val deviceSharedPrefs by viewModel.sharedPrefs.collectAsStateWithLifecycle()
-    val elementToEdit by viewModel.elementToEdit.collectAsStateWithLifecycle()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val autoUpdateState by viewModel.autoUpdateState.collectAsStateWithLifecycle()
 
@@ -80,27 +79,12 @@ fun SharedPreferencesScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         rows = rows,
         changeValue = viewModel::onValueChanged,
-        onEditClicked = { row, stringValue ->
-            viewModel.onEditClicked(row, stringValue)
-        },
+        onEditClicked = viewModel::onEditClicked,
         autoUpdateState = autoUpdateState,
         onAutoUpdateChange = viewModel::onAutoUpdateChange,
         onAutoUpdateDelayChanged = viewModel::onAutoUpdateDelayChanged,
         refreshClicked = viewModel::refreshClicked,
     )
-
-    elementToEdit?.let {
-        SharedPreferenceEditScreen(
-            row = it.row,
-            stringValue = it.stringValue,
-            cancel = {
-                viewModel.cancelEdition()
-            },
-            save = { row, stringValue ->
-                viewModel.onEditDone(row, stringValue)
-            }
-        )
-    }
 }
 
 @Composable
@@ -109,7 +93,7 @@ fun SharedPrefScreen(
     onSharedPrefSelected: (DeviceSharedPrefUiModel) -> Unit,
     rows: SharedPreferencesRowsStateUiModel,
     changeValue: (SharedPreferencesRowUiModel, String) -> Unit,
-    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     autoUpdateState: PreferenceAutoUpdate,
     onAutoUpdateChange: (Boolean) -> Unit,
     onAutoUpdateDelayChanged: (delay: Int) -> Unit,
@@ -265,7 +249,7 @@ private fun SharedPrefScreenPreview() {
             onSharedPrefSelected = {},
             rows = previewSharedPreferencesRowsStateUiModel(),
             changeValue = { _, _ -> },
-            onEditClicked = { _, _ -> },
+            onEditClicked = {},
             autoUpdateState = PreferenceAutoUpdate.Disabled,
             onAutoUpdateChange = {},
             onAutoUpdateDelayChanged = {},

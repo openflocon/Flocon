@@ -363,4 +363,12 @@
     <string name="preferences_clear_filter">Effacer le filtre</string>
     <string name="preference_increment">Incrémenter</string>
     <string name="preference_decrement">Décrémenter</string>
+    <string name="preference_tab_formatted">Formaté</string>
+    <string name="preference_tab_raw">Brut</string>
+    <string name="preference_type_json">JSON</string>
+    <string name="preference_type_text">Texte</string>
+    <string name="preference_send_to_app">Envoyer à l\'app ⌘↵</string>
+    <string name="preference_status_modified">● Modifié</string>
+    <string name="preference_status_modified_valid">● Modifié · JSON valide</string>
+    <string name="preference_status_invalid">● JSON invalide</string>
 </resources>

@@ -137,3 +137,15 @@ internal fun byteSizeLabel(bytes: Int): String = when {
 
 /** 1000 -> "1s", 2500 -> "2500ms" */
 internal fun delayLabel(delayMs: Int): String = if (delayMs % 1000 == 0) "${delayMs / 1000}s" else "${delayMs}ms"
+
+internal fun isValidJson(text: String): Boolean = parseJson(text) != null
+
+/** Pretty (2 spaces) or compact version of a json, the text itself when it is not a valid json. */
+internal fun formatJson(text: String, pretty: Boolean): String {
+    val json = parseJson(text) ?: return text
+    return if (pretty) {
+        prettyJson.encodeToString(JsonElement.serializer(), json)
+    } else {
+        Json.encodeToString(JsonElement.serializer(), json)
+    }
+}

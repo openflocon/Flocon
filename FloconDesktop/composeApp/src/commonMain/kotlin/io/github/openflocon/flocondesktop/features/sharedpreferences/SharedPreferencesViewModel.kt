@@ -10,17 +10,16 @@ import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceShar
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.flocondesktop.features.sharedpreferences.delegate.SharedPrefSelectorDelegate
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.DeviceSharedPrefUiModel
-import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferenceToEdit
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPreferencesRowsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -36,10 +35,8 @@ class SharedPreferencesViewModel(
     private val observeCurrentDeviceSharedPreferenceValuesUseCase: ObserveCurrentDeviceSharedPreferenceValuesUseCase,
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
     private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
+    private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
-
-    private val _elementToEdit = MutableStateFlow<SharedPreferenceToEdit?>(null)
-    val elementToEdit = _elementToEdit.asStateFlow()
 
     val sharedPrefs: StateFlow<SharedPrefsStateUiModel> =
         sharedPrefSelectorDelegate.deviceSharedPrefs
@@ -188,19 +185,7 @@ class SharedPreferencesViewModel(
         }
     }
 
-    fun onEditClicked(
-        row: SharedPreferencesRowUiModel,
-        stringValue: SharedPreferencesRowUiModel.Value.StringValue
-    ) {
-        _elementToEdit.update { SharedPreferenceToEdit(row, stringValue) }
-    }
-
-    fun cancelEdition() {
-        _elementToEdit.update { null }
-    }
-
-    fun onEditDone(row: SharedPreferencesRowUiModel, stringValue: String) {
-        onValueChanged(row, stringValue)
-        _elementToEdit.update { null }
+    fun onEditClicked(row: SharedPreferencesRowUiModel) {
+        navigationState.navigate(SharedPreferencesRoutes.Edit(row.key))
     }
 }

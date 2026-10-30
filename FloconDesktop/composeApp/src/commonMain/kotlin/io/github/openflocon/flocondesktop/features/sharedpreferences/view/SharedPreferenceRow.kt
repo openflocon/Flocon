@@ -108,7 +108,7 @@ fun SharedPreferenceRow(
     isExpanded: Boolean,
     onToggleExpanded: (key: String) -> Unit,
     onValueChanged: (row: SharedPreferencesRowUiModel, valueString: String) -> Unit,
-    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -151,7 +151,7 @@ fun SharedPreferenceRow(
             key = {
                 Text(
                     text = model.key,
-                    style = FloconTheme.typography.monoSmall,
+                    style = FloconTheme.typography.monoMedium.copy(fontWeight = FontWeight.Medium),
                     color = colors.ink,
                     modifier = Modifier.weight(KeyColumnWeight),
                 )
@@ -240,7 +240,7 @@ private fun RowScope.RowActions(
     isExpanded: Boolean,
     onCancel: () -> Unit,
     onSave: () -> Unit,
-    onEditClicked: (row: SharedPreferencesRowUiModel, stringValue: SharedPreferencesRowUiModel.Value.StringValue) -> Unit,
+    onEditClicked: (row: SharedPreferencesRowUiModel) -> Unit,
 ) {
     val colors = FloconTheme.colors
     val value = model.value
@@ -288,7 +288,7 @@ private fun RowScope.RowActions(
             ActionButton(
                 icon = Icons.Outlined.Edit,
                 tooltip = stringResource(Res.string.preference_edit),
-                onClick = { onEditClicked(model, value) },
+                onClick = { onEditClicked(model) },
                 containerColor = colors.bg300,
                 contentColor = colors.ink,
                 borderColor = colors.lineStrong,
@@ -342,10 +342,11 @@ private fun PreferenceSwitch(
             .clip(shape)
             .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
             .pointerHoverIcon(PointerIcon.Hand),
+        contentAlignment = Alignment.CenterStart,
     ) {
         Box(
             Modifier
-                .offset(x = thumbOffset - 1.dp, y = 1.dp)
+                .offset(x = thumbOffset)
                 .size(16.dp)
                 .background(thumbColor, CircleShape),
         )
@@ -490,7 +491,7 @@ private fun PreferenceValueField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        textStyle = FloconTheme.typography.monoSmall.copy(color = colors.ink, fontSize = MonoSmall),
+        textStyle = FloconTheme.typography.monoMedium.copy(color = colors.ink),
         cursorBrush = SolidColor(colors.accent),
         modifier = modifier
             .height(ActionSize)
@@ -620,7 +621,7 @@ private fun PreviewRow(model: SharedPreferencesRowUiModel, isExpanded: Boolean =
                 isExpanded = isExpanded,
                 onToggleExpanded = {},
                 onValueChanged = { _, _ -> },
-                onEditClicked = { _, _ -> },
+                onEditClicked = {},
             )
         }
     }
