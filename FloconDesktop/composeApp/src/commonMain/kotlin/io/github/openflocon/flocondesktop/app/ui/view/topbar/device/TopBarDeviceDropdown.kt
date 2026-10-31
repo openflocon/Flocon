@@ -27,6 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TopBarDeviceDropdown(
     state: DevicesStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
+    onOpenInNewWindow: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,6 +70,10 @@ internal fun TopBarDeviceDropdown(
                         selected = state.deviceSelected.id == device.id,
                         onClick = {
                             onDeviceSelected(device)
+                            expanded = false
+                        },
+                        onOpenInNewWindow = {
+                            onOpenInNewWindow(device)
                             expanded = false
                         },
                         deleteClick = {

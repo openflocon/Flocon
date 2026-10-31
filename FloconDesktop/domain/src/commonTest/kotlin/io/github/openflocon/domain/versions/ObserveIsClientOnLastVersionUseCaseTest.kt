@@ -11,7 +11,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.SelectedCurrentDeviceIdProvider
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -120,9 +120,9 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     }
 
     private fun createObserveSdkUseCase(devicesRepo: DevicesRepository): ObserveCurrentDeviceFloconSdkVersionNameUseCase {
-        val observeCurrentDeviceIdUseCase = ObserveCurrentDeviceIdUseCase(devicesRepo)
+        val currentDeviceIdProvider = SelectedCurrentDeviceIdProvider(devicesRepo)
         val observeCurrentDeviceIdAndPackageNameUseCase = ObserveCurrentDeviceIdAndPackageNameUseCase(
-            observeCurrentDeviceIdUseCase = observeCurrentDeviceIdUseCase,
+            currentDeviceIdProvider = currentDeviceIdProvider,
             devicesRepository = devicesRepo,
         )
         return ObserveCurrentDeviceFloconSdkVersionNameUseCase(
