@@ -127,7 +127,23 @@ Until a desktop is reachable, everything the plugins log is kept in memory. `Flo
 
 ### Connecting with a QR code
 
-The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`. Scanning it from the SDK is not available yet.
+The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`.
+
+On Android, the optional `flocon-qr-scanner` module scans it for you, so nobody has to type the IP. It opens the Google code scanner, a screen of Google Play Services, so the app needs no camera permission but the device needs Google Play Services:
+
+```kotlin
+debugImplementation("io.github.openflocon:flocon-qr-scanner:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-qr-scanner-no-op:LAST_VERSION")
+```
+
+```kotlin
+import io.github.openflocon.flocon.qrscanner.scanQrCodeAndConnect
+
+// from a button of a debug menu
+val result = Flocon.scanQrCodeAndConnect(activity)
+```
+
+`scanQrCodeAndConnect` is a `suspend` function. It returns the `FloconConnectResult` of the connection (a failed scan, for example without Google Play Services, is a `Failed`), or `null` if the user closed the scanner without scanning. If you scan with your own screen, give the text you read to `Flocon.connectWithQrCode(content)`: the content is the IP address, or a URL whose host is that address (the scheme, the port and the path are ignored).
 
 Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
 
