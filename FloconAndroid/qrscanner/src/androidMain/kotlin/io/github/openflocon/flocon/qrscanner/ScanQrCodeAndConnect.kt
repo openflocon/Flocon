@@ -30,7 +30,7 @@ suspend fun Flocon.Companion.scanQrCodeAndConnect(context: Context): FloconConne
         is Scan.Code -> connectWithQrCode(scan.content)
     }
 
-private sealed interface Scan {
+private sealed interface ScanQrCodeResult {
     data class Code(val content: String) : Scan
     data object Cancelled : Scan
     data class Failed(val reason: String) : Scan
