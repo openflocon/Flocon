@@ -7,14 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,25 +23,20 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreen
 import io.github.openflocon.flocondesktop.features.database.model.DatabasesStateUiModel
 import io.github.openflocon.flocondesktop.features.database.model.filterByQuery
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.floconPanel
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DatabasesAndTables(
     state: DatabasesStateUiModel,
+    filter: String,
     favorites: ImmutableList<DatabaseFavoriteQueryUiModel>,
     onAction: (DatabaseScreenAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val borderColor = FloconTheme.colors.line
-    var filter by rememberSaveable { mutableStateOf("") }
 
-    Surface(
-        color = FloconTheme.colors.islandSidebar,
-        modifier = modifier
-            .floconPanel()
-    ) {
+    Column(modifier) {
         Column(
             Modifier.fillMaxSize()
         ) {
@@ -55,10 +45,6 @@ fun DatabasesAndTables(
                     .padding(all = FloconTheme.spacing.small),
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
             ) {
-                DatabaseFilterField(
-                    value = filter,
-                    onValueChange = { filter = it },
-                )
                 Text(
                     stringResource(Res.string.database_sidebar_title),
                     color = FloconTheme.colors.inkFaint,

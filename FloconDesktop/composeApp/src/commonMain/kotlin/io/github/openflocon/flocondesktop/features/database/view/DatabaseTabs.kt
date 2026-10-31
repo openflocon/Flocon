@@ -22,9 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
@@ -51,17 +48,10 @@ fun DatabaseTabs(
     onAction: (DatabaseTabViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lineColor = FloconTheme.colors.line
     LazyRow(
-        modifier = modifier.drawBehind {
-            drawRect(
-                color = lineColor,
-                topLeft = Offset(0f, size.height - 1.dp.toPx()),
-                size = Size(size.width, 1.dp.toPx()),
-            )
-        },
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
         items(tabs) {
             DatabaseTabItem(
@@ -80,10 +70,7 @@ private fun DatabaseTabItem(
     onAction: (DatabaseTabViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(
-        topStart = 6.dp,
-        topEnd = 6.dp,
-    )
+    val shape = RoundedCornerShape(6.dp)
     val contentColor = if (state == selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
     // the labels are resolved here: the menu is built outside of the composition
     val close = stringResource(Res.string.close)
@@ -115,7 +102,6 @@ private fun DatabaseTabItem(
             }
         }
     ) {
-        // the selected tab has the color of the box under it
         val background = if (state == selected) FloconTheme.colors.bg100 else Color.Transparent
         Row(
             modifier = modifier
