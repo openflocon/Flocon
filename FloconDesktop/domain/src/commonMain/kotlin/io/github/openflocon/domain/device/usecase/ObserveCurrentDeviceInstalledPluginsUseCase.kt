@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.map
  */
 class ObserveCurrentDeviceInstalledPluginsUseCase(
     private val devicesRepository: DevicesRepository,
+    private val currentDeviceIdProvider: CurrentDeviceIdProvider,
 ) {
-    operator fun invoke(): Flow<Set<String>?> = devicesRepository.observeCurrentDevice()
+    operator fun invoke(): Flow<Set<String>?> = devicesRepository.observeDevice(currentDeviceIdProvider)
         .flatMapLatest { device ->
             if (device == null) {
                 flowOf(null)

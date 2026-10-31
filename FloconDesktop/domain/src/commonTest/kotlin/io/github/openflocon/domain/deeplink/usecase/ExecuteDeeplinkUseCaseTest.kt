@@ -20,6 +20,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.SelectedCurrentDeviceIdProvider
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
@@ -100,7 +101,7 @@ class ExecuteDeeplinkUseCaseTest {
             ),
         )
         private val getCurrentDeviceIdAndPackageNameUseCase = GetCurrentDeviceIdAndPackageNameUseCase(
-            getCurrentDeviceIdUseCase = GetCurrentDeviceIdUseCase(devicesRepository),
+            getCurrentDeviceIdUseCase = GetCurrentDeviceIdUseCase(SelectedCurrentDeviceIdProvider(devicesRepository)),
             devicesRepository = devicesRepository,
         )
 

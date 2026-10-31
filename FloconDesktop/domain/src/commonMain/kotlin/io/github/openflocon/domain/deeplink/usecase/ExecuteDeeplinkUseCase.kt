@@ -11,6 +11,7 @@ import io.github.openflocon.domain.device.models.isPlatformIos
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
+import kotlinx.coroutines.flow.first
 
 class ExecuteDeeplinkUseCase(
     private val executeAdbCommandUseCase: ExecuteAdbCommandUseCase,
@@ -62,8 +63,8 @@ class ExecuteDeeplinkUseCase(
     }
 
     private suspend fun open(deeplink: String, current: DeviceIdAndPackageNameDomainModel): Either<Throwable, String> {
-        val isIos = devicesRepository.getCurrentDevice()
-            ?.takeIf { it.deviceId == current.deviceId }
+        val isIos = devicesRepository.devices.first()
+            .firstOrNull { it.deviceId == current.deviceId }
             ?.isPlatformIos() == true
 
         return if (isIos) {
