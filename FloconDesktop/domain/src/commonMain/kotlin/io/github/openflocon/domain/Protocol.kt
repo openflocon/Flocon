@@ -149,6 +149,8 @@ object Protocol {
                 const val GetFocusedNode = "get_focused_node"
                 const val FocusNext = "focus_next"
                 const val FocusPrevious = "focus_previous"
+                const val EnableTalkBack = "enable_talkback"
+                const val DisableTalkBack = "disable_talkback"
             }
         }
 

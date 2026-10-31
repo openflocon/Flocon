@@ -10,4 +10,6 @@ data class AccessibilityStateDomainModel(
     val enabled: Boolean,
     val touchExploration: Boolean,
     val services: List<String>,
+    /** true: the app can turn TalkBack on and off by itself, otherwise it needs a permission granted with adb first */
+    val canToggleTalkBack: Boolean = false,
 )

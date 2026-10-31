@@ -10,6 +10,8 @@
 | Desktop → Mobile | `GetFocusedNode` | empty |
 | Desktop → Mobile | `FocusNext`  | empty |
 | Desktop → Mobile | `FocusPrevious` | empty |
+| Desktop → Mobile | `EnableTalkBack` | empty |
+| Desktop → Mobile | `DisableTalkBack` | empty |
 
 ## `AddEvents` (Mobile → Desktop)
 
@@ -28,6 +30,22 @@ Body is a **JSON array** of `AccessibilityItem`. The SDK sends one message per e
 | `bounds`             | `String?`             | Bounds of the element on screen, ex: `[0,0][100,50]`                                                 |
 | `extras`             | `Map<String, String>` | Platform specific details (hint, traits, assistive technology...). Omitted when empty                |
 | `createdAt`          | `Long`                | Event timestamp (ms)                                                                                 |
+
+### What a screen reader knows about the element (`extras`)
+
+On Android, the events that come from an element (focus, `CLICK`...), the elements of the focus order and the focused element carry these keys in `extras`, each only when it tells something:
+
+| Key | Description |
+|---|---|
+| `spoken` | What a screen reader would likely say: label, role, state, hint, then what a double tap does (ex: `Add to cart, Button, double tap to activate`). A reconstruction: the app cannot hear the screen reader, and its settings change what it says |
+| `role` | How the kind of element is read: `Button`, `Check box`, `Switch`, `Edit box`... |
+| `stateDescription` | State of the element: the state description of the app, or `checked` / `not checked` / `on` / `off` |
+| `hint` | Hint of the element (Views) |
+| `clickLabel` | What the click does, when the app says it |
+| `clickable`, `selected`, `heading` | `"true"` when the element is |
+| `enabled` | `true` / `false` |
+| `lostFocus` | `"true"` on a `VIEW_ACCESSIBILITY_FOCUS_CLEARED` event: the other fields (text, class, bounds, extras) describe the element that had the focus, not one that has it now |
+| `customActions` | Labels of the custom actions, separated by ` \| ` |
 
 ### `CLICK` events
 
@@ -71,6 +89,7 @@ Body is a single `AccessibilityStateItem`. The SDK sends it when the plugin is i
 | `enabled`          | `Boolean`      | `true` when an assistive technology is on (TalkBack, VoiceOver, Switch Control...)       |
 | `touchExploration` | `Boolean`      | `true` when touch exploration is on (TalkBack explore by touch, VoiceOver)               |
 | `services`         | `List<String>` | Enabled accessibility services (Android service ids, `VoiceOver`, `SwitchControl` on iOS) |
+| `canToggleTalkBack` | `Boolean`     | `true` when the app can turn TalkBack on and off (Android, `WRITE_SECURE_SETTINGS` granted). Omitted (`false`) otherwise |
 
 ### Example
 
@@ -101,3 +120,7 @@ The element the screen reader is on. Sent each time the accessibility focus chan
 ## `GetFocusedNode`, `FocusNext`, `FocusPrevious` (Desktop → Mobile)
 
 Empty body. `FocusNext` / `FocusPrevious` give the accessibility focus to the next / previous element of the focus order of the resumed screen, without wrapping, then reply with `FocusedNode`. The SDK builds the focus order itself (Views, and the merged semantics tree of Compose), so it can differ slightly from TalkBack's. It only works while an assistive technology is on: without one there is no accessibility focus. Android only, other platforms reply with an empty `FocusedNode`.
+
+## `EnableTalkBack`, `DisableTalkBack` (Desktop → Mobile)
+
+Empty body. The SDK adds TalkBack to (or removes it from) the enabled accessibility services of the device, the other services are kept, then replies with a `State`. Android only, and only when `canToggleTalkBack` is `true`: the app needs the `WRITE_SECURE_SETTINGS` permission, which only adb can grant (`adb shell pm grant <package> android.permission.WRITE_SECURE_SETTINGS`). The `accessibility` module declares it in its manifest, the `accessibility-no-op` one does not. The desktop grants it with adb the first time. Other platforms ignore these messages.

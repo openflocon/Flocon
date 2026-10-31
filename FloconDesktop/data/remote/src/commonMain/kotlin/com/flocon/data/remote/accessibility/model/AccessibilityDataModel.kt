@@ -21,6 +21,7 @@ data class AccessibilityStateDataModel(
     val enabled: Boolean,
     val touchExploration: Boolean = false,
     val services: List<String>? = emptyList(),
+    val canToggleTalkBack: Boolean = false,
 )
 
 @Serializable

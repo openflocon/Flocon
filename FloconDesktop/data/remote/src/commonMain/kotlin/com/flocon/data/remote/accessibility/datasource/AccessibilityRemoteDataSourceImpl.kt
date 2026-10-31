@@ -53,6 +53,7 @@ private fun AccessibilityStateDataModel.toDomain() = AccessibilityStateDomainMod
     enabled = enabled,
     touchExploration = touchExploration,
     services = services.orEmpty(),
+    canToggleTalkBack = canToggleTalkBack,
 )
 
 private fun AccessibilityFocusedNodeDataModel.toDomain() = AccessibilityFocusedNodeDomainModel(

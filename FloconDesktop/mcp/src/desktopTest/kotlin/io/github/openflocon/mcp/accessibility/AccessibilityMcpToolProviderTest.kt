@@ -250,6 +250,10 @@ private class FakeAccessibilityRepository(
 
     override suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = moveFocus(-1)
 
+    override suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean) {
+        // the device answers with its new state: nothing changes
+    }
+
     private fun moveFocus(step: Int) {
         val index = focusedNode.value?.index ?: return
         if (index + step in 0..2) focusedNode.value = focusOrderElement(index + step)

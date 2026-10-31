@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Lets the debug SDK turn TalkBack on and off. Only granted with `adb shell pm grant`; release builds use accessibility-no-op -->
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- to know which TalkBack is installed -->
+    <queries>
+        <package android:name="com.google.android.marvin.talkback" />
+        <package android:name="com.samsung.android.accessibility.talkback" />
+    </queries>
+</manifest>

@@ -214,7 +214,7 @@ private fun View.toClickEvent(screen: String): AccessibilityEvent {
         extras = buildMap {
             put("source", "view")
             resourceEntryName()?.let { put("viewId", it) }
-            put("enabled", isEnabled.toString())
+            putAll(toNodeDetails(label = text ?: contentDescription).toExtras())
             if (text == null && contentDescription == null) put("missingLabel", "true")
         },
     )

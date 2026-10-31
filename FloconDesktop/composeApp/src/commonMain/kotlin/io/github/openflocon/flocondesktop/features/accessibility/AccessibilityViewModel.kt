@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.accessibility_remote_toggle_talkback_error
 import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventsUseCase
@@ -13,7 +15,9 @@ import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAcc
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
 import io.github.openflocon.domain.accessibility.usecase.RefreshAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
+import io.github.openflocon.domain.accessibility.usecase.SetTalkBackEnabledUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.accessibility.mapper.mapToBannerUi
 import io.github.openflocon.flocondesktop.features.accessibility.mapper.mapToUi
@@ -37,6 +41,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class AccessibilityViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -46,6 +51,8 @@ class AccessibilityViewModel(
     observeCurrentDeviceAccessibilityFocusedNodeUseCase: ObserveCurrentDeviceAccessibilityFocusedNodeUseCase,
     private val focusNextAccessibilityNodeUseCase: FocusNextAccessibilityNodeUseCase,
     private val focusPreviousAccessibilityNodeUseCase: FocusPreviousAccessibilityNodeUseCase,
+    private val setTalkBackEnabledUseCase: SetTalkBackEnabledUseCase,
+    private val feedbackDisplayer: FeedbackDisplayer,
     private val refreshAccessibilityFocusedNodeUseCase: RefreshAccessibilityFocusedNodeUseCase,
     private val resetCurrentDeviceAccessibilityEventsUseCase: ResetCurrentDeviceAccessibilityEventsUseCase,
     private val navigationState: MainFloconNavigationState,
@@ -71,6 +78,11 @@ class AccessibilityViewModel(
     // the focus can only be moved while a screen reader is running on the device
     val canMoveFocus: StateFlow<Boolean> = banner
         .map { it is AccessibilityBannerUiModel.Running }
+        .stateInWhileSubscribed(false)
+
+    // another service alone (Switch Access...) is not TalkBack
+    val talkBackOn: StateFlow<Boolean> = banner
+        .map { it is AccessibilityBannerUiModel.Running && it.services.any { id -> id.contains("talkback", ignoreCase = true) } }
         .stateInWhileSubscribed(false)
 
     // null: nothing has the accessibility focus
@@ -124,8 +136,21 @@ class AccessibilityViewModel(
 
                 AccessibilityAction.OnFocusPreviousClicked -> focusPreviousAccessibilityNodeUseCase()
 
+                is AccessibilityAction.OnTalkBackToggled -> setTalkBackEnabled(action.enabled)
+
                 AccessibilityAction.OnRefreshFocusedNodeClicked -> refreshAccessibilityFocusedNodeUseCase()
             }
+        }
+    }
+
+    // the device tells by itself once TalkBack changed, which updates the banner and so the switch
+    private suspend fun setTalkBackEnabled(enabled: Boolean) {
+        setTalkBackEnabledUseCase(enabled).alsoFailure {
+            it.printStackTrace()
+            feedbackDisplayer.displayMessage(
+                message = getString(Res.string.accessibility_remote_toggle_talkback_error, it.message.orEmpty()),
+                type = FeedbackDisplayer.MessageType.Error,
+            )
         }
     }
 }

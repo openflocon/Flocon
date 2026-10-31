@@ -73,6 +73,7 @@ class RowNavigationTest {
         assertNull(previewTimelineRowUiModel(TimelineSource.Network, title = "https://acme.io").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.AppStart, title = "").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.WebView, title = "log from the page").linkKey())
+        assertNull(previewTimelineRowUiModel(TimelineSource.Accessibility, title = "Pay now").linkKey())
     }
 
     private val linkRows = listOf(

@@ -9,6 +9,7 @@ import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAcc
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
 import io.github.openflocon.domain.accessibility.usecase.RefreshAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
+import io.github.openflocon.domain.accessibility.usecase.SetTalkBackEnabledUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -22,4 +23,5 @@ internal val accessibilityModule = module {
     factoryOf(::FocusNextAccessibilityNodeUseCase)
     factoryOf(::FocusPreviousAccessibilityNodeUseCase)
     factoryOf(::RefreshAccessibilityFocusedNodeUseCase)
+    factoryOf(::SetTalkBackEnabledUseCase)
 }

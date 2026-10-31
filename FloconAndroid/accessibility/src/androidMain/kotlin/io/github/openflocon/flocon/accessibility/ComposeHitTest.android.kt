@@ -64,9 +64,6 @@ internal object ComposeHitTest {
             ?.takeIf { it.isNotBlank() }
         val role = config.getOrNull(SemanticsProperties.Role)?.toString()
         val testTag = config.getOrNull(SemanticsProperties.TestTag)
-        val stateDescription = config.getOrNull(SemanticsProperties.StateDescription)
-        val clickLabel = config.getOrNull(SemanticsActions.OnClick)?.label
-        val enabled = !config.contains(SemanticsProperties.Disabled)
 
         val bounds = boundsInWindow
         val boundsOnScreen = "[${(bounds.left + offsetX).toInt()},${(bounds.top + offsetY).toInt()}]" +
@@ -82,9 +79,7 @@ internal object ComposeHitTest {
             extras = buildMap {
                 put("source", "compose")
                 testTag?.let { put("testTag", it) }
-                stateDescription?.let { put("stateDescription", it) }
-                clickLabel?.let { put("clickLabel", it) }
-                put("enabled", enabled.toString())
+                putAll(toNodeDetails(label = text ?: contentDescription).toExtras())
                 if (text == null && contentDescription == null) put("missingLabel", "true")
             },
         )
