@@ -22,6 +22,12 @@ Features are split across modules, one package per feature (e.g. `featureflags`)
 - Use cases are single-purpose classes exposing `operator fun invoke(...)`, named `<Verb><Subject>UseCase` (e.g. `ObserveCurrentDeviceFeatureFlagsUseCase`).
 - Register every new class in the layer's `DI.kt` (Koin) and include that module from the parent `DI.kt`.
 
+## Current device & windows
+A window opened for a device is a Koin scope (`DeviceWindowScope`, `composeApp/.../window/DeviceWindowScope.kt`) pinned to that device; the main window follows the device selected in the top bar.
+- Use cases, delegates and ViewModels are `factory` / `viewModel` of the root: resolved from the scope they are built with it, so they follow the window. Keep them that way.
+- Read the current device only through `CurrentDeviceIdProvider` (via `ObserveCurrentDeviceIdUseCase`, `GetCurrentDeviceIdUseCase`, `ObserveCurrentDeviceIdAndPackageNameUseCase`). Never `DevicesRepository.currentDeviceId` / `getCurrentDeviceId()` / `observeCurrentDevice()` in a use case.
+- A `single` is built once, with the root, and never sees the scope. A new `single` that depends on the current device, or holds the state of a window (navigation, filters, selection), is declared again in `deviceWindowModule` as `scoped`.
+
 ## UI
 See `compose.md`.
 

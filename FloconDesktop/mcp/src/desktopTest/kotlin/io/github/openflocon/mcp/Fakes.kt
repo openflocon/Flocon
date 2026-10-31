@@ -10,6 +10,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.SelectedCurrentDeviceIdProvider
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
@@ -155,7 +156,7 @@ internal class FakeNetworkRepository(
 internal fun targetResolver(devicesRepository: DevicesRepository) = McpTargetResolver(
     devicesRepository = devicesRepository,
     getCurrentDeviceIdAndPackageNameUseCase = GetCurrentDeviceIdAndPackageNameUseCase(
-        getCurrentDeviceIdUseCase = GetCurrentDeviceIdUseCase(devicesRepository),
+        getCurrentDeviceIdUseCase = GetCurrentDeviceIdUseCase(SelectedCurrentDeviceIdProvider(devicesRepository)),
         devicesRepository = devicesRepository,
     ),
 )

@@ -2,28 +2,34 @@ package io.github.openflocon.flocondesktop.window
 
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.usecase.CurrentDeviceIdProvider
+import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.koin.core.Koin
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class DeviceWindowScopeTest {
 
+    // like the domain: the use cases are factories of the root, built from the provider
     private val koin: Koin = koinApplication {
         modules(
             module {
                 single<CurrentDeviceIdProvider> {
                     object : CurrentDeviceIdProvider {
                         override fun observe(): Flow<DeviceId?> = flowOf("selected")
+                        override suspend fun get(): DeviceId? = "selected"
                     }
                 }
+                factoryOf(::ObserveCurrentDeviceIdUseCase)
+                factoryOf(::GetCurrentDeviceIdUseCase)
             },
             deviceWindowModule,
         )
@@ -37,16 +43,18 @@ class DeviceWindowScopeTest {
 
     @Test
     fun `the root follows the selected device`() = runBlocking {
-        assertEquals("selected", koin.get<CurrentDeviceIdProvider>().observe().first())
+        assertEquals("selected", koin.get<ObserveCurrentDeviceIdUseCase>()().first())
+        assertEquals("selected", koin.get<GetCurrentDeviceIdUseCase>()())
     }
 
     @Test
-    fun `a device window is pinned to its device`() = runBlocking {
+    fun `the use cases of the root follow the device of the window`() = runBlocking {
         val scope = koin.deviceWindow("A")
 
-        assertEquals("A", scope.get<CurrentDeviceIdProvider>().observe().first())
+        assertEquals("A", scope.get<ObserveCurrentDeviceIdUseCase>()().first())
+        assertEquals("A", scope.get<GetCurrentDeviceIdUseCase>()())
         // the root is not changed by the window
-        assertEquals("selected", koin.get<CurrentDeviceIdProvider>().observe().first())
+        assertEquals("selected", koin.get<ObserveCurrentDeviceIdUseCase>()().first())
     }
 
     @Test
@@ -54,9 +62,7 @@ class DeviceWindowScopeTest {
         val first = koin.deviceWindow("A")
         val second = koin.deviceWindow("B")
 
-        assertNotEquals(
-            first.get<CurrentDeviceIdProvider>().observe().first(),
-            second.get<CurrentDeviceIdProvider>().observe().first(),
-        )
+        assertEquals("A", first.get<ObserveCurrentDeviceIdUseCase>()().first())
+        assertEquals("B", second.get<ObserveCurrentDeviceIdUseCase>()().first())
     }
 }
