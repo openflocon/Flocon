@@ -9,13 +9,17 @@ import io.github.openflocon.flocondesktop.app.capture.WindowCaptureController
 import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.LogManagerImpl
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerImpl
+import io.github.openflocon.flocondesktop.window.DeviceWindowsController
+import io.github.openflocon.flocondesktop.window.deviceWindowModule
 import io.github.openflocon.mcp.capture.FloconWindowCapturer
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val appModule = module {
-    includes(appUiModule)
+    includes(appUiModule, deviceWindowModule)
+
+    singleOf(::DeviceWindowsController)
 
     singleOf(::FeedbackDisplayerImpl) {
         bind<FeedbackDisplayer>()

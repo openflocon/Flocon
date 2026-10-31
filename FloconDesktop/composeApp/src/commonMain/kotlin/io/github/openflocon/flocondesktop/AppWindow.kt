@@ -6,8 +6,8 @@ import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flocon.data.remote.dataRemoteModule
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
@@ -35,8 +35,12 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+/**
+ * Starts Koin for the whole application: it has to be above the windows, which all share it.
+ * The windows opened for a device are scopes of it, see [io.github.openflocon.flocondesktop.window.DeviceWindowScope].
+ */
 @Composable
-fun App() {
+fun FloconKoinApplication(content: @Composable () -> Unit) {
     ComposeFoundationFlags.isNewContextMenuEnabled = true
 
     KoinApplication(
@@ -53,35 +57,37 @@ fun App() {
                 mcpModule,
                 // Temporary
                 module {
-//                    scope<MainRoutes.Sub> {
-//                        scoped { MainFloconNavigationState(MainRoutes.Main) }
-//                    }
                     single { MainFloconNavigationState(TimelineRoutes.Main) }
                     singleOf(::AdbRepositoryImpl) bind AdbRepository::class
                     singleOf(::IosSimulatorRepositoryImpl) bind IosSimulatorRepository::class
                 },
             )
         },
-    ) {
-        val appScale by koinInject<ObserveAppScaleUseCase>()()
-            .collectAsStateWithLifecycle()
-        val theme by koinInject<ObserveThemeUseCase>()()
-            .collectAsStateWithLifecycle()
-        val isDarkTheme = when (theme) {
-            ThemeSetting.Dark -> true
-            ThemeSetting.Light -> false
-            ThemeSetting.System -> isSystemInDarkTheme()
-        }
+        content = content,
+    )
+}
 
-//        KoinScope(
-//            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
-//        ) {
-        FloconTheme(
-            appScale = appScale.toAppScale(),
-            isDarkTheme = isDarkTheme,
-        ) {
-            AppScreen()
-        }
-//        }
+/** The theme chosen in the settings. Read without a lifecycle: it can sit above the windows, which provide it. */
+@Composable
+fun FloconAppTheme(content: @Composable () -> Unit) {
+    val appScale by koinInject<ObserveAppScaleUseCase>()().collectAsState()
+    val theme by koinInject<ObserveThemeUseCase>()().collectAsState()
+    val isDarkTheme = when (theme) {
+        ThemeSetting.Dark -> true
+        ThemeSetting.Light -> false
+        ThemeSetting.System -> isSystemInDarkTheme()
+    }
+
+    FloconTheme(
+        appScale = appScale.toAppScale(),
+        isDarkTheme = isDarkTheme,
+        content = content,
+    )
+}
+
+@Composable
+fun App() {
+    FloconAppTheme {
+        AppScreen()
     }
 }

@@ -33,6 +33,7 @@ internal fun TopBarDeviceAndApp(
     devicesState: DevicesStateUiModel,
     appsState: AppsStateUiModel,
     onDeviceSelected: (DeviceItemUiModel) -> Unit,
+    onOpenDeviceInNewWindow: (DeviceItemUiModel) -> Unit,
     deleteDevice: (DeviceItemUiModel) -> Unit,
     onAppSelected: (DeviceAppUiModel) -> Unit,
     deleteApp: (DeviceAppUiModel) -> Unit,
@@ -55,6 +56,7 @@ internal fun TopBarDeviceAndApp(
             TopBarDeviceDropdown(
                 state = devicesState,
                 onDeviceSelected = onDeviceSelected,
+                onOpenInNewWindow = onOpenDeviceInNewWindow,
                 deleteDevice = deleteDevice,
             )
 
