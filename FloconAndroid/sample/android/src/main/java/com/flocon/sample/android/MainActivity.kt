@@ -32,6 +32,7 @@ import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.ui.App
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleQrScanner
 import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures
 import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleWebView
 import io.github.openflocon.flocon.webview.FloconWebView
@@ -42,6 +43,7 @@ import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.connect
+import io.github.openflocon.flocon.qrscanner.scanQrCodeAndConnect
 import io.github.openflocon.flocon.startFlocon
 import io.github.openflocon.flocon.tables.FloconTable
 import io.ktor.client.HttpClient
@@ -114,6 +116,7 @@ class MainActivity : ComponentActivity() {
         AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
         AndroidTestContext.grpcSayHello = { GrpcController.sayHello() }
         registerAndroidSampleFeatures(applicationContext)
+        SampleQrScanner.scan = { Flocon.scanQrCodeAndConnect(this@MainActivity) }
         registerAndroidSampleWebView()
         SampleFeatures.on(SampleFeature.Accessibility) {
             val announcement = "Item added to the cart"
