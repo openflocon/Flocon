@@ -29,6 +29,8 @@ import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * The left menu, shared by the main window and the windows opened for a device: the items depend on the plugins
@@ -36,24 +38,31 @@ import kotlinx.coroutines.flow.combine
  * Built from the scope of the window, so it follows its device and its navigation.
  */
 internal class MenuDelegate(
-    observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
-    observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
+    private val observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
+    private val observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     private val navigationState: MainFloconNavigationState,
 ) {
 
-    val menuState: Flow<MenuState> = combine(
+    /**
+     * The collapsed sections are the saved ones, shared by the windows that follow them.
+     * A window can keep its own instead ([collapsedSections]): they start from the saved ones and are not saved.
+     */
+    fun menuState(collapsedSections: Flow<Set<String>?> = flowOf(null)): Flow<MenuState> = combine(
         observeCurrentDeviceInstalledPluginsUseCase(),
         observeMenuPreferencesUseCase(),
-    ) { installedPlugins, preferences ->
+        collapsedSections,
+    ) { installedPlugins, preferences, ownCollapsedSections ->
         buildMenu().applyPreferences(
             installedPlugins = installedPlugins,
             pinnedIds = preferences.pinnedItems,
-            collapsedSectionIds = preferences.collapsedSections,
+            collapsedSectionIds = ownCollapsedSections ?: preferences.collapsedSections,
             hiddenIds = preferences.hiddenItems,
         )
     }
+
+    suspend fun savedCollapsedSections(): Set<String> = observeMenuPreferencesUseCase().first().collapsedSections
 
     fun initialMenuState(): MenuState = buildMenu().applyPreferences(
         installedPlugins = null,

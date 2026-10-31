@@ -94,7 +94,7 @@ internal class AppViewModel(
         )
     )
 
-    private val menuState: StateFlow<MenuState> = menuDelegate.menuState
+    private val menuState: StateFlow<MenuState> = menuDelegate.menuState()
         .stateInWhileSubscribed(menuDelegate.initialMenuState())
 
     val uiState = combine(

@@ -40,7 +40,11 @@ internal class DeviceWindowViewModel(
 
     private val contentState = MutableStateFlow(ContentUiState(current = SubScreen.Timeline))
 
-    private val menuState: StateFlow<MenuState> = menuDelegate.menuState
+    // the sections collapsed in this window: the saved ones when it opens (null until they are read), then its own,
+    // so collapsing a section here does not collapse it in the main window or in the other windows, and the other way round
+    private val collapsedSections = MutableStateFlow<Set<String>?>(null)
+
+    private val menuState: StateFlow<MenuState> = menuDelegate.menuState(collapsedSections)
         .stateInWhileSubscribed(menuDelegate.initialMenuState())
 
     val uiState: StateFlow<DeviceWindowUiState> = combine(
@@ -63,6 +67,10 @@ internal class DeviceWindowViewModel(
         )
 
     init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            collapsedSections.compareAndSet(null, menuDelegate.savedCollapsedSections())
+        }
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // a feature can ask to display another screen of the menu (ex: from the timeline)
             menuNavigator.requests.collect { screen -> onSelectMenu(screen) }
@@ -92,6 +100,9 @@ internal class DeviceWindowViewModel(
     }
 
     fun onToggleSection(sectionId: String) {
-        viewModelScope.launch(dispatcherProvider.viewModel) { menuDelegate.toggleSection(sectionId) }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val current = collapsedSections.value ?: menuDelegate.savedCollapsedSections()
+            collapsedSections.value = if (sectionId in current) current - sectionId else current + sectionId
+        }
     }
 }
