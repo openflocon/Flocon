@@ -6,8 +6,8 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConnectResult
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 /**
  * Opens the Google code scanner, then connects to the desktop app at the address held by the QR code
@@ -25,27 +25,38 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  */
 suspend fun Flocon.Companion.scanQrCodeAndConnect(context: Context): FloconConnectResult? =
     when (val scan = scanQrCode(context)) {
-        Scan.Cancelled -> null
-        is Scan.Failed -> FloconConnectResult.Failed(scan.reason)
-        is Scan.Code -> connectWithQrCode(scan.content)
+        ScanQrCodeResult.Cancelled -> null
+        is ScanQrCodeResult.Failed -> FloconConnectResult.Failed(scan.reason)
+        is ScanQrCodeResult.Code -> connectWithQrCode(scan.content)
     }
 
 private sealed interface ScanQrCodeResult {
-    data class Code(val content: String) : Scan
-    data object Cancelled : Scan
-    data class Failed(val reason: String) : Scan
+    data class Code(val content: String) : ScanQrCodeResult
+    data object Cancelled : ScanQrCodeResult
+    data class Failed(val reason: String) : ScanQrCodeResult
 }
 
-private suspend fun scanQrCode(context: Context): Scan = suspendCancellableCoroutine { continuation ->
-    val options = GmsBarcodeScannerOptions.Builder()
-        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-        .build()
-    GmsBarcodeScanning.getClient(context, options)
-        .startScan()
-        .addOnSuccessListener { barcode ->
-            val content = barcode.rawValue
-            continuation.resume(if (content == null) Scan.Failed("The QR code is empty") else Scan.Code(content))
-        }
-        .addOnCanceledListener { continuation.resume(Scan.Cancelled) }
-        .addOnFailureListener { error -> continuation.resume(Scan.Failed(error.message ?: "The scanner failed")) }
-}
+private suspend fun scanQrCode(context: Context): ScanQrCodeResult =
+    suspendCancellableCoroutine { continuation ->
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+        GmsBarcodeScanning.getClient(context, options)
+            .startScan()
+            .addOnSuccessListener { barcode ->
+                val content = barcode.rawValue
+                continuation.resume(
+                    if (content == null) {
+                        ScanQrCodeResult.Failed("The QR code is empty")
+                    } else {
+                        ScanQrCodeResult.Code(content)
+                    }
+                )
+            }
+            .addOnCanceledListener {
+                continuation.resume(ScanQrCodeResult.Cancelled)
+            }
+            .addOnFailureListener { error ->
+                continuation.resume(ScanQrCodeResult.Failed(error.message ?: "The scanner failed"))
+            }
+    }
