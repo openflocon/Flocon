@@ -24,6 +24,7 @@ dependencyResolutionManagement {
     }
 }
 
+include(":bom")
 include(":sample-multiplatform")
 include(":flocon:flocon")
 include(":flocon:flocon-no-op")

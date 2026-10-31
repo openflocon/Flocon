@@ -33,6 +33,42 @@ Flocon consists of two parts:
     }
     ```
 
+=== "BOM (align all modules)"
+
+    The `flocon-bom` pins every Flocon module (and its `-no-op`) to the same version, so you declare the version once and never mix versions between modules:
+
+    ```kotlin
+    dependencies {
+        debugImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+        releaseImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+
+        debugImplementation("io.github.openflocon:flocon")
+        releaseImplementation("io.github.openflocon:flocon-no-op")
+
+        // any other module, without a version
+        debugImplementation("io.github.openflocon:flocon-okhttp-interceptor")
+        releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op")
+    }
+    ```
+
+    With a version catalog:
+
+    ```toml
+    [libraries]
+    flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "LAST_VERSION" }
+    flocon = { module = "io.github.openflocon:flocon" }
+    flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
+    ```
+
+    ```kotlin
+    dependencies {
+        debugImplementation(platform(libs.flocon.bom))
+        releaseImplementation(platform(libs.flocon.bom))
+        debugImplementation(libs.flocon)
+        releaseImplementation(libs.flocon.no.op)
+    }
+    ```
+
 === "build.gradle.kts (Android Only)"
 
     ```kotlin
