@@ -4,17 +4,21 @@ import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.usecase.CurrentDeviceIdProvider
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.flocondesktop.app.MenuNavigator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.koin.core.Koin
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 
 class DeviceWindowScopeTest {
 
@@ -28,6 +32,7 @@ class DeviceWindowScopeTest {
                         override suspend fun get(): DeviceId? = "selected"
                     }
                 }
+                singleOf(::MenuNavigator)
                 factoryOf(::ObserveCurrentDeviceIdUseCase)
                 factoryOf(::GetCurrentDeviceIdUseCase)
             },
@@ -55,6 +60,16 @@ class DeviceWindowScopeTest {
         assertEquals("A", scope.get<GetCurrentDeviceIdUseCase>()())
         // the root is not changed by the window
         assertEquals("selected", koin.get<ObserveCurrentDeviceIdUseCase>()().first())
+    }
+
+    @Test
+    fun `a device window has its own menu requests`() {
+        val first = koin.deviceWindow("A")
+        val second = koin.deviceWindow("B")
+
+        assertNotSame(koin.get<MenuNavigator>(), first.get<MenuNavigator>())
+        assertNotSame(first.get<MenuNavigator>(), second.get<MenuNavigator>())
+        assertSame(first.get<MenuNavigator>(), first.get<MenuNavigator>())
     }
 
     @Test
