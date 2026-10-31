@@ -190,6 +190,7 @@ internal class LocalDatabaseDataSourceRoom(
     ) {
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
+                dbId = log.dbId,
                 dbName = log.dbName,
                 sqlQuery = log.sqlQuery,
                 bindArgs = log.bindArgs?.let { json.encodeToString(it) },
@@ -204,14 +205,14 @@ internal class LocalDatabaseDataSourceRoom(
 
     override fun observeQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         limit: Int,
         offset: Int,
     ): Flow<List<DatabaseQueryLogDomainModel>> {
         val query = buildQuery(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -222,6 +223,7 @@ internal class LocalDatabaseDataSourceRoom(
         return databaseQueryLogDao.observeLogs(query).map { list ->
             list.map { entity ->
                 DatabaseQueryLogDomainModel(
+                    dbId = entity.dbId,
                     dbName = entity.dbName,
                     sqlQuery = entity.sqlQuery,
                     bindArgs = entity.bindArgs?.let {
@@ -237,12 +239,12 @@ internal class LocalDatabaseDataSourceRoom(
 
     override fun countQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): Flow<Int> {
         val query = buildCountQuery(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName
@@ -252,12 +254,12 @@ internal class LocalDatabaseDataSourceRoom(
 
     override suspend fun getQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel> {
         val query = buildQuery(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -266,6 +268,7 @@ internal class LocalDatabaseDataSourceRoom(
         )
         return databaseQueryLogDao.getLogs(query).map { entity ->
             DatabaseQueryLogDomainModel(
+                dbId = entity.dbId,
                 dbName = entity.dbName,
                 sqlQuery = entity.sqlQuery,
                 bindArgs = entity.bindArgs?.let {
@@ -280,14 +283,14 @@ internal class LocalDatabaseDataSourceRoom(
 
     override suspend fun getLatestQueryLogs(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,
         limit: Int,
     ): List<DatabaseQueryLogDomainModel> {
         val (whereClause, queryParams) = buildWhereClauseAndParams(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -298,6 +301,7 @@ internal class LocalDatabaseDataSourceRoom(
 
         return databaseQueryLogDao.getLogs(query).map { entity ->
             DatabaseQueryLogDomainModel(
+                dbId = entity.dbId,
                 dbName = entity.dbName,
                 sqlQuery = entity.sqlQuery,
                 bindArgs = entity.bindArgs?.let {
@@ -313,6 +317,7 @@ internal class LocalDatabaseDataSourceRoom(
     override fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?> = databaseQueryLogDao.observeLog(id).map { entity ->
         entity?.let {
             DatabaseQueryLogDomainModel(
+                dbId = it.dbId,
                 dbName = it.dbName,
                 sqlQuery = it.sqlQuery,
                 bindArgs = it.bindArgs?.let { args ->
@@ -333,7 +338,7 @@ internal class LocalDatabaseDataSourceRoom(
     }
 
     private fun buildQuery(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -341,7 +346,7 @@ internal class LocalDatabaseDataSourceRoom(
         offset: Int?,
     ): RoomRawQuery {
         val (whereClause, queryParams) = buildWhereClauseAndParams(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -360,13 +365,13 @@ internal class LocalDatabaseDataSourceRoom(
     }
 
     private fun buildCountQuery(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ): RoomRawQuery {
         val (whereClause, queryParams) = buildWhereClauseAndParams(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
@@ -377,17 +382,17 @@ internal class LocalDatabaseDataSourceRoom(
     }
 
     private fun buildWhereClauseAndParams(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         appInstance: Long? = null,
     ): Pair<String, ArrayList<Any>> {
         val queryParams = ArrayList<Any>()
-        var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbName = ?"
+        var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbId = ?"
         queryParams.add(deviceIdAndPackageName.deviceId)
         queryParams.add(deviceIdAndPackageName.packageName)
-        queryParams.add(dbName)
+        queryParams.add(dbId)
 
         if (appInstance != null) {
             whereClause += " AND appInstance = ?"

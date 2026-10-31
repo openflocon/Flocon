@@ -49,11 +49,11 @@ abstract class CatDatabase : RoomDatabase() {
                     CatDatabase::class.java,
                     "cats_database",
                 )
-                    .floconLogs(name = "cats")
+                    .floconLogs(id = "cats_room2")
                     .build()
                     .also {
                         instance = it
-                        Flocon.databasePlugin.register(displayName = "cats (Room 2)", database = it)
+                        Flocon.databasePlugin.register(id = "cats_room2", displayName = "cats (Room 2)", database = it)
                     }
             }
         }

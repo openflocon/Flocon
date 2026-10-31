@@ -11,13 +11,13 @@ class GetDatabaseQueryLogsUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
     suspend operator fun invoke(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): List<DatabaseQueryLogDomainModel> {
         val current = observeCurrentDeviceIdAndPackageNameUseCase().first() ?: return emptyList()
         return databaseRepository.getQueryLogs(
-            dbName = dbName,
+            dbId = dbId,
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = current,

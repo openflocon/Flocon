@@ -17,7 +17,7 @@ class ObserveDatabaseQueryLogsUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         limit: Int,
@@ -28,7 +28,7 @@ class ObserveDatabaseQueryLogsUseCase(
                 return@flatMapLatest flowOf(emptyList())
             } else {
                 databaseRepository.observeQueryLogs(
-                    dbName = dbName,
+                    dbId = dbId,
                     showTransactions = showTransactions,
                     filters = filters,
                     deviceIdAndPackageName = current,

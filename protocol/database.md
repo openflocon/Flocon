@@ -18,8 +18,8 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of available databases.
 
 | Key    | Type     | Description                       |
 |--------|----------|-----------------------------------|
-| `id`   | `String` | Database id (used in `query`)     |
-| `name` | `String` | Display name                      |
+| `id`   | `String` | Unique database id (used in `query` and `log_query`) |
+| `name` | `String` | Display name, never used to identify a database |
 
 ```json
 [
@@ -110,14 +110,14 @@ Sent for each query executed by the app (when query logging is enabled).
 
 | Key         | Type            | Description                      |
 |-------------|-----------------|----------------------------------|
-| `dbName`    | `String`        | Database name                    |
+| `dbId`      | `String`        | Id of the database (the `id` sent in `GetDatabases`) |
 | `sqlQuery`  | `String`        | Executed SQL                     |
 | `bindArgs`  | `List<String>?` | Bound arguments (`toString()`)   |
 | `timestamp` | `Long`          | Execution timestamp (ms)         |
 
 ```json
 {
-  "dbName": "app_database",
+  "dbId": "app_database",
   "sqlQuery": "SELECT * FROM user WHERE id = ?",
   "bindArgs": ["42"],
   "timestamp": 1729260000000

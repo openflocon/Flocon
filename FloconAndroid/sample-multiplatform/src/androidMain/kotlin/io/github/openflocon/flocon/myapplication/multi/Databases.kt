@@ -2,6 +2,8 @@ package io.github.openflocon.flocon.myapplication.multi
 
 import android.content.Context
 import androidx.room3.Room
+import androidx.sqlite.driver.AndroidSQLiteDriver
+import io.github.openflocon.flocon.database.room3.floconLogs
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
@@ -19,10 +21,12 @@ object Databases {
                 klass = DogDatabase::class.java,
                 name = "dogs_database"
             )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs_room3"))
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
             dogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "dogs_room3",
                 displayName = "dogs",
                 database = instance
             )
@@ -38,9 +42,12 @@ object Databases {
                 context = context.applicationContext,
                 klass = FoodDatabase::class.java,
                 name = "food_database"
-            ).build()
+            )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "food_room3"))
+                .build()
             foodDatabase = instance
             Flocon.databasePlugin.register(
+                id = "food_room3",
                 displayName = "food",
                 database = instance
             )
@@ -56,9 +63,12 @@ object Databases {
             val instance = Room.inMemoryDatabaseBuilder(
                 context.applicationContext,
                 DogDatabase::class.java,
-            ).build()
+            )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs_room3_memory"))
+                .build()
             inMemoryDogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "dogs_room3_memory",
                 displayName = "inmemory_dogs",
                 database = instance
             )

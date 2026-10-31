@@ -4,6 +4,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.openflocon.flocon.database.room3.floconLogs
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -90,8 +91,8 @@ fun main() {
     val dogDatabase = dogDatabase()
     val foodDatabase = foodDatabase()
 
-    Flocon.databasePlugin.register(displayName = "dogs", database = dogDatabase)
-    Flocon.databasePlugin.register(displayName = "food", database = foodDatabase)
+    Flocon.databasePlugin.register(id = "dogs_jvm", displayName = "dogs", database = dogDatabase)
+    Flocon.databasePlugin.register(id = "food_jvm", displayName = "food", database = foodDatabase)
 
     initializeDatabases(dogDatabase = dogDatabase, foodDatabase = foodDatabase)
 
@@ -108,7 +109,7 @@ private fun dogDatabase(): DogDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_dogs_database.db")
     return Room.databaseBuilder<DogDatabase>(name = dbFile.absolutePath)
         .fallbackToDestructiveMigration(dropAllTables = true)
-        .setDriver(BundledSQLiteDriver())
+        .setDriver(BundledSQLiteDriver().floconLogs(id = "dogs_jvm"))
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }
@@ -117,7 +118,7 @@ private fun foodDatabase(): FoodDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
     return Room.databaseBuilder<FoodDatabase>(name = dbFile.absolutePath)
         .fallbackToDestructiveMigration(dropAllTables = true)
-        .setDriver(BundledSQLiteDriver())
+        .setDriver(BundledSQLiteDriver().floconLogs(id = "food_jvm"))
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }

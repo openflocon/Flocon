@@ -99,7 +99,8 @@ class QueryDatabaseRemoteDataSourceImpl(
             upperQuery == "BEGIN IMMEDIATE TRANSACTION"
 
         DatabaseQueryLogDomainModel(
-            dbName = it.dbName,
+            dbId = it.dbId,
+            dbName = it.dbId, // the repository replaces it with the name of the database
             sqlQuery = it.sqlQuery,
             bindArgs = it.bindArgs.orEmpty(),
             timestamp = it.timestamp,

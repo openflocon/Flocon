@@ -80,12 +80,12 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DatabaseQueryLogs(
-    dbName: String,
+    dbId: String,
     modifier: Modifier = Modifier
 ) {
     val viewModel: DatabaseQueryLogsViewModel = koinViewModel(
-        key = dbName,
-        parameters = { parametersOf(dbName) }
+        key = dbId,
+        parameters = { parametersOf(dbId) }
     )
 
     val logs: List<DatabaseQueryUiModel> by viewModel.logs.collectAsStateWithLifecycle()

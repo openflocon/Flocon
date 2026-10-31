@@ -13,6 +13,10 @@ kotlin {
     }
 
     sourceSets {
+        // the SQLite driver methods are not suspend on these targets, they are on the web
+        listOf("androidMain", "jvmMain", "iosMain").forEach {
+            named(it) { kotlin.srcDir("src/nonWebMain/kotlin") }
+        }
         commonMain {
             kotlin.srcDir("src/roomMain/kotlin")
             dependencies {

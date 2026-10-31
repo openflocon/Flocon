@@ -6,7 +6,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 inline fun <reified T : RoomDatabase> RoomDatabase.Builder<T>.floconLogs(
-    name: String? = T::class.simpleName,
+    id: String,
     executor: Executor = Executors.newSingleThreadExecutor(),
     queryCallback: QueryCallback? = null
 ): RoomDatabase.Builder<T> {

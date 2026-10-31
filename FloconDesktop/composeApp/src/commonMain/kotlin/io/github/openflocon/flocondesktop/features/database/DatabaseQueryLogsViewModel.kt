@@ -43,7 +43,7 @@ import java.util.Date
 import java.util.Locale
 
 class DatabaseQueryLogsViewModel(
-    private val dbName: String,
+    private val dbId: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
     private val countDatabaseQueryLogsUseCase: CountDatabaseQueryLogsUseCase,
     private val getDatabaseQueryLogsUseCase: GetDatabaseQueryLogsUseCase,
@@ -83,7 +83,7 @@ class DatabaseQueryLogsViewModel(
         ).flatMapLatest { (filter, page) ->
             val (showTransactions, filterChips, currentDeviceAndPackage) = filter
             observeDatabaseQueryLogsUseCase(
-                dbName = dbName,
+                dbId = dbId,
                 showTransactions = showTransactions,
                 filters = filterChips,
                 limit = PAGE_SIZE,
@@ -101,7 +101,7 @@ class DatabaseQueryLogsViewModel(
     val totalCount: Flow<Int> =
         filtersFlow.flatMapLatest { (showTransactions, filterChips, _) ->
             countDatabaseQueryLogsUseCase(
-                dbName = dbName,
+                dbId = dbId,
                 showTransactions = showTransactions,
                 filters = filterChips,
             )
@@ -211,7 +211,7 @@ class DatabaseQueryLogsViewModel(
     fun exportToCsv() {
         viewModelScope.launch {
             val logs = getDatabaseQueryLogsUseCase(
-                dbName = dbName,
+                dbId = dbId,
                 showTransactions = _showTransactions.value,
                 filters = _filterChips.value.map { it.toDomain() }
             )
@@ -229,7 +229,7 @@ class DatabaseQueryLogsViewModel(
     fun exportToMarkdown() {
         viewModelScope.launch {
             val logs = getDatabaseQueryLogsUseCase(
-                dbName = dbName,
+                dbId = dbId,
                 showTransactions = _showTransactions.value,
                 filters = _filterChips.value.map { it.toDomain() }
             )

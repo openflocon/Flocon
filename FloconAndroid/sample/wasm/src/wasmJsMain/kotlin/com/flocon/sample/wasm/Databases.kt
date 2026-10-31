@@ -2,6 +2,7 @@ package com.flocon.sample.wasm
 
 import androidx.room3.Room
 import androidx.sqlite.driver.web.WebWorkerSQLiteDriver
+import io.github.openflocon.flocon.database.room3.floconLogs
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
@@ -22,15 +23,15 @@ object Databases {
 
     val dogDatabase: DogDatabase by lazy {
         Room.databaseBuilder<DogDatabase>(name = "dogs_database.db")
-            .setDriver(driver)
+            .setDriver(driver.floconLogs(id = "dogs_wasm"))
             .build()
-            .also { Flocon.databasePlugin.register(displayName = "dogs", database = it) }
+            .also { Flocon.databasePlugin.register(id = "dogs_wasm", displayName = "dogs", database = it) }
     }
 
     val foodDatabase: FoodDatabase by lazy {
         Room.databaseBuilder<FoodDatabase>(name = "food_database.db")
-            .setDriver(driver)
+            .setDriver(driver.floconLogs(id = "food_wasm"))
             .build()
-            .also { Flocon.databasePlugin.register(displayName = "food", database = it) }
+            .also { Flocon.databasePlugin.register(id = "food_wasm", displayName = "food", database = it) }
     }
 }
