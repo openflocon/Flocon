@@ -147,13 +147,22 @@ internal fun TimelineFilterPanel(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 items(items = sections, key = { it.source }) { section ->
-                    FilterSection(
-                        section = section,
-                        label = sourceLabels.getValue(section.source),
-                        onAction = onAction,
-                        // the sections slide when the order changes: a source gets its first event
-                        modifier = Modifier.animateItem(),
-                    )
+                    if (section.source == TimelineSource.Network) {
+                        // the network calls have their own card, the filters side by side
+                        NetworkFilterCard(
+                            network = panel.network,
+                            onAction = onAction,
+                            modifier = Modifier.animateItem(),
+                        )
+                    } else {
+                        FilterSection(
+                            section = section,
+                            label = sourceLabels.getValue(section.source),
+                            onAction = onAction,
+                            // the sections slide when the order changes: a source gets its first event
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
                 }
             }
         }

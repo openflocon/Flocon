@@ -1,8 +1,10 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineStatusMatcher
 
 internal const val KIND_NETWORK = "network"
 internal const val KIND_NETWORK_RESPONSE = "network_response" // the response of a network call, at the time it arrived
@@ -61,11 +63,81 @@ private const val NETWORK_STATE = "CASE WHEN response_durationMs IS NULL THEN 'P
     "WHEN $NETWORK_STATUS_CODE IS NULL THEN 'OTHER' ELSE 'SUCCESS' END"
 
 // null while waiting for the response
-private const val NETWORK_SPEED = "CASE WHEN response_durationMs IS NULL THEN NULL " +
-    "WHEN response_durationMs < 100 THEN '<100ms' WHEN response_durationMs < 500 THEN '100-500ms' " +
-    "WHEN response_durationMs < 1000 THEN '500ms-1s' ELSE '>1s' END"
+private val NETWORK_SPEED = buildString {
+    append("CASE WHEN response_durationMs IS NULL THEN NULL")
+    // the bucket is told by its start, from the longest: WHEN duration >= 5000 THEN '5000' WHEN duration >= 2000 ...
+    TIMELINE_DURATION_BUCKETS_MS.reversed().forEach { start ->
+        append(" WHEN response_durationMs >= $start THEN '$start'")
+    }
+    append(" ELSE '0' END")
+}
 
-private const val NETWORK_CONTENT = "CASE WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
+private const val NETWORK_CONTENT = "CASE WHEN type = 'WEBSOCKET' THEN 'WEBSOCKET' " +
+    "WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
+
+private const val NETWORK_HOST = "request_domainFormatted"
+
+private const val NETWORK_DURATION = "CAST(response_durationMs AS INTEGER)"
+
+/**
+ * The conditions of the status, host and duration rules of the network calls, each starting with " AND ".
+ * The rules of an ignored facet are not applied, to count its values.
+ */
+private fun networkRuleConditions(
+    filter: TimelineFilterDomainModel,
+    ignoredFacets: Set<TimelineFacet>,
+): Pair<String, List<Any>> {
+    if (!filter.networkEnabled) return "" to emptyList()
+    val sql = StringBuilder()
+    val params = ArrayList<Any>()
+    val code = "CAST($NETWORK_STATUS_CODE AS INTEGER)"
+
+    if (TimelineFacet.NetworkStatus !in ignoredFacets) {
+        val matchers = filter.networkStatusRules.mapNotNull { rule ->
+            TimelineStatusMatcher.parse(rule.value)?.let { rule.exclude to it }
+        }
+        val includes = matchers.filter { !it.first }.map { it.second }
+        val excludes = matchers.filter { it.first }.map { it.second }
+        if (includes.isNotEmpty()) {
+            sql.append(includes.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$code BETWEEN ? AND ?" })
+            includes.forEach {
+                params.add(it.from)
+                params.add(it.to)
+            }
+        }
+        excludes.forEach {
+            // a call without code yet is not one of the codes hidden
+            sql.append(" AND ($code IS NULL OR NOT ($code BETWEEN ? AND ?))")
+            params.add(it.from)
+            params.add(it.to)
+        }
+    }
+
+    if (TimelineFacet.NetworkHost !in ignoredFacets) {
+        val includes = filter.networkHostRules.filter { !it.exclude && it.value.isNotBlank() }
+        val excludes = filter.networkHostRules.filter { it.exclude && it.value.isNotBlank() }
+        if (includes.isNotEmpty()) {
+            sql.append(includes.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$NETWORK_HOST LIKE ?" })
+            includes.forEach { params.add("%${it.value}%") }
+        }
+        excludes.forEach {
+            sql.append(" AND COALESCE($NETWORK_HOST, '') NOT LIKE ?")
+            params.add("%${it.value}%")
+        }
+    }
+
+    val duration = filter.networkDuration
+    if (duration != null && TimelineFacet.NetworkSpeed !in ignoredFacets) {
+        // a range hides the calls without duration yet
+        sql.append(" AND $NETWORK_DURATION >= ?")
+        params.add(duration.minMs)
+        duration.maxMs?.let { maxMs ->
+            sql.append(" AND $NETWORK_DURATION <= ?")
+            params.add(maxMs)
+        }
+    }
+    return sql.toString() to params
+}
 
 internal class TimelineQuery(
     val sql: String,
@@ -102,6 +174,7 @@ private fun buildUnion(
         extraCondition: String? = null,
         timeColumn: String? = null, // the time of the event, to keep the current session only
         facetExpressions: Map<TimelineFacet, String> = emptyMap(), // what each facet of the source filters on
+        networkRules: Boolean = false, // the status, host and duration rules of the network calls
     ): String {
         val where = StringBuilder("WHERE deviceId = ?")
         params.add(deviceId)
@@ -120,12 +193,18 @@ private fun buildUnion(
             where.append(" AND $timeColumn >= ${latestSessionSql(deviceId, packageName, params)}")
         }
         facetExpressions.forEach { (facet, expression) ->
-            val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && facet !in ignoredFacets }
+            val ignored = facet in ignoredFacets || (facet.source == TimelineSource.Network && !filter.networkEnabled)
+            val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && !ignored }
             if (values != null) {
                 // an event without value (ex: a call without http code yet) is not one of the values hidden
                 where.append(" AND ($expression IS NULL OR $expression NOT IN (${values.joinToString { "?" }}))")
                 params.addAll(values)
             }
+        }
+        if (networkRules) {
+            val (sql, ruleParams) = networkRuleConditions(filter, ignoredFacets)
+            where.append(sql)
+            params.addAll(ruleParams)
         }
         if (text != null) {
             where.append(textColumns.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$it LIKE ?" })
@@ -144,7 +223,7 @@ private fun buildUnion(
         TimelineFacet.NetworkState to NETWORK_STATE,
         TimelineFacet.NetworkSpeed to NETWORK_SPEED,
         TimelineFacet.NetworkContent to NETWORK_CONTENT,
-        TimelineFacet.NetworkHost to "request_domainFormatted",
+        TimelineFacet.NetworkHost to NETWORK_HOST,
     )
 
     val branches = buildList {
@@ -161,6 +240,7 @@ private fun buildUnion(
                     textColumns = listOf("request_url", "request_method"),
                     timeColumn = "request_startTime",
                     facetExpressions = networkFacets,
+                    networkRules = true,
                 )
             )
         }
@@ -178,6 +258,7 @@ private fun buildUnion(
                     textColumns = listOf("request_url", "request_method"),
                     timeColumn = "request_startTime",
                     facetExpressions = networkFacets,
+                    networkRules = true,
                     // a call without response yet has no response event
                     extraCondition = "response_durationMs IS NOT NULL",
                 )

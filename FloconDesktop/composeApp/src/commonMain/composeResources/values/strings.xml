@@ -72,6 +72,16 @@
     <string name="timeline_filters_current_session">Current session only</string>
     <string name="timeline_filters_toggle">Filters</string>
     <string name="timeline_filters_no_result">No filter matches</string>
+    <string name="timeline_filters_reset">Reset</string>
+    <string name="timeline_filters_only">Only</string>
+    <string name="timeline_filters_none">None</string>
+    <string name="timeline_filters_rule_one">1 rule</string>
+    <string name="timeline_filters_rule_other">%1$d rules</string>
+    <string name="timeline_filters_host_count">%1$d hosts</string>
+    <string name="timeline_filters_hosts_matching">%1$d hosts match</string>
+    <string name="timeline_filters_status_placeholder">Code or range: 404, 500-503</string>
+    <string name="timeline_filters_host_placeholder">Word in the host, Enter</string>
+    <string name="timeline_filters_pending">%1$d requests in progress, no duration</string>
     <string name="timeline_facet_network_method">Method</string>
     <string name="timeline_facet_network_status">Status</string>
     <string name="timeline_facet_network_state">State</string>

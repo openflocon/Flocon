@@ -1,7 +1,10 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +20,18 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
+
+/**
+ * What the user typed or moved in the network card of the filter panel, next to the values hidden by facet.
+ */
+internal data class TimelineNetworkRules(
+    val enabled: Boolean = true,
+    val statusRules: List<TimelineRuleDomainModel> = emptyList(),
+    val hostRules: List<TimelineRuleDomainModel> = emptyList(),
+    val duration: TimelineDurationRangeDomainModel? = null,
+) {
+    val ruleCount: Int get() = statusRules.size + hostRules.size + if (duration != null) 1 else 0
+}
 
 /**
  * The filter of the timeline, shared by the screen and by its filter panel: they are two destinations, so two view models.
@@ -36,6 +51,10 @@ internal class TimelineFilterStore(
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
         field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
 
+    // the status, host and duration rules of the network calls
+    val network: StateFlow<TimelineNetworkRules>
+        field = MutableStateFlow(TimelineNetworkRules())
+
     // the events of the latest session only
     val currentSessionOnly: StateFlow<Boolean>
         field = MutableStateFlow(false)
@@ -52,12 +71,17 @@ internal class TimelineFilterStore(
         storedSources,
         facets,
         currentSessionOnly,
-    ) { text, sources, facets, currentSessionOnly ->
+        network,
+    ) { text, sources, facets, currentSessionOnly, network ->
         TimelineFilterDomainModel(
             sources = sources,
             text = text,
             facets = facets,
             currentSessionOnly = currentSessionOnly,
+            networkEnabled = network.enabled,
+            networkStatusRules = network.statusRules,
+            networkHostRules = network.hostRules,
+            networkDuration = network.duration,
         )
     }
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
@@ -74,6 +98,42 @@ internal class TimelineFilterStore(
         }
     }
 
+    // the values hidden of a facet at once, ex: only one host, or none
+    fun setHiddenValues(facet: TimelineFacet, values: Set<String>) {
+        facets.update { if (values.isEmpty()) it - facet else it + (facet to values) }
+    }
+
+    // the values hidden of the network facets and the rules, the master switch is kept
+    fun resetNetwork() {
+        facets.update { facets -> facets.filterKeys { it.source != TimelineSource.Network } }
+        network.update { TimelineNetworkRules(enabled = it.enabled) }
+    }
+
+    fun setNetworkEnabled(value: Boolean) {
+        network.update { it.copy(enabled = value) }
+    }
+
+    // a rule is told by its text: adding it again only changes its side, include or exclude
+    fun addStatusRule(rule: TimelineRuleDomainModel) {
+        network.update { it.copy(statusRules = it.statusRules.filterNot { existing -> existing.value == rule.value } + rule) }
+    }
+
+    fun removeStatusRule(value: String) {
+        network.update { it.copy(statusRules = it.statusRules.filterNot { existing -> existing.value == value }) }
+    }
+
+    fun addHostRule(rule: TimelineRuleDomainModel) {
+        network.update { it.copy(hostRules = it.hostRules.filterNot { existing -> existing.value == rule.value } + rule) }
+    }
+
+    fun removeHostRule(value: String) {
+        network.update { it.copy(hostRules = it.hostRules.filterNot { existing -> existing.value == value }) }
+    }
+
+    fun setNetworkDuration(value: TimelineDurationRangeDomainModel?) {
+        network.update { it.copy(duration = value) }
+    }
+
     fun setCurrentSessionOnly(value: Boolean) {
         currentSessionOnly.update { value }
     }
@@ -82,6 +142,7 @@ internal class TimelineFilterStore(
     fun clear() {
         text.update { "" }
         facets.update { emptyMap() }
+        network.update { TimelineNetworkRules() }
         currentSessionOnly.update { false }
     }
 }
