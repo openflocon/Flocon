@@ -22,6 +22,7 @@ import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
+import io.github.openflocon.flocondesktop.app.ui.delegates.MenuDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.id
@@ -81,10 +82,8 @@ internal class AppViewModel(
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
-    observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
-    private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
-    private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
+    private val menuDelegate: MenuDelegate,
     menuNavigator: MenuNavigator,
     private val deviceWindowsController: DeviceWindowsController,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
@@ -95,25 +94,8 @@ internal class AppViewModel(
         )
     )
 
-    // the items depend on the plugins installed in the SDK of the selected app, and on the user preferences (pins, collapsed sections)
-    private val menuState: StateFlow<MenuState> = combine(
-        observeCurrentDeviceInstalledPluginsUseCase(),
-        observeMenuPreferencesUseCase(),
-    ) { installedPlugins, preferences ->
-        buildMenu().applyPreferences(
-            installedPlugins = installedPlugins,
-            pinnedIds = preferences.pinnedItems,
-            collapsedSectionIds = preferences.collapsedSections,
-            hiddenIds = preferences.hiddenItems,
-        )
-    }
-        .stateInWhileSubscribed(
-            buildMenu().applyPreferences(
-                installedPlugins = null,
-                pinnedIds = emptyList(),
-                collapsedSectionIds = emptySet(),
-            )
-        )
+    private val menuState: StateFlow<MenuState> = menuDelegate.menuState()
+        .stateInWhileSubscribed(menuDelegate.initialMenuState())
 
     val uiState = combine(
         contentState,
@@ -210,11 +192,11 @@ internal class AppViewModel(
             is AppAction.SelectMenu -> onSelectMenu(action)
 
             is AppAction.TogglePin -> viewModelScope.launch(dispatcherProvider.viewModel) {
-                togglePinnedMenuItemUseCase(action.menu.id)
+                menuDelegate.togglePin(action.menu)
             }
 
             is AppAction.ToggleSection -> viewModelScope.launch(dispatcherProvider.viewModel) {
-                toggleCollapsedMenuSectionUseCase(action.sectionId)
+                menuDelegate.toggleSection(action.sectionId)
             }
 
             is AppAction.DeleteApp -> deleteApp(action)
@@ -245,30 +227,7 @@ internal class AppViewModel(
             contentState.update { it.copy(current = action.menu) }
         }
 
-        val route = when (action.menu) {
-            SubScreen.Analytics -> AnalyticsRoutes.Main
-            SubScreen.FeatureFlags -> FeatureFlagsRoutes.Main
-            SubScreen.Accessibility -> AccessibilityRoutes.Main
-            SubScreen.Dashboard -> DashboardRoutes.Main
-            SubScreen.Database -> DatabaseRoutes.Main
-            SubScreen.Deeplinks -> DeeplinkRoutes.Main
-            SubScreen.AdbCommander -> AdbCommanderRoutes.Main
-            SubScreen.Files -> FilesRoutes.Main
-            SubScreen.Images -> ImageRoutes.Main
-            SubScreen.Network -> NetworkRoutes.Main
-            SubScreen.Settings -> SettingsRoutes.Main
-            SubScreen.SharedPreferences -> SharedPreferencesRoutes.Main
-            SubScreen.Tables -> TableRoutes.Main
-            SubScreen.CrashReporter -> CrashReporterRoutes.Main
-            SubScreen.Timeline -> TimelineRoutes.Main
-            SubScreen.WebView -> WebViewRoutes.Main
-        }
-
-        if (route !is SettingsRoutes) {
-            navigationState.menu(route)
-        } else {
-            navigationState.navigate(route)
-        }
+        menuDelegate.navigateTo(action.menu)
     }
 
     private fun onDeviceSelected(action: AppAction.SelectDevice) {

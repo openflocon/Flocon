@@ -61,13 +61,8 @@ actual fun FloconWindow(
         onCloseRequest = onCloseRequest,
     ) {
         CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
-            // the theme draws a background: it has to be in the window, not above it in the application
-            FloconAppTheme {
-                // same surface as the navigation window scenes (network details...)
-                FloconSurface(color = FloconTheme.colors.islandSidebar) {
-                    content()
-                }
-            }
+            // the theme draws the background, like in the main window: it has to be in the window, not above it in the application
+            FloconAppTheme(content = content)
         }
     }
 }

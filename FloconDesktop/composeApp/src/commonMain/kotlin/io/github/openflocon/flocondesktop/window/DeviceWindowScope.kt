@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.window
 
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.usecase.CurrentDeviceIdProvider
+import io.github.openflocon.flocondesktop.app.MenuNavigator
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.TimelineFilterStore
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
@@ -16,7 +17,7 @@ import org.koin.dsl.module
 val DeviceWindowScope = named("deviceWindow")
 
 /** The device a [DeviceWindowScope] is pinned to, declared when the scope is created. */
-data class DeviceWindowTarget(val deviceId: DeviceId)
+data class DeviceWindowTarget(val deviceId: DeviceId, val deviceName: String = deviceId)
 
 private class PinnedCurrentDeviceIdProvider(
     private val target: DeviceWindowTarget,
@@ -34,7 +35,7 @@ private class PinnedCurrentDeviceIdProvider(
  *
  * What is declared here is the state of a window, which the root keeps as a single:
  * - the current device,
- * - its navigation,
+ * - its navigation and the requests to change the screen of its menu,
  * - the other state that is shared by the screens of a window.
  *
  * A single of the root is built once, with the root: it never sees the scope. A new single that depends on the
@@ -44,6 +45,8 @@ internal val deviceWindowModule = module {
     scope(DeviceWindowScope) {
         scoped<CurrentDeviceIdProvider> { PinnedCurrentDeviceIdProvider(target = get()) }
         scoped { MainFloconNavigationState(TimelineRoutes.Main) }
+        // a feature asks for another screen of the menu of its own window
+        scopedOf(::MenuNavigator)
         scopedOf(::TimelineFilterStore)
         scopedOf(::NetworkItemOptionsDelegate)
     }
