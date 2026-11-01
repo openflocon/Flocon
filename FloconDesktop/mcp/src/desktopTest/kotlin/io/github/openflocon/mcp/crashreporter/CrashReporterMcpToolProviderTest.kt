@@ -141,7 +141,7 @@ private class FakeCrashReporterRepository(
 
     override fun observeCrashReportById(id: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<CrashReportDomainModel?> = flowOf(crashes.firstOrNull { it.id == id })
 
-    override fun observeCrashReports(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<PagingData<CrashReportDomainModel>> = error("not used")
+    override fun observeCrashReports(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, filter: String): Flow<PagingData<CrashReportDomainModel>> = error("not used")
 
     override fun observeHasCrashReports(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<Boolean> = flowOf(crashes.isNotEmpty())
 
