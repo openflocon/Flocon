@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -239,7 +240,7 @@ private fun TopBar(
             modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
         ) {
             FloconIconButton(onClick = { onAction(CrashReporterAction.Clean) }) {
-                Icon(Icons.Outlined.Delete, contentDescription = null)
+                Icon(Icons.Outlined.DeleteSweep, contentDescription = null)
             }
             FeatureDocButton(doc = FeatureDoc.CrashReporter)
         }
