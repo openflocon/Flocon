@@ -1,6 +1,6 @@
 ---
 name: Explore
-description: Read-only code locator. Use to find where something lives (files, symbols, usages, config) when only the locations matter, not the file contents.
+description: Use PROACTIVELY for any lookup: finding where something lives (files, symbols, usages, config) or reading code to answer a question, before you read many files yourself. Only locations matter, not file contents.
 tools: Read, Grep, Glob
 model: haiku
 ---
