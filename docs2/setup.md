@@ -53,6 +53,38 @@ Add the core, then one module per feature you want (the full list is in the [mig
     }
     ```
 
+=== "BOM (align all modules)"
+
+    The `flocon-bom` pins every Flocon module (and its `-no-op`) to the same version: you declare the version once and never mix versions between modules.
+
+    ```toml
+    [libraries]
+    flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "LAST_VERSION" }
+    flocon = { module = "io.github.openflocon:flocon" }
+    flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
+    flocon-network = { module = "io.github.openflocon:flocon-network-core" }
+    flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op" }
+    flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor" }
+    flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op" }
+    ```
+
+    Import the BOM in both debug and release, then declare the modules without a version:
+
+    ```kotlin
+    dependencies {
+        debugImplementation(platform(libs.flocon.bom))
+        releaseImplementation(platform(libs.flocon.bom))
+
+        debugImplementation(libs.flocon)
+        releaseImplementation(libs.flocon.no.op)
+
+        debugImplementation(libs.flocon.network)
+        releaseImplementation(libs.flocon.network.no.op)
+        debugImplementation(libs.flocon.okhttp)
+        releaseImplementation(libs.flocon.okhttp.no.op)
+    }
+    ```
+
 === "build.gradle.kts (Android Only)"
 
     ```kotlin
