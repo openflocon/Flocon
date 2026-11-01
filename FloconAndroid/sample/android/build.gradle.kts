@@ -46,29 +46,29 @@ android {
 dependencies {
     implementation(projects.sampleMultiplatform)
 
-    implementation(projects.flocon)
-    implementation(projects.deeplinks)
-    implementation(projects.database.room3)
-    implementation(projects.database.room)
-    implementation(projects.network.ktorInterceptor)
-    implementation(projects.network.okhttpInterceptor)
-    implementation(projects.sharedprefs)
-    implementation(projects.files)
-    implementation(projects.device)
-    implementation(projects.datastores)
-    implementation(projects.analytics)
-    implementation(projects.accessibility)
-    implementation(projects.featureflags)
-    implementation(projects.webview)
-    implementation(projects.crashreporter)
-    implementation(projects.tables)
-    implementation(projects.qrscanner)
+    implementation(projects.flocon.flocon)
+    implementation(projects.deeplinks.deeplinks)
+    implementation(projects.database.room3.room3)
+    implementation(projects.database.room.room)
+    implementation(projects.network.ktorInterceptor.ktorInterceptor)
+    implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
+    implementation(projects.sharedprefs.sharedprefs)
+    implementation(projects.files.files)
+    implementation(projects.device.device)
+    implementation(projects.datastores.datastores)
+    implementation(projects.analytics.analytics)
+    implementation(projects.accessibility.accessibility)
+    implementation(projects.featureflags.featureflags)
+    implementation(projects.webview.webview)
+    implementation(projects.crashreporter.crashreporter)
+    implementation(projects.tables.tables)
+    implementation(projects.qrscanner.qrscanner)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
 
     // gRPC
-    implementation(projects.grpc.grpcInterceptorLite)
+    implementation(projects.grpc.grpcInterceptorLite.grpcInterceptorLite)
     implementation(libs.grpc.android)
     implementation(libs.grpc.stub)
     implementation(libs.grpc.kotlin.stub)
@@ -139,28 +139,28 @@ protobuf {
 // Release builds use the no-op version of every Flocon module,
 // including the ones coming transitively from :sample-multiplatform
 val floconNoOpModules = mapOf(
-    ":flocon" to ":flocon-no-op",
-    ":analytics" to ":analytics-no-op",
-    ":accessibility" to ":accessibility-no-op",
-    ":featureflags" to ":featureflags-no-op",
-    ":webview" to ":webview-no-op",
-    ":crashreporter" to ":crashreporter-no-op",
-    ":database:core" to ":database:core-no-op",
-    ":database:room" to ":database:room-no-op",
-    ":database:room3" to ":database:room3-no-op",
-    ":datastores" to ":datastores-no-op",
-    ":deeplinks" to ":deeplinks-no-op",
-    ":device" to ":device-no-op",
-    ":files" to ":files-no-op",
-    ":grpc:grpc-interceptor-base" to ":grpc:grpc-interceptor-base-no-op",
-    ":grpc:grpc-interceptor" to ":grpc:grpc-interceptor-no-op",
-    ":grpc:grpc-interceptor-lite" to ":grpc:grpc-interceptor-lite-no-op",
-    ":network:core" to ":network:core-no-op",
-    ":network:ktor-interceptor" to ":network:ktor-interceptor-no-op",
-    ":network:okhttp-interceptor" to ":network:okhttp-interceptor-no-op",
-    ":sharedprefs" to ":sharedprefs-no-op",
-    ":tables" to ":tables-no-op",
-    ":qrscanner" to ":qrscanner-no-op",
+    ":flocon:flocon" to ":flocon:flocon-no-op",
+    ":analytics:analytics" to ":analytics:analytics-no-op",
+    ":accessibility:accessibility" to ":accessibility:accessibility-no-op",
+    ":featureflags:featureflags" to ":featureflags:featureflags-no-op",
+    ":webview:webview" to ":webview:webview-no-op",
+    ":crashreporter:crashreporter" to ":crashreporter:crashreporter-no-op",
+    ":database:core:core" to ":database:core:core-no-op",
+    ":database:room:room" to ":database:room:room-no-op",
+    ":database:room3:room3" to ":database:room3:room3-no-op",
+    ":datastores:datastores" to ":datastores:datastores-no-op",
+    ":deeplinks:deeplinks" to ":deeplinks:deeplinks-no-op",
+    ":device:device" to ":device:device-no-op",
+    ":files:files" to ":files:files-no-op",
+    ":grpc:grpc-interceptor-base:grpc-interceptor-base" to ":grpc:grpc-interceptor-base:grpc-interceptor-base-no-op",
+    ":grpc:grpc-interceptor:grpc-interceptor" to ":grpc:grpc-interceptor:grpc-interceptor-no-op",
+    ":grpc:grpc-interceptor-lite:grpc-interceptor-lite" to ":grpc:grpc-interceptor-lite:grpc-interceptor-lite-no-op",
+    ":network:core:core" to ":network:core:core-no-op",
+    ":network:ktor-interceptor:ktor-interceptor" to ":network:ktor-interceptor:ktor-interceptor-no-op",
+    ":network:okhttp-interceptor:okhttp-interceptor" to ":network:okhttp-interceptor:okhttp-interceptor-no-op",
+    ":sharedprefs:sharedprefs" to ":sharedprefs:sharedprefs-no-op",
+    ":tables:tables" to ":tables:tables-no-op",
+    ":qrscanner:qrscanner" to ":qrscanner:qrscanner-no-op",
 )
 
 configurations.configureEach {
