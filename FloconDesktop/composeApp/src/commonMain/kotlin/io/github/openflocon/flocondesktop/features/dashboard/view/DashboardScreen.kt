@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
@@ -129,10 +128,7 @@ fun DashboardScreen(
             } else {
                 state?.let {
                     DashboardContent(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .floconPanel()
-                            .padding(all = FloconTheme.spacing.small),
+                        modifier = Modifier.fillMaxSize(),
                         viewState = state,
                         onClickButton = onClickButton,
                         submitTextField = submitTextField,
