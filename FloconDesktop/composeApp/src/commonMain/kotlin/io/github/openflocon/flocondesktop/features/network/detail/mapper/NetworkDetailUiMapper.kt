@@ -26,9 +26,13 @@ fun FloconNetworkCallDomainModel.toDetailUi(
     defaultSelectedTab: NetworkDetailTab = NetworkDetailTab.Request,
 ): NetworkDetailViewState {
     val imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() }
+    val urlParts = splitUrl(request.url)
     return NetworkDetailViewState(
         callId = callId,
         fullUrl = request.url,
+        host = urlParts.host,
+        path = urlParts.path,
+        queryParams = urlParts.queryParams.takeIf { it.isNotEmpty() }?.toImmutableList(),
         method = toDetailMethodUi(this),
         statusLabel = toDetailStatusLabel(this),
         status = toDetailHttpStatusUi(this),
@@ -174,3 +178,38 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
 }
 
 private fun canOpenExternal(body: String?): Boolean = body != null && body.isNotBlank() && OpenFile.isSupported()
+
+internal data class UrlParts(
+    val host: String,
+    val path: String,
+    val queryParams: List<NetworkDetailHeaderUi>,
+)
+
+/**
+ * Splits `scheme://host/path?a=1&b=2#fragment` for the detail header.
+ * Without a scheme (grpc method, websocket event...) the whole input is the path.
+ */
+internal fun splitUrl(url: String): UrlParts {
+    val withoutFragment = url.substringBefore('#')
+    val schemeEnd = withoutFragment.indexOf("://")
+    val firstDelimiter = withoutFragment.indexOfFirst { it == '/' || it == '?' }
+    val hasScheme = schemeEnd > 0 && (firstDelimiter == -1 || schemeEnd < firstDelimiter)
+    val withoutScheme = if (hasScheme) withoutFragment.substring(schemeEnd + 3) else withoutFragment
+    val beforeQuery = withoutScheme.substringBefore('?')
+    val query = withoutScheme.substringAfter('?', missingDelimiterValue = "")
+
+    val host = if (hasScheme) beforeQuery.substringBefore('/') else ""
+    val path = if (hasScheme) beforeQuery.removePrefix(host).ifEmpty { "/" } else beforeQuery
+
+    val queryParams = query
+        .split('&')
+        .filter { it.isNotEmpty() && !it.startsWith('=') }
+        .map { param ->
+            NetworkDetailHeaderUi(
+                name = param.substringBefore('='),
+                value = param.substringAfter('=', missingDelimiterValue = ""),
+            )
+        }
+
+    return UrlParts(host = host, path = path, queryParams = queryParams)
+}

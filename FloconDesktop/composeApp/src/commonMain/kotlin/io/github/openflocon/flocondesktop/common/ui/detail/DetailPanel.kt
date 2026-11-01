@@ -2,10 +2,13 @@ package io.github.openflocon.flocondesktop.common.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -20,17 +23,24 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -70,33 +80,43 @@ internal fun DetailPanel(
 }
 
 /**
- * A small uppercase [label], a [title], then a row of [chips]
+ * A small uppercase [label] (with optional [actions] on its right), a [title], then a row of [chips]
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun DetailHeader(
     label: String,
     title: String,
     chips: (@Composable RowScope.() -> Unit)? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     SelectionContainer {
         Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
-            Text(
-                text = label.uppercase(),
-                style = FloconTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.6.sp,
-                ),
-                color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = label.uppercase(),
+                    style = FloconTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.6.sp,
+                    ),
+                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
+                    modifier = Modifier.weight(1f),
+                )
+                actions?.invoke(this)
+            }
             Text(
                 text = title,
                 style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                 color = FloconTheme.colors.ink,
             )
             if (chips != null) {
-                Row(
+                FlowRow(
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
-                    verticalAlignment = Alignment.CenterVertically,
+                    itemVerticalAlignment = Alignment.CenterVertically,
                     content = chips,
                 )
             }
@@ -140,7 +160,8 @@ internal fun DetailChipText(text: String) {
 }
 
 /**
- * A bordered card with a header strip: [title], an optional [badge] and a copy button when [onCopy] is set
+ * A bordered card with a header strip: [title], an optional [badge], extra [actions] and a copy button when [onCopy] is set.
+ * When [collapsible], a click on the header strip folds / unfolds the content
  */
 @Composable
 internal fun DetailSectionCard(
@@ -149,9 +170,13 @@ internal fun DetailSectionCard(
     copyContentDescription: String,
     onCopy: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    collapsible: Boolean = false,
+    initiallyExpanded: Boolean = true,
+    actions: (@Composable RowScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val shape = FloconTheme.shapes.medium
+    var expanded by remember { mutableStateOf(initiallyExpanded) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -162,10 +187,20 @@ internal fun DetailSectionCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(FloconTheme.colors.bg000)
+                .then(if (collapsible) Modifier.clickable { expanded = !expanded } else Modifier)
                 .padding(start = FloconTheme.spacing.medium, end = FloconTheme.spacing.small, top = FloconTheme.spacing.compact, bottom = FloconTheme.spacing.compact),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
+            if (collapsible) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.ExpandMore,
+                    tint = FloconTheme.colors.inkMuted,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .graphicsLayer { rotationZ = if (expanded) 0f else -90f },
+                )
+            }
             Text(
                 text = title,
                 style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
@@ -186,6 +221,7 @@ internal fun DetailSectionCard(
                 )
             }
             Spacer(Modifier.weight(1f))
+            actions?.invoke(this)
             if (onCopy != null) {
                 FloconSmallIconButton(
                     imageVector = Icons.Outlined.ContentCopy,
@@ -195,7 +231,9 @@ internal fun DetailSectionCard(
                 )
             }
         }
-        content()
+        if (!collapsible || expanded) {
+            content()
+        }
     }
 }
 

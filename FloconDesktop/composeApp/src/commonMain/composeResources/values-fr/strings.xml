@@ -308,6 +308,10 @@
     <string name="network_mocks_title">Mocks</string>
     <string name="network_pin_panel">Épingler le panneau</string>
     <string name="network_query_name">Nom de la requête</string>
+    <string name="network_query_params">Paramètres de requête</string>
+    <string name="network_request_info">Requête</string>
+    <string name="network_response_info">Réponse</string>
+    <string name="network_no_body">Pas de corps</string>
     <string name="network_replay">Rejouer</string>
     <string name="network_image_response">Image</string>
     <string name="network_mock_tag">MOCK</string>

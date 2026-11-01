@@ -421,6 +421,10 @@
     <string name="network_mocks_title">Mocks</string>
     <string name="network_pin_panel">Pin panel</string>
     <string name="network_query_name">Query name</string>
+    <string name="network_query_params">Query params</string>
+    <string name="network_request_info">Request</string>
+    <string name="network_response_info">Response</string>
+    <string name="network_no_body">No body</string>
     <string name="network_replay">Replay</string>
     <string name="network_image_response">Image response</string>
     <string name="network_mock_tag">MOCK</string>

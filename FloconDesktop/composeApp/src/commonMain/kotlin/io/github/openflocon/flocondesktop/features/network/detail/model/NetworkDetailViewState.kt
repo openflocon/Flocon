@@ -11,6 +11,9 @@ import kotlinx.collections.immutable.PersistentMap
 data class NetworkDetailViewState(
     val callId: String,
     val fullUrl: String,
+    val host: String = "",
+    val path: String = "",
+    val queryParams: ImmutableList<NetworkDetailHeaderUi>? = null,
     val requestTimeFormatted: String,
     val durationFormatted: String?,
 
