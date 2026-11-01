@@ -139,7 +139,7 @@ fun DashboardContainer(
 
             Column(
                 modifier = Modifier.padding(all = FloconTheme.spacing.large),
-                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
             ) {
                 viewState.rows.fastForEach { rowItem ->
                     when (rowItem) {
