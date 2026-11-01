@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.crashreporter
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.crash_clear_all_tooltip
 import flocondesktop.composeapp.generated.resources.crash_copy_trace
+import flocondesktop.composeapp.generated.resources.crash_copy_trace_tooltip
+import flocondesktop.composeapp.generated.resources.crash_delete_selected_tooltip
 import flocondesktop.composeapp.generated.resources.crash_no_result
 import io.github.openflocon.flocondesktop.common.ui.LShape
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
@@ -54,6 +58,7 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
+import io.github.openflocon.library.designsystem.components.WithTooltip
 import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import org.jetbrains.compose.resources.stringResource
@@ -172,6 +177,7 @@ private fun CrashReportScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TopBar(
     barHeight: Dp,
@@ -219,17 +225,21 @@ private fun TopBar(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                FloconOutlinedButton(onClick = { onAction(CrashReporterAction.Copy(selected)) }) {
-                    Icon(
-                        Icons.Filled.CopyAll,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = FloconTheme.spacing.extraSmall).height(16.dp),
-                    )
-                    Text(stringResource(Res.string.crash_copy_trace))
+                WithTooltip(stringResource(Res.string.crash_copy_trace_tooltip)) {
+                    FloconOutlinedButton(onClick = { onAction(CrashReporterAction.Copy(selected)) }) {
+                        Icon(
+                            Icons.Filled.CopyAll,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = FloconTheme.spacing.extraSmall).height(16.dp),
+                        )
+                        Text(stringResource(Res.string.crash_copy_trace))
+                    }
                 }
-                FloconIconButton(onClick = { onAction(CrashReporterAction.Delete(selected.id)) }) {
-                    Icon(Icons.Outlined.Delete, contentDescription = null)
-                }
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    tooltip = stringResource(Res.string.crash_delete_selected_tooltip),
+                    onClick = { onAction(CrashReporterAction.Delete(selected.id)) },
+                )
             } else {
                 Box(Modifier.weight(1f))
             }
@@ -239,9 +249,11 @@ private fun TopBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
         ) {
-            FloconIconButton(onClick = { onAction(CrashReporterAction.Clean) }) {
-                Icon(Icons.Outlined.DeleteSweep, contentDescription = null)
-            }
+            FloconIconButton(
+                imageVector = Icons.Outlined.DeleteSweep,
+                tooltip = stringResource(Res.string.crash_clear_all_tooltip),
+                onClick = { onAction(CrashReporterAction.Clean) },
+            )
             FeatureDocButton(doc = FeatureDoc.CrashReporter)
         }
     }

@@ -16,6 +16,9 @@
     <string name="crash_filter_my_code">My code</string>
     <string name="crash_filter_all_frames">All frames</string>
     <string name="crash_copy_trace">Copy trace</string>
+    <string name="crash_copy_trace_tooltip">Copy the stack trace to the clipboard</string>
+    <string name="crash_delete_selected_tooltip">Delete this crash</string>
+    <string name="crash_clear_all_tooltip">Delete all the crashes of this app</string>
     <string name="crash_root_cause_title">Crashed in your code</string>
     <string name="crash_framework_frames_hidden">%1$d framework frames hidden</string>
     <string name="crash_framework_frames_show">Show</string>
