@@ -314,6 +314,8 @@
     <string name="network_no_body">Pas de corps</string>
     <string name="network_replay">Rejouer</string>
     <string name="network_image_response">Image</string>
+    <string name="network_jwt">Autorisation (JWT)</string>
+    <string name="network_open_jwt_decoder">Ouvrir le décodeur JWT</string>
     <string name="network_mock_tag">MOCK</string>
     <string name="network_request">Requête</string>
     <string name="network_request_headers">En-têtes de la requête</string>

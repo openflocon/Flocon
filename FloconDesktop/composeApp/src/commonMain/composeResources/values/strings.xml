@@ -427,6 +427,8 @@
     <string name="network_no_body">No body</string>
     <string name="network_replay">Replay</string>
     <string name="network_image_response">Image response</string>
+    <string name="network_jwt">Authorization (JWT)</string>
+    <string name="network_open_jwt_decoder">Open JWT decoder</string>
     <string name="network_mock_tag">MOCK</string>
     <string name="network_request">Request</string>
     <string name="network_request_headers">Request Headers</string>

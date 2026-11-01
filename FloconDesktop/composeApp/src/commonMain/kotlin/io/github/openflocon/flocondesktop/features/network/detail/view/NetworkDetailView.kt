@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -86,8 +88,10 @@ import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_time
 import flocondesktop.composeapp.generated.resources.network_headers
 import flocondesktop.composeapp.generated.resources.network_image_response
+import flocondesktop.composeapp.generated.resources.network_jwt
 import flocondesktop.composeapp.generated.resources.network_log_title
 import flocondesktop.composeapp.generated.resources.network_no_body
+import flocondesktop.composeapp.generated.resources.network_open_jwt_decoder
 import flocondesktop.composeapp.generated.resources.network_query_name
 import flocondesktop.composeapp.generated.resources.network_query_params
 import flocondesktop.composeapp.generated.resources.network_request_headers
@@ -168,6 +172,70 @@ fun NetworkDetailScreen(
         tab = tab,
         onAction = viewModel::onAction
     )
+}
+
+private fun Modifier.recordInto(graphicsLayer: GraphicsLayer): Modifier = drawWithContent {
+    graphicsLayer.record {
+        this@drawWithContent.drawContent()
+    }
+    drawLayer(graphicsLayer)
+}
+
+@Composable
+private fun ExportImageDropdown(
+    graphicsLayer: GraphicsLayer,
+    onAction: (NetworkDetailAction) -> Unit,
+    tooltip: String,
+    modifier: Modifier = Modifier,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier) {
+        FloconDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            onExpandRequest = { expanded = true },
+            anchor = DropdownPanelAnchor.BottomEnd,
+            anchorContent = {
+                FloconSmallIconButton(
+                    imageVector = Icons.Outlined.CameraAlt,
+                    onClick = { expanded = true },
+                    contentDescription = tooltip,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        ) {
+            FloconDropdownMenuItem(
+                text = stringResource(Res.string.general_copy_as_image),
+                leadingIcon = Icons.Outlined.CameraAlt,
+                onClick = {
+                    expanded = false
+                    coroutineScope.launch {
+                        try {
+                            onAction(NetworkDetailAction.CopyImage(graphicsLayer.toImageBitmap()))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            )
+            FloconDropdownMenuItem(
+                text = stringResource(Res.string.general_save_as_image),
+                leadingIcon = Icons.Outlined.Save,
+                onClick = {
+                    expanded = false
+                    coroutineScope.launch {
+                        try {
+                            onAction(NetworkDetailAction.SaveImage(graphicsLayer.toImageBitmap()))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            )
+        }
+    }
 }
 
 @Composable
@@ -258,9 +326,10 @@ private fun NetworkDetailContent(
                 )
             },
         ) {
-            FloconSegmentedRow {
+            CompactTabRow {
                 FloconTab(
                     text = "Request (${uiState.requestSize})",
+                    verticalPadding = FloconTheme.spacing.extraSmall,
                     isSelected = selectedTab == NetworkDetailTab.Request,
                     tabType = TabType.Start,
                     onSelected = { selectedTab = NetworkDetailTab.Request },
@@ -273,6 +342,7 @@ private fun NetworkDetailContent(
                 }
                 FloconTab(
                     text = "Response$responseSizeText",
+                    verticalPadding = FloconTheme.spacing.extraSmall,
                     isSelected = selectedTab == NetworkDetailTab.Response,
                     tabType = TabType.End,
                     onSelected = { selectedTab = NetworkDetailTab.Response },
@@ -298,6 +368,22 @@ private fun NetworkDetailContent(
             }
         }
     }
+}
+
+@Composable
+private fun CompactTabRow(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(FloconTheme.spacing.tiny),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+        content = content,
+    )
 }
 
 @Composable
@@ -376,6 +462,9 @@ private fun RequestTab(
         }
     }
 
+    val infoGraphicsLayer = rememberGraphicsLayer()
+    val graphQlGraphicsLayer = rememberGraphicsLayer()
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
@@ -386,8 +475,25 @@ private fun RequestTab(
             copyContentDescription = stringResource(Res.string.network_copy_url),
             onCopy = { onAction(NetworkDetailAction.CopyText(state.fullUrl)) },
             collapsible = true,
+            actions = {
+                ExportImageDropdown(
+                    graphicsLayer = infoGraphicsLayer,
+                    onAction = onAction,
+                    tooltip = stringResource(Res.string.network_export_summary_image),
+                )
+            },
         ) {
-            DetailKeyValueList(entries = infoEntries)
+            DetailKeyValueList(
+                entries = infoEntries,
+                modifier = Modifier.recordInto(infoGraphicsLayer),
+            )
+        }
+
+        state.jwt?.let { jwt ->
+            JwtCard(
+                jwt = jwt,
+                onAction = onAction,
+            )
         }
 
         state.graphQlSection?.let { graphQl ->
@@ -397,19 +503,28 @@ private fun RequestTab(
                 copyContentDescription = stringResource(Res.string.general_copy),
                 onCopy = { onAction(NetworkDetailAction.CopyText(graphQl.queryName)) },
                 collapsible = true,
+                actions = {
+                    ExportImageDropdown(
+                        graphicsLayer = graphQlGraphicsLayer,
+                        onAction = onAction,
+                        tooltip = stringResource(Res.string.network_export_graphql_image),
+                    )
+                },
             ) {
-                DetailKeyValueList(
-                    entries = listOf(stringResource(Res.string.network_query_name) to graphQl.queryName),
-                )
-                FloconLineDescription(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-                    label = stringResource(Res.string.general_type),
-                    labelWidth = KeyWidth,
-                    contentColor = FloconTheme.colors.inkMuted
-                ) {
-                    MethodTag(method = graphQl.method)
+                Column(modifier = Modifier.recordInto(graphQlGraphicsLayer)) {
+                    DetailKeyValueList(
+                        entries = listOf(stringResource(Res.string.network_query_name) to graphQl.queryName),
+                    )
+                    FloconLineDescription(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                        label = stringResource(Res.string.general_type),
+                        labelWidth = KeyWidth,
+                        contentColor = FloconTheme.colors.inkMuted
+                    ) {
+                        MethodTag(method = graphQl.method)
+                    }
                 }
             }
         }
@@ -469,6 +584,9 @@ private fun ResponseTab(
         return
     }
 
+    val errorGraphicsLayer = rememberGraphicsLayer()
+    val responseInfoGraphicsLayer = rememberGraphicsLayer()
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
@@ -481,6 +599,13 @@ private fun ResponseTab(
                     copyContentDescription = stringResource(Res.string.general_copy),
                     onCopy = { onAction(NetworkDetailAction.CopyText(response.issue)) },
                     collapsible = true,
+                    actions = {
+                        ExportImageDropdown(
+                            graphicsLayer = errorGraphicsLayer,
+                            onAction = onAction,
+                            tooltip = stringResource(Res.string.network_export_error_image),
+                        )
+                    },
                 ) {
                     FloconCodeBlock(
                         code = response.issue,
@@ -489,6 +614,7 @@ private fun ResponseTab(
                         borderColor = FloconTheme.colors.line,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .recordInto(errorGraphicsLayer)
                             .padding(FloconTheme.spacing.medium)
                     )
                 }
@@ -501,9 +627,17 @@ private fun ResponseTab(
                     copyContentDescription = stringResource(Res.string.general_copy),
                     onCopy = null,
                     collapsible = true,
+                    actions = {
+                        ExportImageDropdown(
+                            graphicsLayer = responseInfoGraphicsLayer,
+                            onAction = onAction,
+                            tooltip = stringResource(Res.string.network_export_response_summary_image),
+                        )
+                    },
                 ) {
                     DetailKeyValueList(
                         entries = listOf(stringResource(Res.string.network_response_size) to response.size),
+                        modifier = Modifier.recordInto(responseInfoGraphicsLayer),
                     )
                 }
 
@@ -541,12 +675,59 @@ private fun ResponseTab(
 }
 
 @Composable
+private fun JwtCard(
+    jwt: NetworkDetailViewState.Jwt,
+    onAction: (NetworkDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val entries = remember(jwt) { jwt.claims.map { it.name to it.value } }
+    DetailSectionCard(
+        title = stringResource(Res.string.network_jwt),
+        badge = "BEARER",
+        copyContentDescription = stringResource(Res.string.general_copy),
+        onCopy = { onAction(NetworkDetailAction.CopyText(jwt.token)) },
+        modifier = modifier,
+        collapsible = true,
+        actions = {
+            FloconSmallIconButton(
+                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                onClick = { onAction(NetworkDetailAction.DisplayBearerJwt(jwt.token)) },
+                contentDescription = stringResource(Res.string.network_open_jwt_decoder),
+                modifier = Modifier.size(16.dp),
+            )
+        },
+    ) {
+        jwt.expiration?.let { expiration ->
+            DetailChip(
+                text = expiration,
+                modifier = Modifier.padding(FloconTheme.spacing.medium),
+            )
+        }
+        SelectionContainer {
+            Text(
+                text = jwt.token,
+                style = FloconTheme.typography.monoSmall,
+                color = FloconTheme.colors.inkMuted,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = FloconTheme.spacing.medium)
+                    .padding(bottom = FloconTheme.spacing.small),
+            )
+        }
+        DetailKeyValueList(entries = entries)
+    }
+}
+
+@Composable
 private fun HeadersCard(
     headers: ImmutableList<NetworkDetailHeaderUi>,
     onAction: (NetworkDetailAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val copyableText = remember(headers) { headers.map { it.name to it.value }.toCopyableText() }
+    val graphicsLayer = rememberGraphicsLayer()
     DetailSectionCard(
         title = stringResource(Res.string.network_headers),
         badge = headers.size.toString(),
@@ -555,6 +736,13 @@ private fun HeadersCard(
         modifier = modifier,
         collapsible = true,
         initiallyExpanded = false,
+        actions = {
+            ExportImageDropdown(
+                graphicsLayer = graphicsLayer,
+                onAction = onAction,
+                tooltip = stringResource(Res.string.network_export_headers_image),
+            )
+        },
     ) {
         DetailHeaders(
             headers = headers,
@@ -562,7 +750,9 @@ private fun HeadersCard(
             onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
             onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
             framed = false,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .recordInto(graphicsLayer),
         )
     }
 }
@@ -580,6 +770,7 @@ private fun BodyCard(
     withJsonTree: Boolean = false,
     withDiff: Boolean = false,
 ) {
+    val graphicsLayer = rememberGraphicsLayer()
     DetailSectionCard(
         title = title,
         badge = null,
@@ -588,6 +779,11 @@ private fun BodyCard(
         modifier = modifier,
         collapsible = true,
         actions = {
+            ExportImageDropdown(
+                graphicsLayer = graphicsLayer,
+                onAction = onAction,
+                tooltip = stringResource(Res.string.network_export_body_image),
+            )
             if (bodyIsNotBlank) {
                 FloconSmallIconButton(
                     imageVector = Icons.Outlined.OpenInFull,
@@ -621,6 +817,7 @@ private fun BodyCard(
                 body = body,
                 size = size,
                 withJsonTree = withJsonTree,
+                modifier = Modifier.recordInto(graphicsLayer),
             )
         }
     }
