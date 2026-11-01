@@ -154,10 +154,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.WindowDetail>(
         metadata = WindowSceneStrategy.window()
     ) {
-        // the window surface is the sidebar color, the detail is drawn on the panel one
-        Box(Modifier.fillMaxSize().background(FloconTheme.colors.bg100)) {
-            NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
-        }
+        NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
     }
     entry<NetworkRoutes.JsonDetail>(
         metadata = WindowSceneStrategy.window(
