@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.crash_copy_trace
 import flocondesktop.composeapp.generated.resources.crash_no_result
@@ -268,10 +269,13 @@ private fun CrashList(
         contentPadding = PaddingValues(FloconTheme.spacing.small),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
-        items(count = crashReports.itemCount) { index ->
+        items(
+            count = crashReports.itemCount,
+            key = crashReports.itemKey { it.id },
+        ) { index ->
             crashReports[index]?.let { crash ->
                 // the list is sorted by date: a new day starts a new section
-                val startsDay = crashReports.peek(index - 1)?.dayFormatted != crash.dayFormatted
+                val startsDay = index == 0 || crashReports.peek(index - 1)?.dayFormatted != crash.dayFormatted
                 if (startsDay) {
                     DayHeader(crash.dayFormatted)
                 }
