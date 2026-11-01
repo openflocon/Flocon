@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -160,6 +164,42 @@ internal fun DetailChipText(text: String) {
 }
 
 /**
+ * A labeled button for the toolbar of a [DetailSectionCard]
+ */
+@Composable
+internal fun DetailActionButton(
+    label: String,
+    imageVector: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentDescription: String = label,
+) {
+    val shape = FloconTheme.shapes.medium
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(FloconTheme.colors.bg200)
+            .border(width = 1.dp, color = FloconTheme.colors.line, shape = shape)
+            .clickable(onClick = onClick)
+            .semantics { this.contentDescription = contentDescription }
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FloconIcon(
+            imageVector = imageVector,
+            tint = FloconTheme.colors.ink,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = label,
+            style = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            color = FloconTheme.colors.ink,
+        )
+    }
+}
+
+/**
  * A bordered card with a header strip: [title], an optional [badge], extra [actions] and a copy button when [onCopy] is set.
  * When [collapsible], a click on the header strip folds / unfolds the content
  */
@@ -173,6 +213,7 @@ internal fun DetailSectionCard(
     collapsible: Boolean = false,
     initiallyExpanded: Boolean = true,
     actions: (@Composable RowScope.() -> Unit)? = null,
+    toolbar: (@Composable FlowRowScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val shape = FloconTheme.shapes.medium
@@ -232,6 +273,18 @@ internal fun DetailSectionCard(
             }
         }
         if (!collapsible || expanded) {
+            if (toolbar != null) {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(FloconTheme.colors.bg000.copy(alpha = 0.5f))
+                        .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                    content = toolbar,
+                )
+            }
             content()
         }
     }

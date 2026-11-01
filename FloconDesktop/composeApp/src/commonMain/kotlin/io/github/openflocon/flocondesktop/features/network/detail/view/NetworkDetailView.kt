@@ -71,6 +71,11 @@ import flocondesktop.composeapp.generated.resources.general_copy_as_markdown
 import flocondesktop.composeapp.generated.resources.general_save_as_image
 import flocondesktop.composeapp.generated.resources.general_type
 import flocondesktop.composeapp.generated.resources.images_preview
+import flocondesktop.composeapp.generated.resources.network_action_decode
+import flocondesktop.composeapp.generated.resources.network_action_diff
+import flocondesktop.composeapp.generated.resources.network_action_expand
+import flocondesktop.composeapp.generated.resources.network_action_image
+import flocondesktop.composeapp.generated.resources.network_action_open
 import flocondesktop.composeapp.generated.resources.network_body
 import flocondesktop.composeapp.generated.resources.network_copy_curl_command
 import flocondesktop.composeapp.generated.resources.network_copy_url
@@ -110,6 +115,7 @@ import flocondesktop.composeapp.generated.resources.network_view_in_app
 import flocondesktop.composeapp.generated.resources.network_waiting_response
 import flocondesktop.composeapp.generated.resources.open_external
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailActionButton
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailChip
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailEmptyText
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
@@ -198,11 +204,11 @@ private fun ExportImageDropdown(
             onExpandRequest = { expanded = true },
             anchor = DropdownPanelAnchor.BottomEnd,
             anchorContent = {
-                FloconSmallIconButton(
+                DetailActionButton(
+                    label = stringResource(Res.string.network_action_image),
                     imageVector = Icons.Outlined.CameraAlt,
                     onClick = { expanded = true },
                     contentDescription = tooltip,
-                    modifier = Modifier.size(16.dp),
                 )
             }
         ) {
@@ -473,13 +479,18 @@ private fun RequestTab(
             title = stringResource(Res.string.network_request_info),
             badge = null,
             copyContentDescription = stringResource(Res.string.network_copy_url),
-            onCopy = { onAction(NetworkDetailAction.CopyText(state.fullUrl)) },
+            onCopy = null,
             collapsible = true,
-            actions = {
+            toolbar = {
                 ExportImageDropdown(
                     graphicsLayer = infoGraphicsLayer,
                     onAction = onAction,
                     tooltip = stringResource(Res.string.network_export_summary_image),
+                )
+                DetailActionButton(
+                    label = stringResource(Res.string.general_copy),
+                    imageVector = Icons.Outlined.CopyAll,
+                    onClick = { onAction(NetworkDetailAction.CopyText(state.fullUrl)) },
                 )
             },
         ) {
@@ -501,13 +512,18 @@ private fun RequestTab(
                 title = "GraphQl",
                 badge = null,
                 copyContentDescription = stringResource(Res.string.general_copy),
-                onCopy = { onAction(NetworkDetailAction.CopyText(graphQl.queryName)) },
+                onCopy = null,
                 collapsible = true,
-                actions = {
+                toolbar = {
                     ExportImageDropdown(
                         graphicsLayer = graphQlGraphicsLayer,
                         onAction = onAction,
                         tooltip = stringResource(Res.string.network_export_graphql_image),
+                    )
+                    DetailActionButton(
+                        label = stringResource(Res.string.general_copy),
+                        imageVector = Icons.Outlined.CopyAll,
+                        onClick = { onAction(NetworkDetailAction.CopyText(graphQl.queryName)) },
                     )
                 },
             ) {
@@ -535,8 +551,15 @@ private fun RequestTab(
                 title = stringResource(Res.string.network_query_params),
                 badge = entries.size.toString(),
                 copyContentDescription = stringResource(Res.string.general_copy),
-                onCopy = { onAction(NetworkDetailAction.CopyText(entries.toCopyableText())) },
+                onCopy = null,
                 collapsible = true,
+                toolbar = {
+                    DetailActionButton(
+                        label = stringResource(Res.string.general_copy),
+                        imageVector = Icons.Outlined.CopyAll,
+                        onClick = { onAction(NetworkDetailAction.CopyText(entries.toCopyableText())) },
+                    )
+                },
             ) {
                 DetailKeyValueList(entries = entries)
             }
@@ -597,13 +620,18 @@ private fun ResponseTab(
                     title = stringResource(Res.string.network_body),
                     badge = null,
                     copyContentDescription = stringResource(Res.string.general_copy),
-                    onCopy = { onAction(NetworkDetailAction.CopyText(response.issue)) },
+                    onCopy = null,
                     collapsible = true,
-                    actions = {
+                    toolbar = {
                         ExportImageDropdown(
                             graphicsLayer = errorGraphicsLayer,
                             onAction = onAction,
                             tooltip = stringResource(Res.string.network_export_error_image),
+                        )
+                        DetailActionButton(
+                            label = stringResource(Res.string.general_copy),
+                            imageVector = Icons.Outlined.CopyAll,
+                            onClick = { onAction(NetworkDetailAction.CopyText(response.issue)) },
                         )
                     },
                 ) {
@@ -627,7 +655,7 @@ private fun ResponseTab(
                     copyContentDescription = stringResource(Res.string.general_copy),
                     onCopy = null,
                     collapsible = true,
-                    actions = {
+                    toolbar = {
                         ExportImageDropdown(
                             graphicsLayer = responseInfoGraphicsLayer,
                             onAction = onAction,
@@ -685,15 +713,20 @@ private fun JwtCard(
         title = stringResource(Res.string.network_jwt),
         badge = "BEARER",
         copyContentDescription = stringResource(Res.string.general_copy),
-        onCopy = { onAction(NetworkDetailAction.CopyText(jwt.token)) },
+        onCopy = null,
         modifier = modifier,
         collapsible = true,
-        actions = {
-            FloconSmallIconButton(
+        toolbar = {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_decode),
                 imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                 onClick = { onAction(NetworkDetailAction.DisplayBearerJwt(jwt.token)) },
                 contentDescription = stringResource(Res.string.network_open_jwt_decoder),
-                modifier = Modifier.size(16.dp),
+            )
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(jwt.token)) },
             )
         },
     ) {
@@ -732,15 +765,20 @@ private fun HeadersCard(
         title = stringResource(Res.string.network_headers),
         badge = headers.size.toString(),
         copyContentDescription = stringResource(Res.string.general_copy),
-        onCopy = { onAction(NetworkDetailAction.CopyText(copyableText)) },
+        onCopy = null,
         modifier = modifier,
         collapsible = true,
         initiallyExpanded = false,
-        actions = {
+        toolbar = {
             ExportImageDropdown(
                 graphicsLayer = graphicsLayer,
                 onAction = onAction,
                 tooltip = stringResource(Res.string.network_export_headers_image),
+            )
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(copyableText)) },
             )
         },
     ) {
@@ -775,37 +813,44 @@ private fun BodyCard(
         title = title,
         badge = null,
         copyContentDescription = stringResource(Res.string.general_copy),
-        onCopy = { onAction(NetworkDetailAction.CopyText(body)) }.takeIf { bodyIsNotBlank },
+        onCopy = null,
         modifier = modifier,
         collapsible = true,
-        actions = {
+        toolbar = {
+            if (bodyIsNotBlank) {
+                DetailActionButton(
+                    label = stringResource(Res.string.network_action_expand),
+                    imageVector = Icons.Outlined.OpenInFull,
+                    onClick = { onAction(NetworkDetailAction.JsonDetail(json = body)) },
+                    contentDescription = stringResource(Res.string.network_view_in_app),
+                )
+            }
+            if (canOpenExternally) {
+                DetailActionButton(
+                    label = stringResource(Res.string.network_action_open),
+                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                    onClick = onOpenExternally,
+                    contentDescription = stringResource(Res.string.open_external),
+                )
+            }
+            if (withDiff && bodyIsNotBlank) {
+                DetailActionButton(
+                    label = stringResource(Res.string.network_action_diff),
+                    imageVector = Icons.Outlined.Difference,
+                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(body)) },
+                    contentDescription = stringResource(Res.string.diff_compare_clipboard),
+                )
+            }
             ExportImageDropdown(
                 graphicsLayer = graphicsLayer,
                 onAction = onAction,
                 tooltip = stringResource(Res.string.network_export_body_image),
             )
             if (bodyIsNotBlank) {
-                FloconSmallIconButton(
-                    imageVector = Icons.Outlined.OpenInFull,
-                    onClick = { onAction(NetworkDetailAction.JsonDetail(json = body)) },
-                    contentDescription = stringResource(Res.string.network_view_in_app),
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-            if (canOpenExternally) {
-                FloconSmallIconButton(
-                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                    onClick = onOpenExternally,
-                    contentDescription = stringResource(Res.string.open_external),
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-            if (withDiff && bodyIsNotBlank) {
-                FloconSmallIconButton(
-                    imageVector = Icons.Outlined.Difference,
-                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(body)) },
-                    contentDescription = stringResource(Res.string.diff_compare_clipboard),
-                    modifier = Modifier.size(16.dp),
+                DetailActionButton(
+                    label = stringResource(Res.string.general_copy),
+                    imageVector = Icons.Outlined.CopyAll,
+                    onClick = { onAction(NetworkDetailAction.CopyText(body)) },
                 )
             }
         },
@@ -904,9 +949,17 @@ private fun ImageCard(
         title = stringResource(Res.string.network_image_response),
         badge = null,
         copyContentDescription = stringResource(Res.string.network_copy_url),
-        onCopy = { onAction(NetworkDetailAction.CopyText(imageUrl)) },
+        onCopy = null,
         modifier = modifier,
         collapsible = true,
+        toolbar = {
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(imageUrl)) },
+                contentDescription = stringResource(Res.string.network_copy_url),
+            )
+        },
     ) {
         AsyncImage(
             model = remember(state.callId, imageUrl) {

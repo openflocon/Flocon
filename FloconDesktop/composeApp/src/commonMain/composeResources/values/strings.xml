@@ -427,6 +427,11 @@
     <string name="network_no_body">No body</string>
     <string name="network_replay">Replay</string>
     <string name="network_image_response">Image response</string>
+    <string name="network_action_expand">Expand</string>
+    <string name="network_action_open">Open</string>
+    <string name="network_action_diff">Diff</string>
+    <string name="network_action_image">Image</string>
+    <string name="network_action_decode">Decode</string>
     <string name="network_jwt">Authorization (JWT)</string>
     <string name="network_open_jwt_decoder">Open JWT decoder</string>
     <string name="network_mock_tag">MOCK</string>
