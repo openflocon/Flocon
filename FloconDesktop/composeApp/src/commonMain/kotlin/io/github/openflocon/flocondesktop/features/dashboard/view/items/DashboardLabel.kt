@@ -23,9 +23,9 @@ internal fun DashboardLabel(
         Text(
             text = rowItem.label,
             modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
-            color = FloconTheme.colors.ink,
-            style = FloconTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Thin,
+            color = FloconTheme.colors.inkMuted,
+            style = FloconTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.SemiBold,
             ),
         )
     }

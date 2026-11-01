@@ -23,8 +23,8 @@
     <string name="crash_framework_frames_hidden">%1$d framework frames hidden</string>
     <string name="crash_framework_frames_show">Show</string>
     <string name="crash_no_result">No crash matches your search</string>
-    <string name="dashboards">Dashboards</string>
     <string name="dashboard_action_delete">Delete Dashboards</string>
+    <string name="dashboard_container_form">form</string>
     <string name="dashboard_empty">No dashboard</string>
     <string name="dashboard_removed">Dashboard removed</string>
     <string name="database_run_query">Run Query</string>

@@ -27,9 +27,9 @@ internal fun DashboardMarkdown(
             Text(
                 text = rowItem.label,
                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall),
-                color = FloconTheme.colors.ink,
-                style = FloconTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Thin,
+                color = FloconTheme.colors.inkMuted,
+                style = FloconTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.SemiBold,
                 ),
             )
         }
@@ -37,7 +37,7 @@ internal fun DashboardMarkdown(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = FloconTheme.colors.bg200,
+                    color = FloconTheme.colors.bg000,
                     shape = RoundedCornerShape(8.dp),
                 )
                 .padding(FloconTheme.spacing.small),

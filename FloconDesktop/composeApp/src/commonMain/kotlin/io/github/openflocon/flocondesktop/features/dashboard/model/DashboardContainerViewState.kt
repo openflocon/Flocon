@@ -14,6 +14,26 @@ data class DashboardContainerViewState(
     val containerConfig: ContainerConfig,
     val rows: ImmutableList<RowItem>,
 ) {
+    /** What the container mostly shows, used to pick the icon of its header */
+    val kind: ContainerKind
+        get() = when {
+            containerConfig is ContainerConfig.Form -> ContainerKind.Form
+            rows.any { it is RowItem.Markdown } -> ContainerKind.Markdown
+            rows.any { it is RowItem.Html } -> ContainerKind.Html
+            rows.any { it is RowItem.PlainText } -> ContainerKind.PlainText
+            rows.any { it is InputItem || it is RowItem.Button } -> ContainerKind.Inputs
+            else -> ContainerKind.Info
+        }
+
+    enum class ContainerKind {
+        Form,
+        Markdown,
+        Html,
+        PlainText,
+        Inputs,
+        Info,
+    }
+
     @Immutable
     sealed interface RowItem {
         @Immutable

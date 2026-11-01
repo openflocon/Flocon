@@ -32,22 +32,17 @@ internal fun DashboardCheckBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-            ) {
-                Text(
-                    style = FloconTheme.typography.bodySmall.copy(
-                        color = FloconTheme.colors.ink,
-                    ),
-                    text = rowItem.label,
-                )
-            }
             FloconCheckbox(
                 checked = value,
                 onCheckedChange = onCheckedChange,
-                uncheckedColor = FloconTheme.colors.bg200
+                uncheckedColor = FloconTheme.colors.lineStrong
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                style = FloconTheme.typography.bodyMedium.copy(
+                    color = FloconTheme.colors.ink,
+                ),
+                text = rowItem.label,
             )
         }
     }

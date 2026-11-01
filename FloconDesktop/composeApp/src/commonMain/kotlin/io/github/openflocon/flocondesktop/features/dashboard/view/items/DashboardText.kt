@@ -34,9 +34,9 @@ internal fun DashboardText(
             Text(
                 text = rowItem.label,
                 modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
-                color = FloconTheme.colors.ink,
-                style = FloconTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Thin,
+                color = FloconTheme.colors.inkMuted,
+                style = FloconTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.SemiBold,
                 ),
             )
             Row(
@@ -49,7 +49,7 @@ internal fun DashboardText(
                     onValueChange = {},
                     readOnly = true,
                     singleLine = false,
-                    containerColor = FloconTheme.colors.bg200,
+                    containerColor = FloconTheme.colors.bg000,
                     textStyle = FloconTheme.typography.bodySmall,
                     contentColor = rowItem.color ?: FloconTheme.colors.inkMuted,
                     contentPadding = PaddingValues(FloconTheme.spacing.small),

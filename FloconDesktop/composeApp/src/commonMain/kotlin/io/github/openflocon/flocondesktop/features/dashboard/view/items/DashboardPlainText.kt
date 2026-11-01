@@ -44,10 +44,10 @@ internal fun DashboardPlainText(
                     modifier =
                     Modifier.padding(start = FloconTheme.spacing.extraSmall)
                         .align(Alignment.CenterStart),
-                    color = FloconTheme.colors.ink,
+                    color = FloconTheme.colors.inkMuted,
                     style =
-                    FloconTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Thin,
+                    FloconTheme.typography.bodySmall.copy(
+                        fontWeight = FontWeight.SemiBold,
                     ),
                 )
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
@@ -62,7 +62,7 @@ internal fun DashboardPlainText(
                 modifier =
                 Modifier.fillMaxWidth()
                     .background(
-                        color = FloconTheme.colors.bg200,
+                        color = FloconTheme.colors.bg000,
                         shape = RoundedCornerShape(8.dp),
                     )
                     .padding(FloconTheme.spacing.small),
