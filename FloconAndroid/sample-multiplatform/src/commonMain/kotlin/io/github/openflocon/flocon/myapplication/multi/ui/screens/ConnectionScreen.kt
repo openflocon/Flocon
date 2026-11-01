@@ -43,6 +43,7 @@ import io.github.openflocon.flocon.FloconConnectResult
 import io.github.openflocon.flocon.FloconConnectionState
 import io.github.openflocon.flocon.connect
 import io.github.openflocon.flocon.connectionState
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleQrScanner
 import io.github.openflocon.flocon.myapplication.multi.ui.components.AccentButton
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Card
 import io.github.openflocon.flocon.myapplication.multi.ui.components.InfoCard
@@ -72,6 +73,18 @@ fun ConnectionScreen(onBack: () -> Unit) {
                 connecting = true
                 result = Flocon.connect(address.trim())
                 connecting = false
+            }
+        }
+    }
+
+    val scanQrCode = SampleQrScanner.scan?.let { scan ->
+        {
+            if (!connecting) {
+                scope.launch {
+                    connecting = true
+                    scan()?.let { result = it }
+                    connecting = false
+                }
             }
         }
     }
@@ -136,6 +149,14 @@ fun ConnectionScreen(onBack: () -> Unit) {
                         text = if (connecting) "…" else "Connect",
                         enabled = address.isNotBlank() && !connecting,
                         onClick = connect,
+                    )
+                }
+                if (scanQrCode != null) {
+                    AccentButton(
+                        text = "Scan the QR code of Flocon Desktop",
+                        enabled = !connecting,
+                        onClick = scanQrCode,
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     )
                 }
                 when (val current = result) {

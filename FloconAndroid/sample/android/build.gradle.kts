@@ -62,6 +62,7 @@ dependencies {
     implementation(projects.webview)
     implementation(projects.crashreporter)
     implementation(projects.tables)
+    implementation(projects.qrscanner)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
@@ -159,6 +160,7 @@ val floconNoOpModules = mapOf(
     ":network:okhttp-interceptor" to ":network:okhttp-interceptor-no-op",
     ":sharedprefs" to ":sharedprefs-no-op",
     ":tables" to ":tables-no-op",
+    ":qrscanner" to ":qrscanner-no-op",
 )
 
 configurations.configureEach {
