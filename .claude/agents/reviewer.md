@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Reviews the current diff for real problems (bugs, broken plugin/no-op parity, protocol drift, missing tests). Use before committing or opening a PR.
+description: Reviews the current diff for real problems (bugs, broken plugin/no-op parity, protocol drift, missing tests). MUST BE USED before every commit and before opening a PR, once the module checks pass.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---

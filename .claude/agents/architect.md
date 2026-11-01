@@ -1,6 +1,6 @@
 ---
 name: architect
-description: Checks a plan or a large change against Flocon's architecture before implementation starts. Use for new plugins, cross-module changes, or protocol changes.
+description: Checks a plan against Flocon's architecture. Use proactively, once the plan exists and before writing any code, for a new plugin, a cross-module change or a protocol change.
 tools: Read, Grep, Glob
 model: opus
 ---

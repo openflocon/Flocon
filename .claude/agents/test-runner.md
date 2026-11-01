@@ -1,6 +1,6 @@
 ---
 name: test-runner
-description: Runs Gradle tests, builds and MkDocs checks for Flocon and reports only the result. Use after a change to verify the touched module.
+description: Runs Gradle tests, builds and MkDocs checks for Flocon and reports only the result. Use proactively after every code or docs change to verify the touched module, instead of running Gradle yourself.
 tools: Bash, Read, Grep, Glob
 model: haiku
 ---
