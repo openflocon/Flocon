@@ -1,34 +1,22 @@
 package io.github.openflocon.flocondesktop.features.crashreporter.view
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconCodeBlock
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 
+/** The header of a crash, then its body: used where there is no top bar to hold the header (the crash panel). */
 @Composable
 internal fun CrashReportDetail(
     onCopy: (CrashReporterSelectedUiModel) -> Unit,
@@ -36,15 +24,17 @@ internal fun CrashReportDetail(
     crash: CrashReporterSelectedUiModel,
     modifier: Modifier = Modifier
 ) {
-    SelectionContainer {
-        Column(
-            modifier = modifier
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = FloconTheme.spacing.medium, horizontal = FloconTheme.spacing.large),
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.padding(
+                top = FloconTheme.spacing.medium,
+                start = FloconTheme.spacing.large,
+                end = FloconTheme.spacing.large,
+            ),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
+            SelectionContainer(Modifier.weight(1f)) {
+                Column {
                     Text(
                         text = crash.exceptionType,
                         style = FloconTheme.typography.titleMedium,
@@ -59,63 +49,17 @@ internal fun CrashReportDetail(
                         style = FloconTheme.typography.bodyMedium
                     )
                 }
-                Actions(
-                    modifier = Modifier.height(40.dp),
-                    onCopy = {
-                        onCopy(crash)
-                    },
-                    onDelete = {
-                        onDelete(crash)
-                    }
-                )
             }
-            FloconCodeBlock(
-                code = crash.stackTrace,
-                containerColor = FloconTheme.colors.bg200,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(FloconTheme.spacing.medium)
-            )
+            FloconIconButton(onClick = { onDelete(crash) }) {
+                Icon(Icons.Filled.Delete, contentDescription = null)
+            }
+            FloconIconButton(onClick = { onCopy(crash) }) {
+                Icon(Icons.Filled.CopyAll, contentDescription = null)
+            }
         }
-    }
-}
-
-@Composable
-private fun Actions(
-    onCopy: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)
-    ) {
-        Box(
-            modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable(onClick = onDelete)
-                .aspectRatio(1f, true),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                Icons.Filled.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
-            )
-        }
-        Box(
-            modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                .clickable(onClick = onCopy)
-                .aspectRatio(1f, true),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                Icons.Filled.CopyAll,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(FloconTheme.colors.ink)
-            )
-        }
+        CrashReportBody(
+            stackTrace = crash.stackTrace,
+            modifier = Modifier.weight(1f),
+        )
     }
 }

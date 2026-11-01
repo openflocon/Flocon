@@ -8,7 +8,11 @@ data class CrashReporterUiModel(
     val dateFormatted: String,
     val exceptionType: String,
     val exceptionMessage: String,
-)
+) {
+    // dateFormatted is "dd/MM/yyyy HH:mm:ss.SSS"
+    val dayFormatted: String get() = dateFormatted.substringBefore(' ')
+    val timeFormatted: String get() = dateFormatted.substringAfter(' ').take(8)
+}
 
 fun previewCrashReportItem() = CrashReporterUiModel(
     id = "id",
