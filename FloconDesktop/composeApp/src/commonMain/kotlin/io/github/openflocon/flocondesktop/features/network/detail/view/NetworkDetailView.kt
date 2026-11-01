@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -809,6 +810,44 @@ private fun BodyCard(
     withDiff: Boolean = false,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
+    val bodyToolbar: @Composable FlowRowScope.() -> Unit = {
+        if (bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_expand),
+                imageVector = Icons.Outlined.OpenInFull,
+                onClick = { onAction(NetworkDetailAction.JsonDetail(json = body)) },
+                contentDescription = stringResource(Res.string.network_view_in_app),
+            )
+        }
+        if (canOpenExternally) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_open),
+                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                onClick = onOpenExternally,
+                contentDescription = stringResource(Res.string.open_external),
+            )
+        }
+        if (withDiff && bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_diff),
+                imageVector = Icons.Outlined.Difference,
+                onClick = { onAction(NetworkDetailAction.DiffWithClipboard(body)) },
+                contentDescription = stringResource(Res.string.diff_compare_clipboard),
+            )
+        }
+        ExportImageDropdown(
+            graphicsLayer = graphicsLayer,
+            onAction = onAction,
+            tooltip = stringResource(Res.string.network_export_body_image),
+        )
+        if (bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(body)) },
+            )
+        }
+    }
     DetailSectionCard(
         title = title,
         badge = null,
@@ -816,44 +855,7 @@ private fun BodyCard(
         onCopy = null,
         modifier = modifier,
         collapsible = true,
-        toolbar = {
-            if (bodyIsNotBlank) {
-                DetailActionButton(
-                    label = stringResource(Res.string.network_action_expand),
-                    imageVector = Icons.Outlined.OpenInFull,
-                    onClick = { onAction(NetworkDetailAction.JsonDetail(json = body)) },
-                    contentDescription = stringResource(Res.string.network_view_in_app),
-                )
-            }
-            if (canOpenExternally) {
-                DetailActionButton(
-                    label = stringResource(Res.string.network_action_open),
-                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                    onClick = onOpenExternally,
-                    contentDescription = stringResource(Res.string.open_external),
-                )
-            }
-            if (withDiff && bodyIsNotBlank) {
-                DetailActionButton(
-                    label = stringResource(Res.string.network_action_diff),
-                    imageVector = Icons.Outlined.Difference,
-                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(body)) },
-                    contentDescription = stringResource(Res.string.diff_compare_clipboard),
-                )
-            }
-            ExportImageDropdown(
-                graphicsLayer = graphicsLayer,
-                onAction = onAction,
-                tooltip = stringResource(Res.string.network_export_body_image),
-            )
-            if (bodyIsNotBlank) {
-                DetailActionButton(
-                    label = stringResource(Res.string.general_copy),
-                    imageVector = Icons.Outlined.CopyAll,
-                    onClick = { onAction(NetworkDetailAction.CopyText(body)) },
-                )
-            }
-        },
+        toolbar = bodyToolbar.takeIf { bodyIsNotBlank },
     ) {
         if (!bodyIsNotBlank) {
             DetailEmptyText(stringResource(Res.string.network_no_body))
