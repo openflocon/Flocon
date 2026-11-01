@@ -1,82 +1,62 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.ViewAgenda
+import androidx.compose.material.icons.outlined.ViewColumn
+import androidx.compose.material.icons.outlined.ViewModule
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.dashboard_items_per_row
 import flocondesktop.composeapp.generated.resources.general_auto
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardArrangement
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconOption
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconToggle
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
-private const val MaxItemsPerRow = 4
+private const val MaxItemsPerRow = 3
 
-/** Segmented control: Auto, then a fixed number of items per row. */
+/** Auto, then 1 to [MaxItemsPerRow] items per row. */
 @Composable
 internal fun DashboardArrangementContent(
     arrangement: DashboardArrangement,
     onArrangementClicked: (DashboardArrangement) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = FloconTheme.colors
-
-    Row(
-        modifier = modifier
-            .height(FloconTheme.sizes.pageBarControlHeight)
-            .clip(FloconTheme.shapes.medium)
-            .background(colors.ink.copy(alpha = 0.06f))
-            .padding(FloconTheme.spacing.tiny),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-    ) {
-        ArrangementSegment(
-            text = stringResource(Res.string.general_auto),
-            isSelected = arrangement is DashboardArrangement.Adaptive,
-            onClick = { onArrangementClicked(DashboardArrangement.Adaptive) },
+    val auto = stringResource(Res.string.general_auto)
+    val one = stringResource(Res.string.dashboard_items_per_row, 1)
+    val two = stringResource(Res.string.dashboard_items_per_row, 2)
+    val three = stringResource(Res.string.dashboard_items_per_row, 3)
+    val options = remember(auto, one, two, three) {
+        persistentListOf(
+            FloconSegmentedIconOption(icon = Icons.Outlined.GridView, tooltip = auto),
+            FloconSegmentedIconOption(icon = Icons.Outlined.ViewAgenda, tooltip = one),
+            FloconSegmentedIconOption(icon = Icons.Outlined.ViewColumn, tooltip = two),
+            FloconSegmentedIconOption(icon = Icons.Outlined.ViewModule, tooltip = three),
         )
-        repeat(MaxItemsPerRow) { index ->
-            val itemsPerRow = index + 1
-            ArrangementSegment(
-                text = itemsPerRow.toString(),
-                isSelected = (arrangement as? DashboardArrangement.Fixed)?.itemsPerRow == itemsPerRow,
-                onClick = { onArrangementClicked(DashboardArrangement.Fixed(itemsPerRow)) },
-            )
-        }
     }
-}
 
-@Composable
-private fun ArrangementSegment(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val colors = FloconTheme.colors
-    val shape = FloconTheme.shapes.small
-
-    Text(
-        modifier = modifier
-            .clip(shape)
-            .background(if (isSelected) colors.ink.copy(alpha = 0.14f) else Color.Transparent)
-            .clickable(onClick = onClick)
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-        text = text,
-        style = FloconTheme.typography.bodySmall,
-        fontWeight = FontWeight.Medium,
-        color = if (isSelected) colors.ink else colors.inkMuted,
-        maxLines = 1,
+    FloconSegmentedIconToggle(
+        modifier = modifier,
+        options = options,
+        selectedIndex = when (arrangement) {
+            is DashboardArrangement.Adaptive -> 0
+            is DashboardArrangement.Fixed -> arrangement.itemsPerRow.coerceIn(1, MaxItemsPerRow)
+        },
+        onSelect = { index ->
+            onArrangementClicked(
+                if (index == 0) {
+                    DashboardArrangement.Adaptive
+                } else {
+                    DashboardArrangement.Fixed(itemsPerRow = index)
+                }
+            )
+        },
     )
 }
 

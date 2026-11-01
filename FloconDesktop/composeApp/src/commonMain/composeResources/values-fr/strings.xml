@@ -11,6 +11,7 @@
     <string name="crashes">Crashs</string>
     <string name="dashboard_action_delete">Supprimer les tableaux de bord</string>
     <string name="dashboard_container_form">formulaire</string>
+    <string name="dashboard_items_per_row">%1$d par ligne</string>
     <string name="dashboard_empty">Aucun tableau de bord</string>
     <string name="dashboard_removed">Tableau de bord supprimé</string>
     <string name="database_run_query">Exécuter la requête</string>

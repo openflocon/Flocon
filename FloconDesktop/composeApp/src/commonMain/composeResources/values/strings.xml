@@ -25,6 +25,7 @@
     <string name="crash_no_result">No crash matches your search</string>
     <string name="dashboard_action_delete">Delete Dashboards</string>
     <string name="dashboard_container_form">form</string>
+    <string name="dashboard_items_per_row">%1$d per row</string>
     <string name="dashboard_empty">No dashboard</string>
     <string name="dashboard_removed">Dashboard removed</string>
     <string name="database_run_query">Run Query</string>
