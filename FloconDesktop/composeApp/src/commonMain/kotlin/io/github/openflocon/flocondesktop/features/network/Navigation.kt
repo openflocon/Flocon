@@ -2,6 +2,10 @@
 
 package io.github.openflocon.flocondesktop.features.network
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
@@ -20,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScre
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkMockEditionScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
@@ -149,7 +154,10 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     entry<NetworkRoutes.WindowDetail>(
         metadata = WindowSceneStrategy.window()
     ) {
-        NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
+        // the window surface is the sidebar color, the detail is drawn on the panel one
+        Box(Modifier.fillMaxSize().background(FloconTheme.colors.bg100)) {
+            NetworkDetailScreen(requestId = it.requestId, key = it.windowKey)
+        }
     }
     entry<NetworkRoutes.JsonDetail>(
         metadata = WindowSceneStrategy.window(
