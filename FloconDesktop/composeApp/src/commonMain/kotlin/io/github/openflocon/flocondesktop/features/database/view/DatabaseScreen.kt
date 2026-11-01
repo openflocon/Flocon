@@ -23,17 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.menu_item_database
+import io.github.openflocon.flocondesktop.common.ui.LShape
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -109,7 +103,7 @@ fun DatabaseScreen(
             var filter by rememberSaveable { mutableStateOf("") }
             val sidebarWidth = 340.dp
             val barHeight = FloconTheme.sizes.controlHeight + FloconTheme.spacing.small * 2
-            val shape = remember(sidebarWidth, barHeight) { DatabaseLShape(sidebarWidth, barHeight) }
+            val shape = remember(sidebarWidth, barHeight) { LShape(sidebarWidth, barHeight) }
 
             Box(Modifier.fillMaxSize()) {
                 // the L is only the background: the content on the right is outside of it
@@ -185,43 +179,5 @@ fun DatabaseScreen(
                 }
             }
         }
-    }
-}
-
-private val DATABASE_L_CORNER_RADIUS = 12.dp
-
-/**
- * Top bar and sidebar in a single block, an inverted L:
- * the bar spans the whole width, the sidebar goes down on the left,
- * with a concave corner where they meet.
- */
-private class DatabaseLShape(
-    private val sidebarWidth: Dp,
-    private val barHeight: Dp,
-) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val r = with(density) { DATABASE_L_CORNER_RADIUS.toPx() }
-        val sw = with(density) { sidebarWidth.toPx() }
-        val bh = with(density) { barHeight.toPx() }
-        val w = size.width
-        val h = size.height
-        return Outline.Generic(
-            Path().apply {
-                moveTo(r, 0f)
-                lineTo(w - r, 0f)
-                quadraticTo(w, 0f, w, r)
-                lineTo(w, bh - r)
-                quadraticTo(w, bh, w - r, bh)
-                lineTo(sw + r, bh)
-                quadraticTo(sw, bh, sw, bh + r)
-                lineTo(sw, h - r)
-                quadraticTo(sw, h, sw - r, h)
-                lineTo(r, h)
-                quadraticTo(0f, h, 0f, h - r)
-                lineTo(0f, r)
-                quadraticTo(0f, 0f, r, 0f)
-                close()
-            }
-        )
     }
 }

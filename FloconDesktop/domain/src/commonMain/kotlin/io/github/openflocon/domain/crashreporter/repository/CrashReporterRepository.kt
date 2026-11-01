@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface CrashReporterRepository {
     fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: String,
     ): Flow<PagingData<CrashReportDomainModel>>
     fun observeHasCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
