@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -29,7 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -39,6 +42,8 @@ private val ControlRadius = 8.dp
 private val SegmentRadius = 6.dp
 private val SegmentIconSize = 15.dp
 private val SegmentPadding = 2.dp
+private const val ShortTextLength = 2
+private const val LongTextWidthFactor = 1.5f
 
 @Immutable
 data class FloconSegmentedIconOption(
@@ -47,6 +52,7 @@ data class FloconSegmentedIconOption(
 )
 
 /** Segmented icon buttons (e.g. [list | grid]), the selected background slides like a switch. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FloconSegmentedIconToggle(
     options: ImmutableList<FloconSegmentedIconOption>,
@@ -54,9 +60,69 @@ fun FloconSegmentedIconToggle(
     onSelect: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val segmentWidth = FloconTheme.sizes.controlHeight
+    SlidingSegmentedControl(
+        segmentWidths = options.map { FloconTheme.sizes.controlHeight },
+        selectedIndex = selectedIndex,
+        modifier = modifier,
+    ) { index, selected, _ ->
+        val option = options[index]
+        WithTooltip(option.tooltip) {
+            SegmentBox(width = FloconTheme.sizes.controlHeight, onClick = { onSelect(index) }) {
+                val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
+                FloconIcon(
+                    imageVector = option.icon,
+                    tint = tint,
+                    modifier = Modifier.size(SegmentIconSize),
+                )
+            }
+        }
+    }
+}
+
+/** Same control as [FloconSegmentedIconToggle] with a text per segment (e.g. [Auto | 1 | 2 | 3]). */
+@Composable
+fun FloconSegmentedTextToggle(
+    options: ImmutableList<String>,
+    selectedIndex: Int,
+    onSelect: (index: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // a segment is as wide as a square one, unless its text is longer than a few characters
+    val segmentWidths = options.map {
+        if (it.length > ShortTextLength) FloconTheme.sizes.controlHeight * LongTextWidthFactor else FloconTheme.sizes.controlHeight
+    }
+    SlidingSegmentedControl(
+        segmentWidths = segmentWidths,
+        selectedIndex = selectedIndex,
+        modifier = modifier,
+    ) { index, selected, segmentWidth ->
+        SegmentBox(width = segmentWidth, onClick = { onSelect(index) }) {
+            val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
+            Text(
+                text = options[index],
+                color = tint,
+                style = FloconTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SlidingSegmentedControl(
+    segmentWidths: List<Dp>,
+    selectedIndex: Int,
+    modifier: Modifier = Modifier,
+    segment: @Composable (index: Int, selected: Boolean, width: Dp) -> Unit,
+) {
+    val selectedWidth = segmentWidths.getOrElse(selectedIndex) { 0.dp }
     val indicatorOffset by animateDpAsState(
-        targetValue = segmentWidth * selectedIndex,
+        targetValue = segmentWidths.take(selectedIndex).fold(0.dp) { acc, width -> acc + width },
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
+    )
+    val indicatorWidth by animateDpAsState(
+        targetValue = selectedWidth,
         animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
     )
     Box(
@@ -71,17 +137,13 @@ fun FloconSegmentedIconToggle(
             modifier = Modifier
                 .offset(x = indicatorOffset)
                 .fillMaxHeight()
-                .width(segmentWidth)
+                .width(indicatorWidth)
                 .clip(RoundedCornerShape(SegmentRadius))
                 .background(FloconTheme.colors.bg300),
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            options.forEachIndexed { index, option ->
-                Segment(
-                    option = option,
-                    selected = index == selectedIndex,
-                    onClick = { onSelect(index) },
-                )
+            segmentWidths.forEachIndexed { index, width ->
+                segment(index, index == selectedIndex, width)
             }
         }
     }
@@ -89,28 +151,21 @@ fun FloconSegmentedIconToggle(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Segment(
-    option: FloconSegmentedIconOption,
-    selected: Boolean,
+private fun SegmentBox(
+    width: Dp,
     onClick: () -> Unit,
+    content: @Composable () -> Unit,
 ) {
-    WithTooltip(option.tooltip) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(FloconTheme.sizes.controlHeight)
-                .clip(RoundedCornerShape(SegmentRadius))
-                .clickable(onClick = onClick)
-                .pointerHoverIcon(PointerIcon.Hand),
-            contentAlignment = Alignment.Center,
-        ) {
-            val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
-            FloconIcon(
-                imageVector = option.icon,
-                tint = tint,
-                modifier = Modifier.size(SegmentIconSize),
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(width)
+            .clip(RoundedCornerShape(SegmentRadius))
+            .clickable(onClick = onClick)
+            .pointerHoverIcon(PointerIcon.Hand),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
     }
 }
 

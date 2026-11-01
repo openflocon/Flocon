@@ -15,12 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+
+private val LabelLetterSpacing = 0.6.sp
 
 @Composable
 fun DashboardTextField(
@@ -36,11 +39,12 @@ fun DashboardTextField(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
         Text(
-            text = rowItem.label,
+            text = rowItem.label.uppercase(),
             modifier = Modifier.padding(start = FloconTheme.spacing.extraSmall),
-            color = FloconTheme.colors.ink,
-            style = FloconTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Thin,
+            color = FloconTheme.colors.inkMuted,
+            style = FloconTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = LabelLetterSpacing,
             ),
         )
         Row(
@@ -52,7 +56,7 @@ fun DashboardTextField(
                 value = value,
                 onValueChange = onValueChange,
                 placeholder = defaultPlaceHolder(rowItem.placeHolder?.takeIf(String::isNotEmpty)),
-                containerColor = FloconTheme.colors.bg200,
+                containerColor = FloconTheme.colors.bg000,
                 contentPadding = PaddingValues(horizontal = FloconTheme.spacing.extraSmall),
                 modifier = Modifier
                     .weight(1f)
