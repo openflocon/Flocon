@@ -1,16 +1,13 @@
 package io.github.openflocon.flocondesktop.features.dashboard.view.items
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -36,11 +33,7 @@ internal fun DashboardMarkdown(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = FloconTheme.colors.bg000,
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .padding(FloconTheme.spacing.small),
+                .padding(FloconTheme.spacing.extraSmall),
         ) {
             Markdown(
                 content = rowItem.value,
