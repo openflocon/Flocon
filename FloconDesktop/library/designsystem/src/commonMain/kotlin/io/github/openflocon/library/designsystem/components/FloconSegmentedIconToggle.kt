@@ -42,7 +42,8 @@ private val ControlRadius = 8.dp
 private val SegmentRadius = 6.dp
 private val SegmentIconSize = 15.dp
 private val SegmentPadding = 2.dp
-private const val TextSegmentWidthFactor = 1.5f
+private const val ShortTextLength = 2
+private const val LongTextWidthFactor = 1.5f
 
 @Immutable
 data class FloconSegmentedIconOption(
@@ -60,11 +61,10 @@ fun FloconSegmentedIconToggle(
     modifier: Modifier = Modifier,
 ) {
     SlidingSegmentedControl(
-        count = options.size,
+        segmentWidths = options.map { FloconTheme.sizes.controlHeight },
         selectedIndex = selectedIndex,
-        segmentWidth = FloconTheme.sizes.controlHeight,
         modifier = modifier,
-    ) { index, selected ->
+    ) { index, selected, _ ->
         val option = options[index]
         WithTooltip(option.tooltip) {
             SegmentBox(width = FloconTheme.sizes.controlHeight, onClick = { onSelect(index) }) {
@@ -87,13 +87,15 @@ fun FloconSegmentedTextToggle(
     onSelect: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val segmentWidth = FloconTheme.sizes.controlHeight * TextSegmentWidthFactor
+    // a segment is as wide as a square one, unless its text is longer than a few characters
+    val segmentWidths = options.map {
+        if (it.length > ShortTextLength) FloconTheme.sizes.controlHeight * LongTextWidthFactor else FloconTheme.sizes.controlHeight
+    }
     SlidingSegmentedControl(
-        count = options.size,
+        segmentWidths = segmentWidths,
         selectedIndex = selectedIndex,
-        segmentWidth = segmentWidth,
         modifier = modifier,
-    ) { index, selected ->
+    ) { index, selected, segmentWidth ->
         SegmentBox(width = segmentWidth, onClick = { onSelect(index) }) {
             val tint by animateColorAsState(if (selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted)
             Text(
@@ -109,14 +111,18 @@ fun FloconSegmentedTextToggle(
 
 @Composable
 private fun SlidingSegmentedControl(
-    count: Int,
+    segmentWidths: List<Dp>,
     selectedIndex: Int,
-    segmentWidth: Dp,
     modifier: Modifier = Modifier,
-    segment: @Composable (index: Int, selected: Boolean) -> Unit,
+    segment: @Composable (index: Int, selected: Boolean, width: Dp) -> Unit,
 ) {
+    val selectedWidth = segmentWidths.getOrElse(selectedIndex) { 0.dp }
     val indicatorOffset by animateDpAsState(
-        targetValue = segmentWidth * selectedIndex,
+        targetValue = segmentWidths.take(selectedIndex).fold(0.dp) { acc, width -> acc + width },
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
+    )
+    val indicatorWidth by animateDpAsState(
+        targetValue = selectedWidth,
         animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
     )
     Box(
@@ -131,13 +137,13 @@ private fun SlidingSegmentedControl(
             modifier = Modifier
                 .offset(x = indicatorOffset)
                 .fillMaxHeight()
-                .width(segmentWidth)
+                .width(indicatorWidth)
                 .clip(RoundedCornerShape(SegmentRadius))
                 .background(FloconTheme.colors.bg300),
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            repeat(count) { index ->
-                segment(index, index == selectedIndex)
+            segmentWidths.forEachIndexed { index, width ->
+                segment(index, index == selectedIndex, width)
             }
         }
     }
