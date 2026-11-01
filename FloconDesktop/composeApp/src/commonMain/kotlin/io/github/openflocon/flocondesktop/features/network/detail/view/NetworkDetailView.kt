@@ -837,9 +837,9 @@ private fun BodyContent(
             modifier = modifier
                 .fillMaxWidth()
                 .height(JsonTreeHeight)
-                .padding(FloconTheme.spacing.medium)
+                .padding(FloconTheme.spacing.small)
                 .background(
-                    FloconTheme.colors.bg200,
+                    FloconTheme.colors.bg000,
                     shape = FloconTheme.shapes.medium,
                 )
                 .padding(FloconTheme.spacing.medium),
