@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.graph
 
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.ln
 
 /**
@@ -88,17 +87,8 @@ internal fun GraphUiModel.toSummaryText(total: Int = eventCount) = GraphSummaryT
     slowestDuration = slowest?.durationMs?.let(::formatGraphDuration),
 )
 
-/**
- * One tick out of how many gets a time of day: enough room ([minGapPx]) for it, at least one tick out of 1.
- * The ticks are [stepMs] apart, so the screen holds some at any zoom.
- */
-internal fun clockTickEvery(stepMs: Long, pxPerMs: Double, minGapPx: Double = CLOCK_MIN_GAP_PX): Int {
-    val tickGapPx = stepMs * pxPerMs
-    if (tickGapPx <= 0.0) return 1
-    return ceil(minGapPx / tickGapPx).toInt().coerceAtLeast(1)
-}
+// a time of day above one tick out of this many, the ticks are about 100 px apart: some on any screen
+internal const val CLOCK_EVERY_TICKS = 4
 
 // "12:00:05.123" is "12:00:05" when the ticks are a second apart or more
 internal fun formatClockLabel(timeOfDay: String, stepMs: Long): String = if (stepMs >= 1_000L) timeOfDay.substringBefore('.') else timeOfDay
-
-private const val CLOCK_MIN_GAP_PX = 130.0
