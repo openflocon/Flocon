@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
-import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
@@ -20,7 +19,6 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,18 +28,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-private val EmptyPanel = TimelineFilterPanelUiModel(
-    sections = persistentListOf(),
-    currentSessionOnly = true,
-    hasActiveFilters = false,
-    activeFilterCount = 0,
-)
-
 internal class TimelineFilterPanelViewModel(
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     private val filterStore: TimelineFilterStore,
-    dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
     // the counts follow the text but not the facets: ticking a value must not make the others, or the sources, move or disappear
@@ -70,12 +60,9 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(
-        mode = RecompositionMode.Immediate,
-        context = dispatcherProvider.viewModel,
-    ) {
+    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
         val summary by summary.collectAsState()
-        // read from the settings: nothing is shown until the stored selection is known
+        // read from the settings: the panel is never empty, the switches settle once the stored selection is known
         val sources by filterStore.storedSources.collectAsState(initial = null)
         val facets by filterStore.facets.collectAsState()
         val currentSessionOnly by filterStore.currentSessionOnly.collectAsState()
@@ -83,7 +70,7 @@ internal class TimelineFilterPanelViewModel(
         val database by filterStore.database.collectAsState()
         val matchingNetworkCount by matchingNetworkCount.collectAsState()
 
-        val selectedSources = sources ?: return@launchMolecule EmptyPanel
+        val selectedSources = sources ?: TimelineSource.entries.toSet()
         remember(summary, selectedSources, facets, currentSessionOnly, network, database, matchingNetworkCount) {
             summary.toFilterPanel(
                 selectedSources = selectedSources,

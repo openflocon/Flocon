@@ -51,6 +51,14 @@ class FilterPanelMapperTest {
     }
 
     @Test
+    fun `the panel lists every source even without any event or setting`() {
+        val panel = TimelineSummaryUiModel.Empty.toFilterPanel(selectedSources = emptySet(), facets = emptyMap())
+
+        assertEquals(TimelineSource.entries, panel.sections.map { it.source })
+        assertTrue(panel.sections.none { it.enabled })
+    }
+
+    @Test
     fun `every known value of a facet is listed, with its count`() {
         val methods = summary.toFilterPanel(all, emptyMap()).network.methods
 
