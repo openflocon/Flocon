@@ -143,9 +143,7 @@ private fun FacetRow(
     emptyText: String? = null, // told by a selector without value yet
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         groups.forEach { group ->

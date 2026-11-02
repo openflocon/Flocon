@@ -74,6 +74,11 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
@@ -87,7 +92,6 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDataba
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.facetGroups
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
@@ -306,7 +310,9 @@ private fun FilterSection(
             exit = shrinkVertically() + fadeOut(),
         ) {
             Column(
-                modifier = Modifier.alpha(groupsAlpha)
+                modifier = Modifier
+                    .padding(FloconTheme.spacing.medium)
+                    .alpha(groupsAlpha)
             ) {
                 when (section) {
                     is TimelineDatabaseFilterUiModel -> DatabaseFilterCard(section, onAction)
@@ -318,8 +324,7 @@ private fun FilterSection(
                     is TimelineBasicFilterUiModel -> Unit
                     is TimelineNetworkFilterUiModel -> NetworkFilterCard(
                         network = section,
-                        onAction = onAction,
-                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium),
+                        onAction = onAction
                     )
                 }
             }

@@ -102,8 +102,7 @@ internal fun NetworkFilterCard(
             .fillMaxWidth()
             .graphicsLayer {
                 alpha = alphaValue
-            }
-            .padding(vertical = FloconTheme.spacing.medium),
+            },
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         MethodSection(network, onAction)
