@@ -1,5 +1,9 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.moleculeFlow
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
@@ -14,9 +18,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -79,29 +83,37 @@ internal class TimelineFilterStore(
         .map { it.selectedSources }
         .distinctUntilChanged()
 
+    // no delay when the text is cleared, a short one while typing
+    private val debouncedText: Flow<String> = text.debounce { if (it.isEmpty()) 0L else 300L }
+
     // shared by the events and the counters, so they always describe the same filter
-    val filter: Flow<TimelineFilterDomainModel> = combine(
-        // no delay when the text is cleared, a short one while typing
-        text.debounce { if (it.isEmpty()) 0L else 300L },
-        storedSources,
-        facets,
-        currentSessionOnly,
-        network,
-        database,
-    ) { text, sources, facets, currentSessionOnly, network, database ->
-        TimelineFilterDomainModel(
-            sources = sources,
-            text = text,
-            facets = facets,
-            currentSessionOnly = currentSessionOnly,
-            networkEnabled = network.enabled,
-            networkStatusRules = network.statusRules,
-            networkHostRules = network.hostRules,
-            networkDuration = network.duration,
-            databaseRules = database.rules,
-            hideDatabaseTransactions = database.hideTransactions,
-        )
+    val filter: Flow<TimelineFilterDomainModel> = moleculeFlow(RecompositionMode.Immediate) {
+        // the current text as initial value: a new subscription must not flash an empty text before the debounce emits
+        val text by debouncedText.collectAsState(initial = text.value)
+        val sources by storedSources.collectAsState(initial = null)
+        val facets by facets.collectAsState()
+        val currentSessionOnly by currentSessionOnly.collectAsState()
+        val network by network.collectAsState()
+        val database by database.collectAsState()
+
+        sources?.let { selected ->
+            TimelineFilterDomainModel(
+                sources = selected,
+                text = text,
+                facets = facets,
+                currentSessionOnly = currentSessionOnly,
+                networkEnabled = network.enabled,
+                networkStatusRules = network.statusRules,
+                networkHostRules = network.hostRules,
+                networkDuration = network.duration,
+                databaseRules = database.rules,
+                hideDatabaseTransactions = database.hideTransactions,
+            )
+        }
     }
+        // nothing until the stored selection is known
+        .filterNotNull()
+        .distinctUntilChanged()
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
     fun setText(value: String) {
