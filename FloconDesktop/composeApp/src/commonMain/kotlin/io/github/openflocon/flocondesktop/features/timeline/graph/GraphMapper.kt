@@ -11,7 +11,7 @@ import kotlin.math.roundToLong
  * The graph of one session, T0 is [sessionStart] (the start of the app).
  *
  * A network call is a request and a response in the timeline: one bar here, from the request, as long as the response
- * took. Without response yet, the bar goes up to the last event received. The database and analytics events have no
+ * took. A WebSocket message is an instant. Without response yet, the bar goes up to the last event received. The database and analytics events have no
  * duration in the protocol: they are instants. The other sources are not drawn.
  */
 internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Long): GraphUiModel {
@@ -26,7 +26,9 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
             TimelineSource.Network -> {
                 // a response alone (its request is filtered out) starts as long before as it took
                 if (event.phase == TimelinePhase.Response && event.id in requestIds) return@mapNotNull null
-                val duration = event.durationMs?.roundToLong()
+                // a WebSocket message happens at a time: no response to wait for, so no duration
+                val instant = event.method == WEB_SOCKET_METHOD
+                val duration = if (instant) 0L else event.durationMs?.roundToLong()
                 val start = if (event.phase == TimelinePhase.Response && duration != null) event.timestamp - duration else event.timestamp
                 val ui = event.toUi()
                 GraphEventUiModel(
@@ -54,3 +56,5 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
     val sessionDuration = mapped.maxOfOrNull { it.endMs } ?: 0L
     return buildGraphUiModel(mapped, sessionDuration)
 }
+
+private const val WEB_SOCKET_METHOD = "WS"

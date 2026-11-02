@@ -6,6 +6,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -162,5 +163,21 @@ class GraphPackingTest {
 
         assertTrue(model.lanes.isEmpty())
         assertNull(model.slowest)
+    }
+
+    @Test
+    fun `a websocket message is an instant, not a call waiting for its response`() {
+        val model = buildGraph(
+            listOf(
+                domain("ws1", TimelinePhase.Request, ts = 1_100L, duration = null).copy(method = "WS", statusCode = null),
+                domain("a", TimelinePhase.Request, ts = 1_900L, duration = 10.0),
+            ),
+            sessionStart = 1_000L,
+        )
+
+        val message = model.lanes.single().rows.flatten().first { it.row.id == "ws1" }
+        assertTrue(message.isInstant)
+        assertFalse(message.inProgress)
+        assertEquals(100L, message.startMs)
     }
 }
