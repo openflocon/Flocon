@@ -10,11 +10,13 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.parseTimelineStatusRules
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -73,7 +75,14 @@ internal class TimelineFilterPanelViewModel(
         )
     }
         .flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineFilterPanelUiModel.Empty)
+        .stateInWhileSubscribed(
+            default = TimelineFilterPanelUiModel(
+                sections = persistentListOf(),
+                currentSessionOnly = true,
+                hasActiveFilters = false,
+                activeFilterCount = 0
+            )
+        )
 
     fun onAction(action: TimelineFilterAction) {
         when (action) {

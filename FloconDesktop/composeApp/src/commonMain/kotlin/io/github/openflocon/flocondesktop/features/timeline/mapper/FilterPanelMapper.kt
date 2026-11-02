@@ -28,6 +28,7 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     matchingNetworkCount: Int? = null, // the network calls displayed, null: all of them
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
+        .filterNot { it == Network }
         .map { source ->
             val groups = TimelineFacet.entries
                 .filter { it.source == source }
@@ -40,14 +41,13 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
                 groups = groups.toImmutableList(),
             )
         }
-        .sortedByDescending { it.count > 0 } // stable: the other of the sources is kept
-
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
     val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + if (currentSessionOnly) 1 else 0
 
     return TimelineFilterPanelUiModel(
-        sections = sections.toImmutableList(),
-        network = toNetworkFilter(facets, network, matchingNetworkCount),
+        sections = sections.plus(toNetworkFilter(facets, network, matchingNetworkCount))
+            .sortedBy { it.source.ordinal }
+            .toImmutableList(),
         currentSessionOnly = currentSessionOnly,
         hasActiveFilters = activeFilterCount > 0,
         activeFilterCount = activeFilterCount,
@@ -74,6 +74,8 @@ private fun TimelineSummaryUiModel.toNetworkFilter(
 
     return TimelineNetworkFilterUiModel(
         enabled = network.enabled,
+        count = 0,
+        activeFacetCount = 0,
         isFiltered = network.ruleCount > 0 || TimelineFacet.entries.any { it.source == TimelineSource.Network && facets[it].orEmpty().isNotEmpty() },
         matchingCount = if (network.enabled) matchingNetworkCount ?: total else total,
         totalCount = total,

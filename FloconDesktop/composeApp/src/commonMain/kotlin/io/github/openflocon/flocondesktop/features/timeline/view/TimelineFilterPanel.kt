@@ -7,7 +7,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -77,7 +76,9 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetG
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
@@ -120,7 +121,9 @@ internal fun TimelineFilterPanel(
         panel.sections.filter { it.matches(query.value, sourceLabels.getValue(it.source)) }
     }
 
-    Row(modifier = modifier.fillMaxSize()) {
+    Row(
+        modifier = modifier.fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -146,23 +149,16 @@ internal fun TimelineFilterPanel(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
             ) {
-                items(items = sections, key = { it.source }) { section ->
-                    if (section.source == TimelineSource.Network) {
-                        // the network calls have their own card, the filters side by side
-                        NetworkFilterCard(
-                            network = panel.network,
-                            onAction = onAction,
-                            modifier = Modifier.animateItem(),
-                        )
-                    } else {
-                        FilterSection(
-                            section = section,
-                            label = sourceLabels.getValue(section.source),
-                            onAction = onAction,
-                            // the sections slide when the order changes: a source gets its first event
-                            modifier = Modifier.animateItem(),
-                        )
-                    }
+                items(
+                    items = sections,
+                    key = { it.source }
+                ) { section ->
+                    FilterSection(
+                        section = section,
+                        label = sourceLabels.getValue(section.source),
+                        onAction = onAction,
+                        modifier = Modifier.animateItem()
+                    )
                 }
             }
         }
@@ -238,15 +234,18 @@ private fun PanelHeader(
 
 @Composable
 private fun FilterSection(
-    section: TimelineFilterSectionUiModel,
+    section: TimelineFilterSectionUi,
     label: String,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val (color, _) = section.source.categoryColors()
-    var expanded by remember(section.source) { mutableStateOf(section.groups.isNotEmpty()) }
-    val canExpand = section.groups.isNotEmpty()
+    var expanded by remember { mutableStateOf(false) }
+    val canExpand = remember(section) {
+        (section is TimelineFilterSectionUiModel && section.groups.isNotEmpty())
+            .or(section !is TimelineFilterSectionUiModel)
+    }
     val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
     val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
     // the filters of a source switched off are still there, to be set before switching it on
@@ -261,7 +260,10 @@ private fun FilterSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
-            Box(Modifier.size(16.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.size(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 if (canExpand) {
                     FloconIcon(
                         imageVector = Icons.Outlined.ExpandMore,
@@ -298,23 +300,32 @@ private fun FilterSection(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut(),
         ) {
-            Column(modifier = Modifier.alpha(groupsAlpha)) {
-                // two groups by row: a dropdown does not need the whole width
-                section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                    ) {
-                        rowGroups.forEach { group ->
-                            FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
-                        }
-                        // a lonely group keeps the width of the others
-                        if (rowGroups.size < GroupsPerRow) {
-                            Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+            Column(
+                modifier = Modifier.alpha(groupsAlpha)
+            ) {
+                when (section) {
+                    is TimelineFilterSectionUiModel -> section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
+                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                        ) {
+                            rowGroups.forEach { group ->
+                                FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
+                            }
+                            // a lonely group keeps the width of the others
+                            if (rowGroups.size < GroupsPerRow) {
+                                Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
+                            }
                         }
                     }
+
+                    is TimelineNetworkFilterUiModel -> NetworkFilterCard(
+                        network = section,
+                        onAction = onAction,
+                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium),
+                    )
                 }
             }
         }
@@ -508,7 +519,7 @@ private fun CountBadge(
  */
 @Composable
 private fun SourceRail(
-    sections: List<TimelineFilterSectionUiModel>,
+    sections: List<TimelineFilterSectionUi>,
     sourceLabels: Map<TimelineSource, String>,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -543,7 +554,7 @@ private fun SourceRail(
 
 @Composable
 private fun RailButton(
-    section: TimelineFilterSectionUiModel,
+    section: TimelineFilterSectionUi,
     initials: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -580,10 +591,11 @@ private fun RailButton(
 }
 
 // the section matches when the search is in the name of the source, or in one of its facet values
-private fun TimelineFilterSectionUiModel.matches(query: String, label: String): Boolean {
-    if (query.isBlank()) return true
-    return label.contains(query, ignoreCase = true) ||
-        groups.any { group -> group.values.any { it.value.contains(query, ignoreCase = true) } }
+private fun TimelineFilterSectionUi.matches(query: String, label: String): Boolean {
+    return query.isBlank() || label.contains(query, ignoreCase = true) || when (this) {
+        is TimelineFilterSectionUiModel -> groups.any { group -> group.values.any { it.value.contains(query, ignoreCase = true) } }
+        is TimelineNetworkFilterUiModel -> false
+    }
 }
 
 // "Réseau" -> "RÉ", "Base de données" -> "BD"
@@ -627,10 +639,10 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
     }
 }
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineFilterPanelDarkPreview() = TimelineFilterPanelContentPreview(isDarkTheme = true)
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineFilterPanelLightPreview() = TimelineFilterPanelContentPreview(isDarkTheme = false)

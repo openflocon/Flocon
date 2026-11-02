@@ -1,9 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
@@ -55,13 +52,11 @@ import flocondesktop.composeapp.generated.resources.timeline_filters_hosts_match
 import flocondesktop.composeapp.generated.resources.timeline_filters_none
 import flocondesktop.composeapp.generated.resources.timeline_filters_only
 import flocondesktop.composeapp.generated.resources.timeline_filters_pending
-import flocondesktop.composeapp.generated.resources.timeline_filters_reset
 import flocondesktop.composeapp.generated.resources.timeline_filters_rule_one
 import flocondesktop.composeapp.generated.resources.timeline_filters_rule_other
 import flocondesktop.composeapp.generated.resources.timeline_filters_status_placeholder
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineFacet
-import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
@@ -80,7 +75,6 @@ import io.github.openflocon.library.designsystem.components.FloconRangeSlider
 import io.github.openflocon.library.designsystem.components.FloconRangeSliderInset
 import io.github.openflocon.library.designsystem.components.FloconRuleChip
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
-import io.github.openflocon.library.designsystem.components.FloconToggleSwitch
 import org.jetbrains.compose.resources.stringResource
 
 private const val DisabledCardAlpha = 0.5f
@@ -101,80 +95,22 @@ internal fun NetworkFilterCard(
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = FloconTheme.colors
-    val (categoryColor, _) = TimelineSource.Network.categoryColors()
-    var expanded by remember { mutableStateOf(true) }
-    val chevronRotation by animateFloatAsState(if (expanded) 0f else -ExpandedChevronRotation / 2)
+    val alphaValue by animateFloatAsState(if (network.enabled) 1f else DisabledCardAlpha)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(FloconTheme.spacing.medium)
-            .clip(FloconTheme.shapes.medium)
-            .background(colors.bg200)
-            .border(1.dp, colors.line, FloconTheme.shapes.medium)
-            .animateContentSize()
-            .padding(FloconTheme.spacing.medium),
+            .graphicsLayer {
+                alpha = alphaValue
+            }
+            .padding(vertical = FloconTheme.spacing.medium),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        ) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(FloconTheme.shapes.small)
-                    .clickable { expanded = !expanded },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            ) {
-                FloconIcon(imageVector = Icons.Outlined.ExpandMore, modifier = Modifier.rotate(chevronRotation))
-                CategoryDot(color = categoryColor, filled = network.enabled)
-                Text(
-                    text = stringResource(TimelineSource.Network.label()),
-                    style = FloconTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colors.ink,
-                    maxLines = 1,
-                )
-            }
-            if (network.isFiltered) {
-                Text(
-                    text = stringResource(Res.string.timeline_filters_reset),
-                    style = FloconTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colors.accent,
-                    modifier = Modifier
-                        .clip(FloconTheme.shapes.small)
-                        .clickable { onAction(TimelineFilterAction.ResetNetwork) }
-                        .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.tiny),
-                )
-            }
-            Text(
-                text = "${network.matchingCount} / ${network.totalCount}",
-                style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-                color = if (network.isFiltered) colors.accent else colors.inkMuted,
-                maxLines = 1,
-            )
-            FloconToggleSwitch(
-                checked = network.enabled,
-                onCheckedChange = { onAction(TimelineFilterAction.SetNetworkEnabled(it)) },
-            )
-        }
-        AnimatedVisibility(visible = expanded) {
-            // the filters of a card switched off are still there, to be set before switching it on
-            Column(
-                modifier = Modifier.alpha(if (network.enabled) 1f else DisabledCardAlpha),
-                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
-            ) {
-                MethodSection(network, onAction)
-                StatusSection(network, onAction)
-                DurationSection(network, onAction)
-                ContentSection(network, onAction)
-                HostSection(network, onAction)
-            }
-        }
+        MethodSection(network, onAction)
+        StatusSection(network, onAction)
+        DurationSection(network, onAction)
+        ContentSection(network, onAction)
+        HostSection(network, onAction)
     }
 }
 
@@ -333,18 +269,12 @@ private fun DurationSection(
             summary = network.durationLabel ?: stringResource(Res.string.timeline_filters_any),
             summaryActive = network.durationLabel != null,
         )
-        FloconHistogram(
-            values = network.histogram,
-            start = network.durationStart,
-            end = network.durationEnd,
-        )
         FloconRangeSlider(
             start = network.durationStart,
             end = network.durationEnd,
             max = steps,
             onRangeChange = { start, end -> onAction(TimelineFilterAction.SetDurationRange(start, end)) },
         )
-        // the ticks are where their duration is on the slider; the last position is "no limit"
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -615,10 +545,10 @@ private fun NetworkFilterCardPreview(isDarkTheme: Boolean) {
 
 private val PreviewCardWidth = 420.dp
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun NetworkFilterCardDarkPreview() = NetworkFilterCardPreview(isDarkTheme = true)
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun NetworkFilterCardLightPreview() = NetworkFilterCardPreview(isDarkTheme = false)

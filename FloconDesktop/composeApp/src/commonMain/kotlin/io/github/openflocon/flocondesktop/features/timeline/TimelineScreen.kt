@@ -212,6 +212,27 @@ internal fun TimelineContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
+            FloconButton(
+                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
+                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
+                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
+            ) {
+                FloconIcon(imageVector = Icons.Outlined.FilterList)
+                Text(
+                    text = stringResource(Res.string.timeline_filters_toggle),
+                    style = FloconTheme.typography.labelLarge,
+                    maxLines = 1,
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+                if (activeFilterCount > 0) {
+                    Text(
+                        text = activeFilterCount.toString(),
+                        style = FloconTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.accent,
+                    )
+                }
+            }
             FilterBar(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
@@ -235,28 +256,6 @@ internal fun TimelineContent(
                 selectedIndex = if (settings.graph) 1 else 0,
                 onSelect = { onAction(TimelineAction.SetGraph(it == 1)) },
             )
-            // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
-            FloconButton(
-                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
-                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
-                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
-            ) {
-                FloconIcon(imageVector = Icons.Outlined.FilterList)
-                Text(
-                    text = stringResource(Res.string.timeline_filters_toggle),
-                    style = FloconTheme.typography.labelLarge,
-                    maxLines = 1,
-                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
-                )
-                if (activeFilterCount > 0) {
-                    Text(
-                        text = activeFilterCount.toString(),
-                        style = FloconTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.accent,
-                    )
-                }
-            }
         }
 
         if (showEmptyState) {
