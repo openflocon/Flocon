@@ -157,6 +157,8 @@ internal fun TimelineContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     var searchFocused by remember { mutableStateOf(false) }
+    // the zoom field of the graph: its keys are not the ones of the list
+    var graphFieldFocused by remember { mutableStateOf(false) }
     val screenFocus = remember { FocusRequester() }
     val searchFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -178,7 +180,7 @@ internal fun TimelineContent(
                 } else if (event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
                     runCatching { searchFocus.requestFocus() }
                     true
-                } else if (!searchFocused && !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed) {
+                } else if (!searchFocused && !graphFieldFocused && !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed) {
                     // up / down / enter move the selection, but the search field keeps its own keys
                     handleSelectionKey(
                         key = event.key,
@@ -303,6 +305,7 @@ internal fun TimelineContent(
                 onSelect = { onAction(TimelineAction.Open(it)) },
                 onPreviousSession = { onAction(TimelineAction.MoveGraphSession(-1)) },
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
+                onEditingChange = { graphFieldFocused = it },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {

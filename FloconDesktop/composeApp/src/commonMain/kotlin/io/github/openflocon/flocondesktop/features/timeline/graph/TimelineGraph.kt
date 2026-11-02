@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -94,6 +95,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 import kotlin.math.max
@@ -134,6 +136,8 @@ internal fun TimelineGraph(
     onPreviousSession: () -> Unit,
     onNextSession: () -> Unit,
     modifier: Modifier = Modifier,
+    // true while the zoom field is being edited: the keys of the screen must leave it alone
+    onEditingChange: (Boolean) -> Unit = {},
 ) {
     val colors = FloconTheme.colors
     val density = LocalDensity.current.density
@@ -141,7 +145,7 @@ internal fun TimelineGraph(
     // logical px: the canvas is drawn scaled by the density
     val widthPx = canvasSize.width / density
     val heightPx = canvasSize.height / density
-    val trackWidth = max(widthPx - LaneLabelWidthPx - TrackEndMarginPx, 1f)
+    val trackWidth = trackWidthOf(widthPx)
     val trackHeight = max(heightPx - AxisHeightPx, 0f)
     val contentHeight = model.contentHeightPx()
 
@@ -154,9 +158,11 @@ internal fun TimelineGraph(
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // shift + drag moves the graph instead of drawing a box
     var shiftHeld by remember { mutableStateOf(false) }
-    LaunchedEffect(canvasSize.width > 0) {
-        if (!opened && canvasSize.width > 0) {
-            viewport = defaultViewport(trackWidth)
+    // opens at 100 % once the canvas has its real width, read when it is known and not from an earlier layout
+    LaunchedEffect(Unit) {
+        val width = snapshotFlow { canvasSize.width }.first { it > 0 }
+        if (!opened) {
+            viewport = defaultViewport(trackWidthOf(width / density))
             opened = true
         }
     }
@@ -176,6 +182,7 @@ internal fun TimelineGraph(
             onPreviousSession = onPreviousSession,
             onNextSession = onNextSession,
             zoomPercent = currentViewport.zoomPercent(trackWidth),
+            onEditingChange = onEditingChange,
             onZoomPercent = {
                 fitted = false
                 viewport = currentViewport.zoomedToPercent(it, trackWidth)
@@ -338,6 +345,9 @@ internal fun TimelineGraph(
     }
 }
 
+// the width of the track in a canvas of [canvasWidthPx]
+private fun trackWidthOf(canvasWidthPx: Float) = max(canvasWidthPx - LaneLabelWidthPx - TrackEndMarginPx, 1f)
+
 private class GraphPalette(
     val axis: Color,
     val panel: Color,
@@ -359,6 +369,7 @@ private fun GraphToolbar(
     onNextSession: () -> Unit,
     zoomPercent: Int,
     onZoomPercent: (Int) -> Unit,
+    onEditingChange: (Boolean) -> Unit,
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
@@ -401,7 +412,7 @@ private fun GraphToolbar(
             }
         }
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
-        GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent)
+        GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
         FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
@@ -413,6 +424,7 @@ private fun GraphToolbar(
 private fun GraphZoomField(
     percent: Int,
     onPercentChange: (Int) -> Unit,
+    onEditingChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var text by remember(percent) { mutableStateOf(percent.toString()) }
@@ -427,7 +439,10 @@ private fun GraphZoomField(
         modifier = modifier
             .width(FloconTheme.sizes.columnMedium)
             .height(FloconTheme.sizes.controlHeight)
-            .onFocusChanged { if (!it.isFocused) apply() }
+            .onFocusChanged {
+                onEditingChange(it.isFocused)
+                if (!it.isFocused) apply()
+            }
             .onPreviewKeyEvent { event ->
                 if (event.type == KeyEventType.KeyDown && (event.key == Key.Enter || event.key == Key.NumPadEnter)) {
                     apply()
