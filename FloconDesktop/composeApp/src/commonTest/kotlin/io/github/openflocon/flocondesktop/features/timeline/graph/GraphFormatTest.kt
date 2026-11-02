@@ -46,6 +46,24 @@ class GraphFormatTest {
     }
 
     @Test
+    fun `a time of day every few ticks, at least one tick out of one`() {
+        // ticks 100 px apart: one out of 2 at 130 px
+        assertEquals(2, clockTickEvery(stepMs = 1_000, pxPerMs = 0.1))
+        // ticks far apart: all of them
+        assertEquals(1, clockTickEvery(stepMs = 1_000, pxPerMs = 1.0))
+        // ticks close: one out of 13
+        assertEquals(13, clockTickEvery(stepMs = 100, pxPerMs = 0.1))
+        assertEquals(1, clockTickEvery(stepMs = 1_000, pxPerMs = 0.0))
+    }
+
+    @Test
+    fun `the time of day has no milliseconds when the ticks are a second apart`() {
+        assertEquals("12:00:05", formatClockLabel("12:00:05.123", stepMs = 1_000))
+        assertEquals("12:00:05", formatClockLabel("12:00:05.123", stepMs = 5_000))
+        assertEquals("12:00:05.123", formatClockLabel("12:00:05.123", stepMs = 500))
+    }
+
+    @Test
     fun `what a bar has room for`() {
         assertFalse(showBarIcon(29f))
         assertTrue(showBarIcon(30f))

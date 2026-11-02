@@ -54,7 +54,7 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
         }
     }
     val sessionDuration = mapped.maxOfOrNull { it.endMs } ?: 0L
-    return buildGraphUiModel(mapped, sessionDuration)
+    return buildGraphUiModel(mapped, sessionDuration, sessionStartTimestamp = sessionStart)
 }
 
 private const val WEB_SOCKET_METHOD = "WS"

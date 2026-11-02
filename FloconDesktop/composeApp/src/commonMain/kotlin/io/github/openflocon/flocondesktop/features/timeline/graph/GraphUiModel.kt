@@ -57,6 +57,8 @@ internal data class GraphUiModel(
     val eventCount: Int,
     val errorCount: Int,
     val slowest: GraphEventUiModel?,
+    // the time of day of the start of the session, to give a time to the axis
+    val sessionStartTimestamp: Long = 0L,
 ) {
     val rowCount: Int get() = lanes.sumOf { it.rows.size }
 

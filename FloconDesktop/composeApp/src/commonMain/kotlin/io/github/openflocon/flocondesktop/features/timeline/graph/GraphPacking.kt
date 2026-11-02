@@ -33,11 +33,12 @@ internal fun packLanes(events: List<GraphEventUiModel>): List<GraphLaneUiModel> 
     return GraphLane.entries.mapNotNull { lane -> byLane[lane]?.let { packLane(lane, it) } }
 }
 
-internal fun buildGraphUiModel(events: List<GraphEventUiModel>, sessionDurationMs: Long): GraphUiModel {
+internal fun buildGraphUiModel(events: List<GraphEventUiModel>, sessionDurationMs: Long, sessionStartTimestamp: Long = 0L): GraphUiModel {
     val completed = events.filter { it.lane == GraphLane.Network && !it.inProgress && it.durationMs > 0L }
     return GraphUiModel(
         lanes = packLanes(events),
         sessionDurationMs = sessionDurationMs,
+        sessionStartTimestamp = sessionStartTimestamp,
         eventCount = events.size,
         errorCount = events.count { it.isError },
         slowest = completed.maxByOrNull { it.durationMs },

@@ -88,6 +88,7 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_summary
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
+import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
@@ -116,6 +117,8 @@ private const val LabelFontPx = 12f
 private const val ChipFontPx = 11f
 private const val ChipHeightPx = 18f
 private const val ChipPaddingPx = 6f
+private const val ClockFontPx = 10f
+private const val AxisTextBottomPx = 5f
 
 /** The previous and next session of the graph: [position] starts at 1. */
 internal data class GraphSessionUiModel(val position: Int, val total: Int) {
@@ -214,6 +217,7 @@ internal fun TimelineGraph(
             grid = colors.line.copy(alpha = 0.5f),
             ink = colors.ink,
             inkMuted = colors.inkMuted,
+            inkFaint = colors.inkFaint,
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
@@ -355,6 +359,7 @@ private class GraphPalette(
     val grid: Color,
     val ink: Color,
     val inkMuted: Color,
+    val inkFaint: Color,
     val onBar: Color,
     val chip: Color,
     val error: Color,
@@ -568,6 +573,7 @@ private fun DrawScope.drawGraph(
     drawLine(palette.line, Offset(0f, AxisHeightPx), Offset(width, AxisHeightPx), strokeWidth = 1f)
     clipRect(left = LaneLabelWidthPx, top = 0f, right = width, bottom = AxisHeightPx) {
         val step = axisStepMs(viewport.pxPerMs)
+        val clockEvery = clockTickEvery(step, viewport.pxPerMs).toLong()
         // no tick before the start of the session
         var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
@@ -578,7 +584,19 @@ private fun DrawScope.drawGraph(
                 density = unit,
                 maxLines = 1,
             )
-            drawText(text, topLeft = Offset(x + 4f, (AxisHeightPx - text.size.height) / 2f))
+            // the time of day above the duration, on some of the ticks: 5 s alone does not tell when it was
+            val showClock = (tick / step) % clockEvery == 0L
+            val textTop = if (showClock) AxisHeightPx - text.size.height - AxisTextBottomPx else (AxisHeightPx - text.size.height) / 2f
+            drawText(text, topLeft = Offset(x + 4f, textTop))
+            if (showClock) {
+                val clock = measurer.measure(
+                    formatClockLabel(formatTimestamp(model.sessionStartTimestamp + tick), step),
+                    TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkFaint),
+                    density = unit,
+                    maxLines = 1,
+                )
+                drawText(clock, topLeft = Offset(x + 4f, textTop - clock.size.height))
+            }
             tick += step
         }
     }
