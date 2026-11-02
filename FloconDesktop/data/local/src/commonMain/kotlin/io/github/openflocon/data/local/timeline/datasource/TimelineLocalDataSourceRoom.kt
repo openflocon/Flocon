@@ -9,12 +9,15 @@ import io.github.openflocon.data.core.timeline.datasources.TimelineLocalDataSour
 import io.github.openflocon.data.local.timeline.dao.TimelineDao
 import io.github.openflocon.data.local.timeline.mapper.toDomain
 import io.github.openflocon.data.local.timeline.mapper.toSummaryDomain
+import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 // the graph draws at most that many events of a session
@@ -22,6 +25,7 @@ private const val MAX_GRAPH_EVENTS = 50_000
 
 internal class TimelineLocalDataSourceRoom(
     private val timelineDao: TimelineDao,
+    private val dispatcherProvider: DispatcherProvider,
 ) : TimelineLocalDataSource {
 
     override fun observeTimeline(
@@ -53,7 +57,10 @@ internal class TimelineLocalDataSourceRoom(
         // same union as the list, in one page: the graph needs the whole session to place the bars
         val capped = TimelineQuery(sql = "SELECT * FROM (${query.sql}) LIMIT $MAX_GRAPH_EVENTS", params = query.params)
         return timelineDao.observeTimelineList(capped.toRoomRawQuery())
+            // the query is re-run for any change of the tables, most of them do not change the events of the session
+            .distinctUntilChanged()
             .map { rows -> rows.map { it.toDomain() } }
+            .flowOn(dispatcherProvider.data)
     }
 
     override fun observeSummary(
