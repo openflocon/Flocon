@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DragIndicator
@@ -127,22 +126,15 @@ internal fun AccessibilityRemoteOverlay(
             offsetX = (offsetX.coerceIn(minX(), 0f) + delta.x).coerceIn(minX(), 0f)
             offsetY = (offsetY.coerceIn(minY(), 0f) + delta.y).coerceIn(minY(), 0f)
         }
-        if (collapsed) {
-            AccessibilityRemoteBubble(
-                onClick = { collapsed = false },
-                onDrag = onDrag,
-            )
-        } else {
-            AccessibilityRemote(
-                focusedNode = focusedNode,
-                canMoveFocus = canMoveFocus,
-                talkBackOn = talkBackOn,
-                talkBackGrantCommand = talkBackGrantCommand,
-                onAction = onAction,
-                onCollapseClicked = { collapsed = true },
-                onDrag = onDrag,
-            )
-        }
+
+        AccessibilityRemote(
+            focusedNode = focusedNode,
+            canMoveFocus = canMoveFocus,
+            talkBackOn = talkBackOn,
+            talkBackGrantCommand = talkBackGrantCommand,
+            onAction = onAction,
+            onDrag = onDrag
+        )
     }
 }
 
@@ -157,7 +149,6 @@ internal fun AccessibilityRemote(
     talkBackOn: Boolean,
     talkBackGrantCommand: String?,
     onAction: (AccessibilityAction) -> Unit,
-    onCollapseClicked: () -> Unit,
     onDrag: (Offset) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -462,33 +453,6 @@ private fun DragHandle(
     }
 }
 
-/** The collapsed remote: a bubble that expands on click */
-@Composable
-private fun AccessibilityRemoteBubble(
-    onClick: () -> Unit,
-    onDrag: (Offset) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    WithTooltip(stringResource(Res.string.accessibility_remote_expand)) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = modifier
-                .size(BubbleSize)
-                .clip(CircleShape)
-                .background(FloconTheme.colors.bg100)
-                .border(1.dp, FloconTheme.colors.line, CircleShape)
-                .dragToMove(onDrag)
-                .clickable(onClick = onClick)
-                .pointerHoverIcon(PointerIcon.Hand),
-        ) {
-            FloconIcon(
-                imageVector = Icons.Outlined.Accessibility,
-                tint = FloconTheme.colors.accent,
-            )
-        }
-    }
-}
-
 @Composable
 private fun Modifier.dragToMove(onDrag: (Offset) -> Unit): Modifier {
     val currentOnDrag by rememberUpdatedState(onDrag)
@@ -510,7 +474,6 @@ private fun AccessibilityRemotePreview() {
             talkBackOn = true,
             talkBackGrantCommand = null,
             onAction = {},
-            onCollapseClicked = {},
             onDrag = {},
         )
     }
@@ -526,34 +489,6 @@ private fun AccessibilityRemoteNoneFocusedPreview() {
             talkBackOn = false,
             talkBackGrantCommand = null,
             onAction = {},
-            onCollapseClicked = {},
-            onDrag = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AccessibilityRemoteGrantHintPreview() {
-    FloconTheme {
-        AccessibilityRemote(
-            focusedNode = null,
-            canMoveFocus = false,
-            talkBackOn = false,
-            talkBackGrantCommand = "adb shell pm grant io.github.openflocon.sample android.permission.WRITE_SECURE_SETTINGS",
-            onAction = {},
-            onCollapseClicked = {},
-            onDrag = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AccessibilityRemoteCollapsedPreview() {
-    FloconTheme {
-        AccessibilityRemoteBubble(
-            onClick = {},
             onDrag = {},
         )
     }

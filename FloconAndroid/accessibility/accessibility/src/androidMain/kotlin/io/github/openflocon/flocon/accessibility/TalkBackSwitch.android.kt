@@ -56,7 +56,7 @@ private fun Context.openTalkBackSettings(): Boolean {
         null
     }
     if (service != null) {
-        val details = Intent(Settings.ACTION_ACCESSIBILITY_DETAILS_SETTINGS)
+        val details = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
             .putExtra(Intent.EXTRA_COMPONENT_NAME, service)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (startSettings(details)) return true
