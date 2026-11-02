@@ -566,7 +566,7 @@ private fun DrawScope.drawGraph(
                         )
                         // the whole label of the hovered one, over the others, on a plain background
                         if (hoveredInstant) {
-                            deferredLabel = { drawInstantFullLabel(event, viewport, rowTop, palette, measurer, labelStyle, unit, width) }
+                            deferredLabel = { drawInstantFullLabel(event, viewport, rowTop, fill, palette, measurer, labelStyle, unit, width) }
                         }
                     } else {
                         drawBar(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width)
@@ -747,11 +747,12 @@ private fun DrawScope.drawInstant(
     drawText(text, topLeft = Offset(instantLabelX(x, text.size.width, onTheLeft), centerY - text.size.height / 2f))
 }
 
-// the whole label of an instant, on a plain background: it hides what is under it
+// the whole label of an instant, on the color of its diamond: it hides what is under it, like the text of a bar
 private fun DrawScope.drawInstantFullLabel(
     event: GraphEventUiModel,
     viewport: GraphViewport,
     rowTop: Float,
+    fill: Color,
     palette: GraphPalette,
     measurer: TextMeasurer,
     labelStyle: TextStyle,
@@ -761,21 +762,15 @@ private fun DrawScope.drawInstantFullLabel(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
-    val text = measurer.measure(event.name, instantLabelStyle(labelStyle, palette), density = unit, maxLines = 1)
+    val text = measurer.measure(event.name, labelStyle.copy(color = palette.onBar, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
+    // the colors of the lanes are opaque: nothing of the labels under it shows through
     drawRoundRect(
-        palette.panel,
+        fill,
         Offset(left - InstantLabelPaddingPx, top - 2f),
         Size(text.size.width + 2 * InstantLabelPaddingPx, text.size.height + 4f),
-        CornerRadius(4f),
-    )
-    drawRoundRect(
-        palette.line,
-        Offset(left - InstantLabelPaddingPx, top - 2f),
-        Size(text.size.width + 2 * InstantLabelPaddingPx, text.size.height + 4f),
-        CornerRadius(4f),
-        style = Stroke(1f),
+        CornerRadius(BarRadiusPx),
     )
     drawText(text, topLeft = Offset(left, top))
 }
