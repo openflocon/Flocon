@@ -570,6 +570,10 @@ private fun DrawScope.drawGraph(
                         }
                     } else {
                         drawBar(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width)
+                        // a bar too short for its content opens on hover, over the others
+                        if (event.key == hoveredKey) {
+                            deferredLabel = { drawBarFull(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width) }
+                        }
                     }
                     i++
                 }
@@ -699,6 +703,60 @@ private fun DrawScope.drawBar(
             maxLines = 1,
             constraints = Constraints(maxWidth = remaining.toInt()),
         )
+    }
+    drawText(text, topLeft = Offset(cursor, centerY - text.size.height / 2f))
+}
+
+// the bar of a hovered event with all its content, longer than the bar when this one is too short for it
+private fun DrawScope.drawBarFull(
+    event: GraphEventUiModel,
+    viewport: GraphViewport,
+    rowTop: Float,
+    fill: Color,
+    selected: Boolean,
+    palette: GraphPalette,
+    measurer: TextMeasurer,
+    labelStyle: TextStyle,
+    chipStyle: TextStyle,
+    unit: Density,
+    imagePainter: Painter,
+    canvasWidth: Float,
+) {
+    val method = event.method?.let { measurer.measure(it, chipStyle.copy(color = palette.ink), density = unit, maxLines = 1) }
+    val text = measurer.measure(
+        "${event.name}  -  ${formatGraphDuration(event.durationMs)}",
+        labelStyle.copy(color = palette.onBar),
+        density = unit,
+        maxLines = 1,
+    )
+    val chipWidth = method?.let { it.size.width + 2 * ChipPaddingPx } ?: 0f
+    val needed = BarPaddingPx +
+        (if (event.isImage) IconSizePx + BarPaddingPx else 0f) +
+        (if (method != null) chipWidth + BarPaddingPx else 0f) +
+        text.size.width + BarPaddingPx
+    val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
+    val barWidth = max(MinBarWidthPx, (event.durationMs * viewport.pxPerMs).toFloat())
+    if (needed <= barWidth) return
+
+    // from the start of the bar, moved to the left when it would go past the right of the canvas
+    val left = min(max(x, LaneLabelWidthPx), canvasWidth - needed).coerceAtLeast(LaneLabelWidthPx)
+    val top = rowTop + BarTopPx
+    drawRoundRect(fill, Offset(left, top), Size(needed, BarHeightPx), CornerRadius(BarRadiusPx))
+    if (selected) {
+        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(needed + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+    }
+    var cursor = left + BarPaddingPx
+    val centerY = top + BarHeightPx / 2f
+    if (event.isImage) {
+        translate(cursor, centerY - IconSizePx / 2f) {
+            with(imagePainter) { draw(Size(IconSizePx, IconSizePx), colorFilter = tint(palette.onBar)) }
+        }
+        cursor += IconSizePx + BarPaddingPx
+    }
+    if (method != null) {
+        drawRoundRect(palette.chip, Offset(cursor, centerY - ChipHeightPx / 2f), Size(chipWidth, ChipHeightPx), CornerRadius(4f))
+        drawText(method, topLeft = Offset(cursor + ChipPaddingPx, centerY - method.size.height / 2f))
+        cursor += chipWidth + BarPaddingPx
     }
     drawText(text, topLeft = Offset(cursor, centerY - text.size.height / 2f))
 }
