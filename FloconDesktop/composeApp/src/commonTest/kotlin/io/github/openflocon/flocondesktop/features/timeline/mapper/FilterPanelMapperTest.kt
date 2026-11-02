@@ -6,6 +6,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.timeline.TimelineDatabaseRules
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
@@ -15,6 +16,8 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDataba
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.facetGroups
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -105,15 +108,16 @@ class FilterPanelMapperTest {
 
         val database = withDatabases.toFilterPanel(all, emptyMap()).database
 
-        assertEquals(listOf("a.db", "b.db"), database.names?.values?.map { it.value })
+        assertEquals(listOf("a.db", "b.db"), database.names.values.map { it.value })
     }
 
     @Test
     fun `a facet without known value is not listed before an event brings one`() {
         val database = summary.toFilterPanel(all, emptyMap()).database
 
-        assertEquals(null, database.names)
-        assertEquals(listOf(TimelineFacet.DatabaseStatement), database.facetGroups().map { it.facet })
+        // the selector of the databases is always there, to tell that none was seen yet
+        assertTrue(database.names.values.isEmpty())
+        assertEquals(listOf(TimelineFacet.DatabaseName, TimelineFacet.DatabaseStatement), database.facetGroups().map { it.facet })
     }
 
     @Test
@@ -123,6 +127,42 @@ class FilterPanelMapperTest {
         assertEquals(2, panel.database.activeFacetCount)
         assertEquals(false, panel.database.statements?.values?.first { it.value == "SELECT" }?.selected)
         assertEquals(0, panel.sections.first { it.source == TimelineSource.Crash }.activeFacetCount)
+    }
+
+    @Test
+    fun `the database rules and the transactions are active filters of the database`() {
+        val database = TimelineDatabaseRules(
+            rules = listOf(TimelineRuleDomainModel("users", exclude = false), TimelineRuleDomainModel("pragma", exclude = true)),
+            hideTransactions = true,
+        )
+        val panel = summary.toFilterPanel(all, emptyMap(), database = database)
+
+        assertEquals(listOf("users", "pragma"), panel.database.rules.map { it.value })
+        assertEquals(listOf(false, true), panel.database.rules.map { it.exclude })
+        assertTrue(panel.database.hideTransactions)
+        assertEquals(3, panel.database.activeFacetCount)
+        assertEquals(3, panel.activeFilterCount)
+    }
+
+    @Test
+    fun `the tables and the kinds of webview event are facets of their source`() {
+        val counted = summary.copy(
+            facetCounts = summary.facetCounts + mapOf(
+                TimelineFacet.TableName to mapOf("users" to 2),
+                TimelineFacet.WebViewKind to mapOf("Console" to 5),
+            ),
+        )
+        val panel = counted.toFilterPanel(all, mapOf(TimelineFacet.TableName to setOf("users")))
+
+        val table = panel.sections.filterIsInstance<TimelineTableFilterUiModel>().single()
+        assertEquals(listOf("users"), table.tables.values.map { it.value })
+        assertEquals(false, table.tables.values.single().selected)
+        assertEquals(1, table.activeFacetCount)
+
+        val kinds = panel.sections.filterIsInstance<TimelineWebViewFilterUiModel>().single().kinds
+        assertEquals(TimelineFacet.WebViewKind.knownValues, kinds?.values?.map { it.value })
+        assertEquals(5, kinds?.values?.first { it.value == "Console" }?.count)
+        assertTrue(kinds?.asTags == true)
     }
 
     @Test

@@ -43,6 +43,8 @@ internal class TimelineFilterPanelViewModel(
                 networkStatusRules = emptyList(),
                 networkHostRules = emptyList(),
                 networkDuration = null,
+                databaseRules = emptyList(),
+                hideDatabaseTransactions = false,
             )
         }
         .distinctUntilChanged()
@@ -65,12 +67,14 @@ internal class TimelineFilterPanelViewModel(
         filterStore.facets,
         filterStore.currentSessionOnly,
         combine(filterStore.network, matchingNetworkCount) { network, matching -> network to matching },
-    ) { summary, sources, facets, currentSessionOnly, (network, matching) ->
+        filterStore.database,
+    ) { summary, sources, facets, currentSessionOnly, (network, matching), database ->
         summary.toFilterPanel(
             selectedSources = sources,
             facets = facets,
             currentSessionOnly = currentSessionOnly,
             network = network,
+            database = database,
             matchingNetworkCount = matching,
         )
     }
@@ -116,6 +120,14 @@ internal class TimelineFilterPanelViewModel(
             }
 
             is TimelineFilterAction.RemoveHostRule -> filterStore.removeHostRule(action.value)
+
+            is TimelineFilterAction.AddDatabaseRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let { filterStore.addDatabaseRule(TimelineRuleDomainModel(it, action.exclude)) }
+            }
+
+            is TimelineFilterAction.RemoveDatabaseRule -> filterStore.removeDatabaseRule(action.value)
+
+            is TimelineFilterAction.SetHideDatabaseTransactions -> filterStore.setHideDatabaseTransactions(action.value)
 
             is TimelineFilterAction.SetDurationRange -> {
                 val buckets = TIMELINE_DURATION_BUCKETS_MS

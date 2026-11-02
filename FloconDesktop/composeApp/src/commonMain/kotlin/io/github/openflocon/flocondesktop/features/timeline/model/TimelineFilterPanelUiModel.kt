@@ -47,8 +47,10 @@ internal data class TimelineDatabaseFilterUiModel(
     override val count: Int,
     override val enabled: Boolean,
     override val activeFacetCount: Int,
-    val names: TimelineFacetGroupUiModel?,
+    val names: TimelineFacetGroupUiModel, // listed even before a database is seen: the selector explains it
     val statements: TimelineFacetGroupUiModel?,
+    val rules: ImmutableList<TimelineRuleUiModel>, // words of the sql query to keep or hide
+    val hideTransactions: Boolean,
 ) : TimelineFilterSectionUi {
     override val source: TimelineSource = TimelineSource.Database
 }
@@ -62,6 +64,28 @@ internal data class TimelineAnalyticsFilterUiModel(
     val tables: TimelineFacetGroupUiModel?,
 ) : TimelineFilterSectionUi {
     override val source: TimelineSource = TimelineSource.Analytics
+}
+
+// the tables the items were added to
+@Immutable
+internal data class TimelineTableFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val tables: TimelineFacetGroupUiModel, // listed even before a table is seen: the selector explains it
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Table
+}
+
+// the kinds of event of the WebViews: console, page, bridge
+@Immutable
+internal data class TimelineWebViewFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val kinds: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.WebView
 }
 
 // the classes of exception of the crashes
@@ -89,6 +113,8 @@ internal data class TimelineAccessibilityFilterUiModel(
 // the facets a source can be narrowed down by, to know if it has something to unfold and what a search can match
 internal fun TimelineFilterSectionUi.facetGroups(): List<TimelineFacetGroupUiModel> = when (this) {
     is TimelineDatabaseFilterUiModel -> listOfNotNull(names, statements)
+    is TimelineTableFilterUiModel -> listOf(tables)
+    is TimelineWebViewFilterUiModel -> listOfNotNull(kinds)
     is TimelineAnalyticsFilterUiModel -> listOfNotNull(tables)
     is TimelineCrashFilterUiModel -> listOfNotNull(exceptions)
     is TimelineAccessibilityFilterUiModel -> listOfNotNull(actions)

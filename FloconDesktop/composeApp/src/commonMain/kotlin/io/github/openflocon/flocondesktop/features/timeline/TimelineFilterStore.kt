@@ -34,6 +34,17 @@ internal data class TimelineNetworkRules(
 }
 
 /**
+ * What the user set in the database card: words of the sql query to keep or hide, and the transactions.
+ */
+internal data class TimelineDatabaseRules(
+    val rules: List<TimelineRuleDomainModel> = emptyList(),
+    val hideTransactions: Boolean = false,
+) {
+    // what the badge of the filter button counts
+    val activeCount: Int get() = rules.size + if (hideTransactions) 1 else 0
+}
+
+/**
  * The filter of the timeline, shared by the screen and by its filter panel: they are two destinations, so two view models.
  * The sources are a setting of the timeline, the text and the facets are not saved.
  */
@@ -55,6 +66,10 @@ internal class TimelineFilterStore(
     val network: StateFlow<TimelineNetworkRules>
         field = MutableStateFlow(TimelineNetworkRules())
 
+    // the sql rules and the transactions of the database logs
+    val database: StateFlow<TimelineDatabaseRules>
+        field = MutableStateFlow(TimelineDatabaseRules())
+
     // the events of the latest session only
     val currentSessionOnly: StateFlow<Boolean>
         field = MutableStateFlow(false)
@@ -72,7 +87,8 @@ internal class TimelineFilterStore(
         facets,
         currentSessionOnly,
         network,
-    ) { text, sources, facets, currentSessionOnly, network ->
+        database,
+    ) { text, sources, facets, currentSessionOnly, network, database ->
         TimelineFilterDomainModel(
             sources = sources,
             text = text,
@@ -82,6 +98,8 @@ internal class TimelineFilterStore(
             networkStatusRules = network.statusRules,
             networkHostRules = network.hostRules,
             networkDuration = network.duration,
+            databaseRules = database.rules,
+            hideDatabaseTransactions = database.hideTransactions,
         )
     }
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
@@ -134,6 +152,19 @@ internal class TimelineFilterStore(
         network.update { it.copy(duration = value) }
     }
 
+    // a rule is told by its text: adding it again only changes its side, include or exclude
+    fun addDatabaseRule(rule: TimelineRuleDomainModel) {
+        database.update { it.copy(rules = it.rules.filterNot { existing -> existing.value == rule.value } + rule) }
+    }
+
+    fun removeDatabaseRule(value: String) {
+        database.update { it.copy(rules = it.rules.filterNot { existing -> existing.value == value }) }
+    }
+
+    fun setHideDatabaseTransactions(value: Boolean) {
+        database.update { it.copy(hideTransactions = value) }
+    }
+
     fun setCurrentSessionOnly(value: Boolean) {
         currentSessionOnly.update { value }
     }
@@ -143,6 +174,7 @@ internal class TimelineFilterStore(
         text.update { "" }
         facets.update { emptyMap() }
         network.update { TimelineNetworkRules() }
+        database.update { TimelineDatabaseRules() }
         currentSessionOnly.update { false }
     }
 }

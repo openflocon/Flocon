@@ -1,5 +1,7 @@
 package io.github.openflocon.domain.timeline.models
 
+import io.github.openflocon.domain.webview.models.WebViewEventKind
+
 // the kinds of SQL statement, TRANSACTION being BEGIN, COMMIT, END, ROLLBACK, SAVEPOINT and RELEASE, SCHEMA being CREATE, ALTER and DROP
 private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
 
@@ -48,6 +50,15 @@ enum class TimelineFacet(
         knownValues = DATABASE_STATEMENTS,
     ),
     AnalyticsTable(TimelineSource.Analytics),
+
+    // the name of the table the item was added to
+    TableName(TimelineSource.Table),
+
+    // the kind of event of a WebView: console message, page event or call to a native bridge
+    WebViewKind(
+        source = TimelineSource.WebView,
+        knownValues = WebViewEventKind.entries.map { it.name },
+    ),
 
     // the class of the exception, ex: java.lang.IllegalStateException
     CrashException(TimelineSource.Crash),

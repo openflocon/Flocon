@@ -6,6 +6,7 @@ import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.timeline.TimelineDatabaseRules
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -19,6 +20,9 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilter
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRuleUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 /**
@@ -30,13 +34,14 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     facets: Map<TimelineFacet, Set<String>>, // the values hidden, by facet
     currentSessionOnly: Boolean = false,
     network: TimelineNetworkRules = TimelineNetworkRules(),
+    database: TimelineDatabaseRules = TimelineDatabaseRules(),
     matchingNetworkCount: Int? = null, // the network calls displayed, null: all of them
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
         .filterNot { it == TimelineSource.Network }
-        .map { source -> toSourceFilter(source, enabled = source in selectedSources, facets = facets) }
+        .map { source -> toSourceFilter(source, enabled = source in selectedSources, facets = facets, database = database) }
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
-    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + if (currentSessionOnly) 1 else 0
+    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + database.activeCount + if (currentSessionOnly) 1 else 0
 
     return TimelineFilterPanelUiModel(
         sections = sections.plus(toNetworkFilter(facets, network, matchingNetworkCount))
@@ -53,18 +58,39 @@ private fun TimelineSummaryUiModel.toSourceFilter(
     source: TimelineSource,
     enabled: Boolean,
     facets: Map<TimelineFacet, Set<String>>,
+    database: TimelineDatabaseRules,
 ): TimelineFilterSectionUi {
     fun group(facet: TimelineFacet) = toGroup(facet, hidden = facets[facet].orEmpty())
+    // a selector that always exists, even when no value was seen yet
+    fun groupOrEmpty(facet: TimelineFacet) = group(facet) ?: TimelineFacetGroupUiModel(facet = facet, values = persistentListOf())
     val count = sourceCounts[source] ?: 0
-    val activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size }
+    // the rules and the transactions are filters of the database source too
+    val activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size } +
+        if (source == TimelineSource.Database) database.activeCount else 0
 
     return when (source) {
         TimelineSource.Database -> TimelineDatabaseFilterUiModel(
             count = count,
             enabled = enabled,
             activeFacetCount = activeFacetCount,
-            names = group(TimelineFacet.DatabaseName),
+            names = groupOrEmpty(TimelineFacet.DatabaseName),
             statements = group(TimelineFacet.DatabaseStatement),
+            rules = database.rules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
+            hideTransactions = database.hideTransactions,
+        )
+
+        TimelineSource.Table -> TimelineTableFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            tables = groupOrEmpty(TimelineFacet.TableName),
+        )
+
+        TimelineSource.WebView -> TimelineWebViewFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            kinds = group(TimelineFacet.WebViewKind),
         )
 
         TimelineSource.Analytics -> TimelineAnalyticsFilterUiModel(
@@ -179,7 +205,7 @@ private fun TimelineSummaryUiModel.toGroup(
         TimelineFacetGroupUiModel(
             facet = facet,
             values = values.toImmutableList(),
-            asTags = facet == TimelineFacet.NetworkMethod || facet == TimelineFacet.NetworkStatus,
+            asTags = facet == TimelineFacet.NetworkMethod || facet == TimelineFacet.NetworkStatus || facet == TimelineFacet.WebViewKind,
         )
     }
 }

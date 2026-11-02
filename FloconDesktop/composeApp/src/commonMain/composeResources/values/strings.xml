@@ -127,6 +127,12 @@
     <string name="timeline_facet_database_statement">Statement</string>
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>
+    <string name="timeline_facet_table_name">Table</string>
+    <string name="timeline_facet_webview_kind">Kind</string>
+    <string name="timeline_filters_database_empty">No database seen yet</string>
+    <string name="timeline_filters_table_empty">No table seen yet</string>
+    <string name="timeline_filters_sql_placeholder">Word in the query, Enter</string>
+    <string name="timeline_filters_hide_transactions">Hide transactions</string>
     <plurals name="network_counter_requests">
         <item quantity="one">request</item>
         <item quantity="other">requests</item>

@@ -57,6 +57,9 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_database_stat
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_host
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
+import flocondesktop.composeapp.generated.resources.timeline_facet_table_name
+import flocondesktop.composeapp.generated.resources.timeline_facet_webview_kind
+import flocondesktop.composeapp.generated.resources.timeline_filters_only
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_speed
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_state
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
@@ -81,6 +84,8 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyt
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.facetGroups
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
@@ -308,6 +313,8 @@ private fun FilterSection(
                     is TimelineAnalyticsFilterUiModel -> AnalyticsFilterCard(section, onAction)
                     is TimelineCrashFilterUiModel -> CrashFilterCard(section, onAction)
                     is TimelineAccessibilityFilterUiModel -> AccessibilityFilterCard(section, onAction)
+                    is TimelineTableFilterUiModel -> TableFilterCard(section, onAction)
+                    is TimelineWebViewFilterUiModel -> WebViewFilterCard(section, onAction)
                     is TimelineBasicFilterUiModel -> Unit
                     is TimelineNetworkFilterUiModel -> NetworkFilterCard(
                         network = section,
@@ -326,6 +333,7 @@ internal fun FacetGroup(
     group: TimelineFacetGroupUiModel,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
+    emptyText: String? = null, // told in the menu when the group has no value yet
 ) {
     var expanded by remember { mutableStateOf(false) }
     val any = stringResource(Res.string.timeline_filters_any)
@@ -344,7 +352,14 @@ internal fun FacetGroup(
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
         ) {
-            if (group.asTags) {
+            if (group.values.isEmpty() && emptyText != null) {
+                Text(
+                    text = emptyText,
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.inkMuted,
+                    modifier = Modifier.padding(FloconTheme.spacing.medium),
+                )
+            } else if (group.asTags) {
                 FacetTags(
                     values = group.values,
                     onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, it)) },
@@ -354,6 +369,10 @@ internal fun FacetGroup(
                     FacetValueRow(
                         item = item,
                         onToggle = { onAction(TimelineFilterAction.ToggleFacet(group.facet, item.value)) },
+                        // only this one: the other values are hidden
+                        onOnly = {
+                            onAction(TimelineFilterAction.SetHiddenValues(group.facet, group.values.map { it.value }.toSet() - item.value))
+                        },
                     )
                 }
             }
@@ -409,6 +428,7 @@ private fun FacetValueRow(
     item: TimelineFacetValueUiModel,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
+    onOnly: (() -> Unit)? = null,
 ) {
     val colors = FloconTheme.colors
     Row(
@@ -432,6 +452,17 @@ private fun FacetValueRow(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
+        if (onOnly != null) {
+            Text(
+                text = stringResource(Res.string.timeline_filters_only),
+                style = FloconTheme.typography.labelMedium,
+                color = colors.inkMuted,
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.small)
+                    .clickable(onClick = onOnly)
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
+            )
+        }
         Text(
             text = item.count.toString(),
             style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
@@ -603,6 +634,8 @@ private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.DatabaseName -> Res.string.timeline_facet_database_name
     TimelineFacet.DatabaseStatement -> Res.string.timeline_facet_database_statement
     TimelineFacet.AnalyticsTable -> Res.string.timeline_facet_analytics_table
+    TimelineFacet.TableName -> Res.string.timeline_facet_table_name
+    TimelineFacet.WebViewKind -> Res.string.timeline_facet_webview_kind
     TimelineFacet.CrashException -> Res.string.timeline_facet_crash_exception
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
 }

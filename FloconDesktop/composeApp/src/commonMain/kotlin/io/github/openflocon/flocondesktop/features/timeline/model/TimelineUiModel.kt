@@ -102,6 +102,11 @@ internal sealed interface TimelineFilterAction {
     data class AddHostRule(val text: String, val exclude: Boolean) : TimelineFilterAction
     data class RemoveHostRule(val value: String) : TimelineFilterAction
 
+    // the database card: words of the sql query, and the transactions
+    data class AddDatabaseRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemoveDatabaseRule(val value: String) : TimelineFilterAction
+    data class SetHideDatabaseTransactions(val value: Boolean) : TimelineFilterAction
+
     // positions of the slider, see TimelineNetworkFilterUiModel
     data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction

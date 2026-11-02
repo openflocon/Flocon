@@ -18,4 +18,8 @@ data class TimelineFilterDomainModel(
     val networkHostRules: List<TimelineRuleDomainModel> = emptyList(),
     // null: every duration, the calls without duration yet are kept. A range hides them
     val networkDuration: TimelineDurationRangeDomainModel? = null,
+    // words of the sql query of the database logs to keep (include) or hide (exclude)
+    val databaseRules: List<TimelineRuleDomainModel> = emptyList(),
+    // true: the logs of the transactions (BEGIN, COMMIT...) are hidden
+    val hideDatabaseTransactions: Boolean = false,
 )
