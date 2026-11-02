@@ -14,6 +14,7 @@ data class TimelineRowEntity(
     val sessionStart: Long?,
     val isImage: Boolean = false, // network only: the response is an image
     val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
+    val facetValues: String? = null, // json object: the value of each facet of the event, null when it has none
 )
 
 // result row of the summary query: one per kind

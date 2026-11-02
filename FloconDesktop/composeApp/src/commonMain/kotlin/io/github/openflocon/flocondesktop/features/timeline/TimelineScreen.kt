@@ -342,6 +342,8 @@ internal fun TimelineContent(
                                 TimelineRowMenu(
                                     row = item.row,
                                     onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                    onExclude = { facet, value -> onAction(TimelineAction.Exclude(facet, value)) },
+                                    onExcludeSource = { onAction(TimelineAction.ExcludeSource(item.row.source)) },
                                 ) {
                                     TimelineRow(
                                         row = item.row,

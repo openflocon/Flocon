@@ -3,10 +3,13 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.common.time.formatDate
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineExcludeUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUiModel(
     id = id,
@@ -19,7 +22,27 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     network = if (source == TimelineSource.Network) toNetworkUi() else null,
     sessionStart = sessionStart,
     phase = phase,
+    excludes = excludes(),
 )
+
+// the facets worth excluding an event by: not the duration bucket, the state or the content of a call
+private val ExcludableFacets = setOf(
+    TimelineFacet.NetworkMethod,
+    TimelineFacet.NetworkStatus,
+    TimelineFacet.NetworkHost,
+    TimelineFacet.DatabaseName,
+    TimelineFacet.DatabaseStatement,
+    TimelineFacet.AnalyticsTable,
+    TimelineFacet.TableName,
+    TimelineFacet.WebViewKind,
+    TimelineFacet.CrashException,
+    TimelineFacet.AccessibilityAction,
+)
+
+internal fun TimelineEventDomainModel.excludes() = TimelineFacet.entries
+    .filter { it in ExcludableFacets }
+    .mapNotNull { facet -> facets[facet]?.takeIf { it.isNotBlank() }?.let { TimelineExcludeUiModel(facet, it) } }
+    .toImmutableList()
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
     val (host, path) = splitUrl(title)

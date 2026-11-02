@@ -5,6 +5,8 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class TimelineRowUiModel(
@@ -18,6 +20,7 @@ internal data class TimelineRowUiModel(
     val network: TimelineNetworkUiModel? = null, // network calls only
     val sessionStart: Long? = null, // the start of the session of the event, null if none is known
     val phase: TimelinePhase = TimelinePhase.Request, // network calls only: the request and the response are two rows
+    val excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(), // what the event can be excluded by
 ) {
     // the ids of two sources can be the same. Shared by the request and the response of a network call,
     // to select and highlight them together
@@ -26,6 +29,13 @@ internal data class TimelineRowUiModel(
     // unique in the list
     val key: String get() = if (phase == TimelinePhase.Request) callKey else "$callKey:${phase.name}"
 }
+
+// a value of the event that can be hidden from the timeline, ex: the GET method
+@Immutable
+internal data class TimelineExcludeUiModel(
+    val facet: TimelineFacet,
+    val value: String,
+)
 
 @Immutable
 internal data class TimelineNetworkUiModel(
@@ -79,6 +89,10 @@ internal sealed interface TimelineAction {
     // the session of the graph: -1 the one before, 1 the one after
     data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
+
+    // hides a value of an event (ex: the GET calls) or its whole source, from the menu of the row
+    data class Exclude(val facet: TimelineFacet, val value: String) : TimelineAction
+    data class ExcludeSource(val source: TimelineSource) : TimelineAction
 }
 
 // the actions of the filter panel
@@ -119,6 +133,7 @@ internal fun previewTimelineRowUiModel(
     subtitle: String? = null,
     network: TimelineNetworkUiModel? = null,
     phase: TimelinePhase = TimelinePhase.Request,
+    excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(),
 ) = TimelineRowUiModel(
     id = id,
     source = source,
@@ -129,6 +144,7 @@ internal fun previewTimelineRowUiModel(
     subtitle = subtitle,
     network = network,
     phase = phase,
+    excludes = excludes,
 )
 
 // one row of each kind of event
@@ -138,6 +154,10 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
         id = "n1",
         title = "https://api.acme.io/v1/users?id=2",
         network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = null, duration = null),
+        excludes = persistentListOf(
+            TimelineExcludeUiModel(TimelineFacet.NetworkMethod, "GET"),
+            TimelineExcludeUiModel(TimelineFacet.NetworkHost, "api.acme.io"),
+        ),
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,

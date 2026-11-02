@@ -17,4 +17,6 @@ data class TimelineEventDomainModel(
     val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
     // the start of the session the event belongs to: the latest app start before it, null if none is known
     val sessionStart: AppInstance? = null,
+    // the value of the event for each facet of its source, ex: the method and the host of a call. What it can be excluded by
+    val facets: Map<TimelineFacet, String> = emptyMap(),
 )

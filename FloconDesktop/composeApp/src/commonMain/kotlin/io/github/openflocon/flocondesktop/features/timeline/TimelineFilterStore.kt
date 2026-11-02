@@ -128,6 +128,13 @@ internal class TimelineFilterStore(
         }
     }
 
+    // hides one more value, ex: from the menu of a row. Adding it twice changes nothing, unlike toggleFacet
+    fun hideFacetValue(facet: TimelineFacet, value: String) {
+        facets.update { it + (facet to it[facet].orEmpty() + value) }
+        // the filters of the network calls are ignored while its card is off: the value would stay displayed
+        if (facet.source == TimelineSource.Network) setNetworkEnabled(true)
+    }
+
     // the values hidden of a facet at once, ex: only one host, or none
     fun setHiddenValues(facet: TimelineFacet, values: Set<String>) {
         facets.update { if (values.isEmpty()) it - facet else it + (facet to values) }

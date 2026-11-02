@@ -19,6 +19,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.sample
@@ -61,6 +63,7 @@ internal class TimelineViewModel(
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
+    private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     private val filterStore: TimelineFilterStore,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
@@ -193,6 +196,13 @@ internal class TimelineViewModel(
 
             is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
+            }
+
+            is TimelineAction.Exclude -> filterStore.hideFacetValue(action.facet, action.value)
+
+            is TimelineAction.ExcludeSource -> viewModelScope.launch {
+                // read from the settings each time, like the filter panel
+                setTimelineSelectedSourcesUseCase(filterStore.storedSources.first() - action.source)
             }
 
             is TimelineAction.Open -> {

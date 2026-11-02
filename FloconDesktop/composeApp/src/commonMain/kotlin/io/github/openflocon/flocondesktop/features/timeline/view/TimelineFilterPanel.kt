@@ -629,7 +629,7 @@ private fun String.initials(): String {
     return letters.uppercase()
 }
 
-private fun TimelineFacet.title(): StringResource = when (this) {
+internal fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.NetworkMethod -> Res.string.timeline_facet_network_method
     TimelineFacet.NetworkStatus -> Res.string.timeline_facet_network_status
     TimelineFacet.NetworkState -> Res.string.timeline_facet_network_state

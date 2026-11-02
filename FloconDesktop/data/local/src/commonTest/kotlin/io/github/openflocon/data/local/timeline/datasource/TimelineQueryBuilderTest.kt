@@ -414,6 +414,17 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `each event carries its value for every facet, to be excluded by them`() {
+        val sql = build().sql
+
+        assertTrue(sql.contains("json_object('NetworkMethod', u.facetNetworkMethod"))
+        TimelineFacet.entries.forEach {
+            assertTrue(sql.contains("'${it.name}', u.facet${it.name}"), it.name)
+        }
+        assertTrue(sql.contains(") AS facetValues"))
+    }
+
+    @Test
     fun `the tables and the kinds of webview event can be hidden`() {
         val table = build(
             TimelineFilterDomainModel(
