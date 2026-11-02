@@ -40,8 +40,8 @@ internal fun GraphViewport.xOf(ms: Long): Float = ((ms - startMs) * pxPerMs).toF
 
 internal fun GraphViewport.msAt(x: Float): Double = startMs + x / pxPerMs
 
-// the graph when it opens: 100 %, from the start of the session
-internal fun defaultViewport(trackWidthPx: Float) = GraphViewport(startMs = 0.0, pxPerMs = (trackWidthPx / ZOOM_REFERENCE_MS).coerceAtLeast(MIN_PX_PER_MS))
+// the graph when it opens: 100 %, a second before the start of the session to see the app start
+internal fun defaultViewport(trackWidthPx: Float) = GraphViewport(startMs = MIN_START_MS, pxPerMs = (trackWidthPx / ZOOM_REFERENCE_MS).coerceAtLeast(MIN_PX_PER_MS))
 
 // the whole session in [trackWidthPx]
 internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphViewport {
@@ -49,6 +49,8 @@ internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphVie
     return GraphViewport(startMs = 0.0, pxPerMs = (trackWidthPx / duration).toDouble().coerceAtLeast(MIN_PX_PER_MS))
 }
 
+// the most the graph shows before the start of the session, the app start is at 0
+internal const val MIN_START_MS = -1_000.0
 internal const val MIN_PX_PER_MS = 0.0005
 internal const val MAX_PX_PER_MS = 20.0
 
@@ -71,7 +73,7 @@ internal const val ZOOM_REFERENCE_MS = 30_000.0
 internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport {
     val newPx = (pxPerMs * factor).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
     val anchorMs = msAt(anchorX)
-    return copy(pxPerMs = newPx, startMs = (anchorMs - anchorX / newPx).coerceAtLeast(0.0))
+    return copy(pxPerMs = newPx, startMs = (anchorMs - anchorX / newPx).coerceAtLeast(MIN_START_MS))
 }
 
 /**
@@ -82,7 +84,7 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
     val left = minOf(fromX, toX).coerceIn(0f, trackWidthPx)
     val right = maxOf(fromX, toX).coerceIn(0f, trackWidthPx)
     if (right - left < MinZoomBoxPx) return this
-    val startMs = msAt(left).coerceAtLeast(0.0)
+    val startMs = msAt(left).coerceAtLeast(MIN_START_MS)
     val endMs = msAt(right)
     val newPx = (trackWidthPx / (endMs - startMs)).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
     return copy(startMs = startMs, pxPerMs = newPx)
@@ -90,8 +92,8 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
 
 private const val MinZoomBoxPx = 8f
 
-// moves along the time axis, never before the start of the session
-internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(0.0))
+// moves along the time axis, never more than a second before the start of the session
+internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(MIN_START_MS))
 
 // the height of a lane: its rows
 internal fun GraphLaneUiModel.heightPx(): Float = rows.size * RowHeightPx
@@ -177,7 +179,7 @@ internal fun GraphViewport.jumpedToLatest(model: GraphUiModel, trackWidthPx: Flo
     val rowTop = model.rowTopOf(event) ?: 0f
     val maxScroll = max(model.contentHeightPx() - trackHeightPx, 0f)
     return copy(
-        startMs = max(event.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, 0.0),
+        startMs = max(event.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS),
         scrollY = (rowTop - (trackHeightPx - RowHeightPx) / 2f).coerceIn(0f, maxScroll),
     )
 }

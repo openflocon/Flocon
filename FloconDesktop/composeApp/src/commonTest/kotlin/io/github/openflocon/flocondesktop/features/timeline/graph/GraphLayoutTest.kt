@@ -91,11 +91,12 @@ class GraphLayoutTest {
     }
 
     @Test
-    fun `the viewport never goes before the start of the session`() {
-        assertEquals(0.0, viewport.copy(startMs = 50.0).panned(-500.0).startMs, 0.0)
+    fun `the viewport never goes more than a second before the start of the session`() {
+        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0).startMs, 0.0)
+        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0).startMs, 0.0)
         assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0).startMs, 0.0)
         // zooming out around the pointer would show the time before 0
-        assertEquals(0.0, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
+        assertEquals(MIN_START_MS, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
     }
 
     @Test
@@ -121,7 +122,7 @@ class GraphLayoutTest {
         assertEquals(1_000, fitViewport(3_000L, 600f).zoomPercent(600f))
         // the graph opens at 100 %, from the start
         assertEquals(100, defaultViewport(600f).zoomPercent(600f))
-        assertEquals(0.0, defaultViewport(600f).startMs, 0.0)
+        assertEquals(MIN_START_MS, defaultViewport(600f).startMs, 0.0)
     }
 
     @Test

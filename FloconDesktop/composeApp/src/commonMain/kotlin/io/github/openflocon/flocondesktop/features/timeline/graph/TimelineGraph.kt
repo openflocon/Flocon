@@ -526,7 +526,8 @@ private fun DrawScope.drawGraph(
     // the lanes
     clipRect(left = LaneLabelWidthPx, top = AxisHeightPx, right = width, bottom = height) {
         val step = axisStepMs(viewport.pxPerMs)
-        var tick = ceil(viewport.startMs / step).toLong() * step
+        // no tick before the start of the session
+        var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
             val x = LaneLabelWidthPx + viewport.xOf(tick)
             drawLine(palette.grid, Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = 1f)
@@ -567,7 +568,8 @@ private fun DrawScope.drawGraph(
     drawLine(palette.line, Offset(0f, AxisHeightPx), Offset(width, AxisHeightPx), strokeWidth = 1f)
     clipRect(left = LaneLabelWidthPx, top = 0f, right = width, bottom = AxisHeightPx) {
         val step = axisStepMs(viewport.pxPerMs)
-        var tick = ceil(viewport.startMs / step).toLong() * step
+        // no tick before the start of the session
+        var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
             val x = LaneLabelWidthPx + viewport.xOf(tick)
             val text = measurer.measure(
