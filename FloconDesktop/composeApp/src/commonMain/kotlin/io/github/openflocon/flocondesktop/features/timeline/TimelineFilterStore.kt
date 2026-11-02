@@ -32,9 +32,10 @@ internal data class TimelineNetworkRules(
     val enabled: Boolean = true,
     val statusRules: List<TimelineRuleDomainModel> = emptyList(),
     val hostRules: List<TimelineRuleDomainModel> = emptyList(),
+    val pathRules: List<TimelineRuleDomainModel> = emptyList(),
     val duration: TimelineDurationRangeDomainModel? = null,
 ) {
-    val ruleCount: Int get() = statusRules.size + hostRules.size + if (duration != null) 1 else 0
+    val ruleCount: Int get() = statusRules.size + hostRules.size + pathRules.size + if (duration != null) 1 else 0
 }
 
 /**
@@ -74,6 +75,10 @@ internal class TimelineFilterStore(
     val database: StateFlow<TimelineDatabaseRules>
         field = MutableStateFlow(TimelineDatabaseRules())
 
+    // the source the filter panel has to scroll to and unfold, ex: asked from the menu of a row
+    val focusedSource: StateFlow<TimelineSource?>
+        field = MutableStateFlow<TimelineSource?>(null)
+
     // the events of the latest session only
     val currentSessionOnly: StateFlow<Boolean>
         field = MutableStateFlow(false)
@@ -105,6 +110,7 @@ internal class TimelineFilterStore(
                 networkEnabled = network.enabled,
                 networkStatusRules = network.statusRules,
                 networkHostRules = network.hostRules,
+                networkPathRules = network.pathRules,
                 networkDuration = network.duration,
                 databaseRules = database.rules,
                 hideDatabaseTransactions = database.hideTransactions,
@@ -165,6 +171,24 @@ internal class TimelineFilterStore(
 
     fun removeHostRule(value: String) {
         network.update { it.copy(hostRules = it.hostRules.filterNot { existing -> existing.value == value }) }
+    }
+
+    // hides the calls of a path, ex: from the menu of a row. The rule is told by its text, adding it twice changes nothing
+    fun hidePath(path: String) {
+        addPathRule(TimelineRuleDomainModel(path, exclude = true))
+        setNetworkEnabled(true)
+    }
+
+    fun focusSource(source: TimelineSource?) {
+        focusedSource.update { source }
+    }
+
+    fun addPathRule(rule: TimelineRuleDomainModel) {
+        network.update { it.copy(pathRules = it.pathRules.filterNot { existing -> existing.value == rule.value } + rule) }
+    }
+
+    fun removePathRule(value: String) {
+        network.update { it.copy(pathRules = it.pathRules.filterNot { existing -> existing.value == value }) }
     }
 
     fun setNetworkDuration(value: TimelineDurationRangeDomainModel?) {

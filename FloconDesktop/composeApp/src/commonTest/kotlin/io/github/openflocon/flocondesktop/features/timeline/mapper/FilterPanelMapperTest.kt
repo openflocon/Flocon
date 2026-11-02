@@ -228,6 +228,17 @@ class FilterPanelMapperTest {
     }
 
     @Test
+    fun `the path rules of the network are shown and are filters to reset`() {
+        val rules = TimelineNetworkRules(pathRules = listOf(TimelineRuleDomainModel("/raw", exclude = true)))
+
+        val panel = summary.toFilterPanel(all, emptyMap(), network = rules)
+
+        assertEquals(listOf("/raw"), panel.network.pathRules.map { it.value })
+        assertTrue(panel.network.isFiltered)
+        assertEquals(1, panel.activeFilterCount)
+    }
+
+    @Test
     fun `the duration range is told by positions of the buckets`() {
         val range = TimelineNetworkRules(duration = TimelineDurationRangeDomainModel(minMs = 100, maxMs = 1_000))
         val card = summary.toFilterPanel(all, emptyMap(), network = range).network

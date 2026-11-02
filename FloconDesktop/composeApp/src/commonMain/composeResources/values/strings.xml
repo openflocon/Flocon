@@ -128,8 +128,13 @@
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>
     <string name="timeline_facet_table_name">Table</string>
-    <string name="timeline_row_exclude">Exclude</string>
-    <string name="timeline_row_exclude_source">Source: %1$s</string>
+    <string name="timeline_row_exclude_requests">Exclude requests</string>
+    <string name="timeline_row_exclude_events">Exclude events</string>
+    <string name="timeline_row_exclude_by">Exclude by</string>
+    <string name="timeline_row_manage_exclusions">Manage exclusions…</string>
+    <string name="timeline_row_source">Source</string>
+    <string name="timeline_facet_network_path">Path</string>
+    <string name="timeline_filters_path_placeholder">Word in the path, Enter</string>
     <string name="timeline_facet_webview_kind">Kind</string>
     <string name="timeline_filters_database_empty">No database seen yet</string>
     <string name="timeline_filters_table_empty">No table seen yet</string>

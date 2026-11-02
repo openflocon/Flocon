@@ -159,6 +159,7 @@ private fun TimelineSummaryUiModel.toNetworkFilter(
         content = values(TimelineFacet.NetworkContent).toImmutableList(),
         hosts = hosts.toImmutableList(),
         hostRules = rules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
+        pathRules = network.pathRules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
         hiddenHostCount = allHosts.count { !it.selected },
         hostCount = hosts.size,
     )
@@ -175,7 +176,7 @@ private fun String.matchesHostRules(rules: List<TimelineRuleDomainModel>): Boole
 private fun formatDuration(ms: Long): String = if (ms >= 1_000 && ms % 1_000 == 0L) "${ms / 1_000} s" else "$ms ms"
 
 // the methods of the facet are the ones of the timeline query: WS and GRPC for the calls that are not http
-private fun String.toMethodUi(): NetworkMethodUi = when (this) {
+internal fun String.toMethodUi(): NetworkMethodUi = when (this) {
     "WS" -> NetworkMethodUi.WebSocket
     "GRPC" -> NetworkMethodUi.Grpc
     else -> toHttpMethodUi(this)

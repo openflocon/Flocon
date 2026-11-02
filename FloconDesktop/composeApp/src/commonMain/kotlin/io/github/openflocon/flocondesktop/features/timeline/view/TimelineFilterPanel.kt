@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,6 +121,7 @@ internal fun TimelineFilterPanel(
     panel: TimelineFilterPanelUiModel,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
+    focusedSource: TimelineSource? = null, // the source to scroll to and unfold, ex: asked from the menu of a row
 ) {
     val colors = FloconTheme.colors
     val query = remember { mutableStateOf("") }
@@ -127,6 +129,14 @@ internal fun TimelineFilterPanel(
     val sourceLabels = TimelineSource.entries.associateWith { stringResource(it.label()) }
     val sections = remember(panel.sections, query.value, sourceLabels) {
         panel.sections.filter { it.matches(query.value, sourceLabels.getValue(it.source)) }
+    }
+
+    LaunchedEffect(focusedSource, sections) {
+        val index = sections.indexOfFirst { it.source == focusedSource }
+        if (focusedSource != null && index >= 0) {
+            listState.animateScrollToItem(index)
+            onAction(TimelineFilterAction.FocusHandled)
+        }
     }
 
     Row(
@@ -165,6 +175,7 @@ internal fun TimelineFilterPanel(
                         section = section,
                         label = sourceLabels.getValue(section.source),
                         onAction = onAction,
+                        unfold = section.source == focusedSource,
                         modifier = Modifier.animateItem()
                     )
                 }
@@ -246,10 +257,14 @@ private fun FilterSection(
     label: String,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
+    unfold: Boolean = false, // asked to show the filters of the source
 ) {
     val colors = FloconTheme.colors
     val (color, _) = section.source.categoryColors()
     var expanded by remember { mutableStateOf(false) }
+    LaunchedEffect(unfold) {
+        if (unfold) expanded = true
+    }
     val canExpand = remember(section) { section is TimelineNetworkFilterUiModel || section.facetGroups().isNotEmpty() }
     val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
     val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)

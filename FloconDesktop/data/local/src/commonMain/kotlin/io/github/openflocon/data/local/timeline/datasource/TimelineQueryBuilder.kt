@@ -80,6 +80,7 @@ private const val NETWORK_CONTENT = "CASE WHEN type = 'WEBSOCKET' THEN 'WEBSOCKE
     "WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
 
 private const val NETWORK_HOST = "request_domainFormatted"
+private const val NETWORK_PATH = "request_queryFormatted" // the path and the query, without the domain
 
 private const val NETWORK_DURATION = "CAST(response_durationMs AS INTEGER)"
 
@@ -122,6 +123,10 @@ private fun networkRuleConditions(
         sql.append(hostSql)
         params.addAll(hostParams)
     }
+
+    val (pathSql, pathParams) = wordRuleConditions(NETWORK_PATH, filter.networkPathRules)
+    sql.append(pathSql)
+    params.addAll(pathParams)
 
     val duration = filter.networkDuration
     if (duration != null && TimelineFacet.NetworkSpeed !in ignoredFacets) {

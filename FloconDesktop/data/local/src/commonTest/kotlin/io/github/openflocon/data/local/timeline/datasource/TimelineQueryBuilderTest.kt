@@ -346,6 +346,26 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the path rules are words of the path of the network calls only`() {
+        val rules = listOf(
+            TimelineRuleDomainModel("/raw", exclude = true),
+            TimelineRuleDomainModel("/users", exclude = false),
+        )
+
+        val network = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network), networkPathRules = rules))
+        assertTrue(network.sql.contains("AND (request_queryFormatted LIKE ?)"))
+        assertTrue(network.sql.contains("AND COALESCE(request_queryFormatted, '') NOT LIKE ?"))
+        val branch = listOf<Any>("device", "com.app", "%/users%", "%/raw%")
+        assertEquals(sessionParams + branch + branch, network.params)
+
+        val other = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database), networkPathRules = rules))
+        assertFalse(other.sql.contains("request_queryFormatted LIKE"))
+
+        val disabled = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network), networkEnabled = false, networkPathRules = rules))
+        assertFalse(disabled.sql.contains("request_queryFormatted LIKE"))
+    }
+
+    @Test
     fun `the network filters are ignored when they are disabled`() {
         val query = build(
             TimelineFilterDomainModel(

@@ -41,6 +41,7 @@ internal class TimelineFilterPanelViewModel(
                 facets = emptyMap(),
                 networkStatusRules = emptyList(),
                 networkHostRules = emptyList(),
+                networkPathRules = emptyList(),
                 networkDuration = null,
                 databaseRules = emptyList(),
                 hideDatabaseTransactions = false,
@@ -83,6 +84,8 @@ internal class TimelineFilterPanelViewModel(
         }
     }
 
+    val focusedSource: StateFlow<TimelineSource?> = filterStore.focusedSource
+
     fun onAction(action: TimelineFilterAction) {
         when (action) {
             is TimelineFilterAction.ToggleSource -> viewModelScope.launch {
@@ -116,6 +119,12 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.RemoveHostRule -> filterStore.removeHostRule(action.value)
 
+            is TimelineFilterAction.AddPathRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let { filterStore.addPathRule(TimelineRuleDomainModel(it, action.exclude)) }
+            }
+
+            is TimelineFilterAction.RemovePathRule -> filterStore.removePathRule(action.value)
+
             is TimelineFilterAction.AddDatabaseRule -> {
                 action.text.trim().takeIf { it.isNotEmpty() }?.let { filterStore.addDatabaseRule(TimelineRuleDomainModel(it, action.exclude)) }
             }
@@ -136,6 +145,8 @@ internal class TimelineFilterPanelViewModel(
                 }
                 filterStore.setNetworkDuration(range)
             }
+
+            is TimelineFilterAction.FocusHandled -> filterStore.focusSource(null)
 
             is TimelineFilterAction.ClearAll -> {
                 filterStore.clear()

@@ -48,7 +48,10 @@ internal data class TimelineNetworkUiModel(
     // a gRPC or a WebSocket call has no http request to copy as cURL, replay or mock
     val httpActions: Boolean = true,
     val isImage: Boolean = false, // the response is an image
-)
+) {
+    // the path alone, to exclude the calls of a route whatever their parameters
+    val pathWithoutQuery: String get() = path.substringBefore('?')
+}
 
 @Immutable
 internal sealed interface TimelineItemUiModel {
@@ -93,6 +96,13 @@ internal sealed interface TimelineAction {
     // hides a value of an event (ex: the GET calls) or its whole source, from the menu of the row
     data class Exclude(val facet: TimelineFacet, val value: String) : TimelineAction
     data class ExcludeSource(val source: TimelineSource) : TimelineAction
+    data class ExcludePath(val path: String) : TimelineAction
+
+    // opens the filter panel on the source, to manage what is excluded
+    data class OpenFilters(val source: TimelineSource) : TimelineAction
+
+    // copies the url of the network call selected, from the keyboard
+    data object CopySelectedUrl : TimelineAction
 }
 
 // the actions of the filter panel
@@ -115,6 +125,8 @@ internal sealed interface TimelineFilterAction {
     data class RemoveStatusRule(val value: String) : TimelineFilterAction
     data class AddHostRule(val text: String, val exclude: Boolean) : TimelineFilterAction
     data class RemoveHostRule(val value: String) : TimelineFilterAction
+    data class AddPathRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemovePathRule(val value: String) : TimelineFilterAction
 
     // the database card: words of the sql query, and the transactions
     data class AddDatabaseRule(val text: String, val exclude: Boolean) : TimelineFilterAction
@@ -124,6 +136,9 @@ internal sealed interface TimelineFilterAction {
     // positions of the slider, see TimelineNetworkFilterUiModel
     data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction
+
+    // the panel went to the source it was asked to show
+    data object FocusHandled : TimelineFilterAction
 }
 
 internal fun previewTimelineRowUiModel(

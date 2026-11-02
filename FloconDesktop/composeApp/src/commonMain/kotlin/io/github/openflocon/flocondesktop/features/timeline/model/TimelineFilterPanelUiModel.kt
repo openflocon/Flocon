@@ -152,6 +152,7 @@ internal data class TimelineNetworkFilterUiModel(
     val content: ImmutableList<TimelineFacetValueUiModel>,
     val hosts: ImmutableList<TimelineFacetValueUiModel>, // the hosts matching the rules
     val hostRules: ImmutableList<TimelineRuleUiModel>,
+    val pathRules: ImmutableList<TimelineRuleUiModel>, // words of the path of the calls to keep or hide
     val hiddenHostCount: Int,
     val hostCount: Int,
 ) : TimelineFilterSectionUi {
@@ -197,6 +198,7 @@ internal fun previewTimelineNetworkFilterUiModel() = TimelineNetworkFilterUiMode
         TimelineFacetValueUiModel("ws.postman-echo.com", count = 8, selected = true),
     ),
     hostRules = persistentListOf(TimelineRuleUiModel("postman", exclude = false), TimelineRuleUiModel("analytics", exclude = true)),
+    pathRules = persistentListOf(TimelineRuleUiModel("/raw", exclude = true)),
     hiddenHostCount = 0,
     hostCount = 2,
 )

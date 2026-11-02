@@ -16,6 +16,8 @@ data class TimelineFilterDomainModel(
     val networkStatusRules: List<TimelineRuleDomainModel> = emptyList(),
     // words of the host of the network calls to keep (include) or hide (exclude)
     val networkHostRules: List<TimelineRuleDomainModel> = emptyList(),
+    // words of the path (and query) of the network calls to keep (include) or hide (exclude)
+    val networkPathRules: List<TimelineRuleDomainModel> = emptyList(),
     // null: every duration, the calls without duration yet are kept. A range hides them
     val networkDuration: TimelineDurationRangeDomainModel? = null,
     // words of the sql query of the database logs to keep (include) or hide (exclude)

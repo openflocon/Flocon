@@ -43,6 +43,7 @@ import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_host
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
+import flocondesktop.composeapp.generated.resources.timeline_facet_network_path
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_speed
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_status
 import flocondesktop.composeapp.generated.resources.timeline_filters_any
@@ -51,6 +52,7 @@ import flocondesktop.composeapp.generated.resources.timeline_filters_host_placeh
 import flocondesktop.composeapp.generated.resources.timeline_filters_hosts_matching
 import flocondesktop.composeapp.generated.resources.timeline_filters_none
 import flocondesktop.composeapp.generated.resources.timeline_filters_only
+import flocondesktop.composeapp.generated.resources.timeline_filters_path_placeholder
 import flocondesktop.composeapp.generated.resources.timeline_filters_pending
 import flocondesktop.composeapp.generated.resources.timeline_filters_rule_one
 import flocondesktop.composeapp.generated.resources.timeline_filters_rule_other
@@ -110,6 +112,7 @@ internal fun NetworkFilterCard(
         DurationSection(network, onAction)
         ContentSection(network, onAction)
         HostSection(network, onAction)
+        PathSection(network, onAction)
     }
 }
 
@@ -329,6 +332,30 @@ private fun ContentSection(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun PathSection(
+    network: TimelineNetworkFilterUiModel,
+    onAction: (TimelineFilterAction) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
+        SectionTitle(
+            title = stringResource(Res.string.timeline_facet_network_path),
+            summary = if (network.pathRules.isEmpty()) stringResource(Res.string.timeline_filters_any) else ruleCountText(network.pathRules.size),
+            summaryActive = network.pathRules.isNotEmpty(),
+        )
+        FloconIncludeExcludeInput(
+            includeLabel = stringResource(Res.string.filter_include),
+            excludeLabel = stringResource(Res.string.filter_exclude),
+            placeholder = stringResource(Res.string.timeline_filters_path_placeholder),
+            onSubmit = { text, exclude -> onAction(TimelineFilterAction.AddPathRule(text, exclude)) },
+        )
+        RuleChips(
+            rules = network.pathRules,
+            onRemove = { onAction(TimelineFilterAction.RemovePathRule(it)) },
+        )
     }
 }
 

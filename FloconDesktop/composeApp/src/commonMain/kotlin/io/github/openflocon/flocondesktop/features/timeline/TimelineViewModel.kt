@@ -20,6 +20,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
@@ -199,6 +200,23 @@ internal class TimelineViewModel(
             }
 
             is TimelineAction.Exclude -> filterStore.hideFacetValue(action.facet, action.value)
+
+            is TimelineAction.ExcludePath -> filterStore.hidePath(action.path)
+
+            is TimelineAction.OpenFilters -> {
+                filterStore.focusSource(action.source)
+                if (!filterPanelOpen.value) navigationState.navigate(TimelineRoutes.Filters)
+            }
+
+            is TimelineAction.CopySelectedUrl -> {
+                // the key of a call is "Network:<id>", see TimelineRowUiModel.callKey
+                val prefix = "${TimelineSource.Network.name}:"
+                selectedKey.value?.takeIf { it.startsWith(prefix) }?.removePrefix(prefix)?.let { callId ->
+                    viewModelScope.launch(dispatcherProvider.viewModel) {
+                        networkItemOptionsDelegate.onOption(callId = callId, option = NetworkItemOption.CopyUrl)
+                    }
+                }
+            }
 
             is TimelineAction.ExcludeSource -> viewModelScope.launch {
                 // read from the settings each time, like the filter panel

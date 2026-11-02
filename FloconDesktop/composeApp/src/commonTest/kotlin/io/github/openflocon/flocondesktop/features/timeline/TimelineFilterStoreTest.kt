@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
@@ -39,6 +40,30 @@ class TimelineFilterStoreTest {
         store.hideFacetValue(TimelineFacet.NetworkMethod, "GET")
 
         assertTrue(store.network.value.enabled)
+    }
+
+    @Test
+    fun `hiding a path adds an exclude rule once and turns the network filters back on`() {
+        store.setNetworkEnabled(false)
+
+        store.hidePath("/raw")
+        store.hidePath("/raw")
+
+        assertEquals(listOf(TimelineRuleDomainModel("/raw", exclude = true)), store.network.value.pathRules)
+        assertEquals(1, store.network.value.ruleCount)
+        assertTrue(store.network.value.enabled)
+
+        store.clear()
+        assertEquals(emptyList(), store.network.value.pathRules)
+    }
+
+    @Test
+    fun `a source can be asked to be shown in the panel, once`() {
+        store.focusSource(TimelineSource.Database)
+        assertEquals(TimelineSource.Database, store.focusedSource.value)
+
+        store.focusSource(null)
+        assertEquals(null, store.focusedSource.value)
     }
 
     @Test
