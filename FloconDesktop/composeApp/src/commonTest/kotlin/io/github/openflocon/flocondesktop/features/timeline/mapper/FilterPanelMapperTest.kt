@@ -7,7 +7,15 @@ import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.facetGroups
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -41,39 +49,51 @@ class FilterPanelMapperTest {
 
     @Test
     fun `every known value of a facet is listed, with its count`() {
-        val network = summary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Network }
+        val methods = summary.toFilterPanel(all, emptyMap()).network.methods
 
-        val methods = network.groups.first { it.facet == TimelineFacet.NetworkMethod }.values
         assertEquals(TimelineFacet.NetworkMethod.knownValues, methods.map { it.value })
         assertEquals(listOf("GET" to 2, "POST" to 1, "PUT" to 0), methods.take(3).map { it.value to it.count })
     }
 
     @Test
     fun `the methods and the status classes are displayed like in the network screen`() {
-        val network = summary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Network }
+        val network = summary.toFilterPanel(all, emptyMap()).network
 
-        val methods = network.groups.first { it.facet == TimelineFacet.NetworkMethod }.values.associate { it.value to it.method }
+        val methods = network.methods.associate { it.value to it.method }
         assertEquals(NetworkMethodUi.Http.GET, methods["GET"])
         assertEquals(NetworkMethodUi.WebSocket, methods["WS"])
         assertEquals(NetworkMethodUi.Grpc, methods["GRPC"])
         assertEquals("OPTIONS", (methods["OPTIONS"] as NetworkMethodUi.OTHER).text)
 
-        // the methods and the status are displayed as tags side by side, a hidden value is unchecked
-        val hiddenPost = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkMethod to setOf("POST")))
-            .sections.first { it.source == TimelineSource.Network }.groups.first { it.facet == TimelineFacet.NetworkMethod }
-        assertTrue(hiddenPost.asTags)
-        assertEquals(false, hiddenPost.values.first { it.method == NetworkMethodUi.Http.POST }.selected)
-        assertEquals(true, hiddenPost.values.first { it.method == NetworkMethodUi.Http.GET }.selected)
-        assertTrue(network.groups.first { it.facet == TimelineFacet.NetworkStatus }.asTags)
+        val hiddenPost = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkMethod to setOf("POST"))).network.methods
+        assertEquals(false, hiddenPost.first { it.method == NetworkMethodUi.Http.POST }.selected)
+        assertEquals(true, hiddenPost.first { it.method == NetworkMethodUi.Http.GET }.selected)
 
-        val families = network.groups.first { it.facet == TimelineFacet.NetworkStatus }.values.map { it.httpFamily }
-        assertEquals(listOf(1, 2, 3, 4, 5), families)
+        assertEquals(listOf(1, 2, 3, 4, 5), network.statusClasses.map { it.httpFamily })
+    }
 
-        // the other facets are plain values
-        val database = summary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Database }
-        val statements = database.groups.first { it.facet == TimelineFacet.DatabaseStatement }
-        assertTrue(statements.values.all { it.method == null && it.httpFamily == null })
-        assertEquals(false, statements.asTags)
+    @Test
+    fun `each source has its own filter model`() {
+        val sections = summary.toFilterPanel(all, emptyMap()).sections.associateBy { it.source }
+
+        assertTrue(sections.getValue(TimelineSource.Network) is TimelineNetworkFilterUiModel)
+        assertTrue(sections.getValue(TimelineSource.Database) is TimelineDatabaseFilterUiModel)
+        assertTrue(sections.getValue(TimelineSource.Analytics) is TimelineAnalyticsFilterUiModel)
+        assertTrue(sections.getValue(TimelineSource.Crash) is TimelineCrashFilterUiModel)
+        assertTrue(sections.getValue(TimelineSource.Accessibility) is TimelineAccessibilityFilterUiModel)
+        // the sources without facet only have their switch
+        assertTrue(sections.getValue(TimelineSource.Adb) is TimelineBasicFilterUiModel)
+        assertEquals(all, sections.keys)
+    }
+
+    @Test
+    fun `the database filter has the names and the statements`() {
+        val database = summary.toFilterPanel(all, emptyMap()).database
+
+        // the statements are plain values, always known
+        assertEquals(TimelineFacet.DatabaseStatement.knownValues, database.statements?.values?.map { it.value })
+        assertTrue(database.statements?.values.orEmpty().all { it.method == null && it.httpFamily == null })
+        assertEquals(false, database.statements?.asTags)
     }
 
     @Test
@@ -83,28 +103,33 @@ class FilterPanelMapperTest {
             sourceCounts = summary.sourceCounts + (TimelineSource.Database to 4),
         )
 
-        val database = withDatabases.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Database }
+        val database = withDatabases.toFilterPanel(all, emptyMap()).database
 
-        assertEquals(listOf("a.db", "b.db"), database.groups.first { it.facet == TimelineFacet.DatabaseName }.values.map { it.value })
+        assertEquals(listOf("a.db", "b.db"), database.names?.values?.map { it.value })
     }
 
     @Test
     fun `a facet without known value is not listed before an event brings one`() {
-        val database = summary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Database }
+        val database = summary.toFilterPanel(all, emptyMap()).database
 
-        assertTrue(database.groups.none { it.facet == TimelineFacet.DatabaseName })
-        // the statements are always known
-        assertEquals(
-            listOf(TimelineFacet.DatabaseStatement),
-            database.groups.map { it.facet },
-        )
+        assertEquals(null, database.names)
+        assertEquals(listOf(TimelineFacet.DatabaseStatement), database.facetGroups().map { it.facet })
+    }
+
+    @Test
+    fun `a hidden value counts in the facets of its source only`() {
+        val panel = summary.toFilterPanel(all, mapOf(TimelineFacet.DatabaseStatement to setOf("SELECT", "INSERT")))
+
+        assertEquals(2, panel.database.activeFacetCount)
+        assertEquals(false, panel.database.statements?.values?.first { it.value == "SELECT" }?.selected)
+        assertEquals(0, panel.sections.first { it.source == TimelineSource.Crash }.activeFacetCount)
     }
 
     @Test
     fun `every value is checked unless it was unchecked, even without event`() {
         val panel = summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkStatus to setOf("5xx")))
 
-        val status = panel.sections.first().groups.first { it.facet == TimelineFacet.NetworkStatus }.values
+        val status = panel.network.statusClasses
         assertEquals(TimelineFacet.NetworkStatus.knownValues, status.map { it.value })
         assertEquals(listOf(true, true, true, true, false), status.map { it.selected })
     }
@@ -129,8 +154,7 @@ class FilterPanelMapperTest {
         )
         assertTrue(some.hasActiveFilters)
         assertEquals(3, some.activeFilterCount)
-        assertEquals(2, some.sections.first { it.source == TimelineSource.Network }.activeFacetCount)
-        assertFalse(some.sections.first { it.source == TimelineSource.Crash }.enabled)
+                assertFalse(some.sections.first { it.source == TimelineSource.Crash }.enabled)
     }
 
     @Test
@@ -209,4 +233,10 @@ class FilterPanelMapperTest {
         // all the hosts are offered without rule
         assertEquals(3, hosts.toFilterPanel(all, emptyMap()).network.hostCount)
     }
+
+    private val TimelineFilterPanelUiModel.network
+        get() = sections.filterIsInstance<TimelineNetworkFilterUiModel>().single()
+
+    private val TimelineFilterPanelUiModel.database
+        get() = sections.filterIsInstance<TimelineDatabaseFilterUiModel>().single()
 }

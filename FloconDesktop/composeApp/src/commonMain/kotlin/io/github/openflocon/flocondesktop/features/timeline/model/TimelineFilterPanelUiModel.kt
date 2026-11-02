@@ -32,15 +32,69 @@ sealed interface TimelineFilterSectionUi {
     val activeFacetCount: Int
 }
 
-// one source of the filter panel: its switch and the facets to narrow it down
+// the sources without any facet: only the switch
 @Immutable
-internal data class TimelineFilterSectionUiModel(
+internal data class TimelineBasicFilterUiModel(
     override val source: TimelineSource,
     override val count: Int,
     override val enabled: Boolean,
-    override val activeFacetCount: Int,
-    val groups: ImmutableList<TimelineFacetGroupUiModel>,
+    override val activeFacetCount: Int = 0,
 ) : TimelineFilterSectionUi
+
+// the databases and the kinds of statement, ex: only the SELECT of app.db
+@Immutable
+internal data class TimelineDatabaseFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val names: TimelineFacetGroupUiModel?,
+    val statements: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Database
+}
+
+// the tables the analytics events are sent to
+@Immutable
+internal data class TimelineAnalyticsFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val tables: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Analytics
+}
+
+// the classes of exception of the crashes
+@Immutable
+internal data class TimelineCrashFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val exceptions: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Crash
+}
+
+// the kinds of accessibility event
+@Immutable
+internal data class TimelineAccessibilityFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val actions: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Accessibility
+}
+
+// the facets a source can be narrowed down by, to know if it has something to unfold and what a search can match
+internal fun TimelineFilterSectionUi.facetGroups(): List<TimelineFacetGroupUiModel> = when (this) {
+    is TimelineDatabaseFilterUiModel -> listOfNotNull(names, statements)
+    is TimelineAnalyticsFilterUiModel -> listOfNotNull(tables)
+    is TimelineCrashFilterUiModel -> listOfNotNull(exceptions)
+    is TimelineAccessibilityFilterUiModel -> listOfNotNull(actions)
+    is TimelineBasicFilterUiModel -> emptyList()
+    is TimelineNetworkFilterUiModel -> emptyList() // has its own card
+}
 
 // an include or exclude rule typed by the user, displayed as a chip
 @Immutable
@@ -75,7 +129,7 @@ internal data class TimelineNetworkFilterUiModel(
     val hiddenHostCount: Int,
     val hostCount: Int,
 ) : TimelineFilterSectionUi {
-    override val source: TimelineSource = Network
+    override val source: TimelineSource = TimelineSource.Network
     val hasHiddenStatus: Boolean get() = statusClasses.any { !it.selected }
     val maxDurationPosition: Int get() = histogram.size
 }

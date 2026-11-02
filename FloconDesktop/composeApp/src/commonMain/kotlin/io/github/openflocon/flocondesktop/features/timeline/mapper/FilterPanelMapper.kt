@@ -10,7 +10,12 @@ import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRuleUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
@@ -28,19 +33,8 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     matchingNetworkCount: Int? = null, // the network calls displayed, null: all of them
 ): TimelineFilterPanelUiModel {
     val sections = TimelineSource.entries
-        .filterNot { it == Network }
-        .map { source ->
-            val groups = TimelineFacet.entries
-                .filter { it.source == source }
-                .mapNotNull { facet -> toGroup(facet, hidden = facets[facet].orEmpty()) }
-            TimelineFilterSectionUiModel(
-                source = source,
-                count = sourceCounts[source] ?: 0,
-                enabled = source in selectedSources,
-                activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size },
-                groups = groups.toImmutableList(),
-            )
-        }
+        .filterNot { it == TimelineSource.Network }
+        .map { source -> toSourceFilter(source, enabled = source in selectedSources, facets = facets) }
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
     val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + if (currentSessionOnly) 1 else 0
 
@@ -52,6 +46,55 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
         hasActiveFilters = activeFilterCount > 0,
         activeFilterCount = activeFilterCount,
     )
+}
+
+// the filter of a source other than the network: each one has its own model, with the facets that make sense for it
+private fun TimelineSummaryUiModel.toSourceFilter(
+    source: TimelineSource,
+    enabled: Boolean,
+    facets: Map<TimelineFacet, Set<String>>,
+): TimelineFilterSectionUi {
+    fun group(facet: TimelineFacet) = toGroup(facet, hidden = facets[facet].orEmpty())
+    val count = sourceCounts[source] ?: 0
+    val activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size }
+
+    return when (source) {
+        TimelineSource.Database -> TimelineDatabaseFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            names = group(TimelineFacet.DatabaseName),
+            statements = group(TimelineFacet.DatabaseStatement),
+        )
+
+        TimelineSource.Analytics -> TimelineAnalyticsFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            tables = group(TimelineFacet.AnalyticsTable),
+        )
+
+        TimelineSource.Crash -> TimelineCrashFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            exceptions = group(TimelineFacet.CrashException),
+        )
+
+        TimelineSource.Accessibility -> TimelineAccessibilityFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            actions = group(TimelineFacet.AccessibilityAction),
+        )
+
+        else -> TimelineBasicFilterUiModel(
+            source = source,
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+        )
+    }
 }
 
 private fun TimelineSummaryUiModel.toNetworkFilter(

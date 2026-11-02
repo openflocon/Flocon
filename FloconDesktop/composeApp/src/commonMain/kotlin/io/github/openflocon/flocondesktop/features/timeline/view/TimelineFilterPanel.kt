@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,7 +76,12 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetV
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUi
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.facetGroups
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -95,7 +99,6 @@ private val PreviewPanelWidth = 500.dp
 private val PreviewPanelHeight = 720.dp
 private val RailButtonSize = 32.dp
 private val CheckboxRowHeight = 28.dp
-private const val GroupsPerRow = 2
 private const val HiddenTagAlpha = 0.3f
 private const val DisabledGroupsAlpha = 0.5f
 private const val ExpandedChevronRotation = 180f
@@ -242,10 +245,7 @@ private fun FilterSection(
     val colors = FloconTheme.colors
     val (color, _) = section.source.categoryColors()
     var expanded by remember { mutableStateOf(false) }
-    val canExpand = remember(section) {
-        (section is TimelineFilterSectionUiModel && section.groups.isNotEmpty())
-            .or(section !is TimelineFilterSectionUiModel)
-    }
+    val canExpand = remember(section) { section is TimelineNetworkFilterUiModel || section.facetGroups().isNotEmpty() }
     val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
     val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
     // the filters of a source switched off are still there, to be set before switching it on
@@ -304,23 +304,11 @@ private fun FilterSection(
                 modifier = Modifier.alpha(groupsAlpha)
             ) {
                 when (section) {
-                    is TimelineFilterSectionUiModel -> section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.small),
-                            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                        ) {
-                            rowGroups.forEach { group ->
-                                FacetGroup(group = group, onAction = onAction, modifier = Modifier.weight(1f))
-                            }
-                            // a lonely group keeps the width of the others
-                            if (rowGroups.size < GroupsPerRow) {
-                                Spacer(Modifier.weight((GroupsPerRow - rowGroups.size).toFloat()))
-                            }
-                        }
-                    }
-
+                    is TimelineDatabaseFilterUiModel -> DatabaseFilterCard(section, onAction)
+                    is TimelineAnalyticsFilterUiModel -> AnalyticsFilterCard(section, onAction)
+                    is TimelineCrashFilterUiModel -> CrashFilterCard(section, onAction)
+                    is TimelineAccessibilityFilterUiModel -> AccessibilityFilterCard(section, onAction)
+                    is TimelineBasicFilterUiModel -> Unit
                     is TimelineNetworkFilterUiModel -> NetworkFilterCard(
                         network = section,
                         onAction = onAction,
@@ -334,7 +322,7 @@ private fun FilterSection(
 }
 
 @Composable
-private fun FacetGroup(
+internal fun FacetGroup(
     group: TimelineFacetGroupUiModel,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -593,8 +581,8 @@ private fun RailButton(
 // the section matches when the search is in the name of the source, or in one of its facet values
 private fun TimelineFilterSectionUi.matches(query: String, label: String): Boolean {
     return query.isBlank() || label.contains(query, ignoreCase = true) || when (this) {
-        is TimelineFilterSectionUiModel -> groups.any { group -> group.values.any { it.value.contains(query, ignoreCase = true) } }
         is TimelineNetworkFilterUiModel -> false
+        else -> facetGroups().any { group -> group.values.any { it.value.contains(query, ignoreCase = true) } }
     }
 }
 
