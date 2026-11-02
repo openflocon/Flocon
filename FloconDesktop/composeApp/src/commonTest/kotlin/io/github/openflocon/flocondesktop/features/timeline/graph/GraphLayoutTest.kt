@@ -79,4 +79,22 @@ class GraphLayoutTest {
 
         assertEquals("GET /v1/feed - +190 ms - 640 ms - 200", feed.tooltip())
     }
+
+    @Test
+    fun `jump to the latest event`() {
+        val jumped = GraphViewport(startMs = 0.0, pxPerMs = 1.0).jumpedToLatest(model, trackWidthPx = 600f, trackHeightPx = 100f)
+
+        // the analytics event at 2830 ms ends last: it is at the right of the track, with a margin
+        assertEquals("15", model.latestEvent()?.row?.id)
+        assertEquals(2830.0 - 520.0, jumped.startMs, 0.001)
+        assertTrue(jumped.scrollY > 0f)
+    }
+
+    @Test
+    fun `the viewport never goes before the start of the session`() {
+        assertEquals(0.0, viewport.copy(startMs = 50.0).panned(-500.0).startMs, 0.0)
+        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0).startMs, 0.0)
+        // zooming out around the pointer would show the time before 0
+        assertEquals(0.0, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
+    }
 }

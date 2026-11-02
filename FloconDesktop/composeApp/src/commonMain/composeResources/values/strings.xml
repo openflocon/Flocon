@@ -81,6 +81,7 @@
     <string name="timeline_view_list">List</string>
     <string name="timeline_view_graph">Graph</string>
     <string name="timeline_graph_fit">Fit</string>
+    <string name="timeline_graph_latest">Latest</string>
     <string name="timeline_graph_zoom_in">+</string>
     <string name="timeline_graph_zoom_out">-</string>
     <string name="timeline_graph_summary">%1$d events - %2$s session - %3$d failed</string>

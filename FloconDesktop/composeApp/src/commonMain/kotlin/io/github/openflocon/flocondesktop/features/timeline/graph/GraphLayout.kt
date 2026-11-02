@@ -52,8 +52,11 @@ internal const val MAX_PX_PER_MS = 20.0
 internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport {
     val newPx = (pxPerMs * factor).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
     val anchorMs = msAt(anchorX)
-    return copy(pxPerMs = newPx, startMs = anchorMs - anchorX / newPx)
+    return copy(pxPerMs = newPx, startMs = (anchorMs - anchorX / newPx).coerceAtLeast(0.0))
 }
+
+// moves along the time axis, never before the start of the session
+internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(0.0))
 
 // the height of a lane: its rows
 internal fun GraphLaneUiModel.heightPx(): Float = rows.size * RowHeightPx
@@ -114,3 +117,34 @@ internal fun GraphUiModel.hitTest(viewport: GraphViewport, x: Float, yInContent:
     }
     return null
 }
+
+// the most recent event: the one that ends last, the latest started when several end together
+internal fun GraphUiModel.latestEvent(): GraphEventUiModel? = lanes
+    .flatMap { lane -> lane.rows.map { row -> row.lastOrNull() } }
+    .filterNotNull()
+    .maxWithOrNull(compareBy({ it.endMs }, { it.startMs }))
+
+// the top of the row of an event in the lanes
+internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
+    val tops = laneTops()
+    lanes.forEachIndexed { laneIndex, lane ->
+        val rowIndex = lane.rows.indexOfFirst { row -> row.any { it.key == event.key } }
+        if (rowIndex >= 0) return tops[laneIndex] + rowIndex * RowHeightPx
+    }
+    return null
+}
+
+/**
+ * Moves to the most recent event, at the right of the track, in the row that holds it. The zoom does not change.
+ */
+internal fun GraphViewport.jumpedToLatest(model: GraphUiModel, trackWidthPx: Float, trackHeightPx: Float): GraphViewport {
+    val event = model.latestEvent() ?: return this
+    val rowTop = model.rowTopOf(event) ?: 0f
+    val maxScroll = max(model.contentHeightPx() - trackHeightPx, 0f)
+    return copy(
+        startMs = max(event.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, 0.0),
+        scrollY = (rowTop - (trackHeightPx - RowHeightPx) / 2f).coerceIn(0f, maxScroll),
+    )
+}
+
+private const val JumpMarginPx = 80f

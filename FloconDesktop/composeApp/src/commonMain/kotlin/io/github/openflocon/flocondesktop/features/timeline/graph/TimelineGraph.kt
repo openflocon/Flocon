@@ -63,6 +63,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
 import flocondesktop.composeapp.generated.resources.timeline_graph_empty
 import flocondesktop.composeapp.generated.resources.timeline_graph_fit
+import flocondesktop.composeapp.generated.resources.timeline_graph_latest
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
@@ -155,6 +156,10 @@ internal fun TimelineGraph(
                 viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
             },
             onFit = { fitted = true },
+            onLatest = {
+                fitted = false
+                viewport = currentViewport.jumpedToLatest(model, trackWidth, trackHeight)
+            },
         )
 
         val measurer = rememberTextMeasurer(cacheSize = 256)
@@ -199,7 +204,7 @@ internal fun TimelineGraph(
                                         viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
                                     } else if (event.keyboardModifiers.isShiftPressed || delta.x != 0f) {
                                         val ticks = if (delta.x != 0f) delta.x else delta.y
-                                        viewport.copy(startMs = viewport.startMs + ticks * 40 / viewport.pxPerMs)
+                                        viewport.panned(ticks * 40 / viewport.pxPerMs)
                                     } else {
                                         viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                     }
@@ -232,10 +237,9 @@ internal fun TimelineGraph(
                     detectDragGestures { change, drag ->
                         change.consume()
                         fitted = false
-                        viewport = viewport.copy(
-                            startMs = viewport.startMs - drag.x / density / viewport.pxPerMs,
-                            scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll),
-                        )
+                        viewport = viewport
+                            .panned(-drag.x / density / viewport.pxPerMs)
+                            .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                     }
                 },
         ) {
@@ -288,6 +292,7 @@ private fun GraphToolbar(
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
+    onLatest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -327,6 +332,7 @@ private fun GraphToolbar(
         }
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
+        FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
     }
 }
