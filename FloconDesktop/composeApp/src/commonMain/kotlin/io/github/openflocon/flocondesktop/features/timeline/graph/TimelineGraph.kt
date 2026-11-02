@@ -88,6 +88,8 @@ import kotlin.math.min
 
 private const val ZoomStep = 1.25
 private const val WheelZoomPerTick = 1.15
+private const val PinchMinFactor = 0.5
+private const val PinchMaxFactor = 2.0
 private const val InstantLabelFlipRatio = 0.84f
 private const val InstantLabelOffsetPx = 14f
 private const val BarPaddingPx = 6f
@@ -209,6 +211,16 @@ internal fun TimelineGraph(
                                         viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                     }
                                     change.consume()
+                                }
+
+                                // the pinch of the trackpad: the factor of this step, around the fingers
+                                PointerEventType.ScaleChange -> {
+                                    val factor = change.scaleFactor.toDouble()
+                                    if (factor > 0.0 && factor != 1.0) {
+                                        fitted = false
+                                        viewport = viewport.zoomed(factor.coerceIn(PinchMinFactor, PinchMaxFactor), x.coerceIn(0f, trackWidth))
+                                        change.consume()
+                                    }
                                 }
 
                                 PointerEventType.Move -> {
