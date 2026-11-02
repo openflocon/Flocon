@@ -747,7 +747,7 @@ private fun DrawScope.drawInstant(
     drawText(text, topLeft = Offset(instantLabelX(x, text.size.width, onTheLeft), centerY - text.size.height / 2f))
 }
 
-// the whole label of an instant, on the color of its diamond: it hides what is under it, like the text of a bar
+// the whole label of an instant, on the color of its diamond: it hides what is under it
 private fun DrawScope.drawInstantFullLabel(
     event: GraphEventUiModel,
     viewport: GraphViewport,
@@ -762,7 +762,7 @@ private fun DrawScope.drawInstantFullLabel(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
-    val text = measurer.measure(event.name, labelStyle.copy(color = palette.onBar, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    val text = measurer.measure(event.name, labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through
