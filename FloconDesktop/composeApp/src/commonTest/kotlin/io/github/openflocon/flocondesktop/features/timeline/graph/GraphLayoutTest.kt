@@ -110,4 +110,12 @@ class GraphLayoutTest {
         // out of the track: the box is cut, and never starts before 0
         assertEquals(0.0, viewport.zoomedToRange(-200f, 300f, 600f).startMs, 0.0)
     }
+
+    @Test
+    fun `the zoom in percent`() {
+        // fit: 3000 ms in 600 px
+        assertEquals(100, fitViewport(3_000L, 600f).zoomPercent(3_000L, 600f))
+        assertEquals(300, fitViewport(3_000L, 600f).zoomed(3.0, 0f).zoomPercent(3_000L, 600f))
+        assertEquals(50, fitViewport(3_000L, 600f).zoomed(0.5, 0f).zoomPercent(3_000L, 600f))
+    }
 }

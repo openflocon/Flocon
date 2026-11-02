@@ -84,6 +84,7 @@
     <string name="timeline_graph_latest">Latest</string>
     <string name="timeline_graph_zoom_in">+</string>
     <string name="timeline_graph_zoom_out">-</string>
+    <string name="timeline_graph_zoom_percent">%1$d%%</string>
     <string name="timeline_graph_summary">%1$d events - %2$s session - %3$d failed</string>
     <string name="timeline_graph_slowest">slowest: %1$s (%2$s)</string>
     <string name="timeline_graph_session">Session %1$d of %2$d</string>

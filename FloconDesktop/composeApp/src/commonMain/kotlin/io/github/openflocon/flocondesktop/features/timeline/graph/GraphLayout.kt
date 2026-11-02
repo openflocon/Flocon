@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.graph
 
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 // geometry in px, see the design of the graph
 internal const val LaneLabelWidthPx = 130f
@@ -47,6 +48,14 @@ internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphVie
 
 internal const val MIN_PX_PER_MS = 0.0005
 internal const val MAX_PX_PER_MS = 20.0
+
+/**
+ * The zoom in percent: 100 when the whole session fits the track, 200 when twice as long as the session fits.
+ */
+internal fun GraphViewport.zoomPercent(sessionDurationMs: Long, trackWidthPx: Float): Int {
+    val fitPxPerMs = fitViewport(sessionDurationMs, trackWidthPx).pxPerMs
+    return (pxPerMs / fitPxPerMs * 100.0).roundToInt()
+}
 
 // zooms around the point [anchorX] of the track, which stays under the pointer
 internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport {

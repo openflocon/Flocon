@@ -75,6 +75,7 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_percent
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
@@ -154,6 +155,7 @@ internal fun TimelineGraph(
             session = session,
             onPreviousSession = onPreviousSession,
             onNextSession = onNextSession,
+            zoomPercent = currentViewport.zoomPercent(model.sessionDurationMs, trackWidth),
             onZoomIn = {
                 fitted = false
                 viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
@@ -331,6 +333,7 @@ private fun GraphToolbar(
     session: GraphSessionUiModel?,
     onPreviousSession: () -> Unit,
     onNextSession: () -> Unit,
+    zoomPercent: Int,
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
@@ -373,6 +376,12 @@ private fun GraphToolbar(
             }
         }
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
+        Text(
+            text = stringResource(Res.string.timeline_graph_zoom_percent, zoomPercent),
+            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+            color = colors.inkMuted,
+            maxLines = 1,
+        )
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
         FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
