@@ -52,6 +52,12 @@ interface AccessibilityRepository {
 
     suspend fun focusPrevious(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 
+    /**
+     * Asks the device to turn TalkBack on or off, the answer comes through [observeState].
+     * The device needs the WRITE_SECURE_SETTINGS permission, see [AccessibilityStateDomainModel.canToggleTalkBack]
+     */
+    suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean)
+
     suspend fun searchEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         type: String?,

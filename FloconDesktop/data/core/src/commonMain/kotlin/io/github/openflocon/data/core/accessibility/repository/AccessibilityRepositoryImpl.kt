@@ -117,6 +117,10 @@ class AccessibilityRepositoryImpl(
         toDeviceAccessibilityDataSource.focusPrevious(deviceIdAndPackageName)
     }
 
+    override suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean) {
+        toDeviceAccessibilityDataSource.setTalkBackEnabled(deviceIdAndPackageName, enabled)
+    }
+
     override suspend fun searchEvents(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         type: String?,
