@@ -81,8 +81,10 @@ internal class TimelineViewModel(
         filterStore.facets,
         filterStore.storedSources,
         filterStore.currentSessionOnly,
-    ) { facets, sources, currentSessionOnly ->
-        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources } + if (currentSessionOnly) 1 else 0
+        filterStore.network,
+    ) { facets, sources, currentSessionOnly, network ->
+        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources } + network.ruleCount +
+            if (currentSessionOnly) 1 else 0
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 

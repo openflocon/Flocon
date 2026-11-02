@@ -1,7 +1,9 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -261,7 +263,7 @@ class TimelineQueryBuilderTest {
                 sources = setOf(TimelineSource.Network),
                 facets = mapOf(
                     TimelineFacet.NetworkState to setOf("PENDING"),
-                    TimelineFacet.NetworkSpeed to setOf(">1s"),
+                    TimelineFacet.NetworkSpeed to setOf("1000"),
                     TimelineFacet.NetworkContent to setOf("IMAGE"),
                     TimelineFacet.NetworkHost to setOf("ads.acme.io"),
                 ),
@@ -269,13 +271,109 @@ class TimelineQueryBuilderTest {
         )
 
         assertTrue(query.sql.contains("WHEN response_durationMs IS NULL THEN 'PENDING'"))
-        assertTrue(query.sql.contains("WHEN response_durationMs < 100 THEN '<100ms'"))
-        assertTrue(query.sql.contains("THEN 'IMAGE' ELSE 'OTHER' END"))
+        assertTrue(query.sql.contains("WHEN response_durationMs >= 1000 THEN '1000'"))
+        assertTrue(query.sql.contains("THEN 'WEBSOCKET' WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"))
         assertTrue(query.sql.contains("request_domainFormatted NOT IN (?)"))
         // a call still waiting for its response has no duration: it is not hidden by the duration
         assertTrue(query.sql.contains("IS NULL OR CASE WHEN response_durationMs IS NULL THEN NULL"))
-        val branch = listOf<Any>("device", "com.app", "PENDING", ">1s", "IMAGE", "ads.acme.io")
+        val branch = listOf<Any>("device", "com.app", "PENDING", "1000", "IMAGE", "ads.acme.io")
         assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `the status rules keep the included codes and hide the excluded ones`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                networkStatusRules = listOf(
+                    TimelineRuleDomainModel("101", exclude = false),
+                    TimelineRuleDomainModel("500-503", exclude = true),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains("AND (CAST(COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode) AS INTEGER) BETWEEN ? AND ?)"))
+        assertTrue(query.sql.contains("IS NULL OR NOT (CAST(COALESCE(response_http_responseHttpCode, response_graphql_responseHttpCode) AS INTEGER) BETWEEN ? AND ?)"))
+        val branch = listOf<Any>("device", "com.app", 101, 101, 500, 503)
+        assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `the host rules are words of the host`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                networkHostRules = listOf(
+                    TimelineRuleDomainModel("postman", exclude = false),
+                    TimelineRuleDomainModel("analytics", exclude = true),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains("AND (request_domainFormatted LIKE ?)"))
+        assertTrue(query.sql.contains("AND COALESCE(request_domainFormatted, '') NOT LIKE ?"))
+        val branch = listOf<Any>("device", "com.app", "%postman%", "%analytics%")
+        assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `a duration range hides the calls without duration`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                networkDuration = TimelineDurationRangeDomainModel(minMs = 100, maxMs = 1_000),
+            )
+        )
+
+        assertTrue(query.sql.contains("AND CAST(response_durationMs AS INTEGER) >= ? AND CAST(response_durationMs AS INTEGER) <= ?"))
+        val branch = listOf<Any>("device", "com.app", 100L, 1_000L)
+        assertEquals(sessionParams + branch + branch, query.params)
+    }
+
+    @Test
+    fun `a duration range without maximum has no upper bound`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                networkDuration = TimelineDurationRangeDomainModel(minMs = 1_000, maxMs = null),
+            )
+        )
+
+        assertFalse(query.sql.contains("<= ?"))
+    }
+
+    @Test
+    fun `the network filters are ignored when they are disabled`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Network),
+                networkEnabled = false,
+                facets = mapOf(TimelineFacet.NetworkMethod to setOf("GET")),
+                networkStatusRules = listOf(TimelineRuleDomainModel("404", exclude = false)),
+                networkHostRules = listOf(TimelineRuleDomainModel("acme", exclude = true)),
+                networkDuration = TimelineDurationRangeDomainModel(minMs = 100, maxMs = null),
+            )
+        )
+
+        assertFalse(query.params.contains("GET"))
+        assertFalse(query.sql.contains("BETWEEN"))
+        assertFalse(query.sql.contains("NOT LIKE"))
+        assertFalse(query.sql.contains(">= ?"))
+    }
+
+    @Test
+    fun `the durations are counted without the duration range`() {
+        val query = buildTimelineFacetCountsQuery(
+            deviceId = "device",
+            packageName = "com.app",
+            filter = TimelineFilterDomainModel(
+                networkDuration = TimelineDurationRangeDomainModel(minMs = 100, maxMs = 1_000),
+            ),
+        )
+
+        // only the other network facets (the counts of status, host...) apply the range
+        val otherNetworkFacets = TimelineFacet.entries.count { it.source == TimelineSource.Network } - 1
+        assertEquals(otherNetworkFacets, query.params.count { it == 100L })
     }
 
     @Test

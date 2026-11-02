@@ -1,8 +1,12 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
+import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
+import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -127,5 +131,82 @@ class FilterPanelMapperTest {
         assertEquals(3, some.activeFilterCount)
         assertEquals(2, some.sections.first { it.source == TimelineSource.Network }.activeFacetCount)
         assertFalse(some.sections.first { it.source == TimelineSource.Crash }.enabled)
+    }
+
+    @Test
+    fun `the network card counts the calls displayed over the calls received`() {
+        val card = summary.toFilterPanel(all, emptyMap(), matchingNetworkCount = 2).network
+
+        assertEquals(2, card.matchingCount)
+        assertEquals(3, card.totalCount)
+        assertFalse(card.isFiltered)
+        // every call is displayed when the filters are not counted yet
+        assertEquals(3, summary.toFilterPanel(all, emptyMap()).network.matchingCount)
+    }
+
+    @Test
+    fun `a rule, a hidden value or a duration range is a filter to reset`() {
+        val rule = TimelineNetworkRules(statusRules = listOf(TimelineRuleDomainModel("404", exclude = false)))
+        assertTrue(summary.toFilterPanel(all, emptyMap(), network = rule).network.isFiltered)
+        assertTrue(summary.toFilterPanel(all, mapOf(TimelineFacet.NetworkContent to setOf("IMAGE"))).network.isFiltered)
+        // a facet of another source is not one of the network
+        assertFalse(summary.toFilterPanel(all, mapOf(TimelineFacet.DatabaseName to setOf("a.db"))).network.isFiltered)
+        // the rules count in the badge of the filter button
+        assertEquals(1, summary.toFilterPanel(all, emptyMap(), network = rule).activeFilterCount)
+    }
+
+    @Test
+    fun `the duration range is told by positions of the buckets`() {
+        val range = TimelineNetworkRules(duration = TimelineDurationRangeDomainModel(minMs = 100, maxMs = 1_000))
+        val card = summary.toFilterPanel(all, emptyMap(), network = range).network
+
+        assertEquals(2, card.durationStart)
+        assertEquals(7, card.durationEnd)
+        assertEquals("100 ms - 1 s", card.durationLabel)
+
+        val open = TimelineNetworkRules(duration = TimelineDurationRangeDomainModel(minMs = 1_000, maxMs = null))
+        val openCard = summary.toFilterPanel(all, emptyMap(), network = open).network
+        assertEquals(TIMELINE_DURATION_BUCKETS_MS.size, openCard.durationEnd)
+        assertEquals("1 s - ∞", openCard.durationLabel)
+
+        val none = summary.toFilterPanel(all, emptyMap()).network
+        assertEquals(0, none.durationStart)
+        assertEquals(none.histogram.size, none.durationEnd)
+        assertEquals(null, none.durationLabel)
+    }
+
+    @Test
+    fun `the histogram and the pending calls come from the counts`() {
+        val counted = summary.copy(
+            facetCounts = summary.facetCounts + mapOf(
+                TimelineFacet.NetworkSpeed to mapOf("0" to 4, "100" to 2),
+                TimelineFacet.NetworkState to mapOf("PENDING" to 5),
+            ),
+        )
+        val card = counted.toFilterPanel(all, emptyMap()).network
+
+        assertEquals(4, card.histogram[0])
+        assertEquals(2, card.histogram[TIMELINE_DURATION_BUCKETS_MS.indexOf(100L)])
+        assertEquals(5, card.pendingCount)
+    }
+
+    @Test
+    fun `the hosts offered are the ones matching the rules`() {
+        val hosts = summary.copy(
+            facetCounts = summary.facetCounts + (TimelineFacet.NetworkHost to mapOf("ws.postman-echo.com" to 8, "ads.acme.io" to 1, "analytics.postman.io" to 2)),
+        )
+        val rules = TimelineNetworkRules(
+            hostRules = listOf(
+                TimelineRuleDomainModel("postman", exclude = false),
+                TimelineRuleDomainModel("analytics", exclude = true),
+            ),
+        )
+
+        val card = hosts.toFilterPanel(all, emptyMap(), network = rules).network
+
+        assertEquals(listOf("ws.postman-echo.com"), card.hosts.map { it.value })
+        assertEquals(1, card.hostCount)
+        // all the hosts are offered without rule
+        assertEquals(3, hosts.toFilterPanel(all, emptyMap()).network.hostCount)
     }
 }
