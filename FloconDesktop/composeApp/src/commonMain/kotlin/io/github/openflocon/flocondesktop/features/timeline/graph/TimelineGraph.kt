@@ -109,7 +109,6 @@ private const val ZoomFieldMaxDigits = 6
 private const val PinchMinFactor = 0.5
 private const val PinchMaxFactor = 2.0
 private const val InstantLabelFlipRatio = 0.84f
-private const val InstantLabelOffsetPx = 14f
 private const val BarPaddingPx = 6f
 private const val IconSizePx = 14f
 private const val BarRadiusPx = 5f
@@ -117,6 +116,7 @@ private const val LabelFontPx = 12f
 private const val ChipFontPx = 11f
 private const val ChipHeightPx = 18f
 private const val ChipPaddingPx = 6f
+private const val InstantLabelPaddingPx = 4f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
 
@@ -320,6 +320,7 @@ internal fun TimelineGraph(
                     width = widthPx,
                     height = heightPx,
                     selectedKey = selectedKey,
+                    hoveredKey = hovered?.key,
                     palette = palette,
                     laneColors = laneColors,
                     laneLabels = laneLabels,
@@ -514,6 +515,7 @@ private fun DrawScope.drawGraph(
     width: Float,
     height: Float,
     selectedKey: String?,
+    hoveredKey: String?,
     palette: GraphPalette,
     laneColors: Map<GraphLane, Color>,
     laneLabels: Map<GraphLane, String>,
@@ -538,6 +540,7 @@ private fun DrawScope.drawGraph(
             drawLine(palette.grid, Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = 1f)
             tick += step
         }
+        var deferredLabel: (() -> Unit)? = null
         model.lanes.forEachIndexed { laneIndex, lane ->
             val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
             if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
@@ -554,7 +557,17 @@ private fun DrawScope.drawGraph(
                     val selected = event.key == selectedKey
                     val fill = if (event.isError) palette.error else color
                     if (event.isInstant) {
-                        drawInstant(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, unit, width)
+                        val hoveredInstant = event.key == hoveredKey
+                        drawInstant(
+                            event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, unit, width,
+                            previous = row.getOrNull(i - 1),
+                            next = row.getOrNull(i + 1),
+                            withLabel = !hoveredInstant,
+                        )
+                        // the whole label of the hovered one, over the others, on a plain background
+                        if (hoveredInstant) {
+                            deferredLabel = { drawInstantFullLabel(event, viewport, rowTop, palette, measurer, labelStyle, unit, width) }
+                        }
                     } else {
                         drawBar(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width)
                     }
@@ -566,6 +579,7 @@ private fun DrawScope.drawGraph(
                 drawLine(palette.line, Offset(LaneLabelWidthPx, y), Offset(width, y), strokeWidth = LaneSeparatorPx)
             }
         }
+        deferredLabel?.invoke()
     }
 
     // the axis, over the lanes
@@ -700,6 +714,9 @@ private fun DrawScope.drawInstant(
     labelStyle: TextStyle,
     unit: Density,
     canvasWidth: Float,
+    previous: GraphEventUiModel?,
+    next: GraphEventUiModel?,
+    withLabel: Boolean,
 ) {
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
@@ -713,14 +730,65 @@ private fun DrawScope.drawInstant(
     }
     drawPath(diamond, fill)
     if (selected) drawPath(diamond, palette.selection, style = Stroke(2f))
+    if (!withLabel) return
 
-    val text = measurer.measure(event.name, labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
-    // past the right of the track, the label goes to the left of the diamond
-    val trackWidth = canvasWidth - LaneLabelWidthPx - TrackEndMarginPx
-    val flip = x - LaneLabelWidthPx > trackWidth * InstantLabelFlipRatio
-    val labelX = if (flip) x - InstantLabelOffsetPx - text.size.width else x + InstantLabelOffsetPx
-    drawText(text, topLeft = Offset(labelX, centerY - text.size.height / 2f))
+    // the label stops before the neighbour: cut with an ellipsis, or not written when there is no room
+    val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
+    val room = instantLabelRoomPx(event, if (onTheLeft) previous else next, viewport.pxPerMs, onTheLeft)
+    if (room != null && !showBarText(room)) return
+    val text = measurer.measure(
+        event.name,
+        instantLabelStyle(labelStyle, palette),
+        density = unit,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        constraints = if (room == null) Constraints() else Constraints(maxWidth = room.toInt().coerceAtLeast(0)),
+    )
+    drawText(text, topLeft = Offset(instantLabelX(x, text.size.width, onTheLeft), centerY - text.size.height / 2f))
 }
+
+// the whole label of an instant, on a plain background: it hides what is under it
+private fun DrawScope.drawInstantFullLabel(
+    event: GraphEventUiModel,
+    viewport: GraphViewport,
+    rowTop: Float,
+    palette: GraphPalette,
+    measurer: TextMeasurer,
+    labelStyle: TextStyle,
+    unit: Density,
+    canvasWidth: Float,
+) {
+    val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
+    val centerY = rowTop + RowHeightPx / 2f
+    val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
+    val text = measurer.measure(event.name, instantLabelStyle(labelStyle, palette), density = unit, maxLines = 1)
+    val left = instantLabelX(x, text.size.width, onTheLeft)
+    val top = centerY - text.size.height / 2f
+    drawRoundRect(
+        palette.panel,
+        Offset(left - InstantLabelPaddingPx, top - 2f),
+        Size(text.size.width + 2 * InstantLabelPaddingPx, text.size.height + 4f),
+        CornerRadius(4f),
+    )
+    drawRoundRect(
+        palette.line,
+        Offset(left - InstantLabelPaddingPx, top - 2f),
+        Size(text.size.width + 2 * InstantLabelPaddingPx, text.size.height + 4f),
+        CornerRadius(4f),
+        style = Stroke(1f),
+    )
+    drawText(text, topLeft = Offset(left, top))
+}
+
+private fun instantLabelStyle(labelStyle: TextStyle, palette: GraphPalette) = labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal)
+
+// past the right of the track, the label goes to the left of the diamond
+private fun DrawScope.instantLabelOnTheLeft(x: Float, canvasWidth: Float): Boolean {
+    val trackWidth = canvasWidth - LaneLabelWidthPx - TrackEndMarginPx
+    return x - LaneLabelWidthPx > trackWidth * InstantLabelFlipRatio
+}
+
+private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) = if (onTheLeft) x - InstantLabelOffsetPx - textWidth else x + InstantLabelOffsetPx
 
 @Composable
 private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {

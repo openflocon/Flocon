@@ -140,7 +140,9 @@ internal fun GraphUiModel.hitTest(viewport: GraphViewport, x: Float, yInContent:
     // the diamond is centered on its time, the bar starts at it
     val halfInstantMs = DiamondSizePx / 2 / viewport.pxPerMs
     val minWidthMs = MinBarWidthPx / viewport.pxPerMs
-    var i = firstVisibleIndex(row, ms - toleranceMs - max(halfInstantMs, minWidthMs))
+    // an instant can be hit by its label, on the right of it: look back as far as a label goes
+    val labelMs = (InstantLabelOffsetPx + MaxLabelHitPx) / viewport.pxPerMs
+    var i = firstVisibleIndex(row, ms - toleranceMs - max(max(halfInstantMs, minWidthMs), labelMs))
     while (i < row.size) {
         val event = row[i]
         val (from, to) = if (event.isInstant) {
@@ -149,7 +151,14 @@ internal fun GraphUiModel.hitTest(viewport: GraphViewport, x: Float, yInContent:
             event.startMs.toDouble() to max(event.endMs.toDouble(), event.startMs + minWidthMs)
         }
         if (from - toleranceMs > ms) return null
-        if (ms in (from - toleranceMs)..(to + toleranceMs)) return event
+        // the label of an instant is part of it, up to the next event
+        val labelEndMs = if (event.isInstant) {
+            val room = instantLabelRoomPx(event, row.getOrNull(i + 1), viewport.pxPerMs, onTheLeft = false)
+            event.startMs + (InstantLabelOffsetPx + (room?.coerceAtLeast(0f)?.let { minOf(it, event.labelWidthPx()) } ?: event.labelWidthPx())) / viewport.pxPerMs
+        } else {
+            to
+        }
+        if (ms in (from - toleranceMs)..(max(to, labelEndMs) + toleranceMs)) return event
         i++
     }
     return null
@@ -185,3 +194,23 @@ internal fun GraphViewport.jumpedToLatest(model: GraphUiModel, trackWidthPx: Flo
 }
 
 private const val JumpMarginPx = 80f
+
+/**
+ * The width the label of an instant can take before it meets the [neighbour] of its row: the next event when the label
+ * is on the right of the diamond, the previous one when [onTheLeft]. Null: all the room it needs.
+ */
+internal fun instantLabelRoomPx(event: GraphEventUiModel, neighbour: GraphEventUiModel?, pxPerMs: Double, onTheLeft: Boolean): Float? {
+    neighbour ?: return null
+    val gapMs = if (onTheLeft) event.startMs - neighbour.endMs else neighbour.startMs - event.startMs
+    // the label starts after the diamond and stops before the diamond or the bar of the neighbour
+    return (gapMs * pxPerMs).toFloat() - InstantLabelOffsetPx - InstantLabelGapPx - DiamondSizePx / 2f
+}
+
+internal const val InstantLabelOffsetPx = 14f
+internal const val InstantLabelGapPx = 6f
+private const val InstantCharWidthPx = 6.5f
+
+// about the width of the label of an instant, to hit it with the pointer
+internal fun GraphEventUiModel.labelWidthPx(): Float = minOf(name.length * InstantCharWidthPx, MaxLabelHitPx)
+
+private const val MaxLabelHitPx = 600f

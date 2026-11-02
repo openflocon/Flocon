@@ -135,4 +135,27 @@ class GraphLayoutTest {
         // nothing to do for a percent that is not valid
         assertEquals(start, start.zoomedToPercent(0, 600f))
     }
+
+    @Test
+    fun `the label of an instant stops before the next event`() {
+        val events = previewGraphEvents().filter { it.lane == GraphLane.Analytics }
+        val first = events.first { it.row.id == "2" } // 20 ms
+        val next = events.first { it.row.id == "9" } // 860 ms
+
+        // 0.1 px per ms: 84 px between the two, the offset, the diamond and the gap are taken
+        val room = instantLabelRoomPx(first, next, pxPerMs = 0.1, onTheLeft = false)
+        assertEquals(84f - InstantLabelOffsetPx - InstantLabelGapPx - DiamondSizePx / 2f, room!!, 0.01f)
+        // nothing after it: all the room
+        assertNull(instantLabelRoomPx(first, null, 0.1, onTheLeft = false))
+        // zoomed out far enough, there is no room left
+        assertTrue(!showBarText(instantLabelRoomPx(first, next, pxPerMs = 0.02, onTheLeft = false)!!))
+    }
+
+    @Test
+    fun `hit test finds an instant by its label`() {
+        val analyticsTop = model.laneTops().last()
+        // app_open at 20 ms, 1 px per ms: its label is on the right of the diamond, before screen_view at 860 ms
+        val onLabel = model.hitTest(viewport, x = 20f + 14f + 20f, yInContent = analyticsTop + 10f)
+        assertEquals("2", onLabel?.row?.id)
+    }
 }
