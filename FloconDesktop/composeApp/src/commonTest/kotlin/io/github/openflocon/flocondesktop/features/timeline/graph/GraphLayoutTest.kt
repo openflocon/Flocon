@@ -112,10 +112,12 @@ class GraphLayoutTest {
     }
 
     @Test
-    fun `the zoom in percent`() {
-        // fit: 3000 ms in 600 px
-        assertEquals(100, fitViewport(3_000L, 600f).zoomPercent(3_000L, 600f))
-        assertEquals(300, fitViewport(3_000L, 600f).zoomed(3.0, 0f).zoomPercent(3_000L, 600f))
-        assertEquals(50, fitViewport(3_000L, 600f).zoomed(0.5, 0f).zoomPercent(3_000L, 600f))
+    fun `the zoom in percent, 100 is 60 s in the track`() {
+        // 600 px for 60 s
+        assertEquals(100, GraphViewport(pxPerMs = 600.0 / 60_000).zoomPercent(600f))
+        assertEquals(200, GraphViewport(pxPerMs = 600.0 / 30_000).zoomPercent(600f))
+        assertEquals(50, GraphViewport(pxPerMs = 600.0 / 120_000).zoomPercent(600f))
+        // a session of 3 s fitted in the track
+        assertEquals(2_000, fitViewport(3_000L, 600f).zoomPercent(600f))
     }
 }

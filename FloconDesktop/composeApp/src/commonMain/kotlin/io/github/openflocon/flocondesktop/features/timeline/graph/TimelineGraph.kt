@@ -155,7 +155,7 @@ internal fun TimelineGraph(
             session = session,
             onPreviousSession = onPreviousSession,
             onNextSession = onNextSession,
-            zoomPercent = currentViewport.zoomPercent(model.sessionDurationMs, trackWidth),
+            zoomPercent = currentViewport.zoomPercent(trackWidth),
             onZoomIn = {
                 fitted = false
                 viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)

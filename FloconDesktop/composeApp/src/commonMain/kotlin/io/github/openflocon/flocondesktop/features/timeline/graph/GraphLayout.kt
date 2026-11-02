@@ -50,12 +50,12 @@ internal const val MIN_PX_PER_MS = 0.0005
 internal const val MAX_PX_PER_MS = 20.0
 
 /**
- * The zoom in percent: 100 when the whole session fits the track, 200 when twice as long as the session fits.
+ * The zoom in percent: 100 when the track shows 60 s, 200 when it shows 30 s.
  */
-internal fun GraphViewport.zoomPercent(sessionDurationMs: Long, trackWidthPx: Float): Int {
-    val fitPxPerMs = fitViewport(sessionDurationMs, trackWidthPx).pxPerMs
-    return (pxPerMs / fitPxPerMs * 100.0).roundToInt()
-}
+internal fun GraphViewport.zoomPercent(trackWidthPx: Float): Int = (pxPerMs / (trackWidthPx / ZOOM_REFERENCE_MS) * 100.0).roundToInt()
+
+// the duration the track shows at 100 %
+internal const val ZOOM_REFERENCE_MS = 60_000.0
 
 // zooms around the point [anchorX] of the track, which stays under the pointer
 internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport {
