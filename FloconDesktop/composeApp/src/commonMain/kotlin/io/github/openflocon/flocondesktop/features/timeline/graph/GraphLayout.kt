@@ -55,6 +55,22 @@ internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport
     return copy(pxPerMs = newPx, startMs = (anchorMs - anchorX / newPx).coerceAtLeast(0.0))
 }
 
+/**
+ * Shows the time between two x of the track ([fromX] and [toX], in any order) in the whole track.
+ * A box too narrow to be a zoom is ignored.
+ */
+internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx: Float): GraphViewport {
+    val left = minOf(fromX, toX).coerceIn(0f, trackWidthPx)
+    val right = maxOf(fromX, toX).coerceIn(0f, trackWidthPx)
+    if (right - left < MinZoomBoxPx) return this
+    val startMs = msAt(left).coerceAtLeast(0.0)
+    val endMs = msAt(right)
+    val newPx = (trackWidthPx / (endMs - startMs)).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
+    return copy(startMs = startMs, pxPerMs = newPx)
+}
+
+private const val MinZoomBoxPx = 8f
+
 // moves along the time axis, never before the start of the session
 internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(0.0))
 

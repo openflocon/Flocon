@@ -97,4 +97,17 @@ class GraphLayoutTest {
         // zooming out around the pointer would show the time before 0
         assertEquals(0.0, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
     }
+
+    @Test
+    fun `zoom on a box`() {
+        // 1 px per ms: the box from 100 to 300 fills a track of 600 px
+        val zoomed = viewport.copy(startMs = 50.0).zoomedToRange(fromX = 300f, toX = 100f, trackWidthPx = 600f)
+
+        assertEquals(150.0, zoomed.startMs, 0.001)
+        assertEquals(3.0, zoomed.pxPerMs, 0.001)
+        // too narrow: nothing changes
+        assertEquals(viewport, viewport.zoomedToRange(100f, 104f, 600f))
+        // out of the track: the box is cut, and never starts before 0
+        assertEquals(0.0, viewport.zoomedToRange(-200f, 300f, 600f).startMs, 0.0)
+    }
 }

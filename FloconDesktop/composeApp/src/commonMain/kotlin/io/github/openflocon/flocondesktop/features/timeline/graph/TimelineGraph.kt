@@ -88,6 +88,7 @@ import kotlin.math.min
 
 private const val ZoomStep = 1.25
 private const val WheelZoomPerTick = 1.15
+private const val ZoomBoxFillAlpha = 0.12f
 private const val PinchMinFactor = 0.5
 private const val PinchMaxFactor = 2.0
 private const val InstantLabelFlipRatio = 0.84f
@@ -134,6 +135,10 @@ internal fun TimelineGraph(
     var fitted by remember { mutableStateOf(true) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
+    // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
+    var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
+    // shift + drag moves the graph instead of drawing a box
+    var shiftHeld by remember { mutableStateOf(false) }
     LaunchedEffect(fitted, model.sessionDurationMs, trackWidth) {
         if (fitted) viewport = fitViewport(model.sessionDurationMs, trackWidth).copy(scrollY = viewport.scrollY)
     }
@@ -194,6 +199,7 @@ internal fun TimelineGraph(
                         while (true) {
                             val event = awaitPointerEvent()
                             val change = event.changes.firstOrNull() ?: continue
+                            shiftHeld = event.keyboardModifiers.isShiftPressed
                             val x = change.position.x / density - LaneLabelWidthPx
                             val y = change.position.y / density - AxisHeightPx
                             when (event.type) {
@@ -245,13 +251,28 @@ internal fun TimelineGraph(
                         }
                     }
                 }
-                .pointerInput(model, density, maxScroll) {
-                    detectDragGestures { change, drag ->
+                .pointerInput(model, density, trackWidth, maxScroll) {
+                    detectDragGestures(
+                        onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
+                        onDragEnd = {
+                            zoomBox?.let { (start, end) ->
+                                fitted = false
+                                viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                            }
+                            zoomBox = null
+                        },
+                        onDragCancel = { zoomBox = null },
+                    ) { change, drag ->
                         change.consume()
-                        fitted = false
-                        viewport = viewport
-                            .panned(-drag.x / density / viewport.pxPerMs)
-                            .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                        val box = zoomBox
+                        if (box != null) {
+                            zoomBox = box.first to change.position
+                        } else {
+                            fitted = false
+                            viewport = viewport
+                                .panned(-drag.x / density / viewport.pxPerMs)
+                                .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                        }
                     }
                 },
         ) {
@@ -268,6 +289,15 @@ internal fun TimelineGraph(
                     measurer = measurer,
                     imagePainter = imagePainter,
                 )
+                zoomBox?.let { (start, end) ->
+                    // the box covers the lanes only, not the axis and the names of the lanes
+                    val left = max(min(start.x, end.x) / density, LaneLabelWidthPx)
+                    val right = max(max(start.x, end.x) / density, LaneLabelWidthPx)
+                    val top = min(start.y, end.y) / density
+                    val bottom = max(start.y, end.y) / density
+                    drawRect(palette.selection.copy(alpha = ZoomBoxFillAlpha), Offset(left, top), Size(right - left, bottom - top))
+                    drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
+                }
             }
         }
 
