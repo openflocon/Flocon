@@ -1,7 +1,12 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
@@ -10,7 +15,6 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.parseTimelineStatusRules
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
-import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
@@ -19,14 +23,19 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummar
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+private val EmptyPanel = TimelineFilterPanelUiModel(
+    sections = persistentListOf(),
+    currentSessionOnly = true,
+    hasActiveFilters = false,
+    activeFilterCount = 0,
+)
 
 internal class TimelineFilterPanelViewModel(
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
@@ -61,32 +70,31 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val panel: StateFlow<TimelineFilterPanelUiModel> = combine(
-        summary,
-        filterStore.storedSources,
-        filterStore.facets,
-        filterStore.currentSessionOnly,
-        combine(filterStore.network, matchingNetworkCount) { network, matching -> network to matching },
-        filterStore.database,
-    ) { summary, sources, facets, currentSessionOnly, (network, matching), database ->
-        summary.toFilterPanel(
-            selectedSources = sources,
-            facets = facets,
-            currentSessionOnly = currentSessionOnly,
-            network = network,
-            database = database,
-            matchingNetworkCount = matching,
-        )
-    }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateInWhileSubscribed(
-            default = TimelineFilterPanelUiModel(
-                sections = persistentListOf(),
-                currentSessionOnly = true,
-                hasActiveFilters = false,
-                activeFilterCount = 0
+    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(
+        mode = RecompositionMode.Immediate,
+        context = dispatcherProvider.viewModel,
+    ) {
+        val summary by summary.collectAsState()
+        // read from the settings: nothing is shown until the stored selection is known
+        val sources by filterStore.storedSources.collectAsState(initial = null)
+        val facets by filterStore.facets.collectAsState()
+        val currentSessionOnly by filterStore.currentSessionOnly.collectAsState()
+        val network by filterStore.network.collectAsState()
+        val database by filterStore.database.collectAsState()
+        val matchingNetworkCount by matchingNetworkCount.collectAsState()
+
+        val selectedSources = sources ?: return@launchMolecule EmptyPanel
+        remember(summary, selectedSources, facets, currentSessionOnly, network, database, matchingNetworkCount) {
+            summary.toFilterPanel(
+                selectedSources = selectedSources,
+                facets = facets,
+                currentSessionOnly = currentSessionOnly,
+                network = network,
+                database = database,
+                matchingNetworkCount = matchingNetworkCount,
             )
-        )
+        }
+    }
 
     fun onAction(action: TimelineFilterAction) {
         when (action) {
