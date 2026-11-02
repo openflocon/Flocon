@@ -52,7 +52,6 @@ internal fun DatabaseFilterCard(
             emptyText = stringResource(Res.string.timeline_filters_database_empty),
         )
         Column(
-            modifier = Modifier.padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
             FloconIncludeExcludeInput(
