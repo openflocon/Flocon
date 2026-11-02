@@ -56,6 +56,16 @@ class TalkBackServicesTest {
     }
 
     @Test
+    fun `TalkBack is toggled when the permission is granted`() {
+        assertEquals(TalkBackToggleDecision.Toggle, talkBackToggleDecision(canToggle = true))
+    }
+
+    @Test
+    fun `the settings are opened when the permission is missing`() {
+        assertEquals(TalkBackToggleDecision.OpenSettings, talkBackToggleDecision(canToggle = false))
+    }
+
+    @Test
     fun `a short form TalkBack entry is removed too`() {
         assertEquals(other, withoutTalkBack("com.google.android.marvin.talkback/.TalkBackService:$other"))
     }

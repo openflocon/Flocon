@@ -9,6 +9,13 @@ internal val TalkBackServices = listOf(
 /** The packages of [TalkBackServices], for the manifest `queries` too. */
 internal val TalkBackPackages = TalkBackServices.map { it.substringBefore('/') }
 
+/** What to do to turn TalkBack on or off, depending on the permission. */
+internal enum class TalkBackToggleDecision { Toggle, OpenSettings }
+
+/** Without WRITE_SECURE_SETTINGS the app cannot write the setting, the user has to do it in the TalkBack settings. */
+internal fun talkBackToggleDecision(canToggle: Boolean): TalkBackToggleDecision =
+    if (canToggle) TalkBackToggleDecision.Toggle else TalkBackToggleDecision.OpenSettings
+
 /** The first known TalkBack service whose package passes [isInstalled]; null when there is none. */
 internal fun findTalkBackService(isInstalled: (packageName: String) -> Boolean): String? =
     TalkBackServices.firstOrNull { isInstalled(it.substringBefore('/')) }

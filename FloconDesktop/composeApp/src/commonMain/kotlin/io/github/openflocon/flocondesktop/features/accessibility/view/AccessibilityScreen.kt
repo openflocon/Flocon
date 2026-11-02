@@ -65,12 +65,14 @@ fun AccessibilityScreen(modifier: Modifier = Modifier) {
     val focusedNode by viewModel.focusedNode.collectAsStateWithLifecycle()
     val canMoveFocus by viewModel.canMoveFocus.collectAsStateWithLifecycle()
     val talkBackOn by viewModel.talkBackOn.collectAsStateWithLifecycle()
+    val talkBackGrantCommand by viewModel.talkBackGrantCommand.collectAsStateWithLifecycle()
 
     AccessibilityScreen(
         banner = banner,
         focusedNode = focusedNode,
         canMoveFocus = canMoveFocus,
         talkBackOn = talkBackOn,
+        talkBackGrantCommand = talkBackGrantCommand,
         types = types,
         selectedType = selectedType,
         onTypeSelected = viewModel::onTypeSelected,
@@ -89,6 +91,7 @@ fun AccessibilityScreen(
     focusedNode: AccessibilityFocusedNodeUiModel?,
     canMoveFocus: Boolean,
     talkBackOn: Boolean,
+    talkBackGrantCommand: String?,
     types: ImmutableList<String>,
     selectedType: String?,
     onTypeSelected: (String?) -> Unit,
@@ -197,6 +200,7 @@ fun AccessibilityScreen(
             focusedNode = focusedNode,
             canMoveFocus = canMoveFocus,
             talkBackOn = talkBackOn,
+            talkBackGrantCommand = talkBackGrantCommand,
             containerSize = containerSize,
             onAction = onAction,
             modifier = Modifier.align(Alignment.BottomEnd),
@@ -216,6 +220,7 @@ private fun AccessibilityScreenPreview() {
             focusedNode = previewAccessibilityFocusedNodeUiModel(),
             canMoveFocus = true,
             talkBackOn = true,
+            talkBackGrantCommand = null,
             types = persistentListOf("ANNOUNCEMENT", "VIEW_FOCUSED"),
             selectedType = null,
             onTypeSelected = {},

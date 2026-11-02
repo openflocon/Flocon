@@ -11,8 +11,9 @@ class SetTalkBackEnabledUseCaseTest {
 
     private val calls = mutableListOf<String>()
 
-    private suspend fun run(canToggle: Boolean, grantFails: Boolean = false) = toggleTalkBack(
+    private suspend fun run(canToggle: Boolean, canGrant: Boolean = true, grantFails: Boolean = false) = toggleTalkBack(
         canToggle = canToggle,
+        canGrant = canGrant,
         grantPermission = {
             calls += "grant"
             if (grantFails) Failure(Throwable("not allowed")) else Success("")
@@ -24,7 +25,8 @@ class SetTalkBackEnabledUseCaseTest {
     fun `the permission is granted first when the device cannot toggle yet`() = runBlocking {
         val result = run(canToggle = false)
 
-        assertIs<Success<Unit>>(result)
+        assertIs<Success<SetTalkBackEnabledResult>>(result)
+        assertEquals(SetTalkBackEnabledResult.Sent, result.value)
         assertEquals(listOf("grant", "send"), calls)
     }
 
@@ -32,7 +34,26 @@ class SetTalkBackEnabledUseCaseTest {
     fun `nothing is granted when the device can already toggle`() = runBlocking {
         val result = run(canToggle = true)
 
-        assertIs<Success<Unit>>(result)
+        assertIs<Success<SetTalkBackEnabledResult>>(result)
+        assertEquals(SetTalkBackEnabledResult.Sent, result.value)
+        assertEquals(listOf("send"), calls)
+    }
+
+    @Test
+    fun `over wifi the request is sent without granting when the permission is missing`() = runBlocking {
+        val result = run(canToggle = false, canGrant = false)
+
+        assertIs<Success<SetTalkBackEnabledResult>>(result)
+        assertEquals(SetTalkBackEnabledResult.SentWithoutPermission, result.value)
+        assertEquals(listOf("send"), calls)
+    }
+
+    @Test
+    fun `over wifi the request is sent when the permission is already granted`() = runBlocking {
+        val result = run(canToggle = true, canGrant = false)
+
+        assertIs<Success<SetTalkBackEnabledResult>>(result)
+        assertEquals(SetTalkBackEnabledResult.Sent, result.value)
         assertEquals(listOf("send"), calls)
     }
 

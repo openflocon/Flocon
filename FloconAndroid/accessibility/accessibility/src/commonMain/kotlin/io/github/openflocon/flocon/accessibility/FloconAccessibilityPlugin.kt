@@ -101,8 +101,10 @@ internal class FloconAccessibilityPluginImpl(
 
     private fun toggleTalkBack(enabled: Boolean) {
         try {
-            if (!setTalkBackEnabled(enabled)) {
-                FloconLogger.log("TalkBack could not be turned ${if (enabled) "on" else "off"}")
+            when (setTalkBackEnabled(enabled)) {
+                TalkBackToggleResult.Toggled -> Unit
+                TalkBackToggleResult.OpenedSettings -> FloconLogger.log("TalkBack settings opened, the permission is missing")
+                TalkBackToggleResult.Failed -> FloconLogger.log("TalkBack could not be turned ${if (enabled) "on" else "off"}")
             }
         } catch (t: Throwable) {
             FloconLogger.logError("error on toggleTalkBack", t)

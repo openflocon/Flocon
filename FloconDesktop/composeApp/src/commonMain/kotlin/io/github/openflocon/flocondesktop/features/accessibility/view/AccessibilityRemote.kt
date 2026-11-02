@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.CenterFocusWeak
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DragIndicator
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material3.LinearProgressIndicator
@@ -62,7 +63,9 @@ import flocondesktop.composeapp.generated.resources.accessibility_focus_position
 import flocondesktop.composeapp.generated.resources.accessibility_focus_previous
 import flocondesktop.composeapp.generated.resources.accessibility_focus_refresh
 import flocondesktop.composeapp.generated.resources.accessibility_remote_drag
+import flocondesktop.composeapp.generated.resources.accessibility_remote_copy_grant_command
 import flocondesktop.composeapp.generated.resources.accessibility_remote_expand
+import flocondesktop.composeapp.generated.resources.accessibility_remote_grant_hint
 import flocondesktop.composeapp.generated.resources.accessibility_remote_talkback_off
 import flocondesktop.composeapp.generated.resources.accessibility_remote_talkback_on
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
@@ -93,6 +96,7 @@ internal fun AccessibilityRemoteOverlay(
     focusedNode: AccessibilityFocusedNodeUiModel?,
     canMoveFocus: Boolean,
     talkBackOn: Boolean,
+    talkBackGrantCommand: String?,
     containerSize: IntSize,
     onAction: (AccessibilityAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -133,6 +137,7 @@ internal fun AccessibilityRemoteOverlay(
                 focusedNode = focusedNode,
                 canMoveFocus = canMoveFocus,
                 talkBackOn = talkBackOn,
+                talkBackGrantCommand = talkBackGrantCommand,
                 onAction = onAction,
                 onCollapseClicked = { collapsed = true },
                 onDrag = onDrag,
@@ -150,6 +155,7 @@ internal fun AccessibilityRemote(
     focusedNode: AccessibilityFocusedNodeUiModel?,
     canMoveFocus: Boolean,
     talkBackOn: Boolean,
+    talkBackGrantCommand: String?,
     onAction: (AccessibilityAction) -> Unit,
     onCollapseClicked: () -> Unit,
     onDrag: (Offset) -> Unit,
@@ -174,6 +180,14 @@ internal fun AccessibilityRemote(
             )
             Spacer(modifier = Modifier.weight(1f))
             DragHandle(onDrag = onDrag)
+        }
+
+        if (talkBackGrantCommand != null) {
+            TalkBackGrantHint(
+                command = talkBackGrantCommand,
+                onCopyClicked = { onAction(AccessibilityAction.OnCopyTalkBackGrantCommand) },
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         RemoteScreen(
@@ -271,6 +285,56 @@ private fun TalkBackSwitchBubble(
             style = FloconTheme.typography.labelSmall,
             color = FloconTheme.colors.inkMuted
         )
+    }
+}
+
+/** Over wifi Flocon cannot grant the permission to toggle TalkBack: the command to run once, ready to copy */
+@Composable
+private fun TalkBackGrantHint(
+    command: String,
+    onCopyClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier
+            .clip(FloconTheme.shapes.large)
+            .background(FloconTheme.colors.bg000)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large)
+            .padding(FloconTheme.spacing.medium),
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                text = stringResource(Res.string.accessibility_remote_grant_hint),
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colors.inkMuted,
+            )
+            Text(
+                text = command,
+                style = FloconTheme.typography.monoSmall,
+                color = FloconTheme.colors.ink,
+            )
+        }
+        WithTooltip(stringResource(Res.string.accessibility_remote_copy_grant_command)) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(FloconTheme.sizes.controlHeight)
+                    .clip(CircleShape)
+                    .clickable(onClick = onCopyClicked)
+                    .pointerHoverIcon(PointerIcon.Hand),
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.ContentCopy,
+                    tint = FloconTheme.colors.inkMuted,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
     }
 }
 
@@ -444,6 +508,7 @@ private fun AccessibilityRemotePreview() {
             focusedNode = previewAccessibilityFocusedNodeUiModel(),
             canMoveFocus = true,
             talkBackOn = true,
+            talkBackGrantCommand = null,
             onAction = {},
             onCollapseClicked = {},
             onDrag = {},
@@ -459,6 +524,23 @@ private fun AccessibilityRemoteNoneFocusedPreview() {
             focusedNode = null,
             canMoveFocus = false,
             talkBackOn = false,
+            talkBackGrantCommand = null,
+            onAction = {},
+            onCollapseClicked = {},
+            onDrag = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AccessibilityRemoteGrantHintPreview() {
+    FloconTheme {
+        AccessibilityRemote(
+            focusedNode = null,
+            canMoveFocus = false,
+            talkBackOn = false,
+            talkBackGrantCommand = "adb shell pm grant io.github.openflocon.sample android.permission.WRITE_SECURE_SETTINGS",
             onAction = {},
             onCollapseClicked = {},
             onDrag = {},

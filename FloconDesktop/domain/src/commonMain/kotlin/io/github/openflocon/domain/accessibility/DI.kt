@@ -7,6 +7,7 @@ import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAcc
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityStateUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveTalkBackGrantCommandUseCase
 import io.github.openflocon.domain.accessibility.usecase.RefreshAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
 import io.github.openflocon.domain.accessibility.usecase.SetTalkBackEnabledUseCase
@@ -24,4 +25,5 @@ internal val accessibilityModule = module {
     factoryOf(::FocusPreviousAccessibilityNodeUseCase)
     factoryOf(::RefreshAccessibilityFocusedNodeUseCase)
     factoryOf(::SetTalkBackEnabledUseCase)
+    factoryOf(::ObserveTalkBackGrantCommandUseCase)
 }

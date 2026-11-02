@@ -6,4 +6,5 @@ sealed interface AccessibilityAction {
     data object OnFocusPreviousClicked : AccessibilityAction
     data class OnTalkBackToggled(val enabled: Boolean) : AccessibilityAction
     data object OnRefreshFocusedNodeClicked : AccessibilityAction
+    data object OnCopyTalkBackGrantCommand : AccessibilityAction
 }

@@ -7,14 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_remote_toggle_talkback_error
+import flocondesktop.composeapp.generated.resources.accessibility_remote_talkback_settings_opened
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityEventsUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityStateUseCase
 import io.github.openflocon.domain.accessibility.usecase.ObserveCurrentDeviceAccessibilityTypesUseCase
+import io.github.openflocon.domain.accessibility.usecase.ObserveTalkBackGrantCommandUseCase
 import io.github.openflocon.domain.accessibility.usecase.RefreshAccessibilityFocusedNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.ResetCurrentDeviceAccessibilityEventsUseCase
+import io.github.openflocon.domain.accessibility.usecase.SetTalkBackEnabledResult
 import io.github.openflocon.domain.accessibility.usecase.SetTalkBackEnabledUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
@@ -26,6 +30,7 @@ import io.github.openflocon.flocondesktop.features.accessibility.model.Accessibi
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityFocusedNodeUiModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityRowUiModel
 import io.github.openflocon.library.designsystem.common.asState
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -49,6 +54,7 @@ class AccessibilityViewModel(
     observeCurrentDeviceAccessibilityTypesUseCase: ObserveCurrentDeviceAccessibilityTypesUseCase,
     observeCurrentDeviceAccessibilityStateUseCase: ObserveCurrentDeviceAccessibilityStateUseCase,
     observeCurrentDeviceAccessibilityFocusedNodeUseCase: ObserveCurrentDeviceAccessibilityFocusedNodeUseCase,
+    observeTalkBackGrantCommandUseCase: ObserveTalkBackGrantCommandUseCase,
     private val focusNextAccessibilityNodeUseCase: FocusNextAccessibilityNodeUseCase,
     private val focusPreviousAccessibilityNodeUseCase: FocusPreviousAccessibilityNodeUseCase,
     private val setTalkBackEnabledUseCase: SetTalkBackEnabledUseCase,
@@ -84,6 +90,11 @@ class AccessibilityViewModel(
     val talkBackOn: StateFlow<Boolean> = banner
         .map { it is AccessibilityBannerUiModel.Running && it.services.any { id -> id.contains("talkback", ignoreCase = true) } }
         .stateInWhileSubscribed(false)
+
+    // not null: connected over wifi, the permission to toggle TalkBack has to be granted once with this adb command
+    val talkBackGrantCommand: StateFlow<String?> = observeTalkBackGrantCommandUseCase()
+        .flowOn(dispatcherProvider.viewModel)
+        .stateInWhileSubscribed(null)
 
     // null: nothing has the accessibility focus
     val focusedNode: StateFlow<AccessibilityFocusedNodeUiModel?> = observeCurrentDeviceAccessibilityFocusedNodeUseCase()
@@ -139,18 +150,36 @@ class AccessibilityViewModel(
                 is AccessibilityAction.OnTalkBackToggled -> setTalkBackEnabled(action.enabled)
 
                 AccessibilityAction.OnRefreshFocusedNodeClicked -> refreshAccessibilityFocusedNodeUseCase()
+
+                AccessibilityAction.OnCopyTalkBackGrantCommand -> copyTalkBackGrantCommand()
             }
         }
     }
 
     // the device tells by itself once TalkBack changed, which updates the banner and so the switch
     private suspend fun setTalkBackEnabled(enabled: Boolean) {
-        setTalkBackEnabledUseCase(enabled).alsoFailure {
-            it.printStackTrace()
-            feedbackDisplayer.displayMessage(
-                message = getString(Res.string.accessibility_remote_toggle_talkback_error, it.message.orEmpty()),
-                type = FeedbackDisplayer.MessageType.Error,
-            )
-        }
+        setTalkBackEnabledUseCase(enabled)
+            .alsoSuccess {
+                // not an error: the device opened its TalkBack settings, the user finishes there
+                if (it == SetTalkBackEnabledResult.SentWithoutPermission) {
+                    feedbackDisplayer.displayMessage(
+                        message = getString(Res.string.accessibility_remote_talkback_settings_opened),
+                        type = FeedbackDisplayer.MessageType.Success,
+                    )
+                }
+            }
+            .alsoFailure {
+                it.printStackTrace()
+                feedbackDisplayer.displayMessage(
+                    message = getString(Res.string.accessibility_remote_toggle_talkback_error, it.message.orEmpty()),
+                    type = FeedbackDisplayer.MessageType.Error,
+                )
+            }
+    }
+
+    private suspend fun copyTalkBackGrantCommand() {
+        val command = talkBackGrantCommand.value ?: return
+        copyToClipboard(command)
+        feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
     }
 }

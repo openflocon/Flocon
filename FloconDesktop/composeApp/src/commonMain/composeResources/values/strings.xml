@@ -206,6 +206,9 @@
     <string name="accessibility_remote_collapse">Collapse the remote</string>
     <string name="accessibility_remote_expand">Show the TalkBack remote</string>
     <string name="accessibility_remote_toggle_talkback_error">Could not change TalkBack: %1$s</string>
+    <string name="accessibility_remote_talkback_settings_opened">TalkBack settings opened on the phone, turn it on there</string>
+    <string name="accessibility_remote_grant_hint">Connected over Wi-Fi: grant the permission once with adb to toggle TalkBack from here</string>
+    <string name="accessibility_remote_copy_grant_command">Copy the adb command</string>
     <string name="accessibility_remote_talkback_on">TalkBack on</string>
     <string name="accessibility_remote_talkback_off">TalkBack off</string>
     <string name="accessibility_focus_none">No element has the accessibility focus (turn on TalkBack, then press next)</string>
