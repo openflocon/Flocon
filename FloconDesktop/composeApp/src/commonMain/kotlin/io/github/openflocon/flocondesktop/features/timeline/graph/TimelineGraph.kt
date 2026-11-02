@@ -90,6 +90,7 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.images.view.viewer.PinchZoomEffect
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.flocondesktop.features.timeline.view.label
@@ -159,6 +160,8 @@ internal fun TimelineGraph(
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
+    // the last x of the pointer in the track: the pinch zooms around it
+    var pointerX by remember { mutableStateOf(0f) }
     // shift + drag moves the graph instead of drawing a box
     var shiftHeld by remember { mutableStateOf(false) }
     // opens at 100 % once the canvas has its real width, read when it is known and not from an earlier layout
@@ -205,6 +208,12 @@ internal fun TimelineGraph(
             },
         )
 
+        // the trackpad pinch (macOS), Compose does not deliver it
+        PinchZoomEffect { factor ->
+            fitted = false
+            viewport = viewport.zoomed(factor.toDouble().coerceIn(PinchMinFactor, PinchMaxFactor), pointerX.coerceIn(0f, trackWidth))
+        }
+
         val measurer = rememberTextMeasurer(cacheSize = 256)
         val imagePainter = rememberVectorPainter(Icons.Outlined.Image)
         val laneLabels = GraphLane.entries.associateWith { stringResource(it.source.label()) }
@@ -238,6 +247,7 @@ internal fun TimelineGraph(
                             val change = event.changes.firstOrNull() ?: continue
                             shiftHeld = event.keyboardModifiers.isShiftPressed
                             val x = change.position.x / density - LaneLabelWidthPx
+                            pointerX = x
                             val y = change.position.y / density - AxisHeightPx
                             when (event.type) {
                                 PointerEventType.Scroll -> {
@@ -254,16 +264,6 @@ internal fun TimelineGraph(
                                         viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                     }
                                     change.consume()
-                                }
-
-                                // the pinch of the trackpad: the factor of this step, around the fingers
-                                PointerEventType.ScaleChange -> {
-                                    val factor = change.scaleFactor.toDouble()
-                                    if (factor > 0.0 && factor != 1.0) {
-                                        fitted = false
-                                        viewport = viewport.zoomed(factor.coerceIn(PinchMinFactor, PinchMaxFactor), x.coerceIn(0f, trackWidth))
-                                        change.consume()
-                                    }
                                 }
 
                                 PointerEventType.Move -> {
