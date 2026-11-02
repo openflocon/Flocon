@@ -65,6 +65,9 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("COALESCE(response_isImage, 0) AS isImage"))
         assertTrue(query.sql.contains("0 AS isImage"))
         assertTrue(query.sql.contains("u.isImage"))
+        assertTrue(query.sql.contains("CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError"))
+        assertTrue(query.sql.contains("0 AS hasError"))
+        assertTrue(query.sql.contains("u.hasError"))
     }
 
     @Test

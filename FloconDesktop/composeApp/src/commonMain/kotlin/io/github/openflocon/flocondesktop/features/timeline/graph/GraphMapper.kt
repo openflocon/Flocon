@@ -40,6 +40,7 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
                     method = event.method?.takeIf { it.isNotEmpty() },
                     statusCode = event.statusCode,
                     isImage = event.isImage,
+                    hasError = event.hasError,
                     inProgress = duration == null,
                 )
             }

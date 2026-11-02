@@ -13,6 +13,7 @@ data class TimelineRowEntity(
     val durationMs: Double?,
     val sessionStart: Long?,
     val isImage: Boolean = false, // network only: the response is an image
+    val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
 )
 
 // result row of the summary query: one per kind

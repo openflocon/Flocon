@@ -32,6 +32,8 @@ internal data class GraphEventUiModel(
     val method: String? = null,
     val statusCode: Int? = null,
     val isImage: Boolean = false,
+    // the call failed without an http error: an exception, a cancellation…
+    val hasError: Boolean = false,
     // the response did not arrive yet: the bar goes up to the last event received
     val inProgress: Boolean = false,
 ) {
@@ -39,8 +41,8 @@ internal data class GraphEventUiModel(
     val isInstant: Boolean get() = durationMs <= 0L
     val endMs: Long get() = startMs + durationMs
 
-    // a http error, or a call that failed without any status
-    val isError: Boolean get() = statusCode != null && statusCode >= 400
+    // a http error, or a call that failed: with or without a status
+    val isError: Boolean get() = hasError || (statusCode != null && statusCode >= 400)
 }
 
 // the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end

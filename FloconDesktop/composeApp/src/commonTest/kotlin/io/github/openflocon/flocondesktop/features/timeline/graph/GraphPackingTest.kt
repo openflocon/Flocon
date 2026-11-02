@@ -158,6 +158,18 @@ class GraphPackingTest {
     }
 
     @Test
+    fun `a failed call without http code is an error`() {
+        val failed = buildGraph(
+            listOf(domain("1", TimelinePhase.Request, ts = 1_100L, duration = 20.0).copy(statusCode = null, hasError = true)),
+            sessionStart = 1_000L,
+        )
+        val ok = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_100L, duration = 20.0)), sessionStart = 1_000L)
+
+        assertEquals(1, failed.errorCount)
+        assertEquals(0, ok.errorCount)
+    }
+
+    @Test
     fun `the sources without lane are not drawn`() {
         val model = buildGraph(listOf(domain("c", TimelinePhase.Request, ts = 1_100L, duration = null, source = TimelineSource.Crash)), 1_000L)
 
