@@ -57,11 +57,19 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
 import flocondesktop.composeapp.generated.resources.timeline_filters_toggle
+import flocondesktop.composeapp.generated.resources.timeline_view_graph
+import flocondesktop.composeapp.generated.resources.timeline_view_list
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
+import io.github.openflocon.flocondesktop.features.timeline.graph.PreviewSessionDurationMs
+import io.github.openflocon.flocondesktop.features.timeline.graph.TimelineGraph
+import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraphUiModel
+import io.github.openflocon.flocondesktop.features.timeline.graph.previewGraphEvents
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
@@ -83,6 +91,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconFilterChip
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.CoroutineScope
@@ -105,6 +114,8 @@ fun TimelineScreen(
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
+    val graph by viewModel.graph.collectAsStateWithLifecycle()
+    val graphSession by viewModel.graphSessionPosition.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -117,6 +128,8 @@ fun TimelineScreen(
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
+        graph = graph,
+        graphSession = graphSession,
         onAction = viewModel::onAction,
     )
 }
@@ -132,6 +145,8 @@ internal fun TimelineContent(
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
+    graph: GraphUiModel,
+    graphSession: GraphSessionUiModel?,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -201,6 +216,16 @@ internal fun TimelineContent(
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
+            FloconFilterChip(
+                text = stringResource(Res.string.timeline_view_list),
+                selected = !settings.graph,
+                onClick = { onAction(TimelineAction.SetGraph(false)) },
+            )
+            FloconFilterChip(
+                text = stringResource(Res.string.timeline_view_graph),
+                selected = settings.graph,
+                onClick = { onAction(TimelineAction.SetGraph(true)) },
+            )
             // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
             FloconButton(
                 onClick = { onAction(TimelineAction.ToggleFilterPanel) },
@@ -269,71 +294,84 @@ internal fun TimelineContent(
             linkedRowIndices(itemCount, railCallKey, railLinkKey) { (rows.peek(it) as? TimelineItemUiModel.Row)?.row }
         }
 
-        Box(modifier = Modifier.fillMaxSize().hoverable(listInteraction)) {
-            LazyColumn(
-                state = listState,
-                reverseLayout = settings.invertList,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
-            ) {
-                items(
-                    count = rows.itemCount,
-                    key = rows.itemKey { it.key },
-                ) { index ->
-                    when (val item = rows[index]) {
-                        is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
-                            // the app start of a session, at the time the app started
-                            SessionHeader(
-                                row = item.row,
-                                eventCount = summary.sessionEventCounts[item.row.timestamp],
-                            )
-                        } else {
-                            val olderTimestamp = olderTimestamp(rows, index)
-                            val delta = remember(item.row.timestamp, olderTimestamp) {
-                                olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
-                            }
-                            TimelineRowMenu(
-                                row = item.row,
-                                onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
-                            ) {
-                                TimelineRow(
+        if (settings.graph) {
+            // a click opens the event in the detail panel, like a click on a row of the list
+            TimelineGraph(
+                model = graph,
+                session = graphSession,
+                selectedKey = selectedKey,
+                onSelect = { onAction(TimelineAction.Open(it)) },
+                onPreviousSession = { onAction(TimelineAction.MoveGraphSession(-1)) },
+                onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
+                modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
+            )
+        } else {
+            Box(modifier = Modifier.fillMaxSize().hoverable(listInteraction)) {
+                LazyColumn(
+                    state = listState,
+                    reverseLayout = settings.invertList,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = FloconTheme.spacing.large),
+                ) {
+                    items(
+                        count = rows.itemCount,
+                        key = rows.itemKey { it.key },
+                    ) { index ->
+                        when (val item = rows[index]) {
+                            is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
+                                // the app start of a session, at the time the app started
+                                SessionHeader(
                                     row = item.row,
-                                    delta = delta,
-                                    selected = item.row.callKey == selectedKey,
-                                    hovered = item.row.callKey in hoveredCallKeys || item.row.linkKey() in hoveredLinkKeys,
-                                    onHoverChange = { hovered ->
-                                        if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
-                                    },
-                                    onClick = { onAction(TimelineAction.Open(it)) },
-                                    highlight = filterText.value,
-                                    modifier = Modifier.fillMaxWidth(),
+                                    eventCount = summary.sessionEventCounts[item.row.timestamp],
                                 )
+                            } else {
+                                val olderTimestamp = olderTimestamp(rows, index)
+                                val delta = remember(item.row.timestamp, olderTimestamp) {
+                                    olderTimestamp?.let { formatDelta(item.row.timestamp - it) }
+                                }
+                                TimelineRowMenu(
+                                    row = item.row,
+                                    onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                ) {
+                                    TimelineRow(
+                                        row = item.row,
+                                        delta = delta,
+                                        selected = item.row.callKey == selectedKey,
+                                        hovered = item.row.callKey in hoveredCallKeys || item.row.linkKey() in hoveredLinkKeys,
+                                        onHoverChange = { hovered ->
+                                            if (hovered) hoveredRows[item.row.key] = item.row else hoveredRows.remove(item.row.key)
+                                        },
+                                        onClick = { onAction(TimelineAction.Open(it)) },
+                                        highlight = filterText.value,
+                                        modifier = Modifier.fillMaxWidth(),
+                                    )
+                                }
                             }
+
+                            is TimelineItemUiModel.DayHeader -> Text(
+                                text = item.day.uppercase(),
+                                style = FloconTheme.typography.labelSmall,
+                                color = colors.inkFaint,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
+                            )
+
+                            null -> Unit
                         }
-
-                        is TimelineItemUiModel.DayHeader -> Text(
-                            text = item.day.uppercase(),
-                            style = FloconTheme.typography.labelSmall,
-                            color = colors.inkFaint,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = FloconTheme.spacing.medium, top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.extraSmall),
-                        )
-
-                        null -> Unit
                     }
                 }
+                CallRail(
+                    listState = listState,
+                    linkedIndices = linkedIndices,
+                    // the request of a call can be older than the events loaded
+                    leavesAfterLoaded = railCallKey != null && linkedIndices.size < 2,
+                    color = railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
-            CallRail(
-                listState = listState,
-                linkedIndices = linkedIndices,
-                // the request of a call can be older than the events loaded
-                leavesAfterLoaded = railCallKey != null && linkedIndices.size < 2,
-                color = railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
-                modifier = Modifier.fillMaxSize(),
-            )
         }
     }
 }
@@ -395,6 +433,8 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,
+            graph = remember { buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs) },
+            graphSession = GraphSessionUiModel(position = 1, total = 1),
             onAction = {},
             modifier = Modifier.height(PreviewScreenHeight),
         )

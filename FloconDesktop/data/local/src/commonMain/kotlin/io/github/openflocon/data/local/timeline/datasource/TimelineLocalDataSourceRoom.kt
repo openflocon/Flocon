@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
+// the graph draws at most that many events of a session
+private const val MAX_GRAPH_EVENTS = 50_000
+
 internal class TimelineLocalDataSourceRoom(
     private val timelineDao: TimelineDao,
 ) : TimelineLocalDataSource {
@@ -36,6 +39,21 @@ internal class TimelineLocalDataSourceRoom(
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain() }
         }
+    }
+
+    override fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>> {
+        val query = buildTimelineQuery(
+            deviceId = deviceIdAndPackageName.deviceId,
+            packageName = deviceIdAndPackageName.packageName,
+            filter = filter,
+        )
+        // same union as the list, in one page: the graph needs the whole session to place the bars
+        val capped = TimelineQuery(sql = "SELECT * FROM (${query.sql}) LIMIT $MAX_GRAPH_EVENTS", params = query.params)
+        return timelineDao.observeTimelineList(capped.toRoomRawQuery())
+            .map { rows -> rows.map { it.toDomain() } }
     }
 
     override fun observeSummary(

@@ -27,6 +27,10 @@ class TimelineSettingsUseCasesTest {
             state.value = state.value.copy(pinPanel = pinPanel)
         }
 
+        override suspend fun setGraph(graph: Boolean) {
+            state.value = state.value.copy(graph = graph)
+        }
+
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
             state.value = state.value.copy(selectedSources = sources)
         }

@@ -14,6 +14,12 @@ interface TimelineRepository {
         filter: TimelineFilterDomainModel,
     ): Flow<TimelineSummaryDomainModel>
 
+    // the events of the filter in one list, newest first, capped: the graph draws a whole session at once
+    fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>>
+
     // newest first
     fun observeTimeline(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
