@@ -145,14 +145,21 @@ internal fun TimelineGraph(
     val trackHeight = max(heightPx - AxisHeightPx, 0f)
     val contentHeight = model.contentHeightPx()
 
-    // fitted: the whole session is shown and follows the new events, until the user zooms or moves
-    var fitted by remember { mutableStateOf(true) }
+    // fitted: the whole session is shown and follows the new events, until the user zooms or moves. Opens at 100 %
+    var fitted by remember { mutableStateOf(false) }
+    var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // shift + drag moves the graph instead of drawing a box
     var shiftHeld by remember { mutableStateOf(false) }
+    LaunchedEffect(canvasSize.width > 0) {
+        if (!opened && canvasSize.width > 0) {
+            viewport = defaultViewport(trackWidth)
+            opened = true
+        }
+    }
     LaunchedEffect(fitted, model.sessionDurationMs, trackWidth) {
         if (fitted) viewport = fitViewport(model.sessionDurationMs, trackWidth).copy(scrollY = viewport.scrollY)
     }

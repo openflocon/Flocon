@@ -40,6 +40,9 @@ internal fun GraphViewport.xOf(ms: Long): Float = ((ms - startMs) * pxPerMs).toF
 
 internal fun GraphViewport.msAt(x: Float): Double = startMs + x / pxPerMs
 
+// the graph when it opens: 100 %, from the start of the session
+internal fun defaultViewport(trackWidthPx: Float) = GraphViewport(startMs = 0.0, pxPerMs = (trackWidthPx / ZOOM_REFERENCE_MS).coerceAtLeast(MIN_PX_PER_MS))
+
 // the whole session in [trackWidthPx]
 internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphViewport {
     val duration = max(sessionDurationMs, 1L)
@@ -50,7 +53,7 @@ internal const val MIN_PX_PER_MS = 0.0005
 internal const val MAX_PX_PER_MS = 20.0
 
 /**
- * The zoom in percent: 100 when the track shows 60 s, 200 when it shows 30 s.
+ * The zoom in percent: 100 when the track shows 30 s, 200 when it shows 15 s.
  */
 internal fun GraphViewport.zoomPercent(trackWidthPx: Float): Int = (pxPerMs / (trackWidthPx / ZOOM_REFERENCE_MS) * 100.0).roundToInt()
 
@@ -62,7 +65,7 @@ internal fun GraphViewport.zoomedToPercent(percent: Int, trackWidthPx: Float): G
 }
 
 // the duration the track shows at 100 %
-internal const val ZOOM_REFERENCE_MS = 60_000.0
+internal const val ZOOM_REFERENCE_MS = 30_000.0
 
 // zooms around the point [anchorX] of the track, which stays under the pointer
 internal fun GraphViewport.zoomed(factor: Double, anchorX: Float): GraphViewport {
