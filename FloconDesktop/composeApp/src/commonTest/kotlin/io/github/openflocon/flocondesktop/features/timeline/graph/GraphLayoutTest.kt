@@ -120,4 +120,15 @@ class GraphLayoutTest {
         // a session of 3 s fitted in the track
         assertEquals(2_000, fitViewport(3_000L, 600f).zoomPercent(600f))
     }
+
+    @Test
+    fun `zoom to a typed percent keeps the middle of the track`() {
+        val start = GraphViewport(startMs = 10_000.0, pxPerMs = 600.0 / 60_000)
+        val zoomed = start.zoomedToPercent(400, 600f)
+
+        assertEquals(400, zoomed.zoomPercent(600f))
+        assertEquals(start.msAt(300f), zoomed.msAt(300f), 0.001)
+        // nothing to do for a percent that is not valid
+        assertEquals(start, start.zoomedToPercent(0, 600f))
+    }
 }

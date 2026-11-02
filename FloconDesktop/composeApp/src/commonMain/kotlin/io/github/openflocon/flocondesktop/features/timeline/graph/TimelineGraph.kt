@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Text
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -36,6 +40,11 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.isCtrlPressed
@@ -52,6 +61,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -75,13 +86,14 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
-import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_percent
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 import kotlin.math.max
@@ -90,6 +102,7 @@ import kotlin.math.min
 private const val ZoomStep = 1.25
 private const val WheelZoomPerTick = 1.15
 private const val ZoomBoxFillAlpha = 0.12f
+private const val ZoomFieldMaxDigits = 6
 private const val PinchMinFactor = 0.5
 private const val PinchMaxFactor = 2.0
 private const val InstantLabelFlipRatio = 0.84f
@@ -156,6 +169,10 @@ internal fun TimelineGraph(
             onPreviousSession = onPreviousSession,
             onNextSession = onNextSession,
             zoomPercent = currentViewport.zoomPercent(trackWidth),
+            onZoomPercent = {
+                fitted = false
+                viewport = currentViewport.zoomedToPercent(it, trackWidth)
+            },
             onZoomIn = {
                 fitted = false
                 viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
@@ -334,6 +351,7 @@ private fun GraphToolbar(
     onPreviousSession: () -> Unit,
     onNextSession: () -> Unit,
     zoomPercent: Int,
+    onZoomPercent: (Int) -> Unit,
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
@@ -376,16 +394,42 @@ private fun GraphToolbar(
             }
         }
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
-        Text(
-            text = stringResource(Res.string.timeline_graph_zoom_percent, zoomPercent),
-            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-            color = colors.inkMuted,
-            maxLines = 1,
-        )
+        GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent)
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
         FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
     }
+}
+
+// the zoom in percent, typed and validated with enter or when the focus leaves the field
+@Composable
+private fun GraphZoomField(
+    percent: Int,
+    onPercentChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var text by remember(percent) { mutableStateOf(percent.toString()) }
+    val apply = { text.toIntOrNull()?.takeIf { it > 0 && it != percent }?.let(onPercentChange) ?: Unit }
+    FloconTextField(
+        value = text,
+        onValueChange = { value -> text = value.filter { it.isDigit() }.take(ZoomFieldMaxDigits) },
+        suffix = { Text(stringResource(Res.string.timeline_graph_zoom_unit)) },
+        textStyle = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { apply() }),
+        modifier = modifier
+            .width(FloconTheme.sizes.columnMedium)
+            .height(FloconTheme.sizes.controlHeight)
+            .onFocusChanged { if (!it.isFocused) apply() }
+            .onPreviewKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown && (event.key == Key.Enter || event.key == Key.NumPadEnter)) {
+                    apply()
+                    true
+                } else {
+                    false
+                }
+            },
+    )
 }
 
 @Composable
