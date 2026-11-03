@@ -57,6 +57,9 @@
     <string name="timeline_network_response">Réponse</string>
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
+    <string name="timeline_screenshots">Écrans</string>
+    <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_failing">Les captures échouent : adb est-il disponible ?</string>
     <string name="timeline_filters_title">Filtres</string>
     <string name="timeline_filters_clear_all">Tout effacer</string>
     <string name="timeline_filters_search">Chercher un filtre</string>

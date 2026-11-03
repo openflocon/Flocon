@@ -12,6 +12,7 @@ import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppI
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
@@ -19,6 +20,8 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
@@ -57,10 +60,13 @@ internal class TimelineViewModel(
     observeTimelineEventsUseCase: ObserveTimelineEventsUseCase,
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
+    observeTimelineScreenshotsFailingUseCase: ObserveTimelineScreenshotsFailingUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
+    private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
+    private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
     private val filterStore: TimelineFilterStore,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
@@ -74,8 +80,21 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
-        .map { TimelineSettingsUiModel(autoScroll = it.autoScroll, invertList = it.invertList, pinPanel = it.pinPanel, graph = it.graph) }
+        .map {
+            TimelineSettingsUiModel(
+                autoScroll = it.autoScroll,
+                invertList = it.invertList,
+                pinPanel = it.pinPanel,
+                graph = it.graph,
+                screenshots = it.screenshots,
+                screenshotIntervalSeconds = it.screenshotIntervalSeconds,
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
+
+    // the last screenshots failed: the control of the header warns
+    val screenshotsFailing: StateFlow<Boolean> = observeTimelineScreenshotsFailingUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)
@@ -181,6 +200,10 @@ internal class TimelineViewModel(
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
+
+            is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
+
+            is TimelineAction.SetScreenshotInterval -> viewModelScope.launch { setTimelineScreenshotIntervalUseCase(action.seconds) }
 
             is TimelineAction.MoveGraphSession -> viewModelScope.launch {
                 val starts = summary.value.sessionEventCounts.keys.sorted()

@@ -115,6 +115,7 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val screenshotsFailing by viewModel.screenshotsFailing.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
@@ -129,6 +130,7 @@ fun TimelineScreen(
         summary = summary,
         isLive = isLive,
         settings = settings,
+        screenshotsFailing = screenshotsFailing,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
@@ -146,6 +148,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsFailing: Boolean,
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
@@ -204,6 +207,7 @@ internal fun TimelineContent(
             summary = summary,
             isLive = isLive,
             settings = settings,
+            screenshotsFailing = screenshotsFailing,
             onAction = onAction,
         )
 
@@ -441,6 +445,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
+            screenshotsFailing = false,
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,

@@ -39,6 +39,7 @@ internal fun TimelineHeader(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsFailing: Boolean,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -92,6 +93,12 @@ internal fun TimelineHeader(
             count = summary.crashCount,
             label = pluralStringResource(Res.plurals.timeline_counter_crashes, summary.crashCount),
             highlight = colors.catCrash,
+        )
+        ScreenshotsControl(
+            enabled = settings.screenshots,
+            intervalSeconds = settings.screenshotIntervalSeconds,
+            failing = screenshotsFailing,
+            onAction = onAction,
         )
         FeatureDocButton(doc = FeatureDoc.Timeline)
         TimelineOverflowMenu(

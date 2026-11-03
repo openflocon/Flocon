@@ -99,6 +99,9 @@
     <string name="timeline_graph_legend_rows">Events that do not overlap share the same row</string>
     <string name="timeline_graph_description">Graph, %1$d events</string>
     <string name="timeline_live">Live</string>
+    <string name="timeline_screenshots">Screens</string>
+    <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_failing">Screenshots are failing: is adb available?</string>
     <string name="timeline_filters_title">Filters</string>
     <string name="timeline_filters_clear_all">Clear all</string>
     <string name="timeline_filters_search">Search a filter</string>
