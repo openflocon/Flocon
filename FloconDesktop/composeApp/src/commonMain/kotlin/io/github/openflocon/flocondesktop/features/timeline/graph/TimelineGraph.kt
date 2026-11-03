@@ -77,6 +77,7 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_empty
 import flocondesktop.composeapp.generated.resources.timeline_graph_fit
 import flocondesktop.composeapp.generated.resources.timeline_graph_following
 import flocondesktop.composeapp.generated.resources.timeline_graph_latest
+import flocondesktop.composeapp.generated.resources.timeline_graph_legend_app_start
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
@@ -101,6 +102,7 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -120,6 +122,7 @@ private const val ChipFontPx = 11f
 private const val ChipHeightPx = 18f
 private const val ChipPaddingPx = 6f
 private const val InstantLabelPaddingPx = 4f
+private const val AppStartLineWidthPx = 2f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
 
@@ -178,10 +181,10 @@ internal fun TimelineGraph(
             opened = true
         }
     }
-    // a more recent event than the ones in view: the graph follows, but not on an older session, and not under the pointer
+    // a more recent event than the ones in view: the graph follows, but not on an older session
     val followsLatest = session == null || !session.hasNext
     LaunchedEffect(model.sessionDurationMs, autoScroll) {
-        if (autoScroll && !paused && !fitted && opened && followsLatest && hovered == null) {
+        if (autoScroll && !paused && !fitted && opened && followsLatest) {
             viewport = viewport.followedLatest(model, trackWidth)
         }
     }
@@ -248,6 +251,7 @@ internal fun TimelineGraph(
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
+            appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
         )
 
@@ -275,7 +279,8 @@ internal fun TimelineGraph(
                                     viewport = if (zoom) {
                                         val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
                                         viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
-                                    } else if (event.keyboardModifiers.isShiftPressed || delta.x != 0f) {
+                                    } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
+                                        // a real move along the time: the trackpad also sends a small horizontal drift
                                         paused = true
                                         val ticks = if (delta.x != 0f) delta.x else delta.y
                                         viewport.panned(ticks * 40 / viewport.pxPerMs)
@@ -385,6 +390,7 @@ private class GraphPalette(
     val onBar: Color,
     val chip: Color,
     val error: Color,
+    val appStart: Color,
     val selection: Color,
 )
 
@@ -518,6 +524,7 @@ private fun GraphLegend(
             listOf(
                 Res.string.timeline_graph_legend_bar,
                 Res.string.timeline_graph_legend_instant,
+                Res.string.timeline_graph_legend_app_start,
                 Res.string.timeline_graph_legend_failed,
                 Res.string.timeline_graph_legend_rows,
             ).forEach {
@@ -572,6 +579,11 @@ private fun DrawScope.drawGraph(
             tick += step
         }
         var deferredLabel: (() -> Unit)? = null
+        // the start of the app, over all the lanes, under the events
+        if (model.hasAppStart) {
+            val x = LaneLabelWidthPx + viewport.xOf(0L)
+            drawLine(palette.appStart, Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = AppStartLineWidthPx)
+        }
         model.lanes.forEachIndexed { laneIndex, lane ->
             val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
             if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
@@ -877,7 +889,7 @@ private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) = if (on
 @Composable
 private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {
     FloconTheme(isDarkTheme = isDarkTheme) {
-        val model = remember { buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs) }
+        val model = remember { buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs, hasAppStart = true) }
         TimelineGraph(
             model = model,
             session = GraphSessionUiModel(position = 2, total = 3),

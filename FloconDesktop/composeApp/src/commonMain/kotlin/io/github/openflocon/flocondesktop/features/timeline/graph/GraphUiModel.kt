@@ -7,9 +7,8 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetwor
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 
-// the types drawn, in the order of the lanes. The other sources of the timeline only appear in the list
+// the types drawn, in the order of the lanes. The app start is a line over the lanes, the other sources only appear in the list
 internal enum class GraphLane(val source: TimelineSource) {
-    App(TimelineSource.AppStart),
     Network(TimelineSource.Network),
     Database(TimelineSource.Database),
     Analytics(TimelineSource.Analytics),
@@ -59,6 +58,8 @@ internal data class GraphUiModel(
     val eventCount: Int,
     val errorCount: Int,
     val slowest: GraphEventUiModel?,
+    // the app start of the session is known: a vertical line at 0
+    val hasAppStart: Boolean = false,
     // the time of day of the start of the session, to give a time to the axis
     val sessionStartTimestamp: Long = 0L,
 ) {
@@ -69,7 +70,7 @@ internal data class GraphUiModel(
     }
 }
 
-// the 15 events of the reference session: 7 rows, 2 failed calls, 3 images
+// the 14 events of the reference session: 6 rows, 2 failed calls, 3 images (and the app start, a line)
 internal fun previewGraphEvents(): List<GraphEventUiModel> {
     fun net(id: String, method: String, path: String, host: String, start: Long, duration: Long, status: Int, image: Boolean = false) = GraphEventUiModel(
         row = previewTimelineRowUiModel(
@@ -113,13 +114,6 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
     )
 
     return listOf(
-        GraphEventUiModel(
-            row = previewTimelineRowUiModel(source = TimelineSource.AppStart, id = "0"),
-            lane = GraphLane.App,
-            startMs = 0L,
-            durationMs = 0L,
-            name = "App start",
-        ),
         net("1", "GET", "/v1/session", "api.shop.io", 0, 180, 200),
         analytics("2", "app_open", 20),
         net("3", "GET", "/v1/feed", "api.shop.io", 190, 640, 200),

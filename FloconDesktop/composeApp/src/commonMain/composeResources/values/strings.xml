@@ -95,6 +95,7 @@
     <string name="timeline_graph_empty">No event in this session</string>
     <string name="timeline_graph_legend_bar">Bar: duration</string>
     <string name="timeline_graph_legend_instant">Diamond: instant event</string>
+    <string name="timeline_graph_legend_app_start">Yellow line: app start</string>
     <string name="timeline_graph_legend_failed">Red: failed call (4xx, 5xx)</string>
     <string name="timeline_graph_legend_rows">Events that do not overlap share the same row</string>
     <string name="timeline_graph_description">Graph, %1$d events</string>

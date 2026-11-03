@@ -33,9 +33,8 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds a bar`() {
-        // the network lane starts at 0 inside the track, the app lane (one row) is above it
-        val networkTop = RowHeightPx + LaneSeparatorPx
-        val feed = model.hitTest(viewport, x = 400f, yInContent = networkTop + RowHeightPx + 10f)
+        // the network lane is the first one: the feed is on its second row
+        val feed = model.hitTest(viewport, x = 400f, yInContent = RowHeightPx + 10f)
 
         assertEquals("3", feed?.row?.id)
     }

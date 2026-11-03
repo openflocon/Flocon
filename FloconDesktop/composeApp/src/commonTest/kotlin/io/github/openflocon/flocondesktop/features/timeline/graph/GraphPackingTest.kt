@@ -15,11 +15,10 @@ class GraphPackingTest {
     private fun ids(model: GraphUiModel, lane: GraphLane) = model.lanes.first { it.lane == lane }.rows.map { row -> row.map { it.row.id } }
 
     @Test
-    fun `the reference session gives 7 rows`() {
+    fun `the reference session gives 6 rows`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(7, model.rowCount)
-        assertEquals(listOf(listOf("0")), ids(model, GraphLane.App))
+        assertEquals(6, model.rowCount)
         assertEquals(
             listOf(listOf("1", "4", "10", "14"), listOf("3", "12"), listOf("6"), listOf("7")),
             ids(model, GraphLane.Network),
@@ -39,7 +38,7 @@ class GraphPackingTest {
     fun `the summary of the reference session`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(15, model.eventCount)
+        assertEquals(14, model.eventCount)
         assertEquals(2, model.errorCount)
         assertEquals("/v1/recommendations", model.slowest?.name)
         val text = model.toSummaryText()
@@ -191,5 +190,15 @@ class GraphPackingTest {
         assertTrue(message.isInstant)
         assertFalse(message.inProgress)
         assertEquals(100L, message.startMs)
+    }
+
+    @Test
+    fun `the app start is a line, not a lane`() {
+        val withStart = buildGraph(listOf(domain("s", TimelinePhase.Request, ts = 1_000L, duration = null, source = TimelineSource.AppStart)), sessionStart = 1_000L)
+        val without = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_100L, duration = 20.0)), sessionStart = 1_000L)
+
+        assertTrue(withStart.hasAppStart)
+        assertTrue(withStart.lanes.isEmpty())
+        assertFalse(without.hasAppStart)
     }
 }

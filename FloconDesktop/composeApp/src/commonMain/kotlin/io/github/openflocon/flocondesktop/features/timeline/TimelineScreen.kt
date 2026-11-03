@@ -444,7 +444,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,
-            graph = remember { buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs) },
+            graph = remember { buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs, hasAppStart = true) },
             graphSession = GraphSessionUiModel(position = 1, total = 1),
             onAction = {},
             modifier = Modifier.height(PreviewScreenHeight),
