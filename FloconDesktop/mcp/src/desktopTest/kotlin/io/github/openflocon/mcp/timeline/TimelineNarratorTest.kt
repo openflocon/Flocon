@@ -276,4 +276,36 @@ class TimelineNarratorTest {
         assertTrue(narrative.anomalies.isEmpty())
         assertEquals(0, narrative.eventCount)
     }
+
+    @Test
+    fun `a continuous poll is one loop, not one per burst`() {
+        val narrative = narrate((0 until 60).map { net("p$it", it * 2_000L, path = "/v1/status") })
+
+        assertEquals(1, narrative.anomalies.count { it.startsWith("LOOP") }, narrative.anomalies.toString())
+        assertTrue(narrative.anomalies.single { it.startsWith("LOOP") }.contains("60×"), narrative.anomalies.toString())
+    }
+
+    @Test
+    fun `a crash, an http error and a large response survive the anomaly cap`() {
+        val crashes = (0 until 30).map { event("c$it", it * 1_000L, TimelineSource.Crash, "Boom$it") }
+        val others = listOf(
+            net("e", 40_000, path = "/v1/checkout", status = 500),
+            net("big", 41_000, path = "/v1/export", bytes = 9_000_000),
+        )
+
+        val narrative = narrate(crashes + others)
+
+        assertEquals(20, narrative.anomalies.size)
+        assertTrue(narrative.anomalies.any { it.startsWith("HTTP 500") }, narrative.anomalies.toString())
+        assertTrue(narrative.anomalies.any { it.startsWith("LARGE") }, narrative.anomalies.toString())
+        assertEquals(32, narrative.anomalyCount)
+    }
+
+    @Test
+    fun `a folded line shows the largest response it holds`() {
+        val narrative = narrate(listOf(net("a", 0, bytes = 100), net("b", 300, bytes = 5_000_000), net("c", 600, bytes = 200)))
+
+        assertEquals(1, narrative.lines.size)
+        assertTrue(narrative.lines[0].contains("largest 4.8 MB"), narrative.lines[0])
+    }
 }

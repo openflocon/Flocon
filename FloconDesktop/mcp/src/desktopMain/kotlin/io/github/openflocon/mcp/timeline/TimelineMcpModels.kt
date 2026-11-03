@@ -2,9 +2,6 @@ package io.github.openflocon.mcp.timeline
 
 import kotlinx.serialization.Serializable
 
-// the app keeps only its most recent database logs in the timeline: a window holding that many may have lost older ones
-internal const val DATABASE_LOGS_KEPT = 20_000
-
 @Serializable
 internal data class TimelineWindowMcpModel(
     val fromMs: Long,

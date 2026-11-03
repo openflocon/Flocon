@@ -1,6 +1,7 @@
 package io.github.openflocon.data.local.timeline.datasource
 
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
@@ -19,7 +20,7 @@ internal const val KIND_APP_START = "appstart"
 internal const val KIND_ADB = "adb"
 
 // apps can log millions of queries: only the most recent ones are merged in the timeline
-internal const val MAX_DATABASE_LOGS = 20_000
+internal const val MAX_DATABASE_LOGS = TIMELINE_MAX_DATABASE_LOGS
 
 // the tables that store the session of their rows
 private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")

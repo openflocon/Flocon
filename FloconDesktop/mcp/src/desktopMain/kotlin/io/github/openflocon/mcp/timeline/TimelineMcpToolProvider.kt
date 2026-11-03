@@ -1,9 +1,12 @@
 package io.github.openflocon.mcp.timeline
 
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_EVENTS
 import io.github.openflocon.domain.timeline.models.TimelineEventRef
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import io.github.openflocon.domain.timeline.usecase.GetTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.GetTimelineSummaryUseCase
 import io.github.openflocon.mcp.McpTargetResolver
@@ -51,7 +54,8 @@ internal class TimelineMcpToolProvider(
         val search = searchOf(input)
         val maxLines = input.maxLines.coerceIn(1, MAX_LINES)
 
-        val anchors = anchorsOf(target)
+        val summary = getTimelineSummaryUseCase(target, TimelineFilterDomainModel())
+        val anchors = anchorsOf(target, summary)
         val eventAnchor = input.eventId?.let { eventAnchorOf(target, it) }
         val window = windowResolver.resolve(input, anchors, eventAnchor)
 
@@ -86,20 +90,33 @@ internal class TimelineMcpToolProvider(
                 if (narrative.truncated) {
                     add("${narrative.omittedCount} lines omitted, the nearest to the anchor of the window are kept: narrow the window (mode at or range) or use search.")
                 }
-                if (events.count { it.source == TimelineSource.Database } >= DATABASE_LOGS_KEPT) {
-                    add("The app keeps only its most recent $DATABASE_LOGS_KEPT database logs: older database events may be missing.")
+                if (events.isEmpty() && !window.isEmpty) {
+                    add(emptyWindowNote(window, summary))
+                }
+                if (events.size >= TIMELINE_MAX_EVENTS) {
+                    add(
+                        "This window holds at least $TIMELINE_MAX_EVENTS events: only the newest $TIMELINE_MAX_EVENTS were read, the oldest are missing " +
+                            "and a search can miss them. Narrow the window (mode at or range)."
+                    )
+                }
+                val database = summary.sources[TimelineSource.Database]
+                val oldestDatabaseLog = database?.firstTimestamp
+                if (database != null && oldestDatabaseLog != null && database.count >= TIMELINE_MAX_DATABASE_LOGS && window.fromMs < oldestDatabaseLog) {
+                    add(
+                        "The app keeps only its most recent $TIMELINE_MAX_DATABASE_LOGS database logs, the oldest is at ${local(oldestDatabaseLog)}: " +
+                            "older database events are missing from this window, which does not mean there were none."
+                    )
                 }
             },
         )
     }
 
     // the sessions and the crashes tell where to look, the window is read afterwards
-    private suspend fun anchorsOf(target: DeviceIdAndPackageNameDomainModel): TimelineAnchors {
+    private suspend fun anchorsOf(target: DeviceIdAndPackageNameDomainModel, summary: TimelineSummaryDomainModel): TimelineAnchors {
         val markers = getTimelineEventsUseCase(
             target,
             TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart, TimelineSource.Crash)),
         )
-        val summary = getTimelineSummaryUseCase(target, TimelineFilterDomainModel())
         return TimelineAnchors(
             sessionStarts = markers.filter { it.source == TimelineSource.AppStart }.map { it.timestamp }.sorted(),
             crashes = markers.filter { it.source == TimelineSource.Crash }.map {
@@ -138,6 +155,13 @@ internal class TimelineMcpToolProvider(
                 )
         }
         return TimelineSearch(text = text, source = source)
+    }
+
+    private fun emptyWindowNote(window: TimelineWindow, summary: TimelineSummaryDomainModel): String {
+        val first = summary.sources.values.mapNotNull { it.firstTimestamp }.minOrNull()
+        val last = summary.sources.filterKeys { it != TimelineSource.AppStart }.values.mapNotNull { it.lastTimestamp }.maxOrNull()
+        val span = if (first != null && last != null) " The events of the app span from ${local(first)} to ${local(last)}." else ""
+        return "No event in this window (${local(window.fromMs)} to ${local(window.toMs)}).$span"
     }
 
     private fun local(ms: Long): String = ZonedDateTime.ofInstant(Instant.ofEpochMilli(ms), zone).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)

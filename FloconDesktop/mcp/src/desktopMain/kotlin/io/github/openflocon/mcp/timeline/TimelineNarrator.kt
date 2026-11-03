@@ -17,6 +17,9 @@ internal const val FOLD_MAX_GAP_MS = 2_000L
 internal const val LOOP_MIN_COUNT = 5
 internal const val LOOP_WINDOW_MS = 10_000L
 
+// a loop goes on while the calls keep that pace: LOOP_MIN_COUNT calls in LOOP_WINDOW_MS is one call every 2.5 s at least
+internal const val LOOP_CONTINUE_GAP_MS = LOOP_WINDOW_MS / (LOOP_MIN_COUNT - 1)
+
 internal const val LARGE_RESPONSE_BYTES = 1_048_576L
 
 internal const val MAX_ANOMALIES = 20
@@ -47,6 +50,9 @@ internal class TimelineNarrator(zone: ZoneId) {
 
     private val clock = DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone(zone)
 
+    /** An anomaly: the lowest rank is the most serious kind */
+    private class Anomaly(val rank: Int, val timeMs: Long, val text: String)
+
     /** A line of the narrative, with the time of its first event to keep the nearest ones when the answer is capped */
     private class Line(val timeMs: Long, val text: String)
 
@@ -63,7 +69,8 @@ internal class TimelineNarrator(zone: ZoneId) {
         val events = eventsNewestFirst.filter { it.phase != TimelinePhase.Response }.sortedBy { it.timestamp }
         val gaps = events.mapIndexed { index, event -> if (index == 0) 0L else event.timestamp - events[index - 1].timestamp }
 
-        val anomalies = anomaliesOf(events)
+        val allAnomalies = anomaliesOf(events)
+        val anomalies = cappedAnomalies(allAnomalies)
         val lines = foldedItems(events).let { items ->
             items.mapIndexed { index, item ->
                 val previousEnd = if (index == 0) item.events.first().timestamp else items[index - 1].events.last().timestamp
@@ -86,8 +93,8 @@ internal class TimelineNarrator(zone: ZoneId) {
 
         return TimelineNarrative(
             lines = kept.map { it.text },
-            anomalies = anomalies.take(MAX_ANOMALIES),
-            anomalyCount = anomalies.size,
+            anomalies = anomalies.map { it.text },
+            anomalyCount = allAnomalies.size,
             found = matches?.isNotEmpty(),
             searchMatches = matches.orEmpty(),
             truncated = lines.size > kept.size,
@@ -144,9 +151,7 @@ internal class TimelineNarrator(zone: ZoneId) {
 
     // ---- anomalies
 
-    private fun anomaliesOf(events: List<TimelineEventDomainModel>): List<String> {
-        class Anomaly(val rank: Int, val timeMs: Long, val text: String)
-
+    private fun anomaliesOf(events: List<TimelineEventDomainModel>): List<Anomaly> {
         val found = ArrayList<Anomaly>()
         events.forEach { event ->
             val at = time(event.timestamp)
@@ -171,7 +176,16 @@ internal class TimelineNarrator(zone: ZoneId) {
             }
         }
         loopsOf(events).forEach { found.add(Anomaly(1, it.first, it.second)) }
-        return found.sortedWith(compareBy({ it.rank }, { it.timeMs })).map { it.text }
+        return found.sortedWith(compareBy({ it.rank }, { it.timeMs }))
+    }
+
+    // the most serious kinds first, but a kind is never dropped for the benefit of another: a flood of crashes
+    // must not hide the one http error, so the first anomaly of each kind is reserved
+    private fun cappedAnomalies(sorted: List<Anomaly>): List<Anomaly> {
+        if (sorted.size <= MAX_ANOMALIES) return sorted
+        val reserved = sorted.groupBy { it.rank }.values.map { it.first() }
+        val rest = sorted.filter { anomaly -> reserved.none { it === anomaly } }.take(MAX_ANOMALIES - reserved.size)
+        return (reserved + rest).sortedWith(compareBy({ it.rank }, { it.timeMs }))
     }
 
     // the same call (method + normalized path) at least LOOP_MIN_COUNT times within LOOP_WINDOW_MS, once per burst
@@ -182,8 +196,10 @@ internal class TimelineNarrator(zone: ZoneId) {
             while (start < calls.size) {
                 var end = start
                 while (end + 1 < calls.size && calls[end + 1].timestamp - calls[start].timestamp <= LOOP_WINDOW_MS) end++
-                val count = end - start + 1
-                if (count >= LOOP_MIN_COUNT) {
+                if (end - start + 1 >= LOOP_MIN_COUNT) {
+                    // the same pace goes on: it is the same loop, not one per burst of 10 s
+                    while (end + 1 < calls.size && calls[end + 1].timestamp - calls[end].timestamp <= LOOP_CONTINUE_GAP_MS) end++
+                    val count = end - start + 1
                     val first = calls[start]
                     val last = calls[end]
                     val call = "${first.method.orEmpty()} ${normalizedPathOf(first.title)}".trim()
@@ -211,6 +227,8 @@ internal class TimelineNarrator(zone: ZoneId) {
             TimelineSource.Network -> listOfNotNull(
                 "${item.events.size}× ${first.method.orEmpty()} ${normalizedPathOf(first.title)}".trim(),
                 statusOf(first),
+                // the size of a call is not hidden by the fold
+                item.events.mapNotNull { it.responseByteSize }.maxOrNull()?.let { "largest ${formatBytes(it)}" },
             ).joinToString("  ")
 
             else -> "${item.events.size}× ${first.title.truncate(TITLE_MAX)}"

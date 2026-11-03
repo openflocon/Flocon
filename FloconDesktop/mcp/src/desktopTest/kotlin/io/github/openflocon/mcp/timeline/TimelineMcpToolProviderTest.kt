@@ -1,6 +1,8 @@
 package io.github.openflocon.mcp.timeline
 
 import io.github.openflocon.domain.device.models.DeviceDomainModel
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_EVENTS
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.GetTimelineEventsUseCase
@@ -211,7 +213,7 @@ class TimelineMcpToolProviderTest {
 
     @Test
     fun `a window holding the most database logs the app keeps says they may be partial`() = runBlocking {
-        val logs = (0 until DATABASE_LOGS_KEPT).map { event("d$it", 99, TimelineSource.Database, "SELECT 1") }
+        val logs = (0 until TIMELINE_MAX_DATABASE_LOGS).map { event("d$it", 99, TimelineSource.Database, "SELECT 1") }
 
         val result = start(events = events + logs).callTool("get_timeline").json()
 
@@ -224,5 +226,34 @@ class TimelineMcpToolProviderTest {
         val result = start().callTool("get_timeline").json()
 
         assertTrue(result["notes"]!!.jsonArray.any { it.jsonPrimitive.content.contains("phone") }, result.toString())
+    }
+
+    private fun JsonObject.notes() = this["notes"]!!.jsonArray.map { it.jsonPrimitive.content }
+
+    @Test
+    fun `database logs older than the ones the app keeps are reported even when the window holds none`() = runBlocking {
+        // the app keeps only its newest database logs: a window before all of them finds none, which does not mean there was none
+        val logs = (0 until TIMELINE_MAX_DATABASE_LOGS).map { event("d$it", 150, TimelineSource.Database, "SELECT 1") }
+
+        val result = start(events = events + logs).callTool("get_timeline").json()
+
+        assertTrue(result.notes().any { it.contains("database", ignoreCase = true) && it.contains("older") }, result.notes().toString())
+    }
+
+    @Test
+    fun `a window that hits the cap of events says the oldest are missing`() = runBlocking {
+        val many = (0 until TIMELINE_MAX_EVENTS).map { net("m$it", 99, "/v1/spam") }
+
+        val result = start(events = events + many).callTool("get_timeline").json()
+
+        assertTrue(result.notes().any { it.contains("$TIMELINE_MAX_EVENTS") && it.contains("oldest") }, result.notes().toString())
+    }
+
+    @Test
+    fun `a window without event tells where the events of the app are`() = runBlocking {
+        val result = start().callTool("get_timeline", mapOf("mode" to "at", "at" to "03:00")).json()
+
+        assertEquals(0, result["eventCount"]!!.jsonPrimitive.int)
+        assertTrue(result.notes().any { it.startsWith("No event in this window") && it.contains("14:00:00") }, result.notes().toString())
     }
 }

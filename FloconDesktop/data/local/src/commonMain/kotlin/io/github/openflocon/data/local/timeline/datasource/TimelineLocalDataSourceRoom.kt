@@ -11,6 +11,7 @@ import io.github.openflocon.data.local.timeline.mapper.toDomain
 import io.github.openflocon.data.local.timeline.mapper.toSummaryDomain
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_EVENTS
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 // the graph draws at most that many events of a session
-private const val MAX_GRAPH_EVENTS = 50_000
+private const val MAX_GRAPH_EVENTS = TIMELINE_MAX_EVENTS
 
 internal class TimelineLocalDataSourceRoom(
     private val timelineDao: TimelineDao,
