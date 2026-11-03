@@ -26,7 +26,7 @@ A KMP module has one variant, so it depends on the real modules. Swap them for t
 
 ```kotlin
 // Android
-startFlocon(this) { install(FloconNetwork) }
+startFlocon(FloconContext(this)) { install(FloconNetwork) }
 // Desktop (JVM)
 startFlocon(FloconContext(appName = "My App", packageName = "com.example.myapp")) { install(FloconNetwork) }
 // iOS / Wasm (call from shared code or from Swift)

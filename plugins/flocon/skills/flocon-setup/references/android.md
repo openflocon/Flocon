@@ -27,11 +27,13 @@ If a module that is compiled in every variant calls a plugin, give it the real m
 In `Application.onCreate`, as early as possible:
 
 ```kotlin
-startFlocon(this) {
+startFlocon(FloconContext(this)) {
     install(FloconNetwork)
     install(FloconAnalytics)
 }
 ```
+
+Always pass a `FloconContext`: `startFlocon(FloconContext(this))`, even though an overload taking the `Context` directly exists.
 
 With debug-only dependencies, put this in a `debug` source set (and a no-op or empty counterpart in `release`), or in a `FloconInitializer` provided per variant.
 

@@ -20,7 +20,7 @@ dependencies {
 ```
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconCrashReporter)
 }
 ```
@@ -37,7 +37,7 @@ startFlocon(context) {
 To install the handler yourself, disable the automatic setup and call `setupCrashHandler()`:
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconCrashReporter) {
         catchFatalErrors = false
     }
