@@ -5,11 +5,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
@@ -125,6 +127,8 @@ private const val InstantLabelPaddingPx = 4f
 private const val AppStartLineWidthPx = 2f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
+private const val PopoverOffsetPx = 12f
+private const val PopoverWidthPx = 260f
 
 /** The previous and next session of the graph: [position] starts at 1. */
 internal data class GraphSessionUiModel(val position: Int, val total: Int) {
@@ -149,6 +153,10 @@ internal fun TimelineGraph(
     onEditingChange: (Boolean) -> Unit = {},
     // keeps the most recent event in view, until the user moves the graph. The option of the list, shared
     autoScroll: Boolean = false,
+    // the screenshots strip above the axis: [screenshotsEnabled] is the setting, the captures are in [model]
+    screenshotsEnabled: Boolean = false,
+    screenshotIntervalSeconds: Int = 10,
+    onTurnOnScreenshots: () -> Unit = {},
 ) {
     val colors = FloconTheme.colors
     val density = LocalDensity.current.density
@@ -167,6 +175,8 @@ internal fun TimelineGraph(
     var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
+    // the time under the pointer in the track, for the screenshot preview
+    var hoverTimeMs by remember { mutableStateOf<Long?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // the last x of the pointer in the track: the pinch zooms around it
@@ -255,113 +265,146 @@ internal fun TimelineGraph(
             selection = colors.ink,
         )
 
-        Canvas(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .semantics { contentDescription = description }
-                .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
-                .onSizeChanged { canvasSize = it }
-                .pointerInput(model, density, trackWidth, maxScroll) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            val change = event.changes.firstOrNull() ?: continue
-                            shiftHeld = event.keyboardModifiers.isShiftPressed
-                            val x = change.position.x / density - LaneLabelWidthPx
-                            pointerX = x
-                            val y = change.position.y / density - AxisHeightPx
-                            when (event.type) {
-                                PointerEventType.Scroll -> {
-                                    val delta = change.scrollDelta
-                                    val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
-                                    fitted = false
-                                    viewport = if (zoom) {
-                                        val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
-                                        viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
-                                    } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
-                                        // a real move along the time: the trackpad also sends a small horizontal drift
-                                        paused = true
-                                        val ticks = if (delta.x != 0f) delta.x else delta.y
-                                        viewport.panned(ticks * 40 / viewport.pxPerMs)
-                                    } else {
-                                        viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
-                                    }
-                                    change.consume()
-                                }
+        val maxScreenshotGapMs = 2 * screenshotIntervalSeconds * 1_000L
+        ScreenshotStrip(
+            screenshots = model.screenshots,
+            viewport = currentViewport,
+            trackWidthPx = trackWidth,
+            enabled = screenshotsEnabled,
+            cursorTimeMs = hoverTimeMs,
+            maxGapMs = maxScreenshotGapMs,
+            onTurnOn = onTurnOnScreenshots,
+        )
 
-                                PointerEventType.Move -> {
-                                    hovered = if (x >= 0f && y >= 0f) {
-                                        model.hitTest(viewport, x, y + viewport.scrollY)
-                                    } else {
-                                        null
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .semantics { contentDescription = description }
+                    .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
+                    .onSizeChanged { canvasSize = it }
+                    .pointerInput(model, density, trackWidth, maxScroll) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull() ?: continue
+                                shiftHeld = event.keyboardModifiers.isShiftPressed
+                                val x = change.position.x / density - LaneLabelWidthPx
+                                pointerX = x
+                                val y = change.position.y / density - AxisHeightPx
+                                when (event.type) {
+                                    PointerEventType.Scroll -> {
+                                        val delta = change.scrollDelta
+                                        val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
+                                        fitted = false
+                                        viewport = if (zoom) {
+                                            val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
+                                            viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
+                                        } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
+                                            // a real move along the time: the trackpad also sends a small horizontal drift
+                                            paused = true
+                                            val ticks = if (delta.x != 0f) delta.x else delta.y
+                                            viewport.panned(ticks * 40 / viewport.pxPerMs)
+                                        } else {
+                                            viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
+                                        }
+                                        change.consume()
+                                    }
+
+                                    PointerEventType.Move -> {
+                                        hoverTimeMs = if (x in 0f..trackWidth && y >= 0f) viewport.msAt(x).toLong() else null
+                                        hovered = if (x >= 0f && y >= 0f) {
+                                            model.hitTest(viewport, x, y + viewport.scrollY)
+                                        } else {
+                                            null
+                                        }
+                                    }
+
+                                    PointerEventType.Exit -> {
+                                        hovered = null
+                                        hoverTimeMs = null
                                     }
                                 }
-
-                                PointerEventType.Exit -> hovered = null
                             }
                         }
                     }
-                }
-                .pointerInput(model, density, maxScroll) {
-                    detectTapGestures { offset ->
-                        val x = offset.x / density - LaneLabelWidthPx
-                        val y = offset.y / density - AxisHeightPx
-                        if (x >= 0f && y >= 0f) {
-                            model.hitTest(viewport, x, y + viewport.scrollY)?.let { onSelect(it.row) }
+                    .pointerInput(model, density, maxScroll) {
+                        detectTapGestures { offset ->
+                            val x = offset.x / density - LaneLabelWidthPx
+                            val y = offset.y / density - AxisHeightPx
+                            if (x >= 0f && y >= 0f) {
+                                model.hitTest(viewport, x, y + viewport.scrollY)?.let { onSelect(it.row) }
+                            }
                         }
                     }
-                }
-                .pointerInput(model, density, trackWidth, maxScroll) {
-                    detectDragGestures(
-                        onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
-                        onDragEnd = {
-                            zoomBox?.let { (start, end) ->
+                    .pointerInput(model, density, trackWidth, maxScroll) {
+                        detectDragGestures(
+                            onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
+                            onDragEnd = {
+                                zoomBox?.let { (start, end) ->
+                                    fitted = false
+                                    paused = true
+                                    viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                                }
+                                zoomBox = null
+                            },
+                            onDragCancel = { zoomBox = null },
+                        ) { change, drag ->
+                            change.consume()
+                            val box = zoomBox
+                            if (box != null) {
+                                zoomBox = box.first to change.position
+                            } else {
                                 fitted = false
                                 paused = true
-                                viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                                viewport = viewport
+                                    .panned(-drag.x / density / viewport.pxPerMs)
+                                    .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                             }
-                            zoomBox = null
-                        },
-                        onDragCancel = { zoomBox = null },
-                    ) { change, drag ->
-                        change.consume()
-                        val box = zoomBox
-                        if (box != null) {
-                            zoomBox = box.first to change.position
-                        } else {
-                            fitted = false
-                            paused = true
-                            viewport = viewport
-                                .panned(-drag.x / density / viewport.pxPerMs)
-                                .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                         }
+                    },
+            ) {
+                scale(density, density, pivot = Offset.Zero) {
+                    drawGraph(
+                        model = model,
+                        viewport = currentViewport,
+                        width = widthPx,
+                        height = heightPx,
+                        selectedKey = selectedKey,
+                        hoveredKey = hovered?.key,
+                        palette = palette,
+                        laneColors = laneColors,
+                        laneLabels = laneLabels,
+                        measurer = measurer,
+                        imagePainter = imagePainter,
+                    )
+                    zoomBox?.let { (start, end) ->
+                        // the box covers the lanes only, not the axis and the names of the lanes
+                        val left = max(min(start.x, end.x) / density, LaneLabelWidthPx)
+                        val right = max(max(start.x, end.x) / density, LaneLabelWidthPx)
+                        val top = min(start.y, end.y) / density
+                        val bottom = max(start.y, end.y) / density
+                        drawRect(palette.selection.copy(alpha = ZoomBoxFillAlpha), Offset(left, top), Size(right - left, bottom - top))
+                        drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
                     }
-                },
-        ) {
-            scale(density, density, pivot = Offset.Zero) {
-                drawGraph(
-                    model = model,
-                    viewport = currentViewport,
-                    width = widthPx,
-                    height = heightPx,
-                    selectedKey = selectedKey,
-                    hoveredKey = hovered?.key,
-                    palette = palette,
-                    laneColors = laneColors,
-                    laneLabels = laneLabels,
-                    measurer = measurer,
-                    imagePainter = imagePainter,
-                )
-                zoomBox?.let { (start, end) ->
-                    // the box covers the lanes only, not the axis and the names of the lanes
-                    val left = max(min(start.x, end.x) / density, LaneLabelWidthPx)
-                    val right = max(max(start.x, end.x) / density, LaneLabelWidthPx)
-                    val top = min(start.y, end.y) / density
-                    val bottom = max(start.y, end.y) / density
-                    drawRect(palette.selection.copy(alpha = ZoomBoxFillAlpha), Offset(left, top), Size(right - left, bottom - top))
-                    drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
                 }
+            }
+
+            // the screenshot taken just before the pointer, next to it, when there is one in range
+            val cursor = hoverTimeMs
+            val before = cursor?.let { screenshotBefore(model.screenshots, it, maxScreenshotGapMs) }
+            if (cursor != null && before != null) {
+                val cursorX = LaneLabelWidthPx + currentViewport.xOf(cursor)
+                // on the other side of the pointer when it would leave the graph
+                val onTheLeft = cursorX + PopoverOffsetPx + PopoverWidthPx > widthPx
+                ScreenshotPopover(
+                    screenshot = before,
+                    beforeMs = cursor - before.timeMs,
+                    modifier = Modifier.offset(
+                        x = (if (onTheLeft) cursorX - PopoverOffsetPx - PopoverWidthPx else cursorX + PopoverOffsetPx).dp,
+                        y = AxisHeightPx.dp,
+                    ),
+                )
             }
         }
 

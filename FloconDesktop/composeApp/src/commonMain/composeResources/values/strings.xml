@@ -101,6 +101,11 @@
     <string name="timeline_live">Live</string>
     <string name="timeline_screenshots">Screens</string>
     <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_waiting">Waiting for the first screenshot…</string>
+    <string name="timeline_screenshots_off_hint">Screenshots are off. Turn them on to see what was on screen next to each event.</string>
+    <string name="timeline_screenshots_turn_on">Turn on</string>
+    <string name="timeline_screenshot_at">Screen at %1$s</string>
+    <string name="timeline_screenshot_before_cursor">%1$d s before the cursor</string>
     <string name="timeline_screenshots_failing">Screenshots are failing: is adb available?</string>
     <string name="timeline_filters_title">Filters</string>
     <string name="timeline_filters_clear_all">Clear all</string>

@@ -318,6 +318,9 @@ internal fun TimelineContent(
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
+                screenshotsEnabled = settings.screenshots,
+                screenshotIntervalSeconds = settings.screenshotIntervalSeconds,
+                onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {

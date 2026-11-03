@@ -46,3 +46,9 @@ internal fun screenshotBefore(
 ): GraphScreenshotUiModel? = shots
     .lastOrNull { it.timeMs <= timeMs }
     ?.takeIf { timeMs - it.timeMs <= maxGapMs }
+
+// "0:30", "61:01": the time of a screenshot since the start of the session
+internal fun formatScreenshotTime(ms: Long): String {
+    val totalSeconds = ms / 1_000L
+    return "${totalSeconds / 60}:${(totalSeconds % 60).toString().padStart(2, '0')}"
+}

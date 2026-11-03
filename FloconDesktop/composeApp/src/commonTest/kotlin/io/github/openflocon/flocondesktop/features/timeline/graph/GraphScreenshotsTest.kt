@@ -89,4 +89,12 @@ class GraphScreenshotsTest {
         // nothing before the first one either
         assertNull(screenshotBefore(listOf(ui(5_000)), timeMs = 1_000, maxGapMs = 20_000))
     }
+
+    @Test
+    fun `the time of a screenshot is minutes and seconds since the start of the session`() {
+        assertEquals("0:00", formatScreenshotTime(0))
+        assertEquals("0:30", formatScreenshotTime(30_999))
+        assertEquals("1:05", formatScreenshotTime(65_000))
+        assertEquals("61:01", formatScreenshotTime(3_661_000))
+    }
 }
