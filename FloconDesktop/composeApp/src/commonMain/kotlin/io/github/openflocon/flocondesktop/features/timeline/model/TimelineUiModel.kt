@@ -57,12 +57,14 @@ internal data class TimelineSettingsUiModel(
     val autoScroll: Boolean,
     val invertList: Boolean,
     val pinPanel: Boolean,
+    val graph: Boolean = true,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     autoScroll = false,
     invertList = false,
     pinPanel = false,
+    graph = false,
 )
 
 internal sealed interface TimelineAction {
@@ -72,6 +74,10 @@ internal sealed interface TimelineAction {
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
+    data class SetGraph(val value: Boolean) : TimelineAction
+
+    // the session of the graph: -1 the one before, 1 the one after
+    data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
 }
 

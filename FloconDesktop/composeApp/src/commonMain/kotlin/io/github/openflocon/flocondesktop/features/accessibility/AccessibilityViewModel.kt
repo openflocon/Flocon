@@ -6,8 +6,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.accessibility_remote_toggle_talkback_error
 import flocondesktop.composeapp.generated.resources.accessibility_remote_talkback_settings_opened
+import flocondesktop.composeapp.generated.resources.accessibility_remote_toggle_talkback_error
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.accessibility.usecase.FocusNextAccessibilityNodeUseCase
 import io.github.openflocon.domain.accessibility.usecase.FocusPreviousAccessibilityNodeUseCase

@@ -149,4 +149,24 @@ class MapperTest {
         assertTrue(row.toDomain().isImage)
         assertFalse(row.copy(isImage = false).toDomain().isImage)
     }
+
+    @Test
+    fun `a failed call keeps its error`() {
+        val row = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1000L,
+            title = "https://api.acme.io/v1/users",
+            subtitle = null,
+            appInstance = 1000L,
+            method = "GET",
+            statusCode = null,
+            durationMs = 20.0,
+            sessionStart = 1000L,
+            hasError = true,
+        )
+
+        assertTrue(row.toDomain().hasError)
+        assertFalse(row.copy(hasError = false).toDomain().hasError)
+    }
 }
