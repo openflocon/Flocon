@@ -206,4 +206,6 @@ private class FakeTimelinePreferencesRepository : TimelinePreferencesRepository 
     override suspend fun setInvertList(invertList: Boolean) = error("not used")
     override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) = error("not used")
+    override suspend fun setScreenshots(screenshots: Boolean) = error("not used")
+    override suspend fun setScreenshotIntervalSeconds(seconds: Int) = error("not used")
 }
