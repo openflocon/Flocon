@@ -33,15 +33,16 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds a bar`() {
-        // the network lane is the first one: the feed is on its second row
-        val feed = model.hitTest(viewport, x = 400f, yInContent = RowHeightPx + 10f)
+        // the network lane is the second one, after analytics: the feed is on its second row
+        val networkTop = model.laneTops()[1]
+        val feed = model.hitTest(viewport, x = 400f, yInContent = networkTop + RowHeightPx + 10f)
 
         assertEquals("3", feed?.row?.id)
     }
 
     @Test
     fun `hit test finds a diamond with a tolerance`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops().first()
         val appOpen = model.hitTest(viewport, x = 20f + 9f, yInContent = analyticsTop + 10f) // 6 px of diamond and 4 of margin
 
         assertEquals("2", appOpen?.row?.id)
@@ -49,7 +50,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds nothing in the empty parts`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops().first()
 
         assertNull(model.hitTest(viewport, x = 500f, yInContent = analyticsTop + 10f))
         assertNull(model.hitTest(viewport, x = 500f, yInContent = 10_000f))
@@ -83,10 +84,10 @@ class GraphLayoutTest {
     fun `jump to the latest event`() {
         val jumped = GraphViewport(startMs = 0.0, pxPerMs = 1.0).jumpedToLatest(model, trackWidthPx = 600f, trackHeightPx = 100f)
 
-        // the analytics event at 2830 ms ends last: it is at the right of the track, with a margin
+        // the analytics event at 2830 ms ends last: it is at the right of the track, with a margin. Analytics is the top lane: no vertical scroll
         assertEquals("15", model.latestEvent()?.row?.id)
         assertEquals(2830.0 - 520.0, jumped.startMs, 0.001)
-        assertTrue(jumped.scrollY > 0f)
+        assertEquals(0f, jumped.scrollY)
     }
 
     @Test
@@ -152,7 +153,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds an instant by its label`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops().first()
         // app_open at 20 ms, 1 px per ms: its label is on the right of the diamond, before screen_view at 860 ms
         val onLabel = model.hitTest(viewport, x = 20f + 14f + 20f, yInContent = analyticsTop + 10f)
         assertEquals("2", onLabel?.row?.id)
