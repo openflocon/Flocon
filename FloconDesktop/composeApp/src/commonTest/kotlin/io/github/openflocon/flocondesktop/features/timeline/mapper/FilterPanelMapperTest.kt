@@ -202,7 +202,7 @@ class FilterPanelMapperTest {
         )
         assertTrue(some.hasActiveFilters)
         assertEquals(3, some.activeFilterCount)
-                assertFalse(some.sections.first { it.source == TimelineSource.Crash }.enabled)
+        assertFalse(some.sections.first { it.source == TimelineSource.Crash }.enabled)
     }
 
     @Test
