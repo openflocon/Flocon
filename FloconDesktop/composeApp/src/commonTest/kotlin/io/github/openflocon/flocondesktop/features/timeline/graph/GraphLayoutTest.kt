@@ -183,8 +183,9 @@ class GraphLayoutTest {
         assertEquals(5_000.0 - 520.0, behind.followedLatest(withShot, trackWidthPx = 600f).startMs, 0.001)
         val jumped = behind.jumpedToLatest(withShot, trackWidthPx = 600f, trackHeightPx = 100f)
         assertEquals(5_000.0 - 520.0, jumped.startMs, 0.001)
-        // the row of the latest event is still the one shown
-        assertTrue(jumped.scrollY > 0f)
+        // the row of the latest event is still the one shown (the track is 100 px high)
+        val rowTop = withShot.rowTopOf(withShot.latestEvent()!!)!!
+        assertTrue(rowTop >= jumped.scrollY && rowTop + RowHeightPx <= jumped.scrollY + 100f)
     }
 
     @Test
