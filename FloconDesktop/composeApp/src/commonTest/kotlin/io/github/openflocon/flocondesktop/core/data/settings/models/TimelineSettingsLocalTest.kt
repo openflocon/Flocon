@@ -46,4 +46,27 @@ class TimelineSettingsLocalTest {
 
         assertEquals(TimelineSettingsLocal(autoScroll = true), local)
     }
+
+    @Test
+    fun `a settings file without the screenshot keys loads as off and 10 s`() {
+        val domain = json.decodeFromString(TimelineSettingsLocal.serializer(), """{}""").toDomain()
+        val old = json.decodeFromString(TimelineSettingsLocal.serializer(), """{"graph":false}""").toDomain()
+
+        assertEquals(false, domain.screenshots)
+        assertEquals(10, domain.screenshotIntervalSeconds)
+        assertEquals(false, old.screenshots)
+        assertEquals(10, old.screenshotIntervalSeconds)
+    }
+
+    @Test
+    fun `a stored interval that is not allowed loads as 10 s`() {
+        assertEquals(10, TimelineSettingsLocal(screenshotIntervalSeconds = 7).toDomain().screenshotIntervalSeconds)
+    }
+
+    @Test
+    fun `the screenshot options round trip through toLocal and toDomain`() {
+        val domain = TimelineSettingsDomainModel(screenshots = true, screenshotIntervalSeconds = 30)
+
+        assertEquals(domain, domain.toLocal().toDomain())
+    }
 }

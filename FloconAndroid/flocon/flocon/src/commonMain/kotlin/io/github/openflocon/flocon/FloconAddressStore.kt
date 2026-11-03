@@ -8,6 +8,9 @@ internal interface FloconAddressStore {
     fun load(): String?
 
     fun save(address: String)
+
+    /** Forgets the address saved by [save]. */
+    fun clear()
 }
 
 /** Keeps the last address Flocon connected to (SharedPreferences, UserDefaults, ...). */

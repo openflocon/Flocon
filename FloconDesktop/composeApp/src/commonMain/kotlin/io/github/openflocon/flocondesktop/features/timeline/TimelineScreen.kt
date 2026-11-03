@@ -80,12 +80,14 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineItems
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
+import io.github.openflocon.flocondesktop.features.timeline.view.ScreenshotMarkerRow
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
@@ -115,6 +117,7 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
@@ -129,6 +132,7 @@ fun TimelineScreen(
         summary = summary,
         isLive = isLive,
         settings = settings,
+        screenshotsStatus = screenshotsStatus,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
@@ -146,6 +150,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsStatus: TimelineScreenshotsStatus,
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
@@ -204,6 +209,7 @@ internal fun TimelineContent(
             summary = summary,
             isLive = isLive,
             settings = settings,
+            screenshotsStatus = screenshotsStatus,
             onAction = onAction,
         )
 
@@ -314,6 +320,9 @@ internal fun TimelineContent(
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
+                screenshotsEnabled = settings.screenshots,
+                screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
+                onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {
@@ -358,6 +367,8 @@ internal fun TimelineContent(
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),
@@ -441,6 +452,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
+            screenshotsStatus = TimelineScreenshotsStatus.Working,
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,
