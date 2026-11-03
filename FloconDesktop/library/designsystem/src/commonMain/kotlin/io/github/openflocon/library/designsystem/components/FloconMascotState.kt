@@ -332,7 +332,10 @@ class FloconMascotState(
         if (chasing && !crossing && distance <= stopDistance) chasing = false
 
         // it runs while the pointer is far, and keeps running until it has gotten much closer
-        running = chasing && distance > if (running) config.runDistance * RUN_RELEASE else config.runDistance
+        // when crossing, the distance that counts is the one to the pointer, not to the edge, so it
+        // doesn't slow down to a walk as it nears the edge where it jumps
+        val runDistanceToPointer = if (crossing) abs(targetX - x) else distance
+        running = chasing && runDistanceToPointer > if (running) config.runDistance * RUN_RELEASE else config.runDistance
 
         var step = 0f
         if (chasing) {
