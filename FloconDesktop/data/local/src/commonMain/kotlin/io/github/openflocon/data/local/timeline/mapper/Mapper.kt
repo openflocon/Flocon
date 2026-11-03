@@ -50,6 +50,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     sessionStart = sessionStart,
     isImage = isImage,
     hasError = hasError,
+    responseByteSize = responseByteSize,
 )
 
 internal fun toSummaryDomain(

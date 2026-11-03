@@ -25,7 +25,7 @@ internal const val MAX_DATABASE_LOGS = 20_000
 private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")
 
 // columns only the network calls fill
-private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError"
+private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize"
 
 // the column of the union holding the value of a facet: the facets are the last columns of every member of the union
 private fun TimelineFacet.column(): String = "facet$name"
@@ -150,7 +150,7 @@ private class Union(
 )
 
 /**
- * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs, isImage, hasError),
+ * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs, isImage, hasError, responseByteSize),
  * merged by a UNION ALL. The app starts are not rows: they are the sessions, see [sessionsSql].
  */
 private fun buildUnion(
@@ -235,7 +235,8 @@ private fun buildUnion(
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError",
+                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
+                        "response_responseByteSize AS responseByteSize",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -254,7 +255,8 @@ private fun buildUnion(
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError",
+                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
+                        "response_responseByteSize AS responseByteSize",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -400,7 +402,7 @@ private fun latestSessionSql(deviceId: String, packageName: String, params: Muta
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
-        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS sessionStart WHERE 0"
+        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, NULL AS sessionStart WHERE 0"
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -443,7 +445,7 @@ internal fun buildTimelineQuery(
 
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, " +
+            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
             // an app start is below the events that happened at the same time
