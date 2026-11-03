@@ -50,6 +50,7 @@ import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.flocondesktop.window.DeviceWindowsController
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,6 +86,7 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
+    private val deviceWindowsController: DeviceWindowsController,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -230,6 +232,11 @@ internal class AppViewModel(
             is AppAction.SelectApp -> onAppSelected(action)
 
             is AppAction.SelectDevice -> onDeviceSelected(action)
+
+            is AppAction.OpenDeviceInNewWindow -> deviceWindowsController.open(
+                deviceId = action.device.id,
+                title = action.device.deviceName,
+            )
         }
     }
 

@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class ObserveCurrentDeviceIdAndPackageNameUseCase(
-    private val observeCurrentDeviceIdUseCase: ObserveCurrentDeviceIdUseCase,
+    private val currentDeviceIdProvider: CurrentDeviceIdProvider,
     private val devicesRepository: DevicesRepository,
 ) {
-    operator fun invoke(): Flow<DeviceIdAndPackageNameDomainModel?> = observeCurrentDeviceIdUseCase().flatMapLatest { deviceId ->
+    operator fun invoke(): Flow<DeviceIdAndPackageNameDomainModel?> = currentDeviceIdProvider.observe().flatMapLatest { deviceId ->
         if (deviceId == null) {
             flowOf(null)
         } else {

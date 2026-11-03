@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
@@ -35,6 +37,7 @@ import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
 import io.github.openflocon.navigation.FloconNavigation
+import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.DialogSceneStrategy
@@ -74,15 +77,7 @@ private fun Content(
     updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit,
 ) {
-    val sceneStrategies = remember {
-        listOf(
-            PanelSceneStrategy(),
-            WindowSceneStrategy(),
-            DialogSceneStrategy(),
-            BigDialogSceneStrategy(),
-            SinglePaneSceneStrategy()
-        )
-    }
+    val sceneStrategies = remember { floconSceneStrategies() }
 
     CompositionLocalProvider(
         LocalHasDevice provides uiState.hasConnectedDevice,
@@ -111,6 +106,7 @@ private fun Content(
                             deleteApp = { onAction(AppAction.DeleteApp(it)) },
                             deleteDevice = { onAction(AppAction.DeleteDevice(it)) },
                             onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
+                            onOpenDeviceInNewWindow = { onAction(AppAction.OpenDeviceInNewWindow(it)) },
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
                             onRestartClicked = { onAction(AppAction.Restart) },
@@ -125,23 +121,36 @@ private fun Content(
             // no background here: the themed page background shows through the islands
             modifier = Modifier.fillMaxSize()
         ) {
-            analyticsRoutes()
-            featureFlagsRoutes()
-            dashboardRoutes()
-            databaseRoutes()
-            deeplinkRoutes()
-            adbCommanderRoutes()
-            filesRoutes()
-            imageRoutes()
-            networkRoutes()
-            sharedPreferencesRoutes()
-            tableRoutes()
-            settingsRoutes()
-            releaseNotesRoutes()
-            crashReporterRoutes()
-            timelineRoutes()
-            webViewRoutes()
-            accessibilityRoutes()
+            floconRoutes()
         }
     }
+}
+
+internal fun floconSceneStrategies(): List<SceneStrategy<FloconRoute>> = listOf(
+    PanelSceneStrategy(),
+    WindowSceneStrategy(),
+    DialogSceneStrategy(),
+    BigDialogSceneStrategy(),
+    SinglePaneSceneStrategy(),
+)
+
+/** Every destination of the app, also used by the windows opened for a device: a row of the timeline can open any of them. */
+internal fun EntryProviderScope<FloconRoute>.floconRoutes() {
+    analyticsRoutes()
+    featureFlagsRoutes()
+    dashboardRoutes()
+    databaseRoutes()
+    deeplinkRoutes()
+    adbCommanderRoutes()
+    filesRoutes()
+    imageRoutes()
+    networkRoutes()
+    sharedPreferencesRoutes()
+    tableRoutes()
+    settingsRoutes()
+    releaseNotesRoutes()
+    crashReporterRoutes()
+    timelineRoutes()
+    webViewRoutes()
+    accessibilityRoutes()
 }

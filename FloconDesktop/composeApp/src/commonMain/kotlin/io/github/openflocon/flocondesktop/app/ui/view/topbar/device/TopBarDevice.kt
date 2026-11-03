@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Wifi
@@ -96,12 +97,13 @@ internal fun TopBarDevice(
     }
 }
 
-/** A device in the dropdown: connection dot, name, then the check when selected or the delete button. */
+/** A device in the dropdown: connection dot, name, the open in a new window button, then the check when selected or the delete button. */
 @Composable
 internal fun TopBarDeviceRow(
     device: DeviceItemUiModel,
     selected: Boolean,
     onClick: () -> Unit,
+    onOpenInNewWindow: () -> Unit,
     deleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -127,6 +129,20 @@ internal fun TopBarDeviceRow(
             color = if (device.isActive) colors.ink else colors.inkMuted,
             modifier = Modifier.weight(1f),
         )
+        Box(
+            Modifier
+                .clip(FloconTheme.shapes.small)
+                .background(colors.bg300)
+                .clickable(onClick = onOpenInNewWindow)
+                .padding(FloconTheme.spacing.tiny),
+            contentAlignment = Alignment.Center,
+        ) {
+            FloconIcon(
+                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                tint = colors.inkMuted,
+                modifier = Modifier.size(14.dp),
+            )
+        }
         if (selected) {
             FloconIcon(
                 imageVector = Icons.Outlined.Check,
@@ -236,18 +252,21 @@ private fun TopBarDeviceRowPreview() {
                     device = previewDeviceItemUiModel(platform = Platform.Android, isActive = true),
                     selected = true,
                     onClick = {},
+                    onOpenInNewWindow = {},
                     deleteClick = {},
                 )
                 TopBarDeviceRow(
                     device = previewDeviceItemUiModel(platform = Platform.ios, isActive = true, isWifi = true),
                     selected = false,
                     onClick = {},
+                    onOpenInNewWindow = {},
                     deleteClick = {},
                 )
                 TopBarDeviceRow(
                     device = previewDeviceItemUiModel(platform = Platform.Android, isActive = false),
                     selected = false,
                     onClick = {},
+                    onOpenInNewWindow = {},
                     deleteClick = {},
                 )
             }

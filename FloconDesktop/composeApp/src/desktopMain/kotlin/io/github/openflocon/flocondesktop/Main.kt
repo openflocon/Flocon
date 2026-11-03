@@ -34,6 +34,7 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
 import io.github.openflocon.flocondesktop.about.AboutScreen
 import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
+import io.github.openflocon.flocondesktop.window.DeviceWindows
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
@@ -81,48 +82,52 @@ fun main() {
 
         val handlers = remember { mutableStateListOf<() -> Boolean>() }
 
-        Window(
-            state = windowState,
-            onCloseRequest = {
-                if (windowState.isInitialized) {
-                    val currentBounds = windowState.bounds
-                    WindowStateSaver.save(
-                        WindowStateData(
-                            width = currentBounds.size.width.value.toInt(),
-                            height = currentBounds.size.height.value.toInt(),
-                            x = currentBounds.left.value.toInt(),
-                            y = currentBounds.top.value.toInt(),
-                        ),
-                    )
-                }
+        FloconKoinApplication {
+            Window(
+                state = windowState,
+                onCloseRequest = {
+                    if (windowState.isInitialized) {
+                        val currentBounds = windowState.bounds
+                        WindowStateSaver.save(
+                            WindowStateData(
+                                width = currentBounds.size.width.value.toInt(),
+                                height = currentBounds.size.height.value.toInt(),
+                                x = currentBounds.left.value.toInt(),
+                                y = currentBounds.top.value.toInt(),
+                            ),
+                        )
+                    }
 
-                exitApplication()
-            },
-            onPreviewKeyEvent = {
-                when (it.key) {
-                    Key.Escape if it.type == KeyEventType.KeyDown -> handlers.lastOrNull()?.invoke() ?: false
-                    else -> false
-                }
-            },
-            title = stringResource(Res.string.app_name),
-            icon = painterResource(Res.drawable.app_icon_window), // macOS-style margin so the dock icon matches other apps
-        ) {
-            CompositionLocalProvider(
-                LocalEscapeHandlerStack provides handlers,
-                LocalWindowTitleBar provides rememberWindowTitleBar(),
+                    exitApplication()
+                },
+                onPreviewKeyEvent = {
+                    when (it.key) {
+                        Key.Escape if it.type == KeyEventType.KeyDown -> handlers.lastOrNull()?.invoke() ?: false
+                        else -> false
+                    }
+                },
+                title = stringResource(Res.string.app_name),
+                icon = painterResource(Res.drawable.app_icon_window), // macOS-style margin so the dock icon matches other apps
             ) {
-                window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
-                App()
-                if (ACTIVATE_TRAY_NOTIFICATION) {
-                    FloconTray()
-                }
+                CompositionLocalProvider(
+                    LocalEscapeHandlerStack provides handlers,
+                    LocalWindowTitleBar provides rememberWindowTitleBar(),
+                ) {
+                    window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+                    App()
+                    if (ACTIVATE_TRAY_NOTIFICATION) {
+                        FloconTray()
+                    }
 
-                if (openAbout) {
-                    AboutScreen(
-                        onCloseRequest = { openAbout = false }
-                    )
+                    if (openAbout) {
+                        AboutScreen(
+                            onCloseRequest = { openAbout = false }
+                        )
+                    }
                 }
             }
+
+            DeviceWindows()
         }
     }
 }

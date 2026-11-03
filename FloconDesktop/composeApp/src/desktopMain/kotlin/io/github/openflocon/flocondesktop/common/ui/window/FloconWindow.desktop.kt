@@ -16,6 +16,7 @@ import androidx.compose.ui.window.v2.WindowPositionProvider
 import androidx.compose.ui.window.v2.WindowState
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_window
+import io.github.openflocon.flocondesktop.FloconAppTheme
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.escape.LocalEscapeHandlerStack
@@ -60,9 +61,12 @@ actual fun FloconWindow(
         onCloseRequest = onCloseRequest,
     ) {
         CompositionLocalProvider(LocalEscapeHandlerStack provides handlers) {
-            // same surface as the navigation window scenes (network details...)
-            FloconSurface(color = FloconTheme.colors.islandSidebar) {
-                content()
+            // the theme draws a background: it has to be in the window, not above it in the application
+            FloconAppTheme {
+                // same surface as the navigation window scenes (network details...)
+                FloconSurface(color = FloconTheme.colors.islandSidebar) {
+                    content()
+                }
             }
         }
     }

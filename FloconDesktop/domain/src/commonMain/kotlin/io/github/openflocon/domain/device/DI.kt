@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.device
 
+import io.github.openflocon.domain.device.usecase.CurrentDeviceIdProvider
 import io.github.openflocon.domain.device.usecase.DeleteDeviceApplicationUseCase
 import io.github.openflocon.domain.device.usecase.DeleteDeviceUseCase
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
@@ -22,13 +23,16 @@ import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCas
 import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
+import io.github.openflocon.domain.device.usecase.SelectedCurrentDeviceIdProvider
 import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.StopRecordingVideoUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val deviceModule = module {
+    factoryOf(::SelectedCurrentDeviceIdProvider) bind CurrentDeviceIdProvider::class
     factoryOf(::GetCurrentDeviceIdAndPackageNameUseCase)
     factoryOf(::GetCurrentDeviceIdUseCase)
     factoryOf(::HandleDeviceAndAppUseCase)
