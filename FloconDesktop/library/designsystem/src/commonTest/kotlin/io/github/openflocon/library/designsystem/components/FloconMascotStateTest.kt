@@ -450,11 +450,11 @@ class FloconMascotStateTest {
         assertFalse(mascot.facingRight)
 
         // the pointer is far away but it does not move during the bark
-        mascot.run(targetX = 900f, durationMs = 600, startMs = 32)
+        mascot.run(targetX = 900f, durationMs = 450, startMs = 32)
         assertEquals(FloconMascotMode.Bark, mascot.mode)
         assertEquals(barkX, mascot.x)
 
-        mascot.run(targetX = 900f, durationMs = 200, startMs = 632)
+        mascot.run(targetX = 900f, durationMs = 200, startMs = 482)
         assertEquals(FloconMascotMode.Sit, mascot.mode)
         assertEquals(0f, mascot.barkProgress)
         assertEquals(0f, mascot.lift)

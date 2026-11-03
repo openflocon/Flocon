@@ -45,7 +45,7 @@ class FloconMascotConfig(
     val minTurnIntervalMs: Long = 600,
     val jumpMs: Long = 600,
     val backflipMs: Long = 900,
-    val barkMs: Long = 700,
+    val barkMs: Long = 560,
     val wakeUpMs: Long = 1_000,
 )
 
