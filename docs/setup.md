@@ -169,6 +169,17 @@ Flocon.connectionState.collect { state ->
 
 ---
 
+### Timeline logs
+
+To push your own navigation, user action, lifecycle or custom events into the Flocon timeline, add the optional `flocon-timeline` module (and `flocon-timeline-no-op` for release builds), install `FloconTimeline` in the `startFlocon` block, then call `Flocon.timelinePlugin.logNavigation(...)`. See [Timeline](timeline.md).
+
+```kotlin
+debugImplementation("io.github.openflocon:flocon-timeline:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-timeline-no-op:LAST_VERSION")
+```
+
+---
+
 ## 3. Install the Desktop Companion
 
 Download the latest release for your operating system:

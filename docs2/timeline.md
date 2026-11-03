@@ -73,6 +73,9 @@ There are two kinds of calls, never mixed:
 `value` is the main text of the row (a screen name for example), `params` is a `Map<String, String>` shown in the detail panel (text only, optional).
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 Flocon.timelinePlugin.logNavigation("CheckoutScreen", params = mapOf("from" to "CartScreen"))
 Flocon.timelinePlugin.logUserAction("Tap on Pay")
 Flocon.timelinePlugin.logLifecycle("App moved to background")
@@ -87,6 +90,9 @@ Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), Fl
 ### Navigation listener (Compose)
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 @Composable
 fun NavigationLogger(navController: NavController) {
     DisposableEffect(navController) {
@@ -107,6 +113,9 @@ fun NavigationLogger(navController: NavController) {
 Declare a type once and reuse it, optionally with an extension:
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 val Billing = FloconTimelineType("billing")
 
 fun FloconTimelinePlugin.logBilling(value: String, params: Map<String, String> = emptyMap()) =

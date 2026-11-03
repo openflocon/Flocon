@@ -5,7 +5,7 @@ description: Push your own navigation, user action, lifecycle and custom logs in
 
 # 🕒 Timeline
 
-The timeline merges the events received by Flocon Desktop into **one chronological list** (and a graph), grouped by day and by app session, so you can see what happened right before a crash or an HTTP error. The logs sent by your app show up in it next to the other sources.
+The timeline merges the events received by Flocon Desktop into **one chronological list** (and a graph), grouped by day and by app session, so you can see what happened right before a crash or an HTTP error. Your app can send its own logs to it, shown in the list and in the graph.
 
 ---
 
@@ -40,6 +40,9 @@ There are two kinds of calls, never mixed:
 `value` is the main text of the row (a screen name for example), `params` is a `Map<String, String>` shown in the detail panel (text only, optional).
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 Flocon.timelinePlugin.logNavigation("CheckoutScreen", params = mapOf("from" to "CartScreen"))
 Flocon.timelinePlugin.logUserAction("Tap on Pay")
 Flocon.timelinePlugin.logLifecycle("App moved to background")
@@ -54,6 +57,9 @@ Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), Fl
 ### Navigation listener (Compose)
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 @Composable
 fun NavigationLogger(navController: NavController) {
     DisposableEffect(navController) {
@@ -74,6 +80,9 @@ fun NavigationLogger(navController: NavController) {
 Declare a type once and reuse it, optionally with an extension:
 
 ```kotlin
+import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.timeline.*
+
 val Billing = FloconTimelineType("billing")
 
 fun FloconTimelinePlugin.logBilling(value: String, params: Map<String, String> = emptyMap()) =
@@ -90,7 +99,7 @@ The native Swift SDK lives in a separate repository, [FloconSwift](https://githu
 
 ### On the desktop
 
-- Logs are a new **Log** source, in the list and in the graph (one marker per log, in its own lane).
+- Logs show up in the timeline, both in the list and in the graph (one marker per log).
 - Filter them by **Type** (including your custom tags) and by **Level**.
 - Click a row to open its detail: value, type, level, params and time.
 - The desktop keeps at most 20 000 logs per device and app, the oldest ones are dropped first.
