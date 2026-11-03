@@ -20,6 +20,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.semantics.Role
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.app_icon_small
+import io.github.openflocon.navigation.mascot.LocalMascotCommands
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -40,8 +41,8 @@ internal data class GifFrame(
 )
 
 /**
- * The app logo: shows the first frame of the animated dog, and plays the whole animation once on click.
- * Clicks while it plays are ignored.
+ * The app logo: shows the first frame of the animated dog, and plays the whole animation once on click,
+ * while the mascot barks. Clicks while it plays are ignored.
  */
 @Composable
 fun AnimatedAppLogo(
@@ -51,6 +52,7 @@ fun AnimatedAppLogo(
     val frames by produceState<ImmutableList<GifFrame>?>(initialValue = null) {
         value = runCatching { loadGifFrames(Res.readBytes(AnimatedLogoPath)) }.getOrNull()
     }
+    val mascot = LocalMascotCommands.current
     var frameIndex by remember { mutableIntStateOf(0) }
     var isPlaying by remember { mutableStateOf(false) }
 
@@ -70,7 +72,12 @@ fun AnimatedAppLogo(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             role = Role.Button,
-            onClick = { if (frames != null) isPlaying = true },
+            onClick = {
+                if (frames != null) {
+                    if (!isPlaying) mascot?.bark()
+                    isPlaying = true
+                }
+            },
         )
         .pointerHoverIcon(PointerIcon.Hand)
 
