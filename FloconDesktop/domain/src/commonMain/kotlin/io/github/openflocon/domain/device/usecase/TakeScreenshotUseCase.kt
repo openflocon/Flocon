@@ -17,18 +17,26 @@ class TakeScreenshotUseCase(
     private val iosSimulatorRepository: IosSimulatorRepository,
 ) {
 
-    suspend operator fun invoke(target: DeviceIdAndPackageNameDomainModel? = null): Either<Throwable, String> {
+    // [outputFile]: where to write the png, instead of the Screenshot folder of the user
+    suspend operator fun invoke(
+        target: DeviceIdAndPackageNameDomainModel? = null,
+        outputFile: File? = null,
+    ): Either<Throwable, String> {
         val current = target ?: getCurrentDeviceIdAndPackageNameUseCase() ?: return Failure(Throwable("No device selected"))
 
         val fileName = "screenshot_${current.packageName}_${System.currentTimeMillis()}.png"
         val onDeviceFilePath = "/sdcard/$fileName"
 
-        val parentFile = File(getFloconDocumentPathUseCase(), "Screenshot")
-        if (!parentFile.exists()) {
-            parentFile.mkdirs()
+        val filePath = if (outputFile != null) {
+            outputFile.parentFile?.mkdirs()
+            outputFile.absolutePath
+        } else {
+            val parentFile = File(getFloconDocumentPathUseCase(), "Screenshot")
+            if (!parentFile.exists()) {
+                parentFile.mkdirs()
+            }
+            File(parentFile, fileName).absolutePath
         }
-
-        val filePath = File(parentFile, fileName).absolutePath
 
         if (isCurrentDeviceIosUseCase(current)) {
             // only the booted iOS Simulator is supported, see IosSimulatorRepository
