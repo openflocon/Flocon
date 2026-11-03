@@ -13,6 +13,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUnavailableUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
@@ -35,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
@@ -65,6 +67,7 @@ internal class TimelineViewModel(
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
     observeTimelineScreenshotsFailingUseCase: ObserveTimelineScreenshotsFailingUseCase,
+    observeTimelineScreenshotsUnavailableUseCase: ObserveTimelineScreenshotsUnavailableUseCase,
     observeTimelineScreenshotsUseCase: ObserveTimelineScreenshotsUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
@@ -97,9 +100,17 @@ internal class TimelineViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
 
-    // the last screenshots failed: the control of the header warns
-    val screenshotsFailing: StateFlow<Boolean> = observeTimelineScreenshotsFailingUseCase()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+    // the last screenshots failed, or the device cannot take them: the control of the header says it
+    val screenshotsStatus: StateFlow<TimelineScreenshotsStatus> = combine(
+        observeTimelineScreenshotsFailingUseCase(),
+        observeTimelineScreenshotsUnavailableUseCase(),
+    ) { failing, unavailable ->
+        when {
+            unavailable -> TimelineScreenshotsStatus.Unavailable
+            failing -> TimelineScreenshotsStatus.Failing
+            else -> TimelineScreenshotsStatus.Working
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineScreenshotsStatus.Working)
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)

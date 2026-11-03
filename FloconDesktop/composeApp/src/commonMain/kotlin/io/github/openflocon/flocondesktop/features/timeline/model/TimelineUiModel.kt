@@ -61,6 +61,9 @@ internal sealed interface TimelineItemUiModel {
     ) : TimelineItemUiModel
 }
 
+// what the header says about the screenshots, next to the switch: the device does not support them (an Android over Wi-Fi)
+internal enum class TimelineScreenshotsStatus { Working, Failing, Unavailable }
+
 @Immutable
 internal data class TimelineSettingsUiModel(
     val autoScroll: Boolean,

@@ -30,6 +30,11 @@ class TimelineScreenshotRecorder(
     // the last captures failed (see [FAILURES_BEFORE_WARNING]): adb is not available, the device is locked…
     val isFailing: StateFlow<Boolean> = _isFailing
 
+    private val _isUnavailable = MutableStateFlow(false)
+
+    // the device cannot take them (an Android over Wi-Fi): nothing is captured, and the header says why
+    val isUnavailable: StateFlow<Boolean> = _isUnavailable
+
     private var consecutiveFailures = 0
 
     private data class Plan(val device: DeviceIdAndPackageNameDomainModel, val intervalMs: Long)
@@ -48,6 +53,7 @@ class TimelineScreenshotRecorder(
                 // the failures of the previous plan (another device, the feature turned off) are not the ones of this one
                 consecutiveFailures = 0
                 _isFailing.value = false
+                _isUnavailable.value = false
                 if (plan != null) captureEvery(plan)
             }
     }
@@ -55,7 +61,10 @@ class TimelineScreenshotRecorder(
     // a full interval of rest after each capture: a slow capture (wireless adb) never keeps the device busy all the time
     private suspend fun captureEvery(plan: Plan) {
         while (true) {
-            captureOnce(plan.device)
+            // asked at each turn: the adb serial of a device just connected is known a little later
+            val supported = capturer.isSupported(plan.device)
+            _isUnavailable.value = !supported
+            if (supported) captureOnce(plan.device)
             delay(plan.intervalMs)
         }
     }

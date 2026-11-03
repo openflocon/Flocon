@@ -63,6 +63,9 @@ class TimelineScreenshotRecorderTest {
         var durationMs = 0L
         var gate: CompletableDeferred<Unit>? = null
         var result: Either<Throwable, Unit> = Success(Unit)
+        var supported = true
+
+        override suspend fun isSupported(target: DeviceIdAndPackageNameDomainModel) = supported
 
         override suspend fun capture(target: DeviceIdAndPackageNameDomainModel, jpegFile: File): Either<Throwable, Unit> {
             calls += target
@@ -272,5 +275,34 @@ class TimelineScreenshotRecorderTest {
 
         assertEquals(2, env.capturer.calls.size)
         assertEquals(0, env.repository.added.size)
+    }
+
+    @Test
+    fun `nothing is captured on a device that is not supported, and it is said`() = runTest {
+        val env = env().also { it.capturer.supported = false }
+        start(env)
+
+        runCurrent()
+        advanceTimeBy(30_000)
+        runCurrent()
+
+        assertEquals(0, env.capturer.calls.size)
+        assertTrue(env.recorder.isUnavailable.value)
+        assertFalse(env.recorder.isFailing.value)
+    }
+
+    @Test
+    fun `the capture starts once the device turns out to be supported`() = runTest {
+        // the adb serial of a device just connected is not known: asked again at each turn
+        val env = env().also { it.capturer.supported = false }
+        start(env)
+        runCurrent()
+
+        env.capturer.supported = true
+        advanceTimeBy(10_000)
+        runCurrent()
+
+        assertEquals(1, env.capturer.calls.size)
+        assertFalse(env.recorder.isUnavailable.value)
     }
 }

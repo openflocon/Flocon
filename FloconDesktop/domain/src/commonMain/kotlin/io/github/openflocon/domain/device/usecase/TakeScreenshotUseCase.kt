@@ -9,7 +9,9 @@ import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 class TakeScreenshotUseCase(
@@ -51,10 +53,12 @@ class TakeScreenshotUseCase(
 
         // without the adb serial of the device, the commands run on every device connected: with several of them, the
         // screenshots of all of them are pulled to the same file and the last one wins
-        if (isCaptureAmbiguous(adbRepository.getAdbSerial(current.deviceId), connectedDevices())) {
-            // asks the app again: its answer gives the serial
+        val serial = adbRepository.getAdbSerial(current.deviceId)
+        if (serial == null && isCaptureAmbiguous(serial, connectedDevices())) {
+            // asks the app again: its answer gives the serial, which a device just connected has not sent yet
             handleNewDeviceUseCase(current)
-            return Failure(Throwable("Several devices are connected and the adb serial of ${current.deviceId} is not known yet"))
+            awaitAdbSerial(current.deviceId)
+                ?: return Failure(Throwable("Several devices are connected and the adb serial of ${current.deviceId} is not known yet"))
         }
 
         val device = AdbCommandTargetDomainModel.Device(current.deviceId)
@@ -82,6 +86,15 @@ class TakeScreenshotUseCase(
         }
     }
 
+    private suspend fun awaitAdbSerial(deviceId: String): String? = withTimeoutOrNull(SERIAL_WAIT_MS) {
+        var serial = adbRepository.getAdbSerial(deviceId)
+        while (serial == null) {
+            delay(SERIAL_POLL_MS)
+            serial = adbRepository.getAdbSerial(deviceId)
+        }
+        serial
+    }
+
     private suspend fun connectedDevices(): Int = executeAdbCommandUseCase(
         target = AdbCommandTargetDomainModel.AllDevices,
         command = "devices",
@@ -98,3 +111,6 @@ internal fun countConnectedDevices(devicesOutput: String): Int = devicesOutput.l
 
 // the screenshot cannot tell which device it is the one of
 internal fun isCaptureAmbiguous(serial: String?, connectedDevices: Int): Boolean = serial == null && connectedDevices > 1
+
+private const val SERIAL_WAIT_MS = 5_000L
+private const val SERIAL_POLL_MS = 250L

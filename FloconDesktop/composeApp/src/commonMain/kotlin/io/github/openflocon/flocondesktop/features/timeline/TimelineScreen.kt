@@ -80,6 +80,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineItems
@@ -116,7 +117,7 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
-    val screenshotsFailing by viewModel.screenshotsFailing.collectAsStateWithLifecycle()
+    val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
@@ -131,7 +132,7 @@ fun TimelineScreen(
         summary = summary,
         isLive = isLive,
         settings = settings,
-        screenshotsFailing = screenshotsFailing,
+        screenshotsStatus = screenshotsStatus,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
@@ -149,7 +150,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
-    screenshotsFailing: Boolean,
+    screenshotsStatus: TimelineScreenshotsStatus,
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
@@ -208,7 +209,7 @@ internal fun TimelineContent(
             summary = summary,
             isLive = isLive,
             settings = settings,
-            screenshotsFailing = screenshotsFailing,
+            screenshotsStatus = screenshotsStatus,
             onAction = onAction,
         )
 
@@ -450,7 +451,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
-            screenshotsFailing = false,
+            screenshotsStatus = TimelineScreenshotsStatus.Working,
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,

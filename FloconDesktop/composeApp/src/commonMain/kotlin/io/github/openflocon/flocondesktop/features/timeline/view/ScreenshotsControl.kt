@@ -14,8 +14,10 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshots
 import flocondesktop.composeapp.generated.resources.timeline_screenshots_failing
 import flocondesktop.composeapp.generated.resources.timeline_screenshots_interval
+import flocondesktop.composeapp.generated.resources.timeline_screenshots_unavailable
 import io.github.openflocon.domain.timeline.models.TimelineScreenshotIntervalsSeconds
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSegmentedTextToggle
@@ -26,14 +28,14 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The screenshots of the app taken at a regular interval, shown next to the events: a switch, and the interval once on.
- * [failing]: the last captures did not work.
+ * [status]: the last captures did not work, or the device cannot take them.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ScreenshotsControl(
     enabled: Boolean,
     intervalSeconds: Int,
-    failing: Boolean,
+    status: TimelineScreenshotsStatus,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -66,21 +68,28 @@ internal fun ScreenshotsControl(
             )
         }
         // the warning is about the capture: it makes no sense next to a switch that is off
-        if (failing && enabled) {
-            WithTooltip(tooltip = stringResource(Res.string.timeline_screenshots_failing)) {
-                CategoryDot(color = colors.statusWarning)
+        if (enabled) {
+            val tooltip = when (status) {
+                TimelineScreenshotsStatus.Working -> null
+                TimelineScreenshotsStatus.Failing -> stringResource(Res.string.timeline_screenshots_failing)
+                TimelineScreenshotsStatus.Unavailable -> stringResource(Res.string.timeline_screenshots_unavailable)
+            }
+            if (tooltip != null) {
+                WithTooltip(tooltip = tooltip) {
+                    CategoryDot(color = colors.statusWarning)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ScreenshotsControlPreviewContent(enabled: Boolean, failing: Boolean) {
+private fun ScreenshotsControlPreviewContent(enabled: Boolean, status: TimelineScreenshotsStatus) {
     FloconTheme {
         ScreenshotsControl(
             enabled = enabled,
             intervalSeconds = 10,
-            failing = failing,
+            status = status,
             onAction = {},
         )
     }
@@ -88,12 +97,16 @@ private fun ScreenshotsControlPreviewContent(enabled: Boolean, failing: Boolean)
 
 @Preview
 @Composable
-private fun ScreenshotsControlOnPreview() = ScreenshotsControlPreviewContent(enabled = true, failing = false)
+private fun ScreenshotsControlOnPreview() = ScreenshotsControlPreviewContent(enabled = true, status = TimelineScreenshotsStatus.Working)
 
 @Preview
 @Composable
-private fun ScreenshotsControlOffPreview() = ScreenshotsControlPreviewContent(enabled = false, failing = false)
+private fun ScreenshotsControlOffPreview() = ScreenshotsControlPreviewContent(enabled = false, status = TimelineScreenshotsStatus.Working)
 
 @Preview
 @Composable
-private fun ScreenshotsControlFailingPreview() = ScreenshotsControlPreviewContent(enabled = true, failing = true)
+private fun ScreenshotsControlFailingPreview() = ScreenshotsControlPreviewContent(enabled = true, status = TimelineScreenshotsStatus.Failing)
+
+@Preview
+@Composable
+private fun ScreenshotsControlUnavailablePreview() = ScreenshotsControlPreviewContent(enabled = true, status = TimelineScreenshotsStatus.Unavailable)
