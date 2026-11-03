@@ -63,7 +63,6 @@
     <string name="timeline_screenshots_off_hint">Les captures sont désactivées. Active-les pour voir ce qu’il y avait à l’écran à côté de chaque événement.</string>
     <string name="timeline_screenshots_turn_on">Activer</string>
     <string name="timeline_screenshot_at">Écran à %1$s</string>
-    <string name="timeline_screenshot_before_cursor">%1$d s avant le curseur</string>
     <string name="timeline_screenshot_marker">Capture · %1$s</string>
     <string name="timeline_screenshots_failing">Les captures échouent : adb est-il disponible ?</string>
     <string name="timeline_filters_title">Filtres</string>

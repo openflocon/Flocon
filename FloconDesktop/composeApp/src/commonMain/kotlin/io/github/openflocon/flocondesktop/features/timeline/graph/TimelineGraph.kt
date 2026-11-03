@@ -127,8 +127,7 @@ private const val InstantLabelPaddingPx = 4f
 private const val AppStartLineWidthPx = 2f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
-private const val PopoverOffsetPx = 12f
-private const val PopoverWidthPx = 260f
+private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
 internal data class GraphSessionUiModel(val position: Int, val total: Int) {
@@ -155,7 +154,6 @@ internal fun TimelineGraph(
     autoScroll: Boolean = false,
     // the screenshots strip above the axis: [screenshotsEnabled] is the setting, the captures are in [model]
     screenshotsEnabled: Boolean = false,
-    screenshotIntervalSeconds: Int = 10,
     onTurnOnScreenshots: () -> Unit = {},
 ) {
     val colors = FloconTheme.colors
@@ -175,8 +173,8 @@ internal fun TimelineGraph(
     var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
-    // the time under the pointer in the track, for the screenshot preview
-    var hoverTimeMs by remember { mutableStateOf<Long?>(null) }
+    // the screenshot of the strip under the pointer, shown larger
+    var hoveredScreenshot by remember { mutableStateOf<GraphScreenshotUiModel?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // the last x of the pointer in the track: the pinch zooms around it
@@ -265,14 +263,13 @@ internal fun TimelineGraph(
             selection = colors.ink,
         )
 
-        val maxScreenshotGapMs = 2 * screenshotIntervalSeconds * 1_000L
         ScreenshotStrip(
             screenshots = model.screenshots,
             viewport = currentViewport,
             trackWidthPx = trackWidth,
             enabled = screenshotsEnabled,
-            cursorTimeMs = hoverTimeMs,
-            maxGapMs = maxScreenshotGapMs,
+            hoveredTimeMs = hoveredScreenshot?.timeMs,
+            onHover = { hoveredScreenshot = it },
             onTurnOn = onTurnOnScreenshots,
         )
 
@@ -312,8 +309,6 @@ internal fun TimelineGraph(
                                     }
 
                                     PointerEventType.Move -> {
-                                        // only followed when there are screenshots to show: without them a move does not recompose the graph
-                                        hoverTimeMs = if (model.screenshots.isNotEmpty() && x in 0f..trackWidth && y >= 0f) viewport.msAt(x).toLong() else null
                                         hovered = if (x >= 0f && y >= 0f) {
                                             model.hitTest(viewport, x, y + viewport.scrollY)
                                         } else {
@@ -321,10 +316,7 @@ internal fun TimelineGraph(
                                         }
                                     }
 
-                                    PointerEventType.Exit -> {
-                                        hovered = null
-                                        hoverTimeMs = null
-                                    }
+                                    PointerEventType.Exit -> hovered = null
                                 }
                             }
                         }
@@ -391,19 +383,14 @@ internal fun TimelineGraph(
                 }
             }
 
-            // the screenshot taken just before the pointer, next to it, when there is one in range
-            val cursor = hoverTimeMs
-            val before = cursor?.let { screenshotBefore(model.screenshots, it, maxScreenshotGapMs) }
-            if (cursor != null && before != null) {
-                val cursorX = LaneLabelWidthPx + currentViewport.xOf(cursor)
-                // on the other side of the pointer when it would leave the graph
-                val onTheLeft = cursorX + PopoverOffsetPx + PopoverWidthPx > widthPx
+            // the hovered thumbnail, larger, under its place in the strip. A screenshot that left the strip (cap, new session) is not shown
+            hoveredScreenshot?.takeIf { it in model.screenshots }?.let { shot ->
+                val centerX = LaneLabelWidthPx + currentViewport.xOf(shot.timeMs)
                 ScreenshotPopover(
-                    screenshot = before,
-                    beforeMs = cursor - before.timeMs,
+                    screenshot = shot,
                     modifier = Modifier.offset(
-                        x = (if (onTheLeft) cursorX - PopoverOffsetPx - PopoverWidthPx else cursorX + PopoverOffsetPx).dp,
-                        y = AxisHeightPx.dp,
+                        x = (centerX - PopoverWidthPx / 2).coerceIn(0f, max(widthPx - PopoverWidthPx, 0f)).dp,
+                        y = 0.dp,
                     ),
                 )
             }

@@ -26,12 +26,13 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_at
-import flocondesktop.composeapp.generated.resources.timeline_screenshot_before_cursor
 import flocondesktop.composeapp.generated.resources.timeline_screenshots
 import flocondesktop.composeapp.generated.resources.timeline_screenshots_off_hint
 import flocondesktop.composeapp.generated.resources.timeline_screenshots_turn_on
@@ -44,9 +45,8 @@ import java.io.File
 private val ThumbWidth = 58.dp
 private val ThumbHeight = 122.dp
 private val ThumbGap = 6.dp
-private val PopoverImageWidth = 104.dp
-private val PopoverImageHeight = 220.dp
-private val PopoverWidth = 260.dp
+private val PopoverImageWidth = 190.dp
+private val PopoverImageHeight = 400.dp
 private val HintHeight = 48.dp
 private val DashLength = 6.dp
 
@@ -60,8 +60,8 @@ internal fun ScreenshotStrip(
     viewport: GraphViewport,
     trackWidthPx: Float,
     enabled: Boolean,
-    cursorTimeMs: Long?,
-    maxGapMs: Long,
+    hoveredTimeMs: Long?,
+    onHover: (GraphScreenshotUiModel?) -> Unit,
     onTurnOn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -95,8 +95,8 @@ internal fun ScreenshotStrip(
                     screenshots = screenshots,
                     viewport = viewport,
                     trackWidthPx = trackWidthPx,
-                    cursorTimeMs = cursorTimeMs,
-                    maxGapMs = maxGapMs,
+                    hoveredTimeMs = hoveredTimeMs,
+                    onHover = onHover,
                 )
             }
         }
@@ -108,8 +108,8 @@ private fun Thumbnails(
     screenshots: List<GraphScreenshotUiModel>,
     viewport: GraphViewport,
     trackWidthPx: Float,
-    cursorTimeMs: Long?,
-    maxGapMs: Long,
+    hoveredTimeMs: Long?,
+    onHover: (GraphScreenshotUiModel?) -> Unit,
 ) {
     val colors = FloconTheme.colors
     val thumbWidthPx = ThumbWidth.value
@@ -117,7 +117,6 @@ private fun Thumbnails(
         thinScreenshots(screenshots, viewport, minGapPx = thumbWidthPx + ThumbGap.value)
             .filter { viewport.xOf(it.timeMs) in -thumbWidthPx..(trackWidthPx + thumbWidthPx) }
     }
-    val highlighted = cursorTimeMs?.let { screenshotBefore(screenshots, it, maxGapMs) }
 
     Box(
         modifier = Modifier
@@ -126,11 +125,22 @@ private fun Thumbnails(
             .clipToBounds(),
     ) {
         visible.forEach { shot ->
-            val isHighlighted = highlighted?.timeMs == shot.timeMs
+            val isHighlighted = hoveredTimeMs == shot.timeMs
             Box(
                 modifier = Modifier
                     .offset(x = (viewport.xOf(shot.timeMs) - thumbWidthPx / 2).dp)
                     .size(width = ThumbWidth, height = ThumbHeight)
+                    // hovering a thumbnail shows it larger, over the graph
+                    .pointerInput(shot) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                when (awaitPointerEvent().type) {
+                                    PointerEventType.Enter -> onHover(shot)
+                                    PointerEventType.Exit -> onHover(null)
+                                }
+                            }
+                        }
+                    }
                     .clip(FloconTheme.shapes.small)
                     .background(colors.bg200)
                     .border(if (isHighlighted) 2.dp else 1.dp, if (isHighlighted) colors.accent else colors.line, FloconTheme.shapes.small),
@@ -141,18 +151,6 @@ private fun Thumbnails(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxHeight().fillMaxWidth(),
-                )
-            }
-        }
-        cursorTimeMs?.let { time ->
-            val x = viewport.xOf(time)
-            if (x in 0f..trackWidthPx) {
-                Box(
-                    modifier = Modifier
-                        .offset(x = x.dp)
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(colors.inkMuted),
                 )
             }
         }
@@ -195,22 +193,20 @@ private fun OffHint(onTurnOn: () -> Unit) {
     }
 }
 
-/** The screenshot taken [beforeMs] before the cursor, shown over the lanes. */
+/** A screenshot of the strip, larger, shown over the graph while its thumbnail is hovered. */
 @Composable
 internal fun ScreenshotPopover(
     screenshot: GraphScreenshotUiModel,
-    beforeMs: Long,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    Row(
+    Column(
         modifier = modifier
-            .width(PopoverWidth)
             .clip(FloconTheme.shapes.medium)
             .background(colors.bg100)
             .border(1.dp, colors.line, FloconTheme.shapes.medium)
             .padding(FloconTheme.spacing.medium),
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         AsyncImage(
             model = File(screenshot.filePath),
@@ -221,18 +217,11 @@ internal fun ScreenshotPopover(
                 .clip(FloconTheme.shapes.small)
                 .background(colors.bg200),
         )
-        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
-            Text(
-                text = stringResource(Res.string.timeline_screenshot_at, formatScreenshotTime(screenshot.timeMs)),
-                style = FloconTheme.typography.labelLarge,
-                color = colors.ink,
-            )
-            Text(
-                text = stringResource(Res.string.timeline_screenshot_before_cursor, (beforeMs / 1_000L).toInt()),
-                style = FloconTheme.typography.bodySmall,
-                color = colors.inkMuted,
-            )
-        }
+        Text(
+            text = stringResource(Res.string.timeline_screenshot_at, formatScreenshotTime(screenshot.timeMs)),
+            style = FloconTheme.typography.labelLarge,
+            color = colors.ink,
+        )
     }
 }
 
@@ -245,8 +234,8 @@ private fun ScreenshotStripPreviewContent(enabled: Boolean, withScreenshots: Boo
             viewport = GraphViewport(startMs = 0.0, pxPerMs = 0.02),
             trackWidthPx = 900f,
             enabled = enabled,
-            cursorTimeMs = if (withScreenshots) 25_000L else null,
-            maxGapMs = 20_000L,
+            hoveredTimeMs = if (withScreenshots) 20_000L else null,
+            onHover = {},
             onTurnOn = {},
         )
     }

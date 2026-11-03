@@ -38,15 +38,6 @@ internal fun thinScreenshots(
     return kept
 }
 
-// the latest screenshot at or before [timeMs], none when it is older than [maxGapMs] (the capture was paused)
-internal fun screenshotBefore(
-    shots: List<GraphScreenshotUiModel>,
-    timeMs: Long,
-    maxGapMs: Long,
-): GraphScreenshotUiModel? = shots
-    .lastOrNull { it.timeMs <= timeMs }
-    ?.takeIf { timeMs - it.timeMs <= maxGapMs }
-
 // "0:30", "61:01": the time of a screenshot since the start of the session
 internal fun formatScreenshotTime(ms: Long): String {
     val totalSeconds = ms / 1_000L

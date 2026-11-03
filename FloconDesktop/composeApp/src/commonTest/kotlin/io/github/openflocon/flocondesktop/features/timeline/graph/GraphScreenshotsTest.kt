@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class GraphScreenshotsTest {
 
@@ -47,7 +46,6 @@ class GraphScreenshotsTest {
     fun `an empty list gives an empty strip`() {
         assertEquals(emptyList(), screenshotsOfSession(emptyList(), sessionStart = 0, nextSessionStart = null))
         assertEquals(emptyList(), thinScreenshots(emptyList(), viewport, minGapPx = 60f))
-        assertNull(screenshotBefore(emptyList(), timeMs = 500, maxGapMs = 1_000))
     }
 
     @Test
@@ -71,23 +69,6 @@ class GraphScreenshotsTest {
 
         assertEquals(2, thinScreenshots(shots, viewport, minGapPx = 60f).size)
         assertEquals(3, thinScreenshots(shots, GraphViewport(startMs = 0.0, pxPerMs = 4.0), minGapPx = 60f).size)
-    }
-
-    @Test
-    fun `the nearest before the cursor is the latest at or before it`() {
-        val shots = listOf(ui(0), ui(10_000), ui(20_000))
-
-        assertEquals(10_000L, screenshotBefore(shots, timeMs = 14_000, maxGapMs = 20_000)?.timeMs)
-        assertEquals(10_000L, screenshotBefore(shots, timeMs = 10_000, maxGapMs = 20_000)?.timeMs)
-    }
-
-    @Test
-    fun `none is returned when the closest is older than the max gap`() {
-        val shots = listOf(ui(0), ui(10_000))
-
-        assertNull(screenshotBefore(shots, timeMs = 31_000, maxGapMs = 20_000))
-        // nothing before the first one either
-        assertNull(screenshotBefore(listOf(ui(5_000)), timeMs = 1_000, maxGapMs = 20_000))
     }
 
     @Test
