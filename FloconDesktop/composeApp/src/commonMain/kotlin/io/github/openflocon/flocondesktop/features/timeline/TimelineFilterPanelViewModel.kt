@@ -63,6 +63,7 @@ internal class TimelineFilterPanelViewModel(
 
     val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
         val summary by summary.collectAsState()
+
         // read from the settings: the panel is never empty, the switches settle once the stored selection is known
         val sources by filterStore.storedSources.collectAsState(initial = null)
         val facets by filterStore.facets.collectAsState()

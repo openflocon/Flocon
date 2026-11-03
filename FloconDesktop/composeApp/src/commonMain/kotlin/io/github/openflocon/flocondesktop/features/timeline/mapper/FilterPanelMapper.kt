@@ -8,14 +8,14 @@ import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.timeline.TimelineDatabaseRules
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRuleUiModel
@@ -61,9 +61,11 @@ private fun TimelineSummaryUiModel.toSourceFilter(
     database: TimelineDatabaseRules,
 ): TimelineFilterSectionUi {
     fun group(facet: TimelineFacet) = toGroup(facet, hidden = facets[facet].orEmpty())
+
     // a selector that always exists, even when no value was seen yet
     fun groupOrEmpty(facet: TimelineFacet) = group(facet) ?: TimelineFacetGroupUiModel(facet = facet, values = persistentListOf())
     val count = sourceCounts[source] ?: 0
+
     // the rules and the transactions are filters of the database source too
     val activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size } +
         if (source == TimelineSource.Database) database.activeCount else 0

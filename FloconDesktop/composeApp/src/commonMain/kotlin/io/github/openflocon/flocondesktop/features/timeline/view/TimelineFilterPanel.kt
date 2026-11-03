@@ -327,12 +327,19 @@ private fun FilterSection(
             ) {
                 when (section) {
                     is TimelineDatabaseFilterUiModel -> DatabaseFilterCard(section, onAction)
+
                     is TimelineAnalyticsFilterUiModel -> AnalyticsFilterCard(section, onAction)
+
                     is TimelineCrashFilterUiModel -> CrashFilterCard(section, onAction)
+
                     is TimelineAccessibilityFilterUiModel -> AccessibilityFilterCard(section, onAction)
+
                     is TimelineTableFilterUiModel -> TableFilterCard(section, onAction)
+
                     is TimelineWebViewFilterUiModel -> WebViewFilterCard(section, onAction)
+
                     is TimelineBasicFilterUiModel -> Unit
+
                     is TimelineNetworkFilterUiModel -> NetworkFilterCard(
                         network = section,
                         onAction = onAction
@@ -626,12 +633,12 @@ private fun RailButton(
 }
 
 // the section matches when the search is in the name of the source, or in one of its facet values
-private fun TimelineFilterSectionUi.matches(query: String, label: String): Boolean {
-    return query.isBlank() || label.contains(query, ignoreCase = true) || when (this) {
+private fun TimelineFilterSectionUi.matches(query: String, label: String): Boolean = query.isBlank() ||
+    label.contains(query, ignoreCase = true) ||
+    when (this) {
         is TimelineNetworkFilterUiModel -> false
         else -> facetGroups().any { group -> group.values.any { it.value.contains(query, ignoreCase = true) } }
     }
-}
 
 // "Réseau" -> "RÉ", "Base de données" -> "BD"
 private fun String.initials(): String {
