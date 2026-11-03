@@ -24,8 +24,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.serialization.modules.EmptySerializersModule
 
+@OptIn(ExperimentalAtomicApi::class)
 class FloconClient internal constructor(
     private val context: FloconContext,
     private val scope: CoroutineScope,
@@ -57,18 +60,19 @@ class FloconClient internal constructor(
     /** The connection to the default address of the desktop app, always tried. */
     internal val defaultLink: FloconLink by lazy { newLink(defaultServer()) }
 
-    @Volatile
-    internal var websocketPort: Int = FLOCON_DEFAULT_WEBSOCKET_PORT
-        private set
+    private val websocketPortValue = AtomicInt(FLOCON_DEFAULT_WEBSOCKET_PORT)
+    private val httpPortValue = AtomicInt(FLOCON_DEFAULT_HTTP_PORT)
 
-    @Volatile
-    internal var httpPort: Int = FLOCON_DEFAULT_HTTP_PORT
-        private set
+    internal val websocketPort: Int
+        get() = websocketPortValue.load()
+
+    internal val httpPort: Int
+        get() = httpPortValue.load()
 
     /** Sets the desktop ports, to call before the default link is first used. */
     internal fun setupPorts(websocketPort: Int, httpPort: Int) {
-        this.websocketPort = websocketPort
-        this.httpPort = httpPort
+        websocketPortValue.store(websocketPort)
+        httpPortValue.store(httpPort)
     }
 
     /** The connection to the address given with `Flocon.connect`, in addition to the default one. */
