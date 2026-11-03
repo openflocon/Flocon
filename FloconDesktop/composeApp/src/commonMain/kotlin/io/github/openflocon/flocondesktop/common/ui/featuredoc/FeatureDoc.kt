@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.common.ui.featuredoc
 
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.feature_doc_accessibility_empty_description
+import flocondesktop.composeapp.generated.resources.feature_doc_accessibility_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_analytics_empty_description
 import flocondesktop.composeapp.generated.resources.feature_doc_analytics_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_crashreporter_empty_description
@@ -25,6 +27,8 @@ import flocondesktop.composeapp.generated.resources.feature_doc_tables_empty_des
 import flocondesktop.composeapp.generated.resources.feature_doc_tables_empty_title
 import flocondesktop.composeapp.generated.resources.feature_doc_timeline_empty_description
 import flocondesktop.composeapp.generated.resources.feature_doc_timeline_empty_title
+import flocondesktop.composeapp.generated.resources.feature_doc_webview_empty_description
+import flocondesktop.composeapp.generated.resources.feature_doc_webview_empty_title
 import org.jetbrains.compose.resources.StringResource
 
 private const val DOC_BASE_URL = "https://openflocon.github.io/Flocon/"
@@ -115,6 +119,18 @@ enum class FeatureDoc(
         setupAnchor = "setup",
         emptyTitle = Res.string.feature_doc_crashreporter_empty_title,
         emptyDescription = Res.string.feature_doc_crashreporter_empty_description,
+    ),
+    WebView(
+        page = "webview",
+        setupAnchor = "setup",
+        emptyTitle = Res.string.feature_doc_webview_empty_title,
+        emptyDescription = Res.string.feature_doc_webview_empty_description,
+    ),
+    Accessibility(
+        page = "accessibility",
+        setupAnchor = "setup",
+        emptyTitle = Res.string.feature_doc_accessibility_empty_title,
+        emptyDescription = Res.string.feature_doc_accessibility_empty_description,
     ),
 
     // Desktop only tool: always usable, so it has no empty state, only a documentation link
