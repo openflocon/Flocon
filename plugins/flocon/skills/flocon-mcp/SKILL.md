@@ -20,6 +20,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 
 | Goal | Tools |
 |---|---|
+| Understand what the app did around a moment ("before the crash", "at 14:32", "recently"), or know if an event was sent | `get_timeline` first: one narrative of every source with the anomalies first (crash, HTTP errors, loops, responses over 1 MB). Give nothing to let it choose (the latest crash, otherwise the last 2 minutes) and read `window.reason`; `mode` / `at` / `from` / `to` / `eventId` to choose; `search` to know if an event was sent. Then use the ids of its lines (`network:<callId>` for `get_network_call`, `crash:<crashId>` for `get_crash_report`) |
 | Find a failing or slow call | `list_network_calls`, `search_network_calls` (summaries), then `get_network_call` with a `callId` for headers, bodies and the cURL command |
 | Make the app receive a fake response or exception | `create_network_mock` (`fromCallId` starts from a captured call), `update_network_mock`, `list_network_mocks`, `get_network_mock`, `delete_network_mock` |
 | Check a file written by the app | `list_files` ("files" / "caches" directories), `read_file` |
@@ -45,6 +46,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 - Mocks change the app behavior: prefer disabling a mock (`update_network_mock`) over deleting it, and tell the user which mocks you left enabled.
 - `query_database` is read only (`SELECT`, `PRAGMA` without value, `EXPLAIN`): always add a `LIMIT`.
 - Files, calls and databases cannot be modified, only mocks can.
+- `get_timeline` only reads. The times are those of the phone, not the computer. Read `window.reason`, `truncated` and `notes` before concluding: an empty answer can mean the window was wrong, not that nothing happened.
 - `flocon_navigate_into_desktop_app` changes what the user selected in Flocon (device, app) and saves the timeline view in their preferences: use it when asked to show something, say what you changed, and ask them to go to the Flocon app.
 - `take_screenshot`, `start_screen_recording` and `open_flocon_folder` act on the device / computer (iOS: the booted Simulator only): use them when asked or when seeing the screen helps. `take_screenshot`, `start_screen_recording` and `open_deeplink` use adb on Android, so they fail for a device whose `connectionType` (in `list_devices`) is `wifi`.
 - `take_flocon_desktop_screenshot` only reads: it captures the Flocon main window as displayed, with its open dialogs, menus and popups (separate windows such as About are not included).
