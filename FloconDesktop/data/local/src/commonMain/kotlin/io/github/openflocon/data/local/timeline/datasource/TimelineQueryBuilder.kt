@@ -17,12 +17,16 @@ internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
 internal const val KIND_APP_START = "appstart"
 internal const val KIND_ADB = "adb"
+internal const val KIND_LOG = "log"
 
 // apps can log millions of queries: only the most recent ones are merged in the timeline
 internal const val MAX_DATABASE_LOGS = 20_000
 
+// same for the logs sent by the app
+internal const val MAX_TIMELINE_LOGS = 20_000
+
 // the tables that store the session of their rows
-private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")
+private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity", "TimelineLogEntity")
 
 // columns only the network calls fill
 private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError"
@@ -362,6 +366,26 @@ private fun buildUnion(
                 )
             )
         }
+        if (TimelineSource.Log in filter.sources) {
+            add(
+                branch(
+                    // the level is a facet column too (read back by the outer select), an ERROR log is flagged in SQL
+                    select = "'$KIND_LOG' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
+                        "value AS title, type AS subtitle, appInstance AS appInstance, " +
+                        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, " +
+                        "CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError",
+                    from = "TimelineLogEntity",
+                    appInstanceColumn = "appInstance",
+                    textColumns = listOf("value", "type"),
+                    timeColumn = "timestamp",
+                    facetExpressions = mapOf(
+                        TimelineFacet.LogType to "type",
+                        TimelineFacet.LogLevel to "level",
+                    ),
+                    orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_TIMELINE_LOGS",
+                )
+            )
+        }
         if (TimelineSource.Adb in filter.sources) {
             add(
                 branch(
@@ -400,7 +424,7 @@ private fun latestSessionSql(deviceId: String, packageName: String, params: Muta
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
-        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS sessionStart WHERE 0"
+        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS level, NULL AS sessionStart WHERE 0"
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -443,7 +467,7 @@ internal fun buildTimelineQuery(
 
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, " +
+            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.${TimelineFacet.LogLevel.column()} AS level, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
             // an app start is below the events that happened at the same time

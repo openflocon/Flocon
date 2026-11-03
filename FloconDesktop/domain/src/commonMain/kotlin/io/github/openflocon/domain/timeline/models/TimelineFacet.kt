@@ -61,4 +61,16 @@ enum class TimelineFacet(
             "VIEW_ACCESSIBILITY_FOCUS_CLEARED",
         ),
     ),
+
+    // the type of the log: the known ones are always offered, the custom tags come from the logs received
+    LogType(
+        source = TimelineSource.Log,
+        knownValues = listOf("navigation", "userAction", "lifecycle"),
+    ),
+
+    // as stored: upper-case
+    LogLevel(
+        source = TimelineSource.Log,
+        knownValues = listOf("DEBUG", "INFO", "WARNING", "ERROR"),
+    ),
 }

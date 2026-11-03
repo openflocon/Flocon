@@ -19,7 +19,7 @@ class TimelineQueryBuilderTest {
     )
 
     // the sessions are looked up in the tables that store them
-    private val sessionParams = listOf<Any>("device", "com.app", "device", "com.app", "device", "com.app")
+    private val sessionParams = listOf<Any>("device", "com.app", "device", "com.app", "device", "com.app", "device", "com.app")
 
     // every source but the app starts, which are sessions and not events
     private val eventSources = TimelineSource.entries.size - 1
@@ -41,6 +41,7 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("FROM TableItemEntity JOIN TableEntity"))
         assertTrue(query.sql.contains("FROM DeeplinkEntity"))
         assertTrue(query.sql.contains("FROM AdbCommandHistoryEntity"))
+        assertTrue(query.sql.contains("FROM TimelineLogEntity"))
         assertTrue(
             query.sql.endsWith(
                 "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC"
@@ -89,7 +90,8 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("SELECT appInstance FROM FloconNetworkCallEntity"))
         assertTrue(query.sql.contains("SELECT appInstance FROM DatabaseQueryLogEntity"))
         assertTrue(query.sql.contains("SELECT appInstance FROM AnalyticsItemEntity"))
-        assertEquals(3, Regex(" UNION SELECT").findAll(query.sql).count() + 1)
+        assertTrue(query.sql.contains("SELECT appInstance FROM TimelineLogEntity"))
+        assertEquals(4, Regex(" UNION SELECT").findAll(query.sql).count() + 1)
         assertTrue(query.sql.contains("(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart"))
         // the sessions come first in the query, then the crashes
         assertEquals(sessionParams + listOf<Any>("device", "com.app"), query.params)
@@ -168,9 +170,9 @@ class TimelineQueryBuilderTest {
     fun `the session filter is only applied on the sources that store it`() {
         val query = build(TimelineFilterDomainModel(appInstance = 42L))
 
-        // network (request and response), database, analytics, accessibility and the app starts
-        assertEquals(6, Regex("appInstance = \\?").findAll(query.sql).count())
-        assertEquals(6, query.params.count { it == 42L })
+        // network (request and response), database, analytics, accessibility, logs and the app starts
+        assertEquals(7, Regex("appInstance = \\?").findAll(query.sql).count())
+        assertEquals(7, query.params.count { it == 42L })
     }
 
     @Test
@@ -482,5 +484,101 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("kind <> '$KIND_APP_START'"))
         assertTrue(query.sql.contains("FROM CrashReportEntity"))
         assertFalse(query.sql.contains("request_url AS title"))
+    }
+
+    private fun logs(filter: TimelineFilterDomainModel = TimelineFilterDomainModel(sources = setOf(TimelineSource.Log))) = build(filter)
+
+    @Test
+    fun `logBranchPresentWhenSourceSelected`() {
+        assertTrue(logs().sql.contains("FROM TimelineLogEntity"))
+        assertTrue(logs().sql.contains("'$KIND_LOG' AS kind, CAST(id AS TEXT) AS id"))
+        assertFalse(build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Crash))).sql.contains("value AS title"))
+        assertTrue(logs().sql.contains("ORDER BY timestamp DESC LIMIT $MAX_TIMELINE_LOGS"))
+    }
+
+    @Test
+    fun `logRowsScopedToDeviceAndPackage`() {
+        val query = logs(TimelineFilterDomainModel(sources = setOf(TimelineSource.Log), appInstance = 1000L))
+
+        assertTrue(query.sql.contains("WHERE deviceId = ? AND packageName = ? AND appInstance = ?"))
+        assertEquals(sessionParams + listOf<Any>("device", "com.app", 1000L), query.params)
+    }
+
+    @Test
+    fun `logRowsUseTitleValueSubtitleType`() {
+        val sql = logs().sql
+
+        assertTrue(sql.contains("value AS title, type AS subtitle"))
+        assertTrue(sql.contains("u.facetLogLevel AS level"))
+        assertTrue(sql.contains("type AS facetLogType"))
+        assertTrue(sql.contains("level AS facetLogLevel"))
+    }
+
+    @Test
+    fun `levelFacetFiltersRows`() {
+        val query = logs(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Log),
+                facets = mapOf(TimelineFacet.LogLevel to setOf("ERROR")),
+            ),
+        )
+
+        assertTrue(query.sql.contains("(level IS NULL OR level NOT IN (?))"))
+        assertTrue(query.params.contains("ERROR"))
+        assertEquals(listOf("DEBUG", "INFO", "WARNING", "ERROR"), TimelineFacet.LogLevel.knownValues)
+    }
+
+    @Test
+    fun `typeFacetFiltersRows`() {
+        val query = logs(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Log),
+                facets = mapOf(TimelineFacet.LogType to setOf("userAction")),
+            ),
+        )
+
+        assertTrue(query.sql.contains("(type IS NULL OR type NOT IN (?))"))
+        assertTrue(query.params.contains("userAction"))
+    }
+
+    @Test
+    fun `errorLevelRowHasError`() {
+        assertTrue(logs().sql.contains("CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError"))
+    }
+
+    @Test
+    fun `customTagAppearsAsLogTypeFacetValueAndFilters`() {
+        // the custom tags are not known values: they are counted from the rows
+        assertFalse(TimelineFacet.LogType.knownValues.contains("billing"))
+        val counts = buildTimelineFacetCountsQuery(
+            deviceId = "device",
+            packageName = "com.app",
+            filter = TimelineFilterDomainModel(),
+        )
+        assertTrue(counts.sql.contains("SELECT 'LogType' AS facet, facetLogType AS value, COUNT(*) AS count FROM ("))
+        assertTrue(counts.sql.contains("SELECT 'LogLevel' AS facet, facetLogLevel AS value"))
+
+        val filtered = logs(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Log),
+                facets = mapOf(TimelineFacet.LogType to setOf("billing")),
+            ),
+        )
+        assertTrue(filtered.params.contains("billing"))
+    }
+
+    @Test
+    fun `emptyValueStillProducesRow`() {
+        // no filter on the value: only the text filter, when used, looks at it
+        val sql = logs().sql
+        assertFalse(sql.contains("value IS NOT NULL"))
+        assertFalse(sql.contains("value <> ''"))
+        assertFalse(sql.contains("LIKE"))
+    }
+
+    @Test
+    fun `sameTimestampBothRowsReturnedInStableOrder`() {
+        // rows of the same time are told apart by their id, so the order is the same on every query
+        assertTrue(logs().sql.endsWith("u.id DESC"))
     }
 }

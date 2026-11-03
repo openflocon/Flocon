@@ -79,6 +79,7 @@ internal fun TimelineSource.label(): StringResource = when (this) {
     TimelineSource.Deeplink -> Res.string.timeline_source_deeplink
     TimelineSource.Adb -> Res.string.timeline_source_adb
     TimelineSource.AppStart -> Res.string.timeline_source_app_start
+    TimelineSource.Log -> Res.string.timeline_source_analytics // placeholder: Task 5 adds the logs label
 }
 
 // the data of these sources are technical: they are displayed in mono
