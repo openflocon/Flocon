@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.device.usecase
 
+import io.github.openflocon.domain.adb.ADB_NOT_AVAILABLE_OVER_WIFI
 import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
@@ -7,9 +8,12 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.models.supportsAdb
+import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
@@ -22,6 +26,7 @@ class TakeScreenshotUseCase(
     private val iosSimulatorRepository: IosSimulatorRepository,
     private val adbRepository: AdbRepository,
     private val handleNewDeviceUseCase: HandleNewDeviceUseCase,
+    private val devicesRepository: DevicesRepository,
 ) {
 
     // [outputFile]: where to write the png, instead of the Screenshot folder of the user
@@ -49,6 +54,11 @@ class TakeScreenshotUseCase(
             // only the booted iOS Simulator is supported, see IosSimulatorRepository
             return iosSimulatorRepository.takeScreenshot(filePath = filePath)
                 .alsoFailure { it.printStackTrace() }
+        }
+
+        // an Android connected over wifi has no adb link: no serial to wait for, nothing to run
+        if (devicesRepository.devices.first().firstOrNull { it.deviceId == current.deviceId }?.supportsAdb() == false) {
+            return Failure(Throwable(ADB_NOT_AVAILABLE_OVER_WIFI))
         }
 
         // without the adb serial of the device, the commands run on every device connected: with several of them, the
