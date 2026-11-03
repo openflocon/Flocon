@@ -22,6 +22,7 @@ import io.github.openflocon.library.designsystem.components.FloconMascotPlatform
 import io.github.openflocon.library.designsystem.components.FloconMascotState
 import io.github.openflocon.library.designsystem.components.FloconMascotWidth
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 private val StopDistance = 26.dp
@@ -31,13 +32,16 @@ private val RunDistance = 320.dp
 private val RunSpeed = 200.dp
 private val JumpHeight = 28.dp
 
+/** Time between the click on the logo and the bark. */
+private const val BarkDelayMs = 2_000L
+
 private const val MaxFrameMs = 50L
 private const val NanosPerMilli = 1_000_000L
 
 /**
  * Mascot walking on the [platforms], after the pointer ([pointerX], null until it has moved), and
- * jumping from one platform to another when the pointer is over the other one. It barks each time
- * [barkCount] goes up. Everything is in px, in the coordinates of this composable.
+ * jumping from one platform to another when the pointer is over the other one. It barks, after a delay,
+ * each time [barkCount] goes up. Everything is in px, in the coordinates of this composable.
  */
 @Composable
 fun MascotOverlay(
@@ -68,6 +72,8 @@ fun MascotOverlay(
     var handledBarks by remember { mutableIntStateOf(barkCount) }
     LaunchedEffect(state, barkCount) {
         if (barkCount != handledBarks) {
+            // a new click while waiting restarts the wait
+            delay(BarkDelayMs)
             handledBarks = barkCount
             state.bark()
         }
