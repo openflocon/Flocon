@@ -76,4 +76,7 @@ val roomModule =
         single {
             get<AppDatabase>().webViewEventDao
         }
+        single {
+            get<AppDatabase>().timelineLogDao
+        }
     }
