@@ -86,6 +86,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelin
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
+import io.github.openflocon.flocondesktop.features.timeline.view.ScreenshotMarkerRow
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
@@ -365,6 +366,8 @@ internal fun TimelineContent(
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),

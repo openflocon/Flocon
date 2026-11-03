@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
 import io.github.openflocon.flocondesktop.features.timeline.graph.screenshotsOfSession
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotMarkerBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -184,10 +186,21 @@ internal class TimelineViewModel(
 
     val items: Flow<PagingData<TimelineItemUiModel>> = combine(filter, invertList) { filter, inverted -> filter to inverted }
         .flatMapLatest { (filter, inverted) ->
-            observeTimelineUseCase(filter).map { pagingData ->
-                pagingData
-                    .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
-                    .insertSeparators { before, after -> separatorBetween(before, after, inverted) }
+            // the events of the filter are shared (cachedIn) to be combined with each new screenshot without a new query. The scope
+            // lives as long as this filter: it is cancelled when the filter changes
+            channelFlow {
+                val events = observeTimelineUseCase(filter)
+                    .map { pagingData -> pagingData.map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) } }
+                    .cachedIn(this)
+                combine(events, observeTimelineScreenshotsUseCase()) { pagingData, shots ->
+                    // without screenshot the list is the one it always was
+                    val withScreenshots = if (shots.isEmpty()) {
+                        pagingData
+                    } else {
+                        pagingData.insertSeparators { before, after -> screenshotMarkerBetween(before, after, shots) }
+                    }
+                    withScreenshots.insertSeparators { before, after -> separatorBetween(before, after, inverted) }
+                }.collect { send(it) }
             }
         }
         .flowOn(dispatcherProvider.viewModel)

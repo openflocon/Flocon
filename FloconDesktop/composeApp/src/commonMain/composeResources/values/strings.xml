@@ -106,6 +106,7 @@
     <string name="timeline_screenshots_turn_on">Turn on</string>
     <string name="timeline_screenshot_at">Screen at %1$s</string>
     <string name="timeline_screenshot_before_cursor">%1$d s before the cursor</string>
+    <string name="timeline_screenshot_marker">Screenshot · %1$s</string>
     <string name="timeline_screenshots_failing">Screenshots are failing: is adb available?</string>
     <string name="timeline_filters_title">Filters</string>
     <string name="timeline_filters_clear_all">Clear all</string>

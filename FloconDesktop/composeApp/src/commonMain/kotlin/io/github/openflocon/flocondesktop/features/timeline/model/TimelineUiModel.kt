@@ -50,6 +50,15 @@ internal sealed interface TimelineItemUiModel {
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
+
+    // a screenshot of the app, between the events before and after the time it was taken
+    data class Screenshot(
+        val timestamp: Long,
+        val day: String, // like the rows, to place the headers of the days around it
+        val filePath: String,
+        override val key: String,
+        val time: String = "", // hh:mm:ss
+    ) : TimelineItemUiModel
 }
 
 @Immutable
