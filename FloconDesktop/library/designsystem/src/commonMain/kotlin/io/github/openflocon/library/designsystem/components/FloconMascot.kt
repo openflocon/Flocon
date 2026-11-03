@@ -113,6 +113,8 @@ fun FloconMascot(
 
                 FloconMascotMode.Petted -> drawSitting(unit, state, FloconMascotMode.Petted)
 
+                FloconMascotMode.Idle -> state.idleAnimation?.let { drawMascotIdle(unit, it, state.idleFrame) }
+
                 FloconMascotMode.Jump -> drawRunning(unit, stretched = state.jumpProgress in JumpStretch, dust = false)
 
                 FloconMascotMode.Bark -> drawBarking(unit, state)
@@ -130,7 +132,7 @@ fun FloconMascot(
     }
 }
 
-private fun DrawScope.pixels(
+internal fun DrawScope.pixels(
     unit: Float,
     x: Int,
     y: Int,

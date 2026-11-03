@@ -1,5 +1,6 @@
 package io.github.openflocon.library.designsystem.components
 
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -530,5 +531,104 @@ class FloconMascotStateTest {
 
         mascot.run(targetX = 440f, durationMs = 2_000, startMs = 9_000)
         assertTrue(mascot.facingRight)
+    }
+
+    private fun playful(animations: List<FloconMascotIdleAnimation>) = FloconMascotState(
+        startX = 500f,
+        config = FloconMascotConfig(
+            stopDistance = 30f,
+            wakeDistance = 100f,
+            speedPerSecond = 100f,
+            runDistance = 400f,
+            runSpeedPerSecond = 300f,
+            idleAnimations = animations,
+            idleAnimationDelayMs = 1_000L..1_000L,
+        ),
+        random = Random(1),
+    )
+
+    @Test
+    fun playsAnIdleAnimationAfterSittingForAWhile() {
+        val mascot = playful(listOf(FloconMascotIdleAnimation.Scratch))
+        mascot.run(targetX = 500f, durationMs = 900)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+
+        mascot.run(targetX = 500f, durationMs = 300, startMs = 900)
+        assertEquals(FloconMascotMode.Idle, mascot.mode)
+        assertEquals(FloconMascotIdleAnimation.Scratch, mascot.idleAnimation)
+    }
+
+    @Test
+    fun playsNothingWithoutIdleAnimations() {
+        val mascot = playful(emptyList())
+        mascot.run(targetX = 500f, durationMs = 3_000)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+        assertEquals(null, mascot.idleAnimation)
+    }
+
+    @Test
+    fun stillFallsAsleepAfterPlaying() {
+        val mascot = playful(FloconMascotIdleAnimation.entries)
+        mascot.run(targetX = 500f, durationMs = 30_000)
+        assertTrue(mascot.mode == FloconMascotMode.Lie, "mode=${mascot.mode}")
+    }
+
+    @Test
+    fun theTimeSpentPlayingDoesNotCountAsIdleTime() {
+        val mascot = playful(listOf(FloconMascotIdleAnimation.Ball))
+        // it is still playing after 2 s of waiting, the time spent playing is not counted as idle time
+        mascot.run(targetX = 500f, durationMs = 2_000)
+        assertEquals(FloconMascotMode.Idle, mascot.mode)
+    }
+
+    @Test
+    fun anIdleAnimationIsInterruptedByAFarPointer() {
+        val mascot = playful(listOf(FloconMascotIdleAnimation.Stretch))
+        mascot.run(targetX = 500f, durationMs = 1_500)
+        assertEquals(FloconMascotMode.Idle, mascot.mode)
+
+        mascot.run(targetX = 900f, durationMs = 200, startMs = 1_500)
+        assertEquals(FloconMascotMode.Walk, mascot.mode)
+        assertEquals(null, mascot.idleAnimation)
+    }
+
+    @Test
+    fun anIdleAnimationIsInterruptedByAClick() {
+        val mascot = playful(listOf(FloconMascotIdleAnimation.Sniff))
+        mascot.run(targetX = 500f, durationMs = 1_500)
+        assertEquals(FloconMascotMode.Idle, mascot.mode)
+
+        mascot.pet()
+        mascot.run(targetX = 500f, durationMs = 50, startMs = 1_500)
+        assertEquals(FloconMascotMode.Happy, mascot.mode)
+        assertEquals(null, mascot.idleAnimation)
+    }
+
+    @Test
+    fun doesNotPlayTheSameAnimationTwiceInARow() {
+        val mascot = playful(listOf(FloconMascotIdleAnimation.Scratch, FloconMascotIdleAnimation.Sniff))
+        val played = mutableListOf<FloconMascotIdleAnimation>()
+        var previous: FloconMascotIdleAnimation? = null
+        var t = 0L
+        while (t < 30_000) {
+            mascot.update(16, t, 500f, 0f, 1_000f)
+            val current = mascot.idleAnimation
+            if (current != null && previous == null) played += current
+            previous = current
+            t += 16
+        }
+        assertTrue(played.size >= 2, "played=$played")
+        played.zipWithNext().forEach { (a, b) -> assertTrue(a != b, "played=$played") }
+    }
+
+    @Test
+    fun noIdleAnimationDuringABackflip() {
+        val mascot = playful(FloconMascotIdleAnimation.entries)
+        mascot.run(targetX = 500f, durationMs = 1_500)
+        assertEquals(FloconMascotMode.Idle, mascot.mode)
+        mascot.backflip()
+        mascot.update(16, 1_500, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Backflip, mascot.mode)
+        assertEquals(null, mascot.idleAnimation)
     }
 }
