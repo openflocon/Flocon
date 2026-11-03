@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
@@ -21,9 +22,6 @@ internal const val KIND_LOG = "log"
 
 // apps can log millions of queries: only the most recent ones are merged in the timeline
 internal const val MAX_DATABASE_LOGS = 20_000
-
-// same for the logs sent by the app
-internal const val MAX_TIMELINE_LOGS = 20_000
 
 // the tables that store the session of their rows
 private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity", "TimelineLogEntity")
