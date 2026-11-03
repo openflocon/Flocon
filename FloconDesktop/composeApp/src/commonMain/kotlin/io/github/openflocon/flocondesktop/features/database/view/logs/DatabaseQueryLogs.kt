@@ -138,35 +138,49 @@ fun DatabaseQueryLogs(
                         modifier = Modifier
                             .fillMaxWidth(),
                         items = persistentListOf(
-                            FloconContextMenuItem.Item("Copy Query") {
-                                viewModel.copyQuery(log.sqlQuery)
-                            },
-                            FloconContextMenuItem.Item("Copy Args") {
-                                viewModel.copyArgs(log.bindArgs)
-                            },
-                            FloconContextMenuItem.Item("Copy as SQL") {
-                                viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
-                            },
+                            FloconContextMenuItem.Item(
+                                label = "Copy Query",
+                                onClick = { viewModel.copyQuery(log.sqlQuery) }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Copy Args",
+                                onClick = {
+                                    viewModel.copyArgs(log.bindArgs)
+                                }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Copy as SQL",
+                                onClick = { viewModel.copyAsSql(log.sqlQuery, log.bindArgs) }
+                            ),
                             FloconContextMenuItem.Separator(),
-                            FloconContextMenuItem.Item("Filter In") {
-                                viewModel.addFilter(
-                                    log.sqlQuery,
-                                    FilterChipUiModel.FilterType.INCLUDE
-                                )
-                            },
-                            FloconContextMenuItem.Item("Filter Out") {
-                                viewModel.addFilter(
-                                    log.sqlQuery,
-                                    FilterChipUiModel.FilterType.EXCLUDE
-                                )
-                            }
+                            FloconContextMenuItem.Item(
+                                label = "Filter In",
+                                onClick = {
+                                    viewModel.addFilter(
+                                        log.sqlQuery,
+                                        FilterChipUiModel.FilterType.INCLUDE
+                                    )
+                                }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Filter Out",
+                                onClick = {
+                                    viewModel.addFilter(
+                                        log.sqlQuery,
+                                        FilterChipUiModel.FilterType.EXCLUDE
+                                    )
+                                }
+                            )
                         )
                     ) {
                         DatabaseQueryLogItem(
                             log = log,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
+                                .padding(
+                                    horizontal = FloconTheme.spacing.small,
+                                    vertical = FloconTheme.spacing.small
+                                )
                         )
                     }
                     HorizontalDivider(color = FloconTheme.colors.bg200)
@@ -236,10 +250,16 @@ private fun DatabaseLogsHeader(
                     )
 
                     IconButton(onClick = addIncludeFilter) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.filter_include))
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(Res.string.filter_include)
+                        )
                     }
                     IconButton(onClick = addExcludeFilter) {
-                        Icon(imageVector = Icons.Default.Remove, contentDescription = stringResource(Res.string.filter_exclude))
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(Res.string.filter_exclude)
+                        )
                     }
                 }
 
@@ -249,7 +269,10 @@ private fun DatabaseLogsHeader(
                         toggleShowTransactions()
                     },
                     label = {
-                        Text(stringResource(Res.string.general_hide_transactions), style = FloconTheme.typography.bodySmall)
+                        Text(
+                            stringResource(Res.string.general_hide_transactions),
+                            style = FloconTheme.typography.bodySmall
+                        )
                     },
                     leadingIcon = {
                         if (!showTransactions) {

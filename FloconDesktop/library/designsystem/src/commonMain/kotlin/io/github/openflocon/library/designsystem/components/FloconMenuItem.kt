@@ -171,7 +171,7 @@ fun FloconMenuSeparator(
     modifier: Modifier = Modifier
 ) {
     FloconHorizontalDivider(
-        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.compact),
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
         color = FloconTheme.colors.line
     )
 }
