@@ -6,6 +6,7 @@ import io.github.openflocon.domain.timeline.screenshot.TimelineScreenCapturer
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenCapturerImpl
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRecorder
 import io.github.openflocon.domain.timeline.usecase.GetTimelineEventsUseCase
+import io.github.openflocon.domain.timeline.usecase.GetTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
@@ -30,6 +31,7 @@ internal val timelineDomainModule = module {
     factoryOf(::ObserveTimelineUseCase)
     factoryOf(::ObserveTimelineEventsUseCase)
     factoryOf(::GetTimelineEventsUseCase)
+    factoryOf(::GetTimelineSummaryUseCase)
     factoryOf(::ObserveTimelineSummaryUseCase)
     factoryOf(::ObserveTimelineSettingsUseCase)
     factoryOf(::SetTimelineAutoScrollUseCase)

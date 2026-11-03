@@ -213,4 +213,17 @@ class TimelineWindowResolverTest {
         assertEquals(0L, window.toMs)
         assertTrue(window.reason.contains("No event"), window.reason)
     }
+
+    @Test
+    fun `the anchor of a window is the crash, the event or the time asked, and its end otherwise`() {
+        val crashTime = at(14, 32, 5)
+        val anchors = TimelineAnchors(sessionStarts = listOf(at(14, 0)), crashes = listOf(crash("2", crashTime)), lastEventMs = at(14, 40))
+        val noCrash = anchors.copy(crashes = emptyList())
+        val event = TimelineEventAnchor(id = "network:abc", timestampMs = at(11, 0), label = "GET /feed")
+
+        assertEquals(crashTime, resolve(anchors = anchors).anchorMs)
+        assertEquals(at(14, 32), resolve(GetTimelineInput(mode = TimelineMode.At, at = "14:32"), anchors).anchorMs)
+        assertEquals(at(11, 0), resolve(GetTimelineInput(eventId = "network:abc"), anchors, event).anchorMs)
+        assertEquals(at(14, 40), resolve(anchors = noCrash).anchorMs)
+    }
 }

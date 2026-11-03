@@ -17,6 +17,13 @@ import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.screen.models.FloconScreen
 import io.github.openflocon.domain.screen.models.ScreenRequestDomainModel
 import io.github.openflocon.domain.screen.repository.DesktopNavigationRepository
+import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineEventRef
+import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelinePhase
+import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timeline.repository.TimelineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -186,4 +193,44 @@ internal class FakeDesktopNavigationRepository : DesktopNavigationRepository {
     override fun observeRequestedScreen(): Flow<ScreenRequestDomainModel> = emptyFlow()
 
     override fun consumeRequestedScreen(request: ScreenRequestDomainModel) = Unit
+}
+
+/** The events of the timeline, filtered like the Room query: sources, time bounds and event refs (a call is its request event) */
+internal class FakeTimelineRepository(private val events: List<TimelineEventDomainModel>) : TimelineRepository {
+
+    override fun observeSummary(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<TimelineSummaryDomainModel> = flowOf(
+        TimelineSummaryDomainModel(
+            sources = events.groupBy { it.source }.mapValues { (_, events) ->
+                TimelineSourceSummaryDomainModel(
+                    count = events.size,
+                    httpErrorCount = events.count { (it.statusCode ?: 0) >= 400 },
+                    firstTimestamp = events.minOf { it.timestamp },
+                    lastTimestamp = events.maxOf { it.timestamp },
+                )
+            },
+            sessionEventCounts = emptyMap(),
+        )
+    )
+
+    override fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>> = flowOf(
+        events
+            .filter { it.source in filter.sources }
+            .filter { filter.fromMs == null || it.timestamp >= filter.fromMs!! }
+            .filter { filter.toMs == null || it.timestamp <= filter.toMs!! }
+            .filter { event ->
+                filter.events == null || (event.phase == TimelinePhase.Request && TimelineEventRef(event.source, event.id) in filter.events!!)
+            }
+            .sortedByDescending { it.timestamp }
+    )
+
+    override fun observeTimeline(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<PagingData<TimelineEventDomainModel>> = error("not used")
 }

@@ -42,7 +42,12 @@ internal data class TimelineWindow(
     val toMs: Long,
     val reason: String,
     val anchorEventId: String?,
+    // the moment the window is about, the narrative keeps the lines nearest to it when it is capped
+    val anchorMs: Long = toMs,
 )
+
+// nothing to read: the app has no event yet
+internal val TimelineWindow.isEmpty: Boolean get() = fromMs == 0L && toMs == 0L
 
 internal class TimelineWindowResolver(
     private val zone: ZoneId,
@@ -129,6 +134,7 @@ internal class TimelineWindowResolver(
         toMs = crash.timestampMs + AFTER_CRASH_MS,
         reason = "$prefix the crash ${crash.title} at ${time(crash.timestampMs)}: the minute before it and the 5 seconds after.",
         anchorEventId = "crash:${crash.id}",
+        anchorMs = crash.timestampMs,
     )
 
     private fun at(input: GetTimelineInput, anchors: TimelineAnchors): TimelineWindow {
@@ -142,6 +148,7 @@ internal class TimelineWindowResolver(
             toMs = instant + around,
             reason = "Around ${time(instant)}, ${around / 1_000} seconds on each side.$gap",
             anchorEventId = null,
+            anchorMs = instant,
         )
     }
 
@@ -165,6 +172,7 @@ internal class TimelineWindowResolver(
             toMs = event.timestampMs + around,
             reason = "Around ${event.label} at ${time(event.timestampMs)}, ${around / 1_000} seconds on each side.",
             anchorEventId = event.id,
+            anchorMs = event.timestampMs,
         )
     }
 
