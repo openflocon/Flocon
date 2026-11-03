@@ -109,7 +109,7 @@ class FloconMcpServer(
               Screenshot, recording and open_deeplink use adb on Android: they are not available for devices connected over wifi.
             - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
-              floconNavigateIntoDesktopApp moves it for the user: displays a screen, selects a device / app, sets the timeline
+              flocon_navigate_into_desktop_app moves it for the user: displays a screen, selects a device / app, sets the timeline
               view (graph or list). Flocon is never brought to the front: tell the user to go to the Flocon app to see it.
         """.trimIndent()
     }

@@ -25,7 +25,7 @@ internal class NavigateDesktopAppMcpToolProvider(
 
     override fun register(server: McpToolServer) {
         server.addTypedTool(
-            name = "floconNavigateIntoDesktopApp",
+            name = "flocon_navigate_into_desktop_app",
             title = "Navigate into the Flocon desktop app",
             description = "Moves the Flocon Desktop window for the user: displays a screen, selects the device and app, " +
                 "and sets the timeline view (graph or list). Unlike the other tools it changes what the user sees and selected in Flocon " +

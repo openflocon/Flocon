@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 
 class NavigateDesktopAppMcpToolProviderTest {
 
-    private val toolName = "floconNavigateIntoDesktopApp"
+    private val toolName = "flocon_navigate_into_desktop_app"
 
     private val pixel = DeviceDomainModel(deviceId = "pixel", deviceName = "Pixel 9", platform = "android")
     private val iphone = DeviceDomainModel(deviceId = "iphone", deviceName = "iPhone 16", platform = "ios")

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Un outil MCP `floconNavigateIntoDesktopApp` qui, depuis l'agent, affiche n'importe quelle section de Flocon Desktop, change l'appareil ou l'app sélectionnés et règle le mode Graph/List de la timeline, puis dit à l'utilisateur d'aller voir dans Flocon.
+**Goal:** Un outil MCP `flocon_navigate_into_desktop_app` qui, depuis l'agent, affiche n'importe quelle section de Flocon Desktop, change l'appareil ou l'app sélectionnés et règle le mode Graph/List de la timeline, puis dit à l'utilisateur d'aller voir dans Flocon.
 
 **Architecture:** Un conteneur de demande d'écran en mémoire vit dans `domain` (le module `mcp` et `composeApp` ne se voient pas). L'outil y écrit; `AppViewModel` l'observe, navigue via son `onSelectMenu` existant, puis consomme la demande. Le changement d'appareil/app et le mode Graph passent directement par les cas d'usage existants (`SelectDeviceUseCase`, `SelectDeviceAppUseCase`, `SetTimelineGraphUseCase`), sans UI.
 
@@ -83,7 +83,7 @@
 - [ ] **Step 5: Run** `./gradlew ktlintFormat`, puis relancer le Step 4.
 - [ ] **Step 6: Commit** `feat: [MCP] The app displays the screen requested through the domain store`
 
-### Task 3: l'outil `floconNavigateIntoDesktopApp`
+### Task 3: l'outil `flocon_navigate_into_desktop_app`
 
 **Files:**
 - Create: `FloconDesktop/mcp/src/desktopMain/kotlin/io/github/openflocon/mcp/screen/NavigateDesktopAppMcpToolProvider.kt`, `NavigateDesktopAppMcpInputs.kt`, `NavigateDesktopAppMcpModels.kt`
@@ -94,7 +94,7 @@
 
 **Interfaces:**
 - Consumes: `ScreenRequestStore`, `FloconScreen` (Task 1); `McpTargetResolver.resolve(deviceId, packageName)`; `SelectDeviceUseCase`, `SelectDeviceAppUseCase`, `SetTimelineGraphUseCase`.
-- Produces: l'outil `floconNavigateIntoDesktopApp` (annotations `writeToolAnnotations(destructive = false, idempotent = true)`).
+- Produces: l'outil `flocon_navigate_into_desktop_app` (annotations `writeToolAnnotations(destructive = false, idempotent = true)`).
   - Entrée `NavigateDesktopAppInput(screen: String? = null, deviceId: String? = null, packageName: String? = null, timelineView: String? = null)`. `screen`: nom en `snake_case` d'un `FloconScreen` (ex. `feature_flags`, `adb_commander`); `timelineView`: `graph` ou `list`. Ici `deviceId` et `packageName` désignent la **cible à sélectionner dans Flocon**; ils ne reprennent pas `McpTargetArguments`, dont le sens (« viser sans changer ») diffère, et leur `@McpDescription` le dit.
   - Sortie `NavigateDesktopAppMcpResult(applied: List<String>, message: String)`. `message` se termine par une consigne à l'utilisateur d'aller voir dans Flocon (la fenêtre n'est pas passée au premier plan).
 
@@ -113,15 +113,15 @@
 - [ ] **Step 2: Run** `./gradlew :mcp:desktopTest --tests '*NavigateDesktopAppMcpToolProviderTest*'`. Attendu: échec de compilation.
 - [ ] **Step 3: Implement** le fournisseur. Ordre: valider tous les paramètres d'abord (écran connu et hors `Settings`, `timelineView` valide, cible résolue via `McpTargetResolver`) et lever `McpToolException` avant toute écriture; au moins un paramètre exigé; puis appliquer dans l'ordre sélection appareil, sélection app, mode Graph, demande d'écran. `applied` décrit chaque action faite. Étendre `Fakes.kt` comme indiqué.
 - [ ] **Step 4: Run** `./gradlew :mcp:desktopTest`. Attendu: PASS, y compris `FloconMcpServerTest` et les tests existants.
-- [ ] **Step 5: Docs.** Ajouter `floconNavigateIntoDesktopApp` (paramètres, effet de bord sur la sélection de l'utilisateur et sur le mode Graph, consigne « allez voir dans Flocon ») à `docs/mcp.md` et à `plugins/flocon/skills/flocon-debug/SKILL.md`. Run `mkdocs build --strict`. Attendu: succès.
+- [ ] **Step 5: Docs.** Ajouter `flocon_navigate_into_desktop_app` (paramètres, effet de bord sur la sélection de l'utilisateur et sur le mode Graph, consigne « allez voir dans Flocon ») à `docs/mcp.md` et à `plugins/flocon/skills/flocon-debug/SKILL.md`. Run `mkdocs build --strict`. Attendu: succès.
 - [ ] **Step 6: Run** `./gradlew ktlintFormat`, puis `./gradlew :domain:allTests :composeApp:desktopTest :mcp:desktopTest`. Attendu: PASS.
-- [ ] **Step 7: Commit** `feat: [MCP] floconNavigateIntoDesktopApp tool to display a screen and change the selected device/app`
+- [ ] **Step 7: Commit** `feat: [MCP] flocon_navigate_into_desktop_app tool to display a screen and change the selected device/app`
 
 ---
 
 ## Self-review
 
 - **Couverture du spec (PR 2):** affichage de n'importe quelle section sauf `Settings` (Tasks 1-3), changement d'appareil/app (Task 3), mode Graph/List (Task 3), conteneur dans `domain` avec remplacement et expiration à 10 minutes (Task 1), jamais de premier plan et consigne à l'utilisateur (Task 3). Hors périmètre: sélection d'un événement et centrage du graphe (PR 3).
-- **Cohérence des noms:** `FloconScreen`, `ScreenRequest`, `ScreenRequestStore.pending/request/consume`, `toSubScreen()`, `floconNavigateIntoDesktopApp`, `NavigateDesktopAppInput`, `NavigateDesktopAppMcpResult` sont identiques dans toutes les tâches.
+- **Cohérence des noms:** `FloconScreen`, `ScreenRequest`, `ScreenRequestStore.pending/request/consume`, `toSubScreen()`, `flocon_navigate_into_desktop_app`, `NavigateDesktopAppInput`, `NavigateDesktopAppMcpResult` sont identiques dans toutes les tâches.
 - **Review Focus:** chaque ligne a son test (Task 1: remplacement, expiration, consommation; Task 2: exhaustivité et `Settings`; Task 3: aucun paramètre, cible inconnue sans changement partiel, `packageName` seul).
 - **Proportion:** le plan décide les signatures, les noms de test et les règles du spec; il laisse l'implémentation des corps au développeur.
