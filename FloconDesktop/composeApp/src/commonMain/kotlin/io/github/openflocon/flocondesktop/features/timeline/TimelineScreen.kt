@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -91,9 +93,11 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconFilterChip
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconOption
+import io.github.openflocon.library.designsystem.components.FloconSegmentedIconToggle
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -218,15 +222,18 @@ internal fun TimelineContent(
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
-            FloconFilterChip(
-                text = stringResource(Res.string.timeline_view_list),
-                selected = !settings.graph,
-                onClick = { onAction(TimelineAction.SetGraph(false)) },
-            )
-            FloconFilterChip(
-                text = stringResource(Res.string.timeline_view_graph),
-                selected = settings.graph,
-                onClick = { onAction(TimelineAction.SetGraph(true)) },
+            // the same switch as the files: the list or the graph of the session
+            val listTooltip = stringResource(Res.string.timeline_view_list)
+            val graphTooltip = stringResource(Res.string.timeline_view_graph)
+            FloconSegmentedIconToggle(
+                options = remember(listTooltip, graphTooltip) {
+                    persistentListOf(
+                        FloconSegmentedIconOption(icon = Icons.AutoMirrored.Outlined.List, tooltip = listTooltip),
+                        FloconSegmentedIconOption(icon = Icons.Outlined.Timeline, tooltip = graphTooltip),
+                    )
+                },
+                selectedIndex = if (settings.graph) 1 else 0,
+                onSelect = { onAction(TimelineAction.SetGraph(it == 1)) },
             )
             // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
             FloconButton(
