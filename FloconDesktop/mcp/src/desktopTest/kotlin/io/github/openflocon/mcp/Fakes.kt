@@ -98,8 +98,20 @@ internal class FakeDevicesRepository(
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
-    override suspend fun selectDevice(deviceId: DeviceId) = error("not used")
-    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) = error("not used")
+
+    /** What was selected in Flocon, in order: "device:<id>" then "app:<id>/<package>" */
+    val selections = mutableListOf<String>()
+
+    override suspend fun selectDevice(deviceId: DeviceId) {
+        selections += "device:$deviceId"
+        currentDeviceIdValue = deviceId
+    }
+
+    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
+        selections += "app:$deviceId/${app.packageName}"
+        selectedApps = selectedApps + (deviceId to app.packageName)
+    }
+
     override suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String) = error("not used")
     override suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean = error("not used")
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
