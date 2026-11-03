@@ -2,8 +2,8 @@ package io.github.openflocon.mcp.screen
 
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
-import io.github.openflocon.domain.screen.ScreenRequestStore
 import io.github.openflocon.domain.screen.models.FloconScreen
+import io.github.openflocon.domain.screen.usecase.RequestDesktopScreenUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
@@ -20,7 +20,7 @@ internal class NavigateDesktopAppMcpToolProvider(
     private val selectDeviceUseCase: SelectDeviceUseCase,
     private val selectDeviceAppUseCase: SelectDeviceAppUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
-    private val screenRequestStore: ScreenRequestStore,
+    private val requestDesktopScreenUseCase: RequestDesktopScreenUseCase,
 ) : McpToolProvider {
 
     override fun register(server: McpToolServer) {
@@ -77,7 +77,7 @@ internal class NavigateDesktopAppMcpToolProvider(
                 add("Set the timeline view to ${if (graph) TIMELINE_VIEW_GRAPH else TIMELINE_VIEW_LIST}")
             }
             if (screen != null) {
-                screenRequestStore.request(screen)
+                requestDesktopScreenUseCase(screen)
                 add("Requested the screen ${screen.toToolName()}")
             }
         }

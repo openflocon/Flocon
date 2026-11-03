@@ -15,7 +15,7 @@ import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
-import io.github.openflocon.domain.screen.ScreenRequestStore
+import io.github.openflocon.domain.screen.usecase.ObserveRequestedDesktopScreenUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
@@ -86,7 +86,7 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
-    screenRequestStore: ScreenRequestStore,
+    observeRequestedDesktopScreenUseCase: ObserveRequestedDesktopScreenUseCase,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -150,9 +150,8 @@ internal class AppViewModel(
 
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // the MCP can ask to display a screen, the request waits here until the window is able to apply it
-            screenRequestStore.pending.collect { request ->
-                onSelectMenu(AppAction.SelectMenu(request.screen.toSubScreen()))
-                screenRequestStore.consume(request)
+            observeRequestedDesktopScreenUseCase().collect { screen ->
+                onSelectMenu(AppAction.SelectMenu(screen.toSubScreen()))
             }
         }
 

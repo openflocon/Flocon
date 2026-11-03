@@ -4,12 +4,13 @@ import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
-import io.github.openflocon.domain.screen.ScreenRequestStore
 import io.github.openflocon.domain.screen.models.FloconScreen
+import io.github.openflocon.domain.screen.usecase.RequestDesktopScreenUseCase
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
+import io.github.openflocon.mcp.FakeDesktopNavigationRepository
 import io.github.openflocon.mcp.FakeDevicesRepository
 import io.github.openflocon.mcp.McpTestServer
 import io.github.openflocon.mcp.app
@@ -42,7 +43,7 @@ class NavigateDesktopAppMcpToolProviderTest {
         currentDeviceIdValue = "pixel",
         selectedApps = mapOf("pixel" to "io.flocon.sample"),
     )
-    private val screenRequestStore = ScreenRequestStore()
+    private val desktopNavigationRepository = FakeDesktopNavigationRepository()
     private val timelinePreferences = FakeTimelinePreferencesRepository()
 
     private val server = McpTestServer(
@@ -52,7 +53,7 @@ class NavigateDesktopAppMcpToolProviderTest {
                 selectDeviceUseCase = SelectDeviceUseCase(devicesRepository),
                 selectDeviceAppUseCase = SelectDeviceAppUseCase(devicesRepository, GetCurrentDeviceIdUseCase(devicesRepository)),
                 setTimelineGraphUseCase = SetTimelineGraphUseCase(timelinePreferences),
-                screenRequestStore = screenRequestStore,
+                requestDesktopScreenUseCase = RequestDesktopScreenUseCase(desktopNavigationRepository),
             ),
         ),
     )
@@ -83,7 +84,7 @@ class NavigateDesktopAppMcpToolProviderTest {
     fun `screen requests the screen in the store`() = runBlocking {
         val result = server.callTool(toolName, mapOf("screen" to "feature_flags")).json()
 
-        assertEquals(FloconScreen.FeatureFlags, screenRequestStore.peek()?.screen)
+        assertEquals(FloconScreen.FeatureFlags, desktopNavigationRepository.requestedScreens.lastOrNull())
         assertTrue(result["applied"]!!.jsonArray.isNotEmpty())
     }
 
@@ -97,7 +98,7 @@ class NavigateDesktopAppMcpToolProviderTest {
         names.forEach { (name, screen) ->
             server.callTool(toolName, mapOf("screen" to name)).json()
 
-            assertEquals(screen, screenRequestStore.peek()?.screen, name)
+            assertEquals(screen, desktopNavigationRepository.requestedScreens.lastOrNull(), name)
         }
     }
 
@@ -115,7 +116,7 @@ class NavigateDesktopAppMcpToolProviderTest {
         val result = server.callTool(toolName, mapOf("screen" to "settings"))
 
         assertEquals(true, result.isError)
-        assertNull(screenRequestStore.peek())
+        assertTrue(desktopNavigationRepository.requestedScreens.isEmpty())
     }
 
     @Test
@@ -186,7 +187,7 @@ class NavigateDesktopAppMcpToolProviderTest {
     }
 
     private fun assertNothingChanged() {
-        assertNull(screenRequestStore.peek())
+        assertTrue(desktopNavigationRepository.requestedScreens.isEmpty())
         assertTrue(devicesRepository.selections.isEmpty())
         assertTrue(timelinePreferences.graphCalls.isEmpty())
     }

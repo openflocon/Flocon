@@ -14,8 +14,12 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.screen.models.FloconScreen
+import io.github.openflocon.domain.screen.models.ScreenRequestDomainModel
+import io.github.openflocon.domain.screen.repository.DesktopNavigationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -171,3 +175,15 @@ internal fun targetResolver(devicesRepository: DevicesRepository) = McpTargetRes
         devicesRepository = devicesRepository,
     ),
 )
+
+internal class FakeDesktopNavigationRepository : DesktopNavigationRepository {
+    val requestedScreens = mutableListOf<FloconScreen>()
+
+    override fun requestScreen(screen: FloconScreen) {
+        requestedScreens += screen
+    }
+
+    override fun observeRequestedScreen(): Flow<ScreenRequestDomainModel> = emptyFlow()
+
+    override fun consumeRequestedScreen(request: ScreenRequestDomainModel) = Unit
+}
