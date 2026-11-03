@@ -40,6 +40,8 @@ import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.mascot.LocalMascot
+import io.github.openflocon.navigation.mascot.LocalMascotCommands
+import io.github.openflocon.navigation.mascot.MascotCommands
 import io.github.openflocon.navigation.mascot.MascotOverlay
 import io.github.openflocon.navigation.mascot.MascotPlatforms
 import io.github.openflocon.navigation.mascot.mascotPlatform
@@ -62,6 +64,7 @@ data class MenuScene(
         var origin by remember { mutableStateOf(Offset.Zero) }
         var pointer by remember { mutableStateOf<Offset?>(null) }
         val mascotPlatforms = remember { MascotPlatforms() }
+        val mascotCommands = remember { MascotCommands() }
         val mascotMargin = with(LocalDensity.current) { FloconTheme.spacing.medium.toPx() }
 
         Box(
@@ -92,7 +95,9 @@ data class MenuScene(
                                 end = FloconTheme.spacing.medium,
                             ),
                         ) {
-                            topBarContent?.invoke()
+                            CompositionLocalProvider(LocalMascotCommands provides mascotCommands) {
+                                topBarContent?.invoke()
+                            }
                         }
                     }
                 },
@@ -145,6 +150,7 @@ data class MenuScene(
                 MascotOverlay(
                     pointerX = pointer?.x,
                     platforms = platforms,
+                    barkCount = mascotCommands.barkCount,
                 )
             }
         }

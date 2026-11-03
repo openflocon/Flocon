@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +34,21 @@ class MascotPlatforms {
         bounds = bounds.remove(key)
     }
 }
+
+/** Things the rest of the screen can ask the mascot to do. */
+@Stable
+class MascotCommands {
+    /** Goes up each time [bark] is called, the overlay barks when it changes. */
+    var barkCount: Int by mutableIntStateOf(0)
+        private set
+
+    fun bark() {
+        barkCount++
+    }
+}
+
+/** Null outside of a scene that hosts the mascot, asking it to do something then does nothing. */
+val LocalMascotCommands = staticCompositionLocalOf<MascotCommands?> { null }
 
 /** Null outside of a scene that hosts the mascot, [mascotPlatform] then does nothing. */
 val LocalMascot = staticCompositionLocalOf<MascotPlatforms?> { null }
