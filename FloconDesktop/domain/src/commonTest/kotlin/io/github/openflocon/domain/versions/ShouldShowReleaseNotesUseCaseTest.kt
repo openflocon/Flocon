@@ -2,6 +2,7 @@ package io.github.openflocon.domain.versions
 
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -45,6 +46,8 @@ class ShouldShowReleaseNotesUseCaseTest {
             lastSeenVersion = version
         }
         override val adbPath: Flow<String?> = emptyFlow()
+        override val serverPorts: Flow<ServerPortsDomainModel> = emptyFlow()
+        override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)

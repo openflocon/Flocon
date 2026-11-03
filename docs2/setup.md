@@ -185,6 +185,60 @@ The available plugins:
 !!! tip "Logs"
     Set `FloconLogger.enabled = true` to see what Flocon does (connection, plugins not installed, ...).
 
+### Connect options
+
+The `connect { }` block inside `startFlocon` configures how the SDK reaches the desktop:
+
+```kotlin
+startFlocon(this) {
+    connect {
+        address = "192.168.1.10"  // desktop host, optionally "host:port"
+        websocketPort = 9023      // default 9023
+        httpPort = 9024           // default 9024 (file upload)
+    }
+    install(FloconNetwork)
+}
+```
+
+| Option | Default | Description |
+| :--- | :--- | :--- |
+| `address` | `localhost` | Desktop host. `host:port` is accepted (for example `"192.168.1.10:3030"`). |
+| `websocketPort` | `9023` | Port of the desktop websocket server. |
+| `httpPort` | `9024` | Port of the desktop HTTP server (file upload). |
+
+A port written in `address` wins over `websocketPort`. The HTTP port only comes from `httpPort`.
+
+### Custom ports
+
+By default Flocon Desktop listens on `9023` (websocket) and `9024` (HTTP). If those ports are already used on your machine, change them in Flocon Desktop under **Settings > Server ports**:
+
+- Ports must be between `1024` and `65535`.
+- The websocket and HTTP ports must be different.
+- `9042` is reserved for the [MCP](mcp.md) server and cannot be used.
+
+The SDK must use the same ports as the desktop:
+
+| Setup | Needs the SDK ports to be changed? |
+| :--- | :--- |
+| Android emulator or USB device | No. The desktop runs `adb reverse` so that the device defaults `9023` / `9024` still reach the desktop, whatever the desktop ports are. |
+| Android real device over Wi-Fi | Yes. There is no `adb reverse`. |
+| iOS (simulator or device), JVM, Wasm | Yes. They do not use `adb reverse`. |
+
+!!! warning "Silent failure"
+    If the SDK ports differ from the desktop settings where `adb reverse` is not used, the app simply never connects, with no error. Enable `FloconLogger.enabled = true` to see the connection attempts.
+
+```kotlin
+startFlocon(FloconContext()) {
+    connect {
+        address = "192.168.1.10"
+        websocketPort = 3030
+        httpPort = 3031
+    }
+}
+```
+
+On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:port` is also accepted in connect addresses.
+
 ---
 
 ## 3. Install the Desktop Companion

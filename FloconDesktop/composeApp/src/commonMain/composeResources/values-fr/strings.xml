@@ -444,4 +444,15 @@
     <string name="analytics_column_event">Événement</string>
     <string name="analytics_column_properties">Propriétés</string>
     <string name="images_column_format">Format</string>
+    <string name="settings_server_ports_title">Ports du serveur</string>
+    <string name="settings_server_ports_description">Ports utilisés par le desktop pour recevoir les connexions du SDK. Par défaut : 9023 (websocket) et 9024 (HTTP).</string>
+    <string name="settings_server_ports_websocket">Port websocket</string>
+    <string name="settings_server_ports_http">Port HTTP</string>
+    <string name="settings_server_ports_apply">Appliquer</string>
+    <string name="settings_server_ports_applied">Ports du serveur mis à jour</string>
+    <string name="settings_server_ports_hint">Les apps Android en USB ou sur émulateur passent par adb reverse. Les apps du SDK en Wi-Fi, et les apps iOS, doivent être configurées avec les mêmes ports.</string>
+    <string name="settings_server_ports_error_range">Les ports doivent être compris entre 1024 et 65535.</string>
+    <string name="settings_server_ports_error_same">Les ports websocket et HTTP doivent être différents.</string>
+    <string name="settings_server_ports_error_mcp">9042 est réservé au serveur MCP.</string>
+    <string name="settings_server_ports_error_reserved">9023 ne peut être que le port websocket et 9024 que le port HTTP.</string>
 </resources>

@@ -18,6 +18,7 @@ import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -54,6 +55,7 @@ import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -68,6 +70,7 @@ internal class AppViewModel(
     mcpServerDelegate: McpServerDelegate,
     initAdbPathUseCase: InitAdbPathUseCase,
     startAdbForwardUseCase: StartAdbForwardUseCase,
+    observeServerPortsUseCase: ObserveServerPortsUseCase,
     shouldShowReleaseNotesUseCase: ShouldShowReleaseNotesUseCase,
     val navigationState: MainFloconNavigationState,
     private val initialSetupStateHolder: InitialSetupStateHolder,
@@ -188,16 +191,19 @@ internal class AppViewModel(
             mcpServerDelegate.initialize()
 
             launch {
-                while (isActive) {
-                    // ensure we have the forward enabled
-                    startAdbForwardUseCase()
-                        .alsoFailure {
-                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
-                        }
-                        .alsoSuccess {
-                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
-                        }
-                    delay(1_500.milliseconds)
+                // the forward is applied again as soon as the server ports change
+                observeServerPortsUseCase().collectLatest { ports ->
+                    while (isActive) {
+                        // ensure we have the forward enabled
+                        startAdbForwardUseCase(ports)
+                            .alsoFailure {
+                                settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
+                            }
+                            .alsoSuccess {
+                                settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                            }
+                        delay(1_500.milliseconds)
+                    }
                 }
             }
         }

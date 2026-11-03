@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.core.data.settings
 
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -21,6 +22,12 @@ internal class SettingsRepositoryImpl(
     override val adbPath: Flow<String?> = localSettingsDataSource.adbPath
     override val appScale: StateFlow<AppScaleSetting> = localSettingsDataSource.appScale
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme
+
+    override val serverPorts: Flow<ServerPortsDomainModel> = localSettingsDataSource.serverPorts
+
+    override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
+        localSettingsDataSource.setServerPorts(ports)
+    }
 
     private val _adbForwardStatus = MutableStateFlow(AdbForwardStatus.UNKNOWN)
     override val adbForwardStatus: StateFlow<AdbForwardStatus> = _adbForwardStatus

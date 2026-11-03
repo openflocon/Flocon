@@ -55,7 +55,21 @@ class FloconClient internal constructor(
     private val items = Channel<OutboxItem>(Channel.UNLIMITED)
 
     /** The connection to the default address of the desktop app, always tried. */
-    internal val defaultLink: FloconLink = newLink(defaultServer())
+    internal val defaultLink: FloconLink by lazy { newLink(defaultServer()) }
+
+    @Volatile
+    internal var websocketPort: Int = FLOCON_DEFAULT_WEBSOCKET_PORT
+        private set
+
+    @Volatile
+    internal var httpPort: Int = FLOCON_DEFAULT_HTTP_PORT
+        private set
+
+    /** Sets the desktop ports, to call before the default link is first used. */
+    internal fun setupPorts(websocketPort: Int, httpPort: Int) {
+        this.websocketPort = websocketPort
+        this.httpPort = httpPort
+    }
 
     /** The connection to the address given with `Flocon.connect`, in addition to the default one. */
     @Volatile
@@ -65,7 +79,7 @@ class FloconClient internal constructor(
     private val address
         get() = (extraLink?.takeIf { it.isConnected } ?: defaultLink.takeIf { it.isConnected } ?: defaultLink).server.host
 
-    private fun defaultServer() = FloconServer(getServerHost(context), FLOCON_WEBSOCKET_PORT)
+    private fun defaultServer() = FloconServer(getServerHost(context), websocketPort)
 
     private fun newLink(server: FloconServer): FloconLink {
         val link = FloconLink(server)
@@ -187,7 +201,7 @@ class FloconClient internal constructor(
         scope.launch {
             httpClient.send(
                 address = address,
-                port = FLOCON_HTTP_PORT,
+                port = httpPort,
                 file = file,
                 infos = infos,
                 deviceId = appInfos.deviceId,
@@ -199,11 +213,6 @@ class FloconClient internal constructor(
 
     /** The messages kept while disconnected are sent by [onConnected], nothing to do here. */
     override fun sendPendingMessages() = Unit
-
-    companion object {
-        private const val FLOCON_WEBSOCKET_PORT = 9023
-        private const val FLOCON_HTTP_PORT = 9024
-    }
 }
 /**
  * The connection to one address of the desktop app, with its own websocket.

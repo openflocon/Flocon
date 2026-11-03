@@ -5,7 +5,9 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
+import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.models.settings.AppScaleSetting
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
@@ -45,6 +48,28 @@ internal class SettingsDataSourcePrefs(
         .filterNotNull()
         .mapLatest { json.decodeFromString<NetworkSettingsLocal>(it) }
         .stateIn(networkSettings)
+
+    // both ports live in a single "websocket:http" key so reads and writes are atomic
+    override val serverPorts: Flow<ServerPortsDomainModel> = flowSettings.getStringOrNullFlow(SERVER_PORTS)
+        .map { it.toServerPorts() }
+
+    override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
+        settings.putString(SERVER_PORTS, "${ports.websocketPort}:${ports.httpPort}")
+    }
+
+    private fun String?.toServerPorts(): ServerPortsDomainModel {
+        val parts = this?.split(":")
+        val websocketPort = parts?.getOrNull(0)?.toIntOrNull()
+        val httpPort = parts?.getOrNull(1)?.toIntOrNull()
+        return if (websocketPort != null && httpPort != null) {
+            ServerPortsDomainModel(websocketPort = websocketPort, httpPort = httpPort)
+        } else {
+            ServerPortsDomainModel(
+                websocketPort = Constant.SERVER_WEBSOCKET_PORT,
+                httpPort = Constant.SERVER_HTTP_PORT,
+            )
+        }
+    }
 
     override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
 
@@ -199,6 +224,7 @@ internal class SettingsDataSourcePrefs(
 
     companion object {
         private const val ADB_PATH = "adb_path"
+        private const val SERVER_PORTS = "server_ports"
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val APP_SCALE = "app_scale"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration

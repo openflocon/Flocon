@@ -8,6 +8,8 @@ class FloconConnectConfig internal constructor() {
     var bufferCapacity: Int = 5_000
     var address: String? = null
     var rememberLastAddress: Boolean = true
+    var websocketPort: Int = 9023
+    var httpPort: Int = 9024
 }
 
 /** Does nothing. */

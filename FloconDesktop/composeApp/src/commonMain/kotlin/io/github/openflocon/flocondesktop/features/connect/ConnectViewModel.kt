@@ -6,6 +6,7 @@ import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.connect.usecase.GetLocalAddressesUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.connect.model.ConnectUiState
 import io.github.openflocon.flocondesktop.features.connect.model.LocalAddressUiModel
@@ -22,6 +23,7 @@ class ConnectViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val getLocalAddressesUseCase: GetLocalAddressesUseCase,
     observeMascotEnabledUseCase: ObserveMascotEnabledUseCase,
+    observeServerPortsUseCase: ObserveServerPortsUseCase,
 ) : ViewModel() {
 
     private val addresses = MutableStateFlow<ImmutableList<LocalAddressUiModel>>(persistentListOf())
@@ -29,10 +31,11 @@ class ConnectViewModel(
     val uiState: StateFlow<ConnectUiState> = combine(
         addresses,
         observeMascotEnabledUseCase(),
-    ) { addresses, mascotEnabled ->
+        observeServerPortsUseCase(),
+    ) { addresses, mascotEnabled, ports ->
         ConnectUiState(
             addresses = addresses,
-            port = Constant.SERVER_WEBSOCKET_PORT,
+            port = ports.websocketPort,
             mascotEnabled = mascotEnabled,
         )
     }.stateInWhileSubscribed(
