@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.components.FloconMascot
 import io.github.openflocon.library.designsystem.components.FloconMascotConfig
 import io.github.openflocon.library.designsystem.components.FloconMascotFeetY
+import io.github.openflocon.library.designsystem.components.FloconMascotIdleAnimation
 import io.github.openflocon.library.designsystem.components.FloconMascotPlatform
 import io.github.openflocon.library.designsystem.components.FloconMascotState
 import io.github.openflocon.library.designsystem.components.FloconMascotWidth
@@ -55,6 +56,7 @@ fun MascotOverlay(
                     runDistance = RunDistance.toPx(),
                     runSpeedPerSecond = RunSpeed.toPx(),
                     jumpHeight = JumpHeight.toPx(),
+                    idleAnimations = FloconMascotIdleAnimation.entries,
                 )
             },
         )
