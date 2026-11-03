@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -34,14 +36,15 @@ private const val NanosPerMilli = 1_000_000L
 
 /**
  * Mascot walking on the [platforms], after the pointer ([pointerX], null until it has moved), and
- * jumping from one platform to another when the pointer is over the other one. Everything is in px,
- * in the coordinates of this composable.
+ * jumping from one platform to another when the pointer is over the other one. It barks each time
+ * [barkCount] goes up. Everything is in px, in the coordinates of this composable.
  */
 @Composable
 fun MascotOverlay(
     pointerX: Float?,
     platforms: ImmutableList<FloconMascotPlatform>,
     modifier: Modifier = Modifier,
+    barkCount: Int = 0,
 ) {
     val density = LocalDensity.current
     val state = remember(density) {
@@ -61,6 +64,14 @@ fun MascotOverlay(
     }
     val currentPointerX by rememberUpdatedState(pointerX)
     val currentPlatforms by rememberUpdatedState(platforms)
+
+    var handledBarks by remember { mutableIntStateOf(barkCount) }
+    LaunchedEffect(state, barkCount) {
+        if (barkCount != handledBarks) {
+            handledBarks = barkCount
+            state.bark()
+        }
+    }
 
     LaunchedEffect(state) {
         var lastNanos = withFrameNanos { it }
