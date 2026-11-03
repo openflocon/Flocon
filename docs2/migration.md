@@ -34,6 +34,11 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | Device (app icon, restart app) | `flocon-device` | Android (app icon also on iOS, restart on Android only) |
 | Crash reporter | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
 
+!!! warning "`flocon-base` is gone"
+    The 1.x `flocon-base` artifact no longer exists. Code that logged WebSocket events or database queries
+    from a module compiled in every variant must now depend on `flocon-network-core` / `flocon-database-core`
+    in debug and on their `-no-op` in release.
+
 Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`). See [Release builds](setup.md#4-release-builds-no-op).
 
 ### Platform support details
@@ -99,6 +104,12 @@ Every plugin is now accessed with `Flocon.xxxPlugin`:
 | `floconRegisterDatabase(...)` | `Flocon.databasePlugin.register("id", "name", roomDatabase)` (the id is required and unique) |
 | `floconLogDatabaseQuery(...)` | `Flocon.databasePlugin.logQuery(dbId, ...)` or `RoomDatabase.Builder.floconLogs(id)`, with the id the database is registered with |
 | `floconLogWebSocketEvent(event)` | `Flocon.networkPlugin.logWebSocket(event)` |
+| `Flocon.deeplinks { ... }` (registered later) | `Flocon.deeplinksPlugin.register { ... }` |
+| `Flocon.analytics("table").logEvents(event)` | `Flocon.analyticsPlugin.log(AnalyticsEvent(name, "table", props))` or `.sender("table").log(...)` |
+
+Packages moved with the modules, for example `io.github.openflocon.flocon.plugins.network.model.FloconWebSocketEvent`
+became `io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent`, and
+`...plugins.analytics.model.*` became `...analytics.model.*`. Fix the imports after changing the dependencies.
 
 The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, `databasePlugin`,
 `deeplinksPlugin`, `devicePlugin`, `featureFlagsPlugin`, `filesPlugin`, `networkPlugin`, `preferencesPlugin` and
@@ -117,3 +128,27 @@ The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, 
 - **Preference type**: `FloconPreference` has a new `type` property, shown next to the preference name in the desktop app. It defaults to `"Custom"` in Kotlin; a Swift class implementing `FloconPreference` must declare it.
 - **Release builds** now use `flocon-no-op` + one no-op per plugin: nothing is started and no
   connection is made to the desktop app.
+
+---
+
+## 5. Pitfalls
+
+- **A plugin must be installed.** `Flocon.dashboardPlugin.dashboard(...)` compiles without `install(FloconDashboard)`
+  but does nothing at runtime. After migrating, list every `Flocon.xxxPlugin` you call and check each one is installed.
+- **Name clashes.** `FloconDashboard`, `FloconNetwork`... are now objects of the SDK. If your project has a class
+  with the same name, import the SDK one with an alias (`import ...FloconDashboard as FloconDashboardPlugin`).
+- **Code compiled in every variant.** A call to a plugin from `main` needs the real module in debug **and** its
+  `-no-op` in release (and in any other non-debug variant, e.g. an internal distribution build).
+- **Databases need a provider.** `install(FloconDatabase)` alone discovers nothing: add the Room provider with
+  `install(FloconDatabase) { room() }` (and the `flocon-database-room` or `-room3` dependency). On Android it then scans
+  the app databases folder; `Flocon.databasePlugin.register(id, name, db)` is only needed for in-memory databases or a custom name.
+  `logQuery` takes the id of the database as the desktop lists it.
+- **Cleartext rules.** The `localhost` / `127.0.0.1` cleartext exceptions in `network_security_config.xml` are no longer needed.
+- **Gradle task names** differ per module (flavors or not). List them with `./gradlew :module:tasks --all` before building.
+
+---
+
+## 6. Migrating with an AI agent
+
+The `flocon-setup` skill of the Flocon plugin follows this guide: it detects the 1.x usage, picks the modules, updates
+the dependencies and the no-ops, rewrites the initialization and compiles. See [MCP](mcp.md) for the plugin install.

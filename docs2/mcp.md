@@ -36,7 +36,7 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
 === "Claude Code"
 
-    With the Flocon plugin (recommended), it declares the server and adds a skill explaining the tools to Claude:
+    With the Flocon plugin (recommended), it declares the server and adds two skills: one explaining the tools to Claude (`flocon-mcp`) and one that installs or migrates Flocon in a project (`flocon-setup`):
 
     ```
     /plugin marketplace add openflocon/Flocon
