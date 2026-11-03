@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,16 +16,51 @@ class GraphPackingTest {
     private fun ids(model: GraphUiModel, lane: GraphLane) = model.lanes.first { it.lane == lane }.rows.map { row -> row.map { it.row.id } }
 
     @Test
-    fun `the reference session gives 6 rows`() {
+    fun `the reference session gives 7 rows`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(6, model.rowCount)
+        assertEquals(7, model.rowCount)
         assertEquals(
             listOf(listOf("1", "4", "10", "14"), listOf("3", "12"), listOf("6"), listOf("7")),
             ids(model, GraphLane.Network),
         )
         assertEquals(listOf(listOf("5", "11")), ids(model, GraphLane.Database))
         assertEquals(listOf(listOf("2", "9", "13", "15")), ids(model, GraphLane.Analytics))
+        assertEquals(listOf(listOf("16", "17", "18")), ids(model, GraphLane.Log))
+    }
+
+    @Test
+    fun `logLaneIsPresent`() {
+        val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
+
+        assertTrue(GraphLane.Log in model.lanes.map { it.lane })
+        assertEquals(TimelineSource.Log, GraphLane.Log.source)
+        assertEquals(GraphLane.Log, TimelineSource.Log.toGraphLane())
+    }
+
+    @Test
+    fun `logEventBecomesInstantMarker`() {
+        val model = buildGraph(listOf(domain("l1", TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log).copy(title = "Opened the feed", method = null, statusCode = null)), sessionStart = 1_000L)
+
+        val marker = model.lanes.single().rows.single().single()
+        assertEquals(GraphLane.Log, marker.lane)
+        assertTrue(marker.isInstant)
+        assertFalse(marker.inProgress)
+        assertEquals(250L, marker.startMs)
+        assertEquals("Opened the feed", marker.name)
+        assertFalse(marker.isError)
+    }
+
+    @Test
+    fun `errorLevelLogMarkedAsError`() {
+        // hasError is computed in SQL (level = ERROR): the graph only carries it
+        val model = buildGraph(
+            listOf(domain("l1", TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log).copy(method = null, statusCode = null, hasError = true, level = TimelineLogLevel.Error)),
+            sessionStart = 1_000L,
+        )
+
+        assertTrue(model.lanes.single().rows.single().single().isError)
+        assertEquals(1, model.errorCount)
     }
 
     @Test
@@ -38,8 +74,8 @@ class GraphPackingTest {
     fun `the summary of the reference session`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(14, model.eventCount)
-        assertEquals(2, model.errorCount)
+        assertEquals(17, model.eventCount)
+        assertEquals(3, model.errorCount)
         assertEquals("/v1/recommendations", model.slowest?.name)
         val text = model.toSummaryText()
         assertEquals("3.00 s", text.sessionDuration)

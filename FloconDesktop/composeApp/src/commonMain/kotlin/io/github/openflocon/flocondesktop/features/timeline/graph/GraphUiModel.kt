@@ -3,15 +3,17 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 
-// the types drawn, in the order of the lanes. The app start is a line over the lanes, the other sources only appear in the list
+// the types drawn, in the order of the lanes. The app start is a line over the lanes, the other sources only appear in the list (the logs are instants)
 internal enum class GraphLane(val source: TimelineSource) {
     Network(TimelineSource.Network),
     Database(TimelineSource.Database),
     Analytics(TimelineSource.Analytics),
+    Log(TimelineSource.Log),
 }
 
 internal fun TimelineSource.toGraphLane(): GraphLane? = GraphLane.entries.firstOrNull { it.source == this }
@@ -70,7 +72,7 @@ internal data class GraphUiModel(
     }
 }
 
-// the 14 events of the reference session: 6 rows, 2 failed calls, 3 images (and the app start, a line)
+// the 17 events of the reference session: 7 rows, 2 failed calls + 1 error log, 3 images (and the app start, a line)
 internal fun previewGraphEvents(): List<GraphEventUiModel> {
     fun net(id: String, method: String, path: String, host: String, start: Long, duration: Long, status: Int, image: Boolean = false) = GraphEventUiModel(
         row = previewTimelineRowUiModel(
@@ -113,6 +115,15 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         name = name,
     )
 
+    fun log(id: String, message: String, start: Long, level: TimelineLogLevel) = GraphEventUiModel(
+        row = previewTimelineRowUiModel(source = TimelineSource.Log, id = id, title = message, logLevel = level),
+        lane = GraphLane.Log,
+        startMs = start,
+        durationMs = 0L,
+        name = message,
+        hasError = level == TimelineLogLevel.Error,
+    )
+
     return listOf(
         net("1", "GET", "/v1/session", "api.shop.io", 0, 180, 200),
         analytics("2", "app_open", 20),
@@ -128,6 +139,9 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         analytics("13", "add_to_cart", 1800),
         net("14", "POST", "/v1/checkout", "api.shop.io", 2300, 520, 401),
         analytics("15", "checkout_failed", 2830),
+        log("16", "Opened the feed screen", 250, TimelineLogLevel.Info),
+        log("17", "Cart updated", 1810, TimelineLogLevel.Debug),
+        log("18", "Checkout failed: 401", 2820, TimelineLogLevel.Error),
     )
 }
 

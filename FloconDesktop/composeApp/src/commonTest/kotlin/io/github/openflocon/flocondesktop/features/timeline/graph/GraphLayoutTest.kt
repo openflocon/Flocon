@@ -41,7 +41,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds a diamond with a tolerance`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
         val appOpen = model.hitTest(viewport, x = 20f + 9f, yInContent = analyticsTop + 10f) // 6 px of diamond and 4 of margin
 
         assertEquals("2", appOpen?.row?.id)
@@ -49,7 +49,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds nothing in the empty parts`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
 
         assertNull(model.hitTest(viewport, x = 500f, yInContent = analyticsTop + 10f))
         assertNull(model.hitTest(viewport, x = 500f, yInContent = 10_000f))
@@ -152,7 +152,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds an instant by its label`() {
-        val analyticsTop = model.laneTops().last()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
         // app_open at 20 ms, 1 px per ms: its label is on the right of the diamond, before screen_view at 860 ms
         val onLabel = model.hitTest(viewport, x = 20f + 14f + 20f, yInContent = analyticsTop + 10f)
         assertEquals("2", onLabel?.row?.id)

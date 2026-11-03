@@ -12,7 +12,7 @@ import kotlin.math.roundToLong
  *
  * A network call is a request and a response in the timeline: one bar here, from the request, as long as the response
  * took. A WebSocket message is an instant. Without response yet, the bar goes up to the last event received. The database and analytics events have no
- * duration in the protocol: they are instants. The other sources are not drawn.
+ * duration in the protocol: they are instants, like the logs. The other sources are not drawn.
  */
 internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Long): GraphUiModel {
     val lastTimestamp = events.maxOfOrNull { it.timestamp } ?: sessionStart
@@ -52,6 +52,8 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
                 startMs = (event.timestamp - sessionStart).coerceAtLeast(0L),
                 durationMs = 0L,
                 name = event.title,
+                // a log of level error: computed in the query
+                hasError = event.hasError,
             )
         }
     }
