@@ -43,6 +43,9 @@ theme:
     - search.highlight
     - search.share
 
+exclude_docs: |
+  superpowers/
+
 extra_css:
   - assets/custom.css
 
