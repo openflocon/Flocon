@@ -5,6 +5,7 @@ import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppI
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenCapturer
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenCapturerImpl
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRecorder
+import io.github.openflocon.domain.timeline.usecase.GetTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
@@ -28,6 +29,7 @@ import org.koin.dsl.module
 internal val timelineDomainModule = module {
     factoryOf(::ObserveTimelineUseCase)
     factoryOf(::ObserveTimelineEventsUseCase)
+    factoryOf(::GetTimelineEventsUseCase)
     factoryOf(::ObserveTimelineSummaryUseCase)
     factoryOf(::ObserveTimelineSettingsUseCase)
     factoryOf(::SetTimelineAutoScrollUseCase)

@@ -400,6 +400,50 @@ private fun sessionsSql(deviceId: String, packageName: String, params: MutableLi
  */
 private fun latestSessionSql(deviceId: String, packageName: String, params: MutableList<Any>): String = "COALESCE((SELECT MAX(appInstance) FROM (${sessionsSql(deviceId, packageName, params)})), 0)"
 
+// the kind of the row of an event: a network call is pointed at by its request
+private fun TimelineSource.kind(): String = when (this) {
+    TimelineSource.Network -> KIND_NETWORK
+    TimelineSource.Database -> KIND_DATABASE
+    TimelineSource.Analytics -> KIND_ANALYTICS
+    TimelineSource.Accessibility -> KIND_ACCESSIBILITY
+    TimelineSource.WebView -> KIND_WEBVIEW
+    TimelineSource.Crash -> KIND_CRASH
+    TimelineSource.Table -> KIND_TABLE
+    TimelineSource.Deeplink -> KIND_DEEPLINK
+    TimelineSource.Adb -> KIND_ADB
+    TimelineSource.AppStart -> KIND_APP_START
+}
+
+/**
+ * The time bounds and the events asked by the filter, applied to the rows of the union: " WHERE ..." (with a trailing space),
+ * or an empty string when the filter asks for neither.
+ */
+private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableList<Any>): String {
+    val conditions = ArrayList<String>()
+    filter.fromMs?.let {
+        conditions.add("u.ts >= ?")
+        params.add(it)
+    }
+    filter.toMs?.let {
+        conditions.add("u.ts <= ?")
+        params.add(it)
+    }
+    filter.events?.let { events ->
+        if (events.isEmpty()) {
+            conditions.add("0")
+        } else {
+            conditions.add(
+                events.joinToString(prefix = "(", separator = " OR ", postfix = ")") {
+                    params.add(it.source.kind())
+                    params.add(it.id)
+                    "(u.kind = ? AND u.id = ?)"
+                }
+            )
+        }
+    }
+    return if (conditions.isEmpty()) "" else conditions.joinToString(prefix = "WHERE ", separator = " AND ", postfix = " ")
+}
+
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
         "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, NULL AS sessionStart WHERE 0"
@@ -443,11 +487,13 @@ internal fun buildTimelineQuery(
         )
     }
 
+    val outerWhere = outerConditions(filter, params)
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
             "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
+            outerWhere +
             // an app start is below the events that happened at the same time
             // at the same time, the response is above its request
             "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC",
