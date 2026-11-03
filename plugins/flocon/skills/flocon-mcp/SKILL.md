@@ -1,5 +1,5 @@
 ---
-name: flocon-debug
+name: flocon-mcp
 description: Use when debugging a mobile app (Android, iOS, KMP) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
 ---
 
