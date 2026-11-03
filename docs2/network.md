@@ -51,7 +51,7 @@ Flocon also includes a built-in network conditioner to simulate real-world condi
 The interceptors report to the **network plugin**: add `flocon-network-core` and install it.
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconNetwork)
 }
 ```

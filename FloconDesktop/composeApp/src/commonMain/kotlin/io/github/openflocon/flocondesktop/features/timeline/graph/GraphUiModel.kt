@@ -7,11 +7,12 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetwor
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 
-// the types drawn, in the order of the lanes. The app start is a line over the lanes, the other sources only appear in the list
+// the types drawn, from top to bottom. Database is the last one: it is the one that spams the most, so it must not push the others down.
+// A new lane goes between Network and Database. The app start is a line over the lanes, the other sources only appear in the list
 internal enum class GraphLane(val source: TimelineSource) {
+    Analytics(TimelineSource.Analytics),
     Network(TimelineSource.Network),
     Database(TimelineSource.Database),
-    Analytics(TimelineSource.Analytics),
 }
 
 internal fun TimelineSource.toGraphLane(): GraphLane? = GraphLane.entries.firstOrNull { it.source == this }

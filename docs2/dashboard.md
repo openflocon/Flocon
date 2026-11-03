@@ -28,7 +28,7 @@ Use cases:
 Dashboards are part of the core module (`flocon` / `flocon-no-op`), install the plugin:
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconDashboard)
 }
 ```
