@@ -4,6 +4,8 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.plugins.dashboard.dsl.text
+import io.github.openflocon.flocon.plugins.dashboard.model.DashboardConfig
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -47,5 +49,28 @@ class FloconDashboardPluginTest {
     @Test
     fun `key is the plugin name sent by the desktop`() {
         assertEquals(Protocol.ToDevice.Dashboard.Plugin, plugin.key)
+    }
+
+    private fun emptyDashboard(index: Int) = DashboardConfig(id = "d$index", containers = emptyList())
+
+    @Test
+    fun `connecting while dashboards are being registered does not crash`() = runBlocking(Dispatchers.Default) {
+        repeat(200) {
+            val plugin = FloconDashboardPluginImpl(FakeFloconMessageSender(), FloconEncoder())
+            repeat(300) { plugin.registerDashboard(emptyDashboard(it)) }
+            // registrations are still pending on the plugin dispatcher: must not throw
+            repeat(5) { plugin.onConnectedToServer() }
+        }
+    }
+
+    @Test
+    fun `sends every registered dashboard again on connect`() = runBlocking {
+        val sender = FakeFloconMessageSender()
+        val plugin = FloconDashboardPluginImpl(sender, FloconEncoder())
+        repeat(3) { plugin.registerDashboard(emptyDashboard(it)) }
+        withTimeout(5_000) { while (sender.messages.size < 3) delay(10) }
+        plugin.onConnectedToServer()
+        withTimeout(5_000) { while (sender.messages.size < 6) delay(10) }
+        assertEquals(6, sender.messages.size)
     }
 }
