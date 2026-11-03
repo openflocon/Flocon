@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -20,6 +22,7 @@ import io.github.openflocon.library.designsystem.components.FloconMascotPlatform
 import io.github.openflocon.library.designsystem.components.FloconMascotState
 import io.github.openflocon.library.designsystem.components.FloconMascotWidth
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 private val StopDistance = 26.dp
@@ -29,19 +32,23 @@ private val RunDistance = 320.dp
 private val RunSpeed = 200.dp
 private val JumpHeight = 28.dp
 
+/** Time between the click on the logo and the bark. */
+private const val BarkDelayMs = 2_000L
+
 private const val MaxFrameMs = 50L
 private const val NanosPerMilli = 1_000_000L
 
 /**
  * Mascot walking on the [platforms], after the pointer ([pointerX], null until it has moved), and
- * jumping from one platform to another when the pointer is over the other one. Everything is in px,
- * in the coordinates of this composable.
+ * jumping from one platform to another when the pointer is over the other one. It barks, after a delay,
+ * each time [barkCount] goes up. Everything is in px, in the coordinates of this composable.
  */
 @Composable
 fun MascotOverlay(
     pointerX: Float?,
     platforms: ImmutableList<FloconMascotPlatform>,
     modifier: Modifier = Modifier,
+    barkCount: Int = 0,
 ) {
     val density = LocalDensity.current
     val state = remember(density) {
@@ -61,6 +68,16 @@ fun MascotOverlay(
     }
     val currentPointerX by rememberUpdatedState(pointerX)
     val currentPlatforms by rememberUpdatedState(platforms)
+
+    var handledBarks by remember { mutableIntStateOf(barkCount) }
+    LaunchedEffect(state, barkCount) {
+        if (barkCount != handledBarks) {
+            // a new click while waiting restarts the wait
+            delay(BarkDelayMs)
+            handledBarks = barkCount
+            state.bark()
+        }
+    }
 
     LaunchedEffect(state) {
         var lastNanos = withFrameNanos { it }
