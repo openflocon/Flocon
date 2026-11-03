@@ -95,8 +95,11 @@ internal class FloconDashboardPluginImpl(
 
     override suspend fun onConnectedToServer() {
         // on connected, send known dashboards
-        dashboards.values.takeIf { it.isNotEmpty() }?.forEach { dashboardConfig ->
-            registerDashboardInternal(dashboardConfig)
+        // `dashboards` is only touched from the plugin dispatcher, iterate a snapshot there
+        scope.launch {
+            dashboards.values.toList().forEach { dashboardConfig ->
+                registerDashboardInternal(dashboardConfig)
+            }
         }
     }
 
