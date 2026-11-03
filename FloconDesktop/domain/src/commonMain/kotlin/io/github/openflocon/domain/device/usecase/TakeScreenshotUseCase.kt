@@ -7,6 +7,8 @@ import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.then
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class TakeScreenshotUseCase(
@@ -44,21 +46,28 @@ class TakeScreenshotUseCase(
                 .alsoFailure { it.printStackTrace() }
         }
 
-        return executeAdbCommandUseCase(
-            target = AdbCommandTargetDomainModel.Device(current.deviceId),
-            command = "shell screencap -p $onDeviceFilePath",
-        ).then {
+        val device = AdbCommandTargetDomainModel.Device(current.deviceId)
+        return try {
             executeAdbCommandUseCase(
-                target = AdbCommandTargetDomainModel.Device(current.deviceId),
-                command = "pull $onDeviceFilePath $filePath",
-            )
-        }.then {
-            executeAdbCommandUseCase(
-                target = AdbCommandTargetDomainModel.Device(current.deviceId),
-                command = "shell rm $onDeviceFilePath",
-            )
-        }.mapSuccess {
-            filePath
-        }.alsoFailure { it.printStackTrace() }
+                target = device,
+                command = "shell screencap -p $onDeviceFilePath",
+            ).then {
+                executeAdbCommandUseCase(
+                    target = device,
+                    command = "pull $onDeviceFilePath $filePath",
+                )
+            }.mapSuccess {
+                filePath
+            }.alsoFailure { it.printStackTrace() }
+        } finally {
+            // even when cancelled in the middle (the timeline stops a capture when the device or the interval changes):
+            // the screenshot must not stay on the device
+            withContext(NonCancellable) {
+                executeAdbCommandUseCase(
+                    target = device,
+                    command = "shell rm $onDeviceFilePath",
+                ).alsoFailure { it.printStackTrace() }
+            }
+        }
     }
 }

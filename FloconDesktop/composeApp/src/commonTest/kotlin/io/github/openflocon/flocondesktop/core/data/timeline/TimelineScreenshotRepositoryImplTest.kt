@@ -78,4 +78,43 @@ class TimelineScreenshotRepositoryImplTest {
         assertEquals(listOf(1L), repository.observe(deviceA).first().map { it.timestamp })
         assertEquals(listOf(2L), repository.observe(deviceB).first().map { it.timestamp })
     }
+
+    @Test
+    fun `purgeAll on a root that is a symlink removes the link and not what it points to`() = runBlocking {
+        val parent = Files.createTempDirectory("flocon-links")
+        val precious = Files.createDirectory(parent.resolve("precious"))
+        val keep = Files.createFile(precious.resolve("keep.txt"))
+        val link = parent.resolve("root-link")
+        try {
+            Files.createSymbolicLink(link, precious)
+        } catch (e: UnsupportedOperationException) {
+            return@runBlocking // no symlink on this file system
+        }
+
+        TimelineScreenshotRepositoryImpl(rootDir = link.toFile()).purgeAll()
+
+        assertTrue(Files.exists(keep), "the target of the link was emptied")
+        assertFalse(Files.exists(link, java.nio.file.LinkOption.NOFOLLOW_LINKS))
+    }
+
+    @Test
+    fun `the root folder is only accessible by its owner`() {
+        val posix = java.nio.file.FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
+        if (!posix) return
+        val fresh = Files.createTempDirectory("flocon-perm").resolve("screens").toFile()
+
+        TimelineScreenshotRepositoryImpl(rootDir = fresh).newJpegFile(deviceA, 1)
+
+        assertEquals(
+            java.nio.file.attribute.PosixFilePermissions.fromString("rwx------"),
+            Files.getPosixFilePermissions(fresh.toPath()),
+        )
+    }
+
+    @Test
+    fun `a device id made of dots stays inside the root`() {
+        val file = repository().newJpegFile(deviceA.copy(deviceId = ".."), 1)
+
+        assertEquals(root.canonicalPath, file.canonicalFile.parentFile.parentFile.canonicalPath)
+    }
 }

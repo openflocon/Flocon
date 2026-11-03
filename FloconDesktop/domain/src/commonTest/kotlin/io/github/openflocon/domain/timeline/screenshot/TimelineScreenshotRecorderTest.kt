@@ -166,16 +166,62 @@ class TimelineScreenshotRecorderTest {
     }
 
     @Test
-    fun `a capture slower than the interval skips ticks instead of queueing`() = runTest {
+    fun `a capture slower than the interval is followed by a full interval of rest`() = runTest {
         val env = env().also { it.capturer.durationMs = 25_000 }
         start(env)
 
         advanceTimeBy(100_000)
         runCurrent()
 
-        // 100 s with a 25 s capture and a 10 s interval: never two at once, and far fewer than the 10 ticks
+        // 25 s of capture then 10 s of rest: starts at 0, 35 and 70 s, never two at once
         assertEquals(1, env.capturer.maxRunning)
-        assertTrue(env.capturer.calls.size <= 5, "calls: ${env.capturer.calls.size}")
+        assertEquals(3, env.capturer.calls.size)
+    }
+
+    @Test
+    fun `a capture that never ends is cancelled after the timeout and counts as a failure`() = runTest {
+        val env = env().also { it.capturer.durationMs = 10 * 60_000L }
+        start(env)
+
+        runCurrent()
+        assertEquals(1, env.capturer.calls.size)
+        // 30 s of timeout, then 10 s of rest: the loop is back
+        advanceTimeBy(41_000)
+        runCurrent()
+
+        assertEquals(2, env.capturer.calls.size)
+        assertEquals(1, env.capturer.maxRunning)
+    }
+
+    @Test
+    fun `the failure warning is cleared when the feature is turned off`() = runTest {
+        val env = env().also { it.capturer.result = Failure(RuntimeException("adb")) }
+        start(env)
+        runCurrent()
+        advanceTimeBy(20_000)
+        runCurrent()
+        assertTrue(env.recorder.isFailing.value)
+
+        env.preferences.setScreenshots(false)
+        runCurrent()
+
+        assertFalse(env.recorder.isFailing.value)
+    }
+
+    @Test
+    fun `failures on one device do not count for the next one`() = runTest {
+        val env = env().also { it.capturer.result = Failure(RuntimeException("adb")) }
+        start(env)
+        runCurrent()
+        advanceTimeBy(10_000)
+        runCurrent()
+        assertEquals(2, env.capturer.calls.size)
+
+        env.device.value = deviceB
+        runCurrent()
+
+        // one failure on B: not the third in a row
+        assertFalse(env.recorder.isFailing.value)
     }
 
     @Test

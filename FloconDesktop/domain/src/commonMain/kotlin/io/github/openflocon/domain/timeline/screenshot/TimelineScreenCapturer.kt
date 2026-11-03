@@ -22,11 +22,13 @@ internal class TimelineScreenCapturerImpl(
     override suspend fun capture(target: DeviceIdAndPackageNameDomainModel, jpegFile: File): Either<Throwable, Unit> {
         // the png of the device, next to the jpeg: deleted once converted
         val png = File(jpegFile.parentFile, "${jpegFile.nameWithoutExtension}.png")
+        var success = false
         return try {
             takeScreenshotUseCase(target = target, outputFile = png).fold(
                 doOnFailure = { Failure(it) },
                 doOnSuccess = {
                     withContext(dispatcherProvider.data) { convertPngToJpeg(png = png, jpeg = jpegFile) }
+                    success = true
                     Success(Unit)
                 },
             )
@@ -36,6 +38,8 @@ internal class TimelineScreenCapturerImpl(
             Failure(t)
         } finally {
             png.delete()
+            // a jpeg of a capture that failed or was cancelled is not in the index: it would stay until the next launch
+            if (!success) jpegFile.delete()
         }
     }
 }

@@ -65,7 +65,8 @@ internal fun ScreenshotsControl(
                 onSelect = { onAction(TimelineAction.SetScreenshotInterval(TimelineScreenshotIntervalsSeconds[it])) },
             )
         }
-        if (failing) {
+        // the warning is about the capture: it makes no sense next to a switch that is off
+        if (failing && enabled) {
             WithTooltip(tooltip = stringResource(Res.string.timeline_screenshots_failing)) {
                 CategoryDot(color = colors.statusWarning)
             }

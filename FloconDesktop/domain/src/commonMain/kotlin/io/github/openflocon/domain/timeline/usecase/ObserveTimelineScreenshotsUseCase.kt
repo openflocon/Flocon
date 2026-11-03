@@ -4,6 +4,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPacka
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainModel
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
@@ -17,4 +18,6 @@ class ObserveTimelineScreenshotsUseCase(
         .flatMapLatest { current ->
             if (current == null) flowOf(emptyList()) else timelineScreenshotRepository.observe(current)
         }
+        // the list of another device or app changes too: the timeline does not rebuild for an equal list
+        .distinctUntilChanged()
 }

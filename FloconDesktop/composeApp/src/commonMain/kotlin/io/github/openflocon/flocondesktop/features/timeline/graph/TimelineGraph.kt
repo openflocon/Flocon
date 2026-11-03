@@ -283,7 +283,7 @@ internal fun TimelineGraph(
                     .semantics { contentDescription = description }
                     .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
                     .onSizeChanged { canvasSize = it }
-                    .pointerInput(model, density, trackWidth, maxScroll) {
+                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
                         awaitPointerEventScope {
                             while (true) {
                                 val event = awaitPointerEvent()
@@ -312,7 +312,8 @@ internal fun TimelineGraph(
                                     }
 
                                     PointerEventType.Move -> {
-                                        hoverTimeMs = if (x in 0f..trackWidth && y >= 0f) viewport.msAt(x).toLong() else null
+                                        // only followed when there are screenshots to show: without them a move does not recompose the graph
+                                        hoverTimeMs = if (model.screenshots.isNotEmpty() && x in 0f..trackWidth && y >= 0f) viewport.msAt(x).toLong() else null
                                         hovered = if (x >= 0f && y >= 0f) {
                                             model.hitTest(viewport, x, y + viewport.scrollY)
                                         } else {
@@ -328,7 +329,7 @@ internal fun TimelineGraph(
                             }
                         }
                     }
-                    .pointerInput(model, density, maxScroll) {
+                    .pointerInput(model.lanes, density, maxScroll) {
                         detectTapGestures { offset ->
                             val x = offset.x / density - LaneLabelWidthPx
                             val y = offset.y / density - AxisHeightPx
@@ -337,7 +338,7 @@ internal fun TimelineGraph(
                             }
                         }
                     }
-                    .pointerInput(model, density, trackWidth, maxScroll) {
+                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
                         detectDragGestures(
                             onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
                             onDragEnd = {

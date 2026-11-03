@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.timeline.screenshot
 
+import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import kotlinx.coroutines.delay
@@ -8,10 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Takes a screenshot of the current app every interval, while the feature is on and the device is connected.
@@ -45,26 +45,27 @@ class TimelineScreenshotRecorder(
             .distinctUntilChanged()
             // a new plan (interval, device, switch) cancels the loop in progress and starts at once
             .collectLatest { plan ->
+                // the failures of the previous plan (another device, the feature turned off) are not the ones of this one
+                consecutiveFailures = 0
+                _isFailing.value = false
                 if (plan != null) captureEvery(plan)
             }
     }
 
-    // a tick that arrives while a capture is running is merged with the next one (conflate): a slow capture skips ticks
+    // a full interval of rest after each capture: a slow capture (wireless adb) never keeps the device busy all the time
     private suspend fun captureEvery(plan: Plan) {
-        flow {
-            while (true) {
-                emit(Unit)
-                delay(plan.intervalMs)
-            }
+        while (true) {
+            captureOnce(plan.device)
+            delay(plan.intervalMs)
         }
-            .conflate()
-            .collect { captureOnce(plan.device) }
     }
 
     private suspend fun captureOnce(target: DeviceIdAndPackageNameDomainModel) {
         val timestamp = System.currentTimeMillis()
         val file = repository.newJpegFile(target, timestamp)
-        capturer.capture(target, file).fold(
+        // a capture that hangs counts as a failure, and the loop goes on
+        val result = withTimeoutOrNull(CAPTURE_TIMEOUT_MS) { capturer.capture(target, file) }
+        (result ?: Failure(IllegalStateException("Screenshot timeout"))).fold(
             doOnFailure = {
                 consecutiveFailures++
                 if (consecutiveFailures >= FAILURES_BEFORE_WARNING) _isFailing.value = true
@@ -87,5 +88,6 @@ class TimelineScreenshotRecorder(
 
     private companion object {
         const val FAILURES_BEFORE_WARNING = 3
+        const val CAPTURE_TIMEOUT_MS = 30_000L
     }
 }
