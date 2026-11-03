@@ -62,6 +62,8 @@ internal data class GraphUiModel(
     val hasAppStart: Boolean = false,
     // the time of day of the start of the session, to give a time to the axis
     val sessionStartTimestamp: Long = 0L,
+    // the screenshots of the session, oldest first: the strip above the time axis
+    val screenshots: List<GraphScreenshotUiModel> = emptyList(),
 ) {
     val rowCount: Int get() = lanes.sumOf { it.rows.size }
 

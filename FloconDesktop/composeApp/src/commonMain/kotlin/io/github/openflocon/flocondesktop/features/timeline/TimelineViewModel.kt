@@ -13,6 +13,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
@@ -26,6 +27,7 @@ import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOp
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
+import io.github.openflocon.flocondesktop.features.timeline.graph.screenshotsOfSession
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -61,6 +63,7 @@ internal class TimelineViewModel(
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
     observeTimelineScreenshotsFailingUseCase: ObserveTimelineScreenshotsFailingUseCase,
+    observeTimelineScreenshotsUseCase: ObserveTimelineScreenshotsUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
@@ -152,9 +155,16 @@ internal class TimelineViewModel(
                 combine(filter, sessionStarts, graphSession) { filter, starts, selected -> Triple(filter, starts, selected) }
                     .flatMapLatest { (filter, starts, selected) ->
                         val sessionStart = (selected?.takeIf { it in starts } ?: starts.lastOrNull())
-                        observeTimelineEventsUseCase(filter.copy(appInstance = sessionStart))
-                            .sample(GRAPH_BATCH_MS)
-                            .map { events -> buildGraph(events, sessionStart ?: events.minOfOrNull { it.timestamp } ?: 0L) }
+                        val nextSessionStart = sessionStart?.let { start -> starts.firstOrNull { it > start } }
+                        combine(
+                            observeTimelineEventsUseCase(filter.copy(appInstance = sessionStart)).sample(GRAPH_BATCH_MS),
+                            observeTimelineScreenshotsUseCase(),
+                        ) { events, shots ->
+                            val start = sessionStart ?: events.minOfOrNull { it.timestamp } ?: 0L
+                            // a session that is not known has no screenshot to place
+                            val screenshots = if (sessionStart == null) emptyList() else screenshotsOfSession(shots, start, nextSessionStart)
+                            buildGraph(events, start).copy(screenshots = screenshots)
+                        }
                     }
             }
         }
