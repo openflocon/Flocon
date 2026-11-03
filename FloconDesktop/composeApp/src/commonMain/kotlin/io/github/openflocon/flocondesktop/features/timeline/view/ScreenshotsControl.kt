@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshots
 import flocondesktop.composeapp.generated.resources.timeline_screenshots_failing
@@ -26,6 +27,8 @@ import io.github.openflocon.library.designsystem.components.WithTooltip
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 
+private const val UnavailableAlpha = 0.4f
+
 /**
  * The screenshots of the app taken at a regular interval, shown next to the events: a switch, and the interval once on.
  * [status]: the last captures did not work, or the device cannot take them.
@@ -40,6 +43,9 @@ internal fun ScreenshotsControl(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
+    // not available for this device: the label and the switch are greyed out, the switch stays off and cannot be turned on
+    val unavailable = status == TimelineScreenshotsStatus.Unavailable
+    val dimmed = if (unavailable) Modifier.alpha(UnavailableAlpha) else Modifier
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -47,19 +53,20 @@ internal fun ScreenshotsControl(
     ) {
         FloconIcon(
             imageVector = Icons.Outlined.PhotoCamera,
-            tint = if (enabled) colors.ink else colors.inkMuted,
+            tint = if (enabled && !unavailable) colors.ink else colors.inkMuted,
+            modifier = dimmed,
         )
         Text(
             text = stringResource(Res.string.timeline_screenshots),
             style = FloconTheme.typography.labelMedium,
-            color = if (enabled) colors.ink else colors.inkMuted,
+            color = if (enabled && !unavailable) colors.ink else colors.inkMuted,
             maxLines = 1,
+            modifier = dimmed,
         )
-        // not available for this device: the switch stays off and cannot be turned on
-        val unavailable = status == TimelineScreenshotsStatus.Unavailable
         FloconToggleSwitch(
             checked = enabled && !unavailable,
             onCheckedChange = if (unavailable) null else ({ onAction(TimelineAction.SetScreenshots(it)) }),
+            modifier = dimmed,
         )
         if (enabled && !unavailable) {
             val labels = TimelineScreenshotIntervalsSeconds.map { stringResource(Res.string.timeline_screenshots_interval, it) }
