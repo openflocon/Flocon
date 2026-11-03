@@ -30,6 +30,27 @@ class FilterPanelMapperTest {
     )
 
     @Test
+    fun `filterPanelListsLogTypeAndLevelFacets`() {
+        val withLogs = summary.copy(
+            sourceCounts = summary.sourceCounts + (TimelineSource.Log to 3),
+            facetCounts = mapOf(TimelineFacet.LogType to mapOf("checkout" to 2, "navigation" to 1)),
+        )
+
+        val log = withLogs.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Log }
+
+        assertEquals(listOf(TimelineFacet.LogType, TimelineFacet.LogLevel), log.groups.map { it.facet })
+        // the fixed types, then the custom tag coming from the data
+        assertEquals(
+            listOf("navigation", "userAction", "lifecycle", "checkout"),
+            log.groups.first { it.facet == TimelineFacet.LogType }.values.map { it.value },
+        )
+        assertEquals(
+            listOf("DEBUG", "INFO", "WARNING", "ERROR"),
+            log.groups.first { it.facet == TimelineFacet.LogLevel }.values.map { it.value },
+        )
+    }
+
+    @Test
     fun `the sources with events come first, in their order`() {
         val panel = summary.toFilterPanel(all, emptyMap())
 

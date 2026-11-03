@@ -19,6 +19,7 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     network = if (source == TimelineSource.Network) toNetworkUi() else null,
     sessionStart = sessionStart,
     phase = phase,
+    logLevel = level,
 )
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {

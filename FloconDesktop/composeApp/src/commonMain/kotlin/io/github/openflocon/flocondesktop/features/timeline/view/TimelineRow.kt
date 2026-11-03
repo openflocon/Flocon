@@ -52,13 +52,16 @@ import flocondesktop.composeapp.generated.resources.timeline_source_app_start
 import flocondesktop.composeapp.generated.resources.timeline_source_crash
 import flocondesktop.composeapp.generated.resources.timeline_source_database
 import flocondesktop.composeapp.generated.resources.timeline_source_deeplink
+import flocondesktop.composeapp.generated.resources.timeline_source_log
 import flocondesktop.composeapp.generated.resources.timeline_source_network
 import flocondesktop.composeapp.generated.resources.timeline_source_table
 import flocondesktop.composeapp.generated.resources.timeline_source_webview
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
 import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
 import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
@@ -79,7 +82,7 @@ internal fun TimelineSource.label(): StringResource = when (this) {
     TimelineSource.Deeplink -> Res.string.timeline_source_deeplink
     TimelineSource.Adb -> Res.string.timeline_source_adb
     TimelineSource.AppStart -> Res.string.timeline_source_app_start
-    TimelineSource.Log -> Res.string.timeline_source_analytics // placeholder: Task 5 adds the logs label
+    TimelineSource.Log -> Res.string.timeline_source_log
 }
 
 // the data of these sources are technical: they are displayed in mono
@@ -87,7 +90,14 @@ private val monoTitles = setOf(TimelineSource.Database, TimelineSource.Adb, Time
 private val monoSubtitles = setOf(TimelineSource.Crash, TimelineSource.Table, TimelineSource.Adb)
 
 // the subtitle of these sources is a short name: it is a chip at the end of the line, so the row keeps one line
-private val chipSubtitles = setOf(TimelineSource.Database, TimelineSource.Analytics, TimelineSource.Deeplink, TimelineSource.Accessibility, TimelineSource.WebView)
+private val chipSubtitles = setOf(
+    TimelineSource.Database,
+    TimelineSource.Analytics,
+    TimelineSource.Deeplink,
+    TimelineSource.Accessibility,
+    TimelineSource.WebView,
+    TimelineSource.Log,
+)
 
 private const val HoverAlpha = 0.3f
 private const val SelectedBorderAlpha = 0.7f
@@ -242,15 +252,31 @@ private fun RowContent(
                 }
                 highlightMatches(plain, highlight, highlightColor)
             }
-            Text(
-                text = text,
-                style = if (row.source in monoTitles) base.copy(fontFamily = FontFamily.Monospace) else base,
-                fontWeight = FontWeight.Medium,
-                color = if (isCrash) colors.catCrash else colors.ink,
-                maxLines = 1,
-                // the start of a link and its end both matter, the end of a query does not
-                overflow = if (row.source == TimelineSource.Deeplink) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
-            )
+            val logLevel = row.logLevel.takeIf { row.source == TimelineSource.Log }
+            // a warning and an error stand out, the other levels keep the color of the other events
+            val titleColor = when {
+                isCrash -> colors.catCrash
+                logLevel == TimelineLogLevel.Warning || logLevel == TimelineLogLevel.Error -> logLevel.color(colors)
+                else -> colors.ink
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            ) {
+                if (logLevel != null) {
+                    LogTypeIcon(type = row.subtitle.orEmpty(), level = logLevel)
+                }
+                Text(
+                    text = text,
+                    style = if (row.source in monoTitles) base.copy(fontFamily = FontFamily.Monospace) else base,
+                    fontWeight = FontWeight.Medium,
+                    color = titleColor,
+                    maxLines = 1,
+                    // the start of a link and its end both matter, the end of a query does not
+                    overflow = if (row.source == TimelineSource.Deeplink) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
         }
         if (subtitle != null) {
             val base = FloconTheme.typography.labelMedium
