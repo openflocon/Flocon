@@ -19,6 +19,7 @@ class TimelineFilterStoreTest {
         override suspend fun setAutoScroll(autoScroll: Boolean) = Unit
         override suspend fun setInvertList(invertList: Boolean) = Unit
         override suspend fun setPinPanel(pinPanel: Boolean) = Unit
+        override suspend fun setGraph(graph: Boolean) = Unit
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) = Unit
     }
 

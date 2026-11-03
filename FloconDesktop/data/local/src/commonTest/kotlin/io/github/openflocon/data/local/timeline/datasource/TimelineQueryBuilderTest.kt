@@ -27,6 +27,19 @@ class TimelineQueryBuilderTest {
     // a network call is two events, its request and its response
     private val eventBranches = eventSources + 1
 
+    // how many columns the text is looked for in, by source
+    private val textColumnCounts = mapOf(
+        TimelineSource.Network to 2,
+        TimelineSource.Database to 2,
+        TimelineSource.Analytics to 3, // the properties too
+        TimelineSource.Accessibility to 4, // the class and the screen too
+        TimelineSource.WebView to 2,
+        TimelineSource.Crash to 3, // the stack trace too
+        TimelineSource.Table to 3, // the columns too
+        TimelineSource.Deeplink to 4, // the description and the parameters too
+        TimelineSource.Adb to 2,
+    )
+
     @Test
     fun `every source is merged by a union sorted from the newest`() {
         val query = build()
@@ -159,9 +172,10 @@ class TimelineQueryBuilderTest {
     fun `the text filter is applied on every source`() {
         val query = build(TimelineFilterDomainModel(text = "login"))
 
-        // every source filters on two columns
-        assertEquals(eventBranches * 2, Regex("LIKE \\?").findAll(query.sql).count())
-        assertEquals(eventBranches * 2, query.params.count { it == "%login%" })
+        // every source filters on its own columns, the response of a network call too
+        val expected = textColumnCounts.values.sum() + textColumnCounts.getValue(TimelineSource.Network)
+        assertEquals(expected, Regex("LIKE \\?").findAll(query.sql).count())
+        assertEquals(expected, query.params.count { it == "%login%" })
     }
 
     @Test
@@ -214,7 +228,7 @@ class TimelineQueryBuilderTest {
             filter = TimelineFilterDomainModel(text = "login"),
         )
 
-        assertEquals(eventSources * 2, query.params.count { it == "%login%" })
+        assertEquals(textColumnCounts.values.sum(), query.params.count { it == "%login%" })
     }
 
     @Test
