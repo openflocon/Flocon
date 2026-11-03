@@ -54,9 +54,15 @@ Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), Fl
 !!! note
     The reserved types are `navigation`, `userAction` and `lifecycle` (matched without case sensitivity). A tag equal to one of them is shown as that type.
 
+!!! note
+    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop shows them as **Info**. Unticking **Info** in the Level filter therefore hides them too.
+
 ### Navigation listener (Compose)
 
 ```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.navigation.NavController
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.timeline.*
 
@@ -66,7 +72,8 @@ fun NavigationLogger(navController: NavController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, arguments ->
             Flocon.timelinePlugin.logNavigation(
                 value = destination.route ?: "unknown",
-                params = arguments?.keySet().orEmpty().associateWith { arguments?.get(it).toString() },
+                // string arguments only
+                params = arguments?.let { b -> b.keySet().associateWith { b.getString(it).orEmpty() } }.orEmpty(),
             )
         }
         navController.addOnDestinationChangedListener(listener)
