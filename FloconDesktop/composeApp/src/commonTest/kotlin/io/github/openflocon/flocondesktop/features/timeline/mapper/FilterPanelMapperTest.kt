@@ -41,13 +41,11 @@ class FilterPanelMapperTest {
     )
 
     @Test
-    fun `the sources with events come first, in their order`() {
+    fun `the sources are listed in their order, whatever their events`() {
         val panel = summary.toFilterPanel(all, emptyMap())
 
-        assertEquals(
-            listOf(TimelineSource.Network, TimelineSource.Adb),
-            panel.sections.take(2).map { it.source },
-        )
+        // the adb commands have events, the databases have none: the order does not move
+        assertEquals(TimelineSource.entries, panel.sections.map { it.source })
     }
 
     @Test
@@ -55,7 +53,8 @@ class FilterPanelMapperTest {
         val panel = TimelineSummaryUiModel.Empty.toFilterPanel(selectedSources = emptySet(), facets = emptyMap())
 
         assertEquals(TimelineSource.entries, panel.sections.map { it.source })
-        assertTrue(panel.sections.none { it.enabled })
+        // the network card has its own master switch, it does not follow the sources selected
+        assertTrue(panel.sections.filterNot { it.source == TimelineSource.Network }.none { it.enabled })
     }
 
     @Test
