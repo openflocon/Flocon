@@ -57,12 +57,14 @@ internal data class TimelineSettingsUiModel(
     val autoScroll: Boolean,
     val invertList: Boolean,
     val pinPanel: Boolean,
+    val graph: Boolean = true,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     autoScroll = false,
     invertList = false,
     pinPanel = false,
+    graph = false,
 )
 
 internal sealed interface TimelineAction {
@@ -72,6 +74,10 @@ internal sealed interface TimelineAction {
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
+    data class SetGraph(val value: Boolean) : TimelineAction
+
+    // the session of the graph: -1 the one before, 1 the one after
+    data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
 }
 
@@ -80,6 +86,24 @@ internal sealed interface TimelineFilterAction {
     data class ToggleSource(val source: TimelineSource) : TimelineFilterAction
     data class ToggleFacet(val facet: TimelineFacet, val value: String) : TimelineFilterAction
     data class SetCurrentSessionOnly(val value: Boolean) : TimelineFilterAction
+
+    // the network card
+    data class SetNetworkEnabled(val value: Boolean) : TimelineFilterAction
+
+    // shows every network call again: the values hidden and the rules are cleared
+    data object ResetNetwork : TimelineFilterAction
+
+    // the values hidden of a facet at once: only one host (all the others hidden), none, or all of them
+    data class SetHiddenValues(val facet: TimelineFacet, val values: Set<String>) : TimelineFilterAction
+
+    // "404, 500-503": a code or a range, several of them separated by commas
+    data class AddStatusRules(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemoveStatusRule(val value: String) : TimelineFilterAction
+    data class AddHostRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemoveHostRule(val value: String) : TimelineFilterAction
+
+    // positions of the slider, see TimelineNetworkFilterUiModel
+    data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction
 }
 

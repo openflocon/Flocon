@@ -23,6 +23,17 @@ class ToDeviceAccessibilityDataSourceImpl(
         send(deviceIdAndPackageName, Protocol.ToDevice.Accessibility.Method.FocusPrevious)
     }
 
+    override suspend fun setTalkBackEnabled(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, enabled: Boolean) {
+        send(
+            deviceIdAndPackageName,
+            if (enabled) {
+                Protocol.ToDevice.Accessibility.Method.EnableTalkBack
+            } else {
+                Protocol.ToDevice.Accessibility.Method.DisableTalkBack
+            },
+        )
+    }
+
     private suspend fun send(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, method: String) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),

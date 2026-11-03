@@ -13,6 +13,11 @@ interface TimelineLocalDataSource {
         filter: TimelineFilterDomainModel,
     ): Flow<TimelineSummaryDomainModel>
 
+    fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>>
+
     fun observeTimeline(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         filter: TimelineFilterDomainModel,

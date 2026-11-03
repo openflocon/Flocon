@@ -54,6 +54,24 @@ interface TimelineDao {
             AdbCommandHistoryEntity::class,
         ]
     )
+    fun observeTimelineList(
+        query: RoomRawQuery,
+    ): Flow<List<TimelineRowEntity>>
+
+    @RawQuery(
+        observedEntities = [
+            FloconNetworkCallEntity::class,
+            AnalyticsItemEntity::class,
+            AccessibilityEventEntity::class,
+            WebViewEventEntity::class,
+            CrashReportEntity::class,
+            DatabaseQueryLogEntity::class,
+            TableEntity::class,
+            TableItemEntity::class,
+            DeeplinkEntity::class,
+            AdbCommandHistoryEntity::class,
+        ]
+    )
     fun observeSummary(
         query: RoomRawQuery,
     ): Flow<List<TimelineSummaryRowEntity>>

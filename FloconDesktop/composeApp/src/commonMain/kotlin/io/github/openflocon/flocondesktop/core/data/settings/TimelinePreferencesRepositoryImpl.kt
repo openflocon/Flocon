@@ -27,6 +27,10 @@ internal class TimelinePreferencesRepositoryImpl(
         localSettingsDataSource.updateTimelineSettings { it.copy(pinPanel = pinPanel) }
     }
 
+    override suspend fun setGraph(graph: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(graph = graph) }
+    }
+
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
         localSettingsDataSource.updateTimelineSettings { current ->
             current.copy(

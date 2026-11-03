@@ -36,6 +36,10 @@ internal object ComposeFocusOrder {
                     composeView.accessibilityNodeProvider
                         ?.performAction(node.id, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null) == true
                 },
+                hasAccessibilityFocus = {
+                    composeView.accessibilityNodeProvider
+                        ?.createAccessibilityNodeInfo(node.id)?.isAccessibilityFocused == true
+                },
             )
         }
         return true
@@ -76,7 +80,7 @@ internal object ComposeFocusOrder {
             extras = buildMap {
                 put("source", "compose")
                 config.getOrNull(SemanticsProperties.TestTag)?.let { put("testTag", it) }
-                config.getOrNull(SemanticsProperties.StateDescription)?.let { put("stateDescription", it) }
+                putAll(toNodeDetails(label = text() ?: contentDescription()).toExtras())
             },
         )
     }

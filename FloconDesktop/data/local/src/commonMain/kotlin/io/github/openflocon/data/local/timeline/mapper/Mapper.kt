@@ -49,6 +49,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     phase = if (kind == KIND_NETWORK_RESPONSE) TimelinePhase.Response else TimelinePhase.Request,
     sessionStart = sessionStart,
     isImage = isImage,
+    hasError = hasError,
 )
 
 internal fun toSummaryDomain(

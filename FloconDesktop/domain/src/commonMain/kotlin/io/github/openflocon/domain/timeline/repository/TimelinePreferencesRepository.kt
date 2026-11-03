@@ -13,5 +13,7 @@ interface TimelinePreferencesRepository {
 
     suspend fun setPinPanel(pinPanel: Boolean)
 
+    suspend fun setGraph(graph: Boolean)
+
     suspend fun setSelectedSources(sources: Set<TimelineSource>)
 }

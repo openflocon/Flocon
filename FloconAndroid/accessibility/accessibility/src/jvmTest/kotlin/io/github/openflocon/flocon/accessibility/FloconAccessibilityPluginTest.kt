@@ -119,6 +119,24 @@ class FloconAccessibilityPluginTest {
     }
 
     @Test
+    fun `talkback commands reply with the state`() {
+        plugin.sendState(AccessibilityStateItem(supported = true, enabled = false, touchExploration = false, services = emptyList()))
+
+        listOf(
+            Protocol.ToDevice.Accessibility.Method.EnableTalkBack,
+            Protocol.ToDevice.Accessibility.Method.DisableTalkBack,
+        ).forEach { command ->
+            sender.messages.clear()
+            runBlocking { plugin.onMessageReceived(command, "") }
+
+            val (pluginName, method, body) = sender.messages.single()
+            assertEquals(Protocol.FromDevice.Accessibility.Plugin, pluginName)
+            assertEquals(Protocol.FromDevice.Accessibility.Method.State, method)
+            assertContains(body, "\"supported\":true")
+        }
+    }
+
+    @Test
     fun `an unknown command is ignored`() {
         runBlocking { plugin.onMessageReceived("unknown", "") }
 

@@ -22,6 +22,15 @@ debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
 ```
 
+To use several Flocon modules with a single version, import the BOM:
+```kotlin
+debugImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+releaseImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+// then declare any module without a version
+debugImplementation("io.github.openflocon:flocon-okhttp-interceptor")
+releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op")
+```
+
 in your `Application.kt`
 ```kotlin
 // android initialization

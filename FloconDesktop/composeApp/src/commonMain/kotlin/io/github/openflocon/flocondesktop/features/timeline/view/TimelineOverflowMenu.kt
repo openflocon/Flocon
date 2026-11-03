@@ -29,12 +29,15 @@ internal fun TimelineOverflowMenu(
             leadingIcon = Icons.Outlined.PlayCircle,
             onCheckedChange = { checked -> onAction(TimelineAction.ToggleAutoScroll(checked)) }
         )
-        FloconDropdownMenuItem(
-            checked = settings.invertList,
-            text = stringResource(Res.string.invert_list),
-            leadingIcon = Icons.AutoMirrored.Outlined.List,
-            onCheckedChange = { checked -> onAction(TimelineAction.InvertList(checked)) }
-        )
+        // the direction of the list means nothing to the graph
+        if (!settings.graph) {
+            FloconDropdownMenuItem(
+                checked = settings.invertList,
+                text = stringResource(Res.string.invert_list),
+                leadingIcon = Icons.AutoMirrored.Outlined.List,
+                onCheckedChange = { checked -> onAction(TimelineAction.InvertList(checked)) }
+            )
+        }
         FloconDropdownMenuItem(
             checked = settings.pinPanel,
             text = stringResource(Res.string.network_pin_panel),
