@@ -14,7 +14,7 @@ Code, protocol and docs ship together in the same PR. When a change touches one 
 - Changed setup / public SDK API → update `docs/setup.md`, the feature page, and the snippet in the root `README.md`. Breaking changes also go in `docs/migration.md`.
 
 ## MCP
-- New or changed MCP tool → update `docs/mcp.md` and `plugins/flocon/skills/flocon-debug/SKILL.md`.
+- New or changed MCP tool → update `docs/mcp.md` and `plugins/flocon/skills/flocon-mcp/SKILL.md`.
 
 ## Full-feature checklist
 A new plugin (see the feature flags PR as the reference) touches: SDK module + no-op, both `Protocol.kt`, desktop domain/data/UI, MCP tools + tests, sample apps, `protocol/`, `docs/`, `mkdocs.yml`, `README.md`, and the MCP skill.

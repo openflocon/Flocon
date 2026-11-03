@@ -27,7 +27,7 @@ Add the appropriate network interceptor to your project depending on your networ
 Mocks are handled by the network plugin, install it first (module `flocon-network-core`):
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconNetwork)
 }
 ```
