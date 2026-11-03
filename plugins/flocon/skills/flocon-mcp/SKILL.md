@@ -30,6 +30,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Check the deeplinks of the app | `list_deeplinks` (declared links and parameters), `list_deeplink_history`, `open_deeplink` (opens a link on the device, fill its parameters first) |
 | See the current screen, or keep a visual trace | `take_screenshot` (saves a PNG and returns the image) |
 | See what the Flocon desktop app itself displays (the screen the user is looking at in Flocon) | `take_flocon_desktop_screenshot` (returns the image of the visible window, nothing is saved; not the device screen) |
+| Show the user something in the Flocon desktop app (a screen, another device / app, the graph or list view of the timeline) | `flocon_navigate_into_desktop_app` (`screen`, `deviceId`, `packageName`, `timelineView`; Flocon is not brought to the front, so tell the user to go to the Flocon app to see it) |
 | Reproduce a bug on video | `start_screen_recording`, do the scenario, then `stop_screen_recording` (returns the mp4 path; Android stops by itself after 3 minutes) |
 | Show the user the saved screenshots, videos or exports | `open_flocon_folder` (opens the Flocon documents folder, optional `Screenshot` / `ScreenRecord` sub folder) |
 | Check SharedPreferences | `list_shared_preferences` (gives the `sharedPreferenceId` and the storage `type`), `get_shared_preference_values` (typed values, optional text filter) |
@@ -44,6 +45,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 - Mocks change the app behavior: prefer disabling a mock (`update_network_mock`) over deleting it, and tell the user which mocks you left enabled.
 - `query_database` is read only (`SELECT`, `PRAGMA` without value, `EXPLAIN`): always add a `LIMIT`.
 - Files, calls and databases cannot be modified, only mocks can.
+- `flocon_navigate_into_desktop_app` changes what the user selected in Flocon (device, app) and saves the timeline view in their preferences: use it when asked to show something, say what you changed, and ask them to go to the Flocon app.
 - `take_screenshot`, `start_screen_recording` and `open_flocon_folder` act on the device / computer (iOS: the booted Simulator only): use them when asked or when seeing the screen helps. `take_screenshot`, `start_screen_recording` and `open_deeplink` use adb on Android, so they fail for a device whose `connectionType` (in `list_devices`) is `wifi`.
 - `take_flocon_desktop_screenshot` only reads: it captures the Flocon main window as displayed, with its open dialogs, menus and popups (separate windows such as About are not included).
 - Start from summaries and fetch details only for the calls you need, bodies can be large.

@@ -17,6 +17,7 @@ import io.github.openflocon.domain.mcp.mcpDomainModule
 import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
+import io.github.openflocon.domain.screen.screenModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
@@ -48,6 +49,7 @@ val domainModule = module {
         crashReporterDomainModule,
         mcpDomainModule,
         menuModule,
+        screenModule,
         timelineDomainModule,
         webViewDomainModule,
     )
