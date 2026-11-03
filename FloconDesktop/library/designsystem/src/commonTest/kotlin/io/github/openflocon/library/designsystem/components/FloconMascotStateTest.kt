@@ -438,6 +438,64 @@ class FloconMascotStateTest {
     }
 
     @Test
+    fun barksTurnedToTheLeftAndThenSitsAgain() {
+        val mascot = state()
+        mascot.update(16, 0, 900f, 0f, 1_000f)
+        assertTrue(mascot.facingRight)
+
+        val barkX = mascot.x
+        mascot.bark()
+        mascot.update(16, 16, 900f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Bark, mascot.mode)
+        assertFalse(mascot.facingRight)
+
+        // the pointer is far away but it does not move during the bark
+        mascot.run(targetX = 900f, durationMs = 450, startMs = 32)
+        assertEquals(FloconMascotMode.Bark, mascot.mode)
+        assertEquals(barkX, mascot.x)
+
+        mascot.run(targetX = 900f, durationMs = 200, startMs = 482)
+        assertEquals(FloconMascotMode.Sit, mascot.mode)
+        assertEquals(0f, mascot.barkProgress)
+        assertEquals(0f, mascot.lift)
+    }
+
+    @Test
+    fun liftsOffTheGroundWhileBarking() {
+        val barking = FloconMascotState(
+            startX = 500f,
+            config = FloconMascotConfig(
+                stopDistance = 30f,
+                wakeDistance = 100f,
+                speedPerSecond = 100f,
+                runDistance = 400f,
+                runSpeedPerSecond = 300f,
+                jumpHeight = 30f,
+            ),
+        )
+        val platforms = listOf(FloconMascotPlatform(0f, 1_000f, y = 100f))
+        barking.update(16, 0, 500f, platforms)
+        barking.bark()
+        barking.runOn(platforms, targetX = 500f, durationMs = 350, startMs = 16)
+        assertTrue(barking.y < 100f - 5f, "y=${barking.y}")
+        assertEquals(100f - barking.y, barking.lift, absoluteTolerance = 0.01f)
+
+        barking.runOn(platforms, targetX = 500f, durationMs = 600, startMs = 366)
+        assertEquals(100f, barking.y)
+    }
+
+    @Test
+    fun clickingDuringABarkDoesNotInterruptIt() {
+        val mascot = state()
+        mascot.bark()
+        mascot.update(16, 0, 500f, 0f, 1_000f)
+        mascot.pet()
+        mascot.backflip()
+        mascot.update(16, 16, 500f, 0f, 1_000f)
+        assertEquals(FloconMascotMode.Bark, mascot.mode)
+    }
+
+    @Test
     fun takesAMomentToWakeUpBeforeWalking() {
         val mascot = state()
         mascot.run(targetX = 500f, durationMs = 5_000)
