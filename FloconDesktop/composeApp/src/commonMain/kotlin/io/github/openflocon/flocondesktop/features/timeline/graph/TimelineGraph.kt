@@ -191,7 +191,9 @@ internal fun TimelineGraph(
     }
     // a more recent event than the ones in view: the graph follows, but not on an older session
     val followsLatest = session == null || !session.hasNext
-    LaunchedEffect(model.sessionDurationMs, autoScroll) {
+    // a new screenshot can be the most recent thing of the graph, with no new event
+    val latestMs = remember(model) { model.latestMs() }
+    LaunchedEffect(model.sessionDurationMs, latestMs, autoScroll) {
         if (autoScroll && !paused && !fitted && opened && followsLatest) {
             viewport = viewport.followedLatest(model, trackWidth)
         }
