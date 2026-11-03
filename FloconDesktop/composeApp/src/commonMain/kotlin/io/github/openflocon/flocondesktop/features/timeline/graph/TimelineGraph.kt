@@ -154,6 +154,8 @@ internal fun TimelineGraph(
     autoScroll: Boolean = false,
     // the screenshots strip above the axis: [screenshotsEnabled] is the setting, the captures are in [model]
     screenshotsEnabled: Boolean = false,
+    // false for a device that cannot take them (an Android over wifi): no strip, nothing to turn on
+    screenshotsAvailable: Boolean = true,
     onTurnOnScreenshots: () -> Unit = {},
 ) {
     val colors = FloconTheme.colors
@@ -265,15 +267,17 @@ internal fun TimelineGraph(
             selection = colors.ink,
         )
 
-        ScreenshotStrip(
-            screenshots = model.screenshots,
-            viewport = currentViewport,
-            trackWidthPx = trackWidth,
-            enabled = screenshotsEnabled,
-            hoveredTimeMs = hoveredScreenshot?.timeMs,
-            onHover = { hoveredScreenshot = it },
-            onTurnOn = onTurnOnScreenshots,
-        )
+        if (screenshotsAvailable) {
+            ScreenshotStrip(
+                screenshots = model.screenshots,
+                viewport = currentViewport,
+                trackWidthPx = trackWidth,
+                enabled = screenshotsEnabled,
+                hoveredTimeMs = hoveredScreenshot?.timeMs,
+                onHover = { hoveredScreenshot = it },
+                onTurnOn = onTurnOnScreenshots,
+            )
+        }
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             Canvas(

@@ -321,6 +321,7 @@ internal fun TimelineContent(
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
                 screenshotsEnabled = settings.screenshots,
+                screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
                 onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )

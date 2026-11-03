@@ -7,7 +7,7 @@ import io.github.openflocon.domain.timeline.screenshot.TimelineScreenCapturerImp
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRecorder
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
-import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUnavailableUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
@@ -39,7 +39,7 @@ internal val timelineDomainModule = module {
     factoryOf(::SetTimelineScreenshotIntervalUseCase)
     factoryOf(::ObserveTimelineScreenshotsUseCase)
     factoryOf(::ObserveTimelineScreenshotsFailingUseCase)
-    factoryOf(::ObserveTimelineScreenshotsUnavailableUseCase)
+    factoryOf(::ObserveTimelineScreenshotsSupportedUseCase)
     factoryOf(::PurgeTimelineScreenshotsUseCase)
     singleOf(::TimelineScreenCapturerImpl) { bind<TimelineScreenCapturer>() }
     single {

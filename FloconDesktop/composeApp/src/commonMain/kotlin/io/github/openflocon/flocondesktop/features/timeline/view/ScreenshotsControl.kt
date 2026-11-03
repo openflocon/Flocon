@@ -55,11 +55,13 @@ internal fun ScreenshotsControl(
             color = if (enabled) colors.ink else colors.inkMuted,
             maxLines = 1,
         )
+        // not available for this device: the switch stays off and cannot be turned on
+        val unavailable = status == TimelineScreenshotsStatus.Unavailable
         FloconToggleSwitch(
-            checked = enabled,
-            onCheckedChange = { onAction(TimelineAction.SetScreenshots(it)) },
+            checked = enabled && !unavailable,
+            onCheckedChange = if (unavailable) null else ({ onAction(TimelineAction.SetScreenshots(it)) }),
         )
-        if (enabled) {
+        if (enabled && !unavailable) {
             val labels = TimelineScreenshotIntervalsSeconds.map { stringResource(Res.string.timeline_screenshots_interval, it) }
             FloconSegmentedTextToggle(
                 options = labels.toImmutableList(),
@@ -67,17 +69,15 @@ internal fun ScreenshotsControl(
                 onSelect = { onAction(TimelineAction.SetScreenshotInterval(TimelineScreenshotIntervalsSeconds[it])) },
             )
         }
-        // the warning is about the capture: it makes no sense next to a switch that is off
-        if (enabled) {
-            val tooltip = when (status) {
-                TimelineScreenshotsStatus.Working -> null
-                TimelineScreenshotsStatus.Failing -> stringResource(Res.string.timeline_screenshots_failing)
-                TimelineScreenshotsStatus.Unavailable -> stringResource(Res.string.timeline_screenshots_unavailable)
-            }
-            if (tooltip != null) {
-                WithTooltip(tooltip = tooltip) {
-                    CategoryDot(color = colors.statusWarning)
-                }
+        // a failing capture makes no sense next to a switch that is off, a device that cannot take them is said whatever the switch
+        val tooltip = when {
+            unavailable -> stringResource(Res.string.timeline_screenshots_unavailable)
+            enabled && status == TimelineScreenshotsStatus.Failing -> stringResource(Res.string.timeline_screenshots_failing)
+            else -> null
+        }
+        if (tooltip != null) {
+            WithTooltip(tooltip = tooltip) {
+                CategoryDot(color = colors.statusWarning)
             }
         }
     }
@@ -109,4 +109,4 @@ private fun ScreenshotsControlFailingPreview() = ScreenshotsControlPreviewConten
 
 @Preview
 @Composable
-private fun ScreenshotsControlUnavailablePreview() = ScreenshotsControlPreviewContent(enabled = true, status = TimelineScreenshotsStatus.Unavailable)
+private fun ScreenshotsControlUnavailablePreview() = ScreenshotsControlPreviewContent(enabled = false, status = TimelineScreenshotsStatus.Unavailable)

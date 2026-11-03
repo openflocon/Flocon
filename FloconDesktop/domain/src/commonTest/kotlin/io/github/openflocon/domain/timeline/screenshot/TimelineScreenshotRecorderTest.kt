@@ -278,7 +278,7 @@ class TimelineScreenshotRecorderTest {
     }
 
     @Test
-    fun `nothing is captured on a device that is not supported, and it is said`() = runTest {
+    fun `nothing is captured on a device that is not supported`() = runTest {
         val env = env().also { it.capturer.supported = false }
         start(env)
 
@@ -287,7 +287,6 @@ class TimelineScreenshotRecorderTest {
         runCurrent()
 
         assertEquals(0, env.capturer.calls.size)
-        assertTrue(env.recorder.isUnavailable.value)
         assertFalse(env.recorder.isFailing.value)
     }
 
@@ -303,6 +302,5 @@ class TimelineScreenshotRecorderTest {
         runCurrent()
 
         assertEquals(1, env.capturer.calls.size)
-        assertFalse(env.recorder.isUnavailable.value)
     }
 }

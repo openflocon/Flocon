@@ -13,7 +13,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
-import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUnavailableUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
@@ -67,7 +67,7 @@ internal class TimelineViewModel(
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
     observeTimelineScreenshotsFailingUseCase: ObserveTimelineScreenshotsFailingUseCase,
-    observeTimelineScreenshotsUnavailableUseCase: ObserveTimelineScreenshotsUnavailableUseCase,
+    observeTimelineScreenshotsSupportedUseCase: ObserveTimelineScreenshotsSupportedUseCase,
     observeTimelineScreenshotsUseCase: ObserveTimelineScreenshotsUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
@@ -103,10 +103,10 @@ internal class TimelineViewModel(
     // the last screenshots failed, or the device cannot take them: the control of the header says it
     val screenshotsStatus: StateFlow<TimelineScreenshotsStatus> = combine(
         observeTimelineScreenshotsFailingUseCase(),
-        observeTimelineScreenshotsUnavailableUseCase(),
-    ) { failing, unavailable ->
+        observeTimelineScreenshotsSupportedUseCase(),
+    ) { failing, supported ->
         when {
-            unavailable -> TimelineScreenshotsStatus.Unavailable
+            !supported -> TimelineScreenshotsStatus.Unavailable
             failing -> TimelineScreenshotsStatus.Failing
             else -> TimelineScreenshotsStatus.Working
         }
