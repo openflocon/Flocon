@@ -15,6 +15,7 @@ import io.github.openflocon.domain.log.LogManager
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleCollapsedMenuSectionUseCase
 import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
+import io.github.openflocon.domain.screen.ScreenRequestStore
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
@@ -85,6 +86,7 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
+    screenRequestStore: ScreenRequestStore,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -143,6 +145,14 @@ internal class AppViewModel(
             // a feature can ask to display another screen of the menu (ex: from the timeline)
             menuNavigator.requests.collect { screen ->
                 onSelectMenu(AppAction.SelectMenu(screen))
+            }
+        }
+
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            // the MCP can ask to display a screen, the request waits here until the window is able to apply it
+            screenRequestStore.pending.collect { request ->
+                onSelectMenu(AppAction.SelectMenu(request.screen.toSubScreen()))
+                screenRequestStore.consume(request)
             }
         }
 
