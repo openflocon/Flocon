@@ -35,7 +35,7 @@ val coreDataModule =
             bind<TimelinePreferencesRepository>()
         }
         // the constructor parameters have defaults: the temporary folder and the cap
-        single { TimelineScreenshotRepositoryImpl() } bind TimelineScreenshotRepository::class
+        single<TimelineScreenshotRepository> { TimelineScreenshotRepositoryImpl() }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()
         }
