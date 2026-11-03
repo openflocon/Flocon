@@ -313,6 +313,7 @@ internal fun TimelineContent(
                 onPreviousSession = { onAction(TimelineAction.MoveGraphSession(-1)) },
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
+                autoScroll = settings.autoScroll,
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {

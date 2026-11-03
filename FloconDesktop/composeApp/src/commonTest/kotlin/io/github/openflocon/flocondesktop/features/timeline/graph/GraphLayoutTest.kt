@@ -158,4 +158,19 @@ class GraphLayoutTest {
         val onLabel = model.hitTest(viewport, x = 20f + 14f + 20f, yInContent = analyticsTop + 10f)
         assertEquals("2", onLabel?.row?.id)
     }
+
+    @Test
+    fun `auto scroll follows the latest event only when it is out of view`() {
+        // the latest event ends at 2830 ms. 1 px per ms, a track of 600 px: 520 ms of room with the margin
+        val inView = GraphViewport(startMs = 2_500.0, pxPerMs = 1.0)
+        assertEquals(inView, inView.followedLatest(model, trackWidthPx = 600f))
+
+        val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
+        val followed = behind.followedLatest(model, trackWidthPx = 600f)
+        assertEquals(2830.0 - 520.0, followed.startMs, 0.001)
+        // the zoom and the vertical scroll are kept
+        assertEquals(behind.pxPerMs, followed.pxPerMs, 0.0)
+        assertEquals(behind.scrollY, followed.scrollY, 0f)
+        assertEquals(GraphViewport(), GraphViewport().followedLatest(GraphUiModel.Empty, 600f))
+    }
 }

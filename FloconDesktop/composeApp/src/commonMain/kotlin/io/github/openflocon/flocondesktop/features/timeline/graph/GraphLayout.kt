@@ -181,6 +181,17 @@ internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
 }
 
 /**
+ * The auto scroll: when the most recent event is past the right of the track, moves along the time axis to put it at the
+ * right. The zoom and the lanes do not change. Nothing moves while it is in view.
+ */
+internal fun GraphViewport.followedLatest(model: GraphUiModel, trackWidthPx: Float): GraphViewport {
+    val latest = model.latestEvent() ?: return this
+    val rightMs = startMs + (trackWidthPx - JumpMarginPx) / pxPerMs
+    if (latest.endMs <= rightMs) return this
+    return copy(startMs = max(latest.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
+}
+
+/**
  * Moves to the most recent event, at the right of the track, in the row that holds it. The zoom does not change.
  */
 internal fun GraphViewport.jumpedToLatest(model: GraphUiModel, trackWidthPx: Float, trackHeightPx: Float): GraphViewport {
