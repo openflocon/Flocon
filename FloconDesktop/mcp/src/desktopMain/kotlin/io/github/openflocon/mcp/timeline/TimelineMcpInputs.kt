@@ -62,6 +62,16 @@ internal data class GetTimelineInput(
     val search: String? = null,
     @McpDescription("Only look for the text in this source: network, database, analytics, accessibility, webview, crash, table, deeplink, adb.")
     val searchSource: String? = null,
+    @McpDescription(
+        "Only read these sources: network, database, analytics, accessibility, webview, crash, table, deeplink, adb. " +
+            "Default: all of them. Crashes of the window are not listed if crash is left out.",
+    )
+    val sources: List<String>? = null,
+    @McpDescription(
+        "Leave these sources out of the window, same names as `sources`. Use it to drop the noise of a source, " +
+            "for example the transactions of a database library: [\"database\"].",
+    )
+    val excludeSources: List<String>? = null,
     @McpDescription("Maximum number of lines returned, from 1 to $MAX_LINES. Default $DEFAULT_MAX_LINES.")
     val maxLines: Int = DEFAULT_MAX_LINES,
     @McpDescription(DEVICE_ID_DESCRIPTION)

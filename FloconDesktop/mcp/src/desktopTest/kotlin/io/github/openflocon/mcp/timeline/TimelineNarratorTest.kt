@@ -308,4 +308,25 @@ class TimelineNarratorTest {
         assertEquals(1, narrative.lines.size)
         assertTrue(narrative.lines[0].contains("largest 4.8 MB"), narrative.lines[0])
     }
+
+    @Test
+    fun `when truncating, database lines go before the others`() {
+        val database = (0 until 5).map { event("d$it", 20_000L + it * 100, TimelineSource.Database, "SELECT $it") }
+        val calls = (0 until 3).map { net("n$it", it * 10_000L, path = "/v1/other$it") }
+
+        val narrative = narrate(database + calls, anchorMs = base + 20_000, maxLines = 3)
+
+        assertEquals(listOf("[network:n0]", "[network:n1]", "[network:n2]"), narrative.lines.map { it.substringAfterLast("  ") })
+    }
+
+    @Test
+    fun `database lines fill the room the others leave, the nearest to the anchor first`() {
+        val database = (0 until 5).map { event("d$it", 20_000L + it * 1_000, TimelineSource.Database, "SELECT $it") }
+        val calls = listOf(net("n0", 0))
+
+        val narrative = narrate(database + calls, anchorMs = base + 20_000, maxLines = 3)
+
+        assertEquals(listOf("[network:n0]", "[database:d0]", "[database:d1]"), narrative.lines.map { it.substringAfterLast("  ") })
+        assertEquals(3, narrative.omittedCount)
+    }
 }

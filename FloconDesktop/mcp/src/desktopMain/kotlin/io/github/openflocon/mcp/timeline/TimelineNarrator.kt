@@ -54,7 +54,7 @@ internal class TimelineNarrator(zone: ZoneId) {
     private class Anomaly(val rank: Int, val timeMs: Long, val text: String)
 
     /** A line of the narrative, with the time of its first event to keep the nearest ones when the answer is capped */
-    private class Line(val timeMs: Long, val text: String)
+    private class Line(val timeMs: Long, val text: String, val noise: Boolean)
 
     /** The events told by one line: a single event, or a fold of identical ones */
     private class Item(val events: List<TimelineEventDomainModel>, val key: String?)
@@ -77,11 +77,7 @@ internal class TimelineNarrator(zone: ZoneId) {
                 lineOf(item, gapMs = item.events.first().timestamp - previousEnd)
             }
         }
-        val kept = if (lines.size > maxLines) {
-            lines.sortedWith(compareBy({ abs(it.timeMs - anchorMs) }, { it.timeMs })).take(maxLines).sortedBy { it.timeMs }
-        } else {
-            lines
-        }
+        val kept = if (lines.size > maxLines) keptLines(lines, anchorMs, maxLines) else lines
 
         val matches = search?.let { wanted ->
             events.withIndex()
@@ -101,6 +97,15 @@ internal class TimelineNarrator(zone: ZoneId) {
             omittedCount = lines.size - kept.size,
             eventCount = events.size,
         )
+    }
+
+    // the lines nearest to the anchor, the noise last: the queries of a database library (transactions, invalidation tracking)
+    // can fill the whole answer, they only fill the room the other lines leave
+    private fun keptLines(lines: List<Line>, anchorMs: Long, maxLines: Int): List<Line> {
+        val nearest = compareBy<Line>({ abs(it.timeMs - anchorMs) }, { it.timeMs })
+        val (noise, others) = lines.partition { it.noise }
+        val kept = others.sortedWith(nearest).take(maxLines)
+        return (kept + noise.sortedWith(nearest).take(maxLines - kept.size)).sortedBy { it.timeMs }
     }
 
     // ---- folding
@@ -233,7 +238,11 @@ internal class TimelineNarrator(zone: ZoneId) {
 
             else -> "${item.events.size}× ${first.title.truncate(TITLE_MAX)}"
         }
-        return Line(first.timestamp, "${gap(gapMs)}  ${time(first.timestamp)}  ${labelOf(first.source)}  $what in $span  [${idOf(first)} … ${idOf(last)}]")
+        return Line(
+            timeMs = first.timestamp,
+            text = "${gap(gapMs)}  ${time(first.timestamp)}  ${labelOf(first.source)}  $what in $span  [${idOf(first)} … ${idOf(last)}]",
+            noise = first.source == TimelineSource.Database,
+        )
     }
 
     private fun singleLine(event: TimelineEventDomainModel, gapMs: Long): String = singleLineModel(event, gapMs).text
@@ -252,7 +261,11 @@ internal class TimelineNarrator(zone: ZoneId) {
                 "${event.title.truncate(TITLE_MAX)}$subtitle"
             }
         }
-        return Line(event.timestamp, "${gap(gapMs)}  ${time(event.timestamp)}  ${labelOf(event.source)}  $what  [${idOf(event)}]")
+        return Line(
+            timeMs = event.timestamp,
+            text = "${gap(gapMs)}  ${time(event.timestamp)}  ${labelOf(event.source)}  $what  [${idOf(event)}]",
+            noise = event.source == TimelineSource.Database,
+        )
     }
 
     private fun statusOf(event: TimelineEventDomainModel): String? = when {

@@ -62,7 +62,10 @@ internal class TimelineMcpToolProvider(
         val events = if (window.isEmpty) {
             emptyList()
         } else {
-            getTimelineEventsUseCase(target, TimelineFilterDomainModel(fromMs = window.fromMs, toMs = window.toMs))
+            getTimelineEventsUseCase(
+                target,
+                TimelineFilterDomainModel(sources = sourcesOf(input), fromMs = window.fromMs, toMs = window.toMs),
+            )
         }
         val narrative = narrator.narrate(events, anchorMs = window.anchorMs, search = search, maxLines = maxLines)
 
@@ -147,15 +150,24 @@ internal class TimelineMcpToolProvider(
 
     private fun searchOf(input: GetTimelineInput): TimelineSearch? {
         val text = input.search?.takeIf { it.isNotBlank() } ?: return null
-        val source = input.searchSource?.takeIf { it.isNotBlank() }?.let { name ->
-            TimelineSource.entries.firstOrNull { it != TimelineSource.AppStart && it.name.equals(name, ignoreCase = true) }
-                ?: throw McpToolException(
-                    "Unknown searchSource '$name'. Use one of: " +
-                        TimelineSource.entries.filter { it != TimelineSource.AppStart }.joinToString { it.name.lowercase(Locale.ROOT) } + ".",
-                )
-        }
+        val source = input.searchSource?.takeIf { it.isNotBlank() }?.let { sourceNamed(it, argument = "searchSource") }
         return TimelineSearch(text = text, source = source)
     }
+
+    // the sources read: the app starts are not a source to choose, they are the sessions
+    private fun sourcesOf(input: GetTimelineInput): Set<TimelineSource> {
+        val wanted = input.sources?.takeIf { it.isNotEmpty() }?.map { sourceNamed(it, argument = "sources") }?.toSet()
+            ?: TimelineSource.entries.toSet()
+        val left = input.excludeSources.orEmpty().map { sourceNamed(it, argument = "excludeSources") }.toSet()
+        return wanted - left + TimelineSource.AppStart
+    }
+
+    private fun sourceNamed(name: String, argument: String): TimelineSource = TimelineSource.entries
+        .firstOrNull { it != TimelineSource.AppStart && it.name.equals(name.trim(), ignoreCase = true) }
+        ?: throw McpToolException(
+            "Unknown source '$name' in $argument. Use one of: " +
+                TimelineSource.entries.filter { it != TimelineSource.AppStart }.joinToString { it.name.lowercase(Locale.ROOT) } + ".",
+        )
 
     private fun emptyWindowNote(window: TimelineWindow, summary: TimelineSummaryDomainModel): String {
         val first = summary.sources.values.mapNotNull { it.firstTimestamp }.minOrNull()

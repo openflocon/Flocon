@@ -256,4 +256,33 @@ class TimelineMcpToolProviderTest {
         assertEquals(0, result["eventCount"]!!.jsonPrimitive.int)
         assertTrue(result.notes().any { it.startsWith("No event in this window") && it.contains("14:00:00") }, result.notes().toString())
     }
+
+    @Test
+    fun `excludeSources leaves a source out of the window`() = runBlocking {
+        val logs = (0 until 5).map { event("d$it", 99, TimelineSource.Database, "SELECT $it") }
+        val server = start(events = events + logs)
+
+        val all = server.callTool("get_timeline").json()
+        val withoutDatabase = server.callTool("get_timeline", mapOf("excludeSources" to listOf("database"))).json()
+
+        assertTrue(all.lines().any { it.contains("  DB  ") })
+        assertTrue(withoutDatabase.lines().none { it.contains("  DB  ") }, withoutDatabase.lines().toString())
+        assertEquals(all["eventCount"]!!.jsonPrimitive.int - 5, withoutDatabase["eventCount"]!!.jsonPrimitive.int)
+    }
+
+    @Test
+    fun `sources keeps only the listed ones`() = runBlocking {
+        val result = start().callTool("get_timeline", mapOf("sources" to listOf("analytics"))).json()
+
+        assertEquals(1, result.lines().size, result.lines().toString())
+        assertTrue(result.lines().single().contains("checkout_failed"))
+    }
+
+    @Test
+    fun `an unknown source in sources lists the valid ones`() = runBlocking {
+        val result = start().callTool("get_timeline", mapOf("sources" to listOf("nope")))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("analytics"), result.text())
+    }
 }
