@@ -18,4 +18,9 @@ data class TimelineFilterDomainModel(
     val networkHostRules: List<TimelineRuleDomainModel> = emptyList(),
     // null: every duration, the calls without duration yet are kept. A range hides them
     val networkDuration: TimelineDurationRangeDomainModel? = null,
+    // null: every time. Only the events list and the list of the timeline apply the bounds, not the counters
+    val fromMs: Long? = null,
+    val toMs: Long? = null,
+    // null: every event. An empty set matches nothing. A network call is pointed at by its request event
+    val events: Set<TimelineEventRef>? = null,
 )

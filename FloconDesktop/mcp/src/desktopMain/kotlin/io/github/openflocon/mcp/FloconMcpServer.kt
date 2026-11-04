@@ -107,6 +107,10 @@ class FloconMcpServer(
               start_screen_recording / stop_screen_recording record a video (mp4). Files are saved in the Flocon documents folder,
               open_flocon_folder opens it on the computer and returns its path.
               Screenshot, recording and open_deeplink use adb on Android: they are not available for devices connected over wifi.
+            - What the app did around a moment (before a crash, at 14:32, recently), above the network: get_timeline gives one narrative of every
+              source with the anomalies first (crash, HTTP errors, loops, large responses) and tells which window it chose. Start there, then use
+              the ids of its lines (network:<callId> with get_network_call, crash:<crashId> with get_crash_report). Its search parameter tells
+              whether an event was sent. The times are those of the phone.
             - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
               flocon_navigate_into_desktop_app moves it for the user: displays a screen, selects a device / app, sets the timeline
