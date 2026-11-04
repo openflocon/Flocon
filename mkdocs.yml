@@ -106,7 +106,6 @@ nav:
       - Data Tables: table.md
       - Deeplink Launcher: deeplink.md
       - Analytics Viewer: analytics.md
-      - Timeline: timeline.md
     - AI Agents (MCP): mcp.md
   - About:
     - The Story: about.md
