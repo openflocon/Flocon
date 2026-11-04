@@ -12,8 +12,10 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
 import io.modelcontextprotocol.kotlin.sdk.server.mcpStatelessStreamableHttp
+import io.modelcontextprotocol.kotlin.sdk.types.Icon
 import io.modelcontextprotocol.kotlin.sdk.types.Implementation
 import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
+import java.util.Base64
 
 /**
  * MCP server over Streamable HTTP, available at http://localhost:[port]/mcp
@@ -52,6 +54,7 @@ class FloconMcpServer(
             name = "flocon",
             title = "Flocon",
             version = SERVER_VERSION,
+            icons = serverIcons(),
         ),
         options = ServerOptions(
             capabilities = ServerCapabilities(
@@ -64,11 +67,24 @@ class FloconMcpServer(
         toolProviders.forEach { it.register(toolServer) }
     }
 
+    private fun serverIcons(): List<Icon>? {
+        val bytes = FloconMcpServer::class.java.getResourceAsStream(ICON_RESOURCE)?.use { it.readBytes() }
+            ?: return null
+        return listOf(
+            Icon(
+                src = "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes),
+                mimeType = "image/png",
+                sizes = listOf("128x128"),
+            ),
+        )
+    }
+
     private companion object {
         const val TAG = "FloconMcpServer"
         const val HOST = "127.0.0.1"
         const val PATH = "/mcp"
         const val SERVER_VERSION = "1.0.0"
+        const val ICON_RESOURCE = "/flocon_icon.png"
 
         val INSTRUCTIONS = """
             Flocon is a debugging tool for mobile apps: the Flocon desktop app receives what happens in the mobile app
