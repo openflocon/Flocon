@@ -194,8 +194,8 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GraphUiModel.Empty)
 
     // the zone of the session the graph is asked to show (by the MCP), until the graph has shown it
-    private val _graphFocus = MutableStateFlow<GraphFocusUiModel?>(null)
-    val graphFocus: StateFlow<GraphFocusUiModel?> = _graphFocus.asStateFlow()
+    val graphFocus: StateFlow<GraphFocusUiModel?>
+        field = MutableStateFlow<GraphFocusUiModel?>(null)
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -208,7 +208,7 @@ internal class TimelineViewModel(
                 plan.selectedKey?.let { key -> _selectedKey.value = key }
                 plan.graph?.let { graph ->
                     graphSession.value = graph.session
-                    _graphFocus.value = graph.focus
+                    graphFocus.value = graph.focus
                 }
                 consumeTimelineFocusUseCase(request)
             }
@@ -278,7 +278,7 @@ internal class TimelineViewModel(
                 graphSession.value = if (target == starts.lastIndex) null else starts.getOrNull(target)
             }
 
-            is TimelineAction.GraphFocusApplied -> _graphFocus.value = null
+            is TimelineAction.GraphFocusApplied -> graphFocus.value = null
 
             is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
