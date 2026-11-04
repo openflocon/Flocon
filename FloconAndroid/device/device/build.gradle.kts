@@ -5,8 +5,6 @@ plugins {
     id("flocon.jvm.library")
     id("flocon.wasm.library")
     id("flocon.publish")
-
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -18,7 +16,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.flocon.flocon)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
         }
 
         androidMain.dependencies {
