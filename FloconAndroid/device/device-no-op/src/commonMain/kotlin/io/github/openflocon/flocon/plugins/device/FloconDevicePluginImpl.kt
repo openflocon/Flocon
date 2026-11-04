@@ -10,9 +10,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 
 class FloconDeviceConfig : FloconPluginConfig
 
-interface FloconDevicePlugin : FloconPlugin {
-    fun registerWithSerial(serial: String)
-}
+interface FloconDevicePlugin : FloconPlugin
 
 object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin> {
     override val name: String = "Device"
@@ -29,10 +27,6 @@ object FloconDevice : FloconPluginFactory<FloconDeviceConfig, FloconDevicePlugin
 
 internal object FloconDevicePluginNoOpImpl : FloconPlugin, FloconDevicePlugin {
     override val key: String = "device"
-
-    override fun registerWithSerial(serial: String) {
-        // no op
-    }
 
     override suspend fun onMessageReceived(
         method: String,

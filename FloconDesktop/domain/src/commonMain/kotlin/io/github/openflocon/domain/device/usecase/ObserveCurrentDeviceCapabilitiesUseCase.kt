@@ -32,6 +32,8 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
     }
 }
 
+private const val DEVICE_PLUGIN = "device"
+
 internal fun computeCapabilities(
     device: DeviceDomainModel,
     app: DeviceAppDomainModel
@@ -41,7 +43,8 @@ internal fun computeCapabilities(
         DeviceCapabilitiesDomainModel(
             screenshot = adb,
             recordScreen = adb,
-            restart = true,
+            // needs the `device` plugin of the SDK; null: an SDK that does not send its plugins
+            restart = app.installedPlugins?.contains(DEVICE_PLUGIN) ?: true,
             sharedPreferences = true,
             deeplinks = adb,
             adbAvailable = adb,

@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.device
+package io.github.openflocon.flocon.device
 
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -10,7 +10,7 @@ import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun getAppIconBase64(context: FloconContext): String? {
+internal actual fun getAppIconBase64(context: FloconContext): String? {
     return try {
         val icons = NSBundle.mainBundle.infoDictionary
             ?.get("CFBundleIcons") as? Map<*, *>
@@ -27,4 +27,8 @@ actual fun getAppIconBase64(context: FloconContext): String? {
         FloconLogger.logError(text = "Error while getting app icon", throwable = t)
         null
     }
+}
+
+internal actual fun observeDeviceSerial(onSerial: (serial: String) -> Unit) {
+    // no op: the serial is only sent through an adb broadcast on Android
 }

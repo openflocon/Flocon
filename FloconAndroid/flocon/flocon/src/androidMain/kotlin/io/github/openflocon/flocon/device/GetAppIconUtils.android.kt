@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.device
+package io.github.openflocon.flocon.device
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,10 +6,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.Base64
 import io.github.openflocon.flocon.FloconContext
+import io.github.openflocon.flocon.FloconDeviceSerial
 import io.github.openflocon.flocon.FloconLogger
 import java.io.ByteArrayOutputStream
 
-actual fun getAppIconBase64(context: FloconContext): String? {
+internal actual fun getAppIconBase64(context: FloconContext): String? {
     return getAppIconBase64(context.context)
 }
 
@@ -65,4 +66,8 @@ private fun resizeAppIcon(bitmap: Bitmap, maxSize: Int): Bitmap {
         (height * scale).toInt(),
         true
     )
+}
+
+internal actual fun observeDeviceSerial(onSerial: (serial: String) -> Unit) {
+    FloconDeviceSerial.observe(onSerial)
 }

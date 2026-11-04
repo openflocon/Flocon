@@ -1,4 +1,4 @@
-package io.github.openflocon.flocon.plugins.device.model.fromdevice
+package io.github.openflocon.flocon.device
 
 import kotlinx.serialization.Serializable
 

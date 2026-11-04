@@ -143,8 +143,8 @@ The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, 
   `install(FloconDatabase) { room() }` (and the `flocon-database-room` or `-room3` dependency). On Android it then scans
   the app databases folder; `Flocon.databasePlugin.register(id, name, db)` is only needed for in-memory databases or a custom name.
   `logQuery` takes the id of the database as the desktop lists it.
-- **The app icon is a plugin.** In 1.x the desktop always showed the app icon. In 2.0 it comes from the Device plugin:
-  without `flocon-device` and `install(FloconDevice)` the icon is missing (and the desktop cannot restart the app).
+- **Restarting the app is a plugin.** The app icon is sent by the core, nothing to install. The "restart the app" action
+  of the desktop (Android) needs `flocon-device` and `install(FloconDevice)`: without it the desktop hides the button.
 - **Cleartext rules.** The `localhost` / `127.0.0.1` cleartext exceptions in `network_security_config.xml` are no longer needed.
 - **Gradle task names** differ per module (flavors or not). List them with `./gradlew :module:tasks --all` before building.
 

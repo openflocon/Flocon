@@ -9,6 +9,8 @@
 | Desktop → Mobile | `get_app_icon`     | `""` (empty)             |
 | Desktop → Mobile | `restart_app`     | `""` (empty)             |
 
+The `get_app_icon` and `register_device` messages are handled by the SDK core: they work without installing the `device` plugin. Only `restart_app` needs it (Android, `flocon-device`): the desktop shows the restart action only when `device` is in the plugins of the `bonjour` message (or when the SDK does not send its plugins).
+
 ## `register_device` (Mobile → Desktop)
 
 Android only. The desktop sends the adb serial to the app through an adb broadcast (`am broadcast ... --es serial <serial>`), the app sends it back so the desktop can map the websocket client to the adb device.
