@@ -30,6 +30,7 @@ import io.github.openflocon.mcp.text
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -267,5 +268,34 @@ class ShowInTimelineMcpToolProviderTest {
         assertTrue(withMode.text().contains("eventId"), withMode.text())
         assertEquals(true, withTime.isError)
         assertNothingChanged()
+    }
+
+    @Test
+    fun `an anomaly chosen by the tool is centered with the seconds around it, not the whole window`() = runBlocking {
+        // no crash: the default window is the last 2 minutes, the main anomaly is the error at 100 s
+        val withError = listOf(
+            event("0", 0, TimelineSource.AppStart, ""),
+            event("n1", 10, TimelineSource.Network, "https://api.shop.io/v1/session", status = 200),
+            event("e1", 100, TimelineSource.Network, "https://api.shop.io/v1/cart", status = 500),
+            event("n2", 150, TimelineSource.Network, "https://api.shop.io/v1/feed", status = 200),
+        )
+
+        val result = start(events = withError).callTool("show_in_timeline", mapOf("aroundSeconds" to 20)).json()
+
+        val request = focusRepository.requests.single()
+        assertEquals(TimelineEventRef(TimelineSource.Network, "e1"), request.event)
+        assertEquals(at(80), request.fromMs)
+        assertEquals(at(120), request.toMs)
+        assertEquals(at(80), result["window"]!!.jsonObject["fromMs"]!!.jsonPrimitive.content.toLong())
+        assertTrue(result["window"]!!.jsonObject["reason"]!!.jsonPrimitive.content.contains("main anomaly"), result.toString())
+    }
+
+    @Test
+    fun `the crash of the default window keeps its minute before it`() = runBlocking {
+        start().callTool("show_in_timeline", mapOf("aroundSeconds" to 5)).json()
+
+        val request = focusRepository.requests.single()
+        assertEquals(at(40), request.fromMs)
+        assertEquals(at(105), request.toMs)
     }
 }

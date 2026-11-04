@@ -88,6 +88,7 @@ internal class ShowInTimelineMcpToolProvider(
             ?.let(::eventRefOf)
         val eventTimeMs = event?.let { ref -> events.firstOrNull { it.source == ref.source && it.id == ref.id }?.timestamp } ?: window.anchorMs
         val sessionStart = found.anchors.sessionStarts.filter { it <= eventTimeMs }.maxOrNull()
+        val shown = zoneOf(window, event, eventTimeMs, input.aroundSeconds)
         val hiddenReasons = event?.let { getTimelineEventHiddenReasonsUseCase(target, it) }.orEmpty()
 
         val current = selectionApplier.current()
@@ -95,8 +96,8 @@ internal class ShowInTimelineMcpToolProvider(
             addAll(selectionApplier.select(target, current, selectApp = current?.deviceId != target.deviceId || current.packageName != target.packageName))
             setTimelineGraphUseCase(graph)
             add("Set the timeline view to ${if (graph) SHOW_VIEW_GRAPH else SHOW_VIEW_LIST}")
-            requestTimelineFocusUseCase(target, sessionStart, event, window.fromMs, window.toMs)
-            add("Requested the zone ${local(window.fromMs)} to ${local(window.toMs)}${event?.let { " with the event ${idOf(it)}" }.orEmpty()}")
+            requestTimelineFocusUseCase(target, sessionStart, event, shown.fromMs, shown.toMs)
+            add("Requested the zone ${local(shown.fromMs)} to ${local(shown.toMs)}${event?.let { " with the event ${idOf(it)}" }.orEmpty()}")
             requestDesktopScreenUseCase(FloconScreen.Timeline)
             add("Requested the screen timeline")
         }
@@ -105,16 +106,29 @@ internal class ShowInTimelineMcpToolProvider(
         return ShowInTimelineMcpResult(
             applied = applied,
             window = TimelineWindowMcpModel(
-                fromMs = window.fromMs,
-                toMs = window.toMs,
-                fromLocal = local(window.fromMs),
-                toLocal = local(window.toMs),
+                fromMs = shown.fromMs,
+                toMs = shown.toMs,
+                fromLocal = local(shown.fromMs),
+                toLocal = local(shown.toMs),
                 timeZone = zone.id,
-                reason = window.reason,
+                reason = shown.reason,
             ),
             eventId = event?.let(::idOf),
             hiddenBy = hiddenBy,
-            message = message(graph = graph, window = window, event = event, hiddenBy = hiddenBy),
+            message = message(graph = graph, window = shown, event = event, hiddenBy = hiddenBy),
+        )
+    }
+
+    // an anomaly the tool picked in a wide window is shown with the seconds around it, not the whole window: the window of a crash
+    // (the minute before it) and the zone around an event asked by its id are already the zone to show
+    private fun zoneOf(window: TimelineWindow, event: TimelineEventRef?, eventTimeMs: Long, aroundSeconds: Int): TimelineWindow {
+        if (event == null || window.anchorEventId != null) return window
+        val around = aroundSeconds.coerceIn(1, MAX_AROUND_SECONDS) * 1_000L
+        return window.copy(
+            fromMs = eventTimeMs - around,
+            toMs = eventTimeMs + around,
+            reason = "${window.reason} Centered on its main anomaly ${idOf(event)} at ${local(eventTimeMs)}, ${around / 1_000} seconds on each side.",
+            anchorMs = eventTimeMs,
         )
     }
 
