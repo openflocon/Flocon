@@ -434,6 +434,7 @@ private fun TimelineSource.kind(): String = when (this) {
     TimelineSource.Table -> KIND_TABLE
     TimelineSource.Deeplink -> KIND_DEEPLINK
     TimelineSource.Adb -> KIND_ADB
+    TimelineSource.Log -> KIND_LOG
     TimelineSource.AppStart -> KIND_APP_START
 }
 
