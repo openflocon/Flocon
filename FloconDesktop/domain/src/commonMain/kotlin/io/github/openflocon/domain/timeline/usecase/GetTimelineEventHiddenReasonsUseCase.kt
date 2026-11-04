@@ -28,7 +28,7 @@ class GetTimelineEventHiddenReasonsUseCase(
         val resets = mapOf(
             TimelineHiddenReason.Source to filter.copy(sources = TimelineSource.entries.toSet()),
             TimelineHiddenReason.Text to filter.copy(text = null),
-            TimelineHiddenReason.Facets to filter.copy(facets = emptyMap()),
+            TimelineHiddenReason.Facets to filter.copy(facets = emptyMap(), logTaggedEnabled = true, logTagRules = emptyList()),
             TimelineHiddenReason.NetworkRules to filter.copy(
                 networkStatusRules = emptyList(),
                 networkHostRules = emptyList(),

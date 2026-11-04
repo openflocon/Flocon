@@ -3,6 +3,9 @@ package io.github.openflocon.domain.timeline.models
 // the kinds of SQL statement, TRANSACTION being BEGIN, COMMIT, END, ROLLBACK, SAVEPOINT and RELEASE, SCHEMA being CREATE, ALTER and DROP
 private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
 
+// the types of log with their own look, they are not tagged logs: the tag and level filters never apply to them
+val TIMELINE_RESERVED_LOG_TYPES = listOf("navigation", "userAction", "lifecycle")
+
 /**
  * The start of each bucket of the duration histogram, in ms. A bucket ends where the next one starts, the last one is open.
  */
@@ -65,11 +68,17 @@ enum class TimelineFacet(
     // the type of the log: the known ones are always offered, the custom tags come from the logs received
     LogType(
         source = TimelineSource.Log,
-        knownValues = listOf("navigation", "userAction", "lifecycle"),
+        knownValues = TIMELINE_RESERVED_LOG_TYPES,
     ),
 
     // as stored: upper-case
     LogLevel(
+        source = TimelineSource.Log,
+        knownValues = listOf("DEBUG", "INFO", "WARNING", "ERROR"),
+    ),
+
+    // the level of the tagged logs only: the reserved types are stored INFO but have no level, they are never hidden by it
+    LogTaggedLevel(
         source = TimelineSource.Log,
         knownValues = listOf("DEBUG", "INFO", "WARNING", "ERROR"),
     ),
