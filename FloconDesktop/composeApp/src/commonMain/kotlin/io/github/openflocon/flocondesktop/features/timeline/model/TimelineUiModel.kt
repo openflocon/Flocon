@@ -52,7 +52,19 @@ internal sealed interface TimelineItemUiModel {
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
+
+    // a screenshot of the app, between the events before and after the time it was taken
+    data class Screenshot(
+        val timestamp: Long,
+        val day: String, // like the rows, to place the headers of the days around it
+        val filePath: String,
+        override val key: String,
+        val time: String = "", // hh:mm:ss
+    ) : TimelineItemUiModel
 }
+
+// what the header says about the screenshots, next to the switch: the device does not support them (an Android over Wi-Fi)
+internal enum class TimelineScreenshotsStatus { Working, Failing, Unavailable }
 
 @Immutable
 internal data class TimelineSettingsUiModel(
@@ -60,6 +72,8 @@ internal data class TimelineSettingsUiModel(
     val invertList: Boolean,
     val pinPanel: Boolean,
     val graph: Boolean = true,
+    val screenshots: Boolean = false,
+    val screenshotIntervalSeconds: Int = 10,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
@@ -67,6 +81,8 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     invertList = false,
     pinPanel = false,
     graph = false,
+    screenshots = false,
+    screenshotIntervalSeconds = 10,
 )
 
 internal sealed interface TimelineAction {
@@ -77,6 +93,8 @@ internal sealed interface TimelineAction {
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
     data class SetGraph(val value: Boolean) : TimelineAction
+    data class SetScreenshots(val value: Boolean) : TimelineAction
+    data class SetScreenshotInterval(val seconds: Int) : TimelineAction
 
     // the session of the graph: -1 the one before, 1 the one after
     data class MoveGraphSession(val delta: Int) : TimelineAction

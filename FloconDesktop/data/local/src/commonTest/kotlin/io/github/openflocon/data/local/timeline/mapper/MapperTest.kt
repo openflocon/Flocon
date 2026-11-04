@@ -1,5 +1,8 @@
 package io.github.openflocon.data.local.timeline.mapper
 
+import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
+import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
+import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
@@ -169,6 +172,63 @@ class MapperTest {
 
         assertTrue(row.toDomain().hasError)
         assertFalse(row.copy(hasError = false).toDomain().hasError)
+    }
+
+    private fun networkRow(kind: String = KIND_NETWORK, responseByteSize: Long? = null) = TimelineRowEntity(
+        kind = kind,
+        id = "c1",
+        ts = 1000L,
+        title = "https://api.acme.io/v1/users",
+        subtitle = null,
+        appInstance = 1000L,
+        method = "GET",
+        statusCode = 200,
+        durationMs = 20.0,
+        sessionStart = 1000L,
+        responseByteSize = responseByteSize,
+    )
+
+    @Test
+    fun `a call keeps the size of its response`() {
+        assertEquals(2_048L, networkRow(responseByteSize = 2_048L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `a call without response yet has no size`() {
+        assertNull(networkRow(responseByteSize = null).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `an empty response has a size of 0, not an unknown one`() {
+        assertEquals(0L, networkRow(responseByteSize = 0L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `a size over Int MAX_VALUE is kept`() {
+        assertEquals(3_000_000_000L, networkRow(responseByteSize = 3_000_000_000L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `the response event of a call carries the size too`() {
+        assertEquals(2_048L, networkRow(kind = KIND_NETWORK_RESPONSE, responseByteSize = 2_048L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `an event that is not a network call has no size`() {
+        val row = TimelineRowEntity(
+            kind = KIND_DATABASE,
+            id = "q1",
+            ts = 1000L,
+            title = "SELECT 1",
+            subtitle = null,
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        )
+
+        assertNull(row.toDomain().responseByteSize)
     }
 
     @Test

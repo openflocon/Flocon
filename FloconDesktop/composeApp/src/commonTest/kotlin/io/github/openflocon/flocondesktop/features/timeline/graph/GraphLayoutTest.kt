@@ -33,8 +33,9 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds a bar`() {
-        // the network lane is the first one: the feed is on its second row
-        val feed = model.hitTest(viewport, x = 400f, yInContent = RowHeightPx + 10f)
+        // the network lane is the second one, after analytics: the feed is on its second row
+        val networkTop = model.laneTops()[1]
+        val feed = model.hitTest(viewport, x = 400f, yInContent = networkTop + RowHeightPx + 10f)
 
         assertEquals("3", feed?.row?.id)
     }
@@ -83,10 +84,10 @@ class GraphLayoutTest {
     fun `jump to the latest event`() {
         val jumped = GraphViewport(startMs = 0.0, pxPerMs = 1.0).jumpedToLatest(model, trackWidthPx = 600f, trackHeightPx = 100f)
 
-        // the analytics event at 2830 ms ends last: it is at the right of the track, with a margin
+        // the analytics event at 2830 ms ends last: it is at the right of the track, with a margin. Analytics is the top lane: no vertical scroll
         assertEquals("15", model.latestEvent()?.row?.id)
         assertEquals(2830.0 - 520.0, jumped.startMs, 0.001)
-        assertTrue(jumped.scrollY > 0f)
+        assertEquals(0f, jumped.scrollY)
     }
 
     @Test
@@ -171,5 +172,35 @@ class GraphLayoutTest {
         assertEquals(behind.pxPerMs, followed.pxPerMs, 0.0)
         assertEquals(behind.scrollY, followed.scrollY, 0f)
         assertEquals(GraphViewport(), GraphViewport().followedLatest(GraphUiModel.Empty, 600f))
+    }
+
+    @Test
+    fun `auto scroll and jump go to a screenshot more recent than the events`() {
+        val withShot = model.copy(screenshots = listOf(GraphScreenshotUiModel(timeMs = 5_000L, filePath = "a.jpg")))
+        val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
+
+        assertEquals(5_000L, withShot.latestMs())
+        assertEquals(5_000.0 - 520.0, behind.followedLatest(withShot, trackWidthPx = 600f).startMs, 0.001)
+        val jumped = behind.jumpedToLatest(withShot, trackWidthPx = 600f, trackHeightPx = 100f)
+        assertEquals(5_000.0 - 520.0, jumped.startMs, 0.001)
+        // the row of the latest event is still the one shown (the track is 100 px high)
+        val rowTop = withShot.rowTopOf(withShot.latestEvent()!!)!!
+        assertTrue(rowTop >= jumped.scrollY && rowTop + RowHeightPx <= jumped.scrollY + 100f)
+    }
+
+    @Test
+    fun `an older screenshot does not change the latest`() {
+        val withShot = model.copy(screenshots = listOf(GraphScreenshotUiModel(timeMs = 100L, filePath = "a.jpg")))
+
+        assertEquals(2_830L, withShot.latestMs())
+    }
+
+    @Test
+    fun `a graph with only screenshots follows and jumps to the last one`() {
+        val onlyShots = GraphUiModel.Empty.copy(screenshots = listOf(GraphScreenshotUiModel(timeMs = 4_000L, filePath = "a.jpg")))
+        val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
+
+        assertEquals(4_000.0 - 520.0, behind.followedLatest(onlyShots, trackWidthPx = 600f).startMs, 0.001)
+        assertEquals(4_000.0 - 520.0, behind.jumpedToLatest(onlyShots, trackWidthPx = 600f, trackHeightPx = 100f).startMs, 0.001)
     }
 }

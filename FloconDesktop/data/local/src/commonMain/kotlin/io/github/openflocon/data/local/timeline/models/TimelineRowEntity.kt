@@ -14,6 +14,7 @@ data class TimelineRowEntity(
     val sessionStart: Long?,
     val isImage: Boolean = false, // network only: the response is an image
     val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
+    val responseByteSize: Long? = null, // network only: size of the response in bytes, null while waiting for it
     val level: String? = null, // log only: DEBUG, INFO, WARNING or ERROR as stored
 )
 

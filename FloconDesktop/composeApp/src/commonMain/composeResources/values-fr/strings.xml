@@ -58,6 +58,15 @@
     <string name="timeline_network_response">Réponse</string>
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
+    <string name="timeline_screenshots">Écrans</string>
+    <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_waiting">En attente de la première capture…</string>
+    <string name="timeline_screenshots_off_hint">Les captures sont désactivées. Active-les pour voir ce qu’il y avait à l’écran à côté de chaque événement.</string>
+    <string name="timeline_screenshots_turn_on">Activer</string>
+    <string name="timeline_screenshot_at">Écran à %1$s</string>
+    <string name="timeline_screenshot_marker">Capture · %1$s</string>
+    <string name="timeline_screenshots_failing">Les captures échouent : adb est-il disponible ?</string>
+    <string name="timeline_screenshots_unavailable">Les captures ne sont pas disponibles en Wi-Fi : branche l’appareil avec un câble</string>
     <string name="timeline_filters_title">Filtres</string>
     <string name="timeline_filters_clear_all">Tout effacer</string>
     <string name="timeline_filters_search">Chercher un filtre</string>

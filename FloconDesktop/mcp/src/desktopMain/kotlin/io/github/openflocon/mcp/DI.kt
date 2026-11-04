@@ -22,6 +22,7 @@ import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.images.ImagesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
+import io.github.openflocon.mcp.screen.NavigateDesktopAppMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
 import io.github.openflocon.mcp.table.TableMcpToolProvider
 import io.github.openflocon.mcp.webview.WebViewMcpToolProvider
@@ -56,4 +57,5 @@ val mcpModule = module {
     singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
     singleOf(::TableMcpToolProvider) bind McpToolProvider::class
     singleOf(::WebViewMcpToolProvider) bind McpToolProvider::class
+    singleOf(::NavigateDesktopAppMcpToolProvider) bind McpToolProvider::class
 }

@@ -14,8 +14,12 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.screen.models.FloconScreen
+import io.github.openflocon.domain.screen.models.ScreenRequestDomainModel
+import io.github.openflocon.domain.screen.repository.DesktopNavigationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -98,8 +102,20 @@ internal class FakeDevicesRepository(
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
-    override suspend fun selectDevice(deviceId: DeviceId) = error("not used")
-    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) = error("not used")
+
+    /** What was selected in Flocon, in order: "device:<id>" then "app:<id>/<package>" */
+    val selections = mutableListOf<String>()
+
+    override suspend fun selectDevice(deviceId: DeviceId) {
+        selections += "device:$deviceId"
+        currentDeviceIdValue = deviceId
+    }
+
+    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
+        selections += "app:$deviceId/${app.packageName}"
+        selectedApps = selectedApps + (deviceId to app.packageName)
+    }
+
     override suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String) = error("not used")
     override suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean = error("not used")
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
@@ -159,3 +175,15 @@ internal fun targetResolver(devicesRepository: DevicesRepository) = McpTargetRes
         devicesRepository = devicesRepository,
     ),
 )
+
+internal class FakeDesktopNavigationRepository : DesktopNavigationRepository {
+    val requestedScreens = mutableListOf<FloconScreen>()
+
+    override fun requestScreen(screen: FloconScreen) {
+        requestedScreens += screen
+    }
+
+    override fun observeRequestedScreen(): Flow<ScreenRequestDomainModel> = emptyFlow()
+
+    override fun consumeRequestedScreen(request: ScreenRequestDomainModel) = Unit
+}

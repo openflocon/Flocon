@@ -12,6 +12,7 @@ import io.github.openflocon.data.core.files.filesModule
 import io.github.openflocon.data.core.images.imagesModule
 import io.github.openflocon.data.core.messages.messageModule
 import io.github.openflocon.data.core.network.networkModule
+import io.github.openflocon.data.core.screen.screenModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
 import io.github.openflocon.data.core.timeline.timelineModule
@@ -32,6 +33,7 @@ val dataCoreModule = module {
         filesModule,
         imagesModule,
         networkModule,
+        screenModule,
         sharedPreferenceModule,
         tableModule,
         messageModule,

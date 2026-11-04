@@ -73,6 +73,16 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the network calls carry the size of their response, the other events never do`() {
+        val query = build()
+
+        // the request and the response events of a call both carry it
+        assertEquals(2, Regex("response_responseByteSize AS responseByteSize").findAll(query.sql).count())
+        assertTrue(query.sql.contains("NULL AS responseByteSize"))
+        assertTrue(query.sql.contains("u.responseByteSize"))
+    }
+
+    @Test
     fun `a network call with a response has a second event at the time the response arrived`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network)))
 

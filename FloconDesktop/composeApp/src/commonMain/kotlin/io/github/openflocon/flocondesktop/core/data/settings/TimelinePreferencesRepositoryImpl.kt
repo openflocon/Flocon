@@ -38,4 +38,12 @@ internal class TimelinePreferencesRepositoryImpl(
             )
         }
     }
+
+    override suspend fun setScreenshots(screenshots: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(screenshots = screenshots) }
+    }
+
+    override suspend fun setScreenshotIntervalSeconds(seconds: Int) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(screenshotIntervalSeconds = seconds) }
+    }
 }

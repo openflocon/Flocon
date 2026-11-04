@@ -34,7 +34,7 @@ Features:
 Install the plugin:
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconPreferences)
 }
 ```

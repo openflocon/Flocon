@@ -12,6 +12,9 @@ import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppI
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
@@ -19,16 +22,21 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
+import io.github.openflocon.flocondesktop.features.timeline.graph.screenshotsOfSession
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotMarkerBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
@@ -40,6 +48,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -57,10 +66,15 @@ internal class TimelineViewModel(
     observeTimelineEventsUseCase: ObserveTimelineEventsUseCase,
     observeIsCurrentDeviceAndAppActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
+    observeTimelineScreenshotsFailingUseCase: ObserveTimelineScreenshotsFailingUseCase,
+    observeTimelineScreenshotsSupportedUseCase: ObserveTimelineScreenshotsSupportedUseCase,
+    observeTimelineScreenshotsUseCase: ObserveTimelineScreenshotsUseCase,
     private val setTimelineAutoScrollUseCase: SetTimelineAutoScrollUseCase,
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
+    private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
+    private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
     private val filterStore: TimelineFilterStore,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
@@ -74,8 +88,29 @@ internal class TimelineViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
-        .map { TimelineSettingsUiModel(autoScroll = it.autoScroll, invertList = it.invertList, pinPanel = it.pinPanel, graph = it.graph) }
+        .map {
+            TimelineSettingsUiModel(
+                autoScroll = it.autoScroll,
+                invertList = it.invertList,
+                pinPanel = it.pinPanel,
+                graph = it.graph,
+                screenshots = it.screenshots,
+                screenshotIntervalSeconds = it.screenshotIntervalSeconds,
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
+
+    // the last screenshots failed, or the device cannot take them: the control of the header says it
+    val screenshotsStatus: StateFlow<TimelineScreenshotsStatus> = combine(
+        observeTimelineScreenshotsFailingUseCase(),
+        observeTimelineScreenshotsSupportedUseCase(),
+    ) { failing, supported ->
+        when {
+            !supported -> TimelineScreenshotsStatus.Unavailable
+            failing -> TimelineScreenshotsStatus.Failing
+            else -> TimelineScreenshotsStatus.Working
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineScreenshotsStatus.Working)
 
     // the last event opened, highlighted in the list
     private val _selectedKey = MutableStateFlow<String?>(null)
@@ -133,9 +168,16 @@ internal class TimelineViewModel(
                 combine(filter, sessionStarts, graphSession) { filter, starts, selected -> Triple(filter, starts, selected) }
                     .flatMapLatest { (filter, starts, selected) ->
                         val sessionStart = (selected?.takeIf { it in starts } ?: starts.lastOrNull())
-                        observeTimelineEventsUseCase(filter.copy(appInstance = sessionStart))
-                            .sample(GRAPH_BATCH_MS)
-                            .map { events -> buildGraph(events, sessionStart ?: events.minOfOrNull { it.timestamp } ?: 0L) }
+                        val nextSessionStart = sessionStart?.let { start -> starts.firstOrNull { it > start } }
+                        combine(
+                            observeTimelineEventsUseCase(filter.copy(appInstance = sessionStart)).sample(GRAPH_BATCH_MS),
+                            observeTimelineScreenshotsUseCase(),
+                        ) { events, shots ->
+                            val start = sessionStart ?: events.minOfOrNull { it.timestamp } ?: 0L
+                            // a session that is not known has no screenshot to place
+                            val screenshots = if (sessionStart == null) emptyList() else screenshotsOfSession(shots, start, nextSessionStart)
+                            buildGraph(events, start).copy(screenshots = screenshots)
+                        }
                     }
             }
         }
@@ -155,10 +197,21 @@ internal class TimelineViewModel(
 
     val items: Flow<PagingData<TimelineItemUiModel>> = combine(filter, invertList) { filter, inverted -> filter to inverted }
         .flatMapLatest { (filter, inverted) ->
-            observeTimelineUseCase(filter).map { pagingData ->
-                pagingData
-                    .map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) }
-                    .insertSeparators { before, after -> separatorBetween(before, after, inverted) }
+            // the events of the filter are shared (cachedIn) to be combined with each new screenshot without a new query. The scope
+            // lives as long as this filter: it is cancelled when the filter changes
+            channelFlow {
+                val events = observeTimelineUseCase(filter)
+                    .map { pagingData -> pagingData.map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) } }
+                    .cachedIn(this)
+                combine(events, observeTimelineScreenshotsUseCase()) { pagingData, shots ->
+                    // without screenshot the list is the one it always was
+                    val withScreenshots = if (shots.isEmpty()) {
+                        pagingData
+                    } else {
+                        pagingData.insertSeparators { before, after -> screenshotMarkerBetween(before, after, shots) }
+                    }
+                    withScreenshots.insertSeparators { before, after -> separatorBetween(before, after, inverted) }
+                }.collect { send(it) }
             }
         }
         .flowOn(dispatcherProvider.viewModel)
@@ -181,6 +234,10 @@ internal class TimelineViewModel(
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
+
+            is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
+
+            is TimelineAction.SetScreenshotInterval -> viewModelScope.launch { setTimelineScreenshotIntervalUseCase(action.seconds) }
 
             is TimelineAction.MoveGraphSession -> viewModelScope.launch {
                 val starts = summary.value.sessionEventCounts.keys.sorted()
