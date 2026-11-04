@@ -93,15 +93,28 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
 private const val MinZoomBoxPx = 8f
 
 /**
- * Moves along the time axis, never more than a second before the start of the session, and never further to the right
- * than the most recent event or screenshot at the right of the track (with the margin of the auto scroll): no scrolling
- * into the future. A viewport already further right (zoomed out, short session) does not move to the right, and is not
- * pulled back. Without any event, nothing moves to the right.
+ * The furthest the graph can be moved to the right: its end, in ms since the start of the session.
+ * The most recent session ends now, even when nothing happened for a while (the phone and the computer are expected to
+ * agree on the time; a phone behind never ends before its last event). An older session ends at its last event or screenshot.
+ * Null: nothing to show.
  */
-internal fun GraphViewport.panned(deltaMs: Double, model: GraphUiModel, trackWidthPx: Float): GraphViewport {
+internal fun GraphUiModel.panLimitMs(isMostRecentSession: Boolean, nowTimestamp: Long): Long? {
+    val latestMs = latestMs()
+    if (!isMostRecentSession || sessionStartTimestamp <= 0L) return latestMs
+    val nowMs = nowTimestamp - sessionStartTimestamp
+    return if (latestMs == null) nowMs.coerceAtLeast(0L) else max(latestMs, nowMs)
+}
+
+/**
+ * Moves along the time axis, never more than a second before the start of the session, and never further to the right
+ * than [limitMs] (see panLimitMs) at the right of the track, with the margin of the auto scroll: no scrolling into the
+ * future. A viewport already further right (zoomed out, short session) does not move to the right, and is not pulled
+ * back. Without a limit, nothing moves to the right.
+ */
+internal fun GraphViewport.panned(deltaMs: Double, limitMs: Long?, trackWidthPx: Float): GraphViewport {
     val moved = startMs + deltaMs
-    val limitMs = model.latestMs()?.let { max(startMs, it - (trackWidthPx - JumpMarginPx) / pxPerMs) } ?: startMs
-    return copy(startMs = moved.coerceAtMost(limitMs).coerceAtLeast(MIN_START_MS))
+    val maxStartMs = limitMs?.let { max(startMs, it - (trackWidthPx - JumpMarginPx) / pxPerMs) } ?: startMs
+    return copy(startMs = moved.coerceAtMost(maxStartMs).coerceAtLeast(MIN_START_MS))
 }
 
 // the height of a lane: its rows

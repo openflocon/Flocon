@@ -91,35 +91,58 @@ class GraphLayoutTest {
     }
 
     @Test
-    fun `the viewport cannot be panned into the future`() {
-        // the latest event ends at 2830 ms: at the right of a 600 px track, with the 80 px margin, the start is 2310 ms
-        assertEquals(2_310.0, viewport.copy(startMs = 2_000.0).panned(5_000.0, model, 600f).startMs, 0.001)
-        assertEquals(2_100.0, viewport.copy(startMs = 2_000.0).panned(100.0, model, 600f).startMs, 0.001)
+    fun `the viewport cannot be panned past the limit`() {
+        // a limit at 2830 ms: at the right of a 600 px track, with the 80 px margin, the start is 2310 ms
+        assertEquals(2_310.0, viewport.copy(startMs = 2_000.0).panned(5_000.0, 2_830L, 600f).startMs, 0.001)
+        assertEquals(2_100.0, viewport.copy(startMs = 2_000.0).panned(100.0, 2_830L, 600f).startMs, 0.001)
         // panning to the left is free
-        assertEquals(1_000.0, viewport.copy(startMs = 2_000.0).panned(-1_000.0, model, 600f).startMs, 0.001)
+        assertEquals(1_000.0, viewport.copy(startMs = 2_000.0).panned(-1_000.0, 2_830L, 600f).startMs, 0.001)
     }
 
     @Test
     fun `a viewport already in the future does not move to the right nor come back`() {
         // zoomed out or a short session: the start is past the limit
         val past = viewport.copy(startMs = 5_000.0)
-        assertEquals(5_000.0, past.panned(300.0, model, 600f).startMs, 0.0)
-        assertEquals(4_700.0, past.panned(-300.0, model, 600f).startMs, 0.0)
+        assertEquals(5_000.0, past.panned(300.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(4_700.0, past.panned(-300.0, 2_830L, 600f).startMs, 0.0)
     }
 
     @Test
-    fun `a graph without event cannot be panned to the right`() {
-        val empty = buildGraphUiModel(emptyList(), 0L)
+    fun `without a limit the viewport cannot be panned to the right`() {
+        assertEquals(0.0, viewport.panned(500.0, null, 600f).startMs, 0.0)
+        assertEquals(-200.0, viewport.panned(-200.0, null, 600f).startMs, 0.0)
+    }
 
-        assertEquals(0.0, viewport.panned(500.0, empty, 600f).startMs, 0.0)
-        assertEquals(-200.0, viewport.panned(-200.0, empty, 600f).startMs, 0.0)
+    @Test
+    fun `the most recent session ends now, even with no new event`() {
+        val started = model.copy(sessionStartTimestamp = 1_000_000L)
+
+        // 10 s after the start, the last event is at 2830 ms: now is the limit
+        assertEquals(10_000L, started.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_010_000L))
+        // a phone ahead of the computer: never before the last event
+        assertEquals(2_830L, started.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_001_000L))
+        // an older session ends at its last event
+        assertEquals(2_830L, started.panLimitMs(isMostRecentSession = false, nowTimestamp = 1_010_000L))
+    }
+
+    @Test
+    fun `a session without a known start ends at its last event`() {
+        assertEquals(2_830L, model.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_010_000L))
+    }
+
+    @Test
+    fun `the most recent session without event ends now`() {
+        val empty = buildGraphUiModel(emptyList(), 0L, sessionStartTimestamp = 1_000_000L)
+
+        assertEquals(4_000L, empty.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_004_000L))
+        assertNull(empty.panLimitMs(isMostRecentSession = false, nowTimestamp = 1_004_000L))
     }
 
     @Test
     fun `the viewport never goes more than a second before the start of the session`() {
-        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0, model, 600f).startMs, 0.0)
-        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0, model, 600f).startMs, 0.0)
-        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0, model, 600f).startMs, 0.0)
+        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0, 2_830L, 600f).startMs, 0.0)
         // zooming out around the pointer would show the time before 0
         assertEquals(MIN_START_MS, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
     }

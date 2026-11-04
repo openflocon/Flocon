@@ -198,6 +198,7 @@ internal fun TimelineGraph(
     val latestMs = remember(model) { model.latestMs() }
     // read by the pointer handlers, which are not restarted for a screenshot: they must see the latest graph
     val currentModel by rememberUpdatedState(model)
+    val currentFollowsLatest by rememberUpdatedState(followsLatest)
     LaunchedEffect(model.sessionDurationMs, latestMs, autoScroll) {
         if (autoScroll && !paused && !fitted && opened && followsLatest) {
             viewport = viewport.followedLatest(model, trackWidth)
@@ -310,7 +311,7 @@ internal fun TimelineGraph(
                                             // a real move along the time: the trackpad also sends a small horizontal drift
                                             paused = true
                                             val ticks = if (delta.x != 0f) delta.x else delta.y
-                                            viewport.panned(ticks * 40 / viewport.pxPerMs, currentModel, trackWidth)
+                                            viewport.panned(ticks * 40 / viewport.pxPerMs, currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis()), trackWidth)
                                         } else {
                                             viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                         }
@@ -360,7 +361,7 @@ internal fun TimelineGraph(
                                 fitted = false
                                 paused = true
                                 viewport = viewport
-                                    .panned(-drag.x / density / viewport.pxPerMs, currentModel, trackWidth)
+                                    .panned(-drag.x / density / viewport.pxPerMs, currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis()), trackWidth)
                                     .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                             }
                         }
