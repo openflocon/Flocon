@@ -11,7 +11,6 @@ import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
 import io.github.openflocon.flocon.myapplication.multi.dashboard.user.userFlow
 import io.github.openflocon.flocon.myapplication.multi.featureflags.initializeFeatureFlags
 import io.github.openflocon.flocon.tables.dsl.table
-import io.github.openflocon.flocon.timeline.timelinePlugin
 import io.github.openflocon.flocon.tables.tablePlugin
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.update
@@ -50,8 +49,6 @@ enum class SampleFeature(
 
     AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),
     AnalyticsEvents(SampleScreen.Analytics, "Firebase-style events", "Two events from one sender", buttonLabel = "Send"),
-
-    Timeline(SampleScreen.Analytics, "Timeline navigation", "Logs a navigation event in the timeline", buttonLabel = "Log"),
 
     Accessibility(SampleScreen.Accessibility, "Announce", "Announces \"Item added to the cart\" to the screen reader", buttonLabel = "Announce"),
 
@@ -143,9 +140,6 @@ object SampleFeatures {
         }
         on(SampleFeature.Dashboard) {
             userFlow.update { it.copy(userName = "flo-${Random.nextInt(100)}") }
-        }
-        on(SampleFeature.Timeline) {
-            Flocon.timelinePlugin.logNavigation("home", mapOf("from" to "sample"))
         }
         on(SampleFeature.Accessibility) { Flocon.accessibilityPlugin.announce("Item added to the cart") }
         on(SampleFeature.FeatureFlags) { initializeFeatureFlags() }

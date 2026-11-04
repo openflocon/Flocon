@@ -1,11 +1,16 @@
 package io.github.openflocon.flocon.myapplication.multi.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.AccessibilityScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.AnalyticsScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.ConnectionScreen
@@ -19,7 +24,9 @@ import io.github.openflocon.flocon.myapplication.multi.ui.screens.HomeScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.ImagesScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.NetworkScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.PreferencesScreen
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.TimelineScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.WebViewScreen
+import io.github.openflocon.flocon.timeline.timelinePlugin
 
 /** A destination of the sample: the home, then one route per plugin screen. */
 sealed interface SampleRoute {
@@ -35,6 +42,7 @@ sealed interface SampleRoute {
     data object Dashboard : SampleRoute
     data object Deeplinks : SampleRoute
     data object Images : SampleRoute
+    data object Timeline : SampleRoute
     data object Crash : SampleRoute
     data object Connection : SampleRoute
 }
@@ -52,6 +60,7 @@ val SampleScreen.route: SampleRoute
         SampleScreen.Dashboard -> SampleRoute.Dashboard
         SampleScreen.Deeplinks -> SampleRoute.Deeplinks
         SampleScreen.Images -> SampleRoute.Images
+        SampleScreen.Timeline -> SampleRoute.Timeline
         SampleScreen.Crash -> SampleRoute.Crash
     }
 
@@ -60,6 +69,47 @@ val SampleScreen.route: SampleRoute
 fun rememberSampleBackStack(): SnapshotStateList<SampleRoute> =
     remember { mutableStateListOf(SampleRoute.Home) }
 
+/** A stable, readable name for the timeline: "home", "network", "feature_flags"... */
+private val SampleRoute.timelineName: String
+    get() = when (this) {
+        SampleRoute.Home -> "home"
+        SampleRoute.Network -> "network"
+        SampleRoute.Database -> "database"
+        SampleRoute.Analytics -> "analytics"
+        SampleRoute.Accessibility -> "accessibility"
+        SampleRoute.WebView -> "web_view"
+        SampleRoute.FeatureFlags -> "feature_flags"
+        SampleRoute.Preferences -> "preferences"
+        SampleRoute.Files -> "files"
+        SampleRoute.Dashboard -> "dashboard"
+        SampleRoute.Deeplinks -> "deeplinks"
+        SampleRoute.Images -> "images"
+        SampleRoute.Timeline -> "timeline"
+        SampleRoute.Crash -> "crash"
+        SampleRoute.Connection -> "connection"
+    }
+
+/**
+ * Example of a navigation listener for the Flocon timeline: every change of the top of the back
+ * stack is logged once, here, instead of in each screen. Routes of this sample have no arguments,
+ * with Navigation 3 keys that carry some, add them to the params.
+ */
+@Composable
+private fun LogNavigationToTimeline(backStack: SnapshotStateList<SampleRoute>) {
+    val current = backStack.lastOrNull() ?: return
+    var previous by remember { mutableStateOf<SampleRoute?>(null) }
+    LaunchedEffect(current) {
+        Flocon.timelinePlugin.logNavigation(
+            value = current.timelineName,
+            params = buildMap {
+                previous?.let { put("from", it.timelineName) }
+                put("backStackSize", backStack.size.toString())
+            },
+        )
+        previous = current
+    }
+}
+
 /**
  * Navigation 3 host: handles the system back gesture, the transitions between screens and the
  * restoration of each screen's state.
@@ -67,6 +117,8 @@ fun rememberSampleBackStack(): SnapshotStateList<SampleRoute> =
 @Composable
 fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
     val onBack: () -> Unit = { if (backStack.size > 1) backStack.removeLast() }
+
+    LogNavigationToTimeline(backStack)
 
     NavDisplay(
         backStack = backStack,
@@ -89,6 +141,7 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
             entry<SampleRoute.Dashboard> { DashboardScreen(onBack) }
             entry<SampleRoute.Deeplinks> { DeeplinksScreen(onBack) }
             entry<SampleRoute.Images> { ImagesScreen(onBack) }
+            entry<SampleRoute.Timeline> { TimelineScreen(onBack) }
             entry<SampleRoute.Crash> { CrashScreen(onBack) }
             entry<SampleRoute.Connection> { ConnectionScreen(onBack) }
         },
