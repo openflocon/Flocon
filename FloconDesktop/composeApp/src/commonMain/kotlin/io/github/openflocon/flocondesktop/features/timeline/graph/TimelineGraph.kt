@@ -102,6 +102,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
@@ -157,6 +158,9 @@ internal fun TimelineGraph(
     // false for a device that cannot take them (an Android over wifi): no strip, nothing to turn on
     screenshotsAvailable: Boolean = true,
     onTurnOnScreenshots: () -> Unit = {},
+    // a zone asked from outside (the MCP): shown once, then the graph is free again
+    focus: GraphFocusUiModel? = null,
+    onFocusApplied: () -> Unit = {},
 ) {
     val colors = FloconTheme.colors
     val density = LocalDensity.current.density
@@ -202,6 +206,21 @@ internal fun TimelineGraph(
     }
     LaunchedEffect(fitted, model.sessionDurationMs, trackWidth) {
         if (fitted) viewport = fitViewport(model.sessionDurationMs, trackWidth).copy(scrollY = viewport.scrollY)
+    }
+    // the event of the zone: it may not be in the model yet when the session has just changed, it is waited for a moment
+    val focusedEvent = remember(model, focus) {
+        focus?.eventKey?.let { key -> model.lanes.firstNotNullOfOrNull { lane -> lane.rows.firstNotNullOfOrNull { row -> row.firstOrNull { it.key == key } } } }
+    }
+    LaunchedEffect(focus, opened, focusedEvent != null, trackWidth, trackHeight) {
+        if (focus == null || !opened || trackWidth <= 0f) return@LaunchedEffect
+        if (focus.eventKey != null && focusedEvent == null) delay(FocusEventWaitMs)
+        // not fitted nor following: the zone stays where it was put until the user moves
+        fitted = false
+        paused = true
+        val rowTop = focusedEvent?.let { model.rowTopOf(it) }
+        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(contentHeight - trackHeight, 0f)) } ?: 0f
+        viewport = focusedViewport(focus.fromMs, focus.toMs, trackWidth).copy(scrollY = scrollY)
+        onFocusApplied()
     }
     val maxScroll = max(contentHeight - trackHeight, 0f)
     val currentViewport = viewport.copy(scrollY = viewport.scrollY.coerceIn(0f, maxScroll))
@@ -948,3 +967,6 @@ private fun TimelineGraphDarkPreview() = TimelineGraphPreviewContent(isDarkTheme
 @Preview
 @Composable
 private fun TimelineGraphLightPreview() = TimelineGraphPreviewContent(isDarkTheme = false)
+
+// how long the event of a zone asked from outside is waited for, when the graph shows another session
+private const val FocusEventWaitMs = 1_500L

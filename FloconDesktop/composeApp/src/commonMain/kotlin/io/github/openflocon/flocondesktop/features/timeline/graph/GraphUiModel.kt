@@ -45,6 +45,20 @@ internal data class GraphEventUiModel(
     val isError: Boolean get() = hasError || (statusCode != null && statusCode >= 400)
 }
 
+/**
+ * A zone of the session the graph is asked to show: it is applied once, then the graph is free again.
+ * Times are since the start of the session, like the events.
+ */
+@Immutable
+internal data class GraphFocusUiModel(
+    val fromMs: Long,
+    val toMs: Long,
+    // the event selected in the zone: the graph scrolls to its row. Null: only the zone
+    val eventKey: String?,
+    // tells a request from the previous one, even for the same zone
+    val token: Long,
+)
+
 // the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end
 @Immutable
 internal data class GraphLaneUiModel(

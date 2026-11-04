@@ -8,10 +8,13 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.usecase.ConsumeTimelineFocusUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineFocusUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
@@ -25,6 +28,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
@@ -47,10 +51,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -79,6 +83,9 @@ internal class TimelineViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
+    observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
+    private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
+    observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel() {
 
     val filterText: StateFlow<String> = filterStore.text
@@ -113,8 +120,8 @@ internal class TimelineViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineScreenshotsStatus.Working)
 
     // the last event opened, highlighted in the list
-    private val _selectedKey = MutableStateFlow<String?>(null)
-    val selectedKey: StateFlow<String?> = _selectedKey.asStateFlow()
+    val selectedKey: StateFlow<String?>
+        field = MutableStateFlow<String?>(null)
 
     // the filter panel is a panel of the navigation, opened from the screen
     val filterPanelOpen: StateFlow<Boolean> = snapshotFlow { navigationState.stack.lastOrNull { it is PanelRoute } is TimelineRoutes.Filters }
@@ -184,6 +191,30 @@ internal class TimelineViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GraphUiModel.Empty)
 
+    // the zone of the session the graph is asked to show (by the MCP), until the graph has shown it
+    val graphFocus: StateFlow<GraphFocusUiModel?>
+        field = MutableStateFlow<GraphFocusUiModel?>(null)
+
+    init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            appliedFocusRequests(observeTimelineFocusUseCase(), observeCurrentDeviceIdAndPackageNameUseCase()).collectResilient(
+                action = { request ->
+                    // the sessions come with the summary of the device: the one of the request is waited for, what is displayed is the fallback
+                    val starts = awaitSessionStarts(request, sessionStarts, FOCUS_SESSIONS_WAIT_MS)
+                    val plan = planFocus(request, starts, graphShown = observeTimelineSettingsUseCase().first().graph)
+                    plan.selectedKey?.let { key -> selectedKey.value = key }
+                    plan.graph?.let { graph ->
+                        graphSession.value = graph.session
+                        graphFocus.value = graph.focus
+                    }
+                    consumeTimelineFocusUseCase(request)
+                },
+                // a request that fails is dropped: the next ones are still applied
+                onError = { request, _ -> consumeTimelineFocusUseCase(request) },
+            )
+        }
+    }
+
     // nothing received at all: the filters are not the reason of the empty list
     val showEmptyState: StateFlow<Boolean> = combine(summary, filterStore.text) { summary, filterText ->
         filterText.isBlank() && summary.sourceCounts.values.sum() == 0
@@ -247,6 +278,8 @@ internal class TimelineViewModel(
                 graphSession.value = if (target == starts.lastIndex) null else starts.getOrNull(target)
             }
 
+            is TimelineAction.GraphFocusApplied -> graphFocus.value = null
+
             is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
             }
@@ -254,7 +287,7 @@ internal class TimelineViewModel(
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()
                 if (destination != null) {
-                    _selectedKey.update { action.row.callKey }
+                    selectedKey.update { action.row.callKey }
                 }
                 when (destination) {
                     is TimelineDestination.Panel -> navigationState.navigate(destination.route)
@@ -267,3 +300,6 @@ internal class TimelineViewModel(
 
 // the graph is rebuilt at most this often while events arrive
 private const val GRAPH_BATCH_MS = 100L
+
+// how long the sessions of a device are waited for before a focus request, when the one of the request is not known yet
+private const val FOCUS_SESSIONS_WAIT_MS = 1_500L

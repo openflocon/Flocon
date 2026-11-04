@@ -127,6 +127,10 @@ class FloconMcpServer(
               source with the anomalies first (crash, HTTP errors, loops, large responses) and tells which window it chose. Start there, then use
               the ids of its lines (network:<callId> with get_network_call, crash:<crashId> with get_crash_report). Its search parameter tells
               whether an event was sent. The times are those of the phone.
+            - To show the user a zone of the timeline (a crash, an error, a loop), show_in_timeline opens it in Flocon, selects the event and centers
+              the graph: give an event id of get_timeline, a time, or nothing. Flocon is never brought to the front: tell the user to go to the
+              Flocon app. Its answer says if a filter of the user hides the event (the filters are never changed) and when the graph cannot
+              draw the event (crashes only appear in the list view).
             - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
               flocon_navigate_into_desktop_app moves it for the user: displays a screen, selects a device / app, sets the timeline
