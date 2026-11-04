@@ -52,6 +52,31 @@ class GraphPackingTest {
     }
 
     @Test
+    fun `logMarkersCarryTheirLevelAndOnlyErrorFails`() {
+        val model = buildGraph(
+            TimelineLogLevel.entries.map { level ->
+                domain(level.name, TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log)
+                    .copy(method = null, statusCode = null, hasError = level == TimelineLogLevel.Error, level = level)
+            },
+            sessionStart = 1_000L,
+        )
+
+        val markers = model.lanes.single().rows.flatten().associateBy { it.row.id }
+        TimelineLogLevel.entries.forEach { level ->
+            assertEquals(level, markers.getValue(level.name).logLevel)
+            assertEquals(level == TimelineLogLevel.Error, markers.getValue(level.name).isError)
+        }
+        assertEquals(1, model.errorCount)
+    }
+
+    @Test
+    fun `networkEventHasNoLogLevel`() {
+        val model = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_000L, duration = 100.0)), sessionStart = 1_000L)
+
+        assertEquals(null, model.lanes.single().rows.single().single().logLevel)
+    }
+
+    @Test
     fun `errorLevelLogMarkedAsError`() {
         // hasError is computed in SQL (level = ERROR): the graph only carries it
         val model = buildGraph(

@@ -253,7 +253,7 @@ private fun RowContent(
                 highlightMatches(plain, highlight, highlightColor)
             }
             val logLevel = row.logLevel.takeIf { row.source == TimelineSource.Log }
-            // a warning and an error stand out, the other levels keep the color of the other events
+            // the icon is tinted by the level, a warning and an error also stand out in the title
             val titleColor = when {
                 isCrash -> colors.catCrash
                 logLevel == TimelineLogLevel.Warning || logLevel == TimelineLogLevel.Error -> logLevel.color(colors)

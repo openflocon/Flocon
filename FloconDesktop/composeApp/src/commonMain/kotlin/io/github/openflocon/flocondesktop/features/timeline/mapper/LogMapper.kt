@@ -21,14 +21,18 @@ internal fun logIconOf(type: String): TimelineLogIcon = when (type) {
 }
 
 /**
- * Debug is quiet, info neutral, warning and error use the colors of the http statuses.
+ * One color per level, used by the list, the graph, the detail and the filters: debug is a quiet grey, info blue,
+ * warning and error use the colors of the http statuses (orange, red).
  */
 internal fun TimelineLogLevel.color(colors: FloconColors): Color = when (this) {
     TimelineLogLevel.Debug -> colors.inkFaint
-    TimelineLogLevel.Info -> colors.inkMuted
+    TimelineLogLevel.Info -> colors.statusInfo
     TimelineLogLevel.Warning -> colors.statusWarning
     TimelineLogLevel.Error -> colors.statusError
 }
+
+/** The level of a stored facet value ("DEBUG", "INFO", "WARNING", "ERROR"). */
+internal fun logLevelOf(value: String): TimelineLogLevel? = TimelineLogLevel.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
 
 internal fun TimelineLogDomainModel.toDetailUi(): TimelineLogDetailUiModel = TimelineLogDetailUiModel(
     value = value,

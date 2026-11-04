@@ -74,6 +74,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -471,6 +472,7 @@ private fun FacetTags(
                 when {
                     method != null -> MethodTag(method = method)
                     httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
+                    item.logLevel != null -> FloconStatusPill(text = item.value, color = item.logLevel.color(colors))
                     else -> FloconStatusPill(text = item.value, color = colors.inkMuted)
                 }
             }

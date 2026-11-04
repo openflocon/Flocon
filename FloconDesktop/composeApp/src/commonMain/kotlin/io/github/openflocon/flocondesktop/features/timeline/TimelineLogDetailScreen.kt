@@ -1,13 +1,22 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_log_detail_copy_params
@@ -25,6 +34,7 @@ import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailKeyValueList
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
+import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineLogDetailUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineLogDetailUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.label
@@ -93,10 +103,29 @@ internal fun TimelineLogDetailScreen(
             copyContentDescription = "",
             onCopy = null,
         ) {
+            // the level, in its color: the same as the icon in the list and the marker in the graph
+            val levelColor = uiState.level.color(FloconTheme.colors)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                Text(
+                    text = stringResource(Res.string.timeline_log_detail_level),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+                Box(Modifier.size(LevelDotSize).background(levelColor, CircleShape))
+                Text(
+                    text = stringResource(uiState.level.label()),
+                    style = FloconTheme.typography.bodySmall,
+                    color = levelColor,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
             DetailKeyValueList(
                 entries = listOf(
                     stringResource(Res.string.timeline_log_detail_type) to uiState.type,
-                    stringResource(Res.string.timeline_log_detail_level) to stringResource(uiState.level.label()),
                     stringResource(Res.string.timeline_log_detail_time) to uiState.time,
                 ),
             )
@@ -139,3 +168,5 @@ private fun TimelineLogDetailScreenNoParamsPreview() {
         )
     }
 }
+
+private val LevelDotSize = 8.dp

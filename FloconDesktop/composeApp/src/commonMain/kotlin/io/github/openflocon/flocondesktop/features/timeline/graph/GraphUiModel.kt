@@ -38,6 +38,8 @@ internal data class GraphEventUiModel(
     val hasError: Boolean = false,
     // the response did not arrive yet: the bar goes up to the last event received
     val inProgress: Boolean = false,
+    // logs only: colors the marker
+    val logLevel: TimelineLogLevel? = null,
 ) {
     val key: String get() = row.callKey
     val isInstant: Boolean get() = durationMs <= 0L
@@ -125,6 +127,7 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         durationMs = 0L,
         name = message,
         hasError = level == TimelineLogLevel.Error,
+        logLevel = level,
     )
 
     return listOf(

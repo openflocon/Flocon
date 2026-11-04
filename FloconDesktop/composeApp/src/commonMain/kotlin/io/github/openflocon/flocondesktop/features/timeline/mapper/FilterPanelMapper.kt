@@ -126,6 +126,7 @@ private fun TimelineSummaryUiModel.toGroup(
                 selected = value !in hidden,
                 method = value.takeIf { facet == TimelineFacet.NetworkMethod }?.toMethodUi(),
                 httpFamily = value.takeIf { facet == TimelineFacet.NetworkStatus }?.firstOrNull()?.digitToIntOrNull(),
+                logLevel = value.takeIf { facet == TimelineFacet.LogLevel }?.let(::logLevelOf),
             )
         }
     return if (values.isEmpty()) {

@@ -19,12 +19,22 @@ class LogMapperTest {
     }
 
     @Test
-    fun `warningAndErrorLevelsGetDistinctColors`() {
+    fun `facetValuesMapToLevels`() {
+        assertEquals(TimelineLogLevel.Warning, logLevelOf("WARNING"))
+        assertEquals(TimelineLogLevel.Debug, logLevelOf("debug"))
+        assertEquals(null, logLevelOf("navigation"))
+    }
+
+    @Test
+    fun `allLevelsGetDistinctColors`() {
         listOf(FloconDarkColors, FloconLightColors).forEach { colors ->
             val byLevel = TimelineLogLevel.entries.associateWith { it.color(colors) }
 
+            assertEquals(4, TimelineLogLevel.entries.size)
             assertEquals(TimelineLogLevel.entries.size, byLevel.values.toSet().size, "every level has its own color")
-            assertNotEquals(byLevel.getValue(TimelineLogLevel.Warning), byLevel.getValue(TimelineLogLevel.Error))
+            assertNotEquals(byLevel.getValue(TimelineLogLevel.Debug), byLevel.getValue(TimelineLogLevel.Info))
+            assertEquals(colors.inkFaint, byLevel.getValue(TimelineLogLevel.Debug))
+            assertEquals(colors.statusInfo, byLevel.getValue(TimelineLogLevel.Info))
             assertEquals(colors.statusWarning, byLevel.getValue(TimelineLogLevel.Warning))
             assertEquals(colors.statusError, byLevel.getValue(TimelineLogLevel.Error))
         }

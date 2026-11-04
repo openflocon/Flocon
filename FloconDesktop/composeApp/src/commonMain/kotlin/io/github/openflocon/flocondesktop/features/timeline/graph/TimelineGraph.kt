@@ -95,7 +95,9 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.images.view.viewer.PinchZoomEffect
+import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.flocondesktop.features.timeline.view.label
@@ -263,6 +265,7 @@ internal fun TimelineGraph(
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
+            logLevels = TimelineLogLevel.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
         )
@@ -427,6 +430,8 @@ private class GraphPalette(
     val onBar: Color,
     val chip: Color,
     val error: Color,
+    // the color of a log marker, by level
+    val logLevels: Map<TimelineLogLevel, Color>,
     val appStart: Color,
     val selection: Color,
 )
@@ -635,7 +640,7 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = if (event.isError) palette.error else color
+                    val fill = event.logLevel?.let { palette.logLevels.getValue(it) } ?: if (event.isError) palette.error else color
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
