@@ -97,6 +97,9 @@ internal sealed interface TimelineAction {
     // the session of the graph: -1 the one before, 1 the one after
     data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
+
+    // the graph showed the zone it was asked to show: it is free again
+    data object GraphFocusApplied : TimelineAction
 }
 
 // the actions of the filter panel

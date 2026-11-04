@@ -66,6 +66,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.PreviewSessionDurationMs
@@ -123,6 +124,7 @@ fun TimelineScreen(
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
     val graph by viewModel.graph.collectAsStateWithLifecycle()
     val graphSession by viewModel.graphSessionPosition.collectAsStateWithLifecycle()
+    val graphFocus by viewModel.graphFocus.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -138,6 +140,7 @@ fun TimelineScreen(
         activeFilterCount = activeFilterCount,
         graph = graph,
         graphSession = graphSession,
+        graphFocus = graphFocus,
         onAction = viewModel::onAction,
     )
 }
@@ -158,6 +161,8 @@ internal fun TimelineContent(
     graphSession: GraphSessionUiModel?,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
+    // a zone of the graph asked from outside, shown once
+    graphFocus: GraphFocusUiModel? = null,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
@@ -323,6 +328,8 @@ internal fun TimelineContent(
                 screenshotsEnabled = settings.screenshots,
                 screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
                 onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
+                focus = graphFocus,
+                onFocusApplied = { onAction(TimelineAction.GraphFocusApplied) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {

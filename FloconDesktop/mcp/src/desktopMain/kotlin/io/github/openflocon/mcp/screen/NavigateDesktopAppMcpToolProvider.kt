@@ -1,7 +1,5 @@
 package io.github.openflocon.mcp.screen
 
-import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
-import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.screen.models.FloconScreen
 import io.github.openflocon.domain.screen.usecase.RequestDesktopScreenUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
@@ -17,8 +15,7 @@ private const val TIMELINE_VIEW_LIST = "list"
 
 internal class NavigateDesktopAppMcpToolProvider(
     private val targetResolver: McpTargetResolver,
-    private val selectDeviceUseCase: SelectDeviceUseCase,
-    private val selectDeviceAppUseCase: SelectDeviceAppUseCase,
+    private val selectionApplier: McpSelectionApplier,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
     private val requestDesktopScreenUseCase: RequestDesktopScreenUseCase,
 ) : McpToolProvider {
@@ -59,18 +56,11 @@ internal class NavigateDesktopAppMcpToolProvider(
             }
         }
         val target = if (deviceId != null || packageName != null) targetResolver.resolve(deviceId, packageName) else null
-        val currentTarget = if (target != null) runCatching { targetResolver.resolve(null, null) }.getOrNull() else null
+        val currentTarget = if (target != null) selectionApplier.current() else null
 
         val applied = buildList {
             if (target != null) {
-                if (currentTarget?.deviceId != target.deviceId) {
-                    selectDeviceUseCase(target.deviceId)
-                    add("Selected the device ${target.deviceId}")
-                }
-                if (packageName != null) {
-                    selectDeviceAppUseCase(target.packageName)
-                    add("Selected the app ${target.packageName}")
-                }
+                addAll(selectionApplier.select(target, currentTarget, selectApp = packageName != null))
             }
             if (graph != null) {
                 setTimelineGraphUseCase(graph)
