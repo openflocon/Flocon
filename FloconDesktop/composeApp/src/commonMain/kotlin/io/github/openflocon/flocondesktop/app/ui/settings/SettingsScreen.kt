@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.about_sdk_version
 import flocondesktop.composeapp.generated.resources.general_clear
 import flocondesktop.composeapp.generated.resources.general_copy_all
 import flocondesktop.composeapp.generated.resources.general_open_folder
@@ -107,10 +108,12 @@ import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
@@ -130,6 +133,7 @@ import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 // ---------------------------------------------------------------------------
@@ -1065,10 +1069,27 @@ private fun <T> LogFilterGroup(
 private fun AboutPane(
     modifier: Modifier = Modifier,
 ) {
+    val observeSdkVersion = koinInject<ObserveCurrentDeviceFloconSdkVersionNameUseCase>()
+    val sdkVersion by remember(observeSdkVersion) { observeSdkVersion() }.collectAsState(null)
+
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
+            Text(
+                text = "Flocon Desktop v${BuildConfig.APP_VERSION}",
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.ink,
+            )
+            sdkVersion?.takeIf { it.isNotBlank() }?.let {
+                Text(
+                    text = stringResource(Res.string.about_sdk_version, it),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+            }
+        }
         Text(
             text = stringResource(Res.string.settings_open_source_licenses),
             style = FloconTheme.typography.titleMedium,
