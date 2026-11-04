@@ -305,6 +305,7 @@
     <string name="settings_test">Test</string>
     <string name="settings_test_failure">Failed! %1$s</string>
     <string name="settings_about_title">About</string>
+    <string name="about_sdk_version">SDK on device: %1$s</string>
     <string name="settings_licenses">Licenses</string>
     <string name="size">Size</string>
     <string name="tables_empty">No Tables</string>

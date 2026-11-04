@@ -12,6 +12,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onFirstVisible
@@ -27,9 +30,11 @@ import androidx.compose.ui.window.v2.WindowPositionProvider
 import androidx.compose.ui.window.v2.WindowSizeProvider
 import androidx.compose.ui.window.v2.rememberWindowState
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.about_sdk_version
 import flocondesktop.composeapp.generated.resources.app_icon
 import flocondesktop.composeapp.generated.resources.app_name
 import flocondesktop.composeapp.generated.resources.settings_about_title
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.utils.openInBrowser
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -37,12 +42,16 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import java.net.URI
 
 @Composable
 internal fun AboutScreen(
     onCloseRequest: () -> Unit
 ) {
+    val observeSdkVersion = koinInject<ObserveCurrentDeviceFloconSdkVersionNameUseCase>()
+    val sdkVersion by remember(observeSdkVersion) { observeSdkVersion() }.collectAsState(null)
+
     val windowState = rememberWindowState(
         initialPlacement = WindowPlacement.Floating,
         initialBoundsProvider = WindowBoundsProvider(
@@ -78,6 +87,13 @@ internal fun AboutScreen(
                     style = FloconTheme.typography.labelSmall,
                     color = FloconTheme.colors.ink
                 )
+                sdkVersion?.takeIf { it.isNotBlank() }?.let {
+                    Text(
+                        text = stringResource(Res.string.about_sdk_version, it),
+                        style = FloconTheme.typography.labelSmall,
+                        color = FloconTheme.colors.inkMuted
+                    )
+                }
                 FloconTextButton(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))

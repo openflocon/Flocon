@@ -28,8 +28,11 @@ class CheckIsDesktopOnLastVersionUseCase(
 }
 
 fun isRemoteVersionNewer(localVersion: String, remoteVersion: String): Boolean {
-    val localParts = localVersion.split(".").mapNotNull { it.toIntOrNull() }
-    val remoteParts = remoteVersion.split(".").mapNotNull { it.toIntOrNull() }
+    val localParts = localVersion.toVersionParts()
+    val remoteParts = remoteVersion.toVersionParts()
+
+    // an unknown version (empty, "unknown"...) can't be compared: never claim an update
+    if (localParts.isEmpty() || remoteParts.isEmpty()) return false
 
     val maxLength = maxOf(localParts.size, remoteParts.size)
     for (i in 0 until maxLength) {
@@ -40,3 +43,10 @@ fun isRemoteVersionNewer(localVersion: String, remoteVersion: String): Boolean {
     }
     return false
 }
+
+// "v1.10.0-SNAPSHOT" -> [1, 10, 0]: keeps the leading digits of each segment, stops at the first non numeric one
+private fun String.toVersionParts(): List<Int> = removePrefix("v")
+    .split(".")
+    .map { segment -> segment.takeWhile { it.isDigit() } }
+    .takeWhile { it.isNotEmpty() }
+    .map { it.toInt() }

@@ -201,6 +201,7 @@
     <string name="settings_test">Tester</string>
     <string name="settings_test_failure">Échec ! %1$s</string>
     <string name="settings_about_title">À propos</string>
+    <string name="about_sdk_version">SDK sur l’appareil : %1$s</string>
     <string name="settings_licenses">Licences</string>
     <string name="size">Taille</string>
     <string name="tables_empty">Aucune table</string>
