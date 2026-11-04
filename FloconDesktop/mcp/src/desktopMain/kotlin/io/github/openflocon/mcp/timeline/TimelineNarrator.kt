@@ -176,7 +176,7 @@ internal class TimelineNarrator(zone: ZoneId) {
             }
             if (event.source == TimelineSource.Log && event.level == TimelineLogLevel.Error) {
                 val type = event.subtitle?.takeIf { it.isNotBlank() }?.let { " $it" }.orEmpty()
-                found.add(Anomaly(2, event.timestamp, "ERROR LOG$type: ${event.title.truncate(TITLE_MAX)} at $at [$id]"))
+                found.add(Anomaly(2, event.timestamp, "ERROR LOG$type: ${event.title.truncate(TITLE_MAX)} at $at [$id]", id))
             }
             if (event.source == TimelineSource.Network) {
                 val call = "${event.method.orEmpty()} ${pathOf(event.title)}".trim()
