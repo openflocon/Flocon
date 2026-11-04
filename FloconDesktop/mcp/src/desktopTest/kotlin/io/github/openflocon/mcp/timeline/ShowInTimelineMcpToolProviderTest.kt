@@ -298,4 +298,26 @@ class ShowInTimelineMcpToolProviderTest {
         assertEquals(at(40), request.fromMs)
         assertEquals(at(105), request.toMs)
     }
+
+    @Test
+    fun `a window the user chose is shown as it is, even with an anomaly inside`() = runBlocking {
+        val withError = listOf(
+            event("0", 0, TimelineSource.AppStart, ""),
+            event("n1", 10, TimelineSource.Network, "https://api.shop.io/v1/session", status = 200),
+            event("e1", 100, TimelineSource.Network, "https://api.shop.io/v1/cart", status = 500),
+            event("n2", 150, TimelineSource.Network, "https://api.shop.io/v1/feed", status = 200),
+        )
+        val server = start(events = withError)
+
+        server.callTool("show_in_timeline", mapOf("mode" to "range", "from" to at(20).toString(), "to" to at(150).toString())).json()
+        server.callTool("show_in_timeline", mapOf("mode" to "at", "at" to at(100).toString(), "aroundSeconds" to 50)).json()
+
+        val (range, around) = focusRepository.requests
+        // the anomaly is still the event selected, the zone is the one asked
+        assertEquals(TimelineEventRef(TimelineSource.Network, "e1"), range.event)
+        assertEquals(at(20), range.fromMs)
+        assertEquals(at(150), range.toMs)
+        assertEquals(at(50), around.fromMs)
+        assertEquals(at(150), around.toMs)
+    }
 }

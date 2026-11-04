@@ -88,7 +88,8 @@ internal class ShowInTimelineMcpToolProvider(
             ?.let(::eventRefOf)
         val eventTimeMs = event?.let { ref -> events.firstOrNull { it.source == ref.source && it.id == ref.id }?.timestamp } ?: window.anchorMs
         val sessionStart = found.anchors.sessionStarts.filter { it <= eventTimeMs }.maxOrNull()
-        val shown = zoneOf(window, event, eventTimeMs, input.aroundSeconds)
+        val windowChosen = input.mode != null || input.at != null || input.from != null || input.to != null || input.eventId != null
+        val shown = if (windowChosen) window else zoneOf(window, event, eventTimeMs, input.aroundSeconds)
         val hiddenReasons = event?.let { getTimelineEventHiddenReasonsUseCase(target, it) }.orEmpty()
 
         val current = selectionApplier.current()
@@ -119,8 +120,8 @@ internal class ShowInTimelineMcpToolProvider(
         )
     }
 
-    // an anomaly the tool picked in a wide window is shown with the seconds around it, not the whole window: the window of a crash
-    // (the minute before it) and the zone around an event asked by its id are already the zone to show
+    // an anomaly the tool picked in the default window is shown with the seconds around it, not the whole window: the window of a crash
+    // (the minute before it) is already the zone to show. A window the user chose is never replaced, see [show]
     private fun zoneOf(window: TimelineWindow, event: TimelineEventRef?, eventTimeMs: Long, aroundSeconds: Int): TimelineWindow {
         if (event == null || window.anchorEventId != null) return window
         val around = aroundSeconds.coerceIn(1, MAX_AROUND_SECONDS) * 1_000L
