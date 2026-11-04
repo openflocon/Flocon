@@ -1,6 +1,6 @@
 ---
 name: planner
-description: MUST BE USED before writing code whenever a request needs thinking: new feature, refactor, bug with unclear cause, trade-off between options, or a change touching more than 2 files. Skip only for trivial edits.
+description: MUST BE USED before writing code when the approach is not obvious: new feature, refactor, bug with unclear cause, or a trade-off between options. Skip it when the change is clear, even if it touches several files (code + test + docs).
 tools: Read, Grep, Glob
 model: opus
 ---
