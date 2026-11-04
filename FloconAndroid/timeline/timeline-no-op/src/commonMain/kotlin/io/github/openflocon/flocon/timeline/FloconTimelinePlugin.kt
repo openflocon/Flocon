@@ -7,20 +7,10 @@ import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.core.FloconEncoder
-import kotlin.jvm.JvmInline
+import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
+import io.github.openflocon.flocon.timeline.model.FloconTimelineType
 
 class FloconTimelineConfig : FloconPluginConfig
-
-enum class FloconTimelineLevel { Debug, Info, Warning, Error }
-
-@JvmInline
-value class FloconTimelineType(val name: String) {
-    companion object {
-        val Navigation = FloconTimelineType("navigation")
-        val UserAction = FloconTimelineType("userAction")
-        val Lifecycle = FloconTimelineType("lifecycle")
-    }
-}
 
 interface FloconTimelinePlugin : FloconPlugin {
     fun log(type: FloconTimelineType, value: String, params: Map<String, String> = emptyMap())

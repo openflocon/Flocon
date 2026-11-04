@@ -3,6 +3,8 @@ package io.github.openflocon.flocon.timeline
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
+import io.github.openflocon.flocon.timeline.model.FloconTimelineType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject

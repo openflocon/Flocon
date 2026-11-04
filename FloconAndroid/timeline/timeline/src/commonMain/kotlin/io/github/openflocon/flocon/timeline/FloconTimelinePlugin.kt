@@ -12,6 +12,8 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
+import io.github.openflocon.flocon.timeline.model.FloconTimelineType
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -19,24 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlin.jvm.JvmInline
 
 class FloconTimelineConfig : FloconPluginConfig
-
-enum class FloconTimelineLevel { Debug, Info, Warning, Error }
-
-/**
- * The type of a timeline event. The reserved types are [Navigation], [UserAction] and [Lifecycle],
- * any other name is a custom type.
- */
-@JvmInline
-value class FloconTimelineType(val name: String) {
-    companion object {
-        val Navigation = FloconTimelineType("navigation")
-        val UserAction = FloconTimelineType("userAction")
-        val Lifecycle = FloconTimelineType("lifecycle")
-    }
-}
 
 interface FloconTimelinePlugin : FloconPlugin {
     /** Logs an event of the given [type], without any level. */

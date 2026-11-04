@@ -75,6 +75,7 @@ There are two kinds of calls, never mixed:
 ```kotlin
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.timeline.*
+import io.github.openflocon.flocon.timeline.model.*
 
 Flocon.timelinePlugin.logNavigation("CheckoutScreen", params = mapOf("from" to "CartScreen"))
 Flocon.timelinePlugin.logUserAction("Tap on Pay")
@@ -122,6 +123,7 @@ Declare a type once and reuse it, optionally with an extension:
 ```kotlin
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.timeline.*
+import io.github.openflocon.flocon.timeline.model.*
 
 val Billing = FloconTimelineType("billing")
 
