@@ -391,4 +391,30 @@ class TimelineNarratorTest {
         assertEquals(listOf("[network:n0]", "[database:d0]", "[database:d1]"), narrative.lines.map { it.substringAfterLast("  ") })
         assertEquals(3, narrative.omittedCount)
     }
+
+    @Test
+    fun `the main anomaly is the crash, before the errors`() {
+        val narrative = narrate(listOf(net("e", 0, status = 500), event("c1", 1_000, TimelineSource.Crash, "Boom")))
+
+        assertEquals("crash:c1", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `without a crash the main anomaly is the first http error`() {
+        val narrative = narrate(listOf(net("ok", 0), net("e", 5_000, path = "/v1/cart", status = 500)))
+
+        assertEquals("network:e", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `the main anomaly of a loop is its first call`() {
+        val narrative = narrate((0 until 5).map { net("c$it", it * 2_000L) })
+
+        assertEquals("network:c0", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `without an anomaly there is no main one`() {
+        assertNull(narrate(listOf(net("a", 0))).mainAnomalyId)
+    }
 }

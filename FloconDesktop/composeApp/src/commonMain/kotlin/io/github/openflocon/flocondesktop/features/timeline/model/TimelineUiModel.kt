@@ -73,7 +73,7 @@ internal data class TimelineSettingsUiModel(
     val pinPanel: Boolean,
     val graph: Boolean = true,
     val screenshots: Boolean = false,
-    val screenshotIntervalSeconds: Int = 10,
+    val screenshotIntervalSeconds: Int = 5,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
@@ -82,7 +82,7 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     pinPanel = false,
     graph = false,
     screenshots = false,
-    screenshotIntervalSeconds = 10,
+    screenshotIntervalSeconds = 5,
 )
 
 internal sealed interface TimelineAction {
@@ -99,6 +99,9 @@ internal sealed interface TimelineAction {
     // the session of the graph: -1 the one before, 1 the one after
     data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
+
+    // the graph showed the zone it was asked to show: it is free again
+    data object GraphFocusApplied : TimelineAction
 }
 
 // the actions of the filter panel

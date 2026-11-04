@@ -20,9 +20,14 @@ import io.github.openflocon.domain.screen.repository.DesktopNavigationRepository
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventRef
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineFocusRequestDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
+import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timeline.repository.TimelineFocusRepository
+import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.repository.TimelineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -233,4 +238,39 @@ internal class FakeTimelineRepository(private val events: List<TimelineEventDoma
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         filter: TimelineFilterDomainModel,
     ): Flow<PagingData<TimelineEventDomainModel>> = error("not used")
+}
+
+internal class FakeTimelinePreferencesRepository : TimelinePreferencesRepository {
+    val graphCalls = mutableListOf<Boolean>()
+
+    override val settings: Flow<TimelineSettingsDomainModel> = MutableStateFlow(TimelineSettingsDomainModel())
+
+    override suspend fun setGraph(graph: Boolean) {
+        graphCalls += graph
+    }
+
+    override suspend fun setAutoScroll(autoScroll: Boolean) = error("not used")
+    override suspend fun setInvertList(invertList: Boolean) = error("not used")
+    override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
+    override suspend fun setSelectedSources(sources: Set<TimelineSource>) = error("not used")
+    override suspend fun setScreenshots(screenshots: Boolean) = error("not used")
+    override suspend fun setScreenshotIntervalSeconds(seconds: Int) = error("not used")
+}
+
+internal class FakeTimelineFocusRepository : TimelineFocusRepository {
+    val requests = mutableListOf<TimelineFocusRequestDomainModel>()
+
+    override fun requestFocus(
+        target: DeviceIdAndPackageNameDomainModel,
+        sessionStart: Long?,
+        event: TimelineEventRef?,
+        fromMs: Long,
+        toMs: Long,
+    ) {
+        requests += TimelineFocusRequestDomainModel(target, sessionStart, event, fromMs, toMs, requestedAtMs = 0L)
+    }
+
+    override fun observeFocus(): Flow<TimelineFocusRequestDomainModel> = emptyFlow()
+
+    override fun consumeFocus(request: TimelineFocusRequestDomainModel) = Unit
 }

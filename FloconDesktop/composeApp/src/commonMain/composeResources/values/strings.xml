@@ -101,7 +101,10 @@
     <string name="timeline_graph_description">Graph, %1$d events</string>
     <string name="timeline_live">Live</string>
     <string name="timeline_screenshots">Screens</string>
-    <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_start">Start</string>
+    <string name="timeline_screenshots_live">Live · %1$d s</string>
+    <string name="timeline_screenshots_interval_option">Every %1$d s</string>
+    <string name="timeline_screenshots_interval_default">default</string>
     <string name="timeline_screenshots_waiting">Waiting for the first screenshot…</string>
     <string name="timeline_screenshots_off_hint">Screenshots are off. Turn them on to see what was on screen next to each event.</string>
     <string name="timeline_screenshots_turn_on">Turn on</string>

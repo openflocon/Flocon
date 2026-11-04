@@ -59,7 +59,10 @@
     <string name="timeline_app_started">App démarrée</string>
     <string name="timeline_live">En direct</string>
     <string name="timeline_screenshots">Écrans</string>
-    <string name="timeline_screenshots_interval">%1$d s</string>
+    <string name="timeline_screenshots_start">Démarrer</string>
+    <string name="timeline_screenshots_live">En direct · %1$d s</string>
+    <string name="timeline_screenshots_interval_option">Toutes les %1$d s</string>
+    <string name="timeline_screenshots_interval_default">par défaut</string>
     <string name="timeline_screenshots_waiting">En attente de la première capture…</string>
     <string name="timeline_screenshots_off_hint">Les captures sont désactivées. Active-les pour voir ce qu’il y avait à l’écran à côté de chaque événement.</string>
     <string name="timeline_screenshots_turn_on">Activer</string>

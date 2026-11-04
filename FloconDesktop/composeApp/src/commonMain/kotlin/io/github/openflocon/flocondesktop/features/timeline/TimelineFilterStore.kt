@@ -5,6 +5,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.repository.TimelineUserFilterProvider
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -40,7 +42,7 @@ internal data class TimelineNetworkRules(
 @OptIn(FlowPreview::class)
 internal class TimelineFilterStore(
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
-) {
+) : TimelineUserFilterProvider {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -85,6 +87,18 @@ internal class TimelineFilterStore(
         )
     }
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
+
+    // the filter as it is now, without the delay of the text: [filter] has no value until the timeline is displayed
+    override suspend fun current(): TimelineFilterDomainModel = TimelineFilterDomainModel(
+        sources = storedSources.first(),
+        text = text.value,
+        facets = facets.value,
+        currentSessionOnly = currentSessionOnly.value,
+        networkEnabled = network.value.enabled,
+        networkStatusRules = network.value.statusRules,
+        networkHostRules = network.value.hostRules,
+        networkDuration = network.value.duration,
+    )
 
     fun setText(value: String) {
         text.update { value }
