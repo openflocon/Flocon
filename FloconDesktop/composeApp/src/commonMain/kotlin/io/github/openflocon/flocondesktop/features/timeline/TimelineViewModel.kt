@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -122,8 +121,8 @@ internal class TimelineViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineScreenshotsStatus.Working)
 
     // the last event opened, highlighted in the list
-    private val _selectedKey = MutableStateFlow<String?>(null)
-    val selectedKey: StateFlow<String?> = _selectedKey.asStateFlow()
+    val selectedKey: StateFlow<String?>
+        field = MutableStateFlow<String?>(null)
 
     // the filter panel is a panel of the navigation, opened from the screen
     val filterPanelOpen: StateFlow<Boolean> = snapshotFlow { navigationState.stack.lastOrNull { it is PanelRoute } is TimelineRoutes.Filters }
@@ -205,7 +204,7 @@ internal class TimelineViewModel(
                     sessionStarts.first { request.sessionStart == null || request.sessionStart in it }
                 } ?: sessionStarts.first()
                 val plan = planFocus(request, starts, graphShown = observeTimelineSettingsUseCase().first().graph)
-                plan.selectedKey?.let { key -> _selectedKey.value = key }
+                plan.selectedKey?.let { key -> selectedKey.value = key }
                 plan.graph?.let { graph ->
                     graphSession.value = graph.session
                     graphFocus.value = graph.focus
@@ -287,7 +286,7 @@ internal class TimelineViewModel(
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()
                 if (destination != null) {
-                    _selectedKey.update { action.row.callKey }
+                    selectedKey.update { action.row.callKey }
                 }
                 when (destination) {
                     is TimelineDestination.Panel -> navigationState.navigate(destination.route)
