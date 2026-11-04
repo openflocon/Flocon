@@ -3,24 +3,15 @@ package io.github.openflocon.flocon.timeline
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconConfig
 import io.github.openflocon.flocon.FloconContext
-import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.FloconPluginConfig
 import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.error.pluginNotInitialized
 import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
 import io.github.openflocon.flocon.timeline.model.FloconTimelineType
-import io.github.openflocon.flocon.utils.currentTimeMillis
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 class FloconTimelineConfig : FloconPluginConfig
 
@@ -55,93 +46,6 @@ object FloconTimeline : FloconPluginFactory<FloconTimelineConfig, FloconTimeline
             encoder = encoder,
         )
             .also { FloconTimelinePluginImpl.plugin = it }
-    }
-}
-
-@Serializable
-internal class TimelineEventSerializable(
-    val type: String,
-    val value: String,
-    val params: Map<String, String> = emptyMap(),
-    val level: String? = null,
-    val timestamp: Long,
-)
-
-internal class FloconTimelinePluginImpl(
-    private val sender: FloconMessageSender,
-    private val encoder: FloconEncoder,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1),
-) : FloconPlugin, FloconTimelinePlugin {
-
-    // the desktop is read only for now: there is no message to receive
-    override val key: String = Protocol.FromDevice.Timeline.Plugin
-
-    // one coroutine at a time, so the events are sent in the order they were logged
-    private val scope = CoroutineScope(dispatcher + SupervisorJob())
-
-    override suspend fun onMessageReceived(method: String, body: String) {
-        // no op
-    }
-
-    override suspend fun onConnectedToServer() {
-        // no op
-    }
-
-    override fun log(type: FloconTimelineType, value: String, params: Map<String, String>) {
-        send(type = type.name, value = value, params = params, level = null)
-    }
-
-    override fun log(
-        tag: String,
-        value: String,
-        params: Map<String, String>,
-        level: FloconTimelineLevel,
-    ) {
-        send(type = tag, value = value, params = params, level = level.toWire())
-    }
-
-    override fun logNavigation(value: String, params: Map<String, String>) =
-        log(FloconTimelineType.Navigation, value, params)
-
-    override fun logUserAction(value: String, params: Map<String, String>) =
-        log(FloconTimelineType.UserAction, value, params)
-
-    override fun logLifecycle(value: String, params: Map<String, String>) =
-        log(FloconTimelineType.Lifecycle, value, params)
-
-    private fun send(type: String, value: String, params: Map<String, String>, level: String?) {
-        // the timestamp is the moment of the call, not the moment the message is sent
-        val timestamp = currentTimeMillis()
-        scope.launch {
-            try {
-                sender.send(
-                    plugin = Protocol.FromDevice.Timeline.Plugin,
-                    method = Protocol.FromDevice.Timeline.Method.Log,
-                    body = encoder.encode(
-                        TimelineEventSerializable(
-                            type = type,
-                            value = value,
-                            params = params,
-                            level = level,
-                            timestamp = timestamp,
-                        )
-                    ),
-                )
-            } catch (t: Throwable) {
-                FloconLogger.logError("timeline error", t)
-            }
-        }
-    }
-
-    private fun FloconTimelineLevel.toWire(): String = when (this) {
-        FloconTimelineLevel.Debug -> "debug"
-        FloconTimelineLevel.Info -> "info"
-        FloconTimelineLevel.Warning -> "warning"
-        FloconTimelineLevel.Error -> "error"
-    }
-
-    companion object {
-        var plugin: FloconTimelinePlugin? = null
     }
 }
 
