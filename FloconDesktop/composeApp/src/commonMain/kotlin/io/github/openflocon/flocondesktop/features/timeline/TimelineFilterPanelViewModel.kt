@@ -15,6 +15,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -41,6 +42,8 @@ internal class TimelineFilterPanelViewModel(
                 networkStatusRules = emptyList(),
                 networkHostRules = emptyList(),
                 networkDuration = null,
+                logTaggedEnabled = true,
+                logTagRules = emptyList(),
             )
         }
         .distinctUntilChanged()
@@ -57,19 +60,24 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    // what is typed in the tag field of the logs card
+    private val logTagQuery = MutableStateFlow("")
+
     val panel: StateFlow<TimelineFilterPanelUiModel> = combine(
         summary,
         filterStore.storedSources,
         filterStore.facets,
         filterStore.currentSessionOnly,
-        combine(filterStore.network, matchingNetworkCount) { network, matching -> network to matching },
-    ) { summary, sources, facets, currentSessionOnly, (network, matching) ->
+        combine(filterStore.network, matchingNetworkCount, filterStore.logs, logTagQuery, ::CardsState),
+    ) { summary, sources, facets, currentSessionOnly, cards ->
         summary.toFilterPanel(
             selectedSources = sources,
             facets = facets,
             currentSessionOnly = currentSessionOnly,
-            network = network,
-            matchingNetworkCount = matching,
+            network = cards.network,
+            matchingNetworkCount = cards.matchingNetworkCount,
+            logs = cards.logs,
+            logTagQuery = cards.logTagQuery,
         )
     }
         .flowOn(dispatcherProvider.viewModel)
@@ -108,6 +116,21 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.RemoveHostRule -> filterStore.removeHostRule(action.value)
 
+            is TimelineFilterAction.SetLogTaggedEnabled -> filterStore.setLogTaggedEnabled(action.value)
+
+            is TimelineFilterAction.AddLogTagRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let {
+                    filterStore.addLogTagRule(it, action.exclude)
+                    logTagQuery.value = ""
+                }
+            }
+
+            is TimelineFilterAction.SetLogTagRuleActive -> filterStore.setLogTagRuleActive(action.value, action.active)
+
+            is TimelineFilterAction.RemoveLogTagRule -> filterStore.removeLogTagRule(action.value)
+
+            is TimelineFilterAction.SetLogTagQuery -> logTagQuery.value = action.text
+
             is TimelineFilterAction.SetDurationRange -> {
                 val buckets = TIMELINE_DURATION_BUCKETS_MS
                 val range = if (action.start <= 0 && action.end >= buckets.size) {
@@ -128,3 +151,11 @@ internal class TimelineFilterPanelViewModel(
         }
     }
 }
+
+// what the network and logs cards of the panel read, combined apart: combine takes five flows at most
+private class CardsState(
+    val network: TimelineNetworkRules,
+    val matchingNetworkCount: Int?,
+    val logs: TimelineLogRules,
+    val logTagQuery: String,
+)
