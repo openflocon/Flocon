@@ -1,9 +1,13 @@
 ---
 name: git-setup
-description: Use before starting work on a Flocon feature, and before creating a branch or a commit. Sets the branch name (the feature name, never `claude/`) and the commit message format.
+description: Use before starting work on a Flocon feature, and before creating a branch or a commit. Sets the branch name (the feature name, never `claude/`) and the commit message format. Runs in the Haiku `git-ops` agent: pass the feature name or what to commit as arguments.
+context: fork
+agent: git-ops
 ---
 
 # Git setup: branch & commit naming
+
+Task from the caller: $ARGUMENTS
 
 ## Branch
 
