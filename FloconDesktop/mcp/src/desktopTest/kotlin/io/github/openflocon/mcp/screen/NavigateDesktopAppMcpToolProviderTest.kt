@@ -50,8 +50,11 @@ class NavigateDesktopAppMcpToolProviderTest {
         toolProviders = listOf(
             NavigateDesktopAppMcpToolProvider(
                 targetResolver = targetResolver(devicesRepository),
-                selectDeviceUseCase = SelectDeviceUseCase(devicesRepository),
-                selectDeviceAppUseCase = SelectDeviceAppUseCase(devicesRepository, GetCurrentDeviceIdUseCase(devicesRepository)),
+                selectionApplier = McpSelectionApplier(
+                    targetResolver = targetResolver(devicesRepository),
+                    selectDeviceUseCase = SelectDeviceUseCase(devicesRepository),
+                    selectDeviceAppUseCase = SelectDeviceAppUseCase(devicesRepository, GetCurrentDeviceIdUseCase(devicesRepository)),
+                ),
                 setTimelineGraphUseCase = SetTimelineGraphUseCase(timelinePreferences),
                 requestDesktopScreenUseCase = RequestDesktopScreenUseCase(desktopNavigationRepository),
             ),

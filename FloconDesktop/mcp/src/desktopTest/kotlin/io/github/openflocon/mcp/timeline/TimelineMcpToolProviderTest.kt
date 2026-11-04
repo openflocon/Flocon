@@ -76,10 +76,14 @@ class TimelineMcpToolProviderTest {
             toolProviders = listOf(
                 TimelineMcpToolProvider(
                     targetResolver = targetResolver(devicesRepository),
+                    windowFinder = TimelineWindowFinder(
+                        getTimelineEventsUseCase = GetTimelineEventsUseCase(repository),
+                        getTimelineSummaryUseCase = GetTimelineSummaryUseCase(repository),
+                        zone = zone,
+                        nowMs = { at(3_600) },
+                    ),
                     getTimelineEventsUseCase = GetTimelineEventsUseCase(repository),
-                    getTimelineSummaryUseCase = GetTimelineSummaryUseCase(repository),
                     zone = zone,
-                    nowMs = { at(3_600) },
                 ),
             ),
         ).also {
