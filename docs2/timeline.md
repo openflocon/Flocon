@@ -26,7 +26,7 @@ From the desktop UI, you can:
 
 The **Graph** view shows one session at a time on a time axis, with the app start at 0. The filters and the selected event are shared with the list.
 
-- **One lane per type**: App, Network, Database, Analytics, Logs (a lane without event is hidden). The other sources only appear in the list.
+- **One lane per type**: App, Analytics, Network, Logs, Database (a lane without event is hidden). The other sources only appear in the list.
 - **A network call is one bar**, from its request to its response. The method and an image icon are shown when the bar is wide enough, and a failed call (HTTP 4xx or 5xx) is red, like a log with the **Error** level. A call still waiting for its response goes up to the last event received.
 - **Database queries, analytics events and logs are diamonds**: they have no duration.
 - **Events that do not overlap share the same row**, to keep the graph short.
