@@ -12,4 +12,4 @@ data class TimelineSettingsDomainModel(
 
 val TimelineScreenshotIntervalsSeconds: List<Int> = listOf(5, 10, 15, 30)
 
-const val DEFAULT_TIMELINE_SCREENSHOT_INTERVAL_SECONDS = 10
+const val DEFAULT_TIMELINE_SCREENSHOT_INTERVAL_SECONDS = 5

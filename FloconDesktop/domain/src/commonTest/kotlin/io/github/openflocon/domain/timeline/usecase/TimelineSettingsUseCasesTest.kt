@@ -112,11 +112,11 @@ class TimelineSettingsUseCasesTest {
     }
 
     @Test
-    fun `screenshots are off with a 10 s interval by default`() = runBlocking {
+    fun `screenshots are off with a 5 s interval by default`() = runBlocking {
         val settings = ObserveTimelineSettingsUseCase(repository)().first()
 
         assertEquals(false, settings.screenshots)
-        assertEquals(10, settings.screenshotIntervalSeconds)
+        assertEquals(5, settings.screenshotIntervalSeconds)
     }
 
     @Test
@@ -144,6 +144,6 @@ class TimelineSettingsUseCasesTest {
         SetTimelineScreenshotIntervalUseCase(repository)(7)
         SetTimelineScreenshotIntervalUseCase(repository)(0)
 
-        assertEquals(10, ObserveTimelineSettingsUseCase(repository)().first().screenshotIntervalSeconds)
+        assertEquals(5, ObserveTimelineSettingsUseCase(repository)().first().screenshotIntervalSeconds)
     }
 }
