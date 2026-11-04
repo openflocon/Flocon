@@ -63,7 +63,6 @@ import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
@@ -198,19 +197,21 @@ internal class TimelineViewModel(
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            appliedFocusRequests(observeTimelineFocusUseCase(), observeCurrentDeviceIdAndPackageNameUseCase()).collect { request ->
-                // the sessions come with the summary of the device: the one of the request is waited for, the latest is the fallback
-                val starts = withTimeoutOrNull(FOCUS_SESSIONS_WAIT_MS) {
-                    sessionStarts.first { request.sessionStart == null || request.sessionStart in it }
-                } ?: sessionStarts.first()
-                val plan = planFocus(request, starts, graphShown = observeTimelineSettingsUseCase().first().graph)
-                plan.selectedKey?.let { key -> selectedKey.value = key }
-                plan.graph?.let { graph ->
-                    graphSession.value = graph.session
-                    graphFocus.value = graph.focus
-                }
-                consumeTimelineFocusUseCase(request)
-            }
+            appliedFocusRequests(observeTimelineFocusUseCase(), observeCurrentDeviceIdAndPackageNameUseCase()).collectResilient(
+                action = { request ->
+                    // the sessions come with the summary of the device: the one of the request is waited for, what is displayed is the fallback
+                    val starts = awaitSessionStarts(request, sessionStarts, FOCUS_SESSIONS_WAIT_MS)
+                    val plan = planFocus(request, starts, graphShown = observeTimelineSettingsUseCase().first().graph)
+                    plan.selectedKey?.let { key -> selectedKey.value = key }
+                    plan.graph?.let { graph ->
+                        graphSession.value = graph.session
+                        graphFocus.value = graph.focus
+                    }
+                    consumeTimelineFocusUseCase(request)
+                },
+                // a request that fails is dropped: the next ones are still applied
+                onError = { request, _ -> consumeTimelineFocusUseCase(request) },
+            )
         }
     }
 

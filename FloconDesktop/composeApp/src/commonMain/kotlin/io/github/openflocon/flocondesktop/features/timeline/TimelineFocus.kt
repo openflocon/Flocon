@@ -3,11 +3,14 @@ package io.github.openflocon.flocondesktop.features.timeline
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFocusRequestDomainModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * What the timeline does to show a [TimelineFocusRequestDomainModel].
@@ -65,4 +68,35 @@ internal fun appliedFocusRequests(
         .filter { it != null && it.deviceId == request.target.deviceId && it.packageName == request.target.packageName }
         .take(1)
         .map { request }
+}
+
+/**
+ * The starts of the sessions displayed, once the one of [request] is there. The summary of a device is empty until it is loaded,
+ * so a request without session waits for the first session too. After [timeoutMs] the sessions displayed are the answer,
+ * which may not hold the session of the request (hidden by a filter) or be empty (the app has no known session).
+ */
+internal suspend fun awaitSessionStarts(
+    request: TimelineFocusRequestDomainModel,
+    sessionStarts: Flow<List<Long>>,
+    timeoutMs: Long,
+): List<Long> = withTimeoutOrNull(timeoutMs) {
+    sessionStarts.first { starts -> starts.isNotEmpty() && (request.sessionStart == null || request.sessionStart in starts) }
+} ?: sessionStarts.first()
+
+/**
+ * Handles each value, and goes on with the next one when handling a value fails (a cancellation is not a failure).
+ */
+internal suspend fun <T> Flow<T>.collectResilient(
+    action: suspend (T) -> Unit,
+    onError: suspend (value: T, error: Exception) -> Unit,
+) {
+    collect { value ->
+        try {
+            action(value)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            onError(value, e)
+        }
+    }
 }

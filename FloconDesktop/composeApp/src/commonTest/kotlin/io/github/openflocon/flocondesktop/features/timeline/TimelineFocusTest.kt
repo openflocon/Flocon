@@ -115,4 +115,63 @@ class TimelineFocusTest {
 
         assertNull(applied)
     }
+
+    @Test
+    fun `the sessions are waited for when the request has no session`() = runBlocking {
+        val starts = MutableStateFlow<List<Long>>(emptyList())
+        val result = async(start = CoroutineStart.UNDISPATCHED) { awaitSessionStarts(request(sessionStart = null), starts, timeoutMs = 1_000L) }
+
+        starts.value = listOf(5L)
+
+        assertEquals(listOf(5L), withTimeoutOrNull(2_000) { result.await() })
+    }
+
+    @Test
+    fun `the session of the request is waited for`() = runBlocking {
+        val starts = MutableStateFlow(listOf(1_000L))
+        val result = async(start = CoroutineStart.UNDISPATCHED) { awaitSessionStarts(request(sessionStart = 3_000L), starts, timeoutMs = 1_000L) }
+
+        starts.value = listOf(1_000L, 3_000L)
+
+        assertEquals(listOf(1_000L, 3_000L), withTimeoutOrNull(2_000) { result.await() })
+    }
+
+    @Test
+    fun `the sessions displayed are returned at once when the session is there`() = runBlocking {
+        val starts = MutableStateFlow(listOf(1_000L, 3_000L))
+
+        assertEquals(listOf(1_000L, 3_000L), awaitSessionStarts(request(sessionStart = 3_000L), starts, timeoutMs = 1_000L))
+    }
+
+    @Test
+    fun `what is displayed is the fallback when the sessions do not come`() = runBlocking {
+        val starts = MutableStateFlow(listOf(1_000L))
+
+        // the session of the request is hidden by a filter
+        assertEquals(listOf(1_000L), awaitSessionStarts(request(sessionStart = 9_000L), starts, timeoutMs = 50L))
+        assertEquals(emptyList(), awaitSessionStarts(request(sessionStart = null), MutableStateFlow(emptyList()), timeoutMs = 50L))
+    }
+
+    @Test
+    fun `a request that fails does not stop the next ones`() = runBlocking {
+        val handled = mutableListOf<Int>()
+        val failed = mutableListOf<Int>()
+
+        flowOf(1, 2, 3).collectResilient(
+            action = { if (it == 2) error("boom") else handled += it },
+            onError = { value, _ -> failed += value },
+        )
+
+        assertEquals(listOf(1, 3), handled)
+        assertEquals(listOf(2), failed)
+    }
+
+    @Test
+    fun `a cancellation is not swallowed`() = runBlocking {
+        val result = runCatching {
+            flowOf(1, 2).collectResilient(action = { throw kotlinx.coroutines.CancellationException("stop") }, onError = { _, _ -> })
+        }
+
+        assertEquals(true, result.exceptionOrNull() is kotlinx.coroutines.CancellationException)
+    }
 }
