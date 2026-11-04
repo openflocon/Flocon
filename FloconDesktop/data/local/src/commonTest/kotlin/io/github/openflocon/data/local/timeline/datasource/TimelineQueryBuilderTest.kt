@@ -553,6 +553,78 @@ class TimelineQueryBuilderTest {
         assertTrue(query.params.contains("userAction"))
     }
 
+    private val reserved = "LOWER(type) IN ('navigation', 'useraction', 'lifecycle')"
+
+    private fun taggedLogs(filter: TimelineFilterDomainModel) = logs(filter.copy(sources = setOf(TimelineSource.Log)))
+
+    @Test
+    fun `the tagged level facet reads the level of the tagged logs only`() {
+        val sql = logs().sql
+        assertTrue(sql.contains("CASE WHEN $reserved THEN NULL ELSE level END AS facetLogTaggedLevel"))
+
+        val query = taggedLogs(TimelineFilterDomainModel(facets = mapOf(TimelineFacet.LogTaggedLevel to setOf("INFO"))))
+        val expression = "CASE WHEN $reserved THEN NULL ELSE level END"
+        assertTrue(query.sql.contains("($expression IS NULL OR $expression NOT IN (?))"))
+        assertTrue(query.params.contains("INFO"))
+    }
+
+    @Test
+    fun `the facet counts contain the tagged level`() {
+        val counts = buildTimelineFacetCountsQuery("device", "com.app", TimelineFilterDomainModel())
+        assertTrue(counts.sql.contains("SELECT 'LogTaggedLevel' AS facet, facetLogTaggedLevel AS value"))
+    }
+
+    @Test
+    fun `tagged logs disabled keeps the reserved types only`() {
+        val query = taggedLogs(
+            TimelineFilterDomainModel(
+                logTaggedEnabled = false,
+                logTagRules = listOf(TimelineRuleDomainModel("bill", exclude = false)),
+                facets = mapOf(TimelineFacet.LogTaggedLevel to setOf("INFO")),
+            ),
+        )
+        assertTrue(query.sql.contains("AND $reserved"))
+        // the rules and the levels have nothing left to narrow
+        assertFalse(query.sql.contains("LIKE"))
+        assertFalse(query.sql.contains("NOT IN"))
+        assertFalse(query.params.contains("%bill%"))
+        assertFalse(query.params.contains("INFO"))
+    }
+
+    @Test
+    fun `tag rules include and exclude with a contains match that spares the reserved types`() {
+        val query = taggedLogs(
+            TimelineFilterDomainModel(
+                logTagRules = listOf(
+                    TimelineRuleDomainModel("bill", exclude = false),
+                    TimelineRuleDomainModel("pay", exclude = false),
+                    TimelineRuleDomainModel("debug", exclude = true),
+                ),
+            ),
+        )
+        assertTrue(query.sql.contains("AND ($reserved OR type LIKE ? ESCAPE '\\' OR type LIKE ? ESCAPE '\\')"))
+        assertTrue(query.sql.contains("AND ($reserved OR type NOT LIKE ? ESCAPE '\\')"))
+        val tail = query.params.takeLast(3)
+        assertEquals(listOf<Any>("%bill%", "%pay%", "%debug%"), tail)
+    }
+
+    @Test
+    fun `the wildcards of the tag rules are escaped`() {
+        val query = taggedLogs(TimelineFilterDomainModel(logTagRules = listOf(TimelineRuleDomainModel("a%b_", exclude = false))))
+        assertEquals("%a\\%b\\_%", query.params.last())
+    }
+
+    @Test
+    fun `the tag rules are not applied to count the types`() {
+        val counts = buildTimelineFacetCountsQuery(
+            "device",
+            "com.app",
+            TimelineFilterDomainModel(logTagRules = listOf(TimelineRuleDomainModel("bill", exclude = false))),
+        )
+        // applied to the two level counts, not to the types
+        assertEquals(2, counts.params.count { it == "%bill%" })
+    }
+
     @Test
     fun `errorLevelRowHasError`() {
         assertTrue(logs().sql.contains("CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError"))

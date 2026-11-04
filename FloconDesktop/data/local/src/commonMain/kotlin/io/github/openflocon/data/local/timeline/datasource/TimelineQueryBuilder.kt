@@ -3,6 +3,7 @@ package io.github.openflocon.data.local.timeline.datasource
 import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_RESERVED_LOG_TYPES
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
@@ -142,6 +143,41 @@ private fun networkRuleConditions(
     return sql.toString() to params
 }
 
+// the logs with their own look (navigation, user action, lifecycle): the tag and level filters never apply to them
+private val LOG_IS_RESERVED = TIMELINE_RESERVED_LOG_TYPES.joinToString(prefix = "LOWER(type) IN (", postfix = ")") { "'${it.lowercase()}'" }
+
+// the level of the tagged logs, nothing for the reserved types (stored INFO but without level)
+private val LOG_TAGGED_LEVEL = "CASE WHEN $LOG_IS_RESERVED THEN NULL ELSE level END"
+
+// the wildcards of LIKE are matched as text
+private fun String.escapeLike(): String = replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+/**
+ * The conditions of the tag rules of the tagged logs, each starting with " AND ". The reserved types are never hidden by them.
+ * The rules of an ignored facet are not applied, to count its values.
+ */
+private fun logRuleConditions(
+    filter: TimelineFilterDomainModel,
+    ignoredFacets: Set<TimelineFacet>,
+): Pair<String, List<Any>> {
+    // every log that is not reserved is hidden, there is nothing left to narrow
+    if (!filter.logTaggedEnabled) return " AND $LOG_IS_RESERVED" to emptyList()
+    if (TimelineFacet.LogType in ignoredFacets) return "" to emptyList()
+    val sql = StringBuilder()
+    val params = ArrayList<Any>()
+    val includes = filter.logTagRules.filter { !it.exclude && it.value.isNotBlank() }
+    val excludes = filter.logTagRules.filter { it.exclude && it.value.isNotBlank() }
+    if (includes.isNotEmpty()) {
+        sql.append(includes.joinToString(prefix = " AND ($LOG_IS_RESERVED OR ", separator = " OR ", postfix = ")") { "type LIKE ? ESCAPE '\\'" })
+        includes.forEach { params.add("%${it.value.escapeLike()}%") }
+    }
+    excludes.forEach {
+        sql.append(" AND ($LOG_IS_RESERVED OR type NOT LIKE ? ESCAPE '\\')")
+        params.add("%${it.value.escapeLike()}%")
+    }
+    return sql.toString() to params
+}
+
 internal class TimelineQuery(
     val sql: String,
     val params: List<Any>,
@@ -178,6 +214,7 @@ private fun buildUnion(
         timeColumn: String? = null, // the time of the event, to keep the current session only
         facetExpressions: Map<TimelineFacet, String> = emptyMap(), // what each facet of the source filters on
         networkRules: Boolean = false, // the status, host and duration rules of the network calls
+        logRules: Boolean = false, // the tagged logs switch and the tag rules of the logs
     ): String {
         val where = StringBuilder("WHERE deviceId = ?")
         params.add(deviceId)
@@ -196,7 +233,10 @@ private fun buildUnion(
             where.append(" AND $timeColumn >= ${latestSessionSql(deviceId, packageName, params)}")
         }
         facetExpressions.forEach { (facet, expression) ->
-            val ignored = facet in ignoredFacets || (facet.source == TimelineSource.Network && !filter.networkEnabled)
+            val ignored = facet in ignoredFacets ||
+                (facet.source == TimelineSource.Network && !filter.networkEnabled) ||
+                // the levels only filter the tagged logs, which are all hidden
+                (facet == TimelineFacet.LogTaggedLevel && !filter.logTaggedEnabled)
             val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && !ignored }
             if (values != null) {
                 // an event without value (ex: a call without http code yet) is not one of the values hidden
@@ -206,6 +246,11 @@ private fun buildUnion(
         }
         if (networkRules) {
             val (sql, ruleParams) = networkRuleConditions(filter, ignoredFacets)
+            where.append(sql)
+            params.addAll(ruleParams)
+        }
+        if (logRules) {
+            val (sql, ruleParams) = logRuleConditions(filter, ignoredFacets)
             where.append(sql)
             params.addAll(ruleParams)
         }
@@ -382,7 +427,9 @@ private fun buildUnion(
                     facetExpressions = mapOf(
                         TimelineFacet.LogType to "type",
                         TimelineFacet.LogLevel to "level",
+                        TimelineFacet.LogTaggedLevel to LOG_TAGGED_LEVEL,
                     ),
+                    logRules = true,
                     orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_TIMELINE_LOGS",
                 )
             )
