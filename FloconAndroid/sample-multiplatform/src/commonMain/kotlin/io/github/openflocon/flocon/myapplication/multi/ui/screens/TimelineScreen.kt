@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.myapplication.multi.timeline.Billing
+import io.github.openflocon.flocon.myapplication.multi.timeline.logBilling
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.components.AccentButton
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Card
@@ -24,15 +26,7 @@ import io.github.openflocon.flocon.myapplication.multi.ui.components.GhostButton
 import io.github.openflocon.flocon.myapplication.multi.ui.theme.SampleTheme
 import io.github.openflocon.flocon.timeline.FloconTimelinePlugin
 import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
-import io.github.openflocon.flocon.timeline.model.FloconTimelineType
 import io.github.openflocon.flocon.timeline.timelinePlugin
-
-/** A custom type, declared once... */
-val Billing = FloconTimelineType("billing")
-
-/** ...and wrapped in an extension, so the call sites read like the built-in ones. */
-fun FloconTimelinePlugin.logBilling(value: String, params: Map<String, String> = emptyMap()) =
-    log(Billing, value, params)
 
 @Composable
 fun TimelineScreen(onBack: () -> Unit) = PluginScreen(SampleScreen.Timeline, onBack) {
