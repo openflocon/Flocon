@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -195,6 +196,8 @@ internal fun TimelineGraph(
     val followsLatest = session == null || !session.hasNext
     // a new screenshot can be the most recent thing of the graph, with no new event
     val latestMs = remember(model) { model.latestMs() }
+    // read by the pointer handlers, which are not restarted for a screenshot: they must see the latest graph
+    val currentModel by rememberUpdatedState(model)
     LaunchedEffect(model.sessionDurationMs, latestMs, autoScroll) {
         if (autoScroll && !paused && !fitted && opened && followsLatest) {
             viewport = viewport.followedLatest(model, trackWidth)
@@ -307,7 +310,7 @@ internal fun TimelineGraph(
                                             // a real move along the time: the trackpad also sends a small horizontal drift
                                             paused = true
                                             val ticks = if (delta.x != 0f) delta.x else delta.y
-                                            viewport.panned(ticks * 40 / viewport.pxPerMs)
+                                            viewport.panned(ticks * 40 / viewport.pxPerMs, currentModel, trackWidth)
                                         } else {
                                             viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                         }
@@ -357,7 +360,7 @@ internal fun TimelineGraph(
                                 fitted = false
                                 paused = true
                                 viewport = viewport
-                                    .panned(-drag.x / density / viewport.pxPerMs)
+                                    .panned(-drag.x / density / viewport.pxPerMs, currentModel, trackWidth)
                                     .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                             }
                         }

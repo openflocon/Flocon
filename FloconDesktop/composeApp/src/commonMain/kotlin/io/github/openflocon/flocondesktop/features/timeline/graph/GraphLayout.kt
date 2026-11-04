@@ -92,8 +92,17 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
 
 private const val MinZoomBoxPx = 8f
 
-// moves along the time axis, never more than a second before the start of the session
-internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(MIN_START_MS))
+/**
+ * Moves along the time axis, never more than a second before the start of the session, and never further to the right
+ * than the most recent event or screenshot at the right of the track (with the margin of the auto scroll): no scrolling
+ * into the future. A viewport already further right (zoomed out, short session) does not move to the right, and is not
+ * pulled back. Without any event, nothing moves to the right.
+ */
+internal fun GraphViewport.panned(deltaMs: Double, model: GraphUiModel, trackWidthPx: Float): GraphViewport {
+    val moved = startMs + deltaMs
+    val limitMs = model.latestMs()?.let { max(startMs, it - (trackWidthPx - JumpMarginPx) / pxPerMs) } ?: startMs
+    return copy(startMs = moved.coerceAtMost(limitMs).coerceAtLeast(MIN_START_MS))
+}
 
 // the height of a lane: its rows
 internal fun GraphLaneUiModel.heightPx(): Float = rows.size * RowHeightPx

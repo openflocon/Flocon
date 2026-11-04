@@ -91,10 +91,35 @@ class GraphLayoutTest {
     }
 
     @Test
+    fun `the viewport cannot be panned into the future`() {
+        // the latest event ends at 2830 ms: at the right of a 600 px track, with the 80 px margin, the start is 2310 ms
+        assertEquals(2_310.0, viewport.copy(startMs = 2_000.0).panned(5_000.0, model, 600f).startMs, 0.001)
+        assertEquals(2_100.0, viewport.copy(startMs = 2_000.0).panned(100.0, model, 600f).startMs, 0.001)
+        // panning to the left is free
+        assertEquals(1_000.0, viewport.copy(startMs = 2_000.0).panned(-1_000.0, model, 600f).startMs, 0.001)
+    }
+
+    @Test
+    fun `a viewport already in the future does not move to the right nor come back`() {
+        // zoomed out or a short session: the start is past the limit
+        val past = viewport.copy(startMs = 5_000.0)
+        assertEquals(5_000.0, past.panned(300.0, model, 600f).startMs, 0.0)
+        assertEquals(4_700.0, past.panned(-300.0, model, 600f).startMs, 0.0)
+    }
+
+    @Test
+    fun `a graph without event cannot be panned to the right`() {
+        val empty = buildGraphUiModel(emptyList(), 0L)
+
+        assertEquals(0.0, viewport.panned(500.0, empty, 600f).startMs, 0.0)
+        assertEquals(-200.0, viewport.panned(-200.0, empty, 600f).startMs, 0.0)
+    }
+
+    @Test
     fun `the viewport never goes more than a second before the start of the session`() {
-        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0).startMs, 0.0)
-        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0).startMs, 0.0)
-        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0).startMs, 0.0)
+        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0, model, 600f).startMs, 0.0)
+        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0, model, 600f).startMs, 0.0)
+        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0, model, 600f).startMs, 0.0)
         // zooming out around the pointer would show the time before 0
         assertEquals(MIN_START_MS, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
     }
