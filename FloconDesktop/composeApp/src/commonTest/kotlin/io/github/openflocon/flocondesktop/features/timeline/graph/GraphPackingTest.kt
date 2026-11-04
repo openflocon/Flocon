@@ -4,6 +4,9 @@ import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyph
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphColor
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphShape
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -67,6 +70,39 @@ class GraphPackingTest {
             assertEquals(level == TimelineLogLevel.Error, markers.getValue(level.name).isError)
         }
         assertEquals(1, model.errorCount)
+    }
+
+    @Test
+    fun `logMarkersCarryTheirGlyphAndTypedLogsAreNeverErrors`() {
+        fun log(id: String, type: String?, level: TimelineLogLevel) = domain(id, TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log)
+            .copy(subtitle = type, method = null, statusCode = null, hasError = level == TimelineLogLevel.Error, level = level)
+        val model = buildGraph(
+            listOf(
+                log("nav", "navigation", TimelineLogLevel.Info),
+                log("act", "userAction", TimelineLogLevel.Info),
+                log("life", "Lifecycle", TimelineLogLevel.Info),
+                log("tag", "billing", TimelineLogLevel.Warning),
+                log("err", "billing", TimelineLogLevel.Error),
+            ),
+            sessionStart = 1_000L,
+        )
+
+        val markers = model.lanes.single().rows.flatten().associateBy { it.row.id }
+        assertEquals(LogGlyph(LogGlyphShape.Arrow, LogGlyphColor.Navigation), markers.getValue("nav").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Pointer, LogGlyphColor.UserAction), markers.getValue("act").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Heart, LogGlyphColor.Lifecycle), markers.getValue("life").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Diamond, LogGlyphColor.Warning), markers.getValue("tag").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Diamond, LogGlyphColor.Error), markers.getValue("err").logGlyph)
+        assertEquals(listOf("err"), markers.values.filter { it.isError }.map { it.row.id })
+        assertEquals(1, model.errorCount)
+    }
+
+    @Test
+    fun `networkEventHasNoLogGlyph`() {
+        val model = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_000L, duration = 100.0)), sessionStart = 1_000L)
+
+        assertNull(model.lanes.single().rows.single().single().logGlyph)
+        assertNull(model.lanes.single().rows.single().single().logType)
     }
 
     @Test

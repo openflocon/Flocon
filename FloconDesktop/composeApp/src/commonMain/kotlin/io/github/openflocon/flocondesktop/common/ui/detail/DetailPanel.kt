@@ -70,12 +70,13 @@ internal fun DetailPanel(
 }
 
 /**
- * A small uppercase [label], a [title], then a row of [chips]
+ * A small uppercase [label], a [title] (after an optional [icon]), then a row of [chips]
  */
 @Composable
 internal fun DetailHeader(
     label: String,
     title: String,
+    icon: (@Composable () -> Unit)? = null,
     chips: (@Composable RowScope.() -> Unit)? = null,
 ) {
     SelectionContainer {
@@ -88,11 +89,18 @@ internal fun DetailHeader(
                 ),
                 color = FloconTheme.colors.ink.copy(alpha = 0.6f),
             )
-            Text(
-                text = title,
-                style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = FloconTheme.colors.ink,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                icon?.invoke()
+                Text(
+                    text = title,
+                    style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = FloconTheme.colors.ink,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
             if (chips != null) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),

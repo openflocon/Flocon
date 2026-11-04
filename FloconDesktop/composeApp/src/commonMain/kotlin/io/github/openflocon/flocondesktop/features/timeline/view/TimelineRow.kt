@@ -64,6 +64,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.DurationLevel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.mapper.copyText
 import io.github.openflocon.flocondesktop.features.timeline.mapper.durationLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -253,10 +254,11 @@ private fun RowContent(
                 highlightMatches(plain, highlight, highlightColor)
             }
             val logLevel = row.logLevel.takeIf { row.source == TimelineSource.Log }
-            // the icon is tinted by the level, a warning and an error also stand out in the title
+            // the glyph is colored by its type or level, a warning and an error tagged log also stand out in the title
+            val isTypedLog = logLevel != null && logGlyphOf(row.subtitle, logLevel).isTyped
             val titleColor = when {
                 isCrash -> colors.catCrash
-                logLevel == TimelineLogLevel.Warning || logLevel == TimelineLogLevel.Error -> logLevel.color(colors)
+                !isTypedLog && (logLevel == TimelineLogLevel.Warning || logLevel == TimelineLogLevel.Error) -> logLevel.color(colors)
                 else -> colors.ink
             }
             Row(

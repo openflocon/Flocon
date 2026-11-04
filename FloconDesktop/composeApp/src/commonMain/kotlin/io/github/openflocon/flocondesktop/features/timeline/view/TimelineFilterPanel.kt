@@ -75,6 +75,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
 import io.github.openflocon.flocondesktop.features.timeline.mapper.color
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -463,6 +464,8 @@ private fun FacetTags(
             val alpha by animateFloatAsState(if (item.selected) 1f else HiddenTagAlpha)
             val method = item.method
             val httpFamily = item.httpFamily
+            // only the reserved types of log have a glyph of their own, the tags stay plain
+            val logGlyph = item.logType?.let { logGlyphOf(it, null) }?.takeIf { it.isTyped }
             Box(
                 modifier = Modifier
                     .alpha(alpha)
@@ -471,8 +474,24 @@ private fun FacetTags(
             ) {
                 when {
                     method != null -> MethodTag(method = method)
+
                     httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
+
                     item.logLevel != null -> FloconStatusPill(text = item.value, color = item.logLevel.color(colors))
+
+                    logGlyph != null -> FloconStatusPill(
+                        color = logGlyph.color(colors),
+                        leading = { LogGlyphIcon(glyph = logGlyph) },
+                    ) {
+                        Text(
+                            text = item.value,
+                            style = FloconTheme.typography.monoSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = logGlyph.color(colors),
+                            maxLines = 1,
+                        )
+                    }
+
                     else -> FloconStatusPill(text = item.value, color = colors.inkMuted)
                 }
             }

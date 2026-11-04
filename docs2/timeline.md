@@ -89,7 +89,7 @@ Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), Fl
     The reserved types are `navigation`, `userAction` and `lifecycle` (matched without case sensitivity). A tag equal to one of them is shown as that type.
 
 !!! note
-    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop shows them as **Info**. Unticking **Info** in the Level filter therefore hides them too.
+    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop stores them as **Info** (a custom type shows as an Info diamond) and hides the level in their detail. Unticking **Info** in the Level filter therefore hides them too.
 
 ### Navigation listener (Compose)
 
@@ -143,6 +143,18 @@ The native Swift SDK lives in a separate repository, [FloconSwift](https://githu
 
 - Logs are a new **Log** source, in the list and in the graph (one marker per log, in its own lane).
 - Filter them by **Type** (including your custom tags) and by **Level**.
+- The same shape and color are used in the list, the graph, the detail and the filters (shapes and lightness differ, so they do not rely on color alone):
+
+| Log | Shape | Color |
+|---|---|---|
+| `navigation` | right arrow | green |
+| `userAction` | mouse pointer | cyan |
+| `lifecycle` | heart | red-pink |
+| Tagged or custom type, **Debug** | diamond | dark blue |
+| Tagged or custom type, **Info** | diamond | pale violet |
+| Tagged or custom type, **Warning** | diamond | orange |
+| Tagged or custom type, **Error** | diamond | red |
+
 - Click a row to open its detail: value, type, level, params and time.
 - The desktop keeps at most 20 000 logs per device and app, the oldest ones are dropped first.
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -29,14 +30,17 @@ import flocondesktop.composeapp.generated.resources.timeline_log_detail_time
 import flocondesktop.composeapp.generated.resources.timeline_log_detail_type
 import flocondesktop.composeapp.generated.resources.timeline_log_detail_value
 import flocondesktop.composeapp.generated.resources.timeline_source_log
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailEmptyText
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailKeyValueList
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
 import io.github.openflocon.flocondesktop.features.timeline.mapper.color
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineLogDetailUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineLogDetailUiModel
+import io.github.openflocon.flocondesktop.features.timeline.view.LogGlyphIcon
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import kotlinx.collections.immutable.persistentListOf
@@ -71,12 +75,15 @@ internal fun TimelineLogDetailScreen(
     onCopyParams: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // the same glyph as the row of the list and the marker of the graph
+    val glyph = remember(uiState.type, uiState.level) { logGlyphOf(uiState.type, uiState.level) }
     DetailPanel(
         modifier = modifier,
         header = {
             DetailHeader(
                 label = stringResource(Res.string.timeline_source_log),
                 title = uiState.value,
+                icon = { LogGlyphIcon(glyph = glyph, size = HeaderGlyphSize) },
             )
         },
     ) {
@@ -103,25 +110,28 @@ internal fun TimelineLogDetailScreen(
             copyContentDescription = "",
             onCopy = null,
         ) {
-            // the level, in its color: the same as the icon in the list and the marker in the graph
-            val levelColor = uiState.level.color(FloconTheme.colors)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
-            ) {
-                Text(
-                    text = stringResource(Res.string.timeline_log_detail_level),
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colors.inkMuted,
-                )
-                Box(Modifier.size(LevelDotSize).background(levelColor, CircleShape))
-                Text(
-                    text = stringResource(uiState.level.label()),
-                    style = FloconTheme.typography.bodySmall,
-                    color = levelColor,
-                    fontWeight = FontWeight.SemiBold,
-                )
+            // the level of a tagged log, in its color; the reserved types carry no level on the wire
+            if (!glyph.isTyped) {
+                // the level, in its color: the same as the icon in the list and the marker in the graph
+                val levelColor = uiState.level.color(FloconTheme.colors)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.timeline_log_detail_level),
+                        style = FloconTheme.typography.bodySmall,
+                        color = FloconTheme.colors.inkMuted,
+                    )
+                    Box(Modifier.size(LevelDotSize).background(levelColor, CircleShape))
+                    Text(
+                        text = stringResource(uiState.level.label()),
+                        style = FloconTheme.typography.bodySmall,
+                        color = levelColor,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
             DetailKeyValueList(
                 entries = listOf(
@@ -169,4 +179,17 @@ private fun TimelineLogDetailScreenNoParamsPreview() {
     }
 }
 
+@Preview
+@Composable
+private fun TimelineLogDetailScreenTypedPreview() {
+    FloconTheme {
+        TimelineLogDetailScreen(
+            uiState = previewTimelineLogDetailUiModel().copy(value = "HomeScreen", type = "navigation", level = TimelineLogLevel.Info),
+            onCopyValue = {},
+            onCopyParams = {},
+        )
+    }
+}
+
 private val LevelDotSize = 8.dp
+private val HeaderGlyphSize = 20.dp

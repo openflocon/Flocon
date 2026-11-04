@@ -55,6 +55,7 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
                 // a log of level error: computed in the query
                 hasError = event.hasError,
                 logLevel = event.level.takeIf { event.source == TimelineSource.Log },
+                logType = event.subtitle.takeIf { event.source == TimelineSource.Log },
             )
         }
     }

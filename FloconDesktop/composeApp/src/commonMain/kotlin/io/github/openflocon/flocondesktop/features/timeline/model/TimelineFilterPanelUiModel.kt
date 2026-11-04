@@ -16,6 +16,7 @@ internal data class TimelineFacetValueUiModel(
     val method: NetworkMethodUi? = null, // an http method, displayed like in the network screen
     val httpFamily: Int? = null, // the first digit of a status class, to color it like in the network screen
     val logLevel: TimelineLogLevel? = null, // a level of log, to color it like in the list
+    val logType: String? = null, // a type of log: the reserved ones show their glyph like in the list
 )
 
 @Immutable

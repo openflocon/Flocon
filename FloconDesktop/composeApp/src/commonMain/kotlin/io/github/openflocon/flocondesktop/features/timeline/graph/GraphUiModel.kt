@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyph
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
@@ -38,9 +40,13 @@ internal data class GraphEventUiModel(
     val hasError: Boolean = false,
     // the response did not arrive yet: the bar goes up to the last event received
     val inProgress: Boolean = false,
-    // logs only: colors the marker
+    // logs only: the shape and the color of the marker (see logGlyphOf)
     val logLevel: TimelineLogLevel? = null,
+    val logType: String? = null,
 ) {
+    // null: not a log
+    val logGlyph: LogGlyph? get() = logLevel?.let { logGlyphOf(logType, it) }
+
     val key: String get() = row.callKey
     val isInstant: Boolean get() = durationMs <= 0L
     val endMs: Long get() = startMs + durationMs
@@ -120,14 +126,15 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         name = name,
     )
 
-    fun log(id: String, message: String, start: Long, level: TimelineLogLevel) = GraphEventUiModel(
-        row = previewTimelineRowUiModel(source = TimelineSource.Log, id = id, title = message, logLevel = level),
+    fun log(id: String, message: String, start: Long, level: TimelineLogLevel, type: String = "checkout") = GraphEventUiModel(
+        row = previewTimelineRowUiModel(source = TimelineSource.Log, id = id, title = message, subtitle = type, logLevel = level),
         lane = GraphLane.Log,
         startMs = start,
         durationMs = 0L,
         name = message,
         hasError = level == TimelineLogLevel.Error,
         logLevel = level,
+        logType = type,
     )
 
     return listOf(
