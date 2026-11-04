@@ -71,7 +71,7 @@ internal data class TimelineSettingsUiModel(
     val pinPanel: Boolean,
     val graph: Boolean = true,
     val screenshots: Boolean = false,
-    val screenshotIntervalSeconds: Int = 10,
+    val screenshotIntervalSeconds: Int = 5,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
@@ -80,7 +80,7 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     pinPanel = false,
     graph = false,
     screenshots = false,
-    screenshotIntervalSeconds = 10,
+    screenshotIntervalSeconds = 5,
 )
 
 internal sealed interface TimelineAction {
