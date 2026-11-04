@@ -2,6 +2,7 @@ package io.github.openflocon.data.local.timeline.datasource
 
 import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineEventRef
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
@@ -591,5 +592,65 @@ class TimelineQueryBuilderTest {
     fun `sameTimestampBothRowsReturnedInStableOrder`() {
         // rows of the same time are told apart by their id, so the order is the same on every query
         assertTrue(logs().sql.endsWith("u.id DESC"))
+    }
+
+    @Test
+    fun `time bounds add a where on the event time`() {
+        val query = build(TimelineFilterDomainModel(fromMs = 100L, toMs = 200L))
+
+        assertTrue(query.sql.contains(") u WHERE u.ts >= ? AND u.ts <= ? ORDER BY"))
+        assertEquals(listOf<Any>(100L, 200L), query.params.takeLast(2))
+    }
+
+    @Test
+    fun `only the bounds that are set are applied`() {
+        val query = build(TimelineFilterDomainModel(toMs = 200L))
+
+        assertTrue(query.sql.contains(") u WHERE u.ts <= ? ORDER BY"))
+        assertFalse(query.sql.contains("u.ts >= ?"))
+        assertEquals(200L, query.params.last())
+    }
+
+    @Test
+    fun `an event list restricts to the kind and id pairs, a call is its request event`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                events = setOf(
+                    TimelineEventRef(TimelineSource.Network, "abc"),
+                    TimelineEventRef(TimelineSource.Crash, "7"),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains(") u WHERE ((u.kind = ? AND u.id = ?) OR (u.kind = ? AND u.id = ?)) ORDER BY"))
+        assertEquals(listOf<Any>(KIND_NETWORK, "abc", KIND_CRASH, "7"), query.params.takeLast(4))
+    }
+
+    @Test
+    fun `an empty event list matches nothing`() {
+        val query = build(TimelineFilterDomainModel(events = emptySet()))
+
+        assertTrue(query.sql.contains(") u WHERE 0 ORDER BY"))
+    }
+
+    @Test
+    fun `bounds and events are both applied`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                fromMs = 1L,
+                toMs = 2L,
+                events = setOf(TimelineEventRef(TimelineSource.Analytics, "x")),
+            )
+        )
+
+        assertTrue(query.sql.contains(") u WHERE u.ts >= ? AND u.ts <= ? AND ((u.kind = ? AND u.id = ?)) ORDER BY"))
+        assertEquals(listOf<Any>(1L, 2L, KIND_ANALYTICS, "x"), query.params.takeLast(4))
+    }
+
+    @Test
+    fun `without bounds nor events the query has no outer where`() {
+        val query = build()
+
+        assertFalse(query.sql.contains(") u WHERE"))
     }
 }
