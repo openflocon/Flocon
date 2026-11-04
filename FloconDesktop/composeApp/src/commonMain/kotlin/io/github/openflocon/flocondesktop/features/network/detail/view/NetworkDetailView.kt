@@ -8,13 +8,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -68,8 +72,14 @@ import flocondesktop.composeapp.generated.resources.general_copy_as_markdown
 import flocondesktop.composeapp.generated.resources.general_save_as_image
 import flocondesktop.composeapp.generated.resources.general_type
 import flocondesktop.composeapp.generated.resources.images_preview
+import flocondesktop.composeapp.generated.resources.network_action_decode
+import flocondesktop.composeapp.generated.resources.network_action_diff
+import flocondesktop.composeapp.generated.resources.network_action_expand
+import flocondesktop.composeapp.generated.resources.network_action_image
+import flocondesktop.composeapp.generated.resources.network_action_open
 import flocondesktop.composeapp.generated.resources.network_body
 import flocondesktop.composeapp.generated.resources.network_copy_curl_command
+import flocondesktop.composeapp.generated.resources.network_copy_url
 import flocondesktop.composeapp.generated.resources.network_details_title
 import flocondesktop.composeapp.generated.resources.network_display_anyway
 import flocondesktop.composeapp.generated.resources.network_export_body_image
@@ -83,13 +93,20 @@ import flocondesktop.composeapp.generated.resources.network_header_method
 import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_time
 import flocondesktop.composeapp.generated.resources.network_headers
+import flocondesktop.composeapp.generated.resources.network_image_response
+import flocondesktop.composeapp.generated.resources.network_jwt
 import flocondesktop.composeapp.generated.resources.network_log_title
+import flocondesktop.composeapp.generated.resources.network_no_body
+import flocondesktop.composeapp.generated.resources.network_open_jwt_decoder
 import flocondesktop.composeapp.generated.resources.network_query_name
+import flocondesktop.composeapp.generated.resources.network_query_params
 import flocondesktop.composeapp.generated.resources.network_request_headers
+import flocondesktop.composeapp.generated.resources.network_request_info
 import flocondesktop.composeapp.generated.resources.network_request_size
 import flocondesktop.composeapp.generated.resources.network_response_body
 import flocondesktop.composeapp.generated.resources.network_response_error
 import flocondesktop.composeapp.generated.resources.network_response_headers
+import flocondesktop.composeapp.generated.resources.network_response_info
 import flocondesktop.composeapp.generated.resources.network_response_size
 import flocondesktop.composeapp.generated.resources.network_save_full_log_image
 import flocondesktop.composeapp.generated.resources.network_save_html
@@ -99,8 +116,17 @@ import flocondesktop.composeapp.generated.resources.network_view_in_app
 import flocondesktop.composeapp.generated.resources.network_waiting_response
 import flocondesktop.composeapp.generated.resources.open_external
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailActionButton
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailChip
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailEmptyText
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailKeyValueList
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
+import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
+import io.github.openflocon.flocondesktop.common.ui.detail.toCopyableText
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailViewModel
+import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailViewState
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.components.DetailHeaders
@@ -118,10 +144,12 @@ import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
 import io.github.openflocon.library.designsystem.components.FloconSection
 import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
+import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
 import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
@@ -130,6 +158,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 private const val LARGE_BODY_LENGTH = 1_000_000
+private val KeyWidth = 140.dp
+private val HeadersLabelWidth = 150.dp
+private val JsonTreeHeight = 600.dp
+private val ImageHeight = 300.dp
 
 @Composable
 fun NetworkDetailScreen(
@@ -149,12 +181,19 @@ fun NetworkDetailScreen(
     )
 }
 
+private fun Modifier.recordInto(graphicsLayer: GraphicsLayer): Modifier = drawWithContent {
+    graphicsLayer.record {
+        this@drawWithContent.drawContent()
+    }
+    drawLayer(graphicsLayer)
+}
+
 @Composable
 private fun ExportImageDropdown(
     graphicsLayer: GraphicsLayer,
     onAction: (NetworkDetailAction) -> Unit,
+    tooltip: String,
     modifier: Modifier = Modifier,
-    tooltip: String = "Export as image",
 ) {
     val coroutineScope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
@@ -166,10 +205,11 @@ private fun ExportImageDropdown(
             onExpandRequest = { expanded = true },
             anchor = DropdownPanelAnchor.BottomEnd,
             anchorContent = {
-                FloconIconButton(
-                    tooltip = tooltip,
+                DetailActionButton(
+                    label = stringResource(Res.string.network_action_image),
                     imageVector = Icons.Outlined.CameraAlt,
-                    onClick = { expanded = true }
+                    onClick = { expanded = true },
+                    contentDescription = tooltip,
                 )
             }
         ) {
@@ -180,8 +220,7 @@ private fun ExportImageDropdown(
                     expanded = false
                     coroutineScope.launch {
                         try {
-                            val bitmap = graphicsLayer.toImageBitmap()
-                            onAction(NetworkDetailAction.CopyImage(bitmap))
+                            onAction(NetworkDetailAction.CopyImage(graphicsLayer.toImageBitmap()))
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -195,8 +234,7 @@ private fun ExportImageDropdown(
                     expanded = false
                     coroutineScope.launch {
                         try {
-                            val bitmap = graphicsLayer.toImageBitmap()
-                            onAction(NetworkDetailAction.SaveImage(bitmap))
+                            onAction(NetworkDetailAction.SaveImage(graphicsLayer.toImageBitmap()))
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -215,15 +253,9 @@ private fun NetworkDetailContent(
 ) {
     var selectedTab by remember(uiState.callId, tab) { mutableStateOf(tab ?: uiState.defaultSelectedTab) }
 
-    val scrollState: ScrollState = rememberScrollState()
-    val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
-    val linesLabelWidth: Dp = 130.dp
-    val headersLabelWidth: Dp = 150.dp
     val fullLogGraphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var shareMenuExpanded by remember { mutableStateOf(false) }
-
-    var openFilePicker by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -259,113 +291,52 @@ private fun NetworkDetailContent(
             ) {
                 FullLogExport(
                     state = uiState,
-                    linesLabelWidth = linesLabelWidth,
-                    headersLabelWidth = headersLabelWidth,
+                    linesLabelWidth = 130.dp,
+                    headersLabelWidth = 150.dp,
                     modifier = Modifier.width(700.dp)
                 )
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(
-                    vertical = FloconTheme.spacing.small,
-                    horizontal = FloconTheme.spacing.extraSmall
-                ),
-        ) {
-            // Top action bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = FloconTheme.spacing.medium,
-                        vertical = FloconTheme.spacing.extraSmall
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(Res.string.network_details_title),
-                    style = FloconTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = FloconTheme.colors.ink
-                )
-
-                FloconDropdownMenu(
-                    expanded = shareMenuExpanded,
-                    onDismissRequest = { shareMenuExpanded = false },
-                    onExpandRequest = { shareMenuExpanded = true },
-                    anchor = DropdownPanelAnchor.BottomEnd,
-                    anchorContent = {
-                        FloconIconButton(
-                            tooltip = stringResource(Res.string.network_share_export),
-                            imageVector = Icons.Outlined.Share,
-                            onClick = { shareMenuExpanded = true }
-                        )
-                    }
-                ) {
-                    FloconDropdownMenuItem(
-                        text = stringResource(Res.string.general_copy_as_markdown),
-                        leadingIcon = Icons.Outlined.Share,
-                        onClick = {
-                            shareMenuExpanded = false
-                            onAction(NetworkDetailAction.ShareAsMarkdown)
+        DetailPanel(
+            modifier = Modifier.fillMaxSize(),
+            header = {
+                DetailHeader(
+                    label = uiState.host.ifEmpty { stringResource(Res.string.network_details_title) },
+                    title = uiState.path.ifEmpty { uiState.fullUrl },
+                    chips = {
+                        when (val method = uiState.method) {
+                            is NetworkDetailViewState.Method.Http -> MethodTag(method = method.method)
+                            is NetworkDetailViewState.Method.MethodName -> DetailChip(text = method.name)
                         }
-                    )
-                    FloconDropdownMenuItem(
-                        text = stringResource(Res.string.network_save_html),
-                        leadingIcon = Icons.Outlined.Html,
-                        onClick = {
-                            shareMenuExpanded = false
-                            onAction(NetworkDetailAction.SaveAsHtml)
-                        }
-                    )
-                    FloconDropdownMenuItem(
-                        text = stringResource(Res.string.network_save_full_log_image),
-                        leadingIcon = Icons.Outlined.Save,
-                        onClick = {
-                            shareMenuExpanded = false
-                            coroutineScope.launch {
-                                try {
-                                    val bitmap = fullLogGraphicsLayer.toImageBitmap()
-                                    onAction(NetworkDetailAction.SaveImage(bitmap))
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
+                        StatusCell(status = uiState.status)
+                        uiState.durationFormatted?.let { DetailChip(text = it) }
+                        DetailChip(text = uiState.requestTimeFormatted)
+                    },
+                    actions = {
+                        ShareMenu(
+                            expanded = shareMenuExpanded,
+                            onExpandedChange = { shareMenuExpanded = it },
+                            onAction = onAction,
+                            onSaveFullLogImage = {
+                                coroutineScope.launch {
+                                    try {
+                                        val bitmap = fullLogGraphicsLayer.toImageBitmap()
+                                        onAction(NetworkDetailAction.SaveImage(bitmap))
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
                                 }
-                            }
-                        }
-                    )
-                    FloconDropdownMenuItem(
-                        text = stringResource(Res.string.network_copy_curl_command),
-                        leadingIcon = Icons.Outlined.Terminal,
-                        onClick = {
-                            shareMenuExpanded = false
-                            onAction(NetworkDetailAction.CopyCurl)
-                        }
-                    )
-                }
-            }
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = FloconTheme.spacing.extraSmall)
-                    .height(1.dp)
-                    .background(FloconTheme.colors.line)
-            )
-
-            // Tab bar
-            FloconSegmentedRow(
-                modifier = Modifier
-                    .padding(
-                        horizontal = FloconTheme.spacing.medium,
-                        vertical = FloconTheme.spacing.extraSmall
-                    )
-            ) {
+                            },
+                        )
+                    },
+                )
+            },
+        ) {
+            CompactTabRow {
                 FloconTab(
                     text = "Request (${uiState.requestSize})",
+                    verticalPadding = FloconTheme.spacing.extraSmall,
                     isSelected = selectedTab == NetworkDetailTab.Request,
                     tabType = TabType.Start,
                     onSelected = { selectedTab = NetworkDetailTab.Request },
@@ -378,6 +349,7 @@ private fun NetworkDetailContent(
                 }
                 FloconTab(
                     text = "Response$responseSizeText",
+                    verticalPadding = FloconTheme.spacing.extraSmall,
                     isSelected = selectedTab == NetworkDetailTab.Response,
                     tabType = TabType.End,
                     onSelected = { selectedTab = NetworkDetailTab.Response },
@@ -385,394 +357,238 @@ private fun NetworkDetailContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
+            Crossfade(
+                targetState = selectedTab,
+                animationSpec = tween(durationMillis = 200),
+            ) { currentTab ->
+                when (currentTab) {
+                    NetworkDetailTab.Request -> RequestTab(
+                        state = uiState,
+                        onAction = onAction,
+                    )
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Crossfade(
-                    targetState = selectedTab,
-                    animationSpec = tween(durationMillis = 200),
-                ) { tab ->
-                    when (tab) {
-                        NetworkDetailTab.Request -> {
-                            Request(
-                                modifier = Modifier.fillMaxWidth(),
-                                state = uiState,
-                                onAction = onAction,
-                                linesLabelWidth = linesLabelWidth,
-                                headersLabelWidth = headersLabelWidth,
-                            )
-                        }
-
-                        NetworkDetailTab.Response -> {
-                            Response(
-                                modifier = Modifier.fillMaxWidth(),
-                                state = uiState,
-                                onAction = onAction,
-                                headersLabelWidth = headersLabelWidth,
-                            )
-                        }
-                    }
+                    NetworkDetailTab.Response -> ResponseTab(
+                        state = uiState,
+                        onAction = onAction,
+                    )
                 }
             }
         }
-        FloconVerticalScrollbar(
-            adapter = scrollAdapter,
-            modifier = Modifier.fillMaxHeight()
-                .align(Alignment.TopEnd)
-        )
     }
 }
 
 @Composable
-private fun SummaryCard(
-    state: NetworkDetailViewState,
-    linesLabelWidth: Dp,
+private fun CompactTabRow(
     modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
 ) {
-    Column(
+    Row(
         modifier = modifier
+            .fillMaxWidth()
             .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
             .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
-            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            .padding(FloconTheme.spacing.tiny),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+        content = content,
+    )
+}
+
+@Composable
+private fun ShareMenu(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onAction: (NetworkDetailAction) -> Unit,
+    onSaveFullLogImage: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { onExpandedChange(false) },
+        onExpandRequest = { onExpandedChange(true) },
+        anchor = DropdownPanelAnchor.BottomEnd,
+        modifier = modifier,
+        anchorContent = {
+            FloconIconButton(
+                tooltip = stringResource(Res.string.network_share_export),
+                imageVector = Icons.Outlined.Share,
+                onClick = { onExpandedChange(true) }
+            )
+        }
     ) {
-        FloconLineDescription(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = FloconTheme.spacing.doubleExtraLarge),
-            label = stringResource(Res.string.network_full_url),
-            value = state.fullUrl,
-            contentColor = FloconTheme.colors.ink,
-            labelWidth = linesLabelWidth,
-        )
-
-        FloconLineDescription(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.network_header_method),
-            contentColor = FloconTheme.colors.ink,
-            labelWidth = linesLabelWidth,
-        ) {
-            when (val m = state.method) {
-                is NetworkDetailViewState.Method.Http -> MethodTag(method = m.method)
-
-                is NetworkDetailViewState.Method.MethodName -> {
-                    SelectionContainer {
-                        Text(
-                            text = m.name,
-                            style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colors.inkMuted,
-                            modifier = Modifier.weight(2f)
-                                .background(
-                                    color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .padding(
-                                    horizontal = FloconTheme.spacing.small,
-                                    vertical = FloconTheme.spacing.compact
-                                ),
-                        )
-                    }
-                }
+        FloconDropdownMenuItem(
+            text = stringResource(Res.string.general_copy_as_markdown),
+            leadingIcon = Icons.Outlined.Share,
+            onClick = {
+                onExpandedChange(false)
+                onAction(NetworkDetailAction.ShareAsMarkdown)
             }
-        }
-        FloconLineDescription(
-            modifier = Modifier.fillMaxWidth(),
-            label = state.statusLabel,
-            contentColor = FloconTheme.colors.ink,
-            labelWidth = linesLabelWidth,
-        ) {
-            StatusCell(
-                status = state.status,
-            )
-        }
-        FloconLineDescription(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.network_header_request_time),
-            value = state.requestTimeFormatted,
-            labelWidth = linesLabelWidth,
-            contentColor = FloconTheme.colors.ink
         )
-        state.durationFormatted?.let {
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.network_header_time),
-                value = it,
-                labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colors.ink
-            )
-        }
-
-        FloconLineDescription(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.network_request_size),
-            value = state.requestSize,
-            labelWidth = linesLabelWidth,
-            contentColor = FloconTheme.colors.ink
+        FloconDropdownMenuItem(
+            text = stringResource(Res.string.network_save_html),
+            leadingIcon = Icons.Outlined.Html,
+            onClick = {
+                onExpandedChange(false)
+                onAction(NetworkDetailAction.SaveAsHtml)
+            }
+        )
+        FloconDropdownMenuItem(
+            text = stringResource(Res.string.network_save_full_log_image),
+            leadingIcon = Icons.Outlined.Save,
+            onClick = {
+                onExpandedChange(false)
+                onSaveFullLogImage()
+            }
+        )
+        FloconDropdownMenuItem(
+            text = stringResource(Res.string.network_copy_curl_command),
+            leadingIcon = Icons.Outlined.Terminal,
+            onClick = {
+                onExpandedChange(false)
+                onAction(NetworkDetailAction.CopyCurl)
+            }
         )
     }
 }
 
 @Composable
-private fun Request(
+private fun RequestTab(
     state: NetworkDetailViewState,
     onAction: (NetworkDetailAction) -> Unit,
-    linesLabelWidth: Dp,
-    headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val summaryGraphicsLayer = rememberGraphicsLayer()
+    val fullUrlLabel = stringResource(Res.string.network_full_url)
+    val timeLabel = stringResource(Res.string.network_header_request_time)
+    val durationLabel = stringResource(Res.string.network_header_time)
+    val sizeLabel = stringResource(Res.string.network_request_size)
+    val infoEntries = remember(state, fullUrlLabel, timeLabel, durationLabel, sizeLabel) {
+        buildList {
+            add(fullUrlLabel to state.fullUrl)
+            add(timeLabel to state.requestTimeFormatted)
+            state.durationFormatted?.let { add(durationLabel to it) }
+            add(sizeLabel to state.requestSize)
+        }
+    }
+
+    val infoGraphicsLayer = rememberGraphicsLayer()
     val graphQlGraphicsLayer = rememberGraphicsLayer()
-    val reqHeadersGraphicsLayer = rememberGraphicsLayer()
-    val reqBodyGraphicsLayer = rememberGraphicsLayer()
 
     Column(
-        modifier = modifier
-            .padding(
-                horizontal = FloconTheme.spacing.medium,
-                vertical = FloconTheme.spacing.extraSmall
-            )
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .drawWithContent {
-                        summaryGraphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-                        drawLayer(summaryGraphicsLayer)
-                    }
-            ) {
-                SummaryCard(
-                    state = state,
-                    linesLabelWidth = linesLabelWidth,
-                    modifier = Modifier.fillMaxWidth()
+        DetailSectionCard(
+            title = stringResource(Res.string.network_request_info),
+            badge = null,
+            copyContentDescription = stringResource(Res.string.network_copy_url),
+            onCopy = null,
+            collapsible = true,
+            toolbar = {
+                ExportImageDropdown(
+                    graphicsLayer = infoGraphicsLayer,
+                    onAction = onAction,
+                    tooltip = stringResource(Res.string.network_export_summary_image),
                 )
-            }
-
-            ExportImageDropdown(
-                graphicsLayer = summaryGraphicsLayer,
-                onAction = onAction,
-                tooltip = stringResource(Res.string.network_export_summary_image),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(
-                        top = FloconTheme.spacing.extraSmall,
-                        end = FloconTheme.spacing.extraSmall
-                    )
+                DetailActionButton(
+                    label = stringResource(Res.string.general_copy),
+                    imageVector = Icons.Outlined.CopyAll,
+                    onClick = { onAction(NetworkDetailAction.CopyText(state.fullUrl)) },
+                )
+            },
+        ) {
+            DetailKeyValueList(
+                entries = infoEntries,
+                modifier = Modifier.recordInto(infoGraphicsLayer),
             )
         }
 
-        state.graphQlSection?.let {
-            Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
-            FloconSection(
+        state.jwt?.let { jwt ->
+            JwtCard(
+                jwt = jwt,
+                onAction = onAction,
+            )
+        }
+
+        state.graphQlSection?.let { graphQl ->
+            DetailSectionCard(
                 title = "GraphQl",
-                initialValue = true,
-                actions = {
+                badge = null,
+                copyContentDescription = stringResource(Res.string.general_copy),
+                onCopy = null,
+                collapsible = true,
+                toolbar = {
                     ExportImageDropdown(
                         graphicsLayer = graphQlGraphicsLayer,
                         onAction = onAction,
-                        tooltip = stringResource(Res.string.network_export_graphql_image)
+                        tooltip = stringResource(Res.string.network_export_graphql_image),
+                    )
+                    DetailActionButton(
+                        label = stringResource(Res.string.general_copy),
+                        imageVector = Icons.Outlined.CopyAll,
+                        onClick = { onAction(NetworkDetailAction.CopyText(graphQl.queryName)) },
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .drawWithContent {
-                            graphQlGraphicsLayer.record {
-                                this@drawWithContent.drawContent()
-                            }
-                            drawLayer(graphQlGraphicsLayer)
-                        }
-                        .background(
-                            color = FloconTheme.colors.bg200,
-                            shape = RoundedCornerShape(12.dp),
-                        )
-                        .padding(FloconTheme.spacing.medium)
-                ) {
-                    FloconLineDescription(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = stringResource(Res.string.network_query_name),
-                        value = it.queryName,
-                        contentColor = FloconTheme.colors.inkMuted,
-                        labelWidth = linesLabelWidth,
+                Column(modifier = Modifier.recordInto(graphQlGraphicsLayer)) {
+                    DetailKeyValueList(
+                        entries = listOf(stringResource(Res.string.network_query_name) to graphQl.queryName),
                     )
                     FloconLineDescription(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
                         label = stringResource(Res.string.general_type),
-                        labelWidth = linesLabelWidth,
+                        labelWidth = KeyWidth,
                         contentColor = FloconTheme.colors.inkMuted
                     ) {
-                        MethodTag(method = it.method)
+                        MethodTag(method = graphQl.method)
                     }
                 }
             }
         }
 
-        state.imageUrl?.let { imageUrl ->
-            // Coil image
-            AsyncImage(
-                model = remember(state) {
-                    ImageRequest.Builder(PlatformContext.INSTANCE)
-                        .data(imageUrl)
-                        .httpHeaders(
-                            NetworkHeaders.Builder().apply {
-                                state.imageHeaders?.forEach { (key, value) ->
-                                    set(key, value)
-                                }
-                            }.build()
-                        )
-                        .build()
+        state.queryParams?.let { queryParams ->
+            val entries = remember(queryParams) { queryParams.map { it.name to it.value } }
+            DetailSectionCard(
+                title = stringResource(Res.string.network_query_params),
+                badge = entries.size.toString(),
+                copyContentDescription = stringResource(Res.string.general_copy),
+                onCopy = null,
+                collapsible = true,
+                toolbar = {
+                    DetailActionButton(
+                        label = stringResource(Res.string.general_copy),
+                        imageVector = Icons.Outlined.CopyAll,
+                        onClick = { onAction(NetworkDetailAction.CopyText(entries.toCopyableText())) },
+                    )
                 },
-                contentDescription = stringResource(Res.string.images_preview),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = FloconTheme.spacing.medium)
-                    .padding(FloconTheme.spacing.extraSmall)
-                    .height(300.dp),
-                contentScale = ContentScale.Fit,
+            ) {
+                DetailKeyValueList(entries = entries)
+            }
+        }
+
+        state.requestHeaders?.let { headers ->
+            HeadersCard(
+                headers = headers,
+                onAction = onAction,
             )
         }
 
-        state.requestHeaders?.let { requestHeaders ->
-            Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
-            FloconSection(
-                title = stringResource(Res.string.network_headers),
-                initialValue = false,
-                actions = {
-                    ExportImageDropdown(
-                        graphicsLayer = reqHeadersGraphicsLayer,
-                        onAction = onAction,
-                        tooltip = stringResource(Res.string.network_export_headers_image)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                DetailHeaders(
-                    headers = requestHeaders,
-                    labelWidth = headersLabelWidth,
-                    onAuthorizationClicked = { token ->
-                        onAction(
-                            NetworkDetailAction.DisplayBearerJwt(
-                                token
-                            )
-                        )
-                    },
-                    onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .drawWithContent {
-                            reqHeadersGraphicsLayer.record {
-                                this@drawWithContent.drawContent()
-                            }
-                            drawLayer(reqHeadersGraphicsLayer)
-                        }
-                        .padding(FloconTheme.spacing.small)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
-        FloconSection(
+        BodyCard(
             title = state.requestBodyTitle,
-            initialValue = true,
-            actions = {
-                ExportImageDropdown(
-                    graphicsLayer = reqBodyGraphicsLayer,
-                    onAction = onAction,
-                    tooltip = stringResource(Res.string.network_export_body_image)
-                )
-                if (state.requestBodyIsNotBlank) {
-                    FloconIconButton(
-                        tooltip = stringResource(Res.string.network_view_in_app),
-                        imageVector = Icons.Outlined.OpenInFull,
-                        onClick = { onAction(NetworkDetailAction.JsonDetail(json = state.requestBody)) }
-                    )
-                }
-                if (state.canOpenRequestBody) {
-                    FloconIconButton(
-                        tooltip = stringResource(Res.string.open_external),
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Request(state)) }
-                    )
-                }
-                if (state.requestBodyIsNotBlank) {
-                    FloconIconButton(
-                        tooltip = stringResource(Res.string.general_copy),
-                        imageVector = Icons.Outlined.CopyAll,
-                        onClick = { onAction(NetworkDetailAction.CopyText(state.requestBody)) }
-                    )
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .drawWithContent {
-                        reqBodyGraphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-                        drawLayer(reqBodyGraphicsLayer)
-                    }
-            ) {
-                var displayBody by remember(state.requestBody) {
-                    val isLargeResponse = state.requestBody.length > LARGE_BODY_LENGTH
-                    mutableStateOf(!isLargeResponse)
-                }
-                if (!displayBody) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(FloconTheme.spacing.medium)
-                            .background(
-                                FloconTheme.colors.bg200,
-                                shape = FloconTheme.shapes.medium,
-                            )
-                            .padding(FloconTheme.spacing.medium),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Response body too large (${state.requestSize} bytes)",
-                            color = FloconTheme.colors.ink,
-                            style = FloconTheme.typography.bodySmall,
-                        )
-                        Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
-                        FloconButton(
-                            onClick = {
-                                displayBody = true
-                            },
-                            containerColor = FloconTheme.colors.ink,
-                        ) {
-                            Text(stringResource(Res.string.network_display_anyway))
-                        }
-                    }
-                } else {
-                    FloconCodeBlock(
-                        code = state.requestBody,
-                        containerColor = FloconTheme.colors.bg000,
-                        contentColor = FloconTheme.colors.inkMuted,
-                        borderColor = FloconTheme.colors.line,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(FloconTheme.spacing.medium)
-                    )
-                }
-            }
-        }
+            body = state.requestBody,
+            bodyIsNotBlank = state.requestBodyIsNotBlank,
+            canOpenExternally = state.canOpenRequestBody,
+            size = state.requestSize,
+            onOpenExternally = { onAction(NetworkDetailAction.OpenBodyExternally.Request(state)) },
+            onAction = onAction,
+        )
     }
 }
 
 @Composable
-private fun Response(
+private fun ResponseTab(
     state: NetworkDetailViewState,
     onAction: (NetworkDetailAction) -> Unit,
-    headersLabelWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
     val response = state.response
@@ -792,31 +608,33 @@ private fun Response(
         return
     }
 
-    val resSummaryGraphicsLayer = rememberGraphicsLayer()
-    val resHeadersGraphicsLayer = rememberGraphicsLayer()
-    val resBodyGraphicsLayer = rememberGraphicsLayer()
-    val resErrorGraphicsLayer = rememberGraphicsLayer()
+    val errorGraphicsLayer = rememberGraphicsLayer()
+    val responseInfoGraphicsLayer = rememberGraphicsLayer()
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = FloconTheme.spacing.medium,
-                vertical = FloconTheme.spacing.extraSmall
-            )
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
         when (response) {
             is NetworkDetailViewState.Response.Error -> {
-                FloconSection(
+                DetailSectionCard(
                     title = stringResource(Res.string.network_body),
-                    initialValue = true,
-                    actions = {
+                    badge = null,
+                    copyContentDescription = stringResource(Res.string.general_copy),
+                    onCopy = null,
+                    collapsible = true,
+                    toolbar = {
                         ExportImageDropdown(
-                            graphicsLayer = resErrorGraphicsLayer,
+                            graphicsLayer = errorGraphicsLayer,
                             onAction = onAction,
-                            tooltip = stringResource(Res.string.network_export_error_image)
+                            tooltip = stringResource(Res.string.network_export_error_image),
                         )
-                    }
+                        DetailActionButton(
+                            label = stringResource(Res.string.general_copy),
+                            imageVector = Icons.Outlined.CopyAll,
+                            onClick = { onAction(NetworkDetailAction.CopyText(response.issue)) },
+                        )
+                    },
                 ) {
                     FloconCodeBlock(
                         code = response.issue,
@@ -825,228 +643,346 @@ private fun Response(
                         borderColor = FloconTheme.colors.line,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .drawWithContent {
-                                resErrorGraphicsLayer.record {
-                                    this@drawWithContent.drawContent()
-                                }
-                                drawLayer(resErrorGraphicsLayer)
-                            }
+                            .recordInto(errorGraphicsLayer)
                             .padding(FloconTheme.spacing.medium)
                     )
                 }
             }
 
             is NetworkDetailViewState.Response.Success -> {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = FloconTheme.spacing.small)
-                            .drawWithContent {
-                                resSummaryGraphicsLayer.record {
-                                    this@drawWithContent.drawContent()
-                                }
-                                drawLayer(resSummaryGraphicsLayer)
-                            }
-                            .background(
-                                color = FloconTheme.colors.bg200,
-                                shape = RoundedCornerShape(12.dp),
-                            )
-                            .padding(
-                                horizontal = FloconTheme.spacing.small,
-                                vertical = FloconTheme.spacing.small
-                            ),
-                    ) {
-                        FloconLineDescription(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(end = FloconTheme.spacing.doubleExtraLarge),
-                            label = stringResource(Res.string.network_response_size),
-                            value = response.size,
-                            labelWidth = 130.dp,
-                            contentColor = FloconTheme.colors.ink
+                DetailSectionCard(
+                    title = stringResource(Res.string.network_response_info),
+                    badge = null,
+                    copyContentDescription = stringResource(Res.string.general_copy),
+                    onCopy = null,
+                    collapsible = true,
+                    toolbar = {
+                        ExportImageDropdown(
+                            graphicsLayer = responseInfoGraphicsLayer,
+                            onAction = onAction,
+                            tooltip = stringResource(Res.string.network_export_response_summary_image),
                         )
-                    }
-
-                    ExportImageDropdown(
-                        graphicsLayer = resSummaryGraphicsLayer,
-                        onAction = onAction,
-                        tooltip = stringResource(Res.string.network_export_response_summary_image),
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(
-                                top = FloconTheme.spacing.extraSmall,
-                                end = FloconTheme.spacing.extraSmall
-                            )
+                    },
+                ) {
+                    DetailKeyValueList(
+                        entries = listOf(stringResource(Res.string.network_response_size) to response.size),
+                        modifier = Modifier.recordInto(responseInfoGraphicsLayer),
                     )
                 }
 
-                response.headers?.let {
-                    Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
-                    FloconSection(
-                        title = stringResource(Res.string.network_headers),
-                        initialValue = false,
-                        actions = {
-                            ExportImageDropdown(
-                                graphicsLayer = resHeadersGraphicsLayer,
-                                onAction = onAction,
-                                tooltip = stringResource(Res.string.network_export_headers_image)
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        DetailHeaders(
-                            headers = response.headers,
-                            labelWidth = headersLabelWidth,
-                            onAuthorizationClicked = { token ->
-                                onAction(
-                                    NetworkDetailAction.DisplayBearerJwt(
-                                        token
-                                    )
-                                )
-                            },
-                            onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .drawWithContent {
-                                    resHeadersGraphicsLayer.record {
-                                        this@drawWithContent.drawContent()
-                                    }
-                                    drawLayer(resHeadersGraphicsLayer)
-                                }
-                                .padding(FloconTheme.spacing.small)
-                        )
-                    }
+                if (state.imageUrl != null) {
+                    ImageCard(
+                        state = state,
+                        imageUrl = state.imageUrl,
+                        onAction = onAction,
+                    )
+                }
+                // an image url can answer with a text body (an error payload for example), keep it visible
+                if (state.imageUrl == null || response.responseBodyIsNotBlank) {
+                    BodyCard(
+                        title = stringResource(Res.string.network_body),
+                        body = response.body,
+                        bodyIsNotBlank = response.responseBodyIsNotBlank,
+                        canOpenExternally = response.canOpenResponseBody,
+                        size = response.size,
+                        onOpenExternally = { onAction(NetworkDetailAction.OpenBodyExternally.Response(response)) },
+                        onAction = onAction,
+                        withJsonTree = true,
+                        withDiff = true,
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
-                FloconSection(
-                    title = stringResource(Res.string.network_body),
-                    initialValue = true,
-                    actions = {
-                        ExportImageDropdown(
-                            graphicsLayer = resBodyGraphicsLayer,
-                            onAction = onAction,
-                            tooltip = stringResource(Res.string.network_export_body_image)
-                        )
-                        if (response.responseBodyIsNotBlank) {
-                            FloconIconButton(
-                                tooltip = stringResource(Res.string.network_view_body_in_app),
-                                imageVector = Icons.Outlined.OpenInFull,
-                                onClick = { onAction(NetworkDetailAction.JsonDetail(response.body)) }
-                            )
-                        }
-                        if (response.canOpenResponseBody) {
-                            FloconIconButton(
-                                tooltip = stringResource(Res.string.open_external),
-                                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                onClick = {
-                                    onAction(
-                                        NetworkDetailAction.OpenBodyExternally.Response(
-                                            response
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                        if (response.responseBodyIsNotBlank) {
-                            FloconIconButton(
-                                tooltip = stringResource(Res.string.diff_compare_clipboard),
-                                imageVector = Icons.Outlined.Difference,
-                                onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
-                            )
-                        }
-                        if (response.responseBodyIsNotBlank) {
-                            FloconIconButton(
-                                tooltip = stringResource(Res.string.general_copy),
-                                imageVector = Icons.Outlined.CopyAll,
-                                onClick = { onAction(NetworkDetailAction.CopyText(response.body)) }
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .drawWithContent {
-                                resBodyGraphicsLayer.record {
-                                    this@drawWithContent.drawContent()
-                                }
-                                drawLayer(resBodyGraphicsLayer)
-                            }
-                    ) {
-                        var jsonError by remember(response.body) { mutableStateOf(false) }
-
-                        if (!jsonError) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(600.dp)
-                                    .padding(FloconTheme.spacing.medium)
-                                    .background(
-                                        FloconTheme.colors.bg200,
-                                        shape = FloconTheme.shapes.medium,
-                                    )
-                                    .padding(FloconTheme.spacing.medium),
-                            ) {
-                                FloconJsonTree(
-                                    json = response.body,
-                                    initialState = TreeState.EXPANDED,
-                                    onError = { jsonError = true },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        } else {
-                            var displayBody by remember(response.body) {
-                                val isLargeResponse = response.body.length > LARGE_BODY_LENGTH
-                                mutableStateOf(!isLargeResponse)
-                            }
-                            if (!displayBody) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(FloconTheme.spacing.medium)
-                                        .background(
-                                            FloconTheme.colors.bg200,
-                                            shape = FloconTheme.shapes.medium,
-                                        )
-                                        .padding(FloconTheme.spacing.medium),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Response body too large (${response.size} bytes)",
-                                        color = FloconTheme.colors.ink,
-                                        style = FloconTheme.typography.bodySmall,
-                                    )
-                                    Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
-                                    FloconButton(
-                                        onClick = {
-                                            displayBody = true
-                                        },
-                                        containerColor = FloconTheme.colors.ink,
-                                    ) {
-                                        Text(stringResource(Res.string.network_display_anyway))
-                                    }
-                                }
-                            } else {
-                                FloconCodeBlock(
-                                    code = response.body,
-                                    containerColor = FloconTheme.colors.bg000,
-                                    contentColor = FloconTheme.colors.inkMuted,
-                                    borderColor = FloconTheme.colors.line,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(FloconTheme.spacing.medium)
-                                )
-                            }
-                        }
-                    }
+                response.headers?.let { headers ->
+                    HeadersCard(
+                        headers = headers,
+                        onAction = onAction,
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun JwtCard(
+    jwt: NetworkDetailViewState.Jwt,
+    onAction: (NetworkDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val entries = remember(jwt) { jwt.claims.map { it.name to it.value } }
+    DetailSectionCard(
+        title = stringResource(Res.string.network_jwt),
+        badge = "BEARER",
+        copyContentDescription = stringResource(Res.string.general_copy),
+        onCopy = null,
+        modifier = modifier,
+        collapsible = true,
+        toolbar = {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_decode),
+                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                onClick = { onAction(NetworkDetailAction.DisplayBearerJwt(jwt.token)) },
+                contentDescription = stringResource(Res.string.network_open_jwt_decoder),
+            )
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(jwt.token)) },
+            )
+        },
+    ) {
+        jwt.expiration?.let { expiration ->
+            DetailChip(
+                text = expiration,
+                modifier = Modifier.padding(FloconTheme.spacing.medium),
+            )
+        }
+        SelectionContainer {
+            Text(
+                text = jwt.token,
+                style = FloconTheme.typography.monoSmall,
+                color = FloconTheme.colors.inkMuted,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = FloconTheme.spacing.medium)
+                    .padding(bottom = FloconTheme.spacing.small),
+            )
+        }
+        DetailKeyValueList(entries = entries)
+    }
+}
+
+@Composable
+private fun HeadersCard(
+    headers: ImmutableList<NetworkDetailHeaderUi>,
+    onAction: (NetworkDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val copyableText = remember(headers) { headers.map { it.name to it.value }.toCopyableText() }
+    val graphicsLayer = rememberGraphicsLayer()
+    DetailSectionCard(
+        title = stringResource(Res.string.network_headers),
+        badge = headers.size.toString(),
+        copyContentDescription = stringResource(Res.string.general_copy),
+        onCopy = null,
+        modifier = modifier,
+        collapsible = true,
+        initiallyExpanded = false,
+        toolbar = {
+            ExportImageDropdown(
+                graphicsLayer = graphicsLayer,
+                onAction = onAction,
+                tooltip = stringResource(Res.string.network_export_headers_image),
+            )
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(copyableText)) },
+            )
+        },
+    ) {
+        DetailHeaders(
+            headers = headers,
+            labelWidth = HeadersLabelWidth,
+            onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
+            onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
+            framed = false,
+            modifier = Modifier
+                .fillMaxWidth()
+                .recordInto(graphicsLayer),
+        )
+    }
+}
+
+@Composable
+private fun BodyCard(
+    title: String,
+    body: String,
+    bodyIsNotBlank: Boolean,
+    canOpenExternally: Boolean,
+    size: String,
+    onOpenExternally: () -> Unit,
+    onAction: (NetworkDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
+    withJsonTree: Boolean = false,
+    withDiff: Boolean = false,
+) {
+    val graphicsLayer = rememberGraphicsLayer()
+    val bodyToolbar: @Composable FlowRowScope.() -> Unit = {
+        if (bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_expand),
+                imageVector = Icons.Outlined.OpenInFull,
+                onClick = { onAction(NetworkDetailAction.JsonDetail(json = body)) },
+                contentDescription = stringResource(Res.string.network_view_in_app),
+            )
+        }
+        if (canOpenExternally) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_open),
+                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                onClick = onOpenExternally,
+                contentDescription = stringResource(Res.string.open_external),
+            )
+        }
+        if (withDiff && bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.network_action_diff),
+                imageVector = Icons.Outlined.Difference,
+                onClick = { onAction(NetworkDetailAction.DiffWithClipboard(body)) },
+                contentDescription = stringResource(Res.string.diff_compare_clipboard),
+            )
+        }
+        ExportImageDropdown(
+            graphicsLayer = graphicsLayer,
+            onAction = onAction,
+            tooltip = stringResource(Res.string.network_export_body_image),
+        )
+        if (bodyIsNotBlank) {
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(body)) },
+            )
+        }
+    }
+    DetailSectionCard(
+        title = title,
+        badge = null,
+        copyContentDescription = stringResource(Res.string.general_copy),
+        onCopy = null,
+        modifier = modifier,
+        collapsible = true,
+        toolbar = bodyToolbar.takeIf { bodyIsNotBlank },
+    ) {
+        if (!bodyIsNotBlank) {
+            DetailEmptyText(stringResource(Res.string.network_no_body))
+        } else {
+            BodyContent(
+                body = body,
+                size = size,
+                withJsonTree = withJsonTree,
+                modifier = Modifier.recordInto(graphicsLayer),
+            )
+        }
+    }
+}
+
+@Composable
+private fun BodyContent(
+    body: String,
+    size: String,
+    withJsonTree: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    var jsonError by remember(body) { mutableStateOf(false) }
+
+    if (withJsonTree && !jsonError) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(JsonTreeHeight)
+                .padding(FloconTheme.spacing.small)
+                .background(
+                    FloconTheme.colors.bg000,
+                    shape = FloconTheme.shapes.medium,
+                )
+                .padding(FloconTheme.spacing.medium),
+        ) {
+            FloconJsonTree(
+                json = body,
+                initialState = TreeState.EXPANDED,
+                onError = { jsonError = true },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        return
+    }
+
+    var displayBody by remember(body) { mutableStateOf(body.length <= LARGE_BODY_LENGTH) }
+    if (!displayBody) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(FloconTheme.spacing.medium)
+                .background(
+                    FloconTheme.colors.bg200,
+                    shape = FloconTheme.shapes.medium,
+                )
+                .padding(FloconTheme.spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Body too large ($size bytes)",
+                color = FloconTheme.colors.ink,
+                style = FloconTheme.typography.bodySmall,
+            )
+            Spacer(modifier = Modifier.height(FloconTheme.spacing.small))
+            FloconButton(
+                onClick = { displayBody = true },
+                containerColor = FloconTheme.colors.ink,
+            ) {
+                Text(stringResource(Res.string.network_display_anyway))
+            }
+        }
+    } else {
+        FloconCodeBlock(
+            code = body,
+            containerColor = FloconTheme.colors.bg000,
+            contentColor = FloconTheme.colors.inkMuted,
+            borderColor = FloconTheme.colors.line,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(FloconTheme.spacing.medium)
+        )
+    }
+}
+
+@Composable
+private fun ImageCard(
+    state: NetworkDetailViewState,
+    imageUrl: String,
+    onAction: (NetworkDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DetailSectionCard(
+        title = stringResource(Res.string.network_image_response),
+        badge = null,
+        copyContentDescription = stringResource(Res.string.network_copy_url),
+        onCopy = null,
+        modifier = modifier,
+        collapsible = true,
+        toolbar = {
+            DetailActionButton(
+                label = stringResource(Res.string.general_copy),
+                imageVector = Icons.Outlined.CopyAll,
+                onClick = { onAction(NetworkDetailAction.CopyText(imageUrl)) },
+                contentDescription = stringResource(Res.string.network_copy_url),
+            )
+        },
+    ) {
+        AsyncImage(
+            model = remember(state.callId, imageUrl) {
+                ImageRequest.Builder(PlatformContext.INSTANCE)
+                    .data(imageUrl)
+                    .httpHeaders(
+                        NetworkHeaders.Builder().apply {
+                            state.imageHeaders?.forEach { (key, value) ->
+                                set(key, value)
+                            }
+                        }.build()
+                    )
+                    .build()
+            },
+            contentDescription = stringResource(Res.string.images_preview),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(FloconTheme.spacing.medium)
+                .height(ImageHeight),
+            contentScale = ContentScale.Fit,
+        )
     }
 }
 
@@ -1361,7 +1297,13 @@ private fun NetworkDetailPreview() {
         NetworkDetailContent(
             uiState = NetworkDetailViewState(
                 callId = "",
-                fullUrl = "http://www.google.com",
+                fullUrl = "http://www.google.com/search?q=flocon&lang=fr",
+                host = "www.google.com",
+                path = "/search",
+                queryParams = persistentListOf(
+                    NetworkDetailHeaderUi(name = "q", value = "flocon"),
+                    NetworkDetailHeaderUi(name = "lang", value = "fr"),
+                ),
                 method = NetworkDetailViewState.Method.Http(NetworkMethodUi.Http.GET),
                 statusLabel = "Status",
                 status =

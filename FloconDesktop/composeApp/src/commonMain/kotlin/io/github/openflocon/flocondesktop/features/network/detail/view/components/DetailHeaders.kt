@@ -60,14 +60,22 @@ fun DetailHeaders(
     onAuthorizationClicked: (value: String) -> Unit,
     modifier: Modifier = Modifier,
     onCopyValue: ((value: String) -> Unit)? = null,
+    framed: Boolean = true,
 ) {
     Column(
         modifier = modifier
-            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = FloconTheme.colors.line,
-                shape = FloconTheme.shapes.medium
+            .then(
+                if (framed) {
+                    Modifier
+                        .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colors.line,
+                            shape = FloconTheme.shapes.medium
+                        )
+                } else {
+                    Modifier
+                }
             )
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
     ) {
