@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.flocon.sample.android.grpc.GrpcController
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
@@ -14,6 +16,7 @@ import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
 import io.github.openflocon.flocon.timeline.FloconTimeline
+import io.github.openflocon.flocon.timeline.timelinePlugin
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.room
@@ -95,6 +98,12 @@ class MainActivity : ComponentActivity() {
             install(FloconDevice)
             install(FloconCrashReporter)
         }
+
+        // the single activity of the sample is visible or not: the app is in the foreground or the background
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) = Flocon.timelinePlugin.logLifecycle("foreground")
+            override fun onStop(owner: LifecycleOwner) = Flocon.timelinePlugin.logLifecycle("background")
+        })
 
         intent.data?.let {
             Toast.makeText(this, "opened with : $it", Toast.LENGTH_LONG).show()
