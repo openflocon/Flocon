@@ -8,10 +8,13 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.usecase.ConsumeTimelineFocusUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineEventsUseCase
+import io.github.openflocon.domain.timeline.usecase.ObserveTimelineFocusUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsFailingUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsSupportedUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineScreenshotsUseCase
@@ -25,6 +28,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
@@ -51,6 +55,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -59,6 +64,7 @@ import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 internal class TimelineViewModel(
     observeTimelineUseCase: ObserveTimelineUseCase,
@@ -79,6 +85,9 @@ internal class TimelineViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
+    observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
+    private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
+    observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel() {
 
     val filterText: StateFlow<String> = filterStore.text
@@ -184,6 +193,26 @@ internal class TimelineViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GraphUiModel.Empty)
 
+    // the zone of the session the graph is asked to show (by the MCP), until the graph has shown it
+    private val _graphFocus = MutableStateFlow<GraphFocusUiModel?>(null)
+    val graphFocus: StateFlow<GraphFocusUiModel?> = _graphFocus.asStateFlow()
+
+    init {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            appliedFocusRequests(observeTimelineFocusUseCase(), observeCurrentDeviceIdAndPackageNameUseCase()).collect { request ->
+                // the sessions come with the summary of the device: the one of the request is waited for, the latest is the fallback
+                val starts = withTimeoutOrNull(FOCUS_SESSIONS_WAIT_MS) {
+                    sessionStarts.first { request.sessionStart == null || request.sessionStart in it }
+                } ?: sessionStarts.first()
+                val plan = planFocus(request, starts)
+                graphSession.value = plan.graphSession
+                plan.selectedKey?.let { key -> _selectedKey.value = key }
+                _graphFocus.value = plan.focus
+                consumeTimelineFocusUseCase(request)
+            }
+        }
+    }
+
     // nothing received at all: the filters are not the reason of the empty list
     val showEmptyState: StateFlow<Boolean> = combine(summary, filterStore.text) { summary, filterText ->
         filterText.isBlank() && summary.sourceCounts.values.sum() == 0
@@ -247,6 +276,8 @@ internal class TimelineViewModel(
                 graphSession.value = if (target == starts.lastIndex) null else starts.getOrNull(target)
             }
 
+            is TimelineAction.GraphFocusApplied -> _graphFocus.value = null
+
             is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
             }
@@ -267,3 +298,6 @@ internal class TimelineViewModel(
 
 // the graph is rebuilt at most this often while events arrive
 private const val GRAPH_BATCH_MS = 100L
+
+// how long the sessions of a device are waited for before a focus request, when the one of the request is not known yet
+private const val FOCUS_SESSIONS_WAIT_MS = 1_500L
