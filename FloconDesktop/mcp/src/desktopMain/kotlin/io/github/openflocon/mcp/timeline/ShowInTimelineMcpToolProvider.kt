@@ -23,6 +23,9 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+// the sources the graph of the timeline draws (the lanes of GraphLane), the other ones only appear in the list
+private val GRAPH_SOURCES = setOf(TimelineSource.Network, TimelineSource.Database, TimelineSource.Analytics)
+
 internal class ShowInTimelineMcpToolProvider(
     private val targetResolver: McpTargetResolver,
     private val windowFinder: TimelineWindowFinder,
@@ -121,6 +124,9 @@ internal class ShowInTimelineMcpToolProvider(
         append("The timeline is shown in ${if (graph) "graph" else "list"} mode: ${window.reason} ")
         if (event == null) append("No anomaly in this zone: only the zone is shown. ")
         if (!graph) append("In list mode the row of the event is selected but the list does not scroll to it. ")
+        if (graph && event != null && event.source !in GRAPH_SOURCES) {
+            append("The graph does not draw ${event.source.name.lowercase(Locale.ROOT)} events (only network, database and analytics): the zone around it is shown, use view list to see its row. ")
+        }
         if (hiddenBy.isNotEmpty()) {
             append("The event exists but the filters of the user hide it (${hiddenBy.joinToString("; ")}). The filters were not changed: tell the user.")
         }

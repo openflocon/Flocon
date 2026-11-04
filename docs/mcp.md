@@ -261,6 +261,16 @@ Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_err
 
 The app crashed at 14:32:05 with an `IllegalStateException` (the window read is the minute before it and the 5 seconds after, anchored on that crash). In that minute: 12 calls to `GET /v1/feed` in 3 seconds (a loop), then `POST /v1/checkout` failed with a **401**, and the `checkout_failed` analytics event was sent 2 seconds before the crash.
 
+---
+
+**Prompt**
+
+> Show me where the app crashed.
+
+**Response**
+
+I opened the Flocon timeline in graph mode on the zone around the crash of 14:32:05 (an `IllegalStateException`): go to the Flocon app to see it. The graph does not draw crashes, switch to the list view to see its row.
+
 ## Available tools
 
 By default, every tool targets the **device and app currently selected in Flocon Desktop**. Use `list_devices` then pass `deviceId` / `packageName` to target another one.
@@ -269,6 +279,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 |---|---|
 | `list_devices` | Devices (with their `connectionType`: `default` or `wifi`) and apps known by Flocon, the selected one, and whether they are connected. |
 | `get_timeline` | What the app did in a window of time, above the network: every source (network, database, analytics, crashes, deeplinks...) in one narrative, one line per event with an id for the detail tools, repetitions folded (`12× GET /feed in 3.1 s`) and anomalies first (crash, HTTP errors, calls in a loop, responses over 1 MB). Give `mode` (`recent`, `session`, `before_crash`, `at`, `range`) with `at` / `from` / `to` (epoch ms, ISO-8601 with an offset, or `HH:mm`), or an `eventId` of a previous answer, or nothing: the tool anchors on the latest crash, otherwise on the last 2 minutes of the latest session, and the answer says which window was chosen and why. `search` tells whether an event (name, url, query) was sent in the window (`found`), and its matches are never cut by `maxLines`. `sources` / `excludeSources` choose the sources read (for example `excludeSources: ["database"]` drops the transactions of a database library); when the answer is capped, database lines are the first to go. The times are those of the phone. |
+| `show_in_timeline` | Shows a zone of the timeline in the Flocon Desktop window for you: opens the timeline in graph mode (saved in your preferences), selects the device and app of the call, selects an event and centers the graph on its zone. Give an `eventId` of `get_timeline` (`source:id`), a time (`mode`, `at`, `from`, `to`), or nothing: the latest crash, otherwise the main anomaly (error, loop, large response) of the last minutes. `view: list` selects the row without scrolling to it. Flocon is not brought to the front and the request is only registered: the answer asks you to go to the Flocon app. Nothing is changed when the event or the window is not found. Your filters are never changed: if one hides the event, the answer says which. The graph draws network, database and analytics events only: a crash is shown with its zone, see its row in the list. |
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
 | `get_network_call` | Full details of a call: request & response headers and bodies (truncated if too long), GraphQL query, gRPC status, error, and the equivalent cURL command. |
 | `search_network_calls` | Searches a text in headers, bodies, url, method or status. |

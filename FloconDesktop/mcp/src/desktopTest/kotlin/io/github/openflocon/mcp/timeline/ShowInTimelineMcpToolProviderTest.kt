@@ -241,4 +241,18 @@ class ShowInTimelineMcpToolProviderTest {
 
         assertTrue(result.hiddenBy().isEmpty())
     }
+
+    @Test
+    fun `an event the graph does not draw is told to the agent, one it draws is not`() = runBlocking {
+        val server = start()
+
+        val crash = server.callTool("show_in_timeline").json()
+        val call = server.callTool("show_in_timeline", mapOf("eventId" to "network:n2")).json()
+        val inList = server.callTool("show_in_timeline", mapOf("view" to "list")).json()
+
+        assertTrue(crash.message().contains("graph does not draw crash"), crash.message())
+        assertTrue(!call.message().contains("does not draw"), call.message())
+        // the list shows every source
+        assertTrue(!inList.message().contains("does not draw"), inList.message())
+    }
 }
