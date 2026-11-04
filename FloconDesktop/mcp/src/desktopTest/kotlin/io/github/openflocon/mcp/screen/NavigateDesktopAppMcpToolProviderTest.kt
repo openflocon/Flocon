@@ -12,6 +12,7 @@ import io.github.openflocon.domain.timeline.repository.TimelinePreferencesReposi
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.mcp.FakeDesktopNavigationRepository
 import io.github.openflocon.mcp.FakeDevicesRepository
+import io.github.openflocon.mcp.FakeTimelinePreferencesRepository
 import io.github.openflocon.mcp.McpTestServer
 import io.github.openflocon.mcp.app
 import io.github.openflocon.mcp.json
@@ -194,21 +195,4 @@ class NavigateDesktopAppMcpToolProviderTest {
         assertTrue(devicesRepository.selections.isEmpty())
         assertTrue(timelinePreferences.graphCalls.isEmpty())
     }
-}
-
-private class FakeTimelinePreferencesRepository : TimelinePreferencesRepository {
-    val graphCalls = mutableListOf<Boolean>()
-
-    override val settings: Flow<TimelineSettingsDomainModel> = MutableStateFlow(TimelineSettingsDomainModel())
-
-    override suspend fun setGraph(graph: Boolean) {
-        graphCalls += graph
-    }
-
-    override suspend fun setAutoScroll(autoScroll: Boolean) = error("not used")
-    override suspend fun setInvertList(invertList: Boolean) = error("not used")
-    override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
-    override suspend fun setSelectedSources(sources: Set<TimelineSource>) = error("not used")
-    override suspend fun setScreenshots(screenshots: Boolean) = error("not used")
-    override suspend fun setScreenshotIntervalSeconds(seconds: Int) = error("not used")
 }

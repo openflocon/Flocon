@@ -26,6 +26,7 @@ import io.github.openflocon.mcp.screen.McpSelectionApplier
 import io.github.openflocon.mcp.screen.NavigateDesktopAppMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
 import io.github.openflocon.mcp.table.TableMcpToolProvider
+import io.github.openflocon.mcp.timeline.ShowInTimelineMcpToolProvider
 import io.github.openflocon.mcp.timeline.TimelineMcpToolProvider
 import io.github.openflocon.mcp.timeline.TimelineWindowFinder
 import io.github.openflocon.mcp.webview.WebViewMcpToolProvider
@@ -65,4 +66,5 @@ val mcpModule = module {
     single { TimelineWindowFinder(get(), get(), ZoneId.systemDefault(), System::currentTimeMillis) }
     single { TimelineMcpToolProvider(get(), get(), get(), ZoneId.systemDefault()) } bind McpToolProvider::class
     singleOf(::McpSelectionApplier)
+    single { ShowInTimelineMcpToolProvider(get(), get(), get(), get(), get(), get(), get(), get(), ZoneId.systemDefault()) } bind McpToolProvider::class
 }
