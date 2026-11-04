@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI**, **Antigravity**, **GitHub Copilot**, **Android Studio**, **Windsurf**, **Zed** or **OpenCode** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -150,6 +150,93 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
 
     !!! note
         Antigravity uses `serverUrl` for remote HTTP servers, not `url` nor `httpUrl`.
+
+=== "VS Code / Copilot"
+
+    In `.vscode/mcp.json` (project), or with **MCP: Open User Configuration** (global):
+
+    ```json
+    {
+      "servers": {
+        "flocon": {
+          "type": "http",
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        VS Code uses `servers`, not `mcpServers`. The tools are then available in the Copilot Chat agent mode.
+
+=== "Android Studio"
+
+    Gemini in Android Studio (Agent mode): in the IDE settings, enable MCP servers in the AI section, then paste in the configuration field:
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "httpUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    Type `/mcp` in the chat to check that the Flocon tools are available.
+
+    !!! note
+        Android Studio uses `httpUrl` and only supports remote HTTP servers, which is the case of Flocon.
+
+=== "Windsurf"
+
+    Edit `~/.codeium/windsurf/mcp_config.json` (or use the MCP settings of the Cascade panel):
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "serverUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        Windsurf uses `serverUrl` for remote HTTP servers.
+
+=== "Zed"
+
+    In `settings.json` (**zed: open settings file**):
+
+    ```json
+    {
+      "context_servers": {
+        "flocon": {
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        Zed uses `context_servers`, not `mcpServers`.
+
+=== "OpenCode"
+
+    In `opencode.json` (project) or `~/.config/opencode/opencode.json` (global):
+
+    ```json
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "mcp": {
+        "flocon": {
+          "type": "remote",
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
 
 ---
 

@@ -12,6 +12,8 @@
     "shortDescription": "Debug your mobile app with Flocon",
     "longDescription": "Inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop. Flocon Desktop must be running.",
     "developerName": "openflocon",
+    "composerIcon": "./assets/flocon.png",
+    "logo": "./assets/flocon.png",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://openflocon.github.io/Flocon/",
