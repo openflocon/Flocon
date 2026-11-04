@@ -630,6 +630,7 @@ private fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
     TimelineFacet.LogType -> Res.string.timeline_facet_log_type
     TimelineFacet.LogLevel -> Res.string.timeline_facet_log_level
+    TimelineFacet.LogTaggedLevel -> Res.string.timeline_facet_log_level
 }
 
 @Composable
