@@ -255,4 +255,17 @@ class ShowInTimelineMcpToolProviderTest {
         // the list shows every source
         assertTrue(!inList.message().contains("does not draw"), inList.message())
     }
+
+    @Test
+    fun `an event id combined with a mode or a time is refused and changes nothing`() = runBlocking {
+        val server = start()
+
+        val withMode = server.callTool("show_in_timeline", mapOf("eventId" to "network:n2", "mode" to "session"))
+        val withTime = server.callTool("show_in_timeline", mapOf("eventId" to "network:n2", "at" to "14:00:20"))
+
+        assertEquals(true, withMode.isError)
+        assertTrue(withMode.text().contains("eventId"), withMode.text())
+        assertEquals(true, withTime.isError)
+        assertNothingChanged()
+    }
 }

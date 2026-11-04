@@ -33,48 +33,56 @@ class TimelineFocusTest {
 
     @Test
     fun `the event is selected with the key of the rows`() {
-        val plan = planFocus(request(), sessionStarts = listOf(1_000L))
+        val plan = planFocus(request(), sessionStarts = listOf(1_000L), graphShown = true)
 
         assertEquals("Crash:7", plan.selectedKey)
     }
 
     @Test
     fun `without event only the zone is shown`() {
-        val plan = planFocus(request(event = null), sessionStarts = listOf(1_000L))
+        val plan = planFocus(request(event = null), sessionStarts = listOf(1_000L), graphShown = true)
 
         assertNull(plan.selectedKey)
-        assertEquals(GraphFocusUiModel(fromMs = 10_000L, toMs = 20_000L, eventKey = null, token = 5L), plan.focus)
+        assertEquals(GraphFocusUiModel(fromMs = 10_000L, toMs = 20_000L, eventKey = null, token = 5L), plan.graph?.focus)
     }
 
     @Test
     fun `the zone is told since the start of the session`() {
-        val plan = planFocus(request(), sessionStarts = listOf(1_000L))
+        val plan = planFocus(request(), sessionStarts = listOf(1_000L), graphShown = true)
 
-        assertEquals(GraphFocusUiModel(fromMs = 10_000L, toMs = 20_000L, eventKey = "Crash:7", token = 5L), plan.focus)
+        assertEquals(GraphFocusUiModel(fromMs = 10_000L, toMs = 20_000L, eventKey = "Crash:7", token = 5L), plan.graph?.focus)
     }
 
     @Test
     fun `the latest session is the one that follows the new ones, an older one is chosen`() {
-        assertNull(planFocus(request(sessionStart = 3_000L), sessionStarts = listOf(1_000L, 3_000L)).graphSession)
-        assertEquals(1_000L, planFocus(request(sessionStart = 1_000L), sessionStarts = listOf(1_000L, 3_000L)).graphSession)
+        assertNull(planFocus(request(sessionStart = 3_000L), sessionStarts = listOf(1_000L, 3_000L), graphShown = true).graph?.session)
+        assertEquals(1_000L, planFocus(request(sessionStart = 1_000L), sessionStarts = listOf(1_000L, 3_000L), graphShown = true).graph?.session)
     }
 
     @Test
     fun `a session that is not displayed falls back to the latest one`() {
         // hidden by the filters (ex: current session only): the graph shows the latest session
-        val plan = planFocus(request(sessionStart = 1_000L, fromMs = 13_000L, toMs = 14_000L), sessionStarts = listOf(3_000L))
+        val plan = planFocus(request(sessionStart = 1_000L, fromMs = 13_000L, toMs = 14_000L), sessionStarts = listOf(3_000L), graphShown = true)
 
-        assertNull(plan.graphSession)
-        assertEquals(10_000L, plan.focus?.fromMs)
+        assertNull(plan.graph?.session)
+        assertEquals(10_000L, plan.graph?.focus?.fromMs)
     }
 
     @Test
     fun `without any session there is no zone to show`() {
-        val plan = planFocus(request(sessionStart = null), sessionStarts = emptyList())
+        val plan = planFocus(request(sessionStart = null), sessionStarts = emptyList(), graphShown = true)
 
-        assertNull(plan.focus)
-        assertNull(plan.graphSession)
+        assertNull(plan.graph?.focus)
+        assertNull(plan.graph?.session)
         assertEquals("Crash:7", plan.selectedKey)
+    }
+
+    @Test
+    fun `in list view only the row is selected, the graph is left alone`() {
+        val plan = planFocus(request(), sessionStarts = listOf(1_000L, 3_000L), graphShown = false)
+
+        assertEquals("Crash:7", plan.selectedKey)
+        assertNull(plan.graph)
     }
 
     @Test

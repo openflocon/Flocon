@@ -32,6 +32,10 @@ internal class TimelineWindowFinder(
     )
 
     suspend fun find(target: DeviceIdAndPackageNameDomainModel, input: GetTimelineInput): Found {
+        // the event chooses the window (around it): another choice would be dropped without a word
+        if (input.eventId != null && (input.mode != null || input.at != null || input.from != null || input.to != null)) {
+            throw McpToolException("eventId cannot be combined with mode, at, from or to: the event already chooses the window around it. Give one of them.")
+        }
         val summary = getTimelineSummaryUseCase(target, TimelineFilterDomainModel())
         val anchors = anchorsOf(target, summary)
         val eventAnchor = input.eventId?.let { eventAnchorOf(target, it) }

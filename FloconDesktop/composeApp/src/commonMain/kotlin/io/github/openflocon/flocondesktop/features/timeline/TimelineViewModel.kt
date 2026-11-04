@@ -204,10 +204,12 @@ internal class TimelineViewModel(
                 val starts = withTimeoutOrNull(FOCUS_SESSIONS_WAIT_MS) {
                     sessionStarts.first { request.sessionStart == null || request.sessionStart in it }
                 } ?: sessionStarts.first()
-                val plan = planFocus(request, starts)
-                graphSession.value = plan.graphSession
+                val plan = planFocus(request, starts, graphShown = observeTimelineSettingsUseCase().first().graph)
                 plan.selectedKey?.let { key -> _selectedKey.value = key }
-                _graphFocus.value = plan.focus
+                plan.graph?.let { graph ->
+                    graphSession.value = graph.session
+                    _graphFocus.value = graph.focus
+                }
                 consumeTimelineFocusUseCase(request)
             }
         }

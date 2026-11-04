@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 internal data class ShowInTimelineInput(
     @McpDescription(
         "An event id of a get_timeline answer (source:id, for example network:abc or crash:xyz): the timeline selects it " +
-            "and shows the seconds around it.",
+            "and shows the seconds around it. Not with mode, at, from or to.",
     )
     val eventId: String? = null,
     @McpDescription(

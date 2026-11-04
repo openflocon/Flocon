@@ -289,4 +289,12 @@ class TimelineMcpToolProviderTest {
         assertEquals(true, result.isError)
         assertTrue(result.text().contains("analytics"), result.text())
     }
+
+    @Test
+    fun `an event id combined with a mode or a time is refused instead of being ignored`() = runBlocking {
+        val result = start().callTool("get_timeline", mapOf("eventId" to "network:n2", "mode" to "session"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("eventId"), result.text())
+    }
 }
