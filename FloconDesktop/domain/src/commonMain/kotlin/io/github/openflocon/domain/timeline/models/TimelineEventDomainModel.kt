@@ -20,4 +20,6 @@ data class TimelineEventDomainModel(
     // the start of the session the event belongs to: the latest app start before it, null if none is known
     val sessionStart: AppInstance? = null,
     val level: TimelineLogLevel? = null, // log only
+    // the value of the event for each facet of its source, ex: the method and the host of a call. What it can be excluded by
+    val facets: Map<TimelineFacet, String> = emptyMap(),
 )

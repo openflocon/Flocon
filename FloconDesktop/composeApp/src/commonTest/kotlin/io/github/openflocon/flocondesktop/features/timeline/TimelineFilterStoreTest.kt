@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class TimelineFilterStoreTest {
 
@@ -49,6 +50,19 @@ class TimelineFilterStoreTest {
     }
 
     @Test
+    fun `the current filter has the path and database rules too`() = runBlocking {
+        store.addPathRule(TimelineRuleDomainModel(value = "/raw", exclude = true))
+        store.addDatabaseRule(TimelineRuleDomainModel(value = "users", exclude = false))
+        store.setHideDatabaseTransactions(true)
+
+        val filter = provider.current()
+
+        assertEquals(listOf(TimelineRuleDomainModel(value = "/raw", exclude = true)), filter.networkPathRules)
+        assertEquals(listOf(TimelineRuleDomainModel(value = "users", exclude = false)), filter.databaseRules)
+        assertEquals(true, filter.hideDatabaseTransactions)
+    }
+
+    @Test
     fun `reading the current filter changes nothing`() = runBlocking {
         store.setText("checkout")
 
@@ -56,6 +70,57 @@ class TimelineFilterStoreTest {
 
         assertEquals("checkout", store.text.value)
         assertEquals(emptyMap(), store.facets.value)
+    }
+
+    @Test
+    fun `hiding a value twice is the same as once`() {
+        store.hideFacetValue(TimelineFacet.DatabaseName, "app.db")
+        store.hideFacetValue(TimelineFacet.DatabaseName, "app.db")
+        store.hideFacetValue(TimelineFacet.DatabaseName, "other.db")
+
+        assertEquals(mapOf(TimelineFacet.DatabaseName to setOf("app.db", "other.db")), store.facets.value)
+    }
+
+    @Test
+    fun `hiding a value of the network turns its filters back on`() {
+        store.setNetworkEnabled(false)
+
+        store.hideFacetValue(TimelineFacet.NetworkMethod, "GET")
+
+        assertTrue(store.network.value.enabled)
+    }
+
+    @Test
+    fun `hiding a path adds an exclude rule once and turns the network filters back on`() {
+        store.setNetworkEnabled(false)
+
+        store.hidePath("/raw")
+        store.hidePath("/raw")
+
+        assertEquals(listOf(TimelineRuleDomainModel("/raw", exclude = true)), store.network.value.pathRules)
+        assertEquals(1, store.network.value.ruleCount)
+        assertTrue(store.network.value.enabled)
+
+        store.clear()
+        assertEquals(emptyList(), store.network.value.pathRules)
+    }
+
+    @Test
+    fun `a source can be asked to be shown in the panel, once`() {
+        store.focusSource(TimelineSource.Database)
+        assertEquals(TimelineSource.Database, store.focusedSource.value)
+
+        store.focusSource(null)
+        assertEquals(null, store.focusedSource.value)
+    }
+
+    @Test
+    fun `hiding a value of another source leaves the network card as it is`() {
+        store.setNetworkEnabled(false)
+
+        store.hideFacetValue(TimelineFacet.CrashException, "java.lang.Error")
+
+        assertEquals(false, store.network.value.enabled)
     }
 
     @Test
@@ -85,13 +150,15 @@ class TimelineFilterStoreTest {
     }
 
     @Test
-    fun `clearing resets the logs`() = runBlocking {
+    fun `clearing resets the logs and the database rules`() = runBlocking {
         store.addLogTagRule("billing", exclude = false)
         store.setLogTaggedEnabled(false)
+        store.addDatabaseRule(TimelineRuleDomainModel(value = "users", exclude = false))
 
         store.clear()
 
         assertEquals(TimelineLogRules(), store.logs.value)
+        assertEquals(TimelineDatabaseRules(), store.database.value)
         assertEquals(true, provider.current().logTaggedEnabled)
     }
 }
