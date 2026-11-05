@@ -38,6 +38,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val ROOM_LOG_TABLE = "room_table_modification_log"
+
 class DatabaseQueryLogsViewModel(
     private val dbId: String,
     private val observeDatabaseQueryLogsUseCase: ObserveDatabaseQueryLogsUseCase,
@@ -54,7 +56,10 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
-    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(persistentListOf())
+    // what Room runs for itself (its invalidation tracker) is hidden until the user removes the chip
+    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(
+        persistentListOf(FilterChipUiModel(ROOM_LOG_TABLE, FilterChipUiModel.FilterType.EXCLUDE)),
+    )
     val filterChips = _filterChips.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")

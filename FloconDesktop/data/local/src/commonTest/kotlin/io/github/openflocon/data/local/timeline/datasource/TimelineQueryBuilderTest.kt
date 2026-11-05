@@ -276,6 +276,16 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `what Room runs for itself is told apart, with the whole of its transaction`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
+
+        // first of the statements: a query on the modification log of Room, or any query of a transaction that has one
+        assertTrue(query.sql.contains("CASE WHEN (sqlQuery LIKE '%room_table_modification_log%' OR (transactionId IS NOT NULL AND EXISTS ("))
+        assertTrue(query.sql.contains("THEN 'ROOM'"))
+        assertTrue(query.sql.indexOf("THEN 'ROOM'") < query.sql.indexOf("THEN 'SELECT'"))
+    }
+
+    @Test
     fun `every member of the union has the same facet columns`() {
         val query = build()
 

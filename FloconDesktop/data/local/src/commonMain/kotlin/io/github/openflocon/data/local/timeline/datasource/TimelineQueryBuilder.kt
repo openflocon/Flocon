@@ -1,6 +1,7 @@
 package io.github.openflocon.data.local.timeline.datasource
 
 import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_DATABASE_STATEMENT_ROOM
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_RESERVED_LOG_TYPES
@@ -59,9 +60,17 @@ private const val NETWORK_STATUS_CODE = "COALESCE(response_http_responseHttpCode
 // 1xx, 2xx..., null without http code
 private const val NETWORK_STATUS_CLASS = "(CAST($NETWORK_STATUS_CODE AS INTEGER) / 100) || 'xx'"
 
+private const val ROOM_LOG_TABLE = "room_table_modification_log"
+
+// what Room runs for itself: a query on its modification log, or any query of a transaction that has one (its BEGIN and COMMIT too)
+private const val IS_ROOM_STATEMENT = "(sqlQuery LIKE '%$ROOM_LOG_TABLE%' OR (transactionId IS NOT NULL AND EXISTS (" +
+    "SELECT 1 FROM DatabaseQueryLogEntity r WHERE r.transactionId = DatabaseQueryLogEntity.transactionId " +
+    "AND r.deviceId = DatabaseQueryLogEntity.deviceId AND r.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND r.dbId = DatabaseQueryLogEntity.dbId AND r.sqlQuery LIKE '%$ROOM_LOG_TABLE%')))"
+
 // the kind of a SQL statement, from its first word. Same values as TimelineFacet.DatabaseStatement
 private val DATABASE_STATEMENT = buildString {
-    append("CASE")
+    append("CASE WHEN $IS_ROOM_STATEMENT THEN '$TIMELINE_DATABASE_STATEMENT_ROOM'")
     listOf(
         "SELECT" to listOf("SELECT", "WITH"),
         "INSERT" to listOf("INSERT", "REPLACE"),

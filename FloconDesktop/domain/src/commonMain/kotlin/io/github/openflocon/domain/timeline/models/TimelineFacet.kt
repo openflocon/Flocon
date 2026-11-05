@@ -4,8 +4,21 @@ import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_LIFECYCL
 import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
 import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_USER_ACTION
 
+/**
+ * The value of [TimelineFacet.DatabaseStatement] of what Room runs for itself: its invalidation tracker reads and writes
+ * room_table_modification_log, in a transaction of its own after each write. A query of such a transaction is one of them.
+ */
+const val TIMELINE_DATABASE_STATEMENT_ROOM = "ROOM"
+
 // the kinds of SQL statement, TRANSACTION being BEGIN, COMMIT, END, ROLLBACK, SAVEPOINT and RELEASE, SCHEMA being CREATE, ALTER and DROP
-private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
+private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", TIMELINE_DATABASE_STATEMENT_ROOM, "OTHER")
+
+/**
+ * The values hidden until the user shows them again: the noise nobody asked for.
+ */
+// a getter, not a value: the facets use the values of this file when they are created, a value would be created with them
+val TIMELINE_DEFAULT_HIDDEN_FACETS: Map<TimelineFacet, Set<String>>
+    get() = mapOf(TimelineFacet.DatabaseStatement to setOf(TIMELINE_DATABASE_STATEMENT_ROOM))
 
 // the types of log with their own look, they are not tagged logs: the tag and level filters never apply to them
 val TIMELINE_RESERVED_LOG_TYPES = listOf(TIMELINE_LOG_TYPE_NAVIGATION, TIMELINE_LOG_TYPE_USER_ACTION, TIMELINE_LOG_TYPE_LIFECYCLE)

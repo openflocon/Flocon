@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import io.github.openflocon.domain.timeline.models.TIMELINE_DEFAULT_HIDDEN_FACETS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
@@ -71,9 +72,9 @@ internal class TimelineFilterStore(
     val text: StateFlow<String>
         field = MutableStateFlow("")
 
-    // the values kept by facet
+    // the values hidden by facet: the noise is hidden until the user shows it again (what Room runs for itself)
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
-        field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
+        field = MutableStateFlow(TIMELINE_DEFAULT_HIDDEN_FACETS)
 
     // the status, host and duration rules of the network calls
     val network: StateFlow<TimelineNetworkRules>
