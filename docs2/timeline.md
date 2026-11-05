@@ -89,7 +89,7 @@ Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), Fl
     The reserved types are `navigation`, `userAction` and `lifecycle` (matched without case sensitivity). A tag equal to one of them is shown as that type.
 
 !!! note
-    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop stores them as **Info** (a custom type shows as an Info diamond) and hides the level in their detail. Unticking **Info** in the Level filter therefore hides them too.
+    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop stores them as **Info** (a custom type shows as an Info diamond) and hides the level in their detail. The Level filter only applies to tagged logs: unticking **Info** does not hide navigation, user action or lifecycle logs.
 
 ### Navigation listener (Compose)
 
@@ -142,7 +142,7 @@ The native Swift SDK lives in a separate repository, [FloconSwift](https://githu
 ### On the desktop
 
 - Logs are a new **Log** source, in the list and in the graph (one marker per log, in its own lane).
-- Filter them by **Type** (including your custom tags) and by **Level**.
+- Filter them in the **Logs** card of the filter panel, see [Logs filters](#logs-filters).
 - The same shape and color are used in the list, the graph, the detail and the filters (shapes and lightness differ, so they do not rely on color alone):
 
 | Log | Shape | Color |
@@ -157,6 +157,16 @@ The native Swift SDK lives in a separate repository, [FloconSwift](https://githu
 
 - Click a row to open its detail: value, type, level, params and time.
 - The desktop keeps at most 20 000 logs per device and app, the oldest ones are dropped first.
+
+#### Logs filters
+
+The **Logs** card of the filter panel (shown while the Log source is selected) has three filters:
+
+- **Types**: one menu to show or hide **Navigation**, **User action**, **Lifecycle** and **Tagged logs** (every log whose type is not one of the three, your custom types included), each with its count. When some are hidden, the menu shows the types still shown as chips (the x hides one).
+- **Tag**: type a word and press Enter (or **+**) to keep the tagged logs whose tag contains it, or **−** to hide them. The match is a case-insensitive "contains". The known tags are suggested while you type, each with **+** and **−**. The rules are listed under **Includes** and **Excludes**, with a checkbox to switch one off without deleting it.
+- **Level**: Debug, Info, Warning and Error, with their counts.
+
+The **Tag** and **Level** filters only apply to tagged logs: navigation, user action and lifecycle logs are never hidden by them. Unticking **Tagged logs** hides every tagged log and locks (dims) the Tag and Level filters.
 
 ### Limits
 
