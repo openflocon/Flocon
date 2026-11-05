@@ -113,6 +113,7 @@ private val SelectorChevronSize = 16.dp
 @Composable
 internal fun TimelineFilterPanel(
     panel: TimelineFilterPanelUiModel,
+    logTagText: State<String>, // typed in the tag field of the logs card, read synchronously by the field
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -170,6 +171,7 @@ internal fun TimelineFilterPanel(
                                 {
                                     LogFilterContent(
                                         logs = panel.logs,
+                                        tagText = logTagText,
                                         onAction = onAction,
                                         modifier = Modifier.padding(
                                             start = FloconTheme.spacing.large,
@@ -662,6 +664,7 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
         }
         TimelineFilterPanel(
             panel = panel,
+            logTagText = remember { mutableStateOf("") },
             onAction = {},
             modifier = Modifier
                 .width(PreviewPanelWidth)

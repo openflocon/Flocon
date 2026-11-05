@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -92,6 +93,7 @@ private val SuggestionIconSize = 18.dp
 @Composable
 internal fun LogFilterContent(
     logs: TimelineLogFilterUiModel,
+    tagText: State<String>, // the text of the tag field, a synchronous state so typing is never reset
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -104,7 +106,7 @@ internal fun LogFilterContent(
             modifier = Modifier.alpha(if (logs.taggedEnabled) 1f else DisabledCardAlpha),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         ) {
-            LogTagSection(logs = logs, onAction = onAction)
+            LogTagSection(logs = logs, tagText = tagText, onAction = onAction)
             LogLevelPills(logs = logs, onAction = onAction)
         }
     }
@@ -300,11 +302,13 @@ private fun LogTypeRow(
 @Composable
 private fun LogTagSection(
     logs: TimelineLogFilterUiModel,
+    tagText: State<String>,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val enabled = logs.taggedEnabled
-    val canSubmit = enabled && logs.tagQuery.isNotBlank()
+    val text = tagText.value
+    val canSubmit = enabled && text.isNotBlank()
     val includeDescription = stringResource(Res.string.filter_include)
     val excludeDescription = stringResource(Res.string.filter_exclude)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
@@ -315,12 +319,12 @@ private fun LogTagSection(
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         ) {
             FloconTextFieldWithoutM3(
-                value = logs.tagQuery,
+                value = text,
                 onValueChange = { onAction(TimelineFilterAction.SetLogTagQuery(it)) },
                 enabled = enabled,
                 keyboardActions = KeyboardActions(
                     // default action: include
-                    onDone = { onAction(TimelineFilterAction.AddLogTagRule(logs.tagQuery, exclude = false)) },
+                    onDone = { onAction(TimelineFilterAction.AddLogTagRule(text, exclude = false)) },
                 ),
                 placeholder = defaultPlaceHolder(
                     stringResource(Res.string.timeline_logs_tag_placeholder),
@@ -332,7 +336,7 @@ private fun LogTagSection(
             )
             FloconSmallIconButton(
                 enabled = canSubmit,
-                onClick = { onAction(TimelineFilterAction.AddLogTagRule(logs.tagQuery, exclude = false)) },
+                onClick = { onAction(TimelineFilterAction.AddLogTagRule(text, exclude = false)) },
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.AddCircle,
@@ -344,7 +348,7 @@ private fun LogTagSection(
             }
             FloconSmallIconButton(
                 enabled = canSubmit,
-                onClick = { onAction(TimelineFilterAction.AddLogTagRule(logs.tagQuery, exclude = true)) },
+                onClick = { onAction(TimelineFilterAction.AddLogTagRule(text, exclude = true)) },
             ) {
                 FloconIcon(
                     imageVector = Icons.Outlined.RemoveCircle,
@@ -356,7 +360,7 @@ private fun LogTagSection(
             }
         }
         // listed right under the field instead of in a popup: a popup takes the focus away from the field being typed in
-        if (enabled && logs.tagQuery.isNotBlank() && logs.tagSuggestions.isNotEmpty()) {
+        if (canSubmit && logs.tagSuggestions.isNotEmpty()) {
             TagSuggestions(suggestions = logs.tagSuggestions, onAction = onAction)
         }
         TagRules(
@@ -529,6 +533,7 @@ private fun LogFilterContentPreview(
     FloconTheme(isDarkTheme = isDarkTheme) {
         LogFilterContent(
             logs = remember(allTypesSelected, taggedEnabled) { previewTimelineLogFilterUiModel(allTypesSelected, taggedEnabled) },
+            tagText = remember { mutableStateOf("bi") },
             onAction = {},
             modifier = Modifier
                 .width(PreviewContentWidth)

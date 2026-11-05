@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -15,7 +16,6 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -60,15 +60,16 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    // what is typed in the tag field of the logs card
-    private val logTagQuery = MutableStateFlow("")
+    // what is typed in the tag field of the logs card: the field reads it synchronously, it is not part of the panel
+    private val logTagInput = TimelineLogTagInput()
+    val logTagText: State<String> get() = logTagInput.text
 
     val panel: StateFlow<TimelineFilterPanelUiModel> = combine(
         summary,
         filterStore.storedSources,
         filterStore.facets,
         filterStore.currentSessionOnly,
-        combine(filterStore.network, matchingNetworkCount, filterStore.logs, logTagQuery, ::CardsState),
+        combine(filterStore.network, matchingNetworkCount, filterStore.logs, logTagInput.query, ::CardsState),
     ) { summary, sources, facets, currentSessionOnly, cards ->
         summary.toFilterPanel(
             selectedSources = sources,
@@ -121,7 +122,7 @@ internal class TimelineFilterPanelViewModel(
             is TimelineFilterAction.AddLogTagRule -> {
                 action.text.trim().takeIf { it.isNotEmpty() }?.let {
                     filterStore.addLogTagRule(it, action.exclude)
-                    logTagQuery.value = ""
+                    logTagInput.clear()
                 }
             }
 
@@ -129,7 +130,7 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.RemoveLogTagRule -> filterStore.removeLogTagRule(action.value)
 
-            is TimelineFilterAction.SetLogTagQuery -> logTagQuery.value = action.text
+            is TimelineFilterAction.SetLogTagQuery -> logTagInput.set(action.text)
 
             is TimelineFilterAction.SetDurationRange -> {
                 val buckets = TIMELINE_DURATION_BUCKETS_MS
@@ -146,6 +147,7 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.ClearAll -> {
                 filterStore.clear()
+                logTagInput.clear()
                 viewModelScope.launch { setTimelineSelectedSourcesUseCase(TimelineSource.entries.toSet()) }
             }
         }

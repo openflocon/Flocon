@@ -19,6 +19,7 @@ internal fun TimelineFilterPanelScreen(
 
     TimelineFilterPanel(
         panel = panel,
+        logTagText = viewModel.logTagText,
         onAction = viewModel::onAction,
         modifier = modifier,
     )
