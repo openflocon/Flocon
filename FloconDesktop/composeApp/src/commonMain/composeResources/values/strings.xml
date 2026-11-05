@@ -670,4 +670,11 @@
     <string name="settings_data_auto_description">At each launch of Flocon, the data older than the chosen age is deleted.</string>
     <string name="settings_data_manual_title">Manual cleanup</string>
     <string name="settings_purge_never">Never</string>
+    <string name="settings_data_media_title">Screenshots and recordings</string>
+    <string name="settings_data_media_size">Size on disk</string>
+    <string name="settings_data_media_auto_description">The screenshots and video recordings you saved in the Flocon documents folder. At each launch of Flocon, the ones older than the chosen age are deleted. Never by default.</string>
+    <string name="settings_data_media_manual_description">Deletes the saved screenshots and video recordings of the Flocon documents folder. Other files are kept.</string>
+    <string name="settings_data_media_clean">Delete now</string>
+    <string name="settings_data_media_cleaning">Deleting…</string>
+    <string name="settings_data_media_clean_failed">Cleanup failed</string>
 </resources>
