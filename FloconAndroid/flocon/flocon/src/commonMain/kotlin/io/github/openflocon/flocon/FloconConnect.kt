@@ -11,7 +11,9 @@ class FloconConnectConfig internal constructor() {
 
     /**
      * The IP address of a computer to also try when Flocon starts, for example one with a fixed IP.
-     * Either `host` or `host:port` (no scheme): without a port, [websocketPort] is used.
+     * `host`, `host:wsPort` or `host:wsPort:httpPort` (no scheme), such as `192.168.1.10:10023:10024`.
+     * An omitted port takes [websocketPort] / [httpPort], and the ports of the address win over them
+     * for this address, including the HTTP port used for the file uploads.
      */
     var address: String? = null
 
@@ -72,8 +74,9 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
  * on reconnection, which is retried every 3 seconds. Calling it again replaces the address.
  *
  * @param address the IP address (or host) of the computer running Flocon Desktop, such as `192.168.1.20`.
- * Either `host` or `host:port` (no scheme nor path), without a port the configured
- * `websocketPort` is used (9023 by default). Anything else is a [FloconConnectResult.InvalidAddress].
+ * `host`, `host:wsPort` or `host:wsPort:httpPort` (no scheme nor path), such as `192.168.1.20:10023:10024`.
+ * An omitted port takes the configured `websocketPort` / `httpPort` (9023 / 9024 by default), and the ports
+ * of the address win over them for this address. Anything else is a [FloconConnectResult.InvalidAddress].
  * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
  * in every case, call it again to retry.
  */

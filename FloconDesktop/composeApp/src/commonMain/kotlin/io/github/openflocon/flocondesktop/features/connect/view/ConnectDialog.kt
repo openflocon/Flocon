@@ -80,6 +80,9 @@ private val SingleWidth = 420.dp
 private val MultiWidth = 680.dp
 private val QrSize = 216.dp
 
+// non breaking spaces, to keep a clear gap between the ip and the port
+private const val PortGap = "\u00A0\u00A0\u00A0\u00A0"
+
 /** The paws rest on the top edge of the window: the surface starts a bit above their bottom. */
 private val MascotPawsOverlap = 8.dp
 private val MascotEndOffset = 56.dp
@@ -125,7 +128,6 @@ private fun ConnectDialog(
             } else {
                 SingleAddress(
                     address = uiState.addresses.firstOrNull(),
-                    port = uiState.port,
                     onClose = onDismissRequest,
                 )
             }
@@ -184,7 +186,6 @@ private fun ConnectDialogFrame(
 @Composable
 private fun SingleAddress(
     address: LocalAddressUiModel?,
-    port: Int,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -218,7 +219,6 @@ private fun SingleAddress(
         } else {
             AddressPreview(
                 address = address,
-                port = port,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(FloconTheme.spacing.extraLarge),
@@ -271,7 +271,6 @@ private fun MultipleAddresses(
             Column {
                 AddressPreview(
                     address = selected,
-                    port = uiState.port,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(FloconTheme.spacing.extraLarge),
@@ -336,7 +335,6 @@ private fun AddressRow(
 @Composable
 private fun AddressPreview(
     address: LocalAddressUiModel,
-    port: Int,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -359,13 +357,15 @@ private fun AddressPreview(
         )
         val accent = FloconTheme.colors.accent
         Text(
-            text = remember(address.ip, port, accent) {
+            text = remember(address.ip, address.customPorts, accent) {
                 buildAnnotatedString {
                     append(address.ip)
-                    // non breaking spaces, to keep a clear gap between the ip and the port
-                    append("    ")
-                    withStyle(SpanStyle(color = accent)) {
-                        append(":$port")
+                    // the ports are only shown when one of them is not the default one
+                    address.customPorts?.let { customPorts ->
+                        append(PortGap)
+                        withStyle(SpanStyle(color = accent)) {
+                            append(customPorts)
+                        }
                     }
                 }
             },

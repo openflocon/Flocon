@@ -20,7 +20,7 @@ The SDK talks to the desktop over TLS (`wss://localhost:9023`, `https://localhos
 
 If you changed the ports in Flocon Desktop (**Settings > Server ports**), the SDK must use the same ones, except on Android emulator / USB where `adb reverse` maps the default `9023` / `9024` to the desktop ports.
 
-- Real device over Wi-Fi, iOS (simulator or device), JVM and Wasm: set `connect { websocketPort = ...; httpPort = ... }` (or `address = "host:port"`) to the desktop values. On iOS with the Swift SDK use `flocon.config(host:webSocketPort:httpPort:)`. Otherwise the app silently fails to connect.
+- Real device over Wi-Fi, iOS (simulator or device), JVM and Wasm: set `connect { websocketPort = ...; httpPort = ... }` (or `address = "host:ws:http"`) to the desktop values. On iOS with the Swift SDK use `flocon.config(host:webSocketPort:httpPort:)`. Otherwise the app silently fails to connect.
 - Desktop ports must be in `1024-65535`, different from each other, and not `9042` (MCP).
 - Wasm: open `https://localhost:<websocket port>` once in the browser to accept the certificate.
 

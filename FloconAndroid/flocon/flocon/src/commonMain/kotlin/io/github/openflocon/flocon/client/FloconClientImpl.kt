@@ -80,10 +80,11 @@ class FloconClient internal constructor(
     internal var extraLink: FloconLink? = null
         private set
 
-    private val address
-        get() = (extraLink?.takeIf { it.isConnected } ?: defaultLink.takeIf { it.isConnected } ?: defaultLink).server.host
+    /** The link the files go through: the connected extra one, else the default one. */
+    internal val uploadLink: FloconLink
+        get() = extraLink?.takeIf { it.isConnected } ?: defaultLink
 
-    private fun defaultServer() = FloconServer(getServerHost(context), websocketPort)
+    private fun defaultServer() = FloconServer(getServerHost(context), websocketPort, httpPort)
 
     private fun newLink(server: FloconServer): FloconLink {
         val link = FloconLink(server)
@@ -202,10 +203,12 @@ class FloconClient internal constructor(
         file: FloconFile,
         infos: FloconFileInfo,
     ) {
+        // the link is chosen now, with its own http port
+        val server = uploadLink.server
         scope.launch {
             httpClient.send(
-                address = address,
-                port = httpPort,
+                address = server.host,
+                port = server.httpPort,
                 file = file,
                 infos = infos,
                 deviceId = appInfos.deviceId,

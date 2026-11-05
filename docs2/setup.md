@@ -192,7 +192,7 @@ The `connect { }` block inside `startFlocon` configures how the SDK reaches the 
 ```kotlin
 startFlocon(this) {
     connect {
-        address = "192.168.1.10"  // desktop host, optionally "host:port"
+        address = "192.168.1.10"  // desktop host, optionally "host:ws" or "host:ws:http"
         websocketPort = 9023      // default 9023
         httpPort = 9024           // default 9024 (file upload)
     }
@@ -202,11 +202,13 @@ startFlocon(this) {
 
 | Option | Default | Description |
 | :--- | :--- | :--- |
-| `address` | `localhost` | Desktop host. `host:port` is accepted (for example `"192.168.1.10:3030"`). |
+| `address` | `localhost` | Desktop host. `host`, `host:ws` or `host:ws:http` are accepted (for example `"192.168.1.10:3030:3031"`). |
 | `websocketPort` | `9023` | Port of the desktop websocket server. |
 | `httpPort` | `9024` | Port of the desktop HTTP server (file upload). |
 
-A port written in `address` wins over `websocketPort`. The HTTP port only comes from `httpPort`.
+An address can carry both ports: `host`, `host:wsPort` or `host:wsPort:httpPort` (for example `192.168.1.10:10023:10024`). Each port is between `1` and `65535`; a missing port takes `websocketPort` / `httpPort`. The ports written in `address` win over `websocketPort` / `httpPort` for that address, and the file uploads use the HTTP port of the address they go through. The same format is accepted by `Flocon.connect(address)`.
+
+The QR code of Flocon Desktop's Connect dialog contains `ip:ws:http` (always both ports) as soon as one of the desktop ports is not the default (and just the IP when both are the defaults), so scanning it is enough to connect with the right ports. The last address is saved as `host:ws:http` when one of its ports differs from `websocketPort` / `httpPort`, as the plain host otherwise; addresses saved by older versions still load.
 
 ### Custom ports
 
@@ -237,7 +239,7 @@ startFlocon(FloconContext()) {
 }
 ```
 
-On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:port` is also accepted in connect addresses.
+On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:ws:http` is also accepted in connect addresses.
 
 #### Launch options
 

@@ -11,6 +11,8 @@ data class LocalAddressUiModel(
     val ip: String,
     /** What the SDK is given (QR code, copy, hint): the bare ip on the default port, `ip:port` otherwise. */
     val connectAddress: String = ip,
+    /** `:websocketPort:httpPort`, only when one of them is not the default (the default ports are not worth showing). */
+    val customPorts: String? = null,
 )
 
 @Immutable

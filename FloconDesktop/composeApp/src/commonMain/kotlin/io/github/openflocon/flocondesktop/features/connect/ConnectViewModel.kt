@@ -33,9 +33,18 @@ class ConnectViewModel(
         observeMascotEnabledUseCase(),
         observeServerPortsUseCase(),
     ) { addresses, mascotEnabled, ports ->
+        // older SDKs only accept the bare ip, so both ports are added only when one of them is not the default
+        val customPorts = ":${ports.websocketPort}:${ports.httpPort}".takeIf {
+            ports.websocketPort != Constant.SERVER_WEBSOCKET_PORT || ports.httpPort != Constant.SERVER_HTTP_PORT
+        }
         ConnectUiState(
             addresses = addresses
-                .map { it.copy(connectAddress = connectAddress(ip = it.ip, port = ports.websocketPort)) }
+                .map {
+                    it.copy(
+                        connectAddress = it.ip + customPorts.orEmpty(),
+                        customPorts = customPorts,
+                    )
+                }
                 .toImmutableList(),
             port = ports.websocketPort,
             mascotEnabled = mascotEnabled,
@@ -47,9 +56,6 @@ class ConnectViewModel(
             mascotEnabled = false,
         ),
     )
-
-    // older SDKs only accept the bare ip, so the port is added only when it is not the default one
-    private fun connectAddress(ip: String, port: Int) = if (port == Constant.SERVER_WEBSOCKET_PORT) ip else "$ip:$port"
 
     /** The network can change while the app is open, so addresses are read again each time the dialog opens. */
     fun refresh() {
