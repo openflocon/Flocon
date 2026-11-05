@@ -44,7 +44,13 @@ class TimelineFilterStoreTest {
         // no wait for the debounce of the text
         assertEquals("checkout", filter.text)
         assertEquals(selected, filter.sources)
-        assertEquals(mapOf(TimelineFacet.NetworkMethod to setOf("GET")), filter.facets)
+        assertEquals(
+            mapOf(
+                TimelineFacet.DatabaseStatement to setOf("TRANSACTION"),
+                TimelineFacet.NetworkMethod to setOf("GET"),
+            ),
+            filter.facets,
+        )
         assertEquals(true, filter.currentSessionOnly)
         assertEquals(listOf(TimelineRuleDomainModel(value = "500", exclude = false)), filter.networkStatusRules)
     }
@@ -69,7 +75,16 @@ class TimelineFilterStoreTest {
         provider.current()
 
         assertEquals("checkout", store.text.value)
-        assertEquals(emptyMap(), store.facets.value)
+        assertEquals(mapOf(TimelineFacet.DatabaseStatement to setOf("TRANSACTION")), store.facets.value)
+    }
+
+    @Test
+    fun `the database transactions are hidden until the filter is removed`() = runBlocking {
+        assertEquals(setOf("TRANSACTION"), provider.current().facets[TimelineFacet.DatabaseStatement])
+
+        store.toggleFacet(TimelineFacet.DatabaseStatement, "TRANSACTION")
+
+        assertEquals(emptyMap(), provider.current().facets)
     }
 
     @Test

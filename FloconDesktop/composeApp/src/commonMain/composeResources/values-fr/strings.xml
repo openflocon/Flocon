@@ -142,18 +142,6 @@
         <item quantity="one">événement</item>
         <item quantity="other">événements</item>
     </plurals>
-    <plurals name="timeline_counter_sessions">
-        <item quantity="one">session</item>
-        <item quantity="other">sessions</item>
-    </plurals>
-    <plurals name="timeline_counter_http_errors">
-        <item quantity="one">erreur HTTP</item>
-        <item quantity="other">erreurs HTTP</item>
-    </plurals>
-    <plurals name="timeline_counter_crashes">
-        <item quantity="one">crash</item>
-        <item quantity="other">crashs</item>
-    </plurals>
     <plurals name="timeline_session_events">
         <item quantity="one">%1$d événement</item>
         <item quantity="other">%1$d événements</item>

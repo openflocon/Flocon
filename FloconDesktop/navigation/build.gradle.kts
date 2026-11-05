@@ -37,6 +37,9 @@ kotlin {
             implementation(projects.library.designsystem)
             implementation(libs.kotlinx.immutable)
 
+            implementation(libs.haze)
+            implementation(libs.haze.blur)
+
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
