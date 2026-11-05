@@ -212,8 +212,8 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         // 1.10.0 is newer than 1.9.0 (numeric, not lexicographic)
         assertTrue(isRemoteVersionNewer(localVersion = "1.9.0", remoteVersion = "1.10.0"))
         assertFalse(isRemoteVersionNewer(localVersion = "1.10.0", remoteVersion = "1.9.0"))
-        // suffixes and prefixes are ignored
-        assertFalse(isRemoteVersionNewer(localVersion = "1.10.0-SNAPSHOT", remoteVersion = "1.10.0"))
+        // the "v" prefix is ignored, a pre-release is older than its release (semver)
+        assertTrue(isRemoteVersionNewer(localVersion = "1.10.0-SNAPSHOT", remoteVersion = "1.10.0"))
         assertFalse(isRemoteVersionNewer(localVersion = "v1.10.0", remoteVersion = "1.10.0"))
         assertTrue(isRemoteVersionNewer(localVersion = "1.9.2-rc1", remoteVersion = "1.10.0"))
         // unknown versions never trigger an update
