@@ -15,6 +15,7 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
@@ -56,6 +57,7 @@ fun main() {
         install(FloconAnalytics)
         install(FloconAccessibility)
         install(FloconFeatureFlags)
+        install(FloconTimeline)
         install(FloconPreferences)
         install(FloconFiles)
         install(FloconDevice)

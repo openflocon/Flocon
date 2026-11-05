@@ -17,6 +17,7 @@ import io.github.openflocon.data.local.timeline.models.TimelineFacetCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.data.local.timelinelog.models.TimelineLogEntity
 import io.github.openflocon.data.local.webview.models.WebViewEventEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +35,7 @@ interface TimelineDao {
             TableItemEntity::class,
             DeeplinkEntity::class,
             AdbCommandHistoryEntity::class,
+            TimelineLogEntity::class,
         ]
     )
     fun observeTimeline(
@@ -52,6 +54,7 @@ interface TimelineDao {
             TableItemEntity::class,
             DeeplinkEntity::class,
             AdbCommandHistoryEntity::class,
+            TimelineLogEntity::class,
         ]
     )
     fun observeTimelineList(
@@ -70,6 +73,7 @@ interface TimelineDao {
             TableItemEntity::class,
             DeeplinkEntity::class,
             AdbCommandHistoryEntity::class,
+            TimelineLogEntity::class,
         ]
     )
     fun observeSummary(
@@ -88,6 +92,7 @@ interface TimelineDao {
             TableItemEntity::class,
             DeeplinkEntity::class,
             AdbCommandHistoryEntity::class,
+            TimelineLogEntity::class,
         ]
     )
     fun observeSessionCounts(
@@ -101,6 +106,7 @@ interface TimelineDao {
             AccessibilityEventEntity::class,
             CrashReportEntity::class,
             DatabaseQueryLogEntity::class,
+            TimelineLogEntity::class,
         ]
     )
     fun observeFacetCounts(

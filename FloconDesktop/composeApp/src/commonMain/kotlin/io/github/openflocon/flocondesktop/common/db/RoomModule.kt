@@ -80,6 +80,9 @@ val roomModule =
             get<AppDatabase>().webViewEventDao
         }
         single {
+            get<AppDatabase>().timelineLogDao
+        }
+        single {
             get<AppDatabase>().maintenanceDao
         }
         singleOf(::DatabaseMaintenanceRepositoryImpl) bind DatabaseMaintenanceRepository::class

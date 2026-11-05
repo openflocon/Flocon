@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.timeline.models
 
 import io.github.openflocon.domain.device.models.AppInstance
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 
 data class TimelineEventDomainModel(
     val id: String, // the id of the event in the table of its source
@@ -18,4 +19,5 @@ data class TimelineEventDomainModel(
     val responseByteSize: Long? = null, // network only: size of the response in bytes, null while waiting for it
     // the start of the session the event belongs to: the latest app start before it, null if none is known
     val sessionStart: AppInstance? = null,
+    val level: TimelineLogLevel? = null, // log only
 )

@@ -34,4 +34,7 @@ interface DatabaseMaintenanceDao {
 
     @Query("DELETE FROM TableItemEntity WHERE createdAt < :before")
     suspend fun purgeTableItems(before: Long)
+
+    @Query("DELETE FROM TimelineLogEntity WHERE timestamp < :before")
+    suspend fun purgeTimelineLogs(before: Long)
 }

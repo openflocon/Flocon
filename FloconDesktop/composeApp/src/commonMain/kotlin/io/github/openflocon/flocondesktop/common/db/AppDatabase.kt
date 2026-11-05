@@ -58,6 +58,8 @@ import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.data.local.timeline.dao.TimelineDao
+import io.github.openflocon.data.local.timelinelog.dao.TimelineLogDao
+import io.github.openflocon.data.local.timelinelog.models.TimelineLogEntity
 import io.github.openflocon.data.local.webview.dao.WebViewEventDao
 import io.github.openflocon.data.local.webview.models.WebViewEventEntity
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
@@ -66,7 +68,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 91,
+    version = 92,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -99,6 +101,7 @@ import kotlinx.coroutines.Dispatchers
         AdbFlowEntity::class,
         AdbFlowStepEntity::class,
         WebViewEventEntity::class,
+        TimelineLogEntity::class,
     ]
 )
 @TypeConverters(
@@ -131,6 +134,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val adbCommanderDao: AdbCommanderDao
     abstract val timelineDao: TimelineDao
     abstract val webViewEventDao: WebViewEventDao
+    abstract val timelineLogDao: TimelineLogDao
     abstract val maintenanceDao: DatabaseMaintenanceDao
 }
 

@@ -76,6 +76,11 @@ class RowNavigationTest {
         assertNull(previewTimelineRowUiModel(TimelineSource.Accessibility, title = "Pay now").linkKey())
     }
 
+    @Test
+    fun `logRowsHaveNoLinkKey`() {
+        assertNull(previewTimelineRowUiModel(TimelineSource.Log, title = "HomeScreen").linkKey())
+    }
+
     private val linkRows = listOf(
         previewTimelineRowUiModel(TimelineSource.Database, id = "1", title = "SELECT 1"),
         previewTimelineRowUiModel(TimelineSource.Analytics, id = "2", title = "screen_view"),

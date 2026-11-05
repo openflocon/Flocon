@@ -183,6 +183,15 @@ class TimelineMcpToolProviderTest {
     }
 
     @Test
+    fun `logs are narrated and can be searched with the log source`() = runBlocking {
+        val withLog = events + event("l1", 60, TimelineSource.Log, "HomeScreen", "navigation")
+        val result = start(withLog).callTool("get_timeline", mapOf("mode" to "session", "search" to "HomeScreen", "searchSource" to "log")).json()
+
+        assertEquals(true, result["found"]!!.jsonPrimitive.boolean)
+        assertTrue(result.lines().any { it.contains("navigation: HomeScreen") && it.endsWith("[log:l1]") }, result.lines().toString())
+    }
+
+    @Test
     fun `a time with an unreadable format lists the accepted ones`() = runBlocking {
         val result = start().callTool("get_timeline", mapOf("mode" to "at", "at" to "soon"))
 

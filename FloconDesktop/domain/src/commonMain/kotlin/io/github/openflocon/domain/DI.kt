@@ -23,6 +23,7 @@ import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
 import io.github.openflocon.domain.timeline.timelineDomainModule
+import io.github.openflocon.domain.timelinelog.timelineLogModule
 import io.github.openflocon.domain.versions.versionModule
 import io.github.openflocon.domain.webview.webViewDomainModule
 import org.koin.dsl.module
@@ -53,6 +54,7 @@ val domainModule = module {
         menuModule,
         screenModule,
         timelineDomainModule,
+        timelineLogModule,
         webViewDomainModule,
     )
 }

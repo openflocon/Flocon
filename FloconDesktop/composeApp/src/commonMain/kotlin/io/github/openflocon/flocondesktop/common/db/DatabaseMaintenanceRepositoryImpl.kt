@@ -31,6 +31,7 @@ class DatabaseMaintenanceRepositoryImpl(
         dao.purgeCrashReports(beforeTimestampMs)
         dao.purgeDatabaseQueryLogs(beforeTimestampMs)
         dao.purgeTableItems(beforeTimestampMs)
+        dao.purgeTimelineLogs(beforeTimestampMs)
 
         // deleted rows keep their space in the file until the database is compacted
         database.useWriterConnection { transactor ->
