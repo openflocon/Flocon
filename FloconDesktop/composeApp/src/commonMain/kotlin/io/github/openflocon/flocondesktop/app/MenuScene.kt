@@ -40,6 +40,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.hazeBackground
 import io.github.openflocon.navigation.mascot.LocalMascot
 import io.github.openflocon.navigation.mascot.LocalMascotCommands
 import io.github.openflocon.navigation.mascot.MascotCommands
@@ -71,6 +72,7 @@ data class MenuScene(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .hazeBackground()
                 .onGloballyPositioned { origin = it.positionInRoot() }
                 .pointerInput(Unit) {
                     // watches the pointer without consuming anything
