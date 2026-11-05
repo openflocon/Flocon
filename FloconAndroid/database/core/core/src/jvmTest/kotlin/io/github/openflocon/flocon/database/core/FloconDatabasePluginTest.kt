@@ -41,6 +41,13 @@ class FloconDatabasePluginTest {
     }
 
     @Test
+    fun `logQuery sends the transaction id`() {
+        plugin.logQuery(dbId = "dogs", sqlQuery = "BEGIN", bindArgs = emptyList(), transactionId = "tx-1")
+
+        assertContains(sender.messages.single().third, "\"transactionId\":\"tx-1\"")
+    }
+
+    @Test
     fun `register refuses a second database with the same id`() {
         plugin.register(FloconFileDatabaseModel(id = "dogs", displayName = "dogs", absolutePath = "/a"))
 

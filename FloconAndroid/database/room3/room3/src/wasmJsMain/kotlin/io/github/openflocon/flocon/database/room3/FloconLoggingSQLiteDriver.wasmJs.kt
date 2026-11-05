@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.database.room3
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.SQLiteDriver
 import androidx.sqlite.SQLiteStatement
+import io.github.openflocon.flocon.database.core.FloconTransactionState
 
 actual fun SQLiteDriver.floconLogs(id: String): SQLiteDriver = FloconLoggingSQLiteDriver(delegate = this, dbId = id, logger = DatabasePluginQueryLogger)
 
@@ -24,7 +25,10 @@ private class FloconLoggingConnection(
     private val logger: QueryLogger,
 ) : SQLiteConnection by delegate {
 
-    override suspend fun prepare(sql: String): SQLiteStatement = FloconLoggingStatement(delegate.prepare(sql), dbId, sql, logger)
+    // a connection runs one transaction at a time
+    private val transactionState = FloconTransactionState()
+
+    override suspend fun prepare(sql: String): SQLiteStatement = FloconLoggingStatement(delegate.prepare(sql), dbId, sql, logger, transactionState)
 }
 
 /**
@@ -35,6 +39,7 @@ private class FloconLoggingStatement(
     private val dbId: String,
     private val sql: String,
     private val logger: QueryLogger,
+    private val transactionState: FloconTransactionState,
 ) : SQLiteStatement by delegate {
 
     private val bindArgs = mutableMapOf<Int, Any?>()
@@ -68,7 +73,12 @@ private class FloconLoggingStatement(
     override suspend fun step(): Boolean {
         if (!logged) {
             logged = true
-            logger.log(dbId = dbId, sql = sql, bindArgs = bindArgs.entries.sortedBy { it.key }.map { it.value })
+            logger.log(
+                dbId = dbId,
+                sql = sql,
+                bindArgs = bindArgs.entries.sortedBy { it.key }.map { it.value },
+                transactionId = transactionState.onQuery(sql),
+            )
         }
         return delegate.step()
     }

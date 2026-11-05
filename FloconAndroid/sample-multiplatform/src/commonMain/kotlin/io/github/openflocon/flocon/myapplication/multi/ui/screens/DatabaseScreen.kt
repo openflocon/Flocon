@@ -18,6 +18,13 @@ fun DatabaseScreen(onBack: () -> Unit) = PluginScreen(SampleScreen.Database, onB
             SampleFeature.DatabaseInMemory,
         ),
     )
+    ActionGroup(
+        "Transactions",
+        listOf(
+            SampleFeature.DatabaseTransactionRoom3,
+            SampleFeature.DatabaseTransactionRoom2,
+        ),
+    )
     InfoCard(
         text = "Databases are registered with Flocon at startup (dogs, food, ...). Open them in Flocon > Database " +
             "to run queries and watch the inserted rows.",

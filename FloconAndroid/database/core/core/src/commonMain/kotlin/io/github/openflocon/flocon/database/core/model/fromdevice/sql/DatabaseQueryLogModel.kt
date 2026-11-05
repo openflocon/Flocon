@@ -8,4 +8,5 @@ internal data class DatabaseQueryLogModel(
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val timestamp: Long,
+    val transactionId: String? = null,
 )

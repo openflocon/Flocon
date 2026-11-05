@@ -3,14 +3,20 @@
 package io.github.openflocon.flocon.myapplication.multi.ui
 
 import android.content.Context
+import androidx.room3.immediateTransaction
+import androidx.room3.useWriterConnection
 import io.github.openflocon.flocon.myapplication.multi.Databases
 import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
+import io.github.openflocon.flocon.myapplication.multi.database.model.HumanEntity
+import io.github.openflocon.flocon.myapplication.multi.database.model.HumanWithDogEntity
 import io.github.openflocon.flocon.myapplication.multi.room2.CatDatabase
 import io.github.openflocon.flocon.myapplication.multi.room2.CatEntity
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.updateDatastoreAge
 import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.tester.FloconOkHttpTester
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
@@ -39,6 +45,33 @@ fun registerAndroidSampleFeatures(context: Context) {
         CatDatabase.get(context).catDao().insertCat(
             CatEntity(id = System.currentTimeMillis(), name = "Flocon cat", age = Random.nextInt(1, 15))
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseTransactionRoom3) {
+        // the three inserts and the transaction statements share one transactionId in the query logs
+        val database = Databases.getDogDatabase(context)
+        val dao = database.dogDao()
+        val dog = newDog("Transaction dog")
+        val human = HumanEntity(id = dog.id, firstName = "Transaction", name = "Human")
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                dao.insertDog(dog)
+                dao.insertHuman(human)
+                dao.insertHumanWithDogEntity(HumanWithDogEntity(humanId = human.id, dogId = dog.id))
+            }
+        }
+    }
+    SampleFeatures.on(SampleFeature.DatabaseTransactionRoom2) {
+        val database = CatDatabase.get(context)
+        withContext(Dispatchers.IO) {
+            database.runInTransaction {
+                val now = System.currentTimeMillis()
+                repeat(3) { index ->
+                    database.catDao().insertCatBlocking(
+                        CatEntity(id = now + index, name = "Transaction cat $index", age = Random.nextInt(1, 15)),
+                    )
+                }
+            }
+        }
     }
     SampleFeatures.on(SampleFeature.DatabaseInMemory) {
         AndroidTestContext.inMemoryDb.dogDao().insertDog(newDog("InMemory Flocon"))

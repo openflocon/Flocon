@@ -30,6 +30,10 @@ interface CatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCat(cat: CatEntity)
 
+    /** Blocking, to be called inside [RoomDatabase.runInTransaction]. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCatBlocking(cat: CatEntity)
+
     @Query("SELECT * FROM cats")
     suspend fun getCats(): List<CatEntity>
 }

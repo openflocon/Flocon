@@ -115,7 +115,7 @@ internal class FloconDatabasePluginImpl(
         sendDatabases(registeredDatabases.value)
     }
 
-    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) {
         scope.launch {
             try {
                 sender.send(
@@ -126,7 +126,8 @@ internal class FloconDatabasePluginImpl(
                             dbId = dbId,
                             sqlQuery = sqlQuery,
                             bindArgs = bindArgs.map { it.toString() },
-                            timestamp = currentTimeMillis()
+                            timestamp = currentTimeMillis(),
+                            transactionId = transactionId,
                         )
                     )
                 )

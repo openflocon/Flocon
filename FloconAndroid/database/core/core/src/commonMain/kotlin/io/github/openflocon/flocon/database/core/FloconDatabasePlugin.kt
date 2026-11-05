@@ -17,8 +17,9 @@ interface FloconDatabasePlugin : FloconPlugin {
 
     /**
      * @param dbId the id the database was registered with (see [register]), the queries are shown with this database in the desktop app
+     * @param transactionId the same id for all the queries of a transaction (BEGIN and COMMIT included), the desktop app groups them. Null outside of a transaction
      */
-    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>)
+    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String? = null)
 
 }
 
@@ -29,7 +30,7 @@ private class NoOpDatabasePlugin : FloconDatabasePlugin {
     override val key: String = ""
     override val providers: List<FloconDatabaseProvider> = emptyList()
     override fun register(floconDatabaseModel: FloconDatabaseModel) = Unit
-    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }
