@@ -73,6 +73,44 @@ fun registerAndroidSampleFeatures(context: Context) {
             }
         }
     }
+    SampleFeatures.on(SampleFeature.DatabaseNestedTransactionRoom3) {
+        // transaction { transaction { insertUsers() }; transaction { insertPosts(); insertComments() } }
+        // Room 3 runs the inner transactions as savepoints of the outer one
+        val database = Databases.getDogDatabase(context)
+        val dao = database.dogDao()
+        val dog = newDog("Nested transaction dog")
+        val human = HumanEntity(id = dog.id, firstName = "Nested", name = "Human")
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                withNestedTransaction {
+                    dao.insertHuman(human)
+                }
+                withNestedTransaction {
+                    dao.insertDog(dog)
+                    dao.insertHumanWithDogEntity(HumanWithDogEntity(humanId = human.id, dogId = dog.id))
+                }
+            }
+        }
+    }
+    SampleFeatures.on(SampleFeature.DatabaseNestedTransactionRoom2) {
+        // Room 2 only sends the BEGIN of the outer transaction, the inner ones are part of it
+        val database = CatDatabase.get(context)
+        withContext(Dispatchers.IO) {
+            database.runInTransaction {
+                val now = System.currentTimeMillis()
+                database.runInTransaction {
+                    database.catDao().insertCatBlocking(CatEntity(id = now, name = "Nested cat 0", age = Random.nextInt(1, 15)))
+                }
+                database.runInTransaction {
+                    repeat(2) { index ->
+                        database.catDao().insertCatBlocking(
+                            CatEntity(id = now + 1 + index, name = "Nested cat ${index + 1}", age = Random.nextInt(1, 15)),
+                        )
+                    }
+                }
+            }
+        }
+    }
     SampleFeatures.on(SampleFeature.DatabaseInMemory) {
         AndroidTestContext.inMemoryDb.dogDao().insertDog(newDog("InMemory Flocon"))
     }

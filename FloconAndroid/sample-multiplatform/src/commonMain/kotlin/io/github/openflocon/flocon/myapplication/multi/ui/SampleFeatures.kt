@@ -47,6 +47,8 @@ enum class SampleFeature(
     DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
     DatabaseFood(SampleScreen.Database, "Food, Room 3", "Insert food in the second database", buttonLabel = "Insert"),
     DatabaseTransactionRoom3(SampleScreen.Database, "Transaction, Room 3", "A dog, a human and their link inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom3(SampleScreen.Database, "Nested transactions, Room 3", "A transaction with two transactions inside (humans, then dogs and their links), run with savepoints", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom2(SampleScreen.Database, "Nested transactions, Room 2", "A transaction with two transactions inside (cats, then more cats): Room 2 sends one transaction", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
     DatabaseTransactionRoom2(SampleScreen.Database, "Transaction, Room 2", "Three cats inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
 
     AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),

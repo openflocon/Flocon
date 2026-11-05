@@ -23,6 +23,8 @@ fun DatabaseScreen(onBack: () -> Unit) = PluginScreen(SampleScreen.Database, onB
         listOf(
             SampleFeature.DatabaseTransactionRoom3,
             SampleFeature.DatabaseTransactionRoom2,
+            SampleFeature.DatabaseNestedTransactionRoom3,
+            SampleFeature.DatabaseNestedTransactionRoom2,
         ),
     )
     InfoCard(

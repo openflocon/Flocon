@@ -158,5 +158,7 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom2, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom2, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not set up in the desktop sample")
 }
