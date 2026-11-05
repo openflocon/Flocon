@@ -43,8 +43,11 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -56,7 +59,6 @@ import flocondesktop.composeapp.generated.resources.connect_copy
 import flocondesktop.composeapp.generated.resources.connect_empty
 import flocondesktop.composeapp.generated.resources.connect_hint
 import flocondesktop.composeapp.generated.resources.connect_pick_network
-import flocondesktop.composeapp.generated.resources.connect_port
 import flocondesktop.composeapp.generated.resources.connect_scan
 import flocondesktop.composeapp.generated.resources.connect_title
 import io.github.openflocon.flocondesktop.features.connect.ConnectViewModel
@@ -348,27 +350,37 @@ private fun AddressPreview(
             fontWeight = FontWeight.SemiBold,
             color = FloconTheme.colors.accent,
         )
-        // the SDK connects with the bare ip, see Flocon.connect()
+        // the SDK connects with this address, see Flocon.connect()
         QrCodeImage(
-            content = address.ip,
+            content = address.connectAddress,
             modifier = Modifier
                 .size(QrSize)
                 .clip(FloconTheme.shapes.large),
         )
+        val accent = FloconTheme.colors.accent
         Text(
-            text = address.ip,
+            text = remember(address.ip, port, accent) {
+                buildAnnotatedString {
+                    append(address.ip)
+                    // non breaking spaces, to keep a clear gap between the ip and the port
+                    append("    ")
+                    withStyle(SpanStyle(color = accent)) {
+                        append(":$port")
+                    }
+                }
+            },
             style = FloconTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
         )
         Text(
-            text = "${address.interfaceName} · ${stringResource(Res.string.connect_port, port)}",
+            text = address.interfaceName,
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
         )
-        CopyButton(ip = address.ip)
+        CopyButton(ip = address.connectAddress)
         Text(
-            text = stringResource(Res.string.connect_hint, address.ip),
+            text = stringResource(Res.string.connect_hint, address.connectAddress),
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
             textAlign = TextAlign.Center,

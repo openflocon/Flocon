@@ -525,7 +525,7 @@ private fun ServerPortsCard(
         Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
             ) {
                 Text(
                     text = stringResource(Res.string.settings_server_ports_websocket),
@@ -543,7 +543,7 @@ private fun ServerPortsCard(
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
             ) {
                 Text(
                     text = stringResource(Res.string.settings_server_ports_http),

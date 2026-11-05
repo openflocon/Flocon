@@ -34,7 +34,9 @@ class ConnectViewModel(
         observeServerPortsUseCase(),
     ) { addresses, mascotEnabled, ports ->
         ConnectUiState(
-            addresses = addresses,
+            addresses = addresses
+                .map { it.copy(connectAddress = connectAddress(ip = it.ip, port = ports.websocketPort)) }
+                .toImmutableList(),
             port = ports.websocketPort,
             mascotEnabled = mascotEnabled,
         )
@@ -45,6 +47,9 @@ class ConnectViewModel(
             mascotEnabled = false,
         ),
     )
+
+    // older SDKs only accept the bare ip, so the port is added only when it is not the default one
+    private fun connectAddress(ip: String, port: Int) = if (port == Constant.SERVER_WEBSOCKET_PORT) ip else "$ip:$port"
 
     /** The network can change while the app is open, so addresses are read again each time the dialog opens. */
     fun refresh() {
