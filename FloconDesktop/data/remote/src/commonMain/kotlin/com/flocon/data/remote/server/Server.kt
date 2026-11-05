@@ -3,7 +3,6 @@ package com.flocon.data.remote.server
 import com.flocon.data.remote.models.FloconDeviceIdAndPackageNameDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
-import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,9 +11,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface Server {
-    fun startWebsocket(port: Int = Constant.SERVER_WEBSOCKET_PORT)
+    fun startWebsocket(port: Int)
 
-    fun starHttp(port: Int = Constant.SERVER_HTTP_PORT)
+    fun starHttp(port: Int)
 
     fun stop()
 

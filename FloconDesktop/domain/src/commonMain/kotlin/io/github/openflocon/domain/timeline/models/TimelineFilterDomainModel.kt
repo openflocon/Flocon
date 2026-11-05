@@ -16,8 +16,18 @@ data class TimelineFilterDomainModel(
     val networkStatusRules: List<TimelineRuleDomainModel> = emptyList(),
     // words of the host of the network calls to keep (include) or hide (exclude)
     val networkHostRules: List<TimelineRuleDomainModel> = emptyList(),
+    // words of the path (and query) of the network calls to keep (include) or hide (exclude)
+    val networkPathRules: List<TimelineRuleDomainModel> = emptyList(),
     // null: every duration, the calls without duration yet are kept. A range hides them
     val networkDuration: TimelineDurationRangeDomainModel? = null,
+    // words of the sql query of the database logs to keep (include) or hide (exclude)
+    val databaseRules: List<TimelineRuleDomainModel> = emptyList(),
+    // true: the logs of the transactions (BEGIN, COMMIT...) are hidden
+    val hideDatabaseTransactions: Boolean = false,
+    // false: every log whose type is not reserved (tagged logs, custom types) is hidden
+    val logTaggedEnabled: Boolean = true,
+    // words of the type of the tagged logs to keep (include) or hide (exclude), the reserved types are never affected
+    val logTagRules: List<TimelineRuleDomainModel> = emptyList(),
     // null: every time. Only the events list and the list of the timeline apply the bounds, not the counters
     val fromMs: Long? = null,
     val toMs: Long? = null,

@@ -270,5 +270,8 @@ class ServerJvm(
 
         httpServer?.stop(1000, 2000)
         httpServer = null
+
+        isStarted.set(false)
+        activeSessions.value = emptyMap()
     }
 }

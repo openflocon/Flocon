@@ -10,22 +10,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
 private val RemoveIconSize = 14.dp
+private val ActiveCheckboxSize = 18.dp
+private const val InactiveAlpha = 0.5f
 
 /**
  * A rule typed by the user, that keeps ([exclude] false, green +) or hides ([exclude] true, red −) what matches [text].
+ * With [active] set, a checkbox switches the rule on or off ([onActiveChange]) and an inactive rule is dimmed.
+ * [active] null: no checkbox, the rule is always applied.
  */
 @Composable
 fun FloconRuleChip(
@@ -34,10 +42,13 @@ fun FloconRuleChip(
     onRemove: () -> Unit,
     removeContentDescription: String,
     modifier: Modifier = Modifier,
+    active: Boolean? = null,
+    onActiveChange: ((Boolean) -> Unit)? = null,
 ) {
     val colors = FloconTheme.colors
     Row(
         modifier = modifier
+            .alpha(if (active == false) InactiveAlpha else 1f)
             .clip(FloconTheme.shapes.medium)
             .background(colors.bg300)
             .border(1.dp, colors.line, FloconTheme.shapes.medium)
@@ -45,6 +56,16 @@ fun FloconRuleChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
+        if (active != null) {
+            // the checkbox keeps its own size instead of the touch target of Material
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                FloconCheckbox(
+                    checked = active,
+                    onCheckedChange = { onActiveChange?.invoke(it) },
+                    modifier = Modifier.size(ActiveCheckboxSize),
+                )
+            }
+        }
         Text(
             text = if (exclude) "−" else "+",
             style = FloconTheme.typography.bodyMedium,
@@ -79,6 +100,8 @@ private fun FloconRuleChipPreview() {
         ) {
             FloconRuleChip(text = "101", exclude = false, onRemove = {}, removeContentDescription = "Remove")
             FloconRuleChip(text = "500-503", exclude = true, onRemove = {}, removeContentDescription = "Remove")
+            FloconRuleChip(text = "billing", exclude = false, onRemove = {}, removeContentDescription = "Remove", active = true, onActiveChange = {})
+            FloconRuleChip(text = "auth", exclude = true, onRemove = {}, removeContentDescription = "Remove", active = false, onActiveChange = {})
         }
     }
 }

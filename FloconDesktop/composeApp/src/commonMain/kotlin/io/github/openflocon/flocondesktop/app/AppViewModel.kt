@@ -7,7 +7,6 @@ import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
-import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
@@ -18,6 +17,7 @@ import io.github.openflocon.domain.menu.usecase.TogglePinnedMenuItemUseCase
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
 import io.github.openflocon.domain.versions.usecase.ShouldShowReleaseNotesUseCase
 import io.github.openflocon.flocondesktop.BuildConfig
@@ -54,6 +54,7 @@ import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -68,13 +69,13 @@ internal class AppViewModel(
     mcpServerDelegate: McpServerDelegate,
     initAdbPathUseCase: InitAdbPathUseCase,
     startAdbForwardUseCase: StartAdbForwardUseCase,
+    observeServerPortsUseCase: ObserveServerPortsUseCase,
     shouldShowReleaseNotesUseCase: ShouldShowReleaseNotesUseCase,
     val navigationState: MainFloconNavigationState,
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
     private val devicesDelegate: DevicesDelegate,
     private val takeScreenshotUseCase: TakeScreenshotUseCase,
-    private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val logManager: LogManager,
@@ -193,16 +194,19 @@ internal class AppViewModel(
             mcpServerDelegate.initialize()
 
             launch {
-                while (isActive) {
-                    // ensure we have the forward enabled
-                    startAdbForwardUseCase()
-                        .alsoFailure {
-                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
-                        }
-                        .alsoSuccess {
-                            settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
-                        }
-                    delay(1_500.milliseconds)
+                // the forward is applied again as soon as the server ports change
+                observeServerPortsUseCase().collectLatest { ports ->
+                    while (isActive) {
+                        // ensure we have the forward enabled
+                        startAdbForwardUseCase(ports)
+                            .alsoFailure {
+                                settingsRepository.setAdbForwardStatus(AdbForwardStatus.NOK)
+                            }
+                            .alsoSuccess {
+                                settingsRepository.setAdbForwardStatus(AdbForwardStatus.OK)
+                            }
+                        delay(1_500.milliseconds)
+                    }
                 }
             }
         }
@@ -225,8 +229,6 @@ internal class AppViewModel(
             is AppAction.DeleteDevice -> deleteDevice(action)
 
             AppAction.Record -> onRecord()
-
-            AppAction.Restart -> onRestart()
 
             AppAction.Screenshoot -> onTakeScreenshot()
 
@@ -296,12 +298,6 @@ internal class AppViewModel(
     private fun onRecord() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             recordVideoDelegate.toggleRecording()
-        }
-    }
-
-    private fun onRestart() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            restartAppUseCase()
         }
     }
 

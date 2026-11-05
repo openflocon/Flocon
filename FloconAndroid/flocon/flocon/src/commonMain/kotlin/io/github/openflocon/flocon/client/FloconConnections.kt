@@ -44,7 +44,7 @@ internal class FloconConnections(
         // then the address given by the app, or the last one that worked: the latter wins
         val address = addressStore?.load() ?: initialAddress ?: return
         try {
-            val server = parseFloconServer(address)
+            val server = parseFloconServer(address, client.websocketPort, client.httpPort)
             if (server != client.defaultLink.server) {
                 launch(client.addExtraLink(server))
             }
@@ -56,7 +56,7 @@ internal class FloconConnections(
     /** Adds a connection to [address], next to the default one, replacing the one added before. */
     suspend fun connectTo(address: String): FloconConnectResult = connectMutex.withLock {
         val server = try {
-            parseFloconServer(address)
+            parseFloconServer(address, client.websocketPort, client.httpPort)
         } catch (e: IllegalArgumentException) {
             return FloconConnectResult.InvalidAddress(e.message ?: address)
         }
@@ -135,7 +135,7 @@ internal class FloconConnections(
         client.onConnected(link, handshakeBody = plugins.toBonjourBody(encoder, connectionType))
         FloconConnectionStates.set(link, FloconConnectionState.Connected)
         // the address typed by the user, or given at start, comes back at the next launch
-        if (link !== client.defaultLink) addressStore?.save(link.server.host)
+        if (link !== client.defaultLink) addressStore?.save(link.server.storedAddress(client.websocketPort, client.httpPort))
         plugins.forEach { it.onConnectedToServer() }
     }
 
@@ -147,3 +147,10 @@ internal class FloconConnections(
         FloconConnectionStates.clear(link)
     }
 }
+
+/**
+ * The host alone when it uses the configured ports, so the stored address follows a later port
+ * change, otherwise `host:ws:http`.
+ */
+private fun FloconServer.storedAddress(websocketPort: Int, httpPort: Int) =
+    if (port == websocketPort && this.httpPort == httpPort) host else "$host:$port:${this.httpPort}"

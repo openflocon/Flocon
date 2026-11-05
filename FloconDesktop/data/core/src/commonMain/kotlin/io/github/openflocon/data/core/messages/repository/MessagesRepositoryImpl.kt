@@ -10,8 +10,12 @@ internal class MessagesRepositoryImpl(
     private val remote: MessageRemoteDataSource,
 ) : MessagesRepository {
 
-    override fun startServer() {
-        remote.startServer()
+    override fun startServer(websocketPort: Int, httpPort: Int) {
+        remote.startServer(websocketPort = websocketPort, httpPort = httpPort)
+    }
+
+    override fun stopServer() {
+        remote.stopServer()
     }
 
     override fun listenMessages(): Flow<FloconIncomingMessageDomainModel> = remote.listenMessages()

@@ -56,7 +56,7 @@ import flocondesktop.composeapp.generated.resources.connect_copy
 import flocondesktop.composeapp.generated.resources.connect_empty
 import flocondesktop.composeapp.generated.resources.connect_hint
 import flocondesktop.composeapp.generated.resources.connect_pick_network
-import flocondesktop.composeapp.generated.resources.connect_port
+import flocondesktop.composeapp.generated.resources.connect_ports
 import flocondesktop.composeapp.generated.resources.connect_scan
 import flocondesktop.composeapp.generated.resources.connect_title
 import io.github.openflocon.flocondesktop.features.connect.ConnectViewModel
@@ -123,7 +123,6 @@ private fun ConnectDialog(
             } else {
                 SingleAddress(
                     address = uiState.addresses.firstOrNull(),
-                    port = uiState.port,
                     onClose = onDismissRequest,
                 )
             }
@@ -182,7 +181,6 @@ private fun ConnectDialogFrame(
 @Composable
 private fun SingleAddress(
     address: LocalAddressUiModel?,
-    port: Int,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -216,7 +214,6 @@ private fun SingleAddress(
         } else {
             AddressPreview(
                 address = address,
-                port = port,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(FloconTheme.spacing.extraLarge),
@@ -269,7 +266,6 @@ private fun MultipleAddresses(
             Column {
                 AddressPreview(
                     address = selected,
-                    port = uiState.port,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(FloconTheme.spacing.extraLarge),
@@ -334,7 +330,6 @@ private fun AddressRow(
 @Composable
 private fun AddressPreview(
     address: LocalAddressUiModel,
-    port: Int,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -348,9 +343,9 @@ private fun AddressPreview(
             fontWeight = FontWeight.SemiBold,
             color = FloconTheme.colors.accent,
         )
-        // the SDK connects with the bare ip, see Flocon.connect()
+        // the SDK connects with this address, see Flocon.connect()
         QrCodeImage(
-            content = address.ip,
+            content = address.connectAddress,
             modifier = Modifier
                 .size(QrSize)
                 .clip(FloconTheme.shapes.large),
@@ -361,14 +356,23 @@ private fun AddressPreview(
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
         )
+        // the ports are only shown when one of them is not the default one
+        address.customPorts?.let { customPorts ->
+            Text(
+                text = stringResource(Res.string.connect_ports, customPorts.websocket, customPorts.http),
+                style = FloconTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colors.accent,
+            )
+        }
         Text(
-            text = "${address.interfaceName} · ${stringResource(Res.string.connect_port, port)}",
+            text = address.interfaceName,
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
         )
-        CopyButton(ip = address.ip)
+        CopyButton(ip = address.connectAddress)
         Text(
-            text = stringResource(Res.string.connect_hint, address.ip),
+            text = stringResource(Res.string.connect_hint, address.connectAddress),
             style = FloconTheme.typography.bodySmall,
             color = FloconTheme.colors.inkMuted,
             textAlign = TextAlign.Center,
