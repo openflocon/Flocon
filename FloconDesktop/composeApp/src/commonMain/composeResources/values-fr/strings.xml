@@ -195,8 +195,6 @@
     <string name="network_header_request_time">Date</string>
     <string name="network_header_status">Statut</string>
     <string name="network_header_time">Durée</string>
-    <string name="new_desktop_version">Nouvelle version desktop disponible : %1$s</string>
-    <string name="update_available_desktop">Mise à jour : %1$s</string>
     <string name="no_analytics">Aucun analytics</string>
     <string name="no_devices_found">Aucun appareil trouvé</string>
     <string name="open_external">Ouvrir dans un éditeur externe</string>
@@ -522,4 +520,7 @@
     <string name="sdk_update_copy">Copier</string>
     <string name="sdk_update_release_notes">Notes de version</string>
     <string name="sdk_update_ignore">Ignorer</string>
+    <string name="desktop_update_chip">Mise à jour %1$s</string>
+    <string name="desktop_update_title">Flocon %1$s</string>
+    <string name="desktop_update_installed">Installée : %1$s</string>
 </resources>

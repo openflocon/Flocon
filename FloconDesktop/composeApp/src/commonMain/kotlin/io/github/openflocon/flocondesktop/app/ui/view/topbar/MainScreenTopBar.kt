@@ -65,8 +65,6 @@ fun MainScreenTopBar(
     onRecordClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
-    onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
     sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel? = null,
     onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit = {},
 ) {
@@ -88,8 +86,6 @@ fun MainScreenTopBar(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
         Title(
-            updateChip = updateChip,
-            onUpdateChipClicked = onUpdateChipClicked,
             modifier = Modifier.padding(end = FloconTheme.spacing.medium),
         )
         TopBarDeviceAndApp(
@@ -119,44 +115,8 @@ fun MainScreenTopBar(
 }
 
 @Composable
-private fun TopBarUpdateChip(
-    uiModel: VersionCheckerViewModel.UpdateChipUiModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val colors = FloconTheme.colors
-
-    Row(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(colors.accentSoft)
-            .clickable(onClick = onClick)
-            .pointerHoverIcon(PointerIcon.Hand)
-            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.ArrowCircleUp,
-            contentDescription = null,
-            tint = colors.accent,
-            modifier = Modifier.size(12.dp),
-        )
-        Text(
-            text = uiModel.text,
-            color = colors.accent,
-            style = FloconTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.SemiBold,
-            ),
-        )
-    }
-}
-
-@Composable
 private fun Title(
     modifier: Modifier = Modifier,
-    updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
-    onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
 ) {
     Row(
         modifier = modifier,
@@ -192,13 +152,6 @@ private fun Title(
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.Monospace,
                 ),
-            )
-        }
-
-        if (updateChip != null) {
-            TopBarUpdateChip(
-                uiModel = updateChip,
-                onClick = { onUpdateChipClicked(updateChip) },
             )
         }
     }
