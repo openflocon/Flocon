@@ -233,9 +233,9 @@ internal fun TimelineGraph(
     LaunchedEffect(focus, opened, focusedEvent != null, trackWidth, trackHeight) {
         if (focus == null || !opened || trackWidth <= 0f) return@LaunchedEffect
         if (focus.eventKey != null && focusedEvent == null) delay(FocusEventWaitMs)
-        // not fitted nor following: the zone stays where it was put until the user moves
+        // not fitted nor following: the zone stays where it was put until the user turns the auto scroll on again
         fitted = false
-        paused = true
+        stopAutoScroll()
         val rowTop = focusedEvent?.let { model.rowTopOf(it) }
         val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(contentHeight - trackHeight, 0f)) } ?: 0f
         viewport = focusedViewport(focus.fromMs, focus.toMs, trackWidth).copy(scrollY = scrollY)

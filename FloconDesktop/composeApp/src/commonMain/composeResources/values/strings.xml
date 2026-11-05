@@ -4,6 +4,8 @@
     <string name="release_notes_error">Unable to load the release notes.</string>
     <string name="release_notes_retry">Retry</string>
     <string name="auto_scroll">Auto scroll</string>
+    <string name="timeline_auto_scroll_follow">Follow</string>
+    <string name="timeline_auto_scroll_following">Following</string>
     <string name="auto_update">Auto Update</string>
     <string name="clear_old_sessions">Clear old sessions</string>
     <string name="close">Close</string>
