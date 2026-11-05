@@ -11,7 +11,6 @@ data class DeviceItemUiModel(
     val platform: Platform,
     val canScreenshot: Boolean,
     val canScreenRecord: Boolean,
-    val canRestart: Boolean,
 ) {
     enum class Platform {
         Android,
@@ -29,7 +28,6 @@ fun previewDeviceItemUiModel() = DeviceItemUiModel(
     platform = DeviceItemUiModel.Platform.Android,
     canScreenshot = true,
     canScreenRecord = true,
-    canRestart = true,
 )
 
 fun previewDeviceItemUiModel(
@@ -45,5 +43,4 @@ fun previewDeviceItemUiModel(
     platform = platform,
     canScreenshot = true,
     canScreenRecord = true,
-    canRestart = true,
 )
