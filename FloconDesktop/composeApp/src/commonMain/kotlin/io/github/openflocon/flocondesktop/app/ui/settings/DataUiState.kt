@@ -13,6 +13,13 @@ data class DataUiState(
     // for the manual purge
     val purgeInterval: PurgeInterval = PurgeInterval.DEFAULT,
     val isPurging: Boolean = false,
+    // the screenshots and the video recordings saved in the documents folder, null while computed
+    val screenshotsSizeBytes: Long? = null,
+    val recordingsSizeBytes: Long? = null,
+    // never by default: these are files the user saved on purpose
+    val autoMediaCleanupInterval: AutoPurgeInterval = AutoPurgeInterval.Never,
+    val mediaCleanupInterval: PurgeInterval = PurgeInterval.DEFAULT,
+    val isCleaningMedia: Boolean = false,
 )
 
 fun formatDatabaseSize(bytes: Long): String {
