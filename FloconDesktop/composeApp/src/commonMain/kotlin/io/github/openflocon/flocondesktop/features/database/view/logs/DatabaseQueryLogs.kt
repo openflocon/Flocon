@@ -58,6 +58,7 @@ import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.settings_filter_logs
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.DatabaseQueryLogsViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -88,7 +89,7 @@ fun DatabaseQueryLogs(
         parameters = { parametersOf(dbId) }
     )
 
-    val logs: List<DatabaseQueryUiModel> by viewModel.logs.collectAsStateWithLifecycle()
+    val entries: ImmutableList<DatabaseQueryLogEntryUiModel> by viewModel.logs.collectAsStateWithLifecycle()
     val showTransactions by viewModel.showTransactions.collectAsStateWithLifecycle()
     val filterChips by viewModel.filterChips.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -133,7 +134,7 @@ fun DatabaseQueryLogs(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyListState,
             ) {
-                items(logs) { log ->
+                val queryRow: @Composable (DatabaseQueryUiModel, Modifier) -> Unit = { log, rowModifier ->
                     ContextualMenu(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -164,12 +165,39 @@ fun DatabaseQueryLogs(
                     ) {
                         DatabaseQueryLogItem(
                             log = log,
-                            modifier = Modifier
+                            modifier = rowModifier
                                 .fillMaxWidth()
                                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
                         )
                     }
                     HorizontalDivider(color = FloconTheme.colors.bg200)
+                }
+
+                entries.fastForEach { entry ->
+                    when (entry) {
+                        is DatabaseQueryLogEntryUiModel.Query -> item(key = entry.key) {
+                            queryRow(entry.log, Modifier)
+                        }
+
+                        is DatabaseQueryLogEntryUiModel.Transaction -> {
+                            item(key = entry.key) {
+                                DatabaseTransactionLogItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                                    transaction = entry,
+                                    onClick = { viewModel.toggleTransaction(entry.id) },
+                                )
+                                HorizontalDivider(color = FloconTheme.colors.bg200)
+                            }
+                            if (entry.isExpanded) {
+                                items(entry.queries, key = { "${entry.key}-${it.id}" }) { log ->
+                                    // the queries of a transaction are indented under its header
+                                    queryRow(log, Modifier.padding(start = FloconTheme.spacing.large))
+                                }
+                            }
+                        }
+                    }
                 }
             }
             FloconVerticalScrollbar(

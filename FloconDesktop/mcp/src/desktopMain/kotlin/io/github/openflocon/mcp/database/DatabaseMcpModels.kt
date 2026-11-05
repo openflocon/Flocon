@@ -59,6 +59,8 @@ internal data class DatabaseQueryLogMcpModel(
     val timestamp: String,
     val timestampMs: Long,
     val isTransaction: Boolean,
+    /** The queries of a transaction share this id. Absent outside of a transaction. */
+    val transactionId: String? = null,
     val sessionId: Long,
     val isCurrentSession: Boolean,
 )

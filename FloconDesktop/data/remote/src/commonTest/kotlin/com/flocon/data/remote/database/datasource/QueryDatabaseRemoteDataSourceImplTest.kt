@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class QueryDatabaseRemoteDataSourceImplTest {
@@ -62,5 +64,47 @@ class QueryDatabaseRemoteDataSourceImplTest {
         )
 
         assertTrue(log!!.isTransaction)
+    }
+
+    @Test
+    fun `the statements of room 2 and room 3 transactions are detected`() {
+        listOf(
+            "BEGIN EXCLUSIVE TRANSACTION",
+            "BEGIN DEFERRED TRANSACTION",
+            "BEGIN IMMEDIATE TRANSACTION",
+            "begin",
+            "END TRANSACTION",
+            "SAVEPOINT sp1",
+            "RELEASE SAVEPOINT sp1",
+            "ROLLBACK TO SAVEPOINT sp1",
+            "TRANSACTION SUCCESSFUL",
+        ).forEach { sql ->
+            assertTrue(isTransactionControl(sql), sql)
+        }
+    }
+
+    @Test
+    fun `the queries of the app are not transactions`() {
+        listOf("SELECT * FROM begin_events", "INSERT INTO dog VALUES (1)", "UPDATE commit_log SET a = 1").forEach { sql ->
+            assertFalse(isTransactionControl(sql), sql)
+        }
+    }
+
+    @Test
+    fun `the transaction id is read`() {
+        val log = dataSource.getQueryLogs(
+            message("""{"dbId":"cats","sqlQuery":"COMMIT","bindArgs":null,"timestamp":1000,"transactionId":"tx-1"}"""),
+        )
+
+        assertEquals("tx-1", log!!.transactionId)
+    }
+
+    @Test
+    fun `the transaction id is optional`() {
+        val log = dataSource.getQueryLogs(
+            message("""{"dbId":"cats","sqlQuery":"SELECT 1","bindArgs":null,"timestamp":1000}"""),
+        )
+
+        assertNull(log!!.transactionId)
     }
 }
