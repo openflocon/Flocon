@@ -7,6 +7,7 @@ import io.github.openflocon.domain.settings.repository.MascotPreferencesReposito
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
+import io.github.openflocon.flocondesktop.core.data.settings.LaunchServerPorts
 import io.github.openflocon.flocondesktop.core.data.settings.MascotPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
@@ -20,6 +21,8 @@ import org.koin.dsl.module
 
 val coreDataModule =
     module {
+        // set in main() before Koin starts, from the launch options
+        single { LaunchServerPorts.overrides }
         singleOf(::SettingsRepositoryImpl) {
             bind<SettingsRepository>()
         }

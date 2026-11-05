@@ -239,6 +239,32 @@ startFlocon(FloconContext()) {
 
 On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:port` is also accepted in connect addresses.
 
+#### Launch options
+
+Flocon Desktop can also override the ports for **the current session only**. The values are never saved in the settings, and the next launch without options uses the saved ports again.
+
+| Port | Argument | Environment variable |
+| :--- | :--- | :--- |
+| Websocket | `--websocket-port=<n>` (or `--websocket-port <n>`) | `FLOCON_WEBSOCKET_PORT` |
+| HTTP | `--http-port=<n>` (or `--http-port <n>`) | `FLOCON_HTTP_PORT` |
+
+For each port the priority is: argument, then environment variable, then the ports saved in **Settings > Server ports**, then the defaults `9023` / `9024`. Unknown arguments are ignored.
+
+The ports that will be used (the overrides merged with the saved ports) follow the same rules as the settings. If they are invalid, or if a value is not a number, Flocon Desktop prints the reason on stderr and exits with code `1` without opening the window. When a port is overridden, its field is disabled in **Settings > Server ports**, and the servers, `adb reverse` and the Connect dialog use the overridden port.
+
+```bash
+# from the sources
+./gradlew :composeApp:run --args="--websocket-port=9100 --http-port=9101"
+
+# macOS, installed app
+open -a Flocon --args --websocket-port=9100 --http-port=9101
+
+# environment variables
+FLOCON_WEBSOCKET_PORT=9100 FLOCON_HTTP_PORT=9101 ./gradlew :composeApp:run
+```
+
+With `open -a`, the environment variables of your shell are not forwarded to an already installed app: prefer the arguments, or run the app binary from the terminal.
+
 ---
 
 ## 3. Install the Desktop Companion

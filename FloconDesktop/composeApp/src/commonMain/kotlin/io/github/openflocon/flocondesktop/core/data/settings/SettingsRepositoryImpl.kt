@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.core.data.settings
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -12,10 +13,13 @@ import io.github.openflocon.flocondesktop.core.data.settings.models.toLocal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 
 internal class SettingsRepositoryImpl(
     private val localSettingsDataSource: SettingsDataSource,
+    private val serverPortsOverrides: ServerPortsOverrides,
 ) : SettingsRepository {
 
     // TODO: Consider moving all settings into one StateFlow
@@ -23,10 +27,19 @@ internal class SettingsRepositoryImpl(
     override val appScale: StateFlow<AppScaleSetting> = localSettingsDataSource.appScale
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme
 
+    // the launch options win over the saved ports, for this session only
     override val serverPorts: Flow<ServerPortsDomainModel> = localSettingsDataSource.serverPorts
+        .map { serverPortsOverrides.applyTo(it) }
 
     override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
-        localSettingsDataSource.setServerPorts(ports)
+        // an overridden port is never persisted, the saved one is kept
+        val saved = localSettingsDataSource.serverPorts.first()
+        localSettingsDataSource.setServerPorts(
+            ServerPortsDomainModel(
+                websocketPort = if (serverPortsOverrides.websocketPort != null) saved.websocketPort else ports.websocketPort,
+                httpPort = if (serverPortsOverrides.httpPort != null) saved.httpPort else ports.httpPort,
+            ),
+        )
     }
 
     private val _adbForwardStatus = MutableStateFlow(AdbForwardStatus.UNKNOWN)

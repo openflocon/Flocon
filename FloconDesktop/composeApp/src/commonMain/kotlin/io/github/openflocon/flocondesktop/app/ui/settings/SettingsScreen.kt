@@ -108,6 +108,7 @@ import flocondesktop.composeapp.generated.resources.settings_server_ports_error_
 import flocondesktop.composeapp.generated.resources.settings_server_ports_error_same
 import flocondesktop.composeapp.generated.resources.settings_server_ports_hint
 import flocondesktop.composeapp.generated.resources.settings_server_ports_http
+import flocondesktop.composeapp.generated.resources.settings_server_ports_overridden
 import flocondesktop.composeapp.generated.resources.settings_server_ports_title
 import flocondesktop.composeapp.generated.resources.settings_server_ports_websocket
 import flocondesktop.composeapp.generated.resources.settings_start_screen_description
@@ -535,6 +536,7 @@ private fun ServerPortsCard(
                     value = form.websocketPort,
                     onValueChange = onWebsocketPortChanged,
                     isError = form.error != null,
+                    enabled = !form.websocketPortOverridden,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -552,10 +554,19 @@ private fun ServerPortsCard(
                     value = form.httpPort,
                     onValueChange = onHttpPortChanged,
                     isError = form.error != null,
+                    enabled = !form.httpPortOverridden,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+        }
+
+        if (form.hasOverride) {
+            Text(
+                text = stringResource(Res.string.settings_server_ports_overridden),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.inkMuted,
+            )
         }
 
         form.error?.let { error ->

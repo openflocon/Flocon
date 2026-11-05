@@ -607,6 +607,7 @@
     <string name="settings_server_ports_apply">Apply</string>
     <string name="settings_server_ports_applied">Server ports updated</string>
     <string name="settings_server_ports_hint">Android apps over USB or emulator are reached through adb reverse. SDK apps connecting over Wi-Fi, and iOS apps, must be configured with the same ports.</string>
+    <string name="settings_server_ports_overridden">Set by launch option for this session</string>
     <string name="settings_server_ports_error_range">Ports must be between 1024 and 65535.</string>
     <string name="settings_server_ports_error_same">The websocket and HTTP ports must be different.</string>
     <string name="settings_server_ports_error_mcp">9042 is reserved for the MCP server.</string>

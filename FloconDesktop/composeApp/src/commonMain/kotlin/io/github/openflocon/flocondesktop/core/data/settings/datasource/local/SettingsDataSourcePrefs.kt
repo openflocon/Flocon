@@ -51,24 +51,10 @@ internal class SettingsDataSourcePrefs(
 
     // both ports live in a single "websocket:http" key so reads and writes are atomic
     override val serverPorts: Flow<ServerPortsDomainModel> = flowSettings.getStringOrNullFlow(SERVER_PORTS)
-        .map { it.toServerPorts() }
+        .map { parseServerPorts(it) }
 
     override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
         settings.putString(SERVER_PORTS, "${ports.websocketPort}:${ports.httpPort}")
-    }
-
-    private fun String?.toServerPorts(): ServerPortsDomainModel {
-        val parts = this?.split(":")
-        val websocketPort = parts?.getOrNull(0)?.toIntOrNull()
-        val httpPort = parts?.getOrNull(1)?.toIntOrNull()
-        return if (websocketPort != null && httpPort != null) {
-            ServerPortsDomainModel(websocketPort = websocketPort, httpPort = httpPort)
-        } else {
-            ServerPortsDomainModel(
-                websocketPort = Constant.SERVER_WEBSOCKET_PORT,
-                httpPort = Constant.SERVER_HTTP_PORT,
-            )
-        }
     }
 
     override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
@@ -224,7 +210,22 @@ internal class SettingsDataSourcePrefs(
 
     companion object {
         private const val ADB_PATH = "adb_path"
-        private const val SERVER_PORTS = "server_ports"
+        internal const val SERVER_PORTS = "server_ports"
+
+        // the defaults when nothing is stored, or when what is stored cannot be read
+        internal fun parseServerPorts(raw: String?): ServerPortsDomainModel {
+            val parts = raw?.split(":")
+            val websocketPort = parts?.getOrNull(0)?.toIntOrNull()
+            val httpPort = parts?.getOrNull(1)?.toIntOrNull()
+            return if (websocketPort != null && httpPort != null) {
+                ServerPortsDomainModel(websocketPort = websocketPort, httpPort = httpPort)
+            } else {
+                ServerPortsDomainModel(
+                    websocketPort = Constant.SERVER_WEBSOCKET_PORT,
+                    httpPort = Constant.SERVER_HTTP_PORT,
+                )
+            }
+        }
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val APP_SCALE = "app_scale"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration

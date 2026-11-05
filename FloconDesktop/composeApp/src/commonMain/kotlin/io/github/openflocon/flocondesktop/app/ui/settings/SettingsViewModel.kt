@@ -17,6 +17,7 @@ import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -71,6 +72,7 @@ class SettingsViewModel(
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
     private val logManager: LogManagerEditable,
+    private val serverPortsOverrides: ServerPortsOverrides,
 ) : ViewModel() {
 
     private val _adbPathInput = MutableStateFlow("")
@@ -84,7 +86,12 @@ class SettingsViewModel(
 
     private val _serverPortsForm = MutableStateFlow(
         ServerPortsDomainModel().let {
-            ServerPortsFormUiModel(websocketPort = it.websocketPort.toString(), httpPort = it.httpPort.toString())
+            ServerPortsFormUiModel(
+                websocketPort = it.websocketPort.toString(),
+                httpPort = it.httpPort.toString(),
+                websocketPortOverridden = serverPortsOverrides.websocketPort != null,
+                httpPortOverridden = serverPortsOverrides.httpPort != null,
+            )
         },
     )
     val serverPortsForm = _serverPortsForm.asStateFlow()
@@ -145,7 +152,7 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            // the fields follow the saved ports
+            // the fields follow the effective ports (saved ones, or the launch options)
             observeServerPortsUseCase().collect { ports ->
                 _serverPortsForm.update {
                     it.copy(websocketPort = ports.websocketPort.toString(), httpPort = ports.httpPort.toString())
@@ -216,6 +223,8 @@ class SettingsViewModel(
     fun applyServerPorts() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val form = _serverPortsForm.value
+            // nothing to save: both ports are forced by the launch options
+            if (form.websocketPortOverridden && form.httpPortOverridden) return@launch
             val websocketPort = form.websocketPort.toIntOrNull()
             val httpPort = form.httpPort.toIntOrNull()
             if (websocketPort == null || httpPort == null) {
