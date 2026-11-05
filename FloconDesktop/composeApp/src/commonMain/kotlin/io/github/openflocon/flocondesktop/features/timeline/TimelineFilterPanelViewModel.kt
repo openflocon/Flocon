@@ -1,8 +1,13 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.openflocon.domain.common.DispatcherProvider
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
@@ -17,11 +22,9 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilter
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,7 +33,6 @@ internal class TimelineFilterPanelViewModel(
     observeTimelineSummaryUseCase: ObserveTimelineSummaryUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     private val filterStore: TimelineFilterStore,
-    dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
     // the counts follow the text but not the facets: ticking a value must not make the others, or the sources, move or disappear
@@ -40,7 +42,12 @@ internal class TimelineFilterPanelViewModel(
                 facets = emptyMap(),
                 networkStatusRules = emptyList(),
                 networkHostRules = emptyList(),
+                networkPathRules = emptyList(),
                 networkDuration = null,
+                databaseRules = emptyList(),
+                hideDatabaseTransactions = false,
+                logTaggedEnabled = true,
+                logTagRules = emptyList(),
             )
         }
         .distinctUntilChanged()
@@ -57,23 +64,39 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val panel: StateFlow<TimelineFilterPanelUiModel> = combine(
-        summary,
-        filterStore.storedSources,
-        filterStore.facets,
-        filterStore.currentSessionOnly,
-        combine(filterStore.network, matchingNetworkCount) { network, matching -> network to matching },
-    ) { summary, sources, facets, currentSessionOnly, (network, matching) ->
-        summary.toFilterPanel(
-            selectedSources = sources,
-            facets = facets,
-            currentSessionOnly = currentSessionOnly,
-            network = network,
-            matchingNetworkCount = matching,
-        )
+    // what is typed in the tag field of the logs card: the field reads it synchronously, it is not part of the panel
+    private val logTagInput = TimelineLogTagInput()
+    val logTagText: State<String> get() = logTagInput.text
+
+    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
+        val summary by summary.collectAsState()
+
+        // read from the settings: the panel is never empty, the switches settle once the stored selection is known
+        val sources by filterStore.storedSources.collectAsState(initial = null)
+        val facets by filterStore.facets.collectAsState()
+        val currentSessionOnly by filterStore.currentSessionOnly.collectAsState()
+        val network by filterStore.network.collectAsState()
+        val database by filterStore.database.collectAsState()
+        val logs by filterStore.logs.collectAsState()
+        val logTagQuery by logTagInput.query.collectAsState()
+        val matchingNetworkCount by matchingNetworkCount.collectAsState()
+
+        val selectedSources = sources ?: TimelineSource.entries.toSet()
+        remember(summary, selectedSources, facets, currentSessionOnly, network, database, logs, logTagQuery, matchingNetworkCount) {
+            summary.toFilterPanel(
+                selectedSources = selectedSources,
+                facets = facets,
+                currentSessionOnly = currentSessionOnly,
+                network = network,
+                database = database,
+                matchingNetworkCount = matchingNetworkCount,
+                logs = logs,
+                logTagQuery = logTagQuery,
+            )
+        }
     }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineFilterPanelUiModel.Empty)
+
+    val focusedSource: StateFlow<TimelineSource?> = filterStore.focusedSource
 
     fun onAction(action: TimelineFilterAction) {
         when (action) {
@@ -108,6 +131,35 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.RemoveHostRule -> filterStore.removeHostRule(action.value)
 
+            is TimelineFilterAction.AddPathRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let { filterStore.addPathRule(TimelineRuleDomainModel(it, action.exclude)) }
+            }
+
+            is TimelineFilterAction.RemovePathRule -> filterStore.removePathRule(action.value)
+
+            is TimelineFilterAction.AddDatabaseRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let { filterStore.addDatabaseRule(TimelineRuleDomainModel(it, action.exclude)) }
+            }
+
+            is TimelineFilterAction.RemoveDatabaseRule -> filterStore.removeDatabaseRule(action.value)
+
+            is TimelineFilterAction.SetHideDatabaseTransactions -> filterStore.setHideDatabaseTransactions(action.value)
+
+            is TimelineFilterAction.SetLogTaggedEnabled -> filterStore.setLogTaggedEnabled(action.value)
+
+            is TimelineFilterAction.AddLogTagRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let {
+                    filterStore.addLogTagRule(it, action.exclude)
+                    logTagInput.clear()
+                }
+            }
+
+            is TimelineFilterAction.SetLogTagRuleActive -> filterStore.setLogTagRuleActive(action.value, action.active)
+
+            is TimelineFilterAction.RemoveLogTagRule -> filterStore.removeLogTagRule(action.value)
+
+            is TimelineFilterAction.SetLogTagQuery -> logTagInput.set(action.text)
+
             is TimelineFilterAction.SetDurationRange -> {
                 val buckets = TIMELINE_DURATION_BUCKETS_MS
                 val range = if (action.start <= 0 && action.end >= buckets.size) {
@@ -121,8 +173,11 @@ internal class TimelineFilterPanelViewModel(
                 filterStore.setNetworkDuration(range)
             }
 
+            is TimelineFilterAction.FocusHandled -> filterStore.focusSource(null)
+
             is TimelineFilterAction.ClearAll -> {
                 filterStore.clear()
+                logTagInput.clear()
                 viewModelScope.launch { setTimelineSelectedSourcesUseCase(TimelineSource.entries.toSet()) }
             }
         }

@@ -14,6 +14,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPacka
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -73,6 +74,8 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
+        override val savedServerPorts: Flow<ServerPortsDomainModel> = emptyFlow()
+        override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
@@ -114,7 +117,6 @@ class ObserveIsClientOnLastVersionUseCaseTest {
 
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
-        override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
         override suspend fun clear() {}
         override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = emptyFlow()
     }

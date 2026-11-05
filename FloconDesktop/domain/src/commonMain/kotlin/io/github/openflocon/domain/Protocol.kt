@@ -40,6 +40,14 @@ object Protocol {
             }
         }
 
+        object Timeline {
+            const val Plugin = "timeline"
+
+            object Method {
+                const val Log = "log"
+            }
+        }
+
         object Dashboard {
             const val Plugin = "dashboard"
 
@@ -179,7 +187,6 @@ object Protocol {
 
             object Method {
                 const val GetAppIcon = "get_app_icon"
-                const val RestartApp = "restart_app"
             }
         }
 

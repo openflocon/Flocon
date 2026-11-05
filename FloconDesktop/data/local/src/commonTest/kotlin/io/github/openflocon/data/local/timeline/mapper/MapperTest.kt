@@ -6,8 +6,10 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -173,6 +175,21 @@ class MapperTest {
         assertFalse(row.copy(hasError = false).toDomain().hasError)
     }
 
+    @Test
+    fun `the facet values of an event are read from its json`() {
+        val facets = parseTimelineFacets("""{"NetworkMethod":"GET","NetworkStatus":null,"DatabaseName":"app.db","Unknown":"x"}""")
+
+        assertEquals(mapOf(TimelineFacet.NetworkMethod to "GET", TimelineFacet.DatabaseName to "app.db"), facets)
+    }
+
+    @Test
+    fun `an event without usable facet values has none`() {
+        assertEquals(emptyMap(), parseTimelineFacets(null))
+        assertEquals(emptyMap(), parseTimelineFacets(""))
+        assertEquals(emptyMap(), parseTimelineFacets("not json"))
+        assertEquals(emptyMap(), parseTimelineFacets("[1, 2]"))
+    }
+
     private fun networkRow(kind: String = KIND_NETWORK, responseByteSize: Long? = null) = TimelineRowEntity(
         kind = kind,
         id = "c1",
@@ -228,5 +245,28 @@ class MapperTest {
         )
 
         assertNull(row.toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `mapperMapsLogKindToSourceLogWithLevel`() {
+        val event = TimelineRowEntity(
+            kind = "log",
+            id = "42",
+            ts = 1100L,
+            title = "checkout failed",
+            subtitle = "billing",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+            hasError = true,
+            level = "ERROR",
+        ).toDomain()
+
+        assertEquals(TimelineSource.Log, event.source)
+        assertEquals(TimelineLogLevel.Error, event.level)
+        assertEquals("42", event.id)
+        assertTrue(event.hasError)
     }
 }

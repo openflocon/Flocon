@@ -7,7 +7,8 @@
 | Mobile → Desktop | `register_device` | `RegisterDevice`         |
 | Mobile → Desktop | `app_icon`        | raw Base64 string        |
 | Desktop → Mobile | `get_app_icon`     | `""` (empty)             |
-| Desktop → Mobile | `restart_app`     | `""` (empty)             |
+
+These messages are handled by the SDK core: there is no `device` plugin to install. (`restart_app` existed in earlier versions and was removed; an SDK that still receives it ignores it.)
 
 ## `register_device` (Mobile → Desktop)
 
@@ -32,7 +33,3 @@ iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA...
 ```
 
 No response if the icon can't be retrieved.
-
-## `restart_app` (Desktop → Mobile)
-
-Restarts the application. Empty body, no response.

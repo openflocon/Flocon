@@ -42,7 +42,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds a diamond with a tolerance`() {
-        val analyticsTop = model.laneTops().first()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
         val appOpen = model.hitTest(viewport, x = 20f + 9f, yInContent = analyticsTop + 10f) // 6 px of diamond and 4 of margin
 
         assertEquals("2", appOpen?.row?.id)
@@ -50,7 +50,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds nothing in the empty parts`() {
-        val analyticsTop = model.laneTops().first()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
 
         assertNull(model.hitTest(viewport, x = 500f, yInContent = analyticsTop + 10f))
         assertNull(model.hitTest(viewport, x = 500f, yInContent = 10_000f))
@@ -153,7 +153,7 @@ class GraphLayoutTest {
 
     @Test
     fun `hit test finds an instant by its label`() {
-        val analyticsTop = model.laneTops().first()
+        val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
         // app_open at 20 ms, 1 px per ms: its label is on the right of the diamond, before screen_view at 860 ms
         val onLabel = model.hitTest(viewport, x = 20f + 14f + 20f, yInContent = analyticsTop + 10f)
         assertEquals("2", onLabel?.row?.id)
@@ -202,5 +202,38 @@ class GraphLayoutTest {
 
         assertEquals(4_000.0 - 520.0, behind.followedLatest(onlyShots, trackWidthPx = 600f).startMs, 0.001)
         assertEquals(4_000.0 - 520.0, behind.jumpedToLatest(onlyShots, trackWidthPx = 600f, trackHeightPx = 100f).startMs, 0.001)
+    }
+
+    @Test
+    fun `the focused range is centered with a margin`() {
+        val focused = focusedViewport(fromMs = 10_000L, toMs = 20_000L, trackWidthPx = 1_000f)
+
+        // 10 s and 20 % on each side: 14 s in the track, around 15 s
+        assertEquals(1_000.0 / 14_000.0, focused.pxPerMs, 1e-9)
+        assertEquals(8_000.0, focused.startMs, 1e-9)
+    }
+
+    @Test
+    fun `a range under 2 s is widened to 2 s`() {
+        val focused = focusedViewport(fromMs = 5_000L, toMs = 5_000L, trackWidthPx = 1_000f)
+
+        assertEquals(1_000.0 / 2_800.0, focused.pxPerMs, 1e-9)
+        assertEquals(3_600.0, focused.startMs, 1e-9)
+    }
+
+    @Test
+    fun `the zoom is clamped and the range stays centered`() {
+        val focused = focusedViewport(fromMs = 5_000L, toMs = 5_000L, trackWidthPx = 100_000f)
+
+        assertEquals(MAX_PX_PER_MS, focused.pxPerMs, 1e-9)
+        // 100000 px at 20 px per ms show 5 s: centered on 5 s
+        assertEquals(2_500.0, focused.startMs, 1e-9)
+    }
+
+    @Test
+    fun `the start never goes below the minimum`() {
+        val focused = focusedViewport(fromMs = 0L, toMs = 0L, trackWidthPx = 1_000f)
+
+        assertEquals(MIN_START_MS, focused.startMs, 1e-9)
     }
 }

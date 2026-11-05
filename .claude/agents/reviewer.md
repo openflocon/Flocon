@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Use PROACTIVELY after any code change, before committing or opening a PR. Reviews the diff for bugs, broken plugin/no-op parity, protocol drift and missing tests.
+description: Use once a change is finished, before committing it or opening a PR (not after every intermediate edit). Reviews the diff for bugs, broken plugin/no-op parity, protocol drift and missing tests.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---

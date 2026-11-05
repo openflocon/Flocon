@@ -1,5 +1,7 @@
 package io.github.openflocon.flocon
 
+import io.github.openflocon.flocon.client.FLOCON_DEFAULT_HTTP_PORT
+import io.github.openflocon.flocon.client.FLOCON_DEFAULT_WEBSOCKET_PORT
 import kotlinx.coroutines.flow.StateFlow
 
 /** Options of [connect]. */
@@ -9,7 +11,9 @@ class FloconConnectConfig internal constructor() {
 
     /**
      * The IP address of a computer to also try when Flocon starts, for example one with a fixed IP.
-     * No port nor scheme: the port is always 9023.
+     * `host`, `host:wsPort` or `host:wsPort:httpPort` (no scheme), such as `192.168.1.10:10023:10024`.
+     * An omitted port takes [websocketPort] / [httpPort], and the ports of the address win over them
+     * for this address, including the HTTP port used for the file uploads.
      */
     var address: String? = null
 
@@ -18,6 +22,18 @@ class FloconConnectConfig internal constructor() {
      * preferences, and tries it again at the next launch. It wins over [address].
      */
     var rememberLastAddress: Boolean = true
+
+    /**
+     * The port of the websocket of Flocon Desktop. It must match the websocket port in the
+     * desktop Settings. The default is 9023, which keeps working through `adb reverse`.
+     */
+    var websocketPort: Int = FLOCON_DEFAULT_WEBSOCKET_PORT
+
+    /**
+     * The port of the HTTP server of Flocon Desktop, used to upload files. It must match the
+     * HTTP port in the desktop Settings. The default is 9024, which keeps working through `adb reverse`.
+     */
+    var httpPort: Int = FLOCON_DEFAULT_HTTP_PORT
 }
 
 /**
@@ -38,6 +54,8 @@ fun FloconConfiguration.connect(block: FloconConnectConfig.() -> Unit = {}) {
     connectAtStart(
         initialAddress = options.address,
         store = if (options.rememberLastAddress) floconAddressStore(context) else null,
+        websocketPort = options.websocketPort,
+        httpPort = options.httpPort,
     )
 }
 
@@ -56,7 +74,9 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
  * on reconnection, which is retried every 3 seconds. Calling it again replaces the address.
  *
  * @param address the IP address (or host) of the computer running Flocon Desktop, such as `192.168.1.20`.
- * No port nor scheme: the port is always 9023, anything else is a [FloconConnectResult.InvalidAddress].
+ * `host`, `host:wsPort` or `host:wsPort:httpPort` (no scheme nor path), such as `192.168.1.20:10023:10024`.
+ * An omitted port takes the configured `websocketPort` / `httpPort` (9023 / 9024 by default), and the ports
+ * of the address win over them for this address. Anything else is a [FloconConnectResult.InvalidAddress].
  * @return [FloconConnectResult.Connected], or why it could not connect. The messages are kept
  * in every case, call it again to retry.
  */
