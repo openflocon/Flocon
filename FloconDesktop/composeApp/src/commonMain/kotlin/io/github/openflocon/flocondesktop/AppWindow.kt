@@ -16,6 +16,7 @@ import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
+import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCase
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
@@ -69,11 +70,14 @@ fun App() {
         },
     ) {
         val autoPurgeDatabase = koinInject<AutoPurgeDatabaseUseCase>()
+        val autoCleanMediaFiles = koinInject<AutoCleanMediaFilesUseCase>()
         LaunchedEffect(Unit) {
             // the old data is deleted at each launch, if the user asked for it in the settings
             withContext(Dispatchers.IO) {
                 runCatching { autoPurgeDatabase() }
                     .onFailure { Logger.e("App", it) { "Automatic database purge failed" } }
+                runCatching { autoCleanMediaFiles() }
+                    .onFailure { Logger.e("App", it) { "Automatic screenshots and recordings cleanup failed" } }
             }
         }
 
