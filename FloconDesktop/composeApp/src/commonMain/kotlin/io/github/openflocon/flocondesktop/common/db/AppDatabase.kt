@@ -43,6 +43,7 @@ import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.files.models.FileOptionsEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
+import io.github.openflocon.data.local.maintenance.dao.DatabaseMaintenanceDao
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.dao.NetworkBadQualityConfigDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
@@ -130,6 +131,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val adbCommanderDao: AdbCommanderDao
     abstract val timelineDao: TimelineDao
     abstract val webViewEventDao: WebViewEventDao
+    abstract val maintenanceDao: DatabaseMaintenanceDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
@@ -137,5 +139,14 @@ fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
+    .also { database ->
+        // closing the database checkpoints the WAL into the main file, so the -wal file does not stay on the disk
+        Runtime.getRuntime().addShutdownHook(
+            Thread { runCatching { database.close() } },
+        )
+    }
 
 expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
+
+/** The SQLite file of the Flocon database. */
+expect fun getDatabaseFile(): java.io.File
