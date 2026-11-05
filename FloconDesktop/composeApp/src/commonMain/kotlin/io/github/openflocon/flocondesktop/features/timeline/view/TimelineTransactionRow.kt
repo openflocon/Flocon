@@ -73,6 +73,9 @@ internal fun TimelineTransactionRow(
             modifier = Modifier.width(FloconTheme.sizes.timeColumn),
         )
         Spacer(Modifier.width(railGutter()))
+        Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
+            EventBadge(source = TimelineSource.Database)
+        }
         Row(
             modifier = Modifier
                 .weight(1f)
