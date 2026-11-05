@@ -90,7 +90,6 @@ Visit the full documentation site for setup guides, feature details, and advance
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
 | **Deeplink & Files** | ✅ | ❌ |
-| **[Timeline](https://openflocon.github.io/Flocon/timeline) (navigation, user action & lifecycle logs)** | ✅ | ✅ |
 | **AI Agents (MCP)** | ✅ | ✅ |
 
 ---
