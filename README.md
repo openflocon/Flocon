@@ -40,8 +40,6 @@ Flocon.initialize(this)
 Flocon.initialize()
 ```
 
-Custom ports (set in Flocon Desktop under Settings > Server ports, defaults 9023 / 9024): `connect { websocketPort = ...; httpPort = ... }` or `address = "192.168.1.10:3030"`. Android emulator / USB need no change (`adb reverse`); real devices over Wi-Fi, iOS, JVM and wasm must use the same ports as the desktop. See the [setup guide](https://openflocon.github.io/Flocon/setup#custom-ports).
-
 ```toml
 [versions]
 flocon = "LASTEST_VERSION"
