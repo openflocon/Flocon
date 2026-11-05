@@ -106,3 +106,79 @@ jobs:
           files: release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  homebrew:
+    name: Update Homebrew tap
+    needs: release
+    if: ${{ !inputs.draft }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check prerequisites
+        id: check
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          if [ -z "$TAP_TOKEN" ]; then
+            echo "::warning::HOMEBREW_TAP_TOKEN is not set, skipping the Homebrew tap update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          elif ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::warning::'$VERSION' is not a release version (X.Y.Z), skipping the Homebrew tap update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout cask template
+        if: steps.check.outputs.run == 'true'
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/homebrew
+          path: flocon
+
+      - name: Checkout Homebrew tap
+        if: steps.check.outputs.run == 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: openflocon/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Download macOS artifacts
+        if: steps.check.outputs.run == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-macos-*
+          path: macos-assets
+          merge-multiple: true
+
+      - name: Generate cask
+        if: steps.check.outputs.run == 'true'
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          SHA_ARM64=$(sha256sum macos-assets/Flocon-macos-arm64.dmg | cut -d' ' -f1)
+          SHA_X64=$(sha256sum macos-assets/Flocon-macos-x64.dmg | cut -d' ' -f1)
+          mkdir -p tap/Casks
+          sed -e "s/__VERSION__/$VERSION/" \
+              -e "s/__SHA256_ARM64__/$SHA_ARM64/" \
+              -e "s/__SHA256_X64__/$SHA_X64/" \
+              flocon/.github/homebrew/flocon.rb.template > tap/Casks/flocon.rb
+          cat tap/Casks/flocon.rb
+
+      - name: Push to tap
+        if: steps.check.outputs.run == 'true'
+        working-directory: tap
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/flocon.rb
+          if git diff --cached --quiet; then
+            echo "Cask already up to date."
+            exit 0
+          fi
+          git commit -m "flocon $VERSION"
+          git push
