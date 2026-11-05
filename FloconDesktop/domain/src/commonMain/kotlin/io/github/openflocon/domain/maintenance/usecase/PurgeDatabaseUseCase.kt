@@ -10,7 +10,7 @@ class PurgeDatabaseUseCase(
         interval: PurgeInterval,
         nowMs: Long = System.currentTimeMillis(),
     ) {
-        val before = if (interval == PurgeInterval.All) {
+        val before = if (interval == PurgeInterval.Everything) {
             Long.MAX_VALUE
         } else {
             nowMs - interval.days * DAY_MS

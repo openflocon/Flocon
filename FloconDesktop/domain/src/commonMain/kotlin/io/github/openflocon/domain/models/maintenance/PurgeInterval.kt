@@ -6,7 +6,7 @@ enum class PurgeInterval(val days: Int) {
     OneWeek(7),
     TwoWeeks(14),
     OneMonth(30),
-    All(0);
+    Everything(0);
 
     companion object {
         val DEFAULT = OneWeek

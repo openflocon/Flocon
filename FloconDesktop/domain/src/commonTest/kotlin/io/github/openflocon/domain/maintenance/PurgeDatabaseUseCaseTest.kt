@@ -36,7 +36,7 @@ class PurgeDatabaseUseCaseTest {
 
     @Test
     fun allPurgesEverything() = runTest {
-        useCase(PurgeInterval.All, nowMs = 1_000L)
+        useCase(PurgeInterval.Everything, nowMs = 1_000L)
 
         assertEquals(Long.MAX_VALUE, repository.purgedBefore)
     }

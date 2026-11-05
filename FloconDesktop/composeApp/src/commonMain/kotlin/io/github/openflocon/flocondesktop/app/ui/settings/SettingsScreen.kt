@@ -947,7 +947,7 @@ private fun PurgeInterval.labelRes(): StringResource = when (this) {
     PurgeInterval.OneWeek -> Res.string.settings_purge_7_days
     PurgeInterval.TwoWeeks -> Res.string.settings_purge_14_days
     PurgeInterval.OneMonth -> Res.string.settings_purge_30_days
-    PurgeInterval.All -> Res.string.settings_purge_all
+    PurgeInterval.Everything -> Res.string.settings_purge_all
 }
 
 @Composable
