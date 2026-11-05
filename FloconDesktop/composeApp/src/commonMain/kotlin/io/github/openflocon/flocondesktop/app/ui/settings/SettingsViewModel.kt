@@ -346,7 +346,12 @@ class SettingsViewModel(
     fun refreshMediaSize() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val size = getMediaFilesSizeUseCase()
-            _dataState.update { it.copy(mediaSizeBytes = size) }
+            _dataState.update {
+                it.copy(
+                    screenshotsSizeBytes = size.screenshotsBytes,
+                    recordingsSizeBytes = size.recordingsBytes,
+                )
+            }
         }
     }
 

@@ -14,7 +14,8 @@ data class DataUiState(
     val purgeInterval: PurgeInterval = PurgeInterval.DEFAULT,
     val isPurging: Boolean = false,
     // the screenshots and the video recordings saved in the documents folder, null while computed
-    val mediaSizeBytes: Long? = null,
+    val screenshotsSizeBytes: Long? = null,
+    val recordingsSizeBytes: Long? = null,
     // never by default: these are files the user saved on purpose
     val autoMediaCleanupInterval: AutoPurgeInterval = AutoPurgeInterval.Never,
     val mediaCleanupInterval: PurgeInterval = PurgeInterval.DEFAULT,

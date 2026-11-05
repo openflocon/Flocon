@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.maintenance.repository
 
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.MediaFilesSize
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -8,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
  * They are plain files, not part of the database.
  */
 interface MediaFilesRepository {
-    /** Total size of the saved screenshots and recordings, in bytes. */
-    suspend fun getSizeBytes(): Long
+    /** Size of the saved screenshots and of the saved recordings. */
+    suspend fun getSizes(): MediaFilesSize
 
     /** Deletes the screenshots and recordings last modified before [beforeTimestampMs] (epoch milliseconds). */
     suspend fun deleteFilesBefore(beforeTimestampMs: Long)

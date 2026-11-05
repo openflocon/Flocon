@@ -4,6 +4,7 @@ import io.github.openflocon.domain.maintenance.repository.MediaFilesRepository
 import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCase
 import io.github.openflocon.domain.maintenance.usecase.CleanMediaFilesUseCase
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.MediaFilesSize
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -18,7 +19,7 @@ class CleanMediaFilesUseCaseTest {
         override suspend fun setAutoCleanupInterval(interval: AutoPurgeInterval) {
             autoCleanupInterval.value = interval
         }
-        override suspend fun getSizeBytes() = 0L
+        override suspend fun getSizes() = MediaFilesSize(screenshotsBytes = 0L, recordingsBytes = 0L)
         override suspend fun deleteFilesBefore(beforeTimestampMs: Long) {
             deletedBefore = beforeTimestampMs
         }

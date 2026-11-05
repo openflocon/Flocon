@@ -93,8 +93,8 @@ import flocondesktop.composeapp.generated.resources.settings_data_manual_title
 import flocondesktop.composeapp.generated.resources.settings_data_media_auto_description
 import flocondesktop.composeapp.generated.resources.settings_data_media_clean
 import flocondesktop.composeapp.generated.resources.settings_data_media_cleaning
-import flocondesktop.composeapp.generated.resources.settings_data_media_manual_description
-import flocondesktop.composeapp.generated.resources.settings_data_media_size
+import flocondesktop.composeapp.generated.resources.settings_data_media_recordings_size
+import flocondesktop.composeapp.generated.resources.settings_data_media_screenshots_size
 import flocondesktop.composeapp.generated.resources.settings_data_media_title
 import flocondesktop.composeapp.generated.resources.settings_data_purge
 import flocondesktop.composeapp.generated.resources.settings_data_purging
@@ -199,6 +199,7 @@ fun SettingsScreen(
         onAutoMediaCleanupIntervalChanged = viewModel::onAutoMediaCleanupIntervalChanged,
         onMediaCleanupIntervalChanged = viewModel::onMediaCleanupIntervalChanged,
         onCleanMediaFiles = viewModel::cleanMediaFiles,
+        onOpenMediaFolder = viewModel::openFloconDocumentsFolder,
         modifier = modifier.fillMaxSize(),
         adbPathText = adbPathText,
         onAdbPathChanged = viewModel::onAdbPathChanged,
@@ -234,6 +235,7 @@ private fun SettingsScreen(
     onAutoMediaCleanupIntervalChanged: (AutoPurgeInterval) -> Unit,
     onMediaCleanupIntervalChanged: (PurgeInterval) -> Unit,
     onCleanMediaFiles: () -> Unit,
+    onOpenMediaFolder: () -> Unit,
     adbPathText: String,
     onAdbPathChanged: (String) -> Unit,
     saveAdbPath: () -> Unit,
@@ -325,6 +327,7 @@ private fun SettingsScreen(
                     onAutoMediaIntervalChanged = onAutoMediaCleanupIntervalChanged,
                     onMediaIntervalChanged = onMediaCleanupIntervalChanged,
                     onCleanMedia = onCleanMediaFiles,
+                    onOpenMediaFolder = onOpenMediaFolder,
                 )
 
                 SettingsTab.Logs -> LogsPane(
@@ -912,6 +915,7 @@ private fun DataPane(
     onAutoMediaIntervalChanged: (AutoPurgeInterval) -> Unit,
     onMediaIntervalChanged: (PurgeInterval) -> Unit,
     onCleanMedia: () -> Unit,
+    onOpenMediaFolder: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // the sizes are computed each time the screen is displayed
@@ -920,110 +924,132 @@ private fun DataPane(
         onRefreshMediaSize()
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+    // one compact card per kind of data, side by side, so that the whole screen fits without scrolling
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
         SettingsCard(
             title = stringResource(Res.string.settings_data_title),
             icon = Icons.Outlined.Storage,
             description = stringResource(Res.string.settings_data_description),
+            modifier = Modifier.weight(1f),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            ) {
-                Text(
-                    text = stringResource(Res.string.settings_data_size),
-                    style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colors.inkMuted,
-                )
-                Text(
-                    text = state.databaseSizeBytes?.let(::formatDatabaseSize) ?: "…",
-                    style = FloconTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = FloconTheme.colors.ink,
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_size),
+                bytes = state.databaseSizeBytes,
+            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_auto_title)) {
+                IntervalDropdown(
+                    selected = state.autoPurgeInterval,
+                    options = AutoPurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onAutoIntervalChanged,
                 )
             }
-        }
-
-        SettingsCard(
-            title = stringResource(Res.string.settings_data_auto_title),
-            icon = Icons.Outlined.Storage,
-            description = stringResource(Res.string.settings_data_auto_description),
-        ) {
-            IntervalDropdown(
-                selected = state.autoPurgeInterval,
-                options = AutoPurgeInterval.entries,
-                label = { stringResource(it.labelRes()) },
-                onSelect = onAutoIntervalChanged,
-            )
-        }
-
-        SettingsCard(
-            title = stringResource(Res.string.settings_data_manual_title),
-            icon = Icons.Outlined.Delete,
-            description = stringResource(Res.string.settings_data_kept),
-        ) {
-            IntervalDropdown(
-                selected = state.purgeInterval,
-                options = PurgeInterval.entries,
-                label = { stringResource(it.labelRes()) },
-                onSelect = onIntervalChanged,
-            )
-            SettingsButton(
-                text = stringResource(if (state.isPurging) Res.string.settings_data_purging else Res.string.settings_data_purge),
-                onClick = { if (!state.isPurging) onPurge() },
-                primary = true,
-            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_manual_title)) {
+                IntervalDropdown(
+                    selected = state.purgeInterval,
+                    options = PurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onIntervalChanged,
+                )
+                SettingsButton(
+                    text = stringResource(if (state.isPurging) Res.string.settings_data_purging else Res.string.settings_data_purge),
+                    onClick = { if (!state.isPurging) onPurge() },
+                    primary = true,
+                )
+            }
         }
 
         SettingsCard(
             title = stringResource(Res.string.settings_data_media_title),
             icon = Icons.Outlined.Storage,
             description = stringResource(Res.string.settings_data_media_auto_description),
+            modifier = Modifier.weight(1f),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            ) {
-                Text(
-                    text = stringResource(Res.string.settings_data_media_size),
-                    style = FloconTheme.typography.labelSmall,
-                    color = FloconTheme.colors.inkMuted,
-                )
-                Text(
-                    text = state.mediaSizeBytes?.let(::formatDatabaseSize) ?: "…",
-                    style = FloconTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = FloconTheme.colors.ink,
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_media_screenshots_size),
+                bytes = state.screenshotsSizeBytes,
+            )
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_media_recordings_size),
+                bytes = state.recordingsSizeBytes,
+            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_auto_title)) {
+                IntervalDropdown(
+                    selected = state.autoMediaCleanupInterval,
+                    options = AutoPurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onAutoMediaIntervalChanged,
                 )
             }
-            IntervalDropdown(
-                selected = state.autoMediaCleanupInterval,
-                options = AutoPurgeInterval.entries,
-                label = { stringResource(it.labelRes()) },
-                onSelect = onAutoMediaIntervalChanged,
-            )
-        }
-
-        SettingsCard(
-            title = stringResource(Res.string.settings_data_manual_title),
-            icon = Icons.Outlined.Delete,
-            description = stringResource(Res.string.settings_data_media_manual_description),
-        ) {
-            IntervalDropdown(
-                selected = state.mediaCleanupInterval,
-                options = PurgeInterval.entries,
-                label = { stringResource(it.labelRes()) },
-                onSelect = onMediaIntervalChanged,
-            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_manual_title)) {
+                IntervalDropdown(
+                    selected = state.mediaCleanupInterval,
+                    options = PurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onMediaIntervalChanged,
+                )
+                SettingsButton(
+                    text = stringResource(if (state.isCleaningMedia) Res.string.settings_data_media_cleaning else Res.string.settings_data_media_clean),
+                    onClick = { if (!state.isCleaningMedia) onCleanMedia() },
+                    primary = true,
+                )
+            }
             SettingsButton(
-                text = stringResource(if (state.isCleaningMedia) Res.string.settings_data_media_cleaning else Res.string.settings_data_media_clean),
-                onClick = { if (!state.isCleaningMedia) onCleanMedia() },
-                primary = true,
+                text = stringResource(Res.string.general_open_folder),
+                onClick = onOpenMediaFolder,
             )
         }
+    }
+}
+
+@Composable
+private fun DataSettingRow(
+    label: String,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.labelSmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun DataSizeRow(
+    label: String,
+    bytes: Long?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.labelSmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+        Text(
+            text = bytes?.let(::formatDatabaseSize) ?: "…",
+            style = FloconTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = FloconTheme.colors.ink,
+        )
     }
 }
 
@@ -1524,6 +1550,7 @@ private fun SettingsScreenPreview() {
             onAutoMediaCleanupIntervalChanged = {},
             onMediaCleanupIntervalChanged = {},
             onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
@@ -1561,6 +1588,7 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             onAutoMediaCleanupIntervalChanged = {},
             onMediaCleanupIntervalChanged = {},
             onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
@@ -1596,6 +1624,7 @@ private fun SettingsScreen_LogsPreview() {
             onAutoMediaCleanupIntervalChanged = {},
             onMediaCleanupIntervalChanged = {},
             onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = "/usr/local/bin/adb",
             onAdbPathChanged = {},
             saveAdbPath = {},

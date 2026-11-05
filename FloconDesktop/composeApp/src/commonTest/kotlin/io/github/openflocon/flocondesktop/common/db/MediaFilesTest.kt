@@ -26,12 +26,14 @@ class MediaFilesTest {
         file("ScreenRecord", "b.mp4", 1_000, size = 30)
         file("Other", "c.txt", 1_000, size = 500)
 
-        assertEquals(40L, mediaFiles.sizeBytes())
+        assertEquals(10L, mediaFiles.screenshotsBytes())
+        assertEquals(30L, mediaFiles.recordingsBytes())
     }
 
     @Test
     fun `a missing documents folder is empty`() {
-        assertEquals(0L, MediaFiles { File(root, "nope") }.sizeBytes())
+        assertEquals(0L, MediaFiles { File(root, "nope") }.screenshotsBytes())
+        assertEquals(0L, MediaFiles { File(root, "nope") }.recordingsBytes())
         MediaFiles { File(root, "nope") }.deleteModifiedBefore(Long.MAX_VALUE)
     }
 
@@ -51,9 +53,15 @@ class MediaFilesTest {
     @Test
     fun `files outside the media folders and the folders themselves are kept`() {
         val other = file("Notes", "keep.txt", 1_000)
-        val atRoot = File(root, "root.txt").also { it.writeText("x"); it.setLastModified(1_000) }
+        val atRoot = File(root, "root.txt").also {
+            it.writeText("x")
+            it.setLastModified(1_000)
+        }
         val sub = File(root, "Screenshot/sub").also { it.mkdirs() }
-        val nested = File(sub, "nested.png").also { it.writeText("x"); it.setLastModified(1_000) }
+        val nested = File(sub, "nested.png").also {
+            it.writeText("x")
+            it.setLastModified(1_000)
+        }
 
         mediaFiles.deleteModifiedBefore(Long.MAX_VALUE)
 

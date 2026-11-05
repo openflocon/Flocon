@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.common.db
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.maintenance.repository.MediaFilesRepository
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.MediaFilesSize
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,21 +20,24 @@ import java.nio.file.Files
  */
 internal class MediaFiles(private val documentsFolder: () -> File) {
 
-    fun sizeBytes(): Long = files().sumOf { it.length() }
+    fun screenshotsBytes(): Long = files(SCREENSHOT_FOLDER).sumOf { it.length() }
+
+    fun recordingsBytes(): Long = files(RECORDING_FOLDER).sumOf { it.length() }
 
     fun deleteModifiedBefore(beforeTimestampMs: Long) {
-        files()
+        files(SCREENSHOT_FOLDER, RECORDING_FOLDER)
             .filter { it.lastModified() < beforeTimestampMs }
             .forEach { it.delete() }
     }
 
-    private fun files(): List<File> = FOLDERS
+    private fun files(vararg folders: String): List<File> = folders
         .flatMap { name -> File(documentsFolder(), name).listFiles().orEmpty().asList() }
         // a link is left alone: it may point outside the documents folder
         .filter { it.isFile && !Files.isSymbolicLink(it.toPath()) }
 
     private companion object {
-        val FOLDERS = listOf("Screenshot", "ScreenRecord")
+        const val SCREENSHOT_FOLDER = "Screenshot"
+        const val RECORDING_FOLDER = "ScreenRecord"
     }
 }
 
@@ -43,8 +47,11 @@ internal class MediaFilesRepositoryImpl(
     private val settingsDataSource: SettingsDataSource,
 ) : MediaFilesRepository {
 
-    override suspend fun getSizeBytes(): Long = withContext(dispatcherProvider.data) {
-        mediaFiles.sizeBytes()
+    override suspend fun getSizes(): MediaFilesSize = withContext(dispatcherProvider.data) {
+        MediaFilesSize(
+            screenshotsBytes = mediaFiles.screenshotsBytes(),
+            recordingsBytes = mediaFiles.recordingsBytes(),
+        )
     }
 
     override suspend fun deleteFilesBefore(beforeTimestampMs: Long): Unit = withContext(dispatcherProvider.data) {

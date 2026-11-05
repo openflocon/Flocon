@@ -13,7 +13,6 @@ enum class AutoPurgeInterval(val days: Int) {
         // the user can switch to Never in the settings
         val DEFAULT = TwoWeeks
 
-        fun fromDays(days: Int?, default: AutoPurgeInterval = DEFAULT): AutoPurgeInterval =
-            entries.firstOrNull { it.days == days } ?: default
+        fun fromDays(days: Int?, default: AutoPurgeInterval = DEFAULT): AutoPurgeInterval = entries.firstOrNull { it.days == days } ?: default
     }
 }

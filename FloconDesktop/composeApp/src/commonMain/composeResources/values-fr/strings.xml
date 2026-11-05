@@ -508,9 +508,9 @@
     <string name="settings_data_auto_description">À chaque lancement de Flocon, les données plus vieilles que l’âge choisi sont supprimées.</string>
     <string name="settings_data_manual_title">Nettoyage manuel</string>
     <string name="settings_data_media_title">Captures d’écran et enregistrements</string>
-    <string name="settings_data_media_size">Taille sur le disque</string>
+    <string name="settings_data_media_screenshots_size">Captures d'écran</string>
+    <string name="settings_data_media_recordings_size">Enregistrements</string>
     <string name="settings_data_media_auto_description">Les captures d’écran et enregistrements vidéo sauvegardés dans le dossier Flocon. À chaque lancement de Flocon, ceux plus vieux que l’âge choisi sont supprimés. Jamais par défaut.</string>
-    <string name="settings_data_media_manual_description">Supprime les captures d’écran et enregistrements vidéo sauvegardés dans le dossier Flocon. Les autres fichiers sont conservés.</string>
     <string name="settings_data_media_clean">Supprimer maintenant</string>
     <string name="settings_data_media_cleaning">Suppression…</string>
     <string name="settings_data_media_clean_failed">Échec du nettoyage</string>
