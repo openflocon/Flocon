@@ -93,7 +93,9 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineTransactionRow
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
+import io.github.openflocon.flocondesktop.features.timeline.view.transactionIndent
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -370,10 +372,18 @@ internal fun TimelineContent(
                                         },
                                         onClick = { onAction(TimelineAction.Open(it)) },
                                         highlight = filterText.value,
-                                        modifier = Modifier.fillMaxWidth(),
+                                        // the queries of a transaction are indented under its header
+                                        modifier = Modifier.fillMaxWidth().then(
+                                            if (item.row.transaction != null) Modifier.transactionIndent() else Modifier,
+                                        ),
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.TransactionHeader -> TimelineTransactionRow(
+                                item = item,
+                                onClick = { onAction(TimelineAction.ToggleTransaction(item.transaction.id)) },
+                            )
 
                             is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 

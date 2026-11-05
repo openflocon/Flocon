@@ -4,10 +4,12 @@ import io.github.openflocon.domain.common.time.formatDate
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTransactionUiModel
 
 internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUiModel(
     id = id,
@@ -21,6 +23,15 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     sessionStart = sessionStart,
     phase = phase,
     logLevel = level,
+    transaction = transaction?.toUi(),
+)
+
+private fun TimelineTransactionDomainModel.toUi() = TimelineTransactionUiModel(
+    id = id,
+    queryCount = queryCount,
+    durationLabel = formatElapsed((endTimestamp - startTimestamp).coerceAtLeast(0).toDouble()),
+    endTimestamp = endTimestamp,
+    isControl = isControl,
 )
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
@@ -76,11 +87,54 @@ internal fun separatorBetween(
     }
 }
 
-// the events and the screenshots belong to a day, the headers do not
+// the events, the transactions and the screenshots belong to a day, the headers of the days do not
 private fun TimelineItemUiModel?.dayOrNull(): String? = when (this) {
     is TimelineItemUiModel.Row -> row.day
+    is TimelineItemUiModel.TransactionHeader -> day
     is TimelineItemUiModel.Screenshot -> day
     is TimelineItemUiModel.DayHeader, null -> null
+}
+
+// the time of an event, or of the transaction it opens
+private fun TimelineItemUiModel?.timestampOrNull(): Long? = when (this) {
+    is TimelineItemUiModel.Row -> row.timestamp
+    is TimelineItemUiModel.TransactionHeader -> transaction.endTimestamp
+    is TimelineItemUiModel.Screenshot, is TimelineItemUiModel.DayHeader, null -> null
+}
+
+/**
+ * The header of a transaction goes above its first query when the list goes down from the newest, above its last one
+ * (so after it in the list order) when the list is [inverted]. The queries of a transaction are the ones sharing its id:
+ * a query of another transaction, or none, ends the group. [expanded] are the ids of the transactions that show their queries.
+ */
+internal fun transactionHeaderBetween(
+    before: TimelineItemUiModel?,
+    after: TimelineItemUiModel?,
+    inverted: Boolean,
+    expanded: Set<String>,
+): TimelineItemUiModel.TransactionHeader? {
+    val first = (if (inverted) before else after) as? TimelineItemUiModel.Row ?: return null
+    val neighbor = (if (inverted) after else before) as? TimelineItemUiModel.Row
+    val transaction = first.row.transaction ?: return null
+    if (neighbor?.row?.transaction?.id == transaction.id) return null
+    return TimelineItemUiModel.TransactionHeader(
+        transaction = transaction,
+        day = first.row.day,
+        time = formatTimestamp(transaction.endTimestamp),
+        databaseName = first.row.subtitle,
+        isExpanded = transaction.id in expanded,
+        // a transaction can be interrupted by other events: each of its headers has its own key
+        key = "transaction:${transaction.id}:${first.row.key}",
+    )
+}
+
+/**
+ * The queries of a transaction are shown under its header when it is expanded. The statements that open and close it
+ * (BEGIN, COMMIT...) are only told by the header.
+ */
+internal fun TimelineItemUiModel.isHiddenInTransaction(expanded: Set<String>): Boolean {
+    val transaction = (this as? TimelineItemUiModel.Row)?.row?.transaction ?: return false
+    return transaction.isControl || transaction.id !in expanded
 }
 
 /**
@@ -107,8 +161,8 @@ internal fun screenshotMarkerBetween(
 ): TimelineItemUiModel.Screenshot? {
     val shot = screenshotBetween(
         shots = shots,
-        newerTimestamp = (before as? TimelineItemUiModel.Row)?.row?.timestamp,
-        olderTimestamp = (after as? TimelineItemUiModel.Row)?.row?.timestamp,
+        newerTimestamp = before.timestampOrNull(),
+        olderTimestamp = after.timestampOrNull(),
     ) ?: return null
     return TimelineItemUiModel.Screenshot(
         timestamp = shot.timestamp,

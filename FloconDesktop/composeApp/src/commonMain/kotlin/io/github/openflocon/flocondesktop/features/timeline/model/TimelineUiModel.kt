@@ -20,6 +20,7 @@ internal data class TimelineRowUiModel(
     val sessionStart: Long? = null, // the start of the session of the event, null if none is known
     val phase: TimelinePhase = TimelinePhase.Request, // network calls only: the request and the response are two rows
     val logLevel: TimelineLogLevel? = null, // logs only
+    val transaction: TimelineTransactionUiModel? = null, // database queries run in a transaction only
 ) {
     // the ids of two sources can be the same. Shared by the request and the response of a network call,
     // to select and highlight them together
@@ -28,6 +29,18 @@ internal data class TimelineRowUiModel(
     // unique in the list
     val key: String get() = if (phase == TimelinePhase.Request) callKey else "$callKey:${phase.name}"
 }
+
+/**
+ * The transaction of a database query. The queries of a transaction are grouped under one header.
+ */
+@Immutable
+internal data class TimelineTransactionUiModel(
+    val id: String,
+    val queryCount: Int, // without the statements that open and close it (BEGIN, COMMIT...)
+    val durationLabel: String,
+    val endTimestamp: Long, // the time of the header
+    val isControl: Boolean, // BEGIN, COMMIT...: only the header tells them
+)
 
 @Immutable
 internal data class TimelineNetworkUiModel(
@@ -49,6 +62,16 @@ internal sealed interface TimelineItemUiModel {
     data class Row(val row: TimelineRowUiModel) : TimelineItemUiModel {
         override val key: String get() = row.key
     }
+
+    // displayed above the queries of a transaction, click to show or hide them
+    data class TransactionHeader(
+        val transaction: TimelineTransactionUiModel,
+        val day: String, // like the rows, to place the headers of the days around it
+        val time: String,
+        val databaseName: String?,
+        val isExpanded: Boolean,
+        override val key: String,
+    ) : TimelineItemUiModel
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
@@ -89,6 +112,9 @@ internal sealed interface TimelineAction {
     data class FilterTextChanged(val text: String) : TimelineAction
     data object ToggleFilterPanel : TimelineAction
     data class Open(val row: TimelineRowUiModel) : TimelineAction
+
+    // shows or hides the queries of a transaction
+    data class ToggleTransaction(val id: String) : TimelineAction
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
@@ -147,6 +173,7 @@ internal fun previewTimelineRowUiModel(
     network: TimelineNetworkUiModel? = null,
     phase: TimelinePhase = TimelinePhase.Request,
     logLevel: TimelineLogLevel? = null,
+    transaction: TimelineTransactionUiModel? = null,
 ) = TimelineRowUiModel(
     id = id,
     source = source,
@@ -158,6 +185,22 @@ internal fun previewTimelineRowUiModel(
     network = network,
     phase = phase,
     logLevel = logLevel,
+    transaction = transaction,
+)
+
+internal fun previewTimelineTransaction(
+    id: String = "tx-1",
+    queryCount: Int = 2,
+    isControl: Boolean = false,
+) = TimelineTransactionUiModel(id = id, queryCount = queryCount, durationLabel = "5 ms", endTimestamp = 0L, isControl = isControl)
+
+internal fun previewTimelineTransactionHeader(isExpanded: Boolean = true) = TimelineItemUiModel.TransactionHeader(
+    transaction = previewTimelineTransaction(),
+    day = "20/10/2026",
+    time = "12:00:00.000",
+    databaseName = "app.db",
+    isExpanded = isExpanded,
+    key = "transaction:tx-1:preview",
 )
 
 // one row of each kind of event
@@ -229,5 +272,28 @@ internal fun previewTimelineItems(): List<TimelineItemUiModel> {
     return buildList {
         add(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day:20/10/2026"))
         rows.forEach { add(TimelineItemUiModel.Row(it)) }
+        add(previewTimelineTransactionHeader())
+        add(
+            TimelineItemUiModel.Row(
+                previewTimelineRowUiModel(
+                    source = TimelineSource.Database,
+                    id = "tx1",
+                    title = "UPDATE dog SET age = 7 WHERE id = 1",
+                    subtitle = "app.db",
+                    transaction = previewTimelineTransaction(),
+                ),
+            ),
+        )
+        add(
+            TimelineItemUiModel.Row(
+                previewTimelineRowUiModel(
+                    source = TimelineSource.Database,
+                    id = "tx2",
+                    title = "INSERT INTO dog (name) VALUES ('Rex')",
+                    subtitle = "app.db",
+                    transaction = previewTimelineTransaction(),
+                ),
+            ),
+        )
     }
 }

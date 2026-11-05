@@ -198,7 +198,7 @@ internal fun TimelineRow(
 }
 
 @Composable
-private fun TimeColumn(
+internal fun TimeColumn(
     time: String,
     delta: String?,
     modifier: Modifier = Modifier,

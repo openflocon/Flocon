@@ -16,6 +16,12 @@ data class TimelineRowEntity(
     val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
     val responseByteSize: Long? = null, // network only: size of the response in bytes, null while waiting for it
     val level: String? = null, // log only: DEBUG, INFO, WARNING or ERROR as stored
+    // database only: the transaction of the query, with the queries it ran and its first and last times (all its statements included)
+    val transactionId: String? = null,
+    val txQueryCount: Int? = null,
+    val txStart: Long? = null,
+    val txEnd: Long? = null,
+    val isTransactionControl: Boolean = false, // database only: BEGIN, COMMIT, ROLLBACK...
 )
 
 // result row of the summary query: one per kind

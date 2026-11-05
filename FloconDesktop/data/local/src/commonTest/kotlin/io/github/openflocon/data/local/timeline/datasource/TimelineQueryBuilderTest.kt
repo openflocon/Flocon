@@ -84,6 +84,18 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `every member of the union carries the transaction columns, only the database queries fill them`() {
+        val query = build()
+
+        // the events of every source and the app starts: same columns everywhere, the union is positional
+        assertEquals(eventBranches + 1, Regex("AS transactionId").findAll(query.sql).count())
+        assertEquals(eventBranches + 1, Regex("AS isTransactionControl").findAll(query.sql).count())
+        assertTrue(query.sql.contains("transactionId AS transactionId"))
+        assertTrue(query.sql.contains("u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl"))
+        assertTrue(query.sql.contains("isTransaction AS isTransactionControl"))
+    }
+
+    @Test
     fun `a network call with a response has a second event at the time the response arrived`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network)))
 

@@ -22,6 +22,7 @@ import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 
 private fun String.toTimelineSource(): TimelineSource = when (this) {
@@ -55,6 +56,15 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     hasError = hasError,
     responseByteSize = responseByteSize,
     level = level?.toTimelineLogLevel(),
+    transaction = transactionId?.let {
+        TimelineTransactionDomainModel(
+            id = it,
+            queryCount = txQueryCount ?: 0,
+            startTimestamp = txStart ?: ts,
+            endTimestamp = txEnd ?: ts,
+            isControl = isTransactionControl,
+        )
+    },
 )
 
 // the level is stored upper-case, an unknown one is not shown rather than failing the whole timeline

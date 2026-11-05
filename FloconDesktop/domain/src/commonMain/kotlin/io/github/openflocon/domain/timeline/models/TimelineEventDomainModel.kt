@@ -20,4 +20,16 @@ data class TimelineEventDomainModel(
     // the start of the session the event belongs to: the latest app start before it, null if none is known
     val sessionStart: AppInstance? = null,
     val level: TimelineLogLevel? = null, // log only
+    val transaction: TimelineTransactionDomainModel? = null, // database only: the transaction the query ran in
+)
+
+/**
+ * The transaction of a database query. The queries of a transaction share its [id].
+ */
+data class TimelineTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // without the statements that open and close it (BEGIN, COMMIT...)
+    val startTimestamp: Long,
+    val endTimestamp: Long,
+    val isControl: Boolean, // this query is one of the statements that open or close the transaction
 )
