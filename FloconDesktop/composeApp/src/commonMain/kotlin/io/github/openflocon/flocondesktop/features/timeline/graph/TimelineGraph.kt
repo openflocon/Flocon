@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -78,7 +79,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
 import flocondesktop.composeapp.generated.resources.timeline_graph_empty
 import flocondesktop.composeapp.generated.resources.timeline_graph_fit
-import flocondesktop.composeapp.generated.resources.timeline_graph_following
 import flocondesktop.composeapp.generated.resources.timeline_graph_latest
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_app_start
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
@@ -86,7 +86,6 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
 import flocondesktop.composeapp.generated.resources.timeline_graph_next_session
-import flocondesktop.composeapp.generated.resources.timeline_graph_paused
 import flocondesktop.composeapp.generated.resources.timeline_graph_previous_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
@@ -153,6 +152,8 @@ internal fun TimelineGraph(
     onEditingChange: (Boolean) -> Unit = {},
     // keeps the most recent event in view, until the user moves the graph. The option of the list, shared
     autoScroll: Boolean = false,
+    // the user moved back in time or selected an event (false), or reached the present moment again (true)
+    onAutoScrollChange: (Boolean) -> Unit = {},
     // the screenshots strip above the axis: [screenshotsEnabled] is the setting, the captures are in [model]
     screenshotsEnabled: Boolean = false,
     // false for a device that cannot take them (an Android over wifi): no strip, nothing to turn on
@@ -171,8 +172,6 @@ internal fun TimelineGraph(
 
     // fitted: the whole session is shown and follows the new events, until the user zooms or moves. Opens at 100 %
     var fitted by remember { mutableStateOf(false) }
-    // the auto scroll waits while the user looks around: moved by hand, until latest or fit
-    var paused by remember { mutableStateOf(false) }
     var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
@@ -194,14 +193,28 @@ internal fun TimelineGraph(
     }
     // a more recent event than the ones in view: the graph follows, but not on an older session
     val followsLatest = session == null || !session.hasNext
-    // a new screenshot can be the most recent thing of the graph, with no new event
+    // the end of the events and screenshots, found once per graph: the auto scroll asks for it every frame
     val latestMs = remember(model) { model.latestMs() }
     // read by the pointer handlers, which are not restarted for a screenshot: they must see the latest graph
     val currentModel by rememberUpdatedState(model)
     val currentFollowsLatest by rememberUpdatedState(followsLatest)
-    LaunchedEffect(model.sessionDurationMs, latestMs, autoScroll) {
-        if (autoScroll && !paused && !fitted && opened && followsLatest) {
-            viewport = viewport.followedLatest(model, trackWidth)
+    // the auto scroll follows the present moment, frame by frame, and not only the events: the right of the graph is now.
+    // The user turns it off by moving back in time or by selecting an event, and on with its switch or by reaching the
+    // present moment again: it then jumps to now
+    val currentAutoScroll by rememberUpdatedState(autoScroll)
+    val currentOnAutoScrollChange by rememberUpdatedState(onAutoScrollChange)
+    // only the most recent session follows the present, and the fitted graph follows its own way: the switch is shared
+    // with the list, nothing else must touch it
+    val stopAutoScroll = { if (currentAutoScroll && currentFollowsLatest && !fitted) currentOnAutoScrollChange(false) }
+    val startAutoScroll = { if (!currentAutoScroll && currentFollowsLatest && !fitted) currentOnAutoScrollChange(true) }
+    val currentLatestMs by rememberUpdatedState(latestMs)
+    LaunchedEffect(autoScroll, fitted, opened, followsLatest, trackWidth) {
+        if (!autoScroll || fitted || !opened || !followsLatest) return@LaunchedEffect
+        while (true) {
+            withFrameMillis { }
+            val endMs = currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
+            // a pixel at least: no new layout for less
+            if (viewport.pxPastRight(endMs, trackWidth) >= 1.0) viewport = viewport.followedTo(endMs, trackWidth)
         }
     }
     LaunchedEffect(fitted, model.sessionDurationMs, trackWidth) {
@@ -233,14 +246,11 @@ internal fun TimelineGraph(
                 fitted = false
                 viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
             },
-            following = if (autoScroll) !paused else null,
             onFit = {
                 fitted = true
-                paused = false
             },
             onLatest = {
                 fitted = false
-                paused = false
                 viewport = currentViewport.jumpedToLatest(model, trackWidth, trackHeight)
             },
         )
@@ -309,9 +319,13 @@ internal fun TimelineGraph(
                                             viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
                                         } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
                                             // a real move along the time: the trackpad also sends a small horizontal drift
-                                            paused = true
                                             val ticks = if (delta.x != 0f) delta.x else delta.y
-                                            viewport.panned(ticks * 40 / viewport.pxPerMs, currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis()), trackWidth)
+                                            val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
+                                            val moved = viewport.panned(ticks * 40 / viewport.pxPerMs, limitMs, trackWidth)
+                                            // going back in time leaves the present: no more auto scroll
+                                            if (moved.startMs < viewport.startMs) stopAutoScroll()
+                                            if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
+                                            moved
                                         } else {
                                             viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
                                         }
@@ -336,7 +350,10 @@ internal fun TimelineGraph(
                             val x = offset.x / density - LaneLabelWidthPx
                             val y = offset.y / density - AxisHeightPx
                             if (x >= 0f && y >= 0f) {
-                                model.hitTest(viewport, x, y + viewport.scrollY)?.let { onSelect(it.row) }
+                                model.hitTest(viewport, x, y + viewport.scrollY)?.let {
+                                    stopAutoScroll()
+                                    onSelect(it.row)
+                                }
                             }
                         }
                     }
@@ -346,7 +363,7 @@ internal fun TimelineGraph(
                             onDragEnd = {
                                 zoomBox?.let { (start, end) ->
                                     fitted = false
-                                    paused = true
+                                    stopAutoScroll()
                                     viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
                                 }
                                 zoomBox = null
@@ -359,10 +376,11 @@ internal fun TimelineGraph(
                                 zoomBox = box.first to change.position
                             } else {
                                 fitted = false
-                                paused = true
-                                viewport = viewport
-                                    .panned(-drag.x / density / viewport.pxPerMs, currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis()), trackWidth)
-                                    .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                                val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
+                                val moved = viewport.panned(-drag.x / density / viewport.pxPerMs, limitMs, trackWidth)
+                                if (moved.startMs < viewport.startMs) stopAutoScroll()
+                                if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
+                                viewport = moved.copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                             }
                         }
                     },
@@ -448,8 +466,6 @@ private fun GraphToolbar(
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
     onLatest: () -> Unit,
-    // null: no auto scroll. Else true while the graph follows the new events, false once the user moved it
-    following: Boolean?,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -490,14 +506,6 @@ private fun GraphToolbar(
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
         GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
-        if (following != null) {
-            Text(
-                text = stringResource(if (following) Res.string.timeline_graph_following else Res.string.timeline_graph_paused),
-                style = FloconTheme.typography.labelMedium,
-                color = if (following) colors.statusSuccess else colors.inkFaint,
-                maxLines = 1,
-            )
-        }
         FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
     }

@@ -95,6 +95,10 @@ internal fun TimelineHeader(
             label = pluralStringResource(Res.plurals.timeline_counter_crashes, summary.crashCount),
             highlight = colors.catCrash,
         )
+        AutoScrollControl(
+            enabled = settings.autoScroll,
+            onAction = onAction,
+        )
         ScreenshotsControl(
             enabled = settings.screenshots,
             intervalSeconds = settings.screenshotIntervalSeconds,
