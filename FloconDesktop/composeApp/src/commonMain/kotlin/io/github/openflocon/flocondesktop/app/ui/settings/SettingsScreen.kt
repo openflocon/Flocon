@@ -85,10 +85,12 @@ import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
 import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
+import flocondesktop.composeapp.generated.resources.settings_data_auto_description
+import flocondesktop.composeapp.generated.resources.settings_data_auto_title
 import flocondesktop.composeapp.generated.resources.settings_data_description
 import flocondesktop.composeapp.generated.resources.settings_data_kept
+import flocondesktop.composeapp.generated.resources.settings_data_manual_title
 import flocondesktop.composeapp.generated.resources.settings_data_purge
-import flocondesktop.composeapp.generated.resources.settings_data_purge_label
 import flocondesktop.composeapp.generated.resources.settings_data_purging
 import flocondesktop.composeapp.generated.resources.settings_data_size
 import flocondesktop.composeapp.generated.resources.settings_data_title
@@ -109,6 +111,7 @@ import flocondesktop.composeapp.generated.resources.settings_purge_30_days
 import flocondesktop.composeapp.generated.resources.settings_purge_3_days
 import flocondesktop.composeapp.generated.resources.settings_purge_7_days
 import flocondesktop.composeapp.generated.resources.settings_purge_all
+import flocondesktop.composeapp.generated.resources.settings_purge_never
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
 import flocondesktop.composeapp.generated.resources.settings_scale_description
 import flocondesktop.composeapp.generated.resources.settings_scale_title
@@ -122,6 +125,7 @@ import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
 import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -182,6 +186,7 @@ fun SettingsScreen(
         uiState = uiState,
         dataState = dataState,
         onRefreshDatabaseSize = viewModel::refreshDatabaseSize,
+        onAutoPurgeIntervalChanged = viewModel::onAutoPurgeIntervalChanged,
         onPurgeIntervalChanged = viewModel::onPurgeIntervalChanged,
         onPurgeDatabase = viewModel::purgeDatabase,
         modifier = modifier.fillMaxSize(),
@@ -212,6 +217,7 @@ private fun SettingsScreen(
     uiState: SettingsUiState,
     dataState: DataUiState,
     onRefreshDatabaseSize: () -> Unit,
+    onAutoPurgeIntervalChanged: (AutoPurgeInterval) -> Unit,
     onPurgeIntervalChanged: (PurgeInterval) -> Unit,
     onPurgeDatabase: () -> Unit,
     adbPathText: String,
@@ -298,6 +304,7 @@ private fun SettingsScreen(
                 SettingsTab.Data -> DataPane(
                     state = dataState,
                     onRefreshSize = onRefreshDatabaseSize,
+                    onAutoIntervalChanged = onAutoPurgeIntervalChanged,
                     onIntervalChanged = onPurgeIntervalChanged,
                     onPurge = onPurgeDatabase,
                 )
@@ -880,6 +887,7 @@ private fun StartScreenDropdown(
 private fun DataPane(
     state: DataUiState,
     onRefreshSize: () -> Unit,
+    onAutoIntervalChanged: (AutoPurgeInterval) -> Unit,
     onIntervalChanged: (PurgeInterval) -> Unit,
     onPurge: () -> Unit,
     modifier: Modifier = Modifier,
@@ -912,14 +920,30 @@ private fun DataPane(
                     color = FloconTheme.colors.ink,
                 )
             }
+        }
 
-            Text(
-                text = stringResource(Res.string.settings_data_purge_label),
-                style = FloconTheme.typography.labelSmall,
-                color = FloconTheme.colors.inkMuted,
+        SettingsCard(
+            title = stringResource(Res.string.settings_data_auto_title),
+            icon = Icons.Outlined.Storage,
+            description = stringResource(Res.string.settings_data_auto_description),
+        ) {
+            IntervalDropdown(
+                selected = state.autoPurgeInterval,
+                options = AutoPurgeInterval.entries,
+                label = { stringResource(it.labelRes()) },
+                onSelect = onAutoIntervalChanged,
             )
-            PurgeIntervalDropdown(
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_data_manual_title),
+            icon = Icons.Outlined.Delete,
+            description = stringResource(Res.string.settings_data_kept),
+        ) {
+            IntervalDropdown(
                 selected = state.purgeInterval,
+                options = PurgeInterval.entries,
+                label = { stringResource(it.labelRes()) },
                 onSelect = onIntervalChanged,
             )
             SettingsButton(
@@ -927,13 +951,17 @@ private fun DataPane(
                 onClick = { if (!state.isPurging) onPurge() },
                 primary = true,
             )
-            Text(
-                text = stringResource(Res.string.settings_data_kept),
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colors.inkMuted,
-            )
         }
     }
+}
+
+private fun AutoPurgeInterval.labelRes(): StringResource = when (this) {
+    AutoPurgeInterval.Never -> Res.string.settings_purge_never
+    AutoPurgeInterval.OneDay -> Res.string.settings_purge_1_day
+    AutoPurgeInterval.ThreeDays -> Res.string.settings_purge_3_days
+    AutoPurgeInterval.OneWeek -> Res.string.settings_purge_7_days
+    AutoPurgeInterval.TwoWeeks -> Res.string.settings_purge_14_days
+    AutoPurgeInterval.OneMonth -> Res.string.settings_purge_30_days
 }
 
 private fun PurgeInterval.labelRes(): StringResource = when (this) {
@@ -946,9 +974,11 @@ private fun PurgeInterval.labelRes(): StringResource = when (this) {
 }
 
 @Composable
-private fun PurgeIntervalDropdown(
-    selected: PurgeInterval,
-    onSelect: (PurgeInterval) -> Unit,
+private fun <T> IntervalDropdown(
+    selected: T,
+    options: List<T>,
+    label: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -974,7 +1004,7 @@ private fun PurgeIntervalDropdown(
                     .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
             ) {
                 Text(
-                    text = stringResource(selected.labelRes()),
+                    text = label(selected),
                     style = FloconTheme.typography.bodyMedium,
                     color = FloconTheme.colors.ink,
                 )
@@ -986,9 +1016,9 @@ private fun PurgeIntervalDropdown(
             }
         },
     ) {
-        PurgeInterval.entries.forEach { interval ->
+        options.forEach { interval ->
             FloconDropdownMenuItem(
-                text = stringResource(interval.labelRes()),
+                text = label(interval),
                 leadingIcon = if (interval == selected) Icons.Outlined.Check else null,
                 onClick = {
                     expanded = false
@@ -1415,6 +1445,7 @@ private fun SettingsScreenPreview() {
             uiState = previewSettingsUiState(),
             dataState = DataUiState(databaseSizeBytes = 123_456_789L),
             onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
             onPurgeIntervalChanged = {},
             onPurgeDatabase = {},
             adbPathText = adbPath,
@@ -1447,6 +1478,7 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             uiState = previewSettingsUiState(),
             dataState = DataUiState(databaseSizeBytes = 123_456_789L),
             onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
             onPurgeIntervalChanged = {},
             onPurgeDatabase = {},
             adbPathText = adbPath,
@@ -1477,6 +1509,7 @@ private fun SettingsScreen_LogsPreview() {
             uiState = previewSettingsUiState(),
             dataState = DataUiState(databaseSizeBytes = 123_456_789L),
             onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
             onPurgeIntervalChanged = {},
             onPurgeDatabase = {},
             adbPathText = "/usr/local/bin/adb",

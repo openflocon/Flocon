@@ -1,12 +1,16 @@
 package io.github.openflocon.flocondesktop.app.ui.settings
 
 import androidx.compose.runtime.Immutable
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
 
 @Immutable
 data class DataUiState(
     // null while it is being computed
     val databaseSizeBytes: Long? = null,
+    // deletes the old data at each launch of the app
+    val autoPurgeInterval: AutoPurgeInterval = AutoPurgeInterval.DEFAULT,
+    // for the manual purge
     val purgeInterval: PurgeInterval = PurgeInterval.DEFAULT,
     val isPurging: Boolean = false,
 )

@@ -643,7 +643,6 @@
     <string name="settings_data_title">Database</string>
     <string name="settings_data_description">Flocon keeps everything it receives from your apps (network calls, analytics, images, crashes…). Purge old data to free disk space.</string>
     <string name="settings_data_size">Size on disk</string>
-    <string name="settings_data_purge_label">Purge data</string>
     <string name="settings_data_purge">Purge now</string>
     <string name="settings_data_purging">Purging…</string>
     <string name="settings_data_kept">Devices, mocks, deeplinks and your other settings are kept.</string>
@@ -654,4 +653,8 @@
     <string name="settings_purge_14_days">Older than 14 days</string>
     <string name="settings_purge_30_days">Older than 30 days</string>
     <string name="settings_purge_all">Everything</string>
+    <string name="settings_data_auto_title">Automatic cleanup</string>
+    <string name="settings_data_auto_description">At each launch of Flocon, the data older than the chosen age is deleted.</string>
+    <string name="settings_data_manual_title">Manual cleanup</string>
+    <string name="settings_purge_never">Never</string>
 </resources>

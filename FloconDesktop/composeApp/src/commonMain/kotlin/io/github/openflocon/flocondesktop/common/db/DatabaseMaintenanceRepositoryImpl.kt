@@ -4,13 +4,18 @@ import androidx.room.useWriterConnection
 import io.github.openflocon.data.local.maintenance.dao.DatabaseMaintenanceDao
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.maintenance.repository.DatabaseMaintenanceRepository
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class DatabaseMaintenanceRepositoryImpl(
+internal class DatabaseMaintenanceRepositoryImpl(
     private val database: AppDatabase,
     private val dao: DatabaseMaintenanceDao,
     private val dispatcherProvider: DispatcherProvider,
+    private val settingsDataSource: SettingsDataSource,
 ) : DatabaseMaintenanceRepository {
 
     override suspend fun getDatabaseSizeBytes(): Long = withContext(dispatcherProvider.data) {
@@ -38,5 +43,12 @@ class DatabaseMaintenanceRepositoryImpl(
             transactor.usePrepared("PRAGMA wal_checkpoint(TRUNCATE)") { it.step() }
             transactor.usePrepared("VACUUM") { it.step() }
         }
+    }
+
+    override val autoPurgeInterval: Flow<AutoPurgeInterval> = settingsDataSource.autoPurgeDays
+        .map { AutoPurgeInterval.fromDays(it) }
+
+    override suspend fun setAutoPurgeInterval(interval: AutoPurgeInterval) {
+        settingsDataSource.setAutoPurgeDays(interval.days)
     }
 }

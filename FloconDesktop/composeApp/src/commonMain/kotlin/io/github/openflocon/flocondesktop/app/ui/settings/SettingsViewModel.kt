@@ -13,10 +13,13 @@ import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.maintenance.usecase.GetDatabaseSizeUseCase
+import io.github.openflocon.domain.maintenance.usecase.ObserveAutoPurgeIntervalUseCase
 import io.github.openflocon.domain.maintenance.usecase.PurgeDatabaseUseCase
+import io.github.openflocon.domain.maintenance.usecase.SetAutoPurgeIntervalUseCase
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -70,6 +73,8 @@ class SettingsViewModel(
     private val logManager: LogManagerEditable,
     private val getDatabaseSizeUseCase: GetDatabaseSizeUseCase,
     private val purgeDatabaseUseCase: PurgeDatabaseUseCase,
+    observeAutoPurgeIntervalUseCase: ObserveAutoPurgeIntervalUseCase,
+    private val setAutoPurgeIntervalUseCase: SetAutoPurgeIntervalUseCase,
 ) : ViewModel() {
 
     private val _dataState = MutableStateFlow(DataUiState())
@@ -139,6 +144,11 @@ class SettingsViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            observeAutoPurgeIntervalUseCase().collect { interval ->
+                _dataState.update { it.copy(autoPurgeInterval = interval) }
+            }
+        }
         viewModelScope.launch {
             // Utiliser GlobalScope ici pour la simplicité de l'exemple, mais préférez un scope dédié
             settingsRepository.adbPath.collect { path ->
@@ -315,6 +325,12 @@ class SettingsViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val size = getDatabaseSizeUseCase()
             _dataState.update { it.copy(databaseSizeBytes = size) }
+        }
+    }
+
+    fun onAutoPurgeIntervalChanged(interval: AutoPurgeInterval) {
+        viewModelScope.launch {
+            setAutoPurgeIntervalUseCase(interval)
         }
     }
 
