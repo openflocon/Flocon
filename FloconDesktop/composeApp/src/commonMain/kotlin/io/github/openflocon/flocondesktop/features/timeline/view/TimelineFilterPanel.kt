@@ -165,6 +165,22 @@ internal fun TimelineFilterPanel(
                             onAction = onAction,
                             // the sections slide when the order changes: a source gets its first event
                             modifier = Modifier.animateItem(),
+                            // the logs have their own filters, shown while the source is selected
+                            content = if (section.source == TimelineSource.Log && section.enabled) {
+                                {
+                                    LogFilterContent(
+                                        logs = panel.logs,
+                                        onAction = onAction,
+                                        modifier = Modifier.padding(
+                                            start = FloconTheme.spacing.large,
+                                            end = FloconTheme.spacing.medium,
+                                            bottom = FloconTheme.spacing.small,
+                                        ),
+                                    )
+                                }
+                            } else {
+                                null
+                            },
                         )
                     }
                 }
@@ -246,11 +262,12 @@ private fun FilterSection(
     label: String,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
+    content: (@Composable () -> Unit)? = null, // filters of the source that are not facet groups
 ) {
     val colors = FloconTheme.colors
     val (color, _) = section.source.categoryColors()
-    var expanded by remember(section.source) { mutableStateOf(section.groups.isNotEmpty()) }
-    val canExpand = section.groups.isNotEmpty()
+    val canExpand = section.groups.isNotEmpty() || content != null
+    var expanded by remember(section.source, canExpand) { mutableStateOf(canExpand) }
     val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
     val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
     // the filters of a source switched off are still there, to be set before switching it on
@@ -303,6 +320,7 @@ private fun FilterSection(
             exit = shrinkVertically() + fadeOut(),
         ) {
             Column(modifier = Modifier.alpha(groupsAlpha)) {
+                content?.invoke()
                 // two groups by row: a dropdown does not need the whole width
                 section.groups.chunked(GroupsPerRow).forEach { rowGroups ->
                     Row(

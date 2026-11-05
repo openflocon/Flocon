@@ -127,6 +127,7 @@ internal sealed interface TimelineFilterAction {
 
     // positions of the slider, see TimelineNetworkFilterUiModel
     data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
+
     // the logs card: the reserved types and the levels use ToggleFacet(LogType | LogTaggedLevel)
     data class SetLogTaggedEnabled(val value: Boolean) : TimelineFilterAction
     data class AddLogTagRule(val text: String, val exclude: Boolean) : TimelineFilterAction

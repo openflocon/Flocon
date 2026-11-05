@@ -146,6 +146,16 @@
     <string name="timeline_log_level_info">Info</string>
     <string name="timeline_log_level_warning">Warning</string>
     <string name="timeline_log_level_error">Error</string>
+    <string name="timeline_logs_section">Logs</string>
+    <string name="timeline_logs_types">Types</string>
+    <string name="timeline_logs_all_types">All types · %1$d</string>
+    <string name="timeline_logs_tagged">Tagged logs</string>
+    <string name="timeline_logs_tag">Tag</string>
+    <string name="timeline_logs_tag_placeholder">Word in the tag, Enter</string>
+    <string name="timeline_logs_level">Level</string>
+    <string name="timeline_log_type_navigation">Navigation</string>
+    <string name="timeline_log_type_user_action">User action</string>
+    <string name="timeline_log_type_lifecycle">Lifecycle</string>
     <string name="timeline_log_detail_value">Message</string>
     <string name="timeline_log_detail_copy_value">Copy the message</string>
     <string name="timeline_log_detail_details">Details</string>

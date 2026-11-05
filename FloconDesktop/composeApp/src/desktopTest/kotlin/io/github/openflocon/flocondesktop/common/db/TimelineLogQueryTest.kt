@@ -88,21 +88,21 @@ class TimelineLogQueryTest {
             log(timestamp = 300, type = "billing", level = "INFO", value = "invoice created"),
         ),
     ) { dataSource ->
-            val filter = TimelineFilterDomainModel(sources = setOf(TimelineSource.Log))
+        val filter = TimelineFilterDomainModel(sources = setOf(TimelineSource.Log))
 
-            // newest first
-            val events = dataSource.observeTimelineEvents(app, filter).first()
-            assertEquals(listOf("invoice created", "home", "payment failed"), events.map { it.title })
-            assertEquals(setOf(TimelineSource.Log), events.map { it.source }.toSet())
-            assertEquals(listOf("billing", "navigation", "custom"), events.map { it.subtitle })
-            assertEquals(listOf(TimelineLogLevel.Info, TimelineLogLevel.Info, TimelineLogLevel.Error), events.map { it.level })
-            assertEquals(listOf(false, false, true), events.map { it.hasError })
+        // newest first
+        val events = dataSource.observeTimelineEvents(app, filter).first()
+        assertEquals(listOf("invoice created", "home", "payment failed"), events.map { it.title })
+        assertEquals(setOf(TimelineSource.Log), events.map { it.source }.toSet())
+        assertEquals(listOf("billing", "navigation", "custom"), events.map { it.subtitle })
+        assertEquals(listOf(TimelineLogLevel.Info, TimelineLogLevel.Info, TimelineLogLevel.Error), events.map { it.level })
+        assertEquals(listOf(false, false, true), events.map { it.hasError })
 
-            val facets = dataSource.observeSummary(app, filter).first().facetCounts
-            assertEquals(mapOf("custom" to 1, "navigation" to 1, "billing" to 1), facets[TimelineFacet.LogType])
-            assertEquals(mapOf("ERROR" to 1, "INFO" to 2), facets[TimelineFacet.LogLevel])
-            // the reserved types have no level
-            assertEquals(mapOf("ERROR" to 1, "INFO" to 1), facets[TimelineFacet.LogTaggedLevel])
+        val facets = dataSource.observeSummary(app, filter).first().facetCounts
+        assertEquals(mapOf("custom" to 1, "navigation" to 1, "billing" to 1), facets[TimelineFacet.LogType])
+        assertEquals(mapOf("ERROR" to 1, "INFO" to 2), facets[TimelineFacet.LogLevel])
+        // the reserved types have no level
+        assertEquals(mapOf("ERROR" to 1, "INFO" to 1), facets[TimelineFacet.LogTaggedLevel])
     }
 
     private val mixedLogs = listOf(
