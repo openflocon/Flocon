@@ -11,6 +11,7 @@ import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
@@ -62,6 +63,19 @@ class DestinationTest {
             TimelineDestination.Panel(AccessibilityRoutes.Detail(id = "event-1", fromTimeline = true)),
             row(TimelineSource.Accessibility, id = "event-1").toDestination(),
         )
+    }
+
+    @Test
+    fun `destinationForLogRowIsLogDetail`() {
+        assertEquals(
+            TimelineDestination.Panel(TimelineRoutes.LogDetail(id = 7L)),
+            row(TimelineSource.Log, id = "7").toDestination(),
+        )
+    }
+
+    @Test
+    fun `a log row with an id that is not a number opens nothing`() {
+        assertNull(row(TimelineSource.Log, id = "abc").toDestination())
     }
 
     @Test

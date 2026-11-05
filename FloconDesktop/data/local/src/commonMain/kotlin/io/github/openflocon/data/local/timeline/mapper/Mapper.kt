@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.timeline.datasource.KIND_APP_START
 import io.github.openflocon.data.local.timeline.datasource.KIND_CRASH
 import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
 import io.github.openflocon.data.local.timeline.datasource.KIND_DEEPLINK
+import io.github.openflocon.data.local.timeline.datasource.KIND_LOG
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
 import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.datasource.KIND_TABLE
@@ -21,6 +22,7 @@ import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -36,6 +38,7 @@ private fun String.toTimelineSource(): TimelineSource = when (this) {
     KIND_TABLE -> TimelineSource.Table
     KIND_DEEPLINK -> TimelineSource.Deeplink
     KIND_ADB -> TimelineSource.Adb
+    KIND_LOG -> TimelineSource.Log
     KIND_APP_START -> TimelineSource.AppStart
     else -> error("unknown timeline kind: $this")
 }
@@ -70,8 +73,13 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     sessionStart = sessionStart,
     isImage = isImage,
     hasError = hasError,
+    responseByteSize = responseByteSize,
+    level = level?.toTimelineLogLevel(),
     facets = parseTimelineFacets(facetValues),
 )
+
+// the level is stored upper-case, an unknown one is not shown rather than failing the whole timeline
+private fun String.toTimelineLogLevel(): TimelineLogLevel? = TimelineLogLevel.entries.firstOrNull { it.name.equals(this, ignoreCase = true) }
 
 internal fun toSummaryDomain(
     summaryRows: List<TimelineSummaryRowEntity>,

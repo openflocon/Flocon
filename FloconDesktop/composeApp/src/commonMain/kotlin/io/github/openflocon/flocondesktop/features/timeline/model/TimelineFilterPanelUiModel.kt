@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -14,6 +15,8 @@ internal data class TimelineFacetValueUiModel(
     val selected: Boolean,
     val method: NetworkMethodUi? = null, // an http method, displayed like in the network screen
     val httpFamily: Int? = null, // the first digit of a status class, to color it like in the network screen
+    val logLevel: TimelineLogLevel? = null, // a level of log, to color it like in the list
+    val logType: String? = null, // a type of log: the reserved ones show their glyph like in the list
 )
 
 @Immutable
@@ -127,6 +130,7 @@ internal fun TimelineFilterSectionUi.facetGroups(): List<TimelineFacetGroupUiMod
 internal data class TimelineRuleUiModel(
     val value: String,
     val exclude: Boolean,
+    val active: Boolean = true, // an inactive rule stays in the list but is not applied
 )
 
 /**
@@ -203,10 +207,90 @@ internal fun previewTimelineNetworkFilterUiModel() = TimelineNetworkFilterUiMode
     hostCount = 2,
 )
 
+// one entry of the types menu of the logs card
+@Immutable
+internal data class TimelineLogTypeUiModel(
+    val type: String?, // a reserved type ("navigation"...), null: the tagged logs, every log whose type is not reserved
+    val count: Int,
+    val selected: Boolean,
+)
+
+/**
+ * The logs card of the filter panel: the types menu, the tag rules and the levels.
+ * The tag and the levels only apply to the tagged logs, never to the reserved types.
+ */
+@Immutable
+internal data class TimelineLogFilterUiModel(
+    val types: ImmutableList<TimelineLogTypeUiModel>, // the reserved types, then the tagged logs
+    val allTypesSelected: Boolean,
+    val totalCount: Int,
+    val taggedEnabled: Boolean,
+    val tagQuery: String,
+    val tagSuggestions: ImmutableList<TimelineFacetValueUiModel>, // the known tags matching the query
+    val tagIncludes: ImmutableList<TimelineRuleUiModel>,
+    val tagExcludes: ImmutableList<TimelineRuleUiModel>,
+    val levels: ImmutableList<TimelineFacetValueUiModel>,
+) {
+    companion object {
+        val Empty = TimelineLogFilterUiModel(
+            types = persistentListOf(),
+            allTypesSelected = true,
+            totalCount = 0,
+            taggedEnabled = true,
+            tagQuery = "",
+            tagSuggestions = persistentListOf(),
+            tagIncludes = persistentListOf(),
+            tagExcludes = persistentListOf(),
+            levels = persistentListOf(),
+        )
+    }
+}
+
+internal fun previewTimelineLogFilterUiModel(
+    allTypesSelected: Boolean = true,
+    taggedEnabled: Boolean = true,
+) = TimelineLogFilterUiModel(
+    types = persistentListOf(
+        TimelineLogTypeUiModel("navigation", count = 12, selected = true),
+        TimelineLogTypeUiModel("userAction", count = 30, selected = allTypesSelected),
+        TimelineLogTypeUiModel("lifecycle", count = 8, selected = allTypesSelected),
+        TimelineLogTypeUiModel(null, count = 41, selected = taggedEnabled),
+    ),
+    allTypesSelected = allTypesSelected && taggedEnabled,
+    totalCount = 91,
+    taggedEnabled = taggedEnabled,
+    tagQuery = "bi",
+    tagSuggestions = persistentListOf(
+        TimelineFacetValueUiModel("billing", count = 23, selected = true, logType = "billing"),
+        TimelineFacetValueUiModel("bin", count = 4, selected = true, logType = "bin"),
+    ),
+    tagIncludes = persistentListOf(TimelineRuleUiModel("payment", exclude = false), TimelineRuleUiModel("auth", exclude = false, active = false)),
+    tagExcludes = persistentListOf(TimelineRuleUiModel("debug", exclude = true)),
+    levels = persistentListOf(
+        TimelineFacetValueUiModel("DEBUG", count = 10, selected = true, logLevel = TimelineLogLevel.Debug),
+        TimelineFacetValueUiModel("INFO", count = 20, selected = false, logLevel = TimelineLogLevel.Info),
+        TimelineFacetValueUiModel("WARNING", count = 6, selected = true, logLevel = TimelineLogLevel.Warning),
+        TimelineFacetValueUiModel("ERROR", count = 5, selected = true, logLevel = TimelineLogLevel.Error),
+    ),
+)
+
 @Immutable
 internal data class TimelineFilterPanelUiModel(
+    // the network card is the section of the network
     val sections: ImmutableList<TimelineFilterSectionUi>,
+    val logs: TimelineLogFilterUiModel,
     val currentSessionOnly: Boolean,
     val hasActiveFilters: Boolean,
-    val activeFilterCount: Int
-)
+    // facets selected, or sources hidden: the badge of the button opening the panel
+    val activeFilterCount: Int,
+) {
+    companion object {
+        val Empty = TimelineFilterPanelUiModel(
+            sections = persistentListOf(),
+            logs = TimelineLogFilterUiModel.Empty,
+            currentSessionOnly = false,
+            hasActiveFilters = false,
+            activeFilterCount = 0,
+        )
+    }
+}

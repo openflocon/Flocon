@@ -3,15 +3,20 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyph
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 
-// the types drawn, in the order of the lanes. The app start is a line over the lanes, the other sources only appear in the list
+// the types drawn, from top to bottom. Database is the last one of the lanes: it is the one that spams the most, so it must not push the others down.
+// A new lane goes between Network and Database. The app start is a line over the lanes, the other sources only appear in the list (the logs are instants)
 internal enum class GraphLane(val source: TimelineSource) {
-    Network(TimelineSource.Network),
-    Database(TimelineSource.Database),
     Analytics(TimelineSource.Analytics),
+    Network(TimelineSource.Network),
+    Log(TimelineSource.Log),
+    Database(TimelineSource.Database),
 }
 
 internal fun TimelineSource.toGraphLane(): GraphLane? = GraphLane.entries.firstOrNull { it.source == this }
@@ -35,7 +40,13 @@ internal data class GraphEventUiModel(
     val hasError: Boolean = false,
     // the response did not arrive yet: the bar goes up to the last event received
     val inProgress: Boolean = false,
+    // logs only: the shape and the color of the marker (see logGlyphOf)
+    val logLevel: TimelineLogLevel? = null,
+    val logType: String? = null,
 ) {
+    // null: not a log
+    val logGlyph: LogGlyph? get() = logLevel?.let { logGlyphOf(logType, it) }
+
     val key: String get() = row.callKey
     val isInstant: Boolean get() = durationMs <= 0L
     val endMs: Long get() = startMs + durationMs
@@ -43,6 +54,20 @@ internal data class GraphEventUiModel(
     // a http error, or a call that failed: with or without a status
     val isError: Boolean get() = hasError || (statusCode != null && statusCode >= 400)
 }
+
+/**
+ * A zone of the session the graph is asked to show: it is applied once, then the graph is free again.
+ * Times are since the start of the session, like the events.
+ */
+@Immutable
+internal data class GraphFocusUiModel(
+    val fromMs: Long,
+    val toMs: Long,
+    // the event selected in the zone: the graph scrolls to its row. Null: only the zone
+    val eventKey: String?,
+    // tells a request from the previous one, even for the same zone
+    val token: Long,
+)
 
 // the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end
 @Immutable
@@ -62,6 +87,8 @@ internal data class GraphUiModel(
     val hasAppStart: Boolean = false,
     // the time of day of the start of the session, to give a time to the axis
     val sessionStartTimestamp: Long = 0L,
+    // the screenshots of the session, oldest first: the strip above the time axis
+    val screenshots: List<GraphScreenshotUiModel> = emptyList(),
 ) {
     val rowCount: Int get() = lanes.sumOf { it.rows.size }
 
@@ -70,7 +97,7 @@ internal data class GraphUiModel(
     }
 }
 
-// the 14 events of the reference session: 6 rows, 2 failed calls, 3 images (and the app start, a line)
+// the 17 events of the reference session: 7 rows, 2 failed calls + 1 error log, 3 images (and the app start, a line)
 internal fun previewGraphEvents(): List<GraphEventUiModel> {
     fun net(id: String, method: String, path: String, host: String, start: Long, duration: Long, status: Int, image: Boolean = false) = GraphEventUiModel(
         row = previewTimelineRowUiModel(
@@ -113,6 +140,17 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         name = name,
     )
 
+    fun log(id: String, message: String, start: Long, level: TimelineLogLevel, type: String = "checkout") = GraphEventUiModel(
+        row = previewTimelineRowUiModel(source = TimelineSource.Log, id = id, title = message, subtitle = type, logLevel = level),
+        lane = GraphLane.Log,
+        startMs = start,
+        durationMs = 0L,
+        name = message,
+        hasError = level == TimelineLogLevel.Error,
+        logLevel = level,
+        logType = type,
+    )
+
     return listOf(
         net("1", "GET", "/v1/session", "api.shop.io", 0, 180, 200),
         analytics("2", "app_open", 20),
@@ -128,6 +166,9 @@ internal fun previewGraphEvents(): List<GraphEventUiModel> {
         analytics("13", "add_to_cart", 1800),
         net("14", "POST", "/v1/checkout", "api.shop.io", 2300, 520, 401),
         analytics("15", "checkout_failed", 2830),
+        log("16", "Opened the feed screen", 250, TimelineLogLevel.Info),
+        log("17", "Cart updated", 1810, TimelineLogLevel.Debug),
+        log("18", "Checkout failed: 401", 2820, TimelineLogLevel.Error),
     )
 }
 

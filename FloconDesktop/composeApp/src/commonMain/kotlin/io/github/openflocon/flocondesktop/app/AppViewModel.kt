@@ -85,6 +85,7 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
+    timelineScreenshotsRunner: TimelineScreenshotsRunner,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -139,6 +140,10 @@ internal class AppViewModel(
         )
 
     init {
+        viewModelScope.launch(dispatcherProvider.data) {
+            timelineScreenshotsRunner.run()
+        }
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // a feature can ask to display another screen of the menu (ex: from the timeline)
             menuNavigator.requests.collect { screen ->

@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,6 +46,8 @@ internal class TimelineFilterPanelViewModel(
                 networkDuration = null,
                 databaseRules = emptyList(),
                 hideDatabaseTransactions = false,
+                logTaggedEnabled = true,
+                logTagRules = emptyList(),
             )
         }
         .distinctUntilChanged()
@@ -61,6 +64,10 @@ internal class TimelineFilterPanelViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    // what is typed in the tag field of the logs card: the field reads it synchronously, it is not part of the panel
+    private val logTagInput = TimelineLogTagInput()
+    val logTagText: State<String> get() = logTagInput.text
+
     val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
         val summary by summary.collectAsState()
 
@@ -70,10 +77,12 @@ internal class TimelineFilterPanelViewModel(
         val currentSessionOnly by filterStore.currentSessionOnly.collectAsState()
         val network by filterStore.network.collectAsState()
         val database by filterStore.database.collectAsState()
+        val logs by filterStore.logs.collectAsState()
+        val logTagQuery by logTagInput.query.collectAsState()
         val matchingNetworkCount by matchingNetworkCount.collectAsState()
 
         val selectedSources = sources ?: TimelineSource.entries.toSet()
-        remember(summary, selectedSources, facets, currentSessionOnly, network, database, matchingNetworkCount) {
+        remember(summary, selectedSources, facets, currentSessionOnly, network, database, logs, logTagQuery, matchingNetworkCount) {
             summary.toFilterPanel(
                 selectedSources = selectedSources,
                 facets = facets,
@@ -81,6 +90,8 @@ internal class TimelineFilterPanelViewModel(
                 network = network,
                 database = database,
                 matchingNetworkCount = matchingNetworkCount,
+                logs = logs,
+                logTagQuery = logTagQuery,
             )
         }
     }
@@ -134,6 +145,21 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.SetHideDatabaseTransactions -> filterStore.setHideDatabaseTransactions(action.value)
 
+            is TimelineFilterAction.SetLogTaggedEnabled -> filterStore.setLogTaggedEnabled(action.value)
+
+            is TimelineFilterAction.AddLogTagRule -> {
+                action.text.trim().takeIf { it.isNotEmpty() }?.let {
+                    filterStore.addLogTagRule(it, action.exclude)
+                    logTagInput.clear()
+                }
+            }
+
+            is TimelineFilterAction.SetLogTagRuleActive -> filterStore.setLogTagRuleActive(action.value, action.active)
+
+            is TimelineFilterAction.RemoveLogTagRule -> filterStore.removeLogTagRule(action.value)
+
+            is TimelineFilterAction.SetLogTagQuery -> logTagInput.set(action.text)
+
             is TimelineFilterAction.SetDurationRange -> {
                 val buckets = TIMELINE_DURATION_BUCKETS_MS
                 val range = if (action.start <= 0 && action.end >= buckets.size) {
@@ -151,6 +177,7 @@ internal class TimelineFilterPanelViewModel(
 
             is TimelineFilterAction.ClearAll -> {
                 filterStore.clear()
+                logTagInput.clear()
                 viewModelScope.launch { setTimelineSelectedSourcesUseCase(TimelineSource.entries.toSet()) }
             }
         }

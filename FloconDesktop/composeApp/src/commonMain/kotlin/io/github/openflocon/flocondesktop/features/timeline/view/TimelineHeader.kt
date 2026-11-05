@@ -24,6 +24,7 @@ import flocondesktop.composeapp.generated.resources.timeline_live
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -39,6 +40,7 @@ internal fun TimelineHeader(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsStatus: TimelineScreenshotsStatus,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -92,6 +94,12 @@ internal fun TimelineHeader(
             count = summary.crashCount,
             label = pluralStringResource(Res.plurals.timeline_counter_crashes, summary.crashCount),
             highlight = colors.catCrash,
+        )
+        ScreenshotsControl(
+            enabled = settings.screenshots,
+            intervalSeconds = settings.screenshotIntervalSeconds,
+            status = screenshotsStatus,
+            onAction = onAction,
         )
         FeatureDocButton(doc = FeatureDoc.Timeline)
         TimelineOverflowMenu(

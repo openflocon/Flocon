@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -20,6 +21,7 @@ internal data class TimelineRowUiModel(
     val network: TimelineNetworkUiModel? = null, // network calls only
     val sessionStart: Long? = null, // the start of the session of the event, null if none is known
     val phase: TimelinePhase = TimelinePhase.Request, // network calls only: the request and the response are two rows
+    val logLevel: TimelineLogLevel? = null, // logs only
     val excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(), // what the event can be excluded by
 ) {
     // the ids of two sources can be the same. Shared by the request and the response of a network call,
@@ -63,7 +65,19 @@ internal sealed interface TimelineItemUiModel {
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
+
+    // a screenshot of the app, between the events before and after the time it was taken
+    data class Screenshot(
+        val timestamp: Long,
+        val day: String, // like the rows, to place the headers of the days around it
+        val filePath: String,
+        override val key: String,
+        val time: String = "", // hh:mm:ss
+    ) : TimelineItemUiModel
 }
+
+// what the header says about the screenshots, next to the switch: the device does not support them (an Android over Wi-Fi)
+internal enum class TimelineScreenshotsStatus { Working, Failing, Unavailable }
 
 @Immutable
 internal data class TimelineSettingsUiModel(
@@ -71,6 +85,8 @@ internal data class TimelineSettingsUiModel(
     val invertList: Boolean,
     val pinPanel: Boolean,
     val graph: Boolean = true,
+    val screenshots: Boolean = false,
+    val screenshotIntervalSeconds: Int = 5,
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
@@ -78,6 +94,8 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     invertList = false,
     pinPanel = false,
     graph = false,
+    screenshots = false,
+    screenshotIntervalSeconds = 5,
 )
 
 internal sealed interface TimelineAction {
@@ -88,6 +106,8 @@ internal sealed interface TimelineAction {
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
     data class SetGraph(val value: Boolean) : TimelineAction
+    data class SetScreenshots(val value: Boolean) : TimelineAction
+    data class SetScreenshotInterval(val seconds: Int) : TimelineAction
 
     // the session of the graph: -1 the one before, 1 the one after
     data class MoveGraphSession(val delta: Int) : TimelineAction
@@ -103,6 +123,9 @@ internal sealed interface TimelineAction {
 
     // copies the url of the network call selected, from the keyboard
     data object CopySelectedUrl : TimelineAction
+
+    // the graph showed the zone it was asked to show: it is free again
+    data object GraphFocusApplied : TimelineAction
 }
 
 // the actions of the filter panel
@@ -135,6 +158,15 @@ internal sealed interface TimelineFilterAction {
 
     // positions of the slider, see TimelineNetworkFilterUiModel
     data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
+
+    // the logs card: the reserved types and the levels use ToggleFacet(LogType | LogTaggedLevel)
+    data class SetLogTaggedEnabled(val value: Boolean) : TimelineFilterAction
+    data class AddLogTagRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class SetLogTagRuleActive(val value: String, val active: Boolean) : TimelineFilterAction
+    data class RemoveLogTagRule(val value: String) : TimelineFilterAction
+
+    // what is typed in the tag field, to suggest the tags
+    data class SetLogTagQuery(val text: String) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction
 
     // the panel went to the source it was asked to show
@@ -148,6 +180,7 @@ internal fun previewTimelineRowUiModel(
     subtitle: String? = null,
     network: TimelineNetworkUiModel? = null,
     phase: TimelinePhase = TimelinePhase.Request,
+    logLevel: TimelineLogLevel? = null,
     excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(),
 ) = TimelineRowUiModel(
     id = id,
@@ -159,6 +192,7 @@ internal fun previewTimelineRowUiModel(
     subtitle = subtitle,
     network = network,
     phase = phase,
+    logLevel = logLevel,
     excludes = excludes,
 )
 
@@ -221,6 +255,11 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
     previewTimelineRowUiModel(source = TimelineSource.Table, id = "t1", title = "Cart", subtitle = "items=3, total=42.0"),
     previewTimelineRowUiModel(source = TimelineSource.Deeplink, id = "d1", title = "acme://product/42", subtitle = "Product"),
     previewTimelineRowUiModel(source = TimelineSource.Adb, id = "adb1", title = "adb shell pm list packages", subtitle = "package:com.acme.app"),
+    previewTimelineRowUiModel(source = TimelineSource.Log, id = "1", title = "HomeScreen", subtitle = "navigation", logLevel = TimelineLogLevel.Info),
+    previewTimelineRowUiModel(source = TimelineSource.Log, id = "2", title = "Tapped on Pay", subtitle = "userAction", logLevel = TimelineLogLevel.Debug),
+    previewTimelineRowUiModel(source = TimelineSource.Log, id = "3", title = "App went to background", subtitle = "lifecycle", logLevel = TimelineLogLevel.Info),
+    previewTimelineRowUiModel(source = TimelineSource.Log, id = "4", title = "Payment declined", subtitle = "checkout", logLevel = TimelineLogLevel.Warning),
+    previewTimelineRowUiModel(source = TimelineSource.Log, id = "5", title = "Cart sync failed", subtitle = "checkout", logLevel = TimelineLogLevel.Error),
     previewTimelineRowUiModel(source = TimelineSource.AppStart, id = "s1"),
 )
 

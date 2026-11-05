@@ -53,7 +53,7 @@ Add the database core and the module matching your Room version:
 Then install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconDatabase) {
         room()
     }

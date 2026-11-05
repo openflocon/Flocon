@@ -9,6 +9,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.repository.TimelineUserFilterProvider
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -50,13 +52,35 @@ internal data class TimelineDatabaseRules(
 }
 
 /**
+ * A word of the type of the tagged logs typed in the logs card: kept ([exclude] false) or hidden ([exclude] true).
+ * An inactive rule stays in the list but is not applied.
+ */
+internal data class TimelineLogTagRule(
+    val value: String,
+    val exclude: Boolean,
+    val active: Boolean = true,
+)
+
+/**
+ * What the user chose in the logs card of the filter panel, next to the types and levels hidden by facet.
+ * [taggedEnabled] false hides every log whose type is not reserved (tagged logs, custom types).
+ */
+internal data class TimelineLogRules(
+    val taggedEnabled: Boolean = true,
+    val tagRules: List<TimelineLogTagRule> = emptyList(),
+) {
+    val activeRules: List<TimelineRuleDomainModel>
+        get() = tagRules.filter { it.active }.map { TimelineRuleDomainModel(it.value, it.exclude) }
+}
+
+/**
  * The filter of the timeline, shared by the screen and by its filter panel: they are two destinations, so two view models.
  * The sources are a setting of the timeline, the text and the facets are not saved.
  */
 @OptIn(FlowPreview::class)
 internal class TimelineFilterStore(
     observeTimelineSettingsUseCase: ObserveTimelineSettingsUseCase,
-) {
+) : TimelineUserFilterProvider {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -74,6 +98,10 @@ internal class TimelineFilterStore(
     // the sql rules and the transactions of the database logs
     val database: StateFlow<TimelineDatabaseRules>
         field = MutableStateFlow(TimelineDatabaseRules())
+
+    // the tagged logs switch and the tag rules of the logs
+    val logs: StateFlow<TimelineLogRules>
+        field = MutableStateFlow(TimelineLogRules())
 
     // the source the filter panel has to scroll to and unfold, ex: asked from the menu of a row
     val focusedSource: StateFlow<TimelineSource?>
@@ -100,6 +128,7 @@ internal class TimelineFilterStore(
         val currentSessionOnly by currentSessionOnly.collectAsState()
         val network by network.collectAsState()
         val database by database.collectAsState()
+        val logs by logs.collectAsState()
 
         sources?.let { selected ->
             TimelineFilterDomainModel(
@@ -114,6 +143,8 @@ internal class TimelineFilterStore(
                 networkDuration = network.duration,
                 databaseRules = database.rules,
                 hideDatabaseTransactions = database.hideTransactions,
+                logTaggedEnabled = logs.taggedEnabled,
+                logTagRules = logs.activeRules,
             )
         }
     }
@@ -121,6 +152,23 @@ internal class TimelineFilterStore(
         .filterNotNull()
         .distinctUntilChanged()
         .shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
+
+    // the filter as it is now, without the delay of the text: [filter] has no value until the timeline is displayed
+    override suspend fun current(): TimelineFilterDomainModel = TimelineFilterDomainModel(
+        sources = storedSources.first(),
+        text = text.value,
+        facets = facets.value,
+        currentSessionOnly = currentSessionOnly.value,
+        networkEnabled = network.value.enabled,
+        networkStatusRules = network.value.statusRules,
+        networkHostRules = network.value.hostRules,
+        networkPathRules = network.value.pathRules,
+        networkDuration = network.value.duration,
+        databaseRules = database.value.rules,
+        hideDatabaseTransactions = database.value.hideTransactions,
+        logTaggedEnabled = logs.value.taggedEnabled,
+        logTagRules = logs.value.activeRules,
+    )
 
     fun setText(value: String) {
         text.update { value }
@@ -208,6 +256,23 @@ internal class TimelineFilterStore(
         database.update { it.copy(hideTransactions = value) }
     }
 
+    fun setLogTaggedEnabled(value: Boolean) {
+        logs.update { it.copy(taggedEnabled = value) }
+    }
+
+    // a rule is told by its text: adding it again only changes its side and activates it
+    fun addLogTagRule(value: String, exclude: Boolean) {
+        logs.update { it.copy(tagRules = it.tagRules.filterNot { existing -> existing.value == value } + TimelineLogTagRule(value, exclude)) }
+    }
+
+    fun setLogTagRuleActive(value: String, active: Boolean) {
+        logs.update { logs -> logs.copy(tagRules = logs.tagRules.map { if (it.value == value) it.copy(active = active) else it }) }
+    }
+
+    fun removeLogTagRule(value: String) {
+        logs.update { it.copy(tagRules = it.tagRules.filterNot { existing -> existing.value == value }) }
+    }
+
     fun setCurrentSessionOnly(value: Boolean) {
         currentSessionOnly.update { value }
     }
@@ -218,6 +283,7 @@ internal class TimelineFilterStore(
         facets.update { emptyMap() }
         network.update { TimelineNetworkRules() }
         database.update { TimelineDatabaseRules() }
+        logs.update { TimelineLogRules() }
         currentSessionOnly.update { false }
     }
 }

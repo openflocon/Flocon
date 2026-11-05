@@ -5,8 +5,11 @@ import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainMo
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.timeline.TimelineDatabaseRules
+import io.github.openflocon.flocondesktop.features.timeline.TimelineLogRules
+import io.github.openflocon.flocondesktop.features.timeline.TimelineLogTagRule
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
@@ -15,6 +18,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashF
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRuleUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
@@ -39,6 +43,112 @@ class FilterPanelMapperTest {
             TimelineFacet.NetworkStatus to mapOf("2xx" to 3, "5xx" to 0),
         ),
     )
+
+    private val logSummary = summary.copy(
+        sourceCounts = summary.sourceCounts + (TimelineSource.Log to 14),
+        facetCounts = mapOf(
+            TimelineFacet.LogType to mapOf("navigation" to 4, "userAction" to 1, "billing" to 5, "auth" to 3, "Zeta" to 5),
+            TimelineFacet.LogTaggedLevel to mapOf("ERROR" to 1, "DEBUG" to 12),
+        ),
+    )
+
+    @Test
+    fun `the log section has no generic group, the logs card shows its filters`() {
+        val log = logSummary.toFilterPanel(all, emptyMap()).sections.first { it.source == TimelineSource.Log }
+
+        assertTrue(log.facetGroups().isEmpty())
+    }
+
+    @Test
+    fun `the log types are the reserved ones then the tagged logs, with their counts`() {
+        val logs = logSummary.toFilterPanel(all, emptyMap()).logs
+
+        assertEquals(listOf("navigation", "userAction", "lifecycle", null), logs.types.map { it.type })
+        assertEquals(listOf(4, 1, 0, 13), logs.types.map { it.count })
+        assertEquals(18, logs.totalCount)
+        assertTrue(logs.allTypesSelected)
+    }
+
+    @Test
+    fun `a reserved type hidden or the tagged logs disabled is not all the types`() {
+        val hidden = logSummary.toFilterPanel(all, mapOf(TimelineFacet.LogType to setOf("navigation"))).logs
+        assertFalse(hidden.allTypesSelected)
+        assertEquals(listOf(false, true, true, true), hidden.types.map { it.selected })
+
+        val disabled = logSummary.toFilterPanel(all, emptyMap(), logs = TimelineLogRules(taggedEnabled = false)).logs
+        assertFalse(disabled.allTypesSelected)
+        assertEquals(listOf(true, true, true, false), disabled.types.map { it.selected })
+    }
+
+    @Test
+    fun `the tag suggestions are narrowed by the text, without the existing rules, the most used first`() {
+        val all = logSummary.toFilterPanel(all, emptyMap()).logs.tagSuggestions
+        assertEquals(listOf("billing", "Zeta", "auth"), all.map { it.value })
+        assertEquals(listOf(5, 5, 3), all.map { it.count })
+
+        val narrowed = logSummary.toFilterPanel(this.all, emptyMap(), logTagQuery = "ET").logs
+        assertEquals(listOf("Zeta"), narrowed.tagSuggestions.map { it.value })
+        assertEquals("ET", narrowed.tagQuery)
+
+        val withRule = logSummary.toFilterPanel(
+            this.all,
+            emptyMap(),
+            logs = TimelineLogRules(tagRules = listOf(TimelineLogTagRule("Billing", exclude = true))),
+        ).logs
+        assertEquals(listOf("Zeta", "auth"), withRule.tagSuggestions.map { it.value })
+    }
+
+    @Test
+    fun `at most eight tags are suggested`() {
+        val tags = (1..12).associate { "tag$it" to it }
+        val many = logSummary.copy(facetCounts = mapOf(TimelineFacet.LogType to tags))
+
+        val suggestions = many.toFilterPanel(all, emptyMap()).logs.tagSuggestions
+
+        assertEquals(8, suggestions.size)
+        assertEquals("tag12", suggestions.first().value)
+    }
+
+    @Test
+    fun `the tag rules are split in includes and excludes`() {
+        val logs = logSummary.toFilterPanel(
+            all,
+            emptyMap(),
+            logs = TimelineLogRules(
+                tagRules = listOf(
+                    TimelineLogTagRule("a", exclude = false),
+                    TimelineLogTagRule("b", exclude = true, active = false),
+                ),
+            ),
+        ).logs
+
+        assertEquals(listOf(TimelineRuleUiModel("a", exclude = false)), logs.tagIncludes)
+        assertEquals(listOf(TimelineRuleUiModel("b", exclude = true, active = false)), logs.tagExcludes)
+    }
+
+    @Test
+    fun `the levels come from the tagged levels, every one listed`() {
+        val levels = logSummary.toFilterPanel(all, mapOf(TimelineFacet.LogTaggedLevel to setOf("INFO"))).logs.levels
+
+        assertEquals(listOf("DEBUG", "INFO", "WARNING", "ERROR"), levels.map { it.value })
+        assertEquals(listOf(12, 0, 0, 1), levels.map { it.count })
+        assertEquals(listOf(true, false, true, true), levels.map { it.selected })
+        assertEquals(listOf(TimelineLogLevel.Debug, TimelineLogLevel.Info, TimelineLogLevel.Warning, TimelineLogLevel.Error), levels.map { it.logLevel })
+    }
+
+    @Test
+    fun `the logs switch and the active tag rules are active filters`() {
+        val rules = TimelineLogRules(
+            taggedEnabled = false,
+            tagRules = listOf(TimelineLogTagRule("a", exclude = false), TimelineLogTagRule("b", exclude = true, active = false)),
+        )
+
+        val panel = logSummary.toFilterPanel(all, emptyMap(), logs = rules)
+
+        assertEquals(2, panel.activeFilterCount)
+        assertTrue(panel.hasActiveFilters)
+        assertEquals(2, panel.sections.first { it.source == TimelineSource.Log }.activeFacetCount)
+    }
 
     @Test
     fun `the sources are listed in their order, whatever their events`() {

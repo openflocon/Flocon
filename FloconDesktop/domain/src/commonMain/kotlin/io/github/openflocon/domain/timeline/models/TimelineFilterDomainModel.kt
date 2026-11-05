@@ -24,4 +24,13 @@ data class TimelineFilterDomainModel(
     val databaseRules: List<TimelineRuleDomainModel> = emptyList(),
     // true: the logs of the transactions (BEGIN, COMMIT...) are hidden
     val hideDatabaseTransactions: Boolean = false,
+    // false: every log whose type is not reserved (tagged logs, custom types) is hidden
+    val logTaggedEnabled: Boolean = true,
+    // words of the type of the tagged logs to keep (include) or hide (exclude), the reserved types are never affected
+    val logTagRules: List<TimelineRuleDomainModel> = emptyList(),
+    // null: every time. Only the events list and the list of the timeline apply the bounds, not the counters
+    val fromMs: Long? = null,
+    val toMs: Long? = null,
+    // null: every event. An empty set matches nothing. A network call is pointed at by its request event
+    val events: Set<TimelineEventRef>? = null,
 )

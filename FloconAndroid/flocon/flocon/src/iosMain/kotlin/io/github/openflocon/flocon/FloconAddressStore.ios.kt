@@ -11,5 +11,9 @@ internal actual fun floconAddressStore(context: FloconContext): FloconAddressSto
         override fun save(address: String) {
             defaults.setObject(address, forKey = key)
         }
+
+        override fun clear() {
+            defaults.removeObjectForKey(key)
+        }
     }
 }

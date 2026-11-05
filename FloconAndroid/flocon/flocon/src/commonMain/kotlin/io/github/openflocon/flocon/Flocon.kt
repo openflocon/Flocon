@@ -67,6 +67,11 @@ class Flocon internal constructor(
          */
         internal suspend fun connectToServer(address: String): FloconConnectResult =
             started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
+
+        /** Closes the connection added by [connectToServer], see `Flocon.disconnect`. */
+        internal suspend fun disconnectFromServer() {
+            started?.connections?.disconnect()
+        }
     }
 
 }

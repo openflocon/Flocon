@@ -55,6 +55,8 @@ import flocondesktop.composeapp.generated.resources.timeline_facet_analytics_tab
 import flocondesktop.composeapp.generated.resources.timeline_facet_crash_exception
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_name
 import flocondesktop.composeapp.generated.resources.timeline_facet_database_statement
+import flocondesktop.composeapp.generated.resources.timeline_facet_log_level
+import flocondesktop.composeapp.generated.resources.timeline_facet_log_type
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_content
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_host
 import flocondesktop.composeapp.generated.resources.timeline_facet_network_method
@@ -74,6 +76,8 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.timeline.mapper.color
+import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
@@ -119,6 +123,7 @@ private val SelectorChevronSize = 16.dp
 @Composable
 internal fun TimelineFilterPanel(
     panel: TimelineFilterPanelUiModel,
+    logTagText: State<String>, // typed in the tag field of the logs card, read synchronously by the field
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
     focusedSource: TimelineSource? = null, // the source to scroll to and unfold, ex: asked from the menu of a row
@@ -176,7 +181,25 @@ internal fun TimelineFilterPanel(
                         label = sourceLabels.getValue(section.source),
                         onAction = onAction,
                         unfold = section.source == focusedSource,
-                        modifier = Modifier.animateItem()
+                        // the sections slide when the order changes: a source gets its first event
+                        modifier = Modifier.animateItem(),
+                        // the logs have their own filters, shown while the source is selected
+                        content = if (section.source == TimelineSource.Log && section.enabled) {
+                            {
+                                LogFilterContent(
+                                    logs = panel.logs,
+                                    tagText = logTagText,
+                                    onAction = onAction,
+                                    modifier = Modifier.padding(
+                                        start = FloconTheme.spacing.large,
+                                        end = FloconTheme.spacing.medium,
+                                        bottom = FloconTheme.spacing.small,
+                                    ),
+                                )
+                            }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -258,6 +281,7 @@ private fun FilterSection(
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
     unfold: Boolean = false, // asked to show the filters of the source
+    content: (@Composable () -> Unit)? = null, // filters of the source that are not facet groups
 ) {
     val colors = FloconTheme.colors
     val (color, _) = section.source.categoryColors()
@@ -265,7 +289,7 @@ private fun FilterSection(
     LaunchedEffect(unfold) {
         if (unfold) expanded = true
     }
-    val canExpand = remember(section) { section is TimelineNetworkFilterUiModel || section.facetGroups().isNotEmpty() }
+    val canExpand = section is TimelineNetworkFilterUiModel || section.facetGroups().isNotEmpty() || content != null
     val chevronRotation by animateFloatAsState(if (expanded) ExpandedChevronRotation else 0f)
     val labelColor by animateColorAsState(if (section.enabled) colors.ink else colors.inkMuted)
     // the filters of a source switched off are still there, to be set before switching it on
@@ -325,6 +349,7 @@ private fun FilterSection(
                     .padding(FloconTheme.spacing.medium)
                     .alpha(groupsAlpha)
             ) {
+                content?.invoke()
                 when (section) {
                     is TimelineDatabaseFilterUiModel -> DatabaseFilterCard(section, onAction)
 
@@ -513,6 +538,8 @@ private fun FacetTags(
             val alpha by animateFloatAsState(if (item.selected) 1f else HiddenTagAlpha)
             val method = item.method
             val httpFamily = item.httpFamily
+            // only the reserved types of log have a glyph of their own, the tags stay plain
+            val logGlyph = item.logType?.let { logGlyphOf(it, null) }?.takeIf { it.isTyped }
             Box(
                 modifier = Modifier
                     .alpha(alpha)
@@ -521,7 +548,24 @@ private fun FacetTags(
             ) {
                 when {
                     method != null -> MethodTag(method = method)
+
                     httpFamily != null -> FloconStatusPill(text = item.value, color = colors.httpStatus(httpFamily * 100))
+
+                    item.logLevel != null -> FloconStatusPill(text = item.value, color = item.logLevel.color(colors))
+
+                    logGlyph != null -> FloconStatusPill(
+                        color = logGlyph.color(colors),
+                        leading = { LogGlyphIcon(glyph = logGlyph) },
+                    ) {
+                        Text(
+                            text = item.value,
+                            style = FloconTheme.typography.monoSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = logGlyph.color(colors),
+                            maxLines = 1,
+                        )
+                    }
+
                     else -> FloconStatusPill(text = item.value, color = colors.inkMuted)
                 }
             }
@@ -661,6 +705,9 @@ internal fun TimelineFacet.title(): StringResource = when (this) {
     TimelineFacet.WebViewKind -> Res.string.timeline_facet_webview_kind
     TimelineFacet.CrashException -> Res.string.timeline_facet_crash_exception
     TimelineFacet.AccessibilityAction -> Res.string.timeline_facet_accessibility_action
+    TimelineFacet.LogType -> Res.string.timeline_facet_log_type
+    TimelineFacet.LogLevel -> Res.string.timeline_facet_log_level
+    TimelineFacet.LogTaggedLevel -> Res.string.timeline_facet_log_level
 }
 
 @Composable
@@ -674,6 +721,7 @@ private fun TimelineFilterPanelContentPreview(isDarkTheme: Boolean) {
         }
         TimelineFilterPanel(
             panel = panel,
+            logTagText = remember { mutableStateOf("") },
             onAction = {},
             modifier = Modifier
                 .width(PreviewPanelWidth)

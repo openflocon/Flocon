@@ -67,6 +67,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.PreviewSessionDurationMs
@@ -81,12 +82,14 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineItems
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
+import io.github.openflocon.flocondesktop.features.timeline.view.ScreenshotMarkerRow
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
@@ -117,11 +120,13 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
     val graph by viewModel.graph.collectAsStateWithLifecycle()
     val graphSession by viewModel.graphSessionPosition.collectAsStateWithLifecycle()
+    val graphFocus by viewModel.graphFocus.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -131,11 +136,13 @@ fun TimelineScreen(
         summary = summary,
         isLive = isLive,
         settings = settings,
+        screenshotsStatus = screenshotsStatus,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
         graph = graph,
         graphSession = graphSession,
+        graphFocus = graphFocus,
         onAction = viewModel::onAction,
     )
 }
@@ -148,6 +155,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsStatus: TimelineScreenshotsStatus,
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
@@ -155,6 +163,8 @@ internal fun TimelineContent(
     graphSession: GraphSessionUiModel?,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
+    // a zone of the graph asked from outside, shown once
+    graphFocus: GraphFocusUiModel? = null,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
@@ -212,6 +222,7 @@ internal fun TimelineContent(
             summary = summary,
             isLive = isLive,
             settings = settings,
+            screenshotsStatus = screenshotsStatus,
             onAction = onAction,
         )
 
@@ -321,6 +332,11 @@ internal fun TimelineContent(
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
+                screenshotsEnabled = settings.screenshots,
+                screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
+                onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
+                focus = graphFocus,
+                onFocusApplied = { onAction(TimelineAction.GraphFocusApplied) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {
@@ -371,6 +387,8 @@ internal fun TimelineContent(
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),
@@ -454,6 +472,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
+            screenshotsStatus = TimelineScreenshotsStatus.Working,
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,
