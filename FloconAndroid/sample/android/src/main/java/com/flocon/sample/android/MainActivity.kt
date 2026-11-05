@@ -13,6 +13,7 @@ import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.room
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
             install(FloconAnalytics)
             install(FloconAccessibility)
             install(FloconFeatureFlags)
+            install(FloconTimeline)
             install(FloconWebView)
             install(FloconDatabase) {
                 room()
@@ -93,6 +95,8 @@ class MainActivity : ComponentActivity() {
             install(FloconDevice)
             install(FloconCrashReporter)
         }
+
+        logFloconLifecycle(lifecycle)
 
         intent.data?.let {
             Toast.makeText(this, "opened with : $it", Toast.LENGTH_LONG).show()

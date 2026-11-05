@@ -57,4 +57,41 @@ class TimelineFilterStoreTest {
         assertEquals("checkout", store.text.value)
         assertEquals(emptyMap(), store.facets.value)
     }
+
+    @Test
+    fun `adding a log tag rule again changes its side and activates it`() = runBlocking {
+        store.addLogTagRule("billing", exclude = false)
+        store.setLogTagRuleActive("billing", false)
+        store.addLogTagRule("billing", exclude = true)
+
+        assertEquals(listOf(TimelineLogTagRule("billing", exclude = true, active = true)), store.logs.value.tagRules)
+    }
+
+    @Test
+    fun `an inactive log tag rule is kept but not in the domain filter`() = runBlocking {
+        store.addLogTagRule("billing", exclude = false)
+        store.addLogTagRule("auth", exclude = true)
+        store.setLogTagRuleActive("billing", false)
+        store.setLogTaggedEnabled(false)
+
+        val filter = provider.current()
+
+        assertEquals(listOf(TimelineRuleDomainModel("auth", exclude = true)), filter.logTagRules)
+        assertEquals(false, filter.logTaggedEnabled)
+        assertEquals(2, store.logs.value.tagRules.size)
+
+        store.removeLogTagRule("auth")
+        assertEquals(listOf("billing"), store.logs.value.tagRules.map { it.value })
+    }
+
+    @Test
+    fun `clearing resets the logs`() = runBlocking {
+        store.addLogTagRule("billing", exclude = false)
+        store.setLogTaggedEnabled(false)
+
+        store.clear()
+
+        assertEquals(TimelineLogRules(), store.logs.value)
+        assertEquals(true, provider.current().logTaggedEnabled)
+    }
 }

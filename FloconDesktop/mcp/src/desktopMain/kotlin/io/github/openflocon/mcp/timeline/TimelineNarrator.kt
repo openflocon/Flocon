@@ -3,6 +3,7 @@ package io.github.openflocon.mcp.timeline
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -143,7 +144,12 @@ internal class TimelineNarrator(zone: ZoneId) {
     // events with the same key are the same thing happening again; null: never folded (a crash, an app start)
     private fun foldKey(event: TimelineEventDomainModel): String? = when (event.source) {
         TimelineSource.Network -> "net|${networkKey(event)}|${outcomeOf(event)}"
+
         TimelineSource.Crash, TimelineSource.AppStart -> null
+
+        // an error log is not folded with an info log of the same text
+        TimelineSource.Log -> "log|${event.subtitle}|${event.level}|${event.title}"
+
         else -> "${event.source}|${event.title}"
     }
 
@@ -167,6 +173,10 @@ internal class TimelineNarrator(zone: ZoneId) {
             if (event.source == TimelineSource.Crash) {
                 val detail = event.subtitle?.takeIf { it.isNotBlank() }?.let { ": ${it.truncate(80)}" }.orEmpty()
                 found.add(Anomaly(0, event.timestamp, "CRASH ${event.title}$detail at $at [$id]", id))
+            }
+            if (event.source == TimelineSource.Log && event.level == TimelineLogLevel.Error) {
+                val type = event.subtitle?.takeIf { it.isNotBlank() }?.let { " $it" }.orEmpty()
+                found.add(Anomaly(2, event.timestamp, "ERROR LOG$type: ${event.title.truncate(TITLE_MAX)} at $at [$id]", id))
             }
             if (event.source == TimelineSource.Network) {
                 val call = "${event.method.orEmpty()} ${pathOf(event.title)}".trim()
@@ -244,6 +254,8 @@ internal class TimelineNarrator(zone: ZoneId) {
                 item.events.mapNotNull { it.responseByteSize }.maxOrNull()?.let { "largest ${formatBytes(it)}" },
             ).joinToString("  ")
 
+            TimelineSource.Log -> "${item.events.size}× ${logText(first)}"
+
             else -> "${item.events.size}× ${first.title.truncate(TITLE_MAX)}"
         }
         return Line(
@@ -264,6 +276,8 @@ internal class TimelineNarrator(zone: ZoneId) {
                 event.responseByteSize?.let(::formatBytes),
             ).joinToString("  ")
 
+            TimelineSource.Log -> logText(event)
+
             else -> {
                 val subtitle = event.subtitle?.takeIf { it.isNotBlank() }?.let { " (${it.truncate(SUBTITLE_MAX)})" }.orEmpty()
                 "${event.title.truncate(TITLE_MAX)}$subtitle"
@@ -274,6 +288,13 @@ internal class TimelineNarrator(zone: ZoneId) {
             text = "${gap(gapMs)}  ${time(event.timestamp)}  ${labelOf(event.source)}  $what  [${idOf(event)}]",
             noise = event.source == TimelineSource.Database,
         )
+    }
+
+    // "navigation: HomeScreen", "checkout [ERROR]: payment declined": the type, the level when the log has one, the value
+    private fun logText(event: TimelineEventDomainModel): String {
+        val type = event.subtitle?.takeIf { it.isNotBlank() }
+        val level = event.level?.let { " [${it.name.uppercase(Locale.ROOT)}]" }.orEmpty()
+        return "${type.orEmpty()}$level: ${event.title.truncate(TITLE_MAX)}".trimStart(':', ' ')
     }
 
     private fun statusOf(event: TimelineEventDomainModel): String? = when {
@@ -298,6 +319,7 @@ internal class TimelineNarrator(zone: ZoneId) {
         TimelineSource.Table -> "TABLE"
         TimelineSource.Deeplink -> "LINK"
         TimelineSource.Adb -> "ADB"
+        TimelineSource.Log -> "LOG"
         TimelineSource.AppStart -> "START"
     }
 

@@ -3,6 +3,7 @@ package io.github.openflocon.mcp.timeline
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.test.Test
@@ -52,6 +53,16 @@ class TimelineNarratorTest {
         title = title,
         subtitle = subtitle,
         appInstance = null,
+    )
+
+    private fun log(id: String, offsetMs: Long, type: String, value: String, level: TimelineLogLevel? = null) = TimelineEventDomainModel(
+        id = id,
+        source = TimelineSource.Log,
+        timestamp = base + offsetMs,
+        title = value,
+        subtitle = type,
+        appInstance = null,
+        level = level,
     )
 
     // newest first, like the repository
@@ -198,6 +209,57 @@ class TimelineNarratorTest {
 
         assertEquals(3, narrative.lines.size)
         assertEquals(3, narrative.anomalies.count { it.startsWith("CRASH") })
+    }
+
+    @Test
+    fun `a navigation log tells its type and value, a tagged error log is an anomaly`() {
+        val narrative = narrate(
+            listOf(
+                log("1", 0, "navigation", "HomeScreen"),
+                log("2", 500, "checkout", "payment declined", TimelineLogLevel.Error),
+                log("3", 900, "checkout", "retrying", TimelineLogLevel.Warning),
+            ),
+        )
+
+        assertTrue(narrative.lines[0].contains("LOG  navigation: HomeScreen  [log:1]"), narrative.lines[0])
+        assertTrue(narrative.lines[1].contains("LOG  checkout [ERROR]: payment declined  [log:2]"), narrative.lines[1])
+        assertTrue(narrative.lines[2].contains("checkout [WARNING]: retrying"), narrative.lines[2])
+        assertEquals(1, narrative.anomalyCount)
+        assertTrue(narrative.anomalies.single().startsWith("ERROR LOG checkout: payment declined"), narrative.anomalies.toString())
+        assertTrue(narrative.anomalies.single().endsWith("[log:2]"), narrative.anomalies.toString())
+    }
+
+    @Test
+    fun `identical logs fold, an error log is not folded with an info log`() {
+        val narrative = narrate(
+            listOf(
+                log("1", 0, "userAction", "tap_buy"),
+                log("2", 400, "userAction", "tap_buy"),
+                log("3", 800, "userAction", "tap_buy"),
+                log("4", 1_000, "userAction", "tap_buy", TimelineLogLevel.Error),
+            ),
+        )
+
+        assertEquals(2, narrative.lines.size)
+        assertTrue(narrative.lines[0].contains("3× userAction: tap_buy"), narrative.lines[0])
+        assertTrue(narrative.lines[0].contains("[log:1 … log:3]"), narrative.lines[0])
+    }
+
+    @Test
+    fun `search matches the value and the type of a log and can be limited to the log source`() {
+        val events = listOf(
+            log("1", 0, "navigation", "CheckoutScreen"),
+            log("2", 500, "lifecycle", "background"),
+            event("a", 900, TimelineSource.Analytics, "checkout_failed"),
+        )
+
+        val byValue = narrate(events, search = TimelineSearch("checkout", TimelineSource.Log))
+        val byType = narrate(events, search = TimelineSearch("lifecycle", null))
+        val wrongSource = narrate(events, search = TimelineSearch("checkout_failed", TimelineSource.Log))
+
+        assertEquals(1, byValue.searchMatches.size)
+        assertTrue(byValue.searchMatches.single().endsWith("[log:1]"))
+        assertEquals(listOf(true, false), listOf(byType.found, wrongSource.found))
     }
 
     @Test

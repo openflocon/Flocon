@@ -96,8 +96,10 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.images.view.viewer.PinchZoomEffect
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphColor
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
+import io.github.openflocon.flocondesktop.features.timeline.view.drawLogGlyph
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -282,6 +284,7 @@ internal fun TimelineGraph(
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
+            logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
         )
@@ -446,6 +449,8 @@ private class GraphPalette(
     val onBar: Color,
     val chip: Color,
     val error: Color,
+    // the color of a log marker
+    val logGlyphColors: Map<LogGlyphColor, Color>,
     val appStart: Color,
     val selection: Color,
 )
@@ -654,7 +659,7 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = if (event.isError) palette.error else color
+                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else color
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
@@ -878,15 +883,21 @@ private fun DrawScope.drawInstant(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val half = DiamondSizePx / 2f + 1f
-    val diamond = Path().apply {
-        moveTo(x, centerY - half)
-        lineTo(x + half, centerY)
-        lineTo(x, centerY + half)
-        lineTo(x - half, centerY)
-        close()
+    val glyph = event.logGlyph
+    if (glyph != null) {
+        // a log: its own shape. The drawing fills 18/24 of its box as a diamond, so the box is bigger to keep the size of the diamonds
+        drawLogGlyph(glyph.shape, fill, Offset(x, centerY), boxPx = 2f * half * GlyphBoxRatio, outline = palette.selection.takeIf { selected })
+    } else {
+        val diamond = Path().apply {
+            moveTo(x, centerY - half)
+            lineTo(x + half, centerY)
+            lineTo(x, centerY + half)
+            lineTo(x - half, centerY)
+            close()
+        }
+        drawPath(diamond, fill)
+        if (selected) drawPath(diamond, palette.selection, style = Stroke(2f))
     }
-    drawPath(diamond, fill)
-    if (selected) drawPath(diamond, palette.selection, style = Stroke(2f))
     if (!withLabel) return
 
     // the label stops before the neighbour: cut with an ellipsis, or not written when there is no room
@@ -919,7 +930,9 @@ private fun DrawScope.drawInstantFullLabel(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
-    val text = measurer.measure(event.name, labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    // a log marker has a wide range of colors: the text is picked by contrast against it. The other lanes keep their ink
+    val textColor = if (event.logGlyph != null) readableInkOn(fill) else palette.ink
+    val text = measurer.measure(event.name, labelStyle.copy(color = textColor, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through
@@ -931,6 +944,9 @@ private fun DrawScope.drawInstantFullLabel(
     )
     drawText(text, topLeft = Offset(left, top))
 }
+
+// the diamond of the glyphs spans 18 of the 24 units of their box
+private const val GlyphBoxRatio = 24f / 18f
 
 private fun instantLabelStyle(labelStyle: TextStyle, palette: GraphPalette) = labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal)
 

@@ -33,6 +33,7 @@ internal fun TimelineSource.category(): EventCategory = when (this) {
     TimelineSource.Deeplink -> EventCategory.Deeplink
     TimelineSource.Adb -> EventCategory.Adb
     TimelineSource.AppStart -> EventCategory.AppStart
+    TimelineSource.Log -> EventCategory.Log
 }
 
 // the color of the category and its soft background
