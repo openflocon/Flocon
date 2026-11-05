@@ -152,8 +152,8 @@ import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
-import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
