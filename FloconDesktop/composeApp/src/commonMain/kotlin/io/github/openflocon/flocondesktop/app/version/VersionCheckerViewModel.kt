@@ -3,10 +3,7 @@ package io.github.openflocon.flocondesktop.app.version
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.new_client_version
-import flocondesktop.composeapp.generated.resources.new_client_version_desc
 import flocondesktop.composeapp.generated.resources.new_desktop_version
-import flocondesktop.composeapp.generated.resources.update_available_client
 import flocondesktop.composeapp.generated.resources.update_available_desktop
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
@@ -19,7 +16,6 @@ import io.github.openflocon.flocondesktop.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -50,7 +46,14 @@ class VersionCheckerViewModel(
 
     data class VersionAvailableState(
         val desktop: VersionAvailableUiModel?,
-        val client: VersionAvailableUiModel?,
+    )
+
+    /** A newer SDK than the one running in the selected device + app. */
+    data class SdkUpdateUiModel(
+        val currentVersion: String,
+        val latestVersion: String,
+        val dependency: String,
+        val releaseNotesLink: String,
     )
 
     val updateChip: StateFlow<UpdateChipUiModel?> = observeUpdateAvailableUseCase(BuildConfig.APP_VERSION)
@@ -63,13 +66,8 @@ class VersionCheckerViewModel(
                     )
                 }
 
-                is ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.ClientUpdate -> {
-                    UpdateChipUiModel(
-                        text = getString(Res.string.update_available_client, update.version),
-                        link = update.link,
-                    )
-                }
-
+                // the SDK update has its own badge next to the device / app selector
+                is ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.ClientUpdate,
                 ObserveUpdateAvailableUseCase.UpdateAvailableDomainModel.None -> null
             }
         }
@@ -80,35 +78,24 @@ class VersionCheckerViewModel(
             initialValue = null,
         )
 
-    private val hiddenClientDialogs = MutableStateFlow<Set<VersionAvailableUiModel>>(emptySet())
     private val desktopVersionAvailable = MutableStateFlow<VersionAvailableUiModel?>(null)
 
-    private val clientVersionAvailable = observeIsClientOnLastVersionUseCase()
-        .map {
-            it.toUiClient()
-        }.combine(hiddenClientDialogs) { uimodel, hidden ->
-            uimodel.takeIf { it !in hidden }
-        }
+    val sdkUpdate: StateFlow<SdkUpdateUiModel?> = observeIsClientOnLastVersionUseCase()
+        .map { it.toSdkUpdate() }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = null,
         )
 
-    val state = combine(
-        desktopVersionAvailable,
-        clientVersionAvailable,
-    ) { desktop, client ->
-        VersionAvailableState(
-            desktop = desktop,
-            client = client,
+    val state = desktopVersionAvailable
+        .map { desktop -> VersionAvailableState(desktop = desktop) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null,
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
-        initialValue = null,
-    )
 
     init {
         viewModelScope.launch(dispatcherProvider.viewModel) {
@@ -133,19 +120,15 @@ class VersionCheckerViewModel(
         }
     }
 
-    private suspend fun IsLastVersionDomainModel.toUiClient(): VersionAvailableUiModel? = when (this) {
-        is IsLastVersionDomainModel.NewVersionAvailable -> {
-            VersionAvailableUiModel(
-                version = this.name,
-                link = this.link,
-                title = getString(Res.string.new_client_version, name),
-                subtitle = getString(Res.string.new_client_version_desc, this.oldVersion),
-            )
-        }
+    private fun IsLastVersionDomainModel.toSdkUpdate(): SdkUpdateUiModel? = when (this) {
+        is IsLastVersionDomainModel.NewVersionAvailable -> SdkUpdateUiModel(
+            currentVersion = oldVersion,
+            latestVersion = name,
+            dependency = "io.github.openflocon:flocon:$name",
+            releaseNotesLink = link,
+        )
 
-        is IsLastVersionDomainModel.RunningLastVersion -> {
-            null
-        }
+        is IsLastVersionDomainModel.RunningLastVersion -> null
     }
 
     fun hideDesktopNewVersionDialog(uimodel: VersionAvailableUiModel) {
@@ -155,10 +138,9 @@ class VersionCheckerViewModel(
         }
     }
 
-    fun hideClientNewVersionDialog(uimodel: VersionAvailableUiModel) {
-        hiddenClientDialogs.update { it + uimodel }
+    fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            dismissClientVersionUseCase(uimodel.version)
+            dismissClientVersionUseCase(uimodel.latestVersion)
         }
     }
 }

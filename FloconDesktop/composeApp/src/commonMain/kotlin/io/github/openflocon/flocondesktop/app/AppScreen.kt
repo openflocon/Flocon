@@ -51,6 +51,7 @@ fun AppScreen(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
     val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
+    val sdkUpdate by versionCheckerViewModel.sdkUpdate.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -60,6 +61,8 @@ fun AppScreen(modifier: Modifier = Modifier) {
             onAction = viewModel::onAction,
             updateChip = updateChip,
             onUpdateChipClicked = { uriHandler.openUri(it.link) },
+            sdkUpdate = sdkUpdate,
+            onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
         )
         FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
         VersionChecker()
@@ -73,6 +76,8 @@ private fun Content(
     onAction: (AppAction) -> Unit,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit,
+    sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel?,
+    onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit,
 ) {
     val sceneStrategies = remember {
         listOf(
@@ -117,6 +122,8 @@ private fun Content(
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
                             updateChip = updateChip,
                             onUpdateChipClicked = onUpdateChipClicked,
+                            sdkUpdate = sdkUpdate,
+                            onSdkUpdateIgnored = onSdkUpdateIgnored,
                         )
                     }
                 )

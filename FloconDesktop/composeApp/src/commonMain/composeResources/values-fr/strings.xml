@@ -205,11 +205,8 @@
     <string name="network_header_request_time">Date</string>
     <string name="network_header_status">Statut</string>
     <string name="network_header_time">Durée</string>
-    <string name="new_client_version">Nouvelle version du client disponible : %1$s</string>
-    <string name="new_client_version_desc">N’oubliez pas de mettre à jour la version de l’app\n(actuelle : %1$s)</string>
     <string name="new_desktop_version">Nouvelle version desktop disponible : %1$s</string>
     <string name="update_available_desktop">Mise à jour : %1$s</string>
-    <string name="update_available_client">Mise à jour du SDK : %1$s</string>
     <string name="no_analytics">Aucun analytics</string>
     <string name="no_devices_found">Aucun appareil trouvé</string>
     <string name="open_external">Ouvrir dans un éditeur externe</string>
@@ -529,4 +526,10 @@
     <string name="settings_data_media_cleaning">Suppression…</string>
     <string name="settings_data_media_clean_failed">Échec du nettoyage</string>
     <string name="settings_purge_never">Jamais</string>
+    <string name="sdk_update_badge">SDK %1$s → %2$s</string>
+    <string name="sdk_update_title">Mise à jour du SDK pour cette app</string>
+    <string name="sdk_update_running">Version actuelle %1$s · dernière %2$s</string>
+    <string name="sdk_update_copy">Copier</string>
+    <string name="sdk_update_release_notes">Notes de version</string>
+    <string name="sdk_update_ignore">Ignorer</string>
 </resources>

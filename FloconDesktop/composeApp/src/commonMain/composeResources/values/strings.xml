@@ -251,11 +251,8 @@
     <string name="network_header_request_time">Time</string>
     <string name="network_header_status">Status</string>
     <string name="network_header_time">Duration</string>
-    <string name="new_client_version">New client version available: %1$s</string>
-    <string name="new_client_version_desc">Don’t forget to update the app version\n(current: %1$s)</string>
     <string name="new_desktop_version">New desktop version available: %1$s</string>
     <string name="update_available_desktop">Update: %1$s</string>
-    <string name="update_available_client">SDK update: %1$s</string>
     <string name="no_analytics">No analytics</string>
     <string name="no_feature_flags">No feature flags</string>
     <string name="feature_flag_provider">Provider</string>
@@ -691,4 +688,10 @@
     <string name="settings_data_media_clean">Delete now</string>
     <string name="settings_data_media_cleaning">Deleting…</string>
     <string name="settings_data_media_clean_failed">Cleanup failed</string>
+    <string name="sdk_update_badge">SDK %1$s → %2$s</string>
+    <string name="sdk_update_title">SDK update for this app</string>
+    <string name="sdk_update_running">Running %1$s · latest %2$s</string>
+    <string name="sdk_update_copy">Copy</string>
+    <string name="sdk_update_release_notes">Release notes</string>
+    <string name="sdk_update_ignore">Ignore</string>
 </resources>

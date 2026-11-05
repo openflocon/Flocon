@@ -42,7 +42,6 @@ internal fun BoxScope.VersionChecker() {
                 .zIndex(AboveDialogsZIndex),
             state = it,
             onDesktopDismiss = viewmodel::hideDesktopNewVersionDialog,
-            onClientDismiss = viewmodel::hideClientNewVersionDialog,
         )
     }
 }
@@ -50,7 +49,6 @@ internal fun BoxScope.VersionChecker() {
 @Composable
 private fun VersionCheckerDialog(
     state: VersionCheckerViewModel.VersionAvailableState,
-    onClientDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     onDesktopDismiss: (VersionCheckerViewModel.VersionAvailableUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,13 +57,6 @@ private fun VersionCheckerDialog(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)
     ) {
-        state.client?.let {
-            VersionCheckerDialog(
-                modifier = Modifier,
-                version = it,
-                onDismiss = onClientDismiss
-            )
-        }
         state.desktop?.let {
             VersionCheckerDialog(
                 modifier = Modifier,

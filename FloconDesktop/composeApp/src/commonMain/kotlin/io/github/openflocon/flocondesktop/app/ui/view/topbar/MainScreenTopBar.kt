@@ -67,6 +67,8 @@ fun MainScreenTopBar(
     modifier: Modifier = Modifier,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
     onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit = {},
+    sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel? = null,
+    onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit = {},
 ) {
     var showConnectDialog by remember { mutableStateOf(false) }
     if (showConnectDialog) {
@@ -98,6 +100,12 @@ fun MainScreenTopBar(
             deleteDevice = deleteDevice,
             deleteApp = deleteApp,
         )
+        if (sdkUpdate != null) {
+            SdkUpdateBadge(
+                update = sdkUpdate,
+                onIgnore = onSdkUpdateIgnored,
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         TopBarActions(
             onTakeScreenshotClicked = onTakeScreenshotClicked,
