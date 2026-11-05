@@ -19,11 +19,7 @@ class ObserveCurrentDeviceCapabilitiesUseCaseTest {
         floconVersionOnDevice = "1.0.0",
     )
 
-    private fun capabilities(
-        platform: String,
-        connectionType: DeviceConnectionType,
-        app: DeviceAppDomainModel = this.app,
-    ) = computeCapabilities(
+    private fun capabilities(platform: String, connectionType: DeviceConnectionType) = computeCapabilities(
         device = DeviceDomainModel("id", "name", platform, connectionType),
         app = app,
     )
@@ -31,7 +27,7 @@ class ObserveCurrentDeviceCapabilitiesUseCaseTest {
     @Test
     fun `android over usb has every capability`() {
         val result = assertNotNull(capabilities("android", DeviceConnectionType.Default))
-        assertTrue(result.screenshot && result.recordScreen && result.deeplinks && result.restart && result.files)
+        assertTrue(result.screenshot && result.recordScreen && result.deeplinks && result.files)
     }
 
     @Test
@@ -40,7 +36,6 @@ class ObserveCurrentDeviceCapabilitiesUseCaseTest {
         assertFalse(result.screenshot)
         assertFalse(result.recordScreen)
         assertFalse(result.deeplinks)
-        assertTrue(result.restart)
         assertTrue(result.files)
         assertTrue(result.sharedPreferences)
     }
@@ -51,19 +46,5 @@ class ObserveCurrentDeviceCapabilitiesUseCaseTest {
             capabilities("ios", DeviceConnectionType.Default),
             capabilities("ios", DeviceConnectionType.Wifi),
         )
-    }
-
-    @Test
-    fun `android can restart only with the device plugin`() {
-        val withPlugin = assertNotNull(capabilities("android", DeviceConnectionType.Default, app.copy(installedPlugins = setOf("network", "device"))))
-        val withoutPlugin = assertNotNull(capabilities("android", DeviceConnectionType.Default, app.copy(installedPlugins = setOf("network"))))
-        assertTrue(withPlugin.restart)
-        assertFalse(withoutPlugin.restart)
-    }
-
-    @Test
-    fun `android can restart when the SDK does not send its plugins`() {
-        val result = assertNotNull(capabilities("android", DeviceConnectionType.Default, app.copy(installedPlugins = null)))
-        assertTrue(result.restart)
     }
 }

@@ -31,7 +31,6 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | Tables | `flocon-tables` | Android, JVM, iOS, Wasm |
 | Deeplinks | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
 | Files | `flocon-files` | Android, JVM, iOS (Wasm: no file browsing) |
-| Device (app icon, restart app) | `flocon-device` | Android (app icon also on iOS, restart on Android only) |
 | Crash reporter | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
 
 !!! warning "`flocon-base` is gone"
@@ -112,7 +111,7 @@ became `io.github.openflocon.flocon.network.core.model.FloconWebSocketEvent`, an
 `...plugins.analytics.model.*` became `...analytics.model.*`. Fix the imports after changing the dependencies.
 
 The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, `databasePlugin`,
-`deeplinksPlugin`, `devicePlugin`, `featureFlagsPlugin`, `filesPlugin`, `networkPlugin`, `preferencesPlugin` and
+`deeplinksPlugin`, `featureFlagsPlugin`, `filesPlugin`, `networkPlugin`, `preferencesPlugin` and
 `tablePlugin` (plus `databaseRoom` / `databaseRoom3` for the Room providers).
 
 ---
@@ -143,8 +142,8 @@ The accessors are: `analyticsPlugin`, `crashReporterPlugin`, `dashboardPlugin`, 
   `install(FloconDatabase) { room() }` (and the `flocon-database-room` or `-room3` dependency). On Android it then scans
   the app databases folder; `Flocon.databasePlugin.register(id, name, db)` is only needed for in-memory databases or a custom name.
   `logQuery` takes the id of the database as the desktop lists it.
-- **Restarting the app is a plugin.** The app icon is sent by the core, nothing to install. The "restart the app" action
-  of the desktop (Android) needs `flocon-device` and `install(FloconDevice)`: without it the desktop hides the button.
+- **No Device plugin.** The app icon is sent by the core, nothing to install. The `flocon-device` module and the
+  "restart the app" action of the desktop no longer exist: remove `flocon-device` and `install(FloconDevice)` if the project has them.
 - **Cleartext rules.** The `localhost` / `127.0.0.1` cleartext exceptions in `network_security_config.xml` are no longer needed.
 - **Gradle task names** differ per module (flavors or not). List them with `./gradlew :module:tasks --all` before building.
 

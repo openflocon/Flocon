@@ -128,7 +128,6 @@ internal class FakeDevicesRepository(
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
     override suspend fun deleteDevice(deviceId: DeviceId) = error("not used")
     override suspend fun deleteApplication(deviceId: DeviceId, packageName: String) = error("not used")
-    override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
     override suspend fun clear() = error("not used")
 }
 

@@ -22,7 +22,6 @@ import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
-import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.tables.FloconTable
@@ -44,7 +43,6 @@ fun MainViewController() = ComposeUIViewController(
             install(FloconFeatureFlags)
             install(FloconPreferences)
             install(FloconFiles)
-            install(FloconDevice)
             install(FloconCrashReporter)
             install(FloconDeeplinks) {
                 deeplink("flocon://home")

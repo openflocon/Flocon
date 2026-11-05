@@ -8,9 +8,8 @@ import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 
 /**
- * Answers the device messages every app supports, without any plugin to install:
+ * Answers the device messages, without any plugin to install:
  * the app icon, and the adb serial (Android).
- * The `device` plugin only handles what needs an extra dependency (restarting the app).
  */
 internal class FloconDeviceHandler(
     private val sender: FloconMessageSender,
@@ -23,7 +22,7 @@ internal class FloconDeviceHandler(
     }
 
     /**
-     * @return true when the message was handled here, false when it must go to the plugin.
+     * @return true when the message was handled here, false when it must go to a plugin.
      */
     fun handle(plugin: String, method: String): Boolean {
         if (plugin != Protocol.ToDevice.Device.Plugin) return false

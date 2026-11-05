@@ -39,7 +39,6 @@ import io.github.openflocon.flocon.webview.FloconWebView
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
-import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.connect
@@ -90,7 +89,6 @@ class MainActivity : ComponentActivity() {
                     absolutePath = "${filesDir.parentFile!!.absolutePath}/shared_prefs",
                 )
             }
-            install(FloconDevice)
             install(FloconCrashReporter)
         }
 

@@ -382,7 +382,6 @@
     <string name="connect_port">port %1$d</string>
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
-    <string name="topbar_restart">Redémarrer l’app</string>
     <string name="topbar_screenshot">Capture d’écran</string>
     <string name="analytics_selector_caption">Fournisseur</string>
     <string name="tables_selector_caption">Table</string>

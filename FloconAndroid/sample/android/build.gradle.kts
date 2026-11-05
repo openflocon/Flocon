@@ -54,7 +54,6 @@ dependencies {
     implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
     implementation(projects.sharedprefs.sharedprefs)
     implementation(projects.files.files)
-    implementation(projects.device.device)
     implementation(projects.datastores.datastores)
     implementation(projects.analytics.analytics)
     implementation(projects.accessibility.accessibility)
@@ -150,7 +149,6 @@ val floconNoOpModules = mapOf(
     ":database:room3:room3" to ":database:room3:room3-no-op",
     ":datastores:datastores" to ":datastores:datastores-no-op",
     ":deeplinks:deeplinks" to ":deeplinks:deeplinks-no-op",
-    ":device:device" to ":device:device-no-op",
     ":files:files" to ":files:files-no-op",
     ":grpc:grpc-interceptor-base:grpc-interceptor-base" to ":grpc:grpc-interceptor-base:grpc-interceptor-base-no-op",
     ":grpc:grpc-interceptor:grpc-interceptor" to ":grpc:grpc-interceptor:grpc-interceptor-no-op",
