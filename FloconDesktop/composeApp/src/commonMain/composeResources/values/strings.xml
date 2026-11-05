@@ -606,6 +606,7 @@
     <string name="settings_server_ports_websocket">Websocket port</string>
     <string name="settings_server_ports_http">HTTP port</string>
     <string name="settings_server_ports_apply">Apply</string>
+    <string name="settings_server_ports_reset">Reset to default</string>
     <string name="settings_server_ports_applied">Server ports updated</string>
     <string name="settings_server_ports_hint">Android apps over USB or emulator are reached through adb reverse. SDK apps connecting over Wi-Fi, and iOS apps, must be configured with the same ports.</string>
     <string name="settings_server_ports_overridden">Set by launch option for this session</string>

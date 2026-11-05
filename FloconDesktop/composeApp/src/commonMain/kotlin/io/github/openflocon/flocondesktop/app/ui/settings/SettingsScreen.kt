@@ -109,6 +109,7 @@ import flocondesktop.composeapp.generated.resources.settings_server_ports_error_
 import flocondesktop.composeapp.generated.resources.settings_server_ports_hint
 import flocondesktop.composeapp.generated.resources.settings_server_ports_http
 import flocondesktop.composeapp.generated.resources.settings_server_ports_overridden
+import flocondesktop.composeapp.generated.resources.settings_server_ports_reset
 import flocondesktop.composeapp.generated.resources.settings_server_ports_title
 import flocondesktop.composeapp.generated.resources.settings_server_ports_websocket
 import flocondesktop.composeapp.generated.resources.settings_start_screen_description
@@ -193,6 +194,7 @@ fun SettingsScreen(
         onWebsocketPortChanged = viewModel::onWebsocketPortChanged,
         onHttpPortChanged = viewModel::onHttpPortChanged,
         onApplyServerPorts = viewModel::applyServerPorts,
+        onResetServerPorts = viewModel::resetServerPorts,
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         onToggleLogDomain = viewModel::toggleLogDomain,
@@ -222,6 +224,7 @@ private fun SettingsScreen(
     onWebsocketPortChanged: (String) -> Unit,
     onHttpPortChanged: (String) -> Unit,
     onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
@@ -272,6 +275,7 @@ private fun SettingsScreen(
                     onWebsocketPortChanged = onWebsocketPortChanged,
                     onHttpPortChanged = onHttpPortChanged,
                     onApplyServerPorts = onApplyServerPorts,
+                    onResetServerPorts = onResetServerPorts,
                 )
 
                 SettingsTab.Adb -> AdbPane(
@@ -445,6 +449,7 @@ private fun GeneralPane(
     onWebsocketPortChanged: (String) -> Unit,
     onHttpPortChanged: (String) -> Unit,
     onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -456,6 +461,7 @@ private fun GeneralPane(
             onWebsocketPortChanged = onWebsocketPortChanged,
             onHttpPortChanged = onHttpPortChanged,
             onApply = onApplyServerPorts,
+            onReset = onResetServerPorts,
         )
 
         SettingsCard(
@@ -514,6 +520,7 @@ private fun ServerPortsCard(
     onWebsocketPortChanged: (String) -> Unit,
     onHttpPortChanged: (String) -> Unit,
     onApply: () -> Unit,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsCard(
@@ -522,7 +529,10 @@ private fun ServerPortsCard(
         description = stringResource(Res.string.settings_server_ports_description),
         modifier = modifier,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+            verticalAlignment = Alignment.Bottom,
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
                 modifier = Modifier.width(FloconTheme.sizes.columnLarge),
@@ -557,6 +567,12 @@ private fun ServerPortsCard(
                     enabled = !form.httpPortOverridden,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (form.canReset) {
+                SettingsButton(
+                    text = stringResource(Res.string.settings_server_ports_reset),
+                    onClick = onReset,
                 )
             }
         }
@@ -1400,6 +1416,7 @@ private fun SettingsScreenPreview() {
             onWebsocketPortChanged = {},
             onHttpPortChanged = {},
             onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1432,6 +1449,7 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             onWebsocketPortChanged = {},
             onHttpPortChanged = {},
             onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1462,6 +1480,7 @@ private fun SettingsScreen_LogsPreview() {
             onWebsocketPortChanged = {},
             onHttpPortChanged = {},
             onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1481,6 +1500,7 @@ private fun ServerPortsCardPreview() {
             onWebsocketPortChanged = {},
             onHttpPortChanged = {},
             onApply = {},
+            onReset = {},
         )
     }
 }

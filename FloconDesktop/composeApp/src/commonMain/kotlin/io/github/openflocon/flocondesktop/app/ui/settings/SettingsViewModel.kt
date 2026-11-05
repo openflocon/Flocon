@@ -220,6 +220,19 @@ class SettingsViewModel(
         _serverPortsForm.update { it.copy(httpPort = value.toPortInput(), error = null) }
     }
 
+    /** Puts the default ports back (the ones forced by a launch option are left alone) and applies them. */
+    fun resetServerPorts() {
+        val defaults = ServerPortsDomainModel()
+        _serverPortsForm.update {
+            it.copy(
+                websocketPort = if (it.websocketPortOverridden) it.websocketPort else defaults.websocketPort.toString(),
+                httpPort = if (it.httpPortOverridden) it.httpPort else defaults.httpPort.toString(),
+                error = null,
+            )
+        }
+        applyServerPorts()
+    }
+
     fun applyServerPorts() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val form = _serverPortsForm.value
