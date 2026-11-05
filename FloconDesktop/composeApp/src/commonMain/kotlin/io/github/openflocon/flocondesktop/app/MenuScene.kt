@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -47,6 +46,7 @@ import io.github.openflocon.navigation.mascot.MascotCommands
 import io.github.openflocon.navigation.mascot.MascotOverlay
 import io.github.openflocon.navigation.mascot.MascotPlatforms
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import io.github.openflocon.navigation.scene.PanelScene
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -130,8 +130,12 @@ data class MenuScene(
                             .fillMaxHeight()
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
-                            Crossfade(scene) {
-                                it.content()
+                            if (scene !is PanelScene) {
+                                Crossfade(scene) {
+                                    it.content()
+                                }
+                            } else {
+                                scene.content()
                             }
                         }
                     }
