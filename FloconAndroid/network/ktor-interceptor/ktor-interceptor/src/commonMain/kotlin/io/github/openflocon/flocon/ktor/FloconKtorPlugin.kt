@@ -93,11 +93,10 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
 
         try {
             if (isMocked) {
-                val fakeCall = executeMock(client = theClient, request = request, mock = mockConfig)
                 // The engine phase expects an OutgoingContent: hand the call back as the
                 // pipeline result instead of proceeding, otherwise the engine fails with
                 // "No request transformation found".
-                subject = fakeCall
+                subject = executeMock(client = theClient, request = request, mock = mockConfig)
                 finish()
                 return@intercept
             }
