@@ -181,7 +181,6 @@ The available plugins:
 | `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
 | `FloconWebView` | `flocon-webview` | [WebViews](webview.md) |
 | `FloconTimeline` | `flocon-timeline` | [Timeline](timeline.md#logs-from-your-app) |
-| `FloconDevice` | `flocon-device` | Shows the app icon and lets the desktop restart the app (Android) |
 
 !!! tip "Logs"
     Set `FloconLogger.enabled = true` to see what Flocon does (connection, plugins not installed, ...).

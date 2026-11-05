@@ -591,7 +591,6 @@
     <string name="connect_port">port %1$d</string>
     <string name="topbar_open_folder">open flocon folder</string>
     <string name="topbar_record">Record</string>
-    <string name="topbar_restart">restart</string>
     <string name="topbar_screenshot">screenshot</string>
     <string name="analytics_selector_caption">Provider</string>
     <string name="tables_selector_caption">Table</string>
@@ -679,4 +678,11 @@
     <string name="settings_data_auto_description">At each launch of Flocon, the data older than the chosen age is deleted.</string>
     <string name="settings_data_manual_title">Manual cleanup</string>
     <string name="settings_purge_never">Never</string>
+    <string name="settings_data_media_title">Screenshots and recordings</string>
+    <string name="settings_data_media_screenshots_size">Screenshots</string>
+    <string name="settings_data_media_recordings_size">Recordings</string>
+    <string name="settings_data_media_auto_description">The screenshots and video recordings you saved in the Flocon documents folder. At each launch of Flocon, the ones older than the chosen age are deleted. Never by default.</string>
+    <string name="settings_data_media_clean">Delete now</string>
+    <string name="settings_data_media_cleaning">Deleting…</string>
+    <string name="settings_data_media_clean_failed">Cleanup failed</string>
 </resources>

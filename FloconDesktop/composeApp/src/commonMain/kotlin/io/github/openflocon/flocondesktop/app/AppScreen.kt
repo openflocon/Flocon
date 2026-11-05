@@ -113,7 +113,6 @@ private fun Content(
                             onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
-                            onRestartClicked = { onAction(AppAction.Restart) },
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
                             updateChip = updateChip,

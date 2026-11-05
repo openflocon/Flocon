@@ -41,6 +41,9 @@ internal interface SettingsDataSource {
     val autoPurgeDays: Flow<Int?>
     suspend fun setAutoPurgeDays(days: Int)
 
+    val autoMediaCleanupDays: Flow<Int?>
+    suspend fun setAutoMediaCleanupDays(days: Int)
+
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
 
