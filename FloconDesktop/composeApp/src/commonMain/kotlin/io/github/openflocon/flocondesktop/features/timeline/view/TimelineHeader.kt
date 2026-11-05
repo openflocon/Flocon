@@ -101,6 +101,10 @@ internal fun TimelineHeader(
             status = screenshotsStatus,
             onAction = onAction,
         )
+        AutoScrollControl(
+            enabled = settings.autoScroll,
+            onAction = onAction,
+        )
         FeatureDocButton(doc = FeatureDoc.Timeline)
         TimelineOverflowMenu(
             settings = settings,

@@ -91,10 +91,102 @@ class GraphLayoutTest {
     }
 
     @Test
+    fun `the viewport cannot be panned past the limit`() {
+        // a limit at 2830 ms: at the right of a 600 px track, with the 80 px margin, the start is 2310 ms
+        assertEquals(2_310.0, viewport.copy(startMs = 2_000.0).panned(5_000.0, 2_830L, 600f).startMs, 0.001)
+        assertEquals(2_100.0, viewport.copy(startMs = 2_000.0).panned(100.0, 2_830L, 600f).startMs, 0.001)
+        // panning to the left is free
+        assertEquals(1_000.0, viewport.copy(startMs = 2_000.0).panned(-1_000.0, 2_830L, 600f).startMs, 0.001)
+    }
+
+    @Test
+    fun `a viewport already in the future does not move to the right nor come back`() {
+        // zoomed out or a short session: the start is past the limit
+        val past = viewport.copy(startMs = 5_000.0)
+        assertEquals(5_000.0, past.panned(300.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(4_700.0, past.panned(-300.0, 2_830L, 600f).startMs, 0.0)
+    }
+
+    @Test
+    fun `without a limit the viewport cannot be panned to the right`() {
+        assertEquals(0.0, viewport.panned(500.0, null, 600f).startMs, 0.0)
+        assertEquals(-200.0, viewport.panned(-200.0, null, 600f).startMs, 0.0)
+    }
+
+    @Test
+    fun `the most recent session ends now, even with no new event`() {
+        val started = model.copy(sessionStartTimestamp = 1_000_000L)
+
+        // 10 s after the start, the last event is at 2830 ms: now is the limit
+        assertEquals(10_000L, started.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_010_000L))
+        // a phone ahead of the computer: never before the last event
+        assertEquals(2_830L, started.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_001_000L))
+        // an older session ends at its last event
+        assertEquals(2_830L, started.panLimitMs(isMostRecentSession = false, nowTimestamp = 1_010_000L))
+    }
+
+    @Test
+    fun `the latest given by the caller is used`() {
+        val started = model.copy(sessionStartTimestamp = 1_000_000L)
+
+        assertEquals(7_000L, started.panLimitMs(isMostRecentSession = false, nowTimestamp = 1_010_000L, latestMs = 7_000L))
+    }
+
+    @Test
+    fun `a session without a known start ends at its last event`() {
+        assertEquals(2_830L, model.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_010_000L))
+    }
+
+    @Test
+    fun `the most recent session without event ends now`() {
+        val empty = buildGraphUiModel(emptyList(), 0L, sessionStartTimestamp = 1_000_000L)
+
+        assertEquals(4_000L, empty.panLimitMs(isMostRecentSession = true, nowTimestamp = 1_004_000L))
+        assertNull(empty.panLimitMs(isMostRecentSession = false, nowTimestamp = 1_004_000L))
+    }
+
+    @Test
+    fun `the auto scroll on the present puts it at the right of the track`() {
+        // 1 px per ms in a 600 px track: the right is the start + 520 ms (80 px of margin)
+        val behind = viewport.copy(startMs = 0.0)
+
+        assertEquals(10_000.0 - 520.0, behind.followedTo(10_000L, 600f).startMs, 0.001)
+        // in view: nothing moves
+        assertEquals(behind, behind.followedTo(400L, 600f))
+        // never moves back
+        assertEquals(viewport.copy(startMs = 5_000.0), viewport.copy(startMs = 5_000.0).followedTo(1_000L, 600f))
+    }
+
+    @Test
+    fun `the distance of the present past the right of the track`() {
+        assertEquals(480.0, viewport.copy(startMs = 0.0).pxPastRight(1_000L, 600f), 0.001)
+        assertEquals(-120.0, viewport.copy(startMs = 0.0).pxPastRight(400L, 600f), 0.001)
+        // 0.5 px per ms: the right of the track is at 1040 ms, 1520 ms is 480 ms further, 240 px
+        assertEquals(240.0, GraphViewport(startMs = 0.0, pxPerMs = 0.5).pxPastRight(1_520L, 600f), 0.001)
+    }
+
+    @Test
+    fun `reaching the end of the graph by moving to the right`() {
+        // a limit at 2830 ms in a 600 px track: the end is at the start 2310 ms
+        val before = viewport.copy(startMs = 2_000.0)
+
+        assertTrue(before.reachedEnd(before.panned(5_000.0, 2_830L, 600f), 2_830L, 600f))
+        // not far enough
+        assertTrue(!before.reachedEnd(before.panned(100.0, 2_830L, 600f), 2_830L, 600f))
+        // already there: a move that goes nowhere is not an arrival
+        val there = viewport.copy(startMs = 2_310.0)
+        assertTrue(!there.reachedEnd(there.panned(100.0, 2_830L, 600f), 2_830L, 600f))
+        // past it (zoomed out, short session) and no limit
+        val past = viewport.copy(startMs = 5_000.0)
+        assertTrue(!past.reachedEnd(past.panned(100.0, 2_830L, 600f), 2_830L, 600f))
+        assertTrue(!before.reachedEnd(before.panned(5_000.0, 2_830L, 600f), null, 600f))
+    }
+
+    @Test
     fun `the viewport never goes more than a second before the start of the session`() {
-        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0).startMs, 0.0)
-        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0).startMs, 0.0)
-        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0).startMs, 0.0)
+        assertEquals(-450.0, viewport.copy(startMs = 50.0).panned(-500.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(MIN_START_MS, viewport.copy(startMs = 50.0).panned(-5_000.0, 2_830L, 600f).startMs, 0.0)
+        assertEquals(60.0, viewport.copy(startMs = 50.0).panned(10.0, 2_830L, 600f).startMs, 0.0)
         // zooming out around the pointer would show the time before 0
         assertEquals(MIN_START_MS, viewport.copy(startMs = 10.0).zoomed(0.1, anchorX = 500f).startMs, 0.0)
     }
@@ -163,15 +255,16 @@ class GraphLayoutTest {
     fun `auto scroll follows the latest event only when it is out of view`() {
         // the latest event ends at 2830 ms. 1 px per ms, a track of 600 px: 520 ms of room with the margin
         val inView = GraphViewport(startMs = 2_500.0, pxPerMs = 1.0)
-        assertEquals(inView, inView.followedLatest(model, trackWidthPx = 600f))
+        assertEquals(inView, inView.followedTo(model.latestMs()!!, trackWidthPx = 600f))
 
         val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
-        val followed = behind.followedLatest(model, trackWidthPx = 600f)
+        val followed = behind.followedTo(model.latestMs()!!, trackWidthPx = 600f)
         assertEquals(2830.0 - 520.0, followed.startMs, 0.001)
         // the zoom and the vertical scroll are kept
         assertEquals(behind.pxPerMs, followed.pxPerMs, 0.0)
         assertEquals(behind.scrollY, followed.scrollY, 0f)
-        assertEquals(GraphViewport(), GraphViewport().followedLatest(GraphUiModel.Empty, 600f))
+        // no event, no screenshot: nothing to follow
+        assertNull(GraphUiModel.Empty.latestMs())
     }
 
     @Test
@@ -180,7 +273,7 @@ class GraphLayoutTest {
         val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
 
         assertEquals(5_000L, withShot.latestMs())
-        assertEquals(5_000.0 - 520.0, behind.followedLatest(withShot, trackWidthPx = 600f).startMs, 0.001)
+        assertEquals(5_000.0 - 520.0, behind.followedTo(withShot.latestMs()!!, trackWidthPx = 600f).startMs, 0.001)
         val jumped = behind.jumpedToLatest(withShot, trackWidthPx = 600f, trackHeightPx = 100f)
         assertEquals(5_000.0 - 520.0, jumped.startMs, 0.001)
         // the row of the latest event is still the one shown (the track is 100 px high)
@@ -200,7 +293,7 @@ class GraphLayoutTest {
         val onlyShots = GraphUiModel.Empty.copy(screenshots = listOf(GraphScreenshotUiModel(timeMs = 4_000L, filePath = "a.jpg")))
         val behind = GraphViewport(startMs = 0.0, pxPerMs = 1.0)
 
-        assertEquals(4_000.0 - 520.0, behind.followedLatest(onlyShots, trackWidthPx = 600f).startMs, 0.001)
+        assertEquals(4_000.0 - 520.0, behind.followedTo(onlyShots.latestMs()!!, trackWidthPx = 600f).startMs, 0.001)
         assertEquals(4_000.0 - 520.0, behind.jumpedToLatest(onlyShots, trackWidthPx = 600f, trackHeightPx = 100f).startMs, 0.001)
     }
 
