@@ -2,6 +2,9 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import androidx.compose.ui.graphics.Color
 import io.github.openflocon.domain.common.time.formatDate
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_LIFECYCLE
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_USER_ACTION
 import io.github.openflocon.domain.timelinelog.models.TimelineLogDomainModel
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineLogDetailUiModel
@@ -48,12 +51,12 @@ internal data class LogGlyph(val shape: LogGlyphShape, val color: LogGlyphColor)
  * The single mapping of a log to its glyph: the reserved types (case-insensitive) have a shape and a color of their
  * own, everything else (tags, custom types) is a diamond colored by [level] (a missing one counts as info).
  */
-internal fun logGlyphOf(type: String?, level: TimelineLogLevel?): LogGlyph = when (type?.lowercase()) {
-    "navigation" -> LogGlyph(LogGlyphShape.Arrow, LogGlyphColor.Navigation)
+internal fun logGlyphOf(type: String?, level: TimelineLogLevel?): LogGlyph = when {
+    type.isLogType(TIMELINE_LOG_TYPE_NAVIGATION) -> LogGlyph(LogGlyphShape.Arrow, LogGlyphColor.Navigation)
 
-    "useraction" -> LogGlyph(LogGlyphShape.Pointer, LogGlyphColor.UserAction)
+    type.isLogType(TIMELINE_LOG_TYPE_USER_ACTION) -> LogGlyph(LogGlyphShape.Pointer, LogGlyphColor.UserAction)
 
-    "lifecycle" -> LogGlyph(LogGlyphShape.Heart, LogGlyphColor.Lifecycle)
+    type.isLogType(TIMELINE_LOG_TYPE_LIFECYCLE) -> LogGlyph(LogGlyphShape.Heart, LogGlyphColor.Lifecycle)
 
     else -> LogGlyph(
         LogGlyphShape.Diamond,
@@ -87,3 +90,5 @@ internal fun TimelineLogDomainModel.toDetailUi(): TimelineLogDetailUiModel = Tim
     time = formatDate(timestamp),
     params = params.entries.sortedBy { it.key }.map { it.key to it.value }.toImmutableList(),
 )
+
+private fun String?.isLogType(reserved: String) = equals(reserved, ignoreCase = true)

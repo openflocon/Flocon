@@ -59,6 +59,9 @@ import flocondesktop.composeapp.generated.resources.timeline_logs_tag_placeholde
 import flocondesktop.composeapp.generated.resources.timeline_logs_tagged
 import flocondesktop.composeapp.generated.resources.timeline_logs_types
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_LIFECYCLE
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_USER_ACTION
 import io.github.openflocon.flocondesktop.features.timeline.mapper.color
 import io.github.openflocon.flocondesktop.features.timeline.mapper.logGlyphOf
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
@@ -124,11 +127,11 @@ private fun LogSectionTitle(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TimelineLogTypeUiModel.label(): String = when (type?.lowercase()) {
-    null -> stringResource(Res.string.timeline_logs_tagged)
-    "navigation" -> stringResource(Res.string.timeline_log_type_navigation)
-    "useraction" -> stringResource(Res.string.timeline_log_type_user_action)
-    "lifecycle" -> stringResource(Res.string.timeline_log_type_lifecycle)
+private fun TimelineLogTypeUiModel.label(): String = when {
+    type == null -> stringResource(Res.string.timeline_logs_tagged)
+    type.equals(TIMELINE_LOG_TYPE_NAVIGATION, ignoreCase = true) -> stringResource(Res.string.timeline_log_type_navigation)
+    type.equals(TIMELINE_LOG_TYPE_USER_ACTION, ignoreCase = true) -> stringResource(Res.string.timeline_log_type_user_action)
+    type.equals(TIMELINE_LOG_TYPE_LIFECYCLE, ignoreCase = true) -> stringResource(Res.string.timeline_log_type_lifecycle)
     else -> type
 }
 
