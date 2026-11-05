@@ -22,6 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +42,6 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 private val ChevronSize = 18.dp
-private val IndentLineWidth = 1.dp
 
 /**
  * The queries run in the same transaction, under one row: time | chevron | what it holds | database.
@@ -54,6 +56,7 @@ internal fun TimelineTransactionRow(
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
     val transaction = item.transaction
+    val (categoryColor, categorySoft) = TimelineSource.Database.categoryColors()
 
     Row(
         modifier = modifier
@@ -73,7 +76,8 @@ internal fun TimelineTransactionRow(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .background(colors.bg200.copy(alpha = HeaderAlpha), FloconTheme.shapes.medium)
+                // the tint of the database events: the header is read as part of them, not as a grey bar
+                .background(categorySoft, FloconTheme.shapes.medium)
                 .padding(horizontal = spacing.compact, vertical = spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
@@ -90,7 +94,7 @@ internal fun TimelineTransactionRow(
                 text = stringResource(Res.string.database_query_log_panel_transaction),
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = TimelineSource.Database.categoryColors().first,
+                color = categoryColor,
                 maxLines = 1,
             )
             Text(
@@ -108,23 +112,46 @@ internal fun TimelineTransactionRow(
 }
 
 /**
- * The line along the queries of an expanded transaction: they are indented under their header.
+ * The branch of a query of an expanded transaction: the query is indented, a line along the queries of the transaction
+ * curves towards it. The line goes on below the query unless it is the [isLast] one of its transaction.
  */
 @Composable
-internal fun Modifier.transactionIndent(): Modifier {
-    val color = FloconTheme.colors.bg300
+internal fun Modifier.transactionBranch(isLast: Boolean): Modifier {
+    val color = FloconTheme.colors.inkFaint
     val spacing = FloconTheme.spacing
-    // under the middle of the chevron of the header
-    val lineStart = FloconTheme.sizes.timeColumn + spacing.compact + railGutter() + spacing.small + spacing.compact + ChevronSize / 2
+    val indent = spacing.large + spacing.small
+    val lineX = spacing.compact + spacing.small / 2
+    val radius = spacing.small
+    val elbowEnd = spacing.compact + indent - BranchGap
     return this
         .drawBehind {
-            val x = lineStart.toPx()
-            drawLine(color = color, start = Offset(x, 0f), end = Offset(x, size.height), strokeWidth = IndentLineWidth.toPx())
+            val x = lineX.toPx()
+            val r = radius.toPx()
+            val centerY = size.height / 2
+            val stroke = Stroke(width = BranchLineWidth.toPx(), cap = StrokeCap.Round)
+            // the line comes from the header, and goes on to the next query of the transaction
+            drawLine(
+                color = color,
+                start = Offset(x, 0f),
+                end = Offset(x, if (isLast) centerY - r else size.height),
+                strokeWidth = stroke.width,
+            )
+            // the curve towards the query
+            drawPath(
+                path = Path().apply {
+                    moveTo(x, centerY - r)
+                    quadraticTo(x, centerY, x + r, centerY)
+                    lineTo(elbowEnd.toPx(), centerY)
+                },
+                color = color,
+                style = stroke,
+            )
         }
-        .padding(start = spacing.large)
+        .padding(start = indent)
 }
 
-private const val HeaderAlpha = 0.5f
+private val BranchLineWidth = 1.dp
+private val BranchGap = 2.dp
 
 @Preview
 @Composable
