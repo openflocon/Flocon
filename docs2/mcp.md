@@ -378,6 +378,14 @@ The app crashed at 14:32:05 with an `IllegalStateException` (the window read is 
 
 I opened the Flocon timeline in graph mode on the zone around the crash of 14:32:05 (an `IllegalStateException`): go to the Flocon app to see it. The graph does not draw crashes, switch to the list view to see its row.
 
+**Prompt**
+
+> Move the Flocon server to the ports 9100 and 9101.
+
+**Response**
+
+I changed the Flocon ports: the websocket server now listens on **9100** (it was 9023) and the HTTP server on **9101** (it was 9024). The servers restarted, so the connected devices are disconnected until the app reconnects: the SDK must be configured with these ports. This MCP connection is not affected.
+
 ---
 
 ## Available tools
@@ -437,6 +445,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
 | `flocon_navigate_into_desktop_app` | Moves the Flocon Desktop window for you: displays a screen (`screen`, e.g. `network`, `timeline`, `feature_flags`), selects a device and app (`deviceId`, `packageName`: this changes what you selected in the app) and sets the timeline view (`timelineView`: `graph` or `list`, saved in your preferences). Flocon is not brought to the front: the answer asks you to go to the Flocon app to see it. At least one parameter is required, and nothing is changed if one of them is invalid. |
+| `get_server_ports` | Ports of the Flocon desktop servers (websocket, default 9023; HTTP, default 9024): the effective ones, the saved ones, the defaults, and whether each is forced by a launch option for this session. |
+| `set_server_ports` | Changes the websocket and / or HTTP port (`websocketPort`, `httpPort`; at least one, the omitted one keeps its value; 9023 / 9024 put the defaults back). Same rules as the Settings screen: 1024..65535, different, not 9042 (MCP server), websocket not 9024, HTTP not 9023. A port forced by a launch option cannot be changed. **Restarts the websocket and HTTP servers and disconnects every device until the SDKs reconnect.** The MCP server is not affected. |
 
 ---
 

@@ -24,6 +24,7 @@ import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
 import io.github.openflocon.mcp.screen.McpSelectionApplier
 import io.github.openflocon.mcp.screen.NavigateDesktopAppMcpToolProvider
+import io.github.openflocon.mcp.serverports.ServerPortsMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
 import io.github.openflocon.mcp.table.TableMcpToolProvider
 import io.github.openflocon.mcp.timeline.ShowInTimelineMcpToolProvider
@@ -57,6 +58,7 @@ val mcpModule = module {
     singleOf(::DesktopFolderOpener) bind FolderOpener::class
     singleOf(::FloconFolderMcpToolProvider) bind McpToolProvider::class
     singleOf(::SharedPreferencesMcpToolProvider) bind McpToolProvider::class
+    singleOf(::ServerPortsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
     singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
