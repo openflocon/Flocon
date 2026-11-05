@@ -12,13 +12,9 @@ inline fun <reified T : RoomDatabase> RoomDatabase.Builder<T>.floconLogs(
     executor: Executor = Executors.newSingleThreadExecutor(),
     queryCallback: QueryCallback? = null
 ): RoomDatabase.Builder<T> {
-    // the plugin finds the transaction of a query from the ones logged before, they must reach it one at a time
-    val lock = Any()
     return setQueryCallback(
         queryCallback = { sqlQuery, bindArgs ->
-            synchronized(lock) {
-                Flocon.databasePlugin.logQuery(dbId = id, sqlQuery = sqlQuery, bindArgs = bindArgs)
-            }
+            Flocon.databasePlugin.logQuery(dbId = id, sqlQuery = sqlQuery, bindArgs = bindArgs)
             queryCallback?.onQuery(sqlQuery, bindArgs)
         },
         executor = executor

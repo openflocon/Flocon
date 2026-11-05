@@ -117,12 +117,17 @@ internal class FloconDatabasePluginImpl(
 
     // one state per database, for the callers that do not know the transaction of their queries
     private val transactionStates = mutableMapOf<String, FloconTransactionState>()
+    private val transactionLock = FloconLock()
 
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
-        val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
-        val transactionId = state.onQuery(sqlQuery)
-        // outside of a transaction: nothing to remember for this database
-        if (transactionId == null) transactionStates.remove(dbId)
+        // the queries can be logged from any thread
+        val transactionId = transactionLock.withLock {
+            val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
+            state.onQuery(sqlQuery).also { id ->
+                // outside of a transaction: nothing to remember for this database
+                if (id == null) transactionStates.remove(dbId)
+            }
+        }
         logQuery(dbId, sqlQuery, bindArgs, transactionId)
     }
 

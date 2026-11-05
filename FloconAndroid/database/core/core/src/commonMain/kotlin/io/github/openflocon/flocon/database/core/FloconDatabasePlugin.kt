@@ -18,7 +18,7 @@ interface FloconDatabasePlugin : FloconPlugin {
     /**
      * Logs a query, the plugin finds the transaction it belongs to from the queries already logged for [dbId]
      * (BEGIN, COMMIT, SAVEPOINT...), so all the queries of a transaction are grouped in the desktop app.
-     * Not thread safe for a given [dbId]: call it from one thread at a time.
+     * Can be called from any thread.
      *
      * @param dbId the id the database was registered with (see [register]), the queries are shown with this database in the desktop app
      */
