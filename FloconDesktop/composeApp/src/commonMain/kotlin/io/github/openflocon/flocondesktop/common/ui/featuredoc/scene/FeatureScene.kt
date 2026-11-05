@@ -59,6 +59,8 @@ internal fun FeatureDoc.scene(): FeatureSceneSpec? = when (this) {
     FeatureDoc.FeatureFlags -> FeatureFlagsScene
     FeatureDoc.Timeline -> TimelineScene
     FeatureDoc.CrashReporter -> CrashReporterScene
+    FeatureDoc.WebView -> WebViewScene
+    FeatureDoc.Accessibility -> AccessibilityScene
     FeatureDoc.AdbCommander -> AdbCommanderWifiScene
 }
 

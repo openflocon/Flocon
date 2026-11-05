@@ -13,6 +13,7 @@ import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.room
@@ -39,7 +40,6 @@ import io.github.openflocon.flocon.webview.FloconWebView
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
-import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.connect
@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
             install(FloconAnalytics)
             install(FloconAccessibility)
             install(FloconFeatureFlags)
+            install(FloconTimeline)
             install(FloconWebView)
             install(FloconDatabase) {
                 room()
@@ -90,9 +91,10 @@ class MainActivity : ComponentActivity() {
                     absolutePath = "${filesDir.parentFile!!.absolutePath}/shared_prefs",
                 )
             }
-            install(FloconDevice)
             install(FloconCrashReporter)
         }
+
+        logFloconLifecycle(lifecycle)
 
         intent.data?.let {
             Toast.makeText(this, "opened with : $it", Toast.LENGTH_LONG).show()

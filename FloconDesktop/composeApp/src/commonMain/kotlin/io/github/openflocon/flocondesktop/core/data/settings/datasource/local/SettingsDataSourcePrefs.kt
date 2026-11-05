@@ -76,6 +76,18 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { it.toThemeSetting() }
         .stateIn(ThemeSetting.DEFAULT)
 
+    override val autoPurgeDays: Flow<Int?> = flowSettings.getIntOrNullFlow(AUTO_PURGE_DAYS)
+
+    override suspend fun setAutoPurgeDays(days: Int) {
+        settings.putInt(AUTO_PURGE_DAYS, days)
+    }
+
+    override val autoMediaCleanupDays: Flow<Int?> = flowSettings.getIntOrNullFlow(AUTO_MEDIA_CLEANUP_DAYS)
+
+    override suspend fun setAutoMediaCleanupDays(days: Int) {
+        settings.putInt(AUTO_MEDIA_CLEANUP_DAYS, days)
+    }
+
     override val mascotEnabled: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(MASCOT_ENABLED)
         .mapLatest { it ?: true }
 
@@ -231,6 +243,8 @@ internal class SettingsDataSourcePrefs(
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
+        private const val AUTO_PURGE_DAYS = "auto_purge_days"
+        private const val AUTO_MEDIA_CLEANUP_DAYS = "auto_media_cleanup_days"
         private const val TIMELINE_SETTINGS = "timeline_settings"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"

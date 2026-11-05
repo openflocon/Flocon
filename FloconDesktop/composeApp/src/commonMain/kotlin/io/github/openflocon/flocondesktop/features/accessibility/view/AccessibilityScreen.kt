@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -34,7 +33,8 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.accessibility_clear
 import flocondesktop.composeapp.generated.resources.accessibility_filter
 import flocondesktop.composeapp.generated.resources.menu_item_accessibility
-import flocondesktop.composeapp.generated.resources.no_accessibility_events
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityViewModel
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityAction
 import io.github.openflocon.flocondesktop.features.accessibility.model.AccessibilityBannerUiModel
@@ -161,11 +161,9 @@ fun AccessibilityScreen(
                     )
             ) {
                 if (rows.isEmpty()) {
-                    Text(
-                        text = stringResource(Res.string.no_accessibility_events),
-                        style = FloconTheme.typography.bodyMedium,
-                        color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-                        modifier = Modifier.align(Alignment.Center),
+                    FeatureEmptyState(
+                        doc = FeatureDoc.Accessibility,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 } else {
                     LazyColumn(

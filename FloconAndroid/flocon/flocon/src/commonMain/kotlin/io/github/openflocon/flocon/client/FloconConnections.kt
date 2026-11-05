@@ -84,6 +84,15 @@ internal class FloconConnections(
         }
     }
 
+    /**
+     * Closes the connection added with [connectTo] (or given at start), and forgets its address so it is not
+     * tried again at the next launch. The default address stays. Nothing to do without such a connection.
+     */
+    suspend fun disconnect() = connectMutex.withLock {
+        client.extraLink?.let { removeExtraLink(it) }
+        addressStore?.clear()
+    }
+
     private fun launch(link: FloconLink) {
         FloconConnectionStates.set(link, FloconConnectionState.Connecting)
         link.job = config.scope.launch { connectUntilSuccess(link) }

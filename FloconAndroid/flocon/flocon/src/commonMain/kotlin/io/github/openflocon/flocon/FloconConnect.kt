@@ -81,3 +81,11 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
  * in every case, call it again to retry.
  */
 suspend fun Flocon.Companion.connect(address: String): FloconConnectResult = connectToServer(address)
+
+/**
+ * Closes the connection made with [connect] (or the address given at start), and forgets its address:
+ * it is not tried again at the next launch. The default address (localhost on an emulator) is kept,
+ * Flocon keeps trying it. The messages logged from now on are kept in memory, as when no desktop is reachable,
+ * and sent when a connection is back. Does nothing when there is no such connection.
+ */
+suspend fun Flocon.Companion.disconnect() = disconnectFromServer()

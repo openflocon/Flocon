@@ -10,5 +10,9 @@ internal actual fun floconAddressStore(context: FloconContext): FloconAddressSto
         override fun save(address: String) {
             preferences.edit().putString(LAST_ADDRESS_KEY, address).apply()
         }
+
+        override fun clear() {
+            preferences.edit().remove(LAST_ADDRESS_KEY).apply()
+        }
     }
 }

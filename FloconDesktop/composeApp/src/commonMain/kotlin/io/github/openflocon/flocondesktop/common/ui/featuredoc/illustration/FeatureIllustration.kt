@@ -21,18 +21,33 @@ fun FeatureIllustration(
     IllustrationCanvas(modifier = modifier) { colors ->
         when (doc) {
             FeatureDoc.Network -> drawNetwork(colors)
+
             FeatureDoc.Images -> drawImages(colors)
+
             FeatureDoc.Database -> drawDatabase(colors)
+
             FeatureDoc.SharedPreferences -> drawPreferences(colors)
+
             FeatureDoc.Files -> drawFiles(colors)
+
             FeatureDoc.Dashboard -> drawDashboard(colors)
+
             FeatureDoc.Analytics -> drawAnalytics(colors)
+
             FeatureDoc.Tables -> drawTables(colors)
+
             FeatureDoc.Deeplinks -> drawDeeplinks(colors)
+
             FeatureDoc.FeatureFlags -> drawFeatureFlags(colors)
+
             FeatureDoc.Timeline -> drawTimeline(colors)
+
             FeatureDoc.CrashReporter -> drawCrashReporter(colors)
+
             FeatureDoc.AdbCommander -> drawAdbCommander(colors)
+
+            // drawn as pixel scenes (see FeatureDoc.scene)
+            FeatureDoc.WebView, FeatureDoc.Accessibility -> Unit
         }
     }
 }

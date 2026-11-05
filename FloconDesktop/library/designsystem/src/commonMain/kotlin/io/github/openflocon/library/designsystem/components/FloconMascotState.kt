@@ -10,8 +10,9 @@ import androidx.compose.runtime.setValue
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
+import kotlin.random.Random
 
-enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted, Jump, Backflip }
+enum class FloconMascotMode { Sit, Walk, Sleep, Lie, Happy, Petted, Jump, Backflip, Bark, Idle }
 
 /** A line the mascot can walk on, from [minX] to [maxX] (px) at the height [y] (px). */
 class FloconMascotPlatform(
@@ -27,7 +28,9 @@ class FloconMascotPlatform(
  * @param wakeDistance how far the pointer must be for a seated or sleeping mascot to get up
  * @param runDistance how far the pointer must be for the mascot to run instead of walk
  * @param jumpHeight how high above the straight line between two platforms the mascot jumps, a
- * backflip goes four fifths as high
+ * backflip goes four fifths as high, a bark a third as high
+ * @param idleAnimations what the mascot may play while sitting, before it falls asleep, picked at
+ * random (none: it only sits). An animation starts after a delay taken in [idleAnimationDelayMs]
  */
 class FloconMascotConfig(
     val stopDistance: Float,
@@ -45,7 +48,10 @@ class FloconMascotConfig(
     val minTurnIntervalMs: Long = 600,
     val jumpMs: Long = 600,
     val backflipMs: Long = 900,
+    val barkMs: Long = 560,
     val wakeUpMs: Long = 1_000,
+    val idleAnimations: List<FloconMascotIdleAnimation> = emptyList(),
+    val idleAnimationDelayMs: LongRange = 1_500L..3_000L,
 )
 
 /**
@@ -61,6 +67,7 @@ class FloconMascotConfig(
 class FloconMascotState(
     startX: Float,
     private val config: FloconMascotConfig,
+    private val random: Random = Random.Default,
 ) {
     var x by mutableFloatStateOf(startX)
         private set
@@ -97,6 +104,14 @@ class FloconMascotState(
     var backflipProgress by mutableFloatStateOf(0f)
         private set
 
+    /** 0..1 while [FloconMascotMode.Bark], 0 otherwise. */
+    var barkProgress by mutableFloatStateOf(0f)
+        private set
+
+    /** How high the paws are above the platform (px), the shadow stays on it. */
+    var lift by mutableFloatStateOf(0f)
+        private set
+
     /** Time spent being petted without a break, drives the hearts floating up. */
     var petClockMs by mutableLongStateOf(0L)
         private set
@@ -107,6 +122,14 @@ class FloconMascotState(
 
     /** Number of "z" shown above the head while sleeping (1..2). */
     var sleepZCount by mutableIntStateOf(1)
+        private set
+
+    /** What it plays while sitting, null when it isn't playing anything. */
+    var idleAnimation by mutableStateOf<FloconMascotIdleAnimation?>(null)
+        private set
+
+    /** Which picture of [idleAnimation] to draw. */
+    var idleFrame by mutableIntStateOf(0)
         private set
 
     private class Jump(
@@ -120,6 +143,7 @@ class FloconMascotState(
     private var jump: Jump? = null
     private var wakingMs = 0L
     private var backflipElapsedMs = NOT_FLIPPING
+    private var barkElapsedMs = NOT_FLIPPING
     private var platformIndex = -1
     private var chasing = false
     private var sitMs = config.minSitMs
@@ -133,6 +157,9 @@ class FloconMascotState(
     private var strokes = 0
     private var lastStrokeMs = Long.MIN_VALUE
     private var sinceTurnMs = config.minTurnIntervalMs
+    private var idleAnimationMs = 0L
+    private var nextIdleAnimationAtMs = pickIdleAnimationDelay()
+    private var lastIdleAnimation: FloconMascotIdleAnimation? = null
 
     /**
      * The pointer moved over the mascot, at [x] (px, in the mascot's own coordinates). Moving back
@@ -175,6 +202,7 @@ class FloconMascotState(
         pettedMs = 0
         petClockMs = 0
         hopUp = false
+        stopIdleAnimation()
         sitMs = 0
         idleMs = 0
         lieMs = 0
@@ -182,9 +210,33 @@ class FloconMascotState(
         backflipProgress = 0f
     }
 
-    /** Jumping or flipping: nothing else can happen until it is over. */
+    /**
+     * The logo has been clicked: it turns to the left, where the logo is, and barks once, lifting a
+     * little off the ground. It can't be interrupted.
+     */
+    fun bark() {
+        if (busy) return
+        barkElapsedMs = 0
+        chasing = false
+        running = false
+        happyMs = 0
+        pettedMs = 0
+        petClockMs = 0
+        hopUp = false
+        stopIdleAnimation()
+        sitMs = 0
+        idleMs = 0
+        lieMs = 0
+        wakingMs = 0
+        facingRight = false
+        sinceTurnMs = 0
+        mode = FloconMascotMode.Bark
+        barkProgress = 0f
+    }
+
+    /** Jumping, flipping or barking: nothing else can happen until it is over. */
     private val busy: Boolean
-        get() = jump != null || backflipElapsedMs != NOT_FLIPPING
+        get() = jump != null || backflipElapsedMs != NOT_FLIPPING || barkElapsedMs != NOT_FLIPPING
 
     /** [update] with a single platform at the height 0. */
     fun update(
@@ -222,6 +274,12 @@ class FloconMascotState(
         val platform = platforms[platformIndex]
         y = platform.y
         x = x.coerceIn(platform.minX, platform.maxX)
+        lift = 0f
+
+        if (barkElapsedMs != NOT_FLIPPING) {
+            advanceBark(deltaMs, platform)
+            return
+        }
 
         if (backflipElapsedMs != NOT_FLIPPING) {
             advanceBackflip(deltaMs, platform)
@@ -274,7 +332,10 @@ class FloconMascotState(
         if (chasing && !crossing && distance <= stopDistance) chasing = false
 
         // it runs while the pointer is far, and keeps running until it has gotten much closer
-        running = chasing && distance > if (running) config.runDistance * RUN_RELEASE else config.runDistance
+        // when crossing, the distance that counts is the one to the pointer, not to the edge, so it
+        // doesn't slow down to a walk as it nears the edge where it jumps
+        val runDistanceToPointer = if (crossing) abs(targetX - x) else distance
+        running = chasing && runDistanceToPointer > if (running) config.runDistance * RUN_RELEASE else config.runDistance
 
         var step = 0f
         if (chasing) {
@@ -289,11 +350,20 @@ class FloconMascotState(
         }
 
         val moving = step > 0f
-        idleMs = if (moving || still) 0 else idleMs + deltaMs
+        advanceIdleAnimation(deltaMs, idle = !moving && !still)
+        // the time spent playing doesn't make it sleepier
+        idleMs = if (moving || still) {
+            0
+        } else if (idleAnimation != null) {
+            idleMs
+        } else {
+            idleMs + deltaMs
+        }
         mode = when {
             happy -> FloconMascotMode.Happy
             petted -> FloconMascotMode.Petted
             moving -> FloconMascotMode.Walk
+            idleAnimation != null -> FloconMascotMode.Idle
             idleMs > config.lieAfterMs -> FloconMascotMode.Lie
             idleMs > config.sleepAfterMs -> FloconMascotMode.Sleep
             else -> FloconMascotMode.Sit
@@ -314,6 +384,62 @@ class FloconMascotState(
         hopUp = happy && (happyMs / HOP_MS) % 2 == 0L
         petClockMs = if (petted) petClockMs + deltaMs else 0L
         heartFrame = ((maxOf(happyMs, pettedMs) / HEART_MS) % 2).toInt()
+    }
+
+    private fun advanceIdleAnimation(deltaMs: Long, idle: Boolean) {
+        if (!idle) {
+            stopIdleAnimation()
+            return
+        }
+        val current = idleAnimation
+        if (current != null) {
+            idleAnimationMs += deltaMs
+            if (idleAnimationMs >= current.durationMs) {
+                idleAnimation = null
+                idleAnimationMs = 0
+                idleFrame = 0
+                nextIdleAnimationAtMs = idleMs + pickIdleAnimationDelay()
+            } else {
+                idleFrame = current.frameAt(idleAnimationMs)
+            }
+        } else if (idleMs >= nextIdleAnimationAtMs && idleMs <= config.sleepAfterMs) {
+            val next = pickIdleAnimation() ?: return
+            lastIdleAnimation = next
+            idleAnimation = next
+            idleAnimationMs = 0
+            idleFrame = next.frameAt(0)
+        }
+    }
+
+    private fun stopIdleAnimation() {
+        idleAnimation = null
+        idleAnimationMs = 0
+        idleFrame = 0
+        nextIdleAnimationAtMs = pickIdleAnimationDelay()
+    }
+
+    /** Any of them but the one it just played, if it has the choice. */
+    private fun pickIdleAnimation(): FloconMascotIdleAnimation? {
+        val all = config.idleAnimations
+        val choices = all.filter { it != lastIdleAnimation }.ifEmpty { all }
+        return if (choices.isEmpty()) null else choices[random.nextInt(choices.size)]
+    }
+
+    private fun pickIdleAnimationDelay(): Long = random.nextLong(config.idleAnimationDelayMs.first, config.idleAnimationDelayMs.last + 1)
+
+    private fun advanceBark(deltaMs: Long, platform: FloconMascotPlatform) {
+        barkElapsedMs += deltaMs
+        val progress = (barkElapsedMs.toFloat() / config.barkMs).coerceIn(0f, 1f)
+        if (progress >= 1f) {
+            barkElapsedMs = NOT_FLIPPING
+            barkProgress = 0f
+            mode = FloconMascotMode.Sit
+            return
+        }
+        mode = FloconMascotMode.Bark
+        barkProgress = progress
+        lift = 4f * config.jumpHeight * BARK_HEIGHT_RATIO * progress * (1f - progress)
+        y = platform.y - lift
     }
 
     private fun advanceBackflip(deltaMs: Long, platform: FloconMascotPlatform) {
@@ -349,6 +475,7 @@ class FloconMascotState(
         pettedMs = 0
         petClockMs = 0
         hopUp = false
+        stopIdleAnimation()
         facingRight = toX > x
         sinceTurnMs = 0
         mode = FloconMascotMode.Jump
@@ -399,6 +526,7 @@ class FloconMascotState(
     private companion object {
         const val NOT_FLIPPING = -1L
         const val BACKFLIP_HEIGHT_RATIO = 0.8f
+        const val BARK_HEIGHT_RATIO = 0.3f
         const val FACING_THRESHOLD = 6f
         const val EDGE_EPSILON = 0.5f
         const val TAIL_MS = 300L

@@ -6,6 +6,7 @@ import io.github.openflocon.domain.messages.repository.MessagesReceiverRepositor
 import io.github.openflocon.domain.settings.repository.MascotPreferencesRepository
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
+import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MascotPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
@@ -13,6 +14,7 @@ import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryI
 import io.github.openflocon.flocondesktop.core.data.settings.TimelinePreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSourcePrefs
+import io.github.openflocon.flocondesktop.core.data.timeline.TimelineScreenshotRepositoryImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -32,6 +34,8 @@ val coreDataModule =
         singleOf(::TimelinePreferencesRepositoryImpl) {
             bind<TimelinePreferencesRepository>()
         }
+        // the constructor parameters have defaults: the temporary folder and the cap
+        single<TimelineScreenshotRepository> { TimelineScreenshotRepositoryImpl() }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()
         }

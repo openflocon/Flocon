@@ -12,8 +12,10 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
 import io.modelcontextprotocol.kotlin.sdk.server.mcpStatelessStreamableHttp
+import io.modelcontextprotocol.kotlin.sdk.types.Icon
 import io.modelcontextprotocol.kotlin.sdk.types.Implementation
 import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
+import java.util.Base64
 
 /**
  * MCP server over Streamable HTTP, available at http://localhost:[port]/mcp
@@ -52,6 +54,7 @@ class FloconMcpServer(
             name = "flocon",
             title = "Flocon",
             version = SERVER_VERSION,
+            icons = serverIcons(),
         ),
         options = ServerOptions(
             capabilities = ServerCapabilities(
@@ -64,11 +67,24 @@ class FloconMcpServer(
         toolProviders.forEach { it.register(toolServer) }
     }
 
+    private fun serverIcons(): List<Icon>? {
+        val bytes = FloconMcpServer::class.java.getResourceAsStream(ICON_RESOURCE)?.use { it.readBytes() }
+            ?: return null
+        return listOf(
+            Icon(
+                src = "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes),
+                mimeType = "image/png",
+                sizes = listOf("128x128"),
+            ),
+        )
+    }
+
     private companion object {
         const val TAG = "FloconMcpServer"
         const val HOST = "127.0.0.1"
         const val PATH = "/mcp"
         const val SERVER_VERSION = "1.0.0"
+        const val ICON_RESOURCE = "/flocon_icon.png"
 
         val INSTRUCTIONS = """
             Flocon is a debugging tool for mobile apps: the Flocon desktop app receives what happens in the mobile app
@@ -107,8 +123,18 @@ class FloconMcpServer(
               start_screen_recording / stop_screen_recording record a video (mp4). Files are saved in the Flocon documents folder,
               open_flocon_folder opens it on the computer and returns its path.
               Screenshot, recording and open_deeplink use adb on Android: they are not available for devices connected over wifi.
+            - What the app did around a moment (before a crash, at 14:32, recently), above the network: get_timeline gives one narrative of every
+              source with the anomalies first (crash, HTTP errors, loops, large responses) and tells which window it chose. Start there, then use
+              the ids of its lines (network:<callId> with get_network_call, crash:<crashId> with get_crash_report). Its search parameter tells
+              whether an event was sent. The times are those of the phone.
+            - To show the user a zone of the timeline (a crash, an error, a loop), show_in_timeline opens it in Flocon, selects the event and centers
+              the graph: give an event id of get_timeline, a time, or nothing. Flocon is never brought to the front: tell the user to go to the
+              Flocon app. Its answer says if a filter of the user hides the event (the filters are never changed) and when the graph cannot
+              draw the event (crashes only appear in the list view).
             - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
+              flocon_navigate_into_desktop_app moves it for the user: displays a screen, selects a device / app, sets the timeline
+              view (graph or list). Flocon is never brought to the front: tell the user to go to the Flocon app to see it.
         """.trimIndent()
     }
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -66,6 +67,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
+import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.PreviewSessionDurationMs
@@ -80,16 +82,19 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineItems
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.CallRail
+import io.github.openflocon.flocondesktop.features.timeline.view.ScreenshotMarkerRow
 import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenuCallbacks
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -115,11 +120,13 @@ fun TimelineScreen(
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
     val graph by viewModel.graph.collectAsStateWithLifecycle()
     val graphSession by viewModel.graphSessionPosition.collectAsStateWithLifecycle()
+    val graphFocus by viewModel.graphFocus.collectAsStateWithLifecycle()
 
     TimelineContent(
         modifier = modifier.fillMaxSize(),
@@ -129,11 +136,13 @@ fun TimelineScreen(
         summary = summary,
         isLive = isLive,
         settings = settings,
+        screenshotsStatus = screenshotsStatus,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
         graph = graph,
         graphSession = graphSession,
+        graphFocus = graphFocus,
         onAction = viewModel::onAction,
     )
 }
@@ -146,6 +155,7 @@ internal fun TimelineContent(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
     settings: TimelineSettingsUiModel,
+    screenshotsStatus: TimelineScreenshotsStatus,
     showEmptyState: Boolean,
     filterPanelOpen: Boolean,
     activeFilterCount: Int,
@@ -153,6 +163,8 @@ internal fun TimelineContent(
     graphSession: GraphSessionUiModel?,
     onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
+    // a zone of the graph asked from outside, shown once
+    graphFocus: GraphFocusUiModel? = null,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
@@ -181,6 +193,12 @@ internal fun TimelineContent(
             .onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) {
                     false
+                } else if (event.key == Key.C && event.isShiftPressed && (event.isCtrlPressed || event.isMetaPressed) &&
+                    selectedKey?.startsWith("${TimelineSource.Network.name}:") == true
+                ) {
+                    // the shortcut shown in the menu of a network call
+                    onAction(TimelineAction.CopySelectedUrl)
+                    true
                 } else if (event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
                     runCatching { searchFocus.requestFocus() }
                     true
@@ -204,6 +222,7 @@ internal fun TimelineContent(
             summary = summary,
             isLive = isLive,
             settings = settings,
+            screenshotsStatus = screenshotsStatus,
             onAction = onAction,
         )
 
@@ -212,6 +231,27 @@ internal fun TimelineContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
+            FloconButton(
+                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
+                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
+                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
+            ) {
+                FloconIcon(imageVector = Icons.Outlined.FilterList)
+                Text(
+                    text = stringResource(Res.string.timeline_filters_toggle),
+                    style = FloconTheme.typography.labelLarge,
+                    maxLines = 1,
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+                if (activeFilterCount > 0) {
+                    Text(
+                        text = activeFilterCount.toString(),
+                        style = FloconTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.accent,
+                    )
+                }
+            }
             FilterBar(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
@@ -235,28 +275,6 @@ internal fun TimelineContent(
                 selectedIndex = if (settings.graph) 1 else 0,
                 onSelect = { onAction(TimelineAction.SetGraph(it == 1)) },
             )
-            // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
-            FloconButton(
-                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
-                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
-                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
-            ) {
-                FloconIcon(imageVector = Icons.Outlined.FilterList)
-                Text(
-                    text = stringResource(Res.string.timeline_filters_toggle),
-                    style = FloconTheme.typography.labelLarge,
-                    maxLines = 1,
-                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
-                )
-                if (activeFilterCount > 0) {
-                    Text(
-                        text = activeFilterCount.toString(),
-                        style = FloconTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.accent,
-                    )
-                }
-            }
         }
 
         if (showEmptyState) {
@@ -314,6 +332,11 @@ internal fun TimelineContent(
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
+                screenshotsEnabled = settings.screenshots,
+                screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
+                onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
+                focus = graphFocus,
+                onFocusApplied = { onAction(TimelineAction.GraphFocusApplied) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
             )
         } else {
@@ -342,7 +365,13 @@ internal fun TimelineContent(
                                 }
                                 TimelineRowMenu(
                                     row = item.row,
-                                    onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                    callbacks = TimelineRowMenuCallbacks(
+                                        onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                        onExclude = { facet, value -> onAction(TimelineAction.Exclude(facet, value)) },
+                                        onExcludePath = { onAction(TimelineAction.ExcludePath(it)) },
+                                        onExcludeSource = { onAction(TimelineAction.ExcludeSource(item.row.source)) },
+                                        onManageExclusions = { onAction(TimelineAction.OpenFilters(item.row.source)) },
+                                    ),
                                 ) {
                                     TimelineRow(
                                         row = item.row,
@@ -358,6 +387,8 @@ internal fun TimelineContent(
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),
@@ -441,6 +472,7 @@ private fun TimelineScreenPreviewContent(isDarkTheme: Boolean) {
             summary = previewTimelineSummaryUiModel(),
             isLive = true,
             settings = previewTimelineSettingsUiModel(),
+            screenshotsStatus = TimelineScreenshotsStatus.Working,
             showEmptyState = false,
             filterPanelOpen = false,
             activeFilterCount = 2,

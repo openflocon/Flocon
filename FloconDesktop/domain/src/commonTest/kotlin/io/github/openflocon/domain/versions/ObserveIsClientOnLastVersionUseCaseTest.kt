@@ -117,7 +117,6 @@ class ObserveIsClientOnLastVersionUseCaseTest {
 
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
-        override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
         override suspend fun clear() {}
         override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = emptyFlow()
     }

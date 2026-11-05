@@ -3,7 +3,7 @@ package io.github.openflocon.flocon
 
 /**
  * Bridge between [FloconBroadcastReceiver] (which must stay in this module, the desktop targets it by name)
- * and the device plugin, which lives in its own module.
+ * and the device handler of the core.
  * The last received serial is kept, so a plugin observing after the broadcast still receives it.
  */
 object FloconDeviceSerial {

@@ -7,7 +7,6 @@ import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
-import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
@@ -77,7 +76,6 @@ internal class AppViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val devicesDelegate: DevicesDelegate,
     private val takeScreenshotUseCase: TakeScreenshotUseCase,
-    private val restartAppUseCase: RestartAppUseCase,
     private val recordVideoDelegate: RecordVideoDelegate,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val logManager: LogManager,
@@ -88,6 +86,7 @@ internal class AppViewModel(
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
     menuNavigator: MenuNavigator,
+    timelineScreenshotsRunner: TimelineScreenshotsRunner,
 ) : ViewModel(messagesServerDelegate, mcpServerDelegate) {
 
     private val contentState = MutableStateFlow(
@@ -142,6 +141,10 @@ internal class AppViewModel(
         )
 
     init {
+        viewModelScope.launch(dispatcherProvider.data) {
+            timelineScreenshotsRunner.run()
+        }
+
         viewModelScope.launch(dispatcherProvider.viewModel) {
             // a feature can ask to display another screen of the menu (ex: from the timeline)
             menuNavigator.requests.collect { screen ->
@@ -227,8 +230,6 @@ internal class AppViewModel(
 
             AppAction.Record -> onRecord()
 
-            AppAction.Restart -> onRestart()
-
             AppAction.Screenshoot -> onTakeScreenshot()
 
             AppAction.OpenFloconFolder -> onOpenFloconFolder()
@@ -297,12 +298,6 @@ internal class AppViewModel(
     private fun onRecord() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             recordVideoDelegate.toggleRecording()
-        }
-    }
-
-    private fun onRestart() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            restartAppUseCase()
         }
     }
 

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
+import flocondesktop.composeapp.generated.resources.settings_data_media_clean_failed
+import flocondesktop.composeapp.generated.resources.settings_data_purge_failed
 import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_server_ports_applied
 import flocondesktop.composeapp.generated.resources.settings_test_failure
@@ -12,9 +14,19 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.maintenance.usecase.CleanMediaFilesUseCase
+import io.github.openflocon.domain.maintenance.usecase.GetDatabaseSizeUseCase
+import io.github.openflocon.domain.maintenance.usecase.GetMediaFilesSizeUseCase
+import io.github.openflocon.domain.maintenance.usecase.ObserveAutoMediaCleanupIntervalUseCase
+import io.github.openflocon.domain.maintenance.usecase.ObserveAutoPurgeIntervalUseCase
+import io.github.openflocon.domain.maintenance.usecase.PurgeDatabaseUseCase
+import io.github.openflocon.domain.maintenance.usecase.SetAutoMediaCleanupIntervalUseCase
+import io.github.openflocon.domain.maintenance.usecase.SetAutoPurgeIntervalUseCase
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
@@ -73,7 +85,18 @@ class SettingsViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val logManager: LogManagerEditable,
     private val serverPortsOverrides: ServerPortsOverrides,
+    private val getDatabaseSizeUseCase: GetDatabaseSizeUseCase,
+    private val purgeDatabaseUseCase: PurgeDatabaseUseCase,
+    observeAutoPurgeIntervalUseCase: ObserveAutoPurgeIntervalUseCase,
+    private val setAutoPurgeIntervalUseCase: SetAutoPurgeIntervalUseCase,
+    private val getMediaFilesSizeUseCase: GetMediaFilesSizeUseCase,
+    private val cleanMediaFilesUseCase: CleanMediaFilesUseCase,
+    observeAutoMediaCleanupIntervalUseCase: ObserveAutoMediaCleanupIntervalUseCase,
+    private val setAutoMediaCleanupIntervalUseCase: SetAutoMediaCleanupIntervalUseCase,
 ) : ViewModel() {
+
+    private val _dataState = MutableStateFlow(DataUiState())
+    val dataState = _dataState.asStateFlow()
 
     private val _adbPathInput = MutableStateFlow("")
     val adbPathInput = _adbPathInput.asStateFlow()
@@ -157,6 +180,16 @@ class SettingsViewModel(
                 _serverPortsForm.update {
                     it.copy(websocketPort = ports.websocketPort.toString(), httpPort = ports.httpPort.toString())
                 }
+            }
+        }
+        viewModelScope.launch {
+            observeAutoPurgeIntervalUseCase().collect { interval ->
+                _dataState.update { it.copy(autoPurgeInterval = interval) }
+            }
+        }
+        viewModelScope.launch {
+            observeAutoMediaCleanupIntervalUseCase().collect { interval ->
+                _dataState.update { it.copy(autoMediaCleanupInterval = interval) }
             }
         }
         viewModelScope.launch {
@@ -372,6 +405,93 @@ class SettingsViewModel(
             }
             OpenFile.openFileOnDesktop(folder.absolutePath).alsoFailure {
                 feedbackDisplayer.displayMessage(it.message)
+            }
+        }
+    }
+
+    /** Computes the size of the database, called each time the Data screen is displayed. */
+    fun refreshDatabaseSize() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val size = getDatabaseSizeUseCase()
+            _dataState.update { it.copy(databaseSizeBytes = size) }
+        }
+    }
+
+    /** Computes the size of the saved screenshots and recordings, called each time the Data screen is displayed. */
+    fun refreshMediaSize() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val size = getMediaFilesSizeUseCase()
+            _dataState.update {
+                it.copy(
+                    screenshotsSizeBytes = size.screenshotsBytes,
+                    recordingsSizeBytes = size.recordingsBytes,
+                )
+            }
+        }
+    }
+
+    fun onAutoMediaCleanupIntervalChanged(interval: AutoPurgeInterval) {
+        viewModelScope.launch {
+            setAutoMediaCleanupIntervalUseCase(interval)
+        }
+    }
+
+    fun onMediaCleanupIntervalChanged(interval: PurgeInterval) {
+        _dataState.update { it.copy(mediaCleanupInterval = interval) }
+    }
+
+    fun cleanMediaFiles() {
+        if (_dataState.value.isCleaningMedia) return
+        val interval = _dataState.value.mediaCleanupInterval
+        _dataState.update { it.copy(isCleaningMedia = true) }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            try {
+                cleanMediaFilesUseCase(interval)
+                logManager.d(TAG, "Screenshots and recordings cleaned: ${interval.name}", domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+            } catch (t: Throwable) {
+                Logger.e(TAG, t) { "Media files cleanup failed" }
+                logManager.e(TAG, "Media files cleanup failed", t, domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(
+                    message = t.localizedMessage ?: getString(Res.string.settings_data_media_clean_failed),
+                    type = FeedbackDisplayer.MessageType.Error,
+                )
+            } finally {
+                _dataState.update { it.copy(isCleaningMedia = false) }
+                refreshMediaSize()
+            }
+        }
+    }
+
+    fun onAutoPurgeIntervalChanged(interval: AutoPurgeInterval) {
+        viewModelScope.launch {
+            setAutoPurgeIntervalUseCase(interval)
+        }
+    }
+
+    fun onPurgeIntervalChanged(interval: PurgeInterval) {
+        _dataState.update { it.copy(purgeInterval = interval) }
+    }
+
+    fun purgeDatabase() {
+        if (_dataState.value.isPurging) return
+        val interval = _dataState.value.purgeInterval
+        _dataState.update { it.copy(isPurging = true) }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            try {
+                purgeDatabaseUseCase(interval)
+                logManager.d(TAG, "Database purged: ${interval.name}", domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+            } catch (t: Throwable) {
+                Logger.e(TAG, t) { "Database purge failed" }
+                logManager.e(TAG, "Database purge failed", t, domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(
+                    message = t.localizedMessage ?: getString(Res.string.settings_data_purge_failed),
+                    type = FeedbackDisplayer.MessageType.Error,
+                )
+            } finally {
+                _dataState.update { it.copy(isPurging = false) }
+                refreshDatabaseSize()
             }
         }
     }
