@@ -145,7 +145,6 @@ import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
@@ -175,7 +174,6 @@ import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 // ---------------------------------------------------------------------------
@@ -1498,9 +1496,20 @@ private fun <T> LogFilterGroup(
 private fun AboutPane(
     modifier: Modifier = Modifier,
 ) {
-    val observeSdkVersion = koinInject<ObserveCurrentDeviceFloconSdkVersionNameUseCase>()
-    val sdkVersion by remember(observeSdkVersion) { observeSdkVersion() }.collectAsState(null)
+    val viewModel: AboutViewModel = koinViewModel()
+    val sdkVersion by viewModel.sdkVersion.collectAsStateWithLifecycle()
 
+    AboutPane(
+        sdkVersion = sdkVersion,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun AboutPane(
+    sdkVersion: String?,
+    modifier: Modifier = Modifier,
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
@@ -1511,7 +1520,7 @@ private fun AboutPane(
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colors.ink,
             )
-            sdkVersion?.takeIf { it.isNotBlank() }?.let {
+            sdkVersion?.let {
                 Text(
                     text = stringResource(Res.string.about_sdk_version, it),
                     style = FloconTheme.typography.bodySmall,
