@@ -41,7 +41,7 @@ interface SettingsRepository {
 
     suspend fun setLastSeenReleaseNotesVersion(version: String)
 
-    val serverPorts: Flow<ServerPortsDomainModel>
+    val savedServerPorts: Flow<ServerPortsDomainModel>
 
     suspend fun setServerPorts(ports: ServerPortsDomainModel)
 

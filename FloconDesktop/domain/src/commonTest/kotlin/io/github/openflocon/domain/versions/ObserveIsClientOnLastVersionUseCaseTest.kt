@@ -74,7 +74,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
-        override val serverPorts: Flow<ServerPortsDomainModel> = emptyFlow()
+        override val savedServerPorts: Flow<ServerPortsDomainModel> = emptyFlow()
         override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)

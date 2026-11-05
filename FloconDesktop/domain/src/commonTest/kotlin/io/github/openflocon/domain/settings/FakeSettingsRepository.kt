@@ -34,10 +34,10 @@ internal class FakeSettingsRepository : SettingsRepository {
     override fun getLastSeenReleaseNotesVersion(): String? = null
     override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
     override val adbPath: Flow<String?> = emptyFlow()
-    val savedServerPorts = MutableStateFlow(ServerPortsDomainModel())
-    override val serverPorts: Flow<ServerPortsDomainModel> = savedServerPorts
+    val savedPorts = MutableStateFlow(ServerPortsDomainModel())
+    override val savedServerPorts: Flow<ServerPortsDomainModel> = savedPorts
     override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
-        savedServerPorts.value = ports
+        savedPorts.value = ports
     }
     override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
     override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)

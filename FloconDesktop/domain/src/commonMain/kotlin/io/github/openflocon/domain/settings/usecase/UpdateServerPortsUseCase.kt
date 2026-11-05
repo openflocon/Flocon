@@ -5,7 +5,9 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import kotlinx.coroutines.flow.first
 
 enum class ServerPortsError {
     // not in 1024..65535
@@ -23,11 +25,19 @@ enum class ServerPortsError {
 
 class UpdateServerPortsUseCase(
     private val settingsRepository: SettingsRepository,
+    private val overrides: ServerPortsOverrides,
 ) {
     suspend operator fun invoke(ports: ServerPortsDomainModel): Either<ServerPortsError, Unit> {
         val error = validate(ports)
         if (error != null) return Failure(error)
-        settingsRepository.setServerPorts(ports)
+        // an overridden port is never persisted, the saved one is kept
+        val saved = settingsRepository.savedServerPorts.first()
+        settingsRepository.setServerPorts(
+            ServerPortsDomainModel(
+                websocketPort = if (overrides.websocketPort != null) saved.websocketPort else ports.websocketPort,
+                httpPort = if (overrides.httpPort != null) saved.httpPort else ports.httpPort,
+            ),
+        )
         return Success(Unit)
     }
 
