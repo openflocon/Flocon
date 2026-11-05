@@ -13,6 +13,7 @@ import io.github.openflocon.domain.device.deviceModule
 import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
+import io.github.openflocon.domain.maintenance.maintenanceModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
 import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
@@ -43,6 +44,7 @@ val domainModule = module {
         imagesModule,
         networkModule,
         settingsModule,
+        maintenanceModule,
         sharedPreferencesModule,
         tableModule,
         messagesModule,
