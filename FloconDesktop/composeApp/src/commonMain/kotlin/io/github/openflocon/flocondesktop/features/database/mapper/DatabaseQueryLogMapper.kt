@@ -85,16 +85,11 @@ fun DatabaseQueryLogDomainModel.toUi(currentAppInstance: Long?) = DatabaseQueryU
 
 private fun formatTime(timestamp: Long): String = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
 
-private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? = if (model.isTransaction) {
-    DatabaseQueryUiModel.Type.Transaction
-} else if (model.sqlQuery.startsWith("SELECT")) {
-    DatabaseQueryUiModel.Type.Select
-} else if (model.sqlQuery.startsWith("INSERT")) {
-    DatabaseQueryUiModel.Type.Insert
-} else if (model.sqlQuery.startsWith("UPDATE")) {
-    DatabaseQueryUiModel.Type.Update
-} else if (model.sqlQuery.startsWith("DELETE")) {
-    DatabaseQueryUiModel.Type.Delete
-} else {
-    null
+private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? = when {
+    model.isTransaction -> DatabaseQueryUiModel.Type.Transaction
+    model.sqlQuery.startsWith("SELECT") -> DatabaseQueryUiModel.Type.Select
+    model.sqlQuery.startsWith("INSERT") -> DatabaseQueryUiModel.Type.Insert
+    model.sqlQuery.startsWith("UPDATE") -> DatabaseQueryUiModel.Type.Update
+    model.sqlQuery.startsWith("DELETE") -> DatabaseQueryUiModel.Type.Delete
+    else -> null
 }
