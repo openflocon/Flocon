@@ -435,7 +435,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
-| `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
+| `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). Each query has a `transactionId` when it ran in a transaction; pass `transactionId` to only get the queries of one transaction. |
 | `flocon_navigate_into_desktop_app` | Moves the Flocon Desktop window for you: displays a screen (`screen`, e.g. `network`, `timeline`, `feature_flags`), selects a device and app (`deviceId`, `packageName`: this changes what you selected in the app) and sets the timeline view (`timelineView`: `graph` or `list`, saved in your preferences). Flocon is not brought to the front: the answer asks you to go to the Flocon app to see it. At least one parameter is required, and nothing is changed if one of them is invalid. |
 
 ---
