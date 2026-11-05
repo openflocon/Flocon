@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -127,7 +128,9 @@ data class MenuScene(
                             .fillMaxHeight()
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
-                            scene.content()
+                            Crossfade(scene) {
+                                it.content()
+                            }
                         }
                     }
                 }
