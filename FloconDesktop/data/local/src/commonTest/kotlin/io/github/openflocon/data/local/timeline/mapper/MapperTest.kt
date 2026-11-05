@@ -8,6 +8,7 @@ import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntit
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -228,5 +229,28 @@ class MapperTest {
         )
 
         assertNull(row.toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `mapperMapsLogKindToSourceLogWithLevel`() {
+        val event = TimelineRowEntity(
+            kind = "log",
+            id = "42",
+            ts = 1100L,
+            title = "checkout failed",
+            subtitle = "billing",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+            hasError = true,
+            level = "ERROR",
+        ).toDomain()
+
+        assertEquals(TimelineSource.Log, event.source)
+        assertEquals(TimelineLogLevel.Error, event.level)
+        assertEquals("42", event.id)
+        assertTrue(event.hasError)
     }
 }

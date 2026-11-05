@@ -5,15 +5,22 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
+import flocondesktop.composeapp.generated.resources.settings_data_purge_failed
 import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.maintenance.usecase.GetDatabaseSizeUseCase
+import io.github.openflocon.domain.maintenance.usecase.ObserveAutoPurgeIntervalUseCase
+import io.github.openflocon.domain.maintenance.usecase.PurgeDatabaseUseCase
+import io.github.openflocon.domain.maintenance.usecase.SetAutoPurgeIntervalUseCase
 import io.github.openflocon.domain.menu.usecase.ObserveMenuPreferencesUseCase
 import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -64,7 +71,14 @@ class SettingsViewModel(
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
     private val logManager: LogManagerEditable,
+    private val getDatabaseSizeUseCase: GetDatabaseSizeUseCase,
+    private val purgeDatabaseUseCase: PurgeDatabaseUseCase,
+    observeAutoPurgeIntervalUseCase: ObserveAutoPurgeIntervalUseCase,
+    private val setAutoPurgeIntervalUseCase: SetAutoPurgeIntervalUseCase,
 ) : ViewModel() {
+
+    private val _dataState = MutableStateFlow(DataUiState())
+    val dataState = _dataState.asStateFlow()
 
     private val _adbPathInput = MutableStateFlow("")
     val adbPathInput = _adbPathInput.asStateFlow()
@@ -130,6 +144,11 @@ class SettingsViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            observeAutoPurgeIntervalUseCase().collect { interval ->
+                _dataState.update { it.copy(autoPurgeInterval = interval) }
+            }
+        }
         viewModelScope.launch {
             // Utiliser GlobalScope ici pour la simplicité de l'exemple, mais préférez un scope dédié
             settingsRepository.adbPath.collect { path ->
@@ -297,6 +316,47 @@ class SettingsViewModel(
             }
             OpenFile.openFileOnDesktop(folder.absolutePath).alsoFailure {
                 feedbackDisplayer.displayMessage(it.message)
+            }
+        }
+    }
+
+    /** Computes the size of the database, called each time the Data screen is displayed. */
+    fun refreshDatabaseSize() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val size = getDatabaseSizeUseCase()
+            _dataState.update { it.copy(databaseSizeBytes = size) }
+        }
+    }
+
+    fun onAutoPurgeIntervalChanged(interval: AutoPurgeInterval) {
+        viewModelScope.launch {
+            setAutoPurgeIntervalUseCase(interval)
+        }
+    }
+
+    fun onPurgeIntervalChanged(interval: PurgeInterval) {
+        _dataState.update { it.copy(purgeInterval = interval) }
+    }
+
+    fun purgeDatabase() {
+        if (_dataState.value.isPurging) return
+        val interval = _dataState.value.purgeInterval
+        _dataState.update { it.copy(isPurging = true) }
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            try {
+                purgeDatabaseUseCase(interval)
+                logManager.d(TAG, "Database purged: ${interval.name}", domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(getString(Res.string.general_success))
+            } catch (t: Throwable) {
+                Logger.e(TAG, t) { "Database purge failed" }
+                logManager.e(TAG, "Database purge failed", t, domain = LogDomain.Default)
+                feedbackDisplayer.displayMessage(
+                    message = t.localizedMessage ?: getString(Res.string.settings_data_purge_failed),
+                    type = FeedbackDisplayer.MessageType.Error,
+                )
+            } finally {
+                _dataState.update { it.copy(isPurging = false) }
+                refreshDatabaseSize()
             }
         }
     }

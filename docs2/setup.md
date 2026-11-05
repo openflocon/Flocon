@@ -180,6 +180,7 @@ The available plugins:
 | `FloconFeatureFlags` | `flocon-feature-flags` | [Feature flags](featureflags.md) |
 | `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
 | `FloconWebView` | `flocon-webview` | [WebViews](webview.md) |
+| `FloconTimeline` | `flocon-timeline` | [Timeline](timeline.md#logs-from-your-app) |
 
 !!! tip "Logs"
     Set `FloconLogger.enabled = true` to see what Flocon does (connection, plugins not installed, ...).

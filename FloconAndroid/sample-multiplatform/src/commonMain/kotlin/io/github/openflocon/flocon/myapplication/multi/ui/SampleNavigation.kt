@@ -19,6 +19,7 @@ import io.github.openflocon.flocon.myapplication.multi.ui.screens.HomeScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.ImagesScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.NetworkScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.PreferencesScreen
+import io.github.openflocon.flocon.myapplication.multi.ui.screens.TimelineScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.screens.WebViewScreen
 
 /** A destination of the sample: the home, then one route per plugin screen. */
@@ -35,6 +36,7 @@ sealed interface SampleRoute {
     data object Dashboard : SampleRoute
     data object Deeplinks : SampleRoute
     data object Images : SampleRoute
+    data object Timeline : SampleRoute
     data object Crash : SampleRoute
     data object Connection : SampleRoute
 }
@@ -52,6 +54,7 @@ val SampleScreen.route: SampleRoute
         SampleScreen.Dashboard -> SampleRoute.Dashboard
         SampleScreen.Deeplinks -> SampleRoute.Deeplinks
         SampleScreen.Images -> SampleRoute.Images
+        SampleScreen.Timeline -> SampleRoute.Timeline
         SampleScreen.Crash -> SampleRoute.Crash
     }
 
@@ -67,6 +70,8 @@ fun rememberSampleBackStack(): SnapshotStateList<SampleRoute> =
 @Composable
 fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
     val onBack: () -> Unit = { if (backStack.size > 1) backStack.removeLast() }
+
+    LogNavigationToTimeline(backStack)
 
     NavDisplay(
         backStack = backStack,
@@ -89,6 +94,7 @@ fun SampleNavigation(backStack: SnapshotStateList<SampleRoute>) {
             entry<SampleRoute.Dashboard> { DashboardScreen(onBack) }
             entry<SampleRoute.Deeplinks> { DeeplinksScreen(onBack) }
             entry<SampleRoute.Images> { ImagesScreen(onBack) }
+            entry<SampleRoute.Timeline> { TimelineScreen(onBack) }
             entry<SampleRoute.Crash> { CrashScreen(onBack) }
             entry<SampleRoute.Connection> { ConnectionScreen(onBack) }
         },

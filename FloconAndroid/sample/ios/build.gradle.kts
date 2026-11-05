@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.analytics.analytics)
             implementation(projects.accessibility.accessibility)
             implementation(projects.featureflags.featureflags)
+            implementation(projects.timeline.timeline)
             implementation(projects.tables.tables)
             implementation(projects.sharedprefs.sharedprefs)
             implementation(projects.files.files)

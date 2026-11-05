@@ -49,7 +49,7 @@ internal data class GetTimelineInput(
     val from: String? = null,
     @McpDescription("End of the mode range, same formats as `at`. Defaults to the last event.")
     val to: String? = null,
-    @McpDescription("An event id of a previous answer (source:id, for example network:abc): reads around that event.")
+    @McpDescription("An event id of a previous answer (source:id, for example network:abc): reads around that event. Not with mode, at, from or to.")
     val eventId: String? = null,
     @McpDescription("Half width in seconds of the window for at and eventId. Default $DEFAULT_AROUND_SECONDS.")
     val aroundSeconds: Int = DEFAULT_AROUND_SECONDS,

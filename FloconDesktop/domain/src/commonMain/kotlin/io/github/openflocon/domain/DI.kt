@@ -13,6 +13,7 @@ import io.github.openflocon.domain.device.deviceModule
 import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
+import io.github.openflocon.domain.maintenance.maintenanceModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
 import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
@@ -22,6 +23,7 @@ import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
 import io.github.openflocon.domain.timeline.timelineDomainModule
+import io.github.openflocon.domain.timelinelog.timelineLogModule
 import io.github.openflocon.domain.versions.versionModule
 import io.github.openflocon.domain.webview.webViewDomainModule
 import org.koin.dsl.module
@@ -42,6 +44,7 @@ val domainModule = module {
         imagesModule,
         networkModule,
         settingsModule,
+        maintenanceModule,
         sharedPreferencesModule,
         tableModule,
         messagesModule,
@@ -51,6 +54,7 @@ val domainModule = module {
         menuModule,
         screenModule,
         timelineDomainModule,
+        timelineLogModule,
         webViewDomainModule,
     )
 }

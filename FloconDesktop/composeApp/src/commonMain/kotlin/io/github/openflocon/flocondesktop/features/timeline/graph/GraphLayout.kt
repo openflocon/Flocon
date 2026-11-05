@@ -49,6 +49,21 @@ internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphVie
     return GraphViewport(startMs = 0.0, pxPerMs = (trackWidthPx / duration).toDouble().coerceAtLeast(MIN_PX_PER_MS))
 }
 
+/**
+ * The graph showing the zone [fromMs]..[toMs] centered, with a margin on each side. A zone shorter than [MIN_FOCUS_WIDTH_MS]
+ * is widened to it, and the zoom stays between its limits: the zone remains centered.
+ */
+internal fun focusedViewport(fromMs: Long, toMs: Long, trackWidthPx: Float): GraphViewport {
+    val width = max(toMs - fromMs, MIN_FOCUS_WIDTH_MS)
+    val visibleMs = width * (1 + 2 * FOCUS_MARGIN)
+    val centerMs = (fromMs + toMs) / 2.0
+    val pxPerMs = (trackWidthPx / visibleMs).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
+    return GraphViewport(startMs = max(centerMs - trackWidthPx / pxPerMs / 2, MIN_START_MS), pxPerMs = pxPerMs)
+}
+
+private const val FOCUS_MARGIN = 0.2
+private const val MIN_FOCUS_WIDTH_MS = 2_000L
+
 // the most the graph shows before the start of the session, the app start is at 0
 internal const val MIN_START_MS = -1_000.0
 internal const val MIN_PX_PER_MS = 0.0005

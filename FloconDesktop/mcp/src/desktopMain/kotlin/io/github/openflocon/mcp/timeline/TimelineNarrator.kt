@@ -3,6 +3,7 @@ package io.github.openflocon.mcp.timeline
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -34,6 +35,8 @@ internal data class TimelineNarrative(
     val lines: List<String>,
     val anomalies: List<String>,
     val anomalyCount: Int,
+    // the id of the event of the most serious anomaly (the first call of a loop), null without anomaly
+    val mainAnomalyId: String?,
     // null when no search was asked
     val found: Boolean?,
     val searchMatches: List<String>,
@@ -51,7 +54,7 @@ internal class TimelineNarrator(zone: ZoneId) {
     private val clock = DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone(zone)
 
     /** An anomaly: the lowest rank is the most serious kind */
-    private class Anomaly(val rank: Int, val timeMs: Long, val text: String)
+    private class Anomaly(val rank: Int, val timeMs: Long, val text: String, val eventId: String)
 
     /** A line of the narrative, with the time of its first event to keep the nearest ones when the answer is capped */
     private class Line(val timeMs: Long, val text: String, val noise: Boolean)
@@ -91,6 +94,7 @@ internal class TimelineNarrator(zone: ZoneId) {
             lines = kept.map { it.text },
             anomalies = anomalies.map { it.text },
             anomalyCount = allAnomalies.size,
+            mainAnomalyId = allAnomalies.firstOrNull()?.eventId,
             found = matches?.isNotEmpty(),
             searchMatches = matches.orEmpty(),
             truncated = lines.size > kept.size,
@@ -140,7 +144,12 @@ internal class TimelineNarrator(zone: ZoneId) {
     // events with the same key are the same thing happening again; null: never folded (a crash, an app start)
     private fun foldKey(event: TimelineEventDomainModel): String? = when (event.source) {
         TimelineSource.Network -> "net|${networkKey(event)}|${outcomeOf(event)}"
+
         TimelineSource.Crash, TimelineSource.AppStart -> null
+
+        // an error log is not folded with an info log of the same text
+        TimelineSource.Log -> "log|${event.subtitle}|${event.level}|${event.title}"
+
         else -> "${event.source}|${event.title}"
     }
 
@@ -163,24 +172,28 @@ internal class TimelineNarrator(zone: ZoneId) {
             val id = idOf(event)
             if (event.source == TimelineSource.Crash) {
                 val detail = event.subtitle?.takeIf { it.isNotBlank() }?.let { ": ${it.truncate(80)}" }.orEmpty()
-                found.add(Anomaly(0, event.timestamp, "CRASH ${event.title}$detail at $at [$id]"))
+                found.add(Anomaly(0, event.timestamp, "CRASH ${event.title}$detail at $at [$id]", id))
+            }
+            if (event.source == TimelineSource.Log && event.level == TimelineLogLevel.Error) {
+                val type = event.subtitle?.takeIf { it.isNotBlank() }?.let { " $it" }.orEmpty()
+                found.add(Anomaly(2, event.timestamp, "ERROR LOG$type: ${event.title.truncate(TITLE_MAX)} at $at [$id]", id))
             }
             if (event.source == TimelineSource.Network) {
                 val call = "${event.method.orEmpty()} ${pathOf(event.title)}".trim()
                 val status = event.statusCode
                 if (status != null && status >= 400) {
-                    found.add(Anomaly(2, event.timestamp, "HTTP $status $call at $at [$id]"))
+                    found.add(Anomaly(2, event.timestamp, "HTTP $status $call at $at [$id]", id))
                 } else if (event.hasError) {
-                    found.add(Anomaly(2, event.timestamp, "FAILED $call at $at [$id]"))
+                    found.add(Anomaly(2, event.timestamp, "FAILED $call at $at [$id]", id))
                 }
                 val bytes = event.responseByteSize
                 if (bytes != null && bytes >= LARGE_RESPONSE_BYTES) {
                     val kind = if (event.isImage) "LARGE image" else "LARGE"
-                    found.add(Anomaly(3, event.timestamp, "$kind ${formatBytes(bytes)} response $call at $at [$id]"))
+                    found.add(Anomaly(3, event.timestamp, "$kind ${formatBytes(bytes)} response $call at $at [$id]", id))
                 }
             }
         }
-        loopsOf(events).forEach { found.add(Anomaly(1, it.first, it.second)) }
+        loopsOf(events).forEach { found.add(it) }
         return found.sortedWith(compareBy({ it.rank }, { it.timeMs }))
     }
 
@@ -194,8 +207,8 @@ internal class TimelineNarrator(zone: ZoneId) {
     }
 
     // the same call (method + normalized path) at least LOOP_MIN_COUNT times within LOOP_WINDOW_MS, once per burst
-    private fun loopsOf(events: List<TimelineEventDomainModel>): List<Pair<Long, String>> {
-        val loops = ArrayList<Pair<Long, String>>()
+    private fun loopsOf(events: List<TimelineEventDomainModel>): List<Anomaly> {
+        val loops = ArrayList<Anomaly>()
         events.filter { it.source == TimelineSource.Network }.groupBy { networkKey(it) }.forEach { (_, calls) ->
             var start = 0
             while (start < calls.size) {
@@ -209,8 +222,13 @@ internal class TimelineNarrator(zone: ZoneId) {
                     val last = calls[end]
                     val call = "${first.method.orEmpty()} ${normalizedPathOf(first.title)}".trim()
                     loops.add(
-                        first.timestamp to "LOOP $count× $call in ${formatDuration((last.timestamp - first.timestamp).toDouble())} " +
-                            "from ${time(first.timestamp)} [${idOf(first)} … ${idOf(last)}]"
+                        Anomaly(
+                            rank = 1,
+                            timeMs = first.timestamp,
+                            text = "LOOP $count× $call in ${formatDuration((last.timestamp - first.timestamp).toDouble())} " +
+                                "from ${time(first.timestamp)} [${idOf(first)} … ${idOf(last)}]",
+                            eventId = idOf(first),
+                        )
                     )
                     start = end + 1
                 } else {
@@ -236,6 +254,8 @@ internal class TimelineNarrator(zone: ZoneId) {
                 item.events.mapNotNull { it.responseByteSize }.maxOrNull()?.let { "largest ${formatBytes(it)}" },
             ).joinToString("  ")
 
+            TimelineSource.Log -> "${item.events.size}× ${logText(first)}"
+
             else -> "${item.events.size}× ${first.title.truncate(TITLE_MAX)}"
         }
         return Line(
@@ -256,6 +276,8 @@ internal class TimelineNarrator(zone: ZoneId) {
                 event.responseByteSize?.let(::formatBytes),
             ).joinToString("  ")
 
+            TimelineSource.Log -> logText(event)
+
             else -> {
                 val subtitle = event.subtitle?.takeIf { it.isNotBlank() }?.let { " (${it.truncate(SUBTITLE_MAX)})" }.orEmpty()
                 "${event.title.truncate(TITLE_MAX)}$subtitle"
@@ -266,6 +288,13 @@ internal class TimelineNarrator(zone: ZoneId) {
             text = "${gap(gapMs)}  ${time(event.timestamp)}  ${labelOf(event.source)}  $what  [${idOf(event)}]",
             noise = event.source == TimelineSource.Database,
         )
+    }
+
+    // "navigation: HomeScreen", "checkout [ERROR]: payment declined": the type, the level when the log has one, the value
+    private fun logText(event: TimelineEventDomainModel): String {
+        val type = event.subtitle?.takeIf { it.isNotBlank() }
+        val level = event.level?.let { " [${it.name.uppercase(Locale.ROOT)}]" }.orEmpty()
+        return "${type.orEmpty()}$level: ${event.title.truncate(TITLE_MAX)}".trimStart(':', ' ')
     }
 
     private fun statusOf(event: TimelineEventDomainModel): String? = when {
@@ -290,6 +319,7 @@ internal class TimelineNarrator(zone: ZoneId) {
         TimelineSource.Table -> "TABLE"
         TimelineSource.Deeplink -> "LINK"
         TimelineSource.Adb -> "ADB"
+        TimelineSource.Log -> "LOG"
         TimelineSource.AppStart -> "START"
     }
 

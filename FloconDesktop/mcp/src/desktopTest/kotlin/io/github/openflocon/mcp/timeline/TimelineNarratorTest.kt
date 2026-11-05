@@ -3,6 +3,7 @@ package io.github.openflocon.mcp.timeline
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.test.Test
@@ -52,6 +53,16 @@ class TimelineNarratorTest {
         title = title,
         subtitle = subtitle,
         appInstance = null,
+    )
+
+    private fun log(id: String, offsetMs: Long, type: String, value: String, level: TimelineLogLevel? = null) = TimelineEventDomainModel(
+        id = id,
+        source = TimelineSource.Log,
+        timestamp = base + offsetMs,
+        title = value,
+        subtitle = type,
+        appInstance = null,
+        level = level,
     )
 
     // newest first, like the repository
@@ -201,6 +212,57 @@ class TimelineNarratorTest {
     }
 
     @Test
+    fun `a navigation log tells its type and value, a tagged error log is an anomaly`() {
+        val narrative = narrate(
+            listOf(
+                log("1", 0, "navigation", "HomeScreen"),
+                log("2", 500, "checkout", "payment declined", TimelineLogLevel.Error),
+                log("3", 900, "checkout", "retrying", TimelineLogLevel.Warning),
+            ),
+        )
+
+        assertTrue(narrative.lines[0].contains("LOG  navigation: HomeScreen  [log:1]"), narrative.lines[0])
+        assertTrue(narrative.lines[1].contains("LOG  checkout [ERROR]: payment declined  [log:2]"), narrative.lines[1])
+        assertTrue(narrative.lines[2].contains("checkout [WARNING]: retrying"), narrative.lines[2])
+        assertEquals(1, narrative.anomalyCount)
+        assertTrue(narrative.anomalies.single().startsWith("ERROR LOG checkout: payment declined"), narrative.anomalies.toString())
+        assertTrue(narrative.anomalies.single().endsWith("[log:2]"), narrative.anomalies.toString())
+    }
+
+    @Test
+    fun `identical logs fold, an error log is not folded with an info log`() {
+        val narrative = narrate(
+            listOf(
+                log("1", 0, "userAction", "tap_buy"),
+                log("2", 400, "userAction", "tap_buy"),
+                log("3", 800, "userAction", "tap_buy"),
+                log("4", 1_000, "userAction", "tap_buy", TimelineLogLevel.Error),
+            ),
+        )
+
+        assertEquals(2, narrative.lines.size)
+        assertTrue(narrative.lines[0].contains("3× userAction: tap_buy"), narrative.lines[0])
+        assertTrue(narrative.lines[0].contains("[log:1 … log:3]"), narrative.lines[0])
+    }
+
+    @Test
+    fun `search matches the value and the type of a log and can be limited to the log source`() {
+        val events = listOf(
+            log("1", 0, "navigation", "CheckoutScreen"),
+            log("2", 500, "lifecycle", "background"),
+            event("a", 900, TimelineSource.Analytics, "checkout_failed"),
+        )
+
+        val byValue = narrate(events, search = TimelineSearch("checkout", TimelineSource.Log))
+        val byType = narrate(events, search = TimelineSearch("lifecycle", null))
+        val wrongSource = narrate(events, search = TimelineSearch("checkout_failed", TimelineSource.Log))
+
+        assertEquals(1, byValue.searchMatches.size)
+        assertTrue(byValue.searchMatches.single().endsWith("[log:1]"))
+        assertEquals(listOf(true, false), listOf(byType.found, wrongSource.found))
+    }
+
+    @Test
     fun `the anomalies are the first thing listed and are limited to 20`() {
         val narrative = narrate((0 until 30).map { event("$it", it * 1_000L, TimelineSource.Crash, "Boom$it") })
 
@@ -328,5 +390,31 @@ class TimelineNarratorTest {
 
         assertEquals(listOf("[network:n0]", "[database:d0]", "[database:d1]"), narrative.lines.map { it.substringAfterLast("  ") })
         assertEquals(3, narrative.omittedCount)
+    }
+
+    @Test
+    fun `the main anomaly is the crash, before the errors`() {
+        val narrative = narrate(listOf(net("e", 0, status = 500), event("c1", 1_000, TimelineSource.Crash, "Boom")))
+
+        assertEquals("crash:c1", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `without a crash the main anomaly is the first http error`() {
+        val narrative = narrate(listOf(net("ok", 0), net("e", 5_000, path = "/v1/cart", status = 500)))
+
+        assertEquals("network:e", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `the main anomaly of a loop is its first call`() {
+        val narrative = narrate((0 until 5).map { net("c$it", it * 2_000L) })
+
+        assertEquals("network:c0", narrative.mainAnomalyId)
+    }
+
+    @Test
+    fun `without an anomaly there is no main one`() {
+        assertNull(narrate(listOf(net("a", 0))).mainAnomalyId)
     }
 }

@@ -1,11 +1,11 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode inspect the network calls captured by Flocon, mock them, and read the files, analytics events, feature flags, crashes and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI** or **Antigravity** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI**, **Antigravity**, **GitHub Copilot**, **Android Studio**, **Windsurf**, **Zed** or **OpenCode** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events, feature flags and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
@@ -151,6 +151,93 @@ Declare the Flocon server in your agent configuration. Flocon Desktop must be ru
     !!! note
         Antigravity uses `serverUrl` for remote HTTP servers, not `url` nor `httpUrl`.
 
+=== "VS Code / Copilot"
+
+    In `.vscode/mcp.json` (project), or with **MCP: Open User Configuration** (global):
+
+    ```json
+    {
+      "servers": {
+        "flocon": {
+          "type": "http",
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        VS Code uses `servers`, not `mcpServers`. The tools are then available in the Copilot Chat agent mode.
+
+=== "Android Studio"
+
+    Gemini in Android Studio (Agent mode): in the IDE settings, enable MCP servers in the AI section, then paste in the configuration field:
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "httpUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    Type `/mcp` in the chat to check that the Flocon tools are available.
+
+    !!! note
+        Android Studio uses `httpUrl` and only supports remote HTTP servers, which is the case of Flocon.
+
+=== "Windsurf"
+
+    Edit `~/.codeium/windsurf/mcp_config.json` (or use the MCP settings of the Cascade panel):
+
+    ```json
+    {
+      "mcpServers": {
+        "flocon": {
+          "serverUrl": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        Windsurf uses `serverUrl` for remote HTTP servers.
+
+=== "Zed"
+
+    In `settings.json` (**zed: open settings file**):
+
+    ```json
+    {
+      "context_servers": {
+        "flocon": {
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
+    !!! note
+        Zed uses `context_servers`, not `mcpServers`.
+
+=== "OpenCode"
+
+    In `opencode.json` (project) or `~/.config/opencode/opencode.json` (global):
+
+    ```json
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "mcp": {
+        "flocon": {
+          "type": "remote",
+          "url": "http://localhost:9042/mcp"
+        }
+      }
+    }
+    ```
+
 ---
 
 ## Examples
@@ -271,6 +358,28 @@ Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_err
 
 Recording started on the Pixel 9. I tapped through the checkout, then stopped the recording: the video is saved at `~/Documents/Flocon/ScreenRecord/record_io.flocon.sample_1736000000000.mp4`. A screenshot of the failure shows an empty payment form with no error message, while `POST /payments` returned a **402**. The error is not displayed by the app.
 
+---
+
+**Prompt**
+
+> What happened in the app just before it crashed?
+
+**Response**
+
+The app crashed at 14:32:05 with an `IllegalStateException` (the window read is the minute before it and the 5 seconds after, anchored on that crash). In that minute: 12 calls to `GET /v1/feed` in 3 seconds (a loop), then `POST /v1/checkout` failed with a **401**, and the `checkout_failed` analytics event was sent 2 seconds before the crash.
+
+---
+
+**Prompt**
+
+> Show me where the app crashed.
+
+**Response**
+
+I opened the Flocon timeline in graph mode on the zone around the crash of 14:32:05 (an `IllegalStateException`): go to the Flocon app to see it. The graph does not draw crashes, switch to the list view to see its row.
+
+---
+
 ## Available tools
 
 By default, every tool targets the **device and app currently selected in Flocon Desktop**. Use `list_devices` then pass `deviceId` / `packageName` to target another one.
@@ -278,6 +387,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | Tool | Description |
 |---|---|
 | `list_devices` | Devices and apps known by Flocon, the selected one, and whether they are connected. |
+| `get_timeline` | What the app did in a window of time, above the network: every source (network, database, analytics, crashes, deeplinks, logs sent with `Flocon.timelinePlugin`...) in one narrative, one line per event with an id for the detail tools, repetitions folded (`12× GET /feed in 3.1 s`) and anomalies first (crash, HTTP errors, ERROR logs, calls in a loop, responses over 1 MB). Give `mode` (`recent`, `session`, `before_crash`, `at`, `range`) with `at` / `from` / `to` (epoch ms, ISO-8601 with an offset, or `HH:mm`), or an `eventId` of a previous answer, or nothing: the tool anchors on the latest crash, otherwise on the last 2 minutes of the latest session, and the answer says which window was chosen and why. `search` tells whether an event (name, url, query) was sent in the window (`found`), and its matches are never cut by `maxLines`. `sources` / `excludeSources` choose the sources read (for example `excludeSources: ["database"]` drops the transactions of a database library); when the answer is capped, database lines are the first to go. The times are those of the phone. |
+| `show_in_timeline` | Shows a zone of the timeline in the Flocon Desktop window for you: opens the timeline in graph mode (saved in your preferences), selects the device and app of the call, selects an event and centers the graph on its zone. Give an `eventId` of `get_timeline` (`source:id`), a time (`mode`, `at`, `from`, `to`), or nothing: the latest crash, otherwise the main anomaly (error, loop, large response) of the last minutes. `view: list` selects the row without scrolling to it. Flocon is not brought to the front and the request is only registered: the answer asks you to go to the Flocon app. Nothing is changed when the event or the window is not found. Your filters are never changed: if one hides the event, the answer says which. The graph draws network, database and analytics events only: a crash is shown with its zone, see its row in the list. |
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
 | `get_network_call` | Full details of a call: request & response headers and bodies (truncated if too long), GraphQL query, gRPC status, error, and the equivalent cURL command. |
 | `search_network_calls` | Searches a text in headers, bodies, url, method or status. |
@@ -319,11 +430,13 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `start_screen_recording` | Starts recording the device screen. One recording per device; on Android, `screenrecord` stops by itself after 3 minutes. |
 | `stop_screen_recording` | Stops the recording and returns the path of the mp4 saved in `ScreenRecord/`. Without target, stops the only running recording. |
 | `open_flocon_folder` | Opens the Flocon documents folder (screenshots, screen records, exports), or a sub folder (`Screenshot`, `ScreenRecord`), in the file manager of the computer, and returns its path. |
+| `take_flocon_desktop_screenshot` | Image of what the Flocon Desktop window currently displays (not the device screen). Only the visible content is captured, scaled down if it is too big, and nothing is saved on your computer. |
 | `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId` and storage `type` (SharedPreferences, DataStore, UserDefaults, Keychain...). |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
+| `flocon_navigate_into_desktop_app` | Moves the Flocon Desktop window for you: displays a screen (`screen`, e.g. `network`, `timeline`, `feature_flags`), selects a device and app (`deviceId`, `packageName`: this changes what you selected in the app) and sets the timeline view (`timelineView`: `graph` or `list`, saved in your preferences). Flocon is not brought to the front: the answer asks you to go to the Flocon app to see it. At least one parameter is required, and nothing is changed if one of them is invalid. |
 
 ---
 
