@@ -28,6 +28,8 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphSessionUiModel
@@ -82,6 +84,7 @@ internal class TimelineViewModel(
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
     private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
     private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
+    private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
     private val filterStore: TimelineFilterStore,
     private val dispatcherProvider: DispatcherProvider,
     private val navigationState: MainFloconNavigationState,
@@ -137,8 +140,9 @@ internal class TimelineViewModel(
         filterStore.storedSources,
         filterStore.currentSessionOnly,
         filterStore.network,
-    ) { facets, sources, currentSessionOnly, network ->
-        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources } + network.ruleCount +
+        filterStore.database,
+    ) { facets, sources, currentSessionOnly, network, database ->
+        facets.values.sumOf { it.size } + TimelineSource.entries.count { it !in sources } + network.ruleCount + database.activeCount +
             if (currentSessionOnly) 1 else 0
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
@@ -295,6 +299,30 @@ internal class TimelineViewModel(
             }
 
             is TimelineAction.ToggleTransaction -> expandedTransactions.update { if (action.id in it) it - action.id else it + action.id }
+
+            is TimelineAction.Exclude -> filterStore.hideFacetValue(action.facet, action.value)
+
+            is TimelineAction.ExcludePath -> filterStore.hidePath(action.path)
+
+            is TimelineAction.OpenFilters -> {
+                filterStore.focusSource(action.source)
+                if (!filterPanelOpen.value) navigationState.navigate(TimelineRoutes.Filters)
+            }
+
+            is TimelineAction.CopySelectedUrl -> {
+                // the key of a call is "Network:<id>", see TimelineRowUiModel.callKey
+                val prefix = "${TimelineSource.Network.name}:"
+                selectedKey.value?.takeIf { it.startsWith(prefix) }?.removePrefix(prefix)?.let { callId ->
+                    viewModelScope.launch(dispatcherProvider.viewModel) {
+                        networkItemOptionsDelegate.onOption(callId = callId, option = NetworkItemOption.CopyUrl)
+                    }
+                }
+            }
+
+            is TimelineAction.ExcludeSource -> viewModelScope.launch {
+                // read from the settings each time, like the filter panel
+                setTimelineSelectedSourcesUseCase(filterStore.storedSources.first() - action.source)
+            }
 
             is TimelineAction.Open -> {
                 val destination = action.row.toDestination()

@@ -1,7 +1,7 @@
 package io.github.openflocon.domain.timeline.models
 
 /**
- * An include / exclude rule typed by the user: a word for a host, a code or a range of codes ("404", "500-503") for a status.
+ * An include / exclude rule typed by the user: a word for a host or for a sql query, a code or a range of codes ("404", "500-503") for a status.
  */
 data class TimelineRuleDomainModel(
     val value: String,

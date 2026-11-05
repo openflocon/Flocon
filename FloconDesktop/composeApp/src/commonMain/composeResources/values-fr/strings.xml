@@ -98,6 +98,15 @@
     <string name="timeline_facet_database_statement">Requête</string>
     <string name="timeline_facet_analytics_table">Table</string>
     <string name="timeline_facet_accessibility_action">Action</string>
+    <string name="timeline_facet_table_name">Table</string>
+    <string name="timeline_facet_webview_kind">Type</string>
+    <string name="timeline_facet_network_path">Chemin</string>
+    <string name="timeline_filters_path_placeholder">Mot dans le chemin, Entrée</string>
+    <string name="timeline_row_exclude_requests">Exclure les requêtes</string>
+    <string name="timeline_row_exclude_events">Exclure les événements</string>
+    <string name="timeline_row_exclude_by">Exclure par</string>
+    <string name="timeline_row_manage_exclusions">Gérer les exclusions…</string>
+    <string name="timeline_row_source">Source</string>
     <string name="timeline_facet_log_type">Type</string>
     <string name="timeline_facet_log_level">Niveau</string>
     <string name="timeline_log_level_debug">Debug</string>

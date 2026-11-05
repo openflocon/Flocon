@@ -3,13 +3,16 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.common.time.formatDate
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineExcludeUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTransactionUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUiModel(
     id = id,
@@ -23,6 +26,7 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     sessionStart = sessionStart,
     phase = phase,
     logLevel = level,
+    excludes = excludes(),
     transaction = transaction?.toUi(),
 )
 
@@ -33,6 +37,25 @@ private fun TimelineTransactionDomainModel.toUi() = TimelineTransactionUiModel(
     endTimestamp = endTimestamp,
     isControl = isControl,
 )
+
+// the facets worth excluding an event by: not the duration bucket, the state or the content of a call
+private val ExcludableFacets = setOf(
+    TimelineFacet.NetworkMethod,
+    TimelineFacet.NetworkStatus,
+    TimelineFacet.NetworkHost,
+    TimelineFacet.DatabaseName,
+    TimelineFacet.DatabaseStatement,
+    TimelineFacet.AnalyticsTable,
+    TimelineFacet.TableName,
+    TimelineFacet.WebViewKind,
+    TimelineFacet.CrashException,
+    TimelineFacet.AccessibilityAction,
+)
+
+internal fun TimelineEventDomainModel.excludes() = TimelineFacet.entries
+    .filter { it in ExcludableFacets }
+    .mapNotNull { facet -> facets[facet]?.takeIf { it.isNotBlank() }?.let { TimelineExcludeUiModel(facet, it) } }
+    .toImmutableList()
 
 private fun TimelineEventDomainModel.toNetworkUi(): TimelineNetworkUiModel {
     val (host, path) = splitUrl(title)

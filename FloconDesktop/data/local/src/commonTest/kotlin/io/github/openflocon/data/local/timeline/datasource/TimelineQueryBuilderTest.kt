@@ -29,6 +29,20 @@ class TimelineQueryBuilderTest {
     // a network call is two events, its request and its response
     private val eventBranches = eventSources + 1
 
+    // how many columns the text is looked for in, by source
+    private val textColumnCounts = mapOf(
+        TimelineSource.Network to 2,
+        TimelineSource.Database to 2,
+        TimelineSource.Analytics to 3, // the properties too
+        TimelineSource.Accessibility to 4, // the class and the screen too
+        TimelineSource.WebView to 2,
+        TimelineSource.Crash to 3, // the stack trace too
+        TimelineSource.Table to 3, // the columns too
+        TimelineSource.Deeplink to 4, // the description and the parameters too
+        TimelineSource.Adb to 2,
+        TimelineSource.Log to 2, // the message and the type
+    )
+
     @Test
     fun `every source is merged by a union sorted from the newest`() {
         val query = build()
@@ -185,9 +199,10 @@ class TimelineQueryBuilderTest {
     fun `the text filter is applied on every source`() {
         val query = build(TimelineFilterDomainModel(text = "login"))
 
-        // every source filters on two columns
-        assertEquals(eventBranches * 2, Regex("LIKE \\?").findAll(query.sql).count())
-        assertEquals(eventBranches * 2, query.params.count { it == "%login%" })
+        // every source filters on its own columns, the response of a network call too
+        val expected = textColumnCounts.values.sum() + textColumnCounts.getValue(TimelineSource.Network)
+        assertEquals(expected, Regex("LIKE \\?").findAll(query.sql).count())
+        assertEquals(expected, query.params.count { it == "%login%" })
     }
 
     @Test
@@ -240,7 +255,7 @@ class TimelineQueryBuilderTest {
             filter = TimelineFilterDomainModel(text = "login"),
         )
 
-        assertEquals(eventSources * 2, query.params.count { it == "%login%" })
+        assertEquals(textColumnCounts.values.sum(), query.params.count { it == "%login%" })
     }
 
     @Test
@@ -382,6 +397,26 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the path rules are words of the path of the network calls only`() {
+        val rules = listOf(
+            TimelineRuleDomainModel("/raw", exclude = true),
+            TimelineRuleDomainModel("/users", exclude = false),
+        )
+
+        val network = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network), networkPathRules = rules))
+        assertTrue(network.sql.contains("AND (request_queryFormatted LIKE ?)"))
+        assertTrue(network.sql.contains("AND COALESCE(request_queryFormatted, '') NOT LIKE ?"))
+        val branch = listOf<Any>("device", "com.app", "%/users%", "%/raw%")
+        assertEquals(sessionParams + branch + branch, network.params)
+
+        val other = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database), networkPathRules = rules))
+        assertFalse(other.sql.contains("request_queryFormatted LIKE"))
+
+        val disabled = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network), networkEnabled = false, networkPathRules = rules))
+        assertFalse(disabled.sql.contains("request_queryFormatted LIKE"))
+    }
+
+    @Test
     fun `the network filters are ignored when they are disabled`() {
         val query = build(
             TimelineFilterDomainModel(
@@ -447,6 +482,84 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("exceptionType AS facetCrashException"))
         assertTrue(query.sql.contains("exceptionType NOT IN (?)"))
         assertEquals(sessionParams + listOf("device", "com.app", "java.lang.OutOfMemoryError"), query.params)
+    }
+
+    @Test
+    fun `each event carries its value for every facet, to be excluded by them`() {
+        val sql = build().sql
+
+        assertTrue(sql.contains("json_object('NetworkMethod', u.facetNetworkMethod"))
+        TimelineFacet.entries.forEach {
+            assertTrue(sql.contains("'${it.name}', u.facet${it.name}"), it.name)
+        }
+        assertTrue(sql.contains(") AS facetValues"))
+    }
+
+    @Test
+    fun `the tables and the kinds of webview event can be hidden`() {
+        val table = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Table),
+                facets = mapOf(TimelineFacet.TableName to setOf("users")),
+            )
+        )
+        assertTrue(table.sql.contains("TableEntity.name AS facetTableName"))
+        assertTrue(table.sql.contains("TableEntity.name NOT IN (?)"))
+        assertTrue(table.params.contains("users"))
+
+        val webView = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.WebView),
+                facets = mapOf(TimelineFacet.WebViewKind to setOf("Console")),
+            )
+        )
+        assertTrue(webView.sql.contains("kind AS facetWebViewKind"))
+        assertTrue(webView.sql.contains("kind NOT IN (?)"))
+        assertTrue(webView.params.contains("Console"))
+    }
+
+    @Test
+    fun `the database rules are words of the sql query`() {
+        val query = build(
+            TimelineFilterDomainModel(
+                sources = setOf(TimelineSource.Database),
+                databaseRules = listOf(
+                    TimelineRuleDomainModel("users", exclude = false),
+                    TimelineRuleDomainModel("sqlite_master", exclude = true),
+                ),
+            )
+        )
+
+        assertTrue(query.sql.contains("AND (sqlQuery LIKE ?)"))
+        assertTrue(query.sql.contains("AND COALESCE(sqlQuery, '') NOT LIKE ?"))
+        assertEquals(sessionParams + listOf("device", "com.app", "%users%", "%sqlite_master%"), query.params)
+    }
+
+    @Test
+    fun `the transactions of the database are hidden on demand`() {
+        val sources = setOf(TimelineSource.Database)
+
+        assertTrue(build(TimelineFilterDomainModel(sources = sources, hideDatabaseTransactions = true)).sql.contains("AND isTransaction = 0"))
+        assertFalse(build(TimelineFilterDomainModel(sources = sources)).sql.contains("AND isTransaction = 0"))
+        // the rules of the database are not applied to the other sources
+        assertFalse(
+            build(
+                TimelineFilterDomainModel(
+                    sources = setOf(TimelineSource.Analytics),
+                    databaseRules = listOf(TimelineRuleDomainModel("users", exclude = false)),
+                    hideDatabaseTransactions = true,
+                )
+            ).sql.contains("sqlQuery LIKE"),
+        )
+    }
+
+    @Test
+    fun `the text also looks in the details of the events`() {
+        val query = build(TimelineFilterDomainModel(text = "abc"))
+
+        listOf("propertiesValues", "stackTrace", "className", "screen", "parametersAsJson", "TableItemEntity.columnsNames").forEach {
+            assertTrue(query.sql.contains("$it LIKE ?"), it)
+        }
     }
 
     @Test

@@ -3,6 +3,7 @@ package io.github.openflocon.domain.timeline.models
 import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_LIFECYCLE
 import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
 import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_USER_ACTION
+import io.github.openflocon.domain.webview.models.WebViewEventKind
 
 /**
  * The value of [TimelineFacet.DatabaseStatement] of what Room runs for itself: its invalidation tracker reads and writes
@@ -68,6 +69,15 @@ enum class TimelineFacet(
         knownValues = DATABASE_STATEMENTS,
     ),
     AnalyticsTable(TimelineSource.Analytics),
+
+    // the name of the table the item was added to
+    TableName(TimelineSource.Table),
+
+    // the kind of event of a WebView: console message, page event or call to a native bridge
+    WebViewKind(
+        source = TimelineSource.WebView,
+        knownValues = WebViewEventKind.entries.map { it.name },
+    ),
 
     // the class of the exception, ex: java.lang.IllegalStateException
     CrashException(TimelineSource.Crash),

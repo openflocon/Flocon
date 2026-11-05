@@ -6,6 +6,8 @@ import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class TimelineRowUiModel(
@@ -20,6 +22,7 @@ internal data class TimelineRowUiModel(
     val sessionStart: Long? = null, // the start of the session of the event, null if none is known
     val phase: TimelinePhase = TimelinePhase.Request, // network calls only: the request and the response are two rows
     val logLevel: TimelineLogLevel? = null, // logs only
+    val excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(), // what the event can be excluded by
     val transaction: TimelineTransactionUiModel? = null, // database queries run in a transaction only
 ) {
     // the ids of two sources can be the same. Shared by the request and the response of a network call,
@@ -42,6 +45,13 @@ internal data class TimelineTransactionUiModel(
     val isControl: Boolean, // BEGIN, COMMIT...: only the header tells them
 )
 
+// a value of the event that can be hidden from the timeline, ex: the GET method
+@Immutable
+internal data class TimelineExcludeUiModel(
+    val facet: TimelineFacet,
+    val value: String,
+)
+
 @Immutable
 internal data class TimelineNetworkUiModel(
     val method: String,
@@ -53,7 +63,10 @@ internal data class TimelineNetworkUiModel(
     // a gRPC or a WebSocket call has no http request to copy as cURL, replay or mock
     val httpActions: Boolean = true,
     val isImage: Boolean = false, // the response is an image
-)
+) {
+    // the path alone, to exclude the calls of a route whatever their parameters
+    val pathWithoutQuery: String get() = path.substringBefore('?')
+}
 
 @Immutable
 internal sealed interface TimelineItemUiModel {
@@ -126,6 +139,17 @@ internal sealed interface TimelineAction {
     data class MoveGraphSession(val delta: Int) : TimelineAction
     data class NetworkOption(val callId: String, val option: NetworkItemOption) : TimelineAction
 
+    // hides a value of an event (ex: the GET calls) or its whole source, from the menu of the row
+    data class Exclude(val facet: TimelineFacet, val value: String) : TimelineAction
+    data class ExcludeSource(val source: TimelineSource) : TimelineAction
+    data class ExcludePath(val path: String) : TimelineAction
+
+    // opens the filter panel on the source, to manage what is excluded
+    data class OpenFilters(val source: TimelineSource) : TimelineAction
+
+    // copies the url of the network call selected, from the keyboard
+    data object CopySelectedUrl : TimelineAction
+
     // the graph showed the zone it was asked to show: it is free again
     data object GraphFocusApplied : TimelineAction
 }
@@ -150,6 +174,13 @@ internal sealed interface TimelineFilterAction {
     data class RemoveStatusRule(val value: String) : TimelineFilterAction
     data class AddHostRule(val text: String, val exclude: Boolean) : TimelineFilterAction
     data class RemoveHostRule(val value: String) : TimelineFilterAction
+    data class AddPathRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemovePathRule(val value: String) : TimelineFilterAction
+
+    // the database card: words of the sql query, and the transactions
+    data class AddDatabaseRule(val text: String, val exclude: Boolean) : TimelineFilterAction
+    data class RemoveDatabaseRule(val value: String) : TimelineFilterAction
+    data class SetHideDatabaseTransactions(val value: Boolean) : TimelineFilterAction
 
     // positions of the slider, see TimelineNetworkFilterUiModel
     data class SetDurationRange(val start: Int, val end: Int) : TimelineFilterAction
@@ -163,6 +194,9 @@ internal sealed interface TimelineFilterAction {
     // what is typed in the tag field, to suggest the tags
     data class SetLogTagQuery(val text: String) : TimelineFilterAction
     data object ClearAll : TimelineFilterAction
+
+    // the panel went to the source it was asked to show
+    data object FocusHandled : TimelineFilterAction
 }
 
 internal fun previewTimelineRowUiModel(
@@ -173,6 +207,7 @@ internal fun previewTimelineRowUiModel(
     network: TimelineNetworkUiModel? = null,
     phase: TimelinePhase = TimelinePhase.Request,
     logLevel: TimelineLogLevel? = null,
+    excludes: ImmutableList<TimelineExcludeUiModel> = persistentListOf(),
     transaction: TimelineTransactionUiModel? = null,
 ) = TimelineRowUiModel(
     id = id,
@@ -185,6 +220,7 @@ internal fun previewTimelineRowUiModel(
     network = network,
     phase = phase,
     logLevel = logLevel,
+    excludes = excludes,
     transaction = transaction,
 )
 
@@ -210,6 +246,10 @@ internal fun previewTimelineRows(): List<TimelineRowUiModel> = listOf(
         id = "n1",
         title = "https://api.acme.io/v1/users?id=2",
         network = TimelineNetworkUiModel(method = "GET", host = "api.acme.io", path = "/v1/users?id=2", statusCode = null, duration = null),
+        excludes = persistentListOf(
+            TimelineExcludeUiModel(TimelineFacet.NetworkMethod, "GET"),
+            TimelineExcludeUiModel(TimelineFacet.NetworkHost, "api.acme.io"),
+        ),
     ),
     previewTimelineRowUiModel(
         source = TimelineSource.Network,
