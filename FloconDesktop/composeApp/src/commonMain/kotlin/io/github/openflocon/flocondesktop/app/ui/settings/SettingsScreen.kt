@@ -75,7 +75,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.about_sdk_version
 import flocondesktop.composeapp.generated.resources.general_clear
 import flocondesktop.composeapp.generated.resources.general_copy_all
 import flocondesktop.composeapp.generated.resources.general_open_folder
@@ -1496,20 +1495,6 @@ private fun <T> LogFilterGroup(
 private fun AboutPane(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: AboutViewModel = koinViewModel()
-    val sdkVersion by viewModel.sdkVersion.collectAsStateWithLifecycle()
-
-    AboutPane(
-        sdkVersion = sdkVersion,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun AboutPane(
-    sdkVersion: String?,
-    modifier: Modifier = Modifier,
-) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
@@ -1520,13 +1505,6 @@ private fun AboutPane(
                 style = FloconTheme.typography.bodyMedium,
                 color = FloconTheme.colors.ink,
             )
-            sdkVersion?.let {
-                Text(
-                    text = stringResource(Res.string.about_sdk_version, it),
-                    style = FloconTheme.typography.bodySmall,
-                    color = FloconTheme.colors.inkMuted,
-                )
-            }
         }
         Text(
             text = stringResource(Res.string.settings_open_source_licenses),
