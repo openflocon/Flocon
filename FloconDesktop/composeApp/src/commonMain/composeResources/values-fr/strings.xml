@@ -371,6 +371,7 @@
     <string name="connect_hint">Même Wi-Fi que cet ordinateur, puis scannez, ou appelez Flocon.connect("%1$s")</string>
     <string name="connect_empty">Aucune adresse du réseau local trouvée. Vérifiez que cet ordinateur est connecté à un réseau.</string>
     <string name="connect_port">port %1$d</string>
+    <string name="connect_ports">ws: %1$d&#160;&#160;&#160;&#160;https: %2$d</string>
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
     <string name="topbar_restart">Redémarrer l’app</string>

@@ -527,6 +527,7 @@
     <string name="connect_hint">Same Wi-Fi as this computer, then scan, or call Flocon.connect("%1$s")</string>
     <string name="connect_empty">No local network address found. Check that this computer is connected to a network.</string>
     <string name="connect_port">port %1$d</string>
+    <string name="connect_ports">ws: %1$d&#160;&#160;&#160;&#160;https: %2$d</string>
     <string name="topbar_open_folder">open flocon folder</string>
     <string name="topbar_record">Record</string>
     <string name="topbar_restart">restart</string>

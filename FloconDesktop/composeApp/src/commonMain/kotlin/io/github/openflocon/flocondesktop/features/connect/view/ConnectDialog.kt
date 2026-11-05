@@ -43,11 +43,8 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,6 +56,7 @@ import flocondesktop.composeapp.generated.resources.connect_copy
 import flocondesktop.composeapp.generated.resources.connect_empty
 import flocondesktop.composeapp.generated.resources.connect_hint
 import flocondesktop.composeapp.generated.resources.connect_pick_network
+import flocondesktop.composeapp.generated.resources.connect_ports
 import flocondesktop.composeapp.generated.resources.connect_scan
 import flocondesktop.composeapp.generated.resources.connect_title
 import io.github.openflocon.flocondesktop.features.connect.ConnectViewModel
@@ -79,9 +77,6 @@ import org.koin.compose.viewmodel.koinViewModel
 private val SingleWidth = 420.dp
 private val MultiWidth = 680.dp
 private val QrSize = 216.dp
-
-// non breaking spaces, to keep a clear gap between the ip and the port
-private const val PortGap = "\u00A0\u00A0\u00A0\u00A0"
 
 /** The paws rest on the top edge of the window: the surface starts a bit above their bottom. */
 private val MascotPawsOverlap = 8.dp
@@ -355,24 +350,21 @@ private fun AddressPreview(
                 .size(QrSize)
                 .clip(FloconTheme.shapes.large),
         )
-        val accent = FloconTheme.colors.accent
         Text(
-            text = remember(address.ip, address.customPorts, accent) {
-                buildAnnotatedString {
-                    append(address.ip)
-                    // the ports are only shown when one of them is not the default one
-                    address.customPorts?.let { customPorts ->
-                        append(PortGap)
-                        withStyle(SpanStyle(color = accent)) {
-                            append(customPorts)
-                        }
-                    }
-                }
-            },
+            text = address.ip,
             style = FloconTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
         )
+        // the ports are only shown when one of them is not the default one
+        address.customPorts?.let { customPorts ->
+            Text(
+                text = stringResource(Res.string.connect_ports, customPorts.websocket, customPorts.http),
+                style = FloconTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colors.accent,
+            )
+        }
         Text(
             text = address.interfaceName,
             style = FloconTheme.typography.bodySmall,
