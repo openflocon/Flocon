@@ -14,6 +14,7 @@ kermit = "2.1.0"
 koin = "4.2.2"
 kotlin = "2.4.0"
 kotlinx-coroutines = "1.11.0"
+kotlin-semver = "3.1.0"
 kotlinx-datetime = "0.8.0"
 kotlinx-serialization = "1.11.0"
 kotlinx-schema = "0.6.0"
@@ -88,6 +89,7 @@ koin-core = { module = "io.insert-koin:koin-core" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-semver = { module = "io.github.z4kn4fein:semver", version.ref = "kotlin-semver" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }

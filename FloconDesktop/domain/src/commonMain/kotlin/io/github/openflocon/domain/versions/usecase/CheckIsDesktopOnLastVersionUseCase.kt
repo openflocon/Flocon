@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
+import io.github.z4kn4fein.semver.toVersionOrNull
 
 class CheckIsDesktopOnLastVersionUseCase(
     private val versionsCheckerRepository: VersionsCheckerRepository,
@@ -27,16 +28,9 @@ class CheckIsDesktopOnLastVersionUseCase(
         }
 }
 
+/** Semver comparison ("v1.10.0", "1.10" are accepted). An unknown version (empty, "unknown"...) can't be compared: never claims an update. */
 fun isRemoteVersionNewer(localVersion: String, remoteVersion: String): Boolean {
-    val localParts = localVersion.split(".").mapNotNull { it.toIntOrNull() }
-    val remoteParts = remoteVersion.split(".").mapNotNull { it.toIntOrNull() }
-
-    val maxLength = maxOf(localParts.size, remoteParts.size)
-    for (i in 0 until maxLength) {
-        val local = localParts.getOrElse(i) { 0 }
-        val remote = remoteParts.getOrElse(i) { 0 }
-        if (remote > local) return true
-        if (remote < local) return false
-    }
-    return false
+    val local = localVersion.toVersionOrNull(strict = false) ?: return false
+    val remote = remoteVersion.toVersionOrNull(strict = false) ?: return false
+    return remote > local
 }
