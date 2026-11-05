@@ -65,9 +65,13 @@ class PurgeDatabaseUseCaseTest {
     }
 
     @Test
-    fun unknownStoredValueFallsBackToNever() {
-        assertEquals(AutoPurgeInterval.Never, AutoPurgeInterval.fromDays(42))
-        assertEquals(AutoPurgeInterval.Never, AutoPurgeInterval.fromDays(null))
+    fun defaultIsTwoWeeksUntilTheUserChoosesNever() {
+        assertEquals(AutoPurgeInterval.TwoWeeks, AutoPurgeInterval.DEFAULT)
+        // nothing stored yet, or an unknown value: the default
+        assertEquals(AutoPurgeInterval.TwoWeeks, AutoPurgeInterval.fromDays(null))
+        assertEquals(AutoPurgeInterval.TwoWeeks, AutoPurgeInterval.fromDays(42))
+        // an explicit choice is kept
+        assertEquals(AutoPurgeInterval.Never, AutoPurgeInterval.fromDays(0))
         assertEquals(AutoPurgeInterval.OneWeek, AutoPurgeInterval.fromDays(7))
     }
 }

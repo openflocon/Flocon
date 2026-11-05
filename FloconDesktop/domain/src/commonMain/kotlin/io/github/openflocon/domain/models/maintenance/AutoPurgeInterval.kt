@@ -10,7 +10,8 @@ enum class AutoPurgeInterval(val days: Int) {
     OneMonth(30);
 
     companion object {
-        val DEFAULT = Never
+        // the user can switch to Never in the settings
+        val DEFAULT = TwoWeeks
 
         fun fromDays(days: Int?): AutoPurgeInterval = entries.firstOrNull { it.days == days } ?: DEFAULT
     }
