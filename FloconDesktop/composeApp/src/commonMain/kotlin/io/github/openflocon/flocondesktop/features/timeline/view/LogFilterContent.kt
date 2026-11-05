@@ -79,6 +79,7 @@ import io.github.openflocon.library.designsystem.components.FloconSmallIconButto
 import io.github.openflocon.library.designsystem.components.FloconStatusPill
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 private const val DisabledCardAlpha = 0.5f
@@ -383,7 +384,7 @@ private fun LogTagSection(
 
 @Composable
 private fun TagSuggestions(
-    suggestions: List<TimelineFacetValueUiModel>,
+    suggestions: ImmutableList<TimelineFacetValueUiModel>,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -449,7 +450,7 @@ private fun TagSuggestions(
 @Composable
 private fun TagRules(
     title: String,
-    rules: List<TimelineRuleUiModel>,
+    rules: ImmutableList<TimelineRuleUiModel>,
     enabled: Boolean,
     onAction: (TimelineFilterAction) -> Unit,
     modifier: Modifier = Modifier,
