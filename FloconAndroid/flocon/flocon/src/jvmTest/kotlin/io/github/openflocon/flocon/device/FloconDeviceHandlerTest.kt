@@ -36,8 +36,8 @@ class FloconDeviceHandlerTest {
     }
 
     @Test
-    fun `restart_app is left to the device plugin`() {
-        assertFalse(handler.handle(Protocol.ToDevice.Device.Plugin, Protocol.ToDevice.Device.Method.RestartApp))
+    fun `unknown device methods are not handled`() {
+        assertFalse(handler.handle(Protocol.ToDevice.Device.Plugin, "restart_app"))
     }
 
     @Test
