@@ -63,14 +63,30 @@ class DatabaseQueryLogMapperTest {
             listOf(
                 log("BEGIN", 20, "tx", isTransaction = true),
                 log("INSERT INTO dog VALUES (1)", 30, "tx"),
+                log("INSERT INTO dog VALUES (2)", 31, "tx"),
                 log("ROLLBACK", 45, "tx", isTransaction = true),
             ),
             showTransactions = false,
         )
 
         val transaction = assertIs<DatabaseQueryLogEntryUiModel.Transaction>(result.single())
-        assertEquals(listOf("INSERT INTO dog VALUES (1)"), transaction.queries.map { it.sqlQuery })
+        assertEquals(listOf("INSERT INTO dog VALUES (1)", "INSERT INTO dog VALUES (2)"), transaction.queries.map { it.sqlQuery })
         assertEquals(Status.RolledBack, transaction.status)
+    }
+
+    @Test
+    fun `a transaction of one query is a row like the others once its statements are hidden`() {
+        val logs = listOf(
+            log("BEGIN", 20, "tx", isTransaction = true),
+            log("INSERT INTO dog VALUES (1)", 30, "tx"),
+            log("END TRANSACTION", 45, "tx", isTransaction = true),
+        )
+
+        val hidden = entries(logs, showTransactions = false)
+        assertEquals("INSERT INTO dog VALUES (1)", assertIs<DatabaseQueryLogEntryUiModel.Query>(hidden.single()).log.sqlQuery)
+
+        // with its statements shown, they need the group
+        assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, showTransactions = true).single())
     }
 
     @Test

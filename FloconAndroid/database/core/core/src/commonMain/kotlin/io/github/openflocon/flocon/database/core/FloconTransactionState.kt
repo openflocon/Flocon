@@ -13,6 +13,9 @@ class FloconTransactionState {
 
     private var transactionId: String? = null
     private var openSavepoints = 0
+
+    // Room 2 logs every nested beginTransaction and endTransaction, only the last end closes the transaction
+    private var openBegins = 0
     private var startedBySavepoint = false
 
     /**
@@ -22,8 +25,10 @@ class FloconTransactionState {
         val statement = sql.trimStart().uppercase()
         return when {
             statement.startsWith("BEGIN") -> {
-                // nested begins are not sent to SQLite, but stay safe: it is still the same transaction
-                transactionId ?: start(bySavepoint = false)
+                // a nested begin (Room 2) is still the same transaction
+                val id = transactionId ?: start(bySavepoint = false)
+                openBegins++
+                id
             }
 
             statement.startsWith("SAVEPOINT") -> {
@@ -39,11 +44,16 @@ class FloconTransactionState {
                 id
             }
 
-            statement.startsWith("ROLLBACK TO") -> transactionId
+            // ROLLBACK TO SAVEPOINT x, or ROLLBACK TRANSACTION TO SAVEPOINT x (Room 3): the transaction goes on
+            statement.startsWith("ROLLBACK") && " TO " in statement -> transactionId
 
-            statement.startsWith("COMMIT") ||
-                statement.startsWith("END") ||
-                statement.startsWith("ROLLBACK") -> {
+            statement.startsWith("COMMIT") || statement.startsWith("END") -> {
+                val id = transactionId
+                if (openBegins > 1) openBegins-- else reset()
+                id
+            }
+
+            statement.startsWith("ROLLBACK") -> {
                 val id = transactionId
                 reset()
                 id
@@ -58,6 +68,7 @@ class FloconTransactionState {
         val id = Uuid.random().toString()
         transactionId = id
         openSavepoints = 0
+        openBegins = 0
         startedBySavepoint = bySavepoint
         return id
     }
@@ -65,6 +76,7 @@ class FloconTransactionState {
     private fun reset() {
         transactionId = null
         openSavepoints = 0
+        openBegins = 0
         startedBySavepoint = false
     }
 }

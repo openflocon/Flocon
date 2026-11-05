@@ -37,6 +37,9 @@ fun toQueryLogEntries(
             if (queries.isEmpty()) {
                 // nothing left to show once the statements of the transaction are hidden
                 null
+            } else if (queries.size == 1 && !showTransactions) {
+                // a transaction of one query is not worth a group
+                DatabaseQueryLogEntryUiModel.Query(queries.single())
             } else {
                 DatabaseQueryLogEntryUiModel.Transaction(
                     id = transactionId,
@@ -59,7 +62,7 @@ fun toQueryLogEntries(
 internal fun transactionStatus(sqls: List<String>): Status {
     val statements = sqls.map { it.trim().uppercase() }
     return when {
-        statements.any { it.startsWith("ROLLBACK") && !it.startsWith("ROLLBACK TO") } -> Status.RolledBack
+        statements.any { it.startsWith("ROLLBACK") && " TO " !in it } -> Status.RolledBack
 
         statements.any { it.startsWith("COMMIT") } -> Status.Committed
 

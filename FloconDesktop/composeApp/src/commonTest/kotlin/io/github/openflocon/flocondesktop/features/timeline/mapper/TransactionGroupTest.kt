@@ -43,6 +43,20 @@ class TransactionGroupTest {
     }
 
     @Test
+    fun `a transaction of one query has no header, its statements are still hidden`() {
+        val begin = TimelineItemUiModel.Row(
+            previewTimelineRowUiModel(
+                source = TimelineSource.Database,
+                id = "b",
+                transaction = previewTimelineTransaction(id = "tx", queryCount = 1, isControl = true),
+            ),
+        )
+
+        assertNull(transactionHeaderBetween(before = query("0"), after = begin, inverted = false, expanded = emptySet()))
+        assertTrue(begin.isHiddenInTransaction(expanded = emptySet()))
+    }
+
+    @Test
     fun `the queries of a transaction have one header`() {
         assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = false, expanded = emptySet()))
         assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = true, expanded = emptySet()))

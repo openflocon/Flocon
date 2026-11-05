@@ -265,4 +265,38 @@ class FloconTransactionStateTest {
         assertEquals(begin, state.onQuery("END TRANSACTION"))
         assertNull(state.onQuery("SELECT 1"))
     }
+
+    @Test
+    fun `room 2 nested transactions are closed by their last end`() {
+        val begin = state.onQuery("BEGIN EXCLUSIVE TRANSACTION")
+        assertEquals(begin, state.onQuery("BEGIN EXCLUSIVE TRANSACTION"))
+        assertEquals(begin, state.onQuery("INSERT INTO user VALUES (1)"))
+        assertEquals(begin, state.onQuery("TRANSACTION SUCCESSFUL"))
+        assertEquals(begin, state.onQuery("END TRANSACTION"))
+        // the outer transaction goes on
+        assertEquals(begin, state.onQuery("INSERT INTO post VALUES (1)"))
+        assertEquals(begin, state.onQuery("TRANSACTION SUCCESSFUL"))
+        assertEquals(begin, state.onQuery("END TRANSACTION"))
+        assertNull(state.onQuery("SELECT 1"))
+    }
+
+    @Test
+    fun `room 3 statements run in the order Room really sends them`() {
+        val begin = state.onQuery("BEGIN IMMEDIATE TRANSACTION")
+        assertEquals(begin, state.onQuery("SAVEPOINT 'sp_1'"))
+        assertEquals(begin, state.onQuery("INSERT INTO dog VALUES (1)"))
+        assertEquals(begin, state.onQuery("ROLLBACK TRANSACTION TO SAVEPOINT 'sp_1'"))
+        assertEquals(begin, state.onQuery("RELEASE SAVEPOINT 'sp_1'"))
+        assertEquals(begin, state.onQuery("INSERT INTO dog VALUES (2)"))
+        assertEquals(begin, state.onQuery("END TRANSACTION"))
+        assertNull(state.onQuery("SELECT 1"))
+    }
+
+    @Test
+    fun `a room 3 rollback ends the transaction`() {
+        val begin = state.onQuery("BEGIN IMMEDIATE TRANSACTION")
+
+        assertEquals(begin, state.onQuery("ROLLBACK TRANSACTION"))
+        assertNull(state.onQuery("SELECT 1"))
+    }
 }

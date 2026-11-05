@@ -27,7 +27,8 @@ internal fun TimelineEventDomainModel.toUi(): TimelineRowUiModel = TimelineRowUi
     phase = phase,
     logLevel = level,
     excludes = excludes(),
-    transaction = transaction?.toUi(),
+    // a transaction of one query is not worth a group: the query is a row like the others. Its BEGIN and COMMIT stay, to be hidden
+    transaction = transaction?.takeUnless { it.queryCount <= 1 && !it.isControl }?.toUi(),
 )
 
 private fun TimelineTransactionDomainModel.toUi() = TimelineTransactionUiModel(
@@ -138,7 +139,7 @@ internal fun transactionHeaderBetween(
 ): TimelineItemUiModel.TransactionHeader? {
     val first = (if (inverted) before else after) as? TimelineItemUiModel.Row ?: return null
     val neighbor = (if (inverted) after else before) as? TimelineItemUiModel.Row
-    val transaction = first.row.transaction ?: return null
+    val transaction = first.row.transaction?.takeIf { it.queryCount > 1 } ?: return null
     if (neighbor?.row?.transaction?.id == transaction.id) return null
     return TimelineItemUiModel.TransactionHeader(
         transaction = transaction,
