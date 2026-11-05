@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.device.usecase
 
-import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import kotlin.test.Test
@@ -11,17 +10,8 @@ import kotlin.test.assertTrue
 
 class ObserveCurrentDeviceCapabilitiesUseCaseTest {
 
-    private val app = DeviceAppDomainModel(
-        name = "app",
-        packageName = "com.example.app",
-        iconEncoded = null,
-        lastAppInstance = 0L,
-        floconVersionOnDevice = "1.0.0",
-    )
-
     private fun capabilities(platform: String, connectionType: DeviceConnectionType) = computeCapabilities(
         device = DeviceDomainModel("id", "name", platform, connectionType),
-        app = app,
     )
 
     @Test

@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.device.usecase
 
-import io.github.openflocon.domain.device.models.DeviceAppDomainModel
 import io.github.openflocon.domain.device.models.DeviceCapabilitiesDomainModel
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.isPlatformAndroid
@@ -21,12 +20,7 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
             flowOf(null)
         } else {
             devicesRepository.observeDeviceSelectedApp(device.deviceId).map { app ->
-                app?.let {
-                    computeCapabilities(
-                        device = device,
-                        app = app,
-                    )
-                }
+                app?.let { computeCapabilities(device = device) }
             }
         }
     }
@@ -34,7 +28,6 @@ class ObserveCurrentDeviceCapabilitiesUseCase(
 
 internal fun computeCapabilities(
     device: DeviceDomainModel,
-    app: DeviceAppDomainModel
 ): DeviceCapabilitiesDomainModel? = when {
     device.isPlatformAndroid() -> {
         val adb = device.supportsAdb()
