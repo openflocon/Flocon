@@ -115,6 +115,17 @@ internal class FloconDatabasePluginImpl(
         sendDatabases(registeredDatabases.value)
     }
 
+    // one state per database, for the callers that do not know the transaction of their queries
+    private val transactionStates = mutableMapOf<String, FloconTransactionState>()
+
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
+        val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
+        val transactionId = state.onQuery(sqlQuery)
+        // outside of a transaction: nothing to remember for this database
+        if (transactionId == null) transactionStates.remove(dbId)
+        logQuery(dbId, sqlQuery, bindArgs, transactionId)
+    }
+
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) {
         scope.launch {
             try {

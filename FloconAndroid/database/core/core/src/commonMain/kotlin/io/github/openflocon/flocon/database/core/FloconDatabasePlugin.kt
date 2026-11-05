@@ -16,10 +16,20 @@ interface FloconDatabasePlugin : FloconPlugin {
     fun register(floconDatabaseModel: FloconDatabaseModel)
 
     /**
+     * Logs a query, the plugin finds the transaction it belongs to from the queries already logged for [dbId]
+     * (BEGIN, COMMIT, SAVEPOINT...), so all the queries of a transaction are grouped in the desktop app.
+     * Not thread safe for a given [dbId]: call it from one thread at a time.
+     *
      * @param dbId the id the database was registered with (see [register]), the queries are shown with this database in the desktop app
-     * @param transactionId the same id for all the queries of a transaction (BEGIN and COMMIT included), the desktop app groups them. Null outside of a transaction
      */
-    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String? = null)
+    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>)
+
+    /**
+     * Logs a query whose transaction is already known by the caller, ex: a driver that follows each connection.
+     *
+     * @param transactionId the same id for all the queries of a transaction (BEGIN and COMMIT included). Null outside of a transaction
+     */
+    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?)
 
 }
 
@@ -30,6 +40,7 @@ private class NoOpDatabasePlugin : FloconDatabasePlugin {
     override val key: String = ""
     override val providers: List<FloconDatabaseProvider> = emptyList()
     override fun register(floconDatabaseModel: FloconDatabaseModel) = Unit
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
