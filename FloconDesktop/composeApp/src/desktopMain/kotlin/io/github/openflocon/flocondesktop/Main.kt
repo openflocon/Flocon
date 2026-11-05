@@ -32,8 +32,13 @@ import flocondesktop.composeapp.generated.resources.app_icon_window
 import flocondesktop.composeapp.generated.resources.app_name
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.feedback.FeedbackDisplayerHandler
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
+import io.github.openflocon.domain.settings.usecase.ParseServerPortsLaunchOptions
 import io.github.openflocon.flocondesktop.about.AboutScreen
 import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
+import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSourcePrefs
+import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.createSettings
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_HEIGHT
 import io.github.openflocon.flocondesktop.window.MIN_WINDOW_WIDTH
 import io.github.openflocon.flocondesktop.window.WindowStateData
@@ -46,10 +51,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.awt.Dimension
+import kotlin.system.exitProcess
 
 private const val ACTIVATE_TRAY_NOTIFICATION = false
 
-fun main() {
+fun main(args: Array<String>) {
+    val serverPortsOverrides = serverPortsLaunchOptions(args.toList())
+
     System.setProperty("apple.awt.application.name", "Flocon")
 
     System.setProperty("apple.awt.application.appearance", "system")
@@ -112,7 +120,7 @@ fun main() {
                 LocalWindowTitleBar provides rememberWindowTitleBar(),
             ) {
                 window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
-                App()
+                App(serverPortsOverrides)
                 if (ACTIVATE_TRAY_NOTIFICATION) {
                     FloconTray()
                 }
@@ -125,6 +133,26 @@ fun main() {
             }
         }
     }
+}
+
+// the ports given as launch options are used for this session only, never saved
+private fun serverPortsLaunchOptions(args: List<String>): ServerPortsOverrides {
+    val overrides = ParseServerPortsLaunchOptions.parse(args, System.getenv())
+        .fold(doOnFailure = { exitWithError(it) }, doOnSuccess = { it })
+    if (overrides.isEmpty) return overrides
+    ParseServerPortsLaunchOptions.validateEffective(overrides, readSavedServerPorts())
+        .alsoFailure { exitWithError(it) }
+    return overrides
+}
+
+// read synchronously, the app is not started yet
+private fun readSavedServerPorts(): ServerPortsDomainModel = SettingsDataSourcePrefs.parseServerPorts(
+    createSettings().getStringOrNull(SettingsDataSourcePrefs.SERVER_PORTS),
+)
+
+private fun exitWithError(message: String): Nothing {
+    System.err.println("Flocon: $message")
+    exitProcess(1)
 }
 
 @Composable

@@ -2,6 +2,7 @@ package io.github.openflocon.domain.settings.repository
 
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +40,10 @@ interface SettingsRepository {
     fun getLastSeenReleaseNotesVersion(): String?
 
     suspend fun setLastSeenReleaseNotesVersion(version: String)
+
+    val savedServerPorts: Flow<ServerPortsDomainModel>
+
+    suspend fun setServerPorts(ports: ServerPortsDomainModel)
 
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>

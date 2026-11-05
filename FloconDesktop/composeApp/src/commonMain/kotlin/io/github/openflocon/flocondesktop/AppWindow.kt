@@ -18,6 +18,7 @@ import io.github.openflocon.domain.domainModule
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCase
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -42,7 +43,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @Composable
-fun App() {
+fun App(serverPortsOverrides: ServerPortsOverrides = ServerPortsOverrides.None) {
     ComposeFoundationFlags.isNewContextMenuEnabled = true
 
     KoinApplication(
@@ -57,6 +58,8 @@ fun App() {
                 dataLocalModule,
                 dataRemoteModule,
                 mcpModule,
+                // the ports given as launch options, for this session only
+                module { single { serverPortsOverrides } },
                 // Temporary
                 module {
 //                    scope<MainRoutes.Sub> {
