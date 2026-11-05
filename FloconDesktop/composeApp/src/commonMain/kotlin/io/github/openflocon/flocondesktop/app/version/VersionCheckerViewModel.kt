@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
+import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.DismissClientVersionUseCase
 import io.github.openflocon.domain.versions.usecase.ObserveIsClientOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.ObserveUpdateAvailableUseCase
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class VersionCheckerViewModel(
+    private val checkIsDesktopOnLastVersionUseCase: CheckIsDesktopOnLastVersionUseCase,
     private val dismissClientVersionUseCase: DismissClientVersionUseCase,
     private val observeIsClientOnLastVersionUseCase: ObserveIsClientOnLastVersionUseCase,
     private val observeUpdateAvailableUseCase: ObserveUpdateAvailableUseCase,
@@ -62,6 +64,13 @@ class VersionCheckerViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null,
         )
+
+    init {
+        // fetches the latest released version: the desktop and SDK updates above are both derived from it
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            checkIsDesktopOnLastVersionUseCase(current = BuildConfig.APP_VERSION)
+        }
+    }
 
     private fun IsLastVersionDomainModel.toSdkUpdate(): SdkUpdateUiModel? = when (this) {
         is IsLastVersionDomainModel.NewVersionAvailable -> SdkUpdateUiModel(
