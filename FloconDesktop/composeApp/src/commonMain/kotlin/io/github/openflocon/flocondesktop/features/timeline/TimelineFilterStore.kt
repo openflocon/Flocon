@@ -27,6 +27,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 
+// the value of [TimelineFacet.DatabaseStatement] for BEGIN, COMMIT, ROLLBACK...
+private const val DATABASE_TRANSACTION = "TRANSACTION"
+
 /**
  * What the user typed or moved in the network card of the filter panel, next to the values hidden by facet.
  */
@@ -87,9 +90,11 @@ internal class TimelineFilterStore(
     val text: StateFlow<String>
         field = MutableStateFlow("")
 
-    // the values kept by facet
+    // the values hidden by facet: the begin, commit and rollback of the databases are noise, hidden until the filter is removed
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
-        field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(emptyMap())
+        field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(
+            mapOf(TimelineFacet.DatabaseStatement to setOf(DATABASE_TRANSACTION)),
+        )
 
     // the status, host and duration rules of the network calls
     val network: StateFlow<TimelineNetworkRules>

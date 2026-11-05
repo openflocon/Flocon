@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,14 +43,23 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import dev.chrisbanes.haze.HazeInput
+import dev.chrisbanes.haze.HazePerformanceMode
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.hazeBlur
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.LocalHazeState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy.Companion.BIG_DIALOG
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+
+private val PanelBlurRadius = 24.dp
+private const val PanelTintAlpha = 0.75f
 
 @Immutable
 private data class BigDialogScene(
@@ -67,6 +77,17 @@ private data class BigDialogScene(
     override val key: Any = entry.contentKey
     override val entries: List<NavEntry<FloconRoute>> = listOf(entry)
     override val content: @Composable (() -> Unit) = {
+        val hazeState = LocalHazeState.current
+        val floating = FloconTheme.colors.floating
+        val panelBlurStyle = remember(floating) {
+            HazeBlurStyle {
+                blurEnabled(true)
+                blurRadius(PanelBlurRadius)
+                backgroundColor(floating)
+                colorEffects(listOf(HazeColorEffect.tint(floating.copy(alpha = PanelTintAlpha))))
+            }
+        }
+
         LaunchedEffect(Unit) {
             val alphaTask = async { alpha.animateTo(1f, spec) }
             val scaleTask = async { scale.animateTo(1f, spec) }
@@ -104,15 +125,18 @@ private data class BigDialogScene(
                         this.scaleX = scale.value
                         this.scaleY = scale.value
                     }
-                    .dropShadow(
-                        shape = RoundedCornerShape(12.dp),
-                        shadow = Shadow(
-                            radius = 4.dp,
-                            color = Color.Black.copy(alpha = 0.35f)
-                        )
-                    )
                     .clip(RoundedCornerShape(12.dp))
-                    .background(FloconTheme.colors.floating)
+                    .then(
+                        if (hazeState != null) {
+                            Modifier.hazeBlur(
+                                input = HazeInput.Sources(hazeState),
+                                style = panelBlurStyle,
+                                performanceMode = HazePerformanceMode.Performance,
+                            )
+                        } else {
+                            Modifier.background(FloconTheme.colors.floating)
+                        }
+                    )
                     .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(12.dp))
                     .padding(FloconTheme.spacing.large)
             ) {

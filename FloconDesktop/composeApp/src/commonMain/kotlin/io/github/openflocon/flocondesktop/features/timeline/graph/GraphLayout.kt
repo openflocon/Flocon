@@ -107,8 +107,41 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
 
 private const val MinZoomBoxPx = 8f
 
-// moves along the time axis, never more than a second before the start of the session
-internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(MIN_START_MS))
+/**
+ * The furthest the graph can be moved to the right: its end, in ms since the start of the session.
+ * The most recent session ends now, even when nothing happened for a while (the phone and the computer are expected to
+ * agree on the time; a phone behind never ends before its last event). An older session ends at its last event or screenshot.
+ * Null: nothing to show. [latestMs] is the one of the model, given by whoever asks often so it is not searched again.
+ */
+internal fun GraphUiModel.panLimitMs(isMostRecentSession: Boolean, nowTimestamp: Long, latestMs: Long? = latestMs()): Long? {
+    if (!isMostRecentSession || sessionStartTimestamp <= 0L) return latestMs
+    val nowMs = nowTimestamp - sessionStartTimestamp
+    return if (latestMs == null) nowMs.coerceAtLeast(0L) else max(latestMs, nowMs)
+}
+
+/**
+ * Moves along the time axis, never more than a second before the start of the session, and never further to the right
+ * than [limitMs] (see panLimitMs) at the right of the track, with the margin of the auto scroll: no scrolling into the
+ * future. A viewport already further right (zoomed out, short session) does not move to the right, and is not pulled
+ * back. Without a limit, nothing moves to the right.
+ */
+internal fun GraphViewport.panned(deltaMs: Double, limitMs: Long?, trackWidthPx: Float): GraphViewport {
+    val moved = startMs + deltaMs
+    val maxStartMs = limitMs?.let { max(startMs, it - (trackWidthPx - JumpMarginPx) / pxPerMs) } ?: startMs
+    return copy(startMs = moved.coerceAtMost(maxStartMs).coerceAtLeast(MIN_START_MS))
+}
+
+/**
+ * A move to the right that arrives at the end of the graph (see panned): the viewport was short of it and [moved] is on it.
+ * Already there, or moving away from it, is not arriving. Without a limit there is no end.
+ */
+internal fun GraphViewport.reachedEnd(moved: GraphViewport, limitMs: Long?, trackWidthPx: Float): Boolean {
+    if (limitMs == null) return false
+    val endStartMs = limitMs - (trackWidthPx - JumpMarginPx) / pxPerMs - ReachedEndToleranceMs
+    return startMs < endStartMs && moved.startMs >= endStartMs
+}
+
+private const val ReachedEndToleranceMs = 0.5
 
 // the height of a lane: its rows
 internal fun GraphLaneUiModel.heightPx(): Float = rows.size * RowHeightPx
@@ -199,15 +232,17 @@ internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
 }
 
 /**
- * The auto scroll: when the most recent event or screenshot is past the right of the track, moves along the time axis to
- * put it at the right. The zoom and the lanes do not change. Nothing moves while it is in view.
+ * The auto scroll on the present moment: when [endMs] (see panLimitMs) is past the right of the track, moves along the
+ * time axis to put it at the right, with the margin of the jump. Never moves back, nothing moves while it is in view.
  */
-internal fun GraphViewport.followedLatest(model: GraphUiModel, trackWidthPx: Float): GraphViewport {
-    val latestMs = model.latestMs() ?: return this
+internal fun GraphViewport.followedTo(endMs: Long, trackWidthPx: Float): GraphViewport {
     val rightMs = startMs + (trackWidthPx - JumpMarginPx) / pxPerMs
-    if (latestMs <= rightMs) return this
-    return copy(startMs = max(latestMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
+    if (endMs <= rightMs) return this
+    return copy(startMs = max(endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
 }
+
+// how far [endMs] is past the right of the track, in px: the auto scroll on the present waits for a pixel to move
+internal fun GraphViewport.pxPastRight(endMs: Long, trackWidthPx: Float): Double = (endMs - (startMs + (trackWidthPx - JumpMarginPx) / pxPerMs)) * pxPerMs
 
 /**
  * Moves to the most recent event or screenshot, at the right of the track, in the row that holds the latest event.

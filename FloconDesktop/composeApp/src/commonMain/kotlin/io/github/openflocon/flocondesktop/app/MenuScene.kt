@@ -1,7 +1,7 @@
 package io.github.openflocon.flocondesktop.app
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -39,12 +39,14 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.hazeBackground
 import io.github.openflocon.navigation.mascot.LocalMascot
 import io.github.openflocon.navigation.mascot.LocalMascotCommands
 import io.github.openflocon.navigation.mascot.MascotCommands
 import io.github.openflocon.navigation.mascot.MascotOverlay
 import io.github.openflocon.navigation.mascot.MascotPlatforms
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import io.github.openflocon.navigation.scene.PanelScene
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -70,6 +72,7 @@ data class MenuScene(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .hazeBackground()
                 .onGloballyPositioned { origin = it.positionInRoot() }
                 .pointerInput(Unit) {
                     // watches the pointer without consuming anything
@@ -127,7 +130,13 @@ data class MenuScene(
                             .fillMaxHeight()
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
-                            scene.content()
+                            if (scene !is PanelScene) {
+                                Crossfade(scene) {
+                                    it.content()
+                                }
+                            } else {
+                                scene.content()
+                            }
                         }
                     }
                 }

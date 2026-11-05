@@ -63,7 +63,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @Immutable
-private data class PanelScene(
+data class PanelScene(
     override val key: Any,
     private val allEntries: List<NavEntry<FloconRoute>>,
     private val properties: PaneProperties,
