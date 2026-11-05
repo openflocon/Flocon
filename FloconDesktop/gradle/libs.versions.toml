@@ -8,6 +8,7 @@ compose-multiplatform = "1.12.2"
 compose-rules = "0.5.9"
 junit = "4.13.2"
 filekit = "0.16.0"
+haze = "2.1.0"
 molecule = "2.2.0"
 kermit = "2.1.0"
 koin = "4.2.2"
@@ -54,6 +55,10 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+
+# Haze
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "haze" }
 
 # Compose
 compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }

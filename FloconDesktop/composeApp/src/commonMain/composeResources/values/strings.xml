@@ -4,6 +4,8 @@
     <string name="release_notes_error">Unable to load the release notes.</string>
     <string name="release_notes_retry">Retry</string>
     <string name="auto_scroll">Auto scroll</string>
+    <string name="timeline_auto_scroll_follow">Follow</string>
+    <string name="timeline_auto_scroll_following">Following</string>
     <string name="auto_update">Auto Update</string>
     <string name="clear_old_sessions">Clear old sessions</string>
     <string name="close">Close</string>
@@ -82,8 +84,6 @@
     <string name="timeline_view_graph">Graph</string>
     <string name="timeline_graph_fit">Fit</string>
     <string name="timeline_graph_latest">Latest</string>
-    <string name="timeline_graph_following">Following</string>
-    <string name="timeline_graph_paused">Paused</string>
     <string name="timeline_graph_zoom_in">+</string>
     <string name="timeline_graph_zoom_out">-</string>
     <string name="timeline_graph_zoom_unit">%</string>
@@ -185,18 +185,6 @@
     <plurals name="timeline_counter_events">
         <item quantity="one">event</item>
         <item quantity="other">events</item>
-    </plurals>
-    <plurals name="timeline_counter_sessions">
-        <item quantity="one">session</item>
-        <item quantity="other">sessions</item>
-    </plurals>
-    <plurals name="timeline_counter_http_errors">
-        <item quantity="one">HTTP error</item>
-        <item quantity="other">HTTP errors</item>
-    </plurals>
-    <plurals name="timeline_counter_crashes">
-        <item quantity="one">crash</item>
-        <item quantity="other">crashes</item>
     </plurals>
     <plurals name="timeline_session_events">
         <item quantity="one">%1$d event</item>
