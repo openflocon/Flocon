@@ -29,7 +29,6 @@ internal fun DeviceDomainModel.mapToUi(
     platform = mapToPlatformUi(platform),
     canScreenshot = currentDeviceCapabilities?.screenshot == true,
     canScreenRecord = currentDeviceCapabilities?.recordScreen == true,
-    canRestart = currentDeviceCapabilities?.restart == true,
 )
 
 private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform = when (platform) {

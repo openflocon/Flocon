@@ -43,10 +43,6 @@ interface DevicesRepository {
         packageName: AppPackageName,
     )
 
-    suspend fun restartApp(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
-    )
-
     suspend fun clear()
     fun observeCurrentDevice(): Flow<DeviceDomainModel?>
 }

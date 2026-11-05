@@ -27,7 +27,6 @@ kotlin {
             implementation(projects.tables.tables)
             implementation(projects.sharedprefs.sharedprefs)
             implementation(projects.files.files)
-            implementation(projects.device.device)
             implementation(projects.crashreporter.crashreporter)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
             implementation(projects.database.room3.room3)

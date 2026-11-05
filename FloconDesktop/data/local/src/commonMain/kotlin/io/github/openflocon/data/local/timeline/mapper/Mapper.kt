@@ -23,6 +23,10 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 
 private fun String.toTimelineSource(): TimelineSource = when (this) {
     KIND_NETWORK, KIND_NETWORK_RESPONSE -> TimelineSource.Network
@@ -37,6 +41,22 @@ private fun String.toTimelineSource(): TimelineSource = when (this) {
     KIND_LOG -> TimelineSource.Log
     KIND_APP_START -> TimelineSource.AppStart
     else -> error("unknown timeline kind: $this")
+}
+
+/**
+ * `{"NetworkMethod":"GET","NetworkStatus":null}` into the facets the event has a value for.
+ * Unknown facets and malformed text are ignored: the event is still displayed, it just cannot be excluded by them.
+ */
+internal fun parseTimelineFacets(json: String?): Map<TimelineFacet, String> {
+    if (json.isNullOrBlank()) return emptyMap()
+    val values = runCatching { Json.parseToJsonElement(json).jsonObject }.getOrNull() ?: return emptyMap()
+    return buildMap {
+        values.forEach { (name, element) ->
+            val facet = TimelineFacet.entries.firstOrNull { it.name == name } ?: return@forEach
+            val value = (element as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content ?: return@forEach
+            put(facet, value)
+        }
+    }
 }
 
 internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEventDomainModel(
@@ -55,6 +75,7 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     hasError = hasError,
     responseByteSize = responseByteSize,
     level = level?.toTimelineLogLevel(),
+    facets = parseTimelineFacets(facetValues),
 )
 
 // the level is stored upper-case, an unknown one is not shown rather than failing the whole timeline

@@ -44,6 +44,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -93,6 +94,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.SessionHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenuCallbacks
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -191,6 +193,12 @@ internal fun TimelineContent(
             .onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) {
                     false
+                } else if (event.key == Key.C && event.isShiftPressed && (event.isCtrlPressed || event.isMetaPressed) &&
+                    selectedKey?.startsWith("${TimelineSource.Network.name}:") == true
+                ) {
+                    // the shortcut shown in the menu of a network call
+                    onAction(TimelineAction.CopySelectedUrl)
+                    true
                 } else if (event.key == Key.K && (event.isCtrlPressed || event.isMetaPressed)) {
                     runCatching { searchFocus.requestFocus() }
                     true
@@ -223,6 +231,27 @@ internal fun TimelineContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         ) {
+            FloconButton(
+                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
+                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
+                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
+            ) {
+                FloconIcon(imageVector = Icons.Outlined.FilterList)
+                Text(
+                    text = stringResource(Res.string.timeline_filters_toggle),
+                    style = FloconTheme.typography.labelLarge,
+                    maxLines = 1,
+                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+                if (activeFilterCount > 0) {
+                    Text(
+                        text = activeFilterCount.toString(),
+                        style = FloconTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.accent,
+                    )
+                }
+            }
             FilterBar(
                 filterText = filterText,
                 placeholderText = stringResource(Res.string.filter),
@@ -246,28 +275,6 @@ internal fun TimelineContent(
                 selectedIndex = if (settings.graph) 1 else 0,
                 onSelect = { onAction(TimelineAction.SetGraph(it == 1)) },
             )
-            // a text next to the icon, to find the filters at first sight: the count of the active filters is in a badge
-            FloconButton(
-                onClick = { onAction(TimelineAction.ToggleFilterPanel) },
-                containerColor = if (filterPanelOpen) colors.accentSoft else colors.bg200,
-                modifier = Modifier.height(FloconTheme.sizes.controlHeight),
-            ) {
-                FloconIcon(imageVector = Icons.Outlined.FilterList)
-                Text(
-                    text = stringResource(Res.string.timeline_filters_toggle),
-                    style = FloconTheme.typography.labelLarge,
-                    maxLines = 1,
-                    modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
-                )
-                if (activeFilterCount > 0) {
-                    Text(
-                        text = activeFilterCount.toString(),
-                        style = FloconTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.accent,
-                    )
-                }
-            }
         }
 
         if (showEmptyState) {
@@ -358,7 +365,13 @@ internal fun TimelineContent(
                                 }
                                 TimelineRowMenu(
                                     row = item.row,
-                                    onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                    callbacks = TimelineRowMenuCallbacks(
+                                        onNetworkOption = { onAction(TimelineAction.NetworkOption(item.row.id, it)) },
+                                        onExclude = { facet, value -> onAction(TimelineAction.Exclude(facet, value)) },
+                                        onExcludePath = { onAction(TimelineAction.ExcludePath(it)) },
+                                        onExcludeSource = { onAction(TimelineAction.ExcludeSource(item.row.source)) },
+                                        onManageExclusions = { onAction(TimelineAction.OpenFilters(item.row.source)) },
+                                    ),
                                 ) {
                                     TimelineRow(
                                         row = item.row,
