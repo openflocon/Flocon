@@ -224,7 +224,6 @@ internal class AppViewModel(
 
             AppAction.Record -> onRecord()
 
-
             AppAction.Screenshoot -> onTakeScreenshot()
 
             AppAction.OpenFloconFolder -> onOpenFloconFolder()
