@@ -1,6 +1,8 @@
 package io.github.openflocon.data.core.timeline
 
+import io.github.openflocon.data.core.timeline.repository.TimelineFocusRepositoryImpl
 import io.github.openflocon.data.core.timeline.repository.TimelineRepositoryImpl
+import io.github.openflocon.domain.timeline.repository.TimelineFocusRepository
 import io.github.openflocon.domain.timeline.repository.TimelineRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -10,4 +12,5 @@ internal val timelineModule = module {
     singleOf(::TimelineRepositoryImpl) {
         bind<TimelineRepository>()
     }
+    single<TimelineFocusRepository> { TimelineFocusRepositoryImpl() }
 }

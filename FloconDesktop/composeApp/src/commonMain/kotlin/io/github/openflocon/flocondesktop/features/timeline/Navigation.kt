@@ -23,6 +23,15 @@ sealed interface TimelineRoutes : FloconRoute {
 
         override val pinGroup: String? get() = PanelPinGroups.Timeline
     }
+
+    // the detail of a log (id: the id of the log in the table of the logs), pinned with the other panels of the timeline
+    @Serializable
+    data class LogDetail(val id: Long) :
+        TimelineRoutes,
+        PanelRoute {
+
+        override val pinGroup: String? get() = PanelPinGroups.Timeline
+    }
 }
 
 fun EntryProviderScope<FloconRoute>.timelineRoutes() {
@@ -40,5 +49,13 @@ fun EntryProviderScope<FloconRoute>.timelineRoutes() {
         }
     ) {
         TimelineFilterPanelScreen()
+    }
+    entry<TimelineRoutes.LogDetail>(
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
+    ) {
+        TimelineLogDetailScreen(id = it.id)
     }
 }

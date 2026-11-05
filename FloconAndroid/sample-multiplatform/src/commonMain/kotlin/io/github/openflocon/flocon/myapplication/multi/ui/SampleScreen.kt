@@ -23,5 +23,6 @@ enum class SampleScreen(
     Dashboard("Dashboard & Tables", "Live values and table rows", SampleCategory.Table, SampleIcons.Dashboard),
     Deeplinks("Deeplinks", "Static and runtime links", SampleCategory.Deeplink, SampleIcons.Deeplinks),
     Images("Images", "A scrolling list of remote images", SampleCategory.Neutral, SampleIcons.Images),
+    Timeline("Timeline logs", "Navigation, actions, lifecycle and custom events", SampleCategory.Neutral, SampleIcons.Timeline),
     Crash("Crash reporter", "Throw a test crash", SampleCategory.Crash, SampleIcons.Crash, SamplePlatform.NotWeb),
 }

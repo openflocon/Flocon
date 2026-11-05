@@ -63,7 +63,6 @@ fun MainScreenTopBar(
     onTakeScreenshotClicked: () -> Unit,
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
-    onRestartClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
     modifier: Modifier = Modifier,
     updateChip: VersionCheckerViewModel.UpdateChipUiModel? = null,
@@ -104,7 +103,6 @@ fun MainScreenTopBar(
             onTakeScreenshotClicked = onTakeScreenshotClicked,
             recordState = recordState,
             onRecordClicked = onRecordClicked,
-            onRestartClicked = onRestartClicked,
             onOpenFolderClicked = onOpenFolderClicked,
             devicesState = devicesState,
         )

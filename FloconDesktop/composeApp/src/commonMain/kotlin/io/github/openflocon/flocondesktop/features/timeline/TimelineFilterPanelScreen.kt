@@ -16,10 +16,13 @@ internal fun TimelineFilterPanelScreen(
 ) {
     val viewModel: TimelineFilterPanelViewModel = koinViewModel()
     val panel by viewModel.panel.collectAsStateWithLifecycle()
+    val focusedSource by viewModel.focusedSource.collectAsStateWithLifecycle()
 
     TimelineFilterPanel(
         panel = panel,
+        logTagText = viewModel.logTagText,
         onAction = viewModel::onAction,
+        focusedSource = focusedSource,
         modifier = modifier,
     )
 }

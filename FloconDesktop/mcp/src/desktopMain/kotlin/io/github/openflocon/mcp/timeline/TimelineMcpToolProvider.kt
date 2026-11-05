@@ -1,14 +1,11 @@
 package io.github.openflocon.mcp.timeline
 
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_EVENTS
-import io.github.openflocon.domain.timeline.models.TimelineEventRef
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import io.github.openflocon.domain.timeline.usecase.GetTimelineEventsUseCase
-import io.github.openflocon.domain.timeline.usecase.GetTimelineSummaryUseCase
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
@@ -23,13 +20,11 @@ import java.util.Locale
 
 internal class TimelineMcpToolProvider(
     private val targetResolver: McpTargetResolver,
+    private val windowFinder: TimelineWindowFinder,
     private val getTimelineEventsUseCase: GetTimelineEventsUseCase,
-    private val getTimelineSummaryUseCase: GetTimelineSummaryUseCase,
     private val zone: ZoneId,
-    nowMs: () -> Long,
 ) : McpToolProvider {
 
-    private val windowResolver = TimelineWindowResolver(zone = zone, nowMs = nowMs)
     private val narrator = TimelineNarrator(zone)
 
     override fun register(server: McpToolServer) {
@@ -54,10 +49,7 @@ internal class TimelineMcpToolProvider(
         val search = searchOf(input)
         val maxLines = input.maxLines.coerceIn(1, MAX_LINES)
 
-        val summary = getTimelineSummaryUseCase(target, TimelineFilterDomainModel())
-        val anchors = anchorsOf(target, summary)
-        val eventAnchor = input.eventId?.let { eventAnchorOf(target, it) }
-        val window = windowResolver.resolve(input, anchors, eventAnchor)
+        val (summary, _, _, window) = windowFinder.find(target, input)
 
         val events = if (window.isEmpty) {
             emptyList()
@@ -114,40 +106,6 @@ internal class TimelineMcpToolProvider(
         )
     }
 
-    // the sessions and the crashes tell where to look, the window is read afterwards
-    private suspend fun anchorsOf(target: DeviceIdAndPackageNameDomainModel, summary: TimelineSummaryDomainModel): TimelineAnchors {
-        val markers = getTimelineEventsUseCase(
-            target,
-            TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart, TimelineSource.Crash)),
-        )
-        return TimelineAnchors(
-            sessionStarts = markers.filter { it.source == TimelineSource.AppStart }.map { it.timestamp }.sorted(),
-            crashes = markers.filter { it.source == TimelineSource.Crash }.map {
-                TimelineCrash(id = it.id, timestampMs = it.timestamp, title = it.title)
-            },
-            lastEventMs = summary.sources
-                .filterKeys { it != TimelineSource.AppStart }
-                .values
-                .mapNotNull { it.lastTimestamp }
-                .maxOrNull(),
-        )
-    }
-
-    private suspend fun eventAnchorOf(target: DeviceIdAndPackageNameDomainModel, eventId: String): TimelineEventAnchor {
-        val source = TimelineSource.entries.firstOrNull { eventId.substringBefore(':', "").equals(it.name, ignoreCase = true) }
-        val id = eventId.substringAfter(':', "")
-        if (source == null || id.isEmpty()) {
-            throw McpToolException("Unreadable event id '$eventId': expected source:id, like network:<callId>, as in the lines of a previous answer.")
-        }
-        val event = getTimelineEventsUseCase(target, TimelineFilterDomainModel(events = setOf(TimelineEventRef(source, id)))).firstOrNull()
-            ?: throw McpToolException("Event '$eventId' not found. Use the ids of a previous get_timeline answer.")
-        return TimelineEventAnchor(
-            id = "${source.name.lowercase(Locale.ROOT)}:${event.id}",
-            timestampMs = event.timestamp,
-            label = event.title.take(LABEL_MAX).ifBlank { source.name },
-        )
-    }
-
     private fun searchOf(input: GetTimelineInput): TimelineSearch? {
         val text = input.search?.takeIf { it.isNotBlank() } ?: return null
         val source = input.searchSource?.takeIf { it.isNotBlank() }?.let { sourceNamed(it, argument = "searchSource") }
@@ -177,8 +135,4 @@ internal class TimelineMcpToolProvider(
     }
 
     private fun local(ms: Long): String = ZonedDateTime.ofInstant(Instant.ofEpochMilli(ms), zone).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-
-    private companion object {
-        const val LABEL_MAX = 80
-    }
 }

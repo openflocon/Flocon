@@ -43,6 +43,7 @@ import io.github.openflocon.data.local.files.models.FileEntity
 import io.github.openflocon.data.local.files.models.FileOptionsEntity
 import io.github.openflocon.data.local.images.dao.FloconImageDao
 import io.github.openflocon.data.local.images.models.DeviceImageEntity
+import io.github.openflocon.data.local.maintenance.dao.DatabaseMaintenanceDao
 import io.github.openflocon.data.local.network.dao.FloconNetworkDao
 import io.github.openflocon.data.local.network.dao.NetworkBadQualityConfigDao
 import io.github.openflocon.data.local.network.dao.NetworkFilterDao
@@ -57,6 +58,8 @@ import io.github.openflocon.data.local.table.dao.FloconTableDao
 import io.github.openflocon.data.local.table.models.TableEntity
 import io.github.openflocon.data.local.table.models.TableItemEntity
 import io.github.openflocon.data.local.timeline.dao.TimelineDao
+import io.github.openflocon.data.local.timelinelog.dao.TimelineLogDao
+import io.github.openflocon.data.local.timelinelog.models.TimelineLogEntity
 import io.github.openflocon.data.local.webview.dao.WebViewEventDao
 import io.github.openflocon.data.local.webview.models.WebViewEventEntity
 import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverters
@@ -65,7 +68,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConvert
 import kotlinx.coroutines.Dispatchers
 
 @Database(
-    version = 91,
+    version = 92,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,
@@ -98,6 +101,7 @@ import kotlinx.coroutines.Dispatchers
         AdbFlowEntity::class,
         AdbFlowStepEntity::class,
         WebViewEventEntity::class,
+        TimelineLogEntity::class,
     ]
 )
 @TypeConverters(
@@ -130,6 +134,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val adbCommanderDao: AdbCommanderDao
     abstract val timelineDao: TimelineDao
     abstract val webViewEventDao: WebViewEventDao
+    abstract val timelineLogDao: TimelineLogDao
+    abstract val maintenanceDao: DatabaseMaintenanceDao
 }
 
 fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
@@ -137,5 +143,14 @@ fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
+    .also { database ->
+        // closing the database checkpoints the WAL into the main file, so the -wal file does not stay on the disk
+        Runtime.getRuntime().addShutdownHook(
+            Thread { runCatching { database.close() } },
+        )
+    }
 
 expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
+
+/** The SQLite file of the Flocon database. */
+expect fun getDatabaseFile(): java.io.File

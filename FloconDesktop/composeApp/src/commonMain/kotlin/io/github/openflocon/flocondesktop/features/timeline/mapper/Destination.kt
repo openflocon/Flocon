@@ -11,6 +11,7 @@ import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.deeplinks.DeeplinkRoutes
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
+import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.navigation.FloconRoute
 
@@ -36,4 +37,5 @@ internal fun TimelineRowUiModel.toDestination(): TimelineDestination? = when (so
     TimelineSource.Table -> TimelineDestination.Panel(TableRoutes.Detail(id = id, fromTimeline = true))
     TimelineSource.Deeplink -> id.toLongOrNull()?.let { TimelineDestination.Panel(DeeplinkRoutes.Panel(id = it, fromTimeline = true)) }
     TimelineSource.Adb -> id.toLongOrNull()?.let { TimelineDestination.Panel(AdbCommanderRoutes.Panel(id = it, fromTimeline = true)) }
+    TimelineSource.Log -> id.toLongOrNull()?.let { TimelineDestination.Panel(TimelineRoutes.LogDetail(id = it)) }
 }

@@ -58,10 +58,18 @@ data class FloconColors(
     val catWebView: Color,
     val catWebViewSoft: Color,
     val catAppstart: Color,
+    val catLog: Color,
+    val catLogSoft: Color,
     val statusSuccess: Color,
     val statusInfo: Color,
     val statusWarning: Color,
     val statusError: Color,
+    // the logs of the timeline: a diamond colored by level (warning and error use the statuses), a dedicated shape and color per reserved type
+    val logDebug: Color,
+    val logInfo: Color,
+    val logNavigation: Color,
+    val logUserAction: Color,
+    val logLifecycle: Color,
     // opaque surface for what floats above the content (panels, dialogs, menus)
     val floating: Color,
     // the app chrome floats as islands over the page background, their fills are translucent
@@ -89,6 +97,7 @@ data class FloconColors(
         EventCategory.Adb -> catAdb to catAdbSoft
         EventCategory.Accessibility -> catAccessibility to catAccessibilitySoft
         EventCategory.WebView -> catWebView to catWebViewSoft
+        EventCategory.Log -> catLog to catLogSoft
         EventCategory.AppStart -> accent to accentSoft
     }
 
@@ -102,7 +111,7 @@ data class FloconColors(
     }
 }
 
-enum class EventCategory { Network, Database, Analytics, Crash, Table, Deeplink, Adb, Accessibility, WebView, AppStart }
+enum class EventCategory { Network, Database, Analytics, Crash, Table, Deeplink, Adb, Accessibility, WebView, Log, AppStart }
 
 val FloconDarkColors = FloconColors(
     bg000 = Color(0xFF111111),
@@ -154,10 +163,17 @@ val FloconDarkColors = FloconColors(
     catWebView = Color(0xFF8FA8FF),
     catWebViewSoft = Color(0x218FA8FF),
     catAppstart = Color(0xFFF5B440),
+    catLog = Color(0xFF6FD0E6),
+    catLogSoft = Color(0x216FD0E6),
     statusSuccess = Color(0xFF4FD08A),
     statusInfo = Color(0xFF5EAAF7),
     statusWarning = Color(0xFFF7A531),
     statusError = Color(0xFFFF6D6D),
+    logDebug = Color(0xFF3B6FE0),
+    logInfo = Color(0xFFE3C2FF),
+    logNavigation = Color(0xFF4ADE80),
+    logUserAction = Color(0xFF67D4E8),
+    logLifecycle = Color(0xFFFF5C7A),
     floating = Color(0xFF1C1C28),
     islandSidebar = Color(0xFF1F1F1F),
     islandTopBar = Color(0xFF1F1F1F),
@@ -220,10 +236,17 @@ val FloconLightColors = FloconColors(
     catWebView = Color(0xFF3B55C2),
     catWebViewSoft = Color(0xFFE4E9FB),
     catAppstart = Color(0xFFC27C0E),
+    catLog = Color(0xFF0E7490),
+    catLogSoft = Color(0xFFDDF3F8),
     statusSuccess = Color(0xFF17804A),
     statusInfo = Color(0xFF1D6BBF),
     statusWarning = Color(0xFFA35A00),
     statusError = Color(0xFFC62F2F),
+    logDebug = Color(0xFF1E40AF),
+    logInfo = Color(0xFFA855F7),
+    logNavigation = Color(0xFF15803D),
+    logUserAction = Color(0xFF0E7490),
+    logLifecycle = Color(0xFFBE123C),
     floating = Color(0xFFF3F3F8),
     islandSidebar = Color(0xFFFFFFFF),
     islandTopBar = Color(0xFFFFFFFF),

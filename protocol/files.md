@@ -211,7 +211,7 @@ Response to `list_files`, `delete_file`, `delete_files` and `delete_folder_conte
 
 ### Response: HTTP upload (Mobile → Desktop)
 
-The file is **not** sent through the websocket but uploaded with `POST https://<host>:9024/upload` (`multipart/form-data`, header `User-Agent: Flocon`).
+The file is **not** sent through the websocket but uploaded with `POST https://<host>:<http port>/upload` (`multipart/form-data`, header `User-Agent: Flocon`). The HTTP port is `9024` by default and configurable (see [README](README.md#transport)).
 
 | Part             | Type        | Description                         |
 |------------------|-------------|-------------------------------------|
@@ -223,6 +223,7 @@ The file is **not** sent through the websocket but uploaded with `POST https://<
 | `file`           | file        | File content (`application/octet-stream`) |
 
 ```bash
+# 9024 = default HTTP port
 curl -k -X POST https://localhost:9024/upload \
   -H "User-Agent: Flocon" \
   -F remotePath=/data/user/0/com.example.app/files/config.json \

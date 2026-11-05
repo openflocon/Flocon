@@ -78,7 +78,6 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
         DeviceItemUiModel(
             id = "id2",
@@ -88,7 +87,6 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
         DeviceItemUiModel(
             id = "id",
@@ -98,7 +96,6 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
     ),
     deviceSelected = DeviceItemUiModel(
@@ -109,7 +106,6 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
         platform = DeviceItemUiModel.Platform.Android,
         canScreenshot = true,
         canScreenRecord = true,
-        canRestart = true,
     ),
 )
 

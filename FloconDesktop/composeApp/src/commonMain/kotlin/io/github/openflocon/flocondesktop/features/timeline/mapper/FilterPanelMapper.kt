@@ -1,19 +1,32 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
+import io.github.openflocon.domain.timeline.models.TIMELINE_RESERVED_LOG_TYPES
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toHttpMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.timeline.TimelineDatabaseRules
+import io.github.openflocon.flocondesktop.features.timeline.TimelineLogRules
 import io.github.openflocon.flocondesktop.features.timeline.TimelineNetworkRules
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAccessibilityFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAnalyticsFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineBasicFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineCrashFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineDatabaseFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetGroupUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFacetValueUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterPanelUiModel
-import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterSectionUi
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineLogFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineLogTypeUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkFilterUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRuleUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTableFilterUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineWebViewFilterUiModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 /**
@@ -25,32 +38,158 @@ internal fun TimelineSummaryUiModel.toFilterPanel(
     facets: Map<TimelineFacet, Set<String>>, // the values hidden, by facet
     currentSessionOnly: Boolean = false,
     network: TimelineNetworkRules = TimelineNetworkRules(),
+    database: TimelineDatabaseRules = TimelineDatabaseRules(),
     matchingNetworkCount: Int? = null, // the network calls displayed, null: all of them
+    logs: TimelineLogRules = TimelineLogRules(),
+    logTagQuery: String = "", // what is typed in the tag field of the logs card
 ): TimelineFilterPanelUiModel {
+    val logRuleCount = (if (logs.taggedEnabled) 0 else 1) + logs.tagRules.count { it.active }
     val sections = TimelineSource.entries
+        .filterNot { it == TimelineSource.Network }
         .map { source ->
-            val groups = TimelineFacet.entries
-                .filter { it.source == source }
-                .mapNotNull { facet -> toGroup(facet, hidden = facets[facet].orEmpty()) }
-            TimelineFilterSectionUiModel(
-                source = source,
-                count = sourceCounts[source] ?: 0,
-                enabled = source in selectedSources,
-                activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size },
-                groups = groups.toImmutableList(),
-            )
+            toSourceFilter(source, enabled = source in selectedSources, facets = facets, database = database, logRuleCount = logRuleCount)
         }
-        .sortedByDescending { it.count > 0 } // stable: the other of the sources is kept
-
     val hiddenSources = TimelineSource.entries.count { it !in selectedSources }
-    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + if (currentSessionOnly) 1 else 0
+    val activeFilterCount = facets.values.sumOf { it.size } + hiddenSources + network.ruleCount + database.activeCount + logRuleCount +
+        if (currentSessionOnly) 1 else 0
 
     return TimelineFilterPanelUiModel(
-        sections = sections.toImmutableList(),
-        network = toNetworkFilter(facets, network, matchingNetworkCount),
+        sections = sections.plus(toNetworkFilter(facets, network, matchingNetworkCount))
+            .sortedBy { it.source.ordinal }
+            .toImmutableList(),
+        logs = toLogFilter(facets, logs, logTagQuery),
         currentSessionOnly = currentSessionOnly,
         hasActiveFilters = activeFilterCount > 0,
         activeFilterCount = activeFilterCount,
+    )
+}
+
+// the filter of a source other than the network: each one has its own model, with the facets that make sense for it
+private fun TimelineSummaryUiModel.toSourceFilter(
+    source: TimelineSource,
+    enabled: Boolean,
+    facets: Map<TimelineFacet, Set<String>>,
+    database: TimelineDatabaseRules,
+    logRuleCount: Int,
+): TimelineFilterSectionUi {
+    fun group(facet: TimelineFacet) = toGroup(facet, hidden = facets[facet].orEmpty())
+
+    // a selector that always exists, even when no value was seen yet
+    fun groupOrEmpty(facet: TimelineFacet) = group(facet) ?: TimelineFacetGroupUiModel(facet = facet, values = persistentListOf())
+    val count = sourceCounts[source] ?: 0
+
+    // the rules and the transactions are filters of the database source too, the tag rules of the logs card those of the logs
+    val activeFacetCount = TimelineFacet.entries.filter { it.source == source }.sumOf { facets[it].orEmpty().size } +
+        when (source) {
+            TimelineSource.Database -> database.activeCount
+            TimelineSource.Log -> logRuleCount
+            else -> 0
+        }
+
+    return when (source) {
+        TimelineSource.Database -> TimelineDatabaseFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            names = groupOrEmpty(TimelineFacet.DatabaseName),
+            statements = group(TimelineFacet.DatabaseStatement),
+            rules = database.rules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
+            hideTransactions = database.hideTransactions,
+        )
+
+        TimelineSource.Table -> TimelineTableFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            tables = groupOrEmpty(TimelineFacet.TableName),
+        )
+
+        TimelineSource.WebView -> TimelineWebViewFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            kinds = group(TimelineFacet.WebViewKind),
+        )
+
+        TimelineSource.Analytics -> TimelineAnalyticsFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            tables = group(TimelineFacet.AnalyticsTable),
+        )
+
+        TimelineSource.Crash -> TimelineCrashFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            exceptions = group(TimelineFacet.CrashException),
+        )
+
+        TimelineSource.Accessibility -> TimelineAccessibilityFilterUiModel(
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+            actions = group(TimelineFacet.AccessibilityAction),
+        )
+
+        else -> TimelineBasicFilterUiModel(
+            source = source,
+            count = count,
+            enabled = enabled,
+            activeFacetCount = activeFacetCount,
+        )
+    }
+}
+
+private const val MAX_TAG_SUGGESTIONS = 8
+
+private val RESERVED_LOG_TYPES_LOWERCASE = TIMELINE_RESERVED_LOG_TYPES.map { it.lowercase() }.toSet()
+
+private fun String.isReservedLogType(): Boolean = lowercase() in RESERVED_LOG_TYPES_LOWERCASE
+
+private fun TimelineSummaryUiModel.toLogFilter(
+    facets: Map<TimelineFacet, Set<String>>,
+    logs: TimelineLogRules,
+    tagQuery: String,
+): TimelineLogFilterUiModel {
+    val typeCounts = facetCounts[TimelineFacet.LogType].orEmpty()
+    val hiddenTypes = facets[TimelineFacet.LogType].orEmpty()
+    // the SDK sends the exact names, but the query treats the reserved types without case
+    val reserved = TIMELINE_RESERVED_LOG_TYPES.map { type ->
+        TimelineLogTypeUiModel(
+            type = type,
+            count = typeCounts.filterKeys { it.equals(type, ignoreCase = true) }.values.sum(),
+            selected = type !in hiddenTypes,
+        )
+    }
+    val tags = typeCounts.filterKeys { !it.isReservedLogType() }
+    val tagged = TimelineLogTypeUiModel(type = null, count = tags.values.sum(), selected = logs.taggedEnabled)
+    val types = reserved + tagged
+
+    val existing = logs.tagRules.map { it.value.lowercase() }.toSet()
+    val query = tagQuery.trim()
+    val suggestions = tags
+        .filterKeys { it.contains(query, ignoreCase = true) && it.lowercase() !in existing }
+        .entries
+        .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.key })
+        .take(MAX_TAG_SUGGESTIONS)
+        .map { TimelineFacetValueUiModel(value = it.key, count = it.value, selected = true, logType = it.key) }
+
+    fun rules(exclude: Boolean) = logs.tagRules
+        .filter { it.exclude == exclude }
+        .map { TimelineRuleUiModel(it.value, it.exclude, it.active) }
+        .toImmutableList()
+
+    return TimelineLogFilterUiModel(
+        types = types.toImmutableList(),
+        allTypesSelected = types.all { it.selected },
+        totalCount = types.sumOf { it.count },
+        taggedEnabled = logs.taggedEnabled,
+        tagQuery = tagQuery,
+        tagSuggestions = suggestions.toImmutableList(),
+        tagIncludes = rules(exclude = false),
+        tagExcludes = rules(exclude = true),
+        levels = toGroup(TimelineFacet.LogTaggedLevel, hidden = facets[TimelineFacet.LogTaggedLevel].orEmpty())?.values.orEmpty().toImmutableList(),
     )
 }
 
@@ -74,6 +213,8 @@ private fun TimelineSummaryUiModel.toNetworkFilter(
 
     return TimelineNetworkFilterUiModel(
         enabled = network.enabled,
+        count = 0,
+        activeFacetCount = 0,
         isFiltered = network.ruleCount > 0 || TimelineFacet.entries.any { it.source == TimelineSource.Network && facets[it].orEmpty().isNotEmpty() },
         matchingCount = if (network.enabled) matchingNetworkCount ?: total else total,
         totalCount = total,
@@ -88,6 +229,7 @@ private fun TimelineSummaryUiModel.toNetworkFilter(
         content = values(TimelineFacet.NetworkContent).toImmutableList(),
         hosts = hosts.toImmutableList(),
         hostRules = rules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
+        pathRules = network.pathRules.map { TimelineRuleUiModel(it.value, it.exclude) }.toImmutableList(),
         hiddenHostCount = allHosts.count { !it.selected },
         hostCount = hosts.size,
     )
@@ -104,7 +246,7 @@ private fun String.matchesHostRules(rules: List<TimelineRuleDomainModel>): Boole
 private fun formatDuration(ms: Long): String = if (ms >= 1_000 && ms % 1_000 == 0L) "${ms / 1_000} s" else "$ms ms"
 
 // the methods of the facet are the ones of the timeline query: WS and GRPC for the calls that are not http
-private fun String.toMethodUi(): NetworkMethodUi = when (this) {
+internal fun String.toMethodUi(): NetworkMethodUi = when (this) {
     "WS" -> NetworkMethodUi.WebSocket
     "GRPC" -> NetworkMethodUi.Grpc
     else -> toHttpMethodUi(this)
@@ -126,6 +268,8 @@ private fun TimelineSummaryUiModel.toGroup(
                 selected = value !in hidden,
                 method = value.takeIf { facet == TimelineFacet.NetworkMethod }?.toMethodUi(),
                 httpFamily = value.takeIf { facet == TimelineFacet.NetworkStatus }?.firstOrNull()?.digitToIntOrNull(),
+                logLevel = value.takeIf { facet == TimelineFacet.LogLevel || facet == TimelineFacet.LogTaggedLevel }?.let(::logLevelOf),
+                logType = value.takeIf { facet == TimelineFacet.LogType },
             )
         }
     return if (values.isEmpty()) {
@@ -134,7 +278,7 @@ private fun TimelineSummaryUiModel.toGroup(
         TimelineFacetGroupUiModel(
             facet = facet,
             values = values.toImmutableList(),
-            asTags = facet == TimelineFacet.NetworkMethod || facet == TimelineFacet.NetworkStatus,
+            asTags = facet == TimelineFacet.NetworkMethod || facet == TimelineFacet.NetworkStatus || facet == TimelineFacet.WebViewKind,
         )
     }
 }

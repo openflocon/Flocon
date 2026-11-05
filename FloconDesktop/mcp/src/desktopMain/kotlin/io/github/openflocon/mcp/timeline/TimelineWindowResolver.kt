@@ -17,6 +17,9 @@ internal const val CRASH_BEFORE_SESSION_MS = 60_000L
 
 internal const val DEFAULT_WINDOW_MS = 120_000L
 
+// the most seconds around a time or an event
+internal const val MAX_AROUND_SECONDS = 3_600
+
 internal data class TimelineCrash(
     val id: String,
     val timestampMs: Long,
@@ -213,7 +216,6 @@ internal class TimelineWindowResolver(
     private companion object {
         val CLOCK_TIME = Regex("""(\d{1,2}):(\d{2})(?::(\d{2}))?""")
         const val TIME_FORMATS = "Accepted: epoch milliseconds, an ISO-8601 instant with an offset (2026-11-03T14:32:00+01:00), or HH:mm[:ss]."
-        const val MAX_AROUND_SECONDS = 3_600
         const val MAX_RECENT_MINUTES = 1_440
     }
 }

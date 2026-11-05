@@ -76,10 +76,14 @@ class TimelineMcpToolProviderTest {
             toolProviders = listOf(
                 TimelineMcpToolProvider(
                     targetResolver = targetResolver(devicesRepository),
+                    windowFinder = TimelineWindowFinder(
+                        getTimelineEventsUseCase = GetTimelineEventsUseCase(repository),
+                        getTimelineSummaryUseCase = GetTimelineSummaryUseCase(repository),
+                        zone = zone,
+                        nowMs = { at(3_600) },
+                    ),
                     getTimelineEventsUseCase = GetTimelineEventsUseCase(repository),
-                    getTimelineSummaryUseCase = GetTimelineSummaryUseCase(repository),
                     zone = zone,
-                    nowMs = { at(3_600) },
                 ),
             ),
         ).also {
@@ -176,6 +180,15 @@ class TimelineMcpToolProviderTest {
         assertEquals(false, network["found"]!!.jsonPrimitive.boolean)
         assertEquals(true, error.isError)
         assertTrue(error.text().contains("analytics"))
+    }
+
+    @Test
+    fun `logs are narrated and can be searched with the log source`() = runBlocking {
+        val withLog = events + event("l1", 60, TimelineSource.Log, "HomeScreen", "navigation")
+        val result = start(withLog).callTool("get_timeline", mapOf("mode" to "session", "search" to "HomeScreen", "searchSource" to "log")).json()
+
+        assertEquals(true, result["found"]!!.jsonPrimitive.boolean)
+        assertTrue(result.lines().any { it.contains("navigation: HomeScreen") && it.endsWith("[log:l1]") }, result.lines().toString())
     }
 
     @Test
@@ -284,5 +297,13 @@ class TimelineMcpToolProviderTest {
 
         assertEquals(true, result.isError)
         assertTrue(result.text().contains("analytics"), result.text())
+    }
+
+    @Test
+    fun `an event id combined with a mode or a time is refused instead of being ignored`() = runBlocking {
+        val result = start().callTool("get_timeline", mapOf("eventId" to "network:n2", "mode" to "session"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("eventId"), result.text())
     }
 }

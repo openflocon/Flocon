@@ -9,6 +9,16 @@ import kotlinx.collections.immutable.toImmutableList
 data class LocalAddressUiModel(
     val interfaceName: String,
     val ip: String,
+    /** What the SDK is given (QR code, copy, hint): the bare ip on the default port, `ip:port` otherwise. */
+    val connectAddress: String = ip,
+    /** Only when one of the ports is not the default one (the default ports are not worth showing). */
+    val customPorts: ConnectPortsUiModel? = null,
+)
+
+@Immutable
+data class ConnectPortsUiModel(
+    val websocket: Int,
+    val http: Int,
 )
 
 @Immutable

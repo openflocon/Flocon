@@ -22,8 +22,6 @@ internal sealed interface AppAction {
 
     data object Record : AppAction
 
-    data object Restart : AppAction
-
     data object Screenshoot : AppAction
 
     data object OpenFloconFolder : AppAction
