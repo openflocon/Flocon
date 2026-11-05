@@ -918,20 +918,15 @@ private fun DataPane(
                 style = FloconTheme.typography.labelSmall,
                 color = FloconTheme.colors.inkMuted,
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-            ) {
-                PurgeIntervalDropdown(
-                    selected = state.purgeInterval,
-                    onSelect = onIntervalChanged,
-                )
-                SettingsButton(
-                    text = stringResource(if (state.isPurging) Res.string.settings_data_purging else Res.string.settings_data_purge),
-                    onClick = { if (!state.isPurging) onPurge() },
-                    primary = true,
-                )
-            }
+            PurgeIntervalDropdown(
+                selected = state.purgeInterval,
+                onSelect = onIntervalChanged,
+            )
+            SettingsButton(
+                text = stringResource(if (state.isPurging) Res.string.settings_data_purging else Res.string.settings_data_purge),
+                onClick = { if (!state.isPurging) onPurge() },
+                primary = true,
+            )
             Text(
                 text = stringResource(Res.string.settings_data_kept),
                 style = FloconTheme.typography.bodySmall,

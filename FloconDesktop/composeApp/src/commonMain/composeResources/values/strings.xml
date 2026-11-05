@@ -644,7 +644,7 @@
     <string name="settings_data_description">Flocon keeps everything it receives from your apps (network calls, analytics, images, crashes…). Purge old data to free disk space.</string>
     <string name="settings_data_size">Size on disk</string>
     <string name="settings_data_purge_label">Purge data</string>
-    <string name="settings_data_purge">Purge</string>
+    <string name="settings_data_purge">Purge now</string>
     <string name="settings_data_purging">Purging…</string>
     <string name="settings_data_kept">Devices, mocks, deeplinks and your other settings are kept.</string>
     <string name="settings_data_purge_failed">Purge failed</string>
