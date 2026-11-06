@@ -205,6 +205,28 @@ jobs:
               flocon/.github/homebrew/flocon.rb.template > tap/Casks/flocon.rb
           cat tap/Casks/flocon.rb
 
+      - name: Download Linux artifacts
+        if: steps.check.outputs.run == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-linux-*
+          path: linux-assets
+          merge-multiple: true
+
+      - name: Generate Linux formula
+        if: steps.check.outputs.run == 'true'
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          SHA_LINUX_ARM64=$(sha256sum linux-assets/Flocon-linux-arm64.jar | cut -d' ' -f1)
+          SHA_LINUX_X64=$(sha256sum linux-assets/Flocon-linux-x64.jar | cut -d' ' -f1)
+          mkdir -p tap/Formula
+          sed -e "s/__VERSION__/$VERSION/g" \
+              -e "s/__SHA256_LINUX_ARM64__/$SHA_LINUX_ARM64/" \
+              -e "s/__SHA256_LINUX_X64__/$SHA_LINUX_X64/" \
+              flocon/.github/homebrew/flocon-linux.rb.template > tap/Formula/flocon.rb
+          cat tap/Formula/flocon.rb
+
       - name: Push to tap
         if: steps.check.outputs.run == 'true'
         working-directory: tap
@@ -213,9 +235,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Casks/flocon.rb
+          git add Casks/flocon.rb Formula/flocon.rb
           if git diff --cached --quiet; then
-            echo "Cask already up to date."
+            echo "Cask and formula already up to date."
             exit 0
           fi
           git commit -m "flocon $VERSION"
