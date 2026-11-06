@@ -67,7 +67,8 @@ internal val multiDeviceScenario = scenario("multi-device", description = "An An
 }
 
 internal val weirdScenario = scenario("weird", description = "Edge cases: huge and invalid bodies, unicode, 500 storm, very long URL, old SDK, odd timestamps") {
-    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE, sdkVersion = "1.0.0") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE, sdkVersion = "1.0.0", appStartedAt = 15.minutes.ago) {
+        // the 30-day-old call below happened "before" the app started, on purpose
         network(10.minutes.ago, "GET", "https://api.flocon-shop.com/v1/export", duration = 4_800.milliseconds) {
             responseHeader("content-type", "application/json")
             responseBody(hugeJson())

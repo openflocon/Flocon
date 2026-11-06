@@ -28,20 +28,20 @@ class MockScenarioBuilder internal constructor() {
         app: String,
         packageName: String,
         id: String = name.toDeviceId(),
-        appInstance: Long = 1L,
+        appStartedAt: Duration? = null,
         sdkVersion: String? = null,
         block: MockDeviceBuilder.() -> Unit,
-    ) = device("android", name, app, packageName, id, appInstance, sdkVersion, block)
+    ) = device("android", name, app, packageName, id, appStartedAt, sdkVersion, block)
 
     fun ios(
         name: String,
         app: String,
         packageName: String,
         id: String = name.toDeviceId(),
-        appInstance: Long = 1L,
+        appStartedAt: Duration? = null,
         sdkVersion: String? = null,
         block: MockDeviceBuilder.() -> Unit,
-    ) = device("ios", name, app, packageName, id, appInstance, sdkVersion, block)
+    ) = device("ios", name, app, packageName, id, appStartedAt, sdkVersion, block)
 
     private fun device(
         platform: String,
@@ -49,7 +49,7 @@ class MockScenarioBuilder internal constructor() {
         app: String,
         packageName: String,
         id: String,
-        appInstance: Long,
+        appStartedAt: Duration?,
         sdkVersion: String?,
         block: MockDeviceBuilder.() -> Unit,
     ) {
@@ -59,7 +59,7 @@ class MockScenarioBuilder internal constructor() {
             platform = platform,
             appName = app,
             packageName = packageName,
-            appInstance = appInstance,
+            appStartedAt = appStartedAt,
             sdkVersion = sdkVersion,
             events = MockDeviceBuilder().apply(block).events.toList(),
         )

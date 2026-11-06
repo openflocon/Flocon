@@ -2,6 +2,8 @@ package com.flocon.data.remote.mock
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 /**
  * Data replayed by the mock mode (`--mock=<name>`) as if devices were connected.
@@ -19,10 +21,19 @@ data class MockDevice(
     val platform: String, // "android" or "ios"
     val appName: String,
     val packageName: String,
-    val appInstance: Long,
+    val appStartedAt: Duration?, // how long before the launch the app started, null = just before its first event
     val sdkVersion: String?, // the Flocon SDK version on the device, null = the desktop version
     val events: List<MockEvent>,
 )
+
+/**
+ * The SDK start timestamp (ms) that identifies the app launch: the desktop draws the session from it.
+ * By default the app started 1 s before its earliest event.
+ */
+internal fun MockDevice.appInstance(launchTime: Instant): Long {
+    val startedAt = appStartedAt ?: ((events.maxOfOrNull { it.at } ?: Duration.ZERO) + 1.seconds)
+    return (launchTime - startedAt).toEpochMilliseconds()
+}
 
 sealed interface MockEvent {
     /** How long before the app launch the event happened. */

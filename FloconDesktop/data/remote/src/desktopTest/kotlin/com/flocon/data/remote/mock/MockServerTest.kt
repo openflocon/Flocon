@@ -13,6 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class MockServerTest {
@@ -25,7 +26,7 @@ class MockServerTest {
             network(2.minutes.ago, "GET", "https://x")
             timeline(1.minutes.ago, "hello")
         }
-        ios("iPhone 16", app = "App", packageName = "c.d", appInstance = 7L) {
+        ios("iPhone 16", app = "App", packageName = "c.d", appStartedAt = 10.minutes.ago) {
             timeline(3.minutes.ago, "ios")
         }
     }
@@ -40,8 +41,8 @@ class MockServerTest {
 
         assertEquals(
             setOf(
-                FloconDeviceIdAndPackageNameDataModel(deviceId = "pixel-8", packageName = "a.b", appInstance = 1L),
-                FloconDeviceIdAndPackageNameDataModel(deviceId = "iphone-16", packageName = "c.d", appInstance = 7L),
+                FloconDeviceIdAndPackageNameDataModel(deviceId = "pixel-8", packageName = "a.b", appInstance = (launch - 2.minutes - 1.seconds).toEpochMilliseconds()),
+                FloconDeviceIdAndPackageNameDataModel(deviceId = "iphone-16", packageName = "c.d", appInstance = (launch - 10.minutes).toEpochMilliseconds()),
             ),
             devices,
         )

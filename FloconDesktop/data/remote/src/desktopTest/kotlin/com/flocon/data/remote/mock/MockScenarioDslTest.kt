@@ -24,7 +24,7 @@ class MockScenarioDslTest {
         assertEquals("Pixel 8", device.name)
         assertEquals("App", device.appName)
         assertEquals("a.b", device.packageName)
-        assertEquals(1L, device.appInstance)
+        assertNull(device.appStartedAt)
         assertNull(device.sdkVersion)
         assertTrue(device.events.isEmpty())
     }

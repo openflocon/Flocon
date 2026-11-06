@@ -25,10 +25,11 @@ internal class MockMessageEncoder(private val json: Json) {
         defaultSdkVersion: String,
     ): List<FloconIncomingMessageDataModel> = scenario.devices
         .flatMap { device ->
+            val appInstance = device.appInstance(launchTime)
             device.events.flatMapIndexed { index, event ->
                 val timestamp = (launchTime - event.at).toEpochMilliseconds()
                 encodeEvent(device, index, event, timestamp).map { (plugin, method, body) ->
-                    timestamp to device.message(plugin = plugin, method = method, body = body, defaultSdkVersion = defaultSdkVersion)
+                    timestamp to device.message(plugin = plugin, method = method, body = body, appInstance = appInstance, defaultSdkVersion = defaultSdkVersion)
                 }
             }
         }
@@ -162,6 +163,7 @@ internal class MockMessageEncoder(private val json: Json) {
         plugin: String,
         method: String,
         body: String,
+        appInstance: Long,
         defaultSdkVersion: String,
     ) = FloconIncomingMessageDataModel(
         deviceName = name,

@@ -186,8 +186,29 @@ class MockMessageEncoderTest {
         )
 
         val (android, ios) = messages
-        assertEquals(listOf("pixel-8", "Pixel 8", "App", "a.b", "android", 1L), android.envelope())
-        assertEquals(listOf("iphone-16", "iPhone 16", "Other", "c.d", "ios", 1L), ios.envelope())
+        assertEquals(listOf("pixel-8", "Pixel 8", "App", "a.b", "android", epochMsBefore(2.minutes + 1.seconds)), android.envelope())
+        assertEquals(listOf("iphone-16", "iPhone 16", "Other", "c.d", "ios", epochMsBefore(1.minutes + 1.seconds)), ios.envelope())
+    }
+
+    @Test
+    fun `appInstance is the app start time`() {
+        val messages = encoder.encode(
+            scenario = scenario("s") {
+                android("Pixel 8", app = "App", packageName = "a.b", appStartedAt = 20.minutes.ago) { timeline(2.minutes.ago, "explicit") }
+                android("Pixel 4", app = "App", packageName = "a.b") {
+                    timeline(3.minutes.ago, "earliest")
+                    timeline(1.minutes.ago, "latest")
+                }
+                android("Pixel 3", app = "App", packageName = "a.b") { featureFlags("p") {} }
+            },
+            launchTime = launch,
+            defaultSdkVersion = desktopVersion,
+        )
+
+        val byDevice = messages.groupBy { it.deviceId }.mapValues { (_, it) -> it.map { m -> m.appInstance }.distinct().single() }
+        assertEquals(epochMsBefore(20.minutes), byDevice["pixel-8"]) // given
+        assertEquals(epochMsBefore(3.minutes + 1.seconds), byDevice["pixel-4"]) // just before the earliest event
+        assertEquals(epochMsBefore(1.seconds), byDevice["pixel-3"]) // events at launch: started just before
     }
 
     @Test

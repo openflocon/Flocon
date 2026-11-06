@@ -40,7 +40,7 @@ class MockServer(
 
     override val activeDevices: StateFlow<Set<FloconDeviceIdAndPackageNameDataModel>> = MutableStateFlow(
         scenario.devices.map {
-            FloconDeviceIdAndPackageNameDataModel(deviceId = it.id, packageName = it.packageName, appInstance = it.appInstance)
+            FloconDeviceIdAndPackageNameDataModel(deviceId = it.id, packageName = it.packageName, appInstance = it.appInstance(launchTime))
         }.toSet(),
     )
 
