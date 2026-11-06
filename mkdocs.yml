@@ -84,6 +84,7 @@ nav:
     - Installation & Setup: setup.md
     - macOS Setup: macos-install.md
     - Linux Setup: linux-install.md
+    - Linux Flatpak: flatpak-install.md
     - Troubleshooting: troubleshooting.md
   - Features:
     - Networking:

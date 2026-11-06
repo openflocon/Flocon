@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Flocon
+GenericName=Mobile app debugger
+Comment=Inspect network calls, databases and files of your Android, iOS and KMP apps
+Exec=flocon
+Icon=io.github.openflocon.flocon
+Terminal=false
+Categories=Development;Debugger;
+Keywords=android;ios;debug;network;adb;kmp;
+StartupWMClass=io-github-openflocon-flocondesktop-MainKt

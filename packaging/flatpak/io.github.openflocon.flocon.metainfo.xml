@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.openflocon.flocon</id>
+  <name>Flocon</name>
+  <summary>Debug your Android, iOS and KMP apps from your desktop</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.openflocon">
+    <name>Flocon contributors</name>
+  </developer>
+  <description>
+    <p>Flocon is a debugging companion for mobile apps. Connect your app with the Flocon SDK and inspect what it does from your desktop.</p>
+    <ul>
+      <li>Network calls: HTTP, GraphQL, WebSocket and gRPC, with mocks and bad network simulation</li>
+      <li>Databases, SharedPreferences, DataStore and the app files</li>
+      <li>Analytics events, feature flags, crash reports and deeplinks</li>
+      <li>Screenshots and screen recordings of Android devices through adb</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.openflocon.flocon.desktop</launchable>
+  <url type="homepage">https://github.com/openflocon/Flocon</url>
+  <url type="bugtracker">https://github.com/openflocon/Flocon/issues</url>
+  <url type="vcs-browser">https://github.com/openflocon/Flocon</url>
+  <categories>
+    <category>Development</category>
+    <category>Debugger</category>
+  </categories>
+  <!-- TODO: add <screenshots> with real images at a stable URL (ressources/ only has the logo). Flathub requires at least one. -->
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="__VERSION__" date="__DATE__"/>
+  </releases>
+  <provides>
+    <binary>flocon</binary>
+  </provides>
+</component>

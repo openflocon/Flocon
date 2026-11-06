@@ -1,0 +1,71 @@
+# Flatpak manifest template for Flocon Desktop.
+# __VERSION__ and the __SHA256_*__ values are filled by render-manifest.sh
+# from the GitHub release assets (see docs2/flatpak-install.md).
+app-id: io.github.openflocon.flocon
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: flocon
+
+finish-args:
+  # Windows
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  # Flocon SDK connections (device to desktop) and adb over the network
+  - --share=network
+  # USB debugging with the bundled adb (x86_64 only). Remove if you only use the host adb server.
+  - --device=all
+  # Default Flocon documents folder (~/Documents/Flocon): screenshots, recordings, exports
+  - --filesystem=xdg-documents/Flocon:create
+  # Share the adb keys with the host so devices already authorized stay authorized
+  - --filesystem=~/.android:create
+
+modules:
+  - name: flocon
+    buildsystem: simple
+    build-commands:
+      # The .deb is a jpackage app image: it already contains its own JRE, so no JDK
+      # runtime or SDK extension is needed. Unpack it and install under /app.
+      - ar x flocon.deb
+      - mkdir -p deb-root && tar -xf data.tar.* -C deb-root
+      - mkdir -p /app/flocon
+      - cp -a deb-root/opt/flocon/. /app/flocon/
+      - install -d /app/bin
+      - ln -sf ../flocon/bin/Flocon /app/bin/flocon
+      - install -Dm644 io.github.openflocon.flocon.desktop /app/share/applications/io.github.openflocon.flocon.desktop
+      - install -Dm644 io.github.openflocon.flocon.metainfo.xml /app/share/metainfo/io.github.openflocon.flocon.metainfo.xml
+      - install -Dm644 io.github.openflocon.flocon.png /app/share/icons/hicolor/256x256/apps/io.github.openflocon.flocon.png
+    sources:
+      - type: file
+        dest-filename: flocon.deb
+        only-arches: [x86_64]
+        url: https://github.com/openflocon/Flocon/releases/download/__VERSION__/Flocon-linux-x64.deb
+        sha256: __SHA256_X64__
+      - type: file
+        dest-filename: flocon.deb
+        only-arches: [aarch64]
+        url: https://github.com/openflocon/Flocon/releases/download/__VERSION__/Flocon-linux-arm64.deb
+        sha256: __SHA256_ARM64__
+      - type: file
+        path: io.github.openflocon.flocon.desktop
+      - type: file
+        path: io.github.openflocon.flocon.metainfo.xml
+      - type: file
+        path: io.github.openflocon.flocon.png
+
+  # adb: Google only publishes platform-tools for Linux x86_64, so it is bundled there only.
+  # On aarch64 there is no adb in the sandbox, see docs2/flatpak-install.md.
+  - name: platform-tools
+    buildsystem: simple
+    only-arches: [x86_64]
+    build-commands:
+      - install -d /app/platform-tools /app/bin
+      - cp -a . /app/platform-tools/
+      - ln -sf ../platform-tools/adb /app/bin/adb
+    sources:
+      - type: archive
+        url: https://dl.google.com/android/repository/platform-tools_r35.0.2-linux.zip
+        sha256: __SHA256_PLATFORM_TOOLS__
+        strip-components: 1
