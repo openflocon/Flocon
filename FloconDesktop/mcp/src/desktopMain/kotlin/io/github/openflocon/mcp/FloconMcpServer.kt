@@ -131,6 +131,9 @@ class FloconMcpServer(
               the graph: give an event id of get_timeline, a time, or nothing. Flocon is never brought to the front: tell the user to go to the
               Flocon app. Its answer says if a filter of the user hides the event (the filters are never changed) and when the graph cannot
               draw the event (crashes only appear in the list view).
+            - Server ports of the Flocon desktop (websocket default 9023, HTTP default 9024): get_server_ports gives the effective, saved and default
+              ports and which one is forced by a launch option, set_server_ports changes them. Changing the ports restarts the servers and
+              disconnects every device until the SDKs reconnect with the new ports: tell the user which ports you changed.
             - Flocon itself: take_flocon_desktop_screenshot returns an image of what the Flocon desktop app currently displays
               (not the device screen, nothing is saved).
               flocon_navigate_into_desktop_app moves it for the user: displays a screen, selects a device / app, sets the timeline

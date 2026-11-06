@@ -334,6 +334,7 @@ internal fun TimelineContent(
                 onNextSession = { onAction(TimelineAction.MoveGraphSession(1)) },
                 onEditingChange = { graphFieldFocused = it },
                 autoScroll = settings.autoScroll,
+                onAutoScrollChange = { onAction(TimelineAction.ToggleAutoScroll(it)) },
                 screenshotsEnabled = settings.screenshots,
                 screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
                 onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },

@@ -10,12 +10,14 @@ Source of truth:
 
 | Channel   | Direction        | Address                          | Usage                                  |
 |-----------|------------------|----------------------------------|----------------------------------------|
-| WebSocket | both             | `wss://<host>:9023/`              | All plugin messages (JSON text frames) |
-| HTTPS     | mobile → desktop | `POST https://<host>:9024/upload` | File upload (see [files.md](files.md)) |
+| WebSocket | both             | `wss://<host>:<ws port>/`              | All plugin messages (JSON text frames) |
+| HTTPS     | mobile → desktop | `POST https://<host>:<http port>/upload` | File upload (see [files.md](files.md)) |
 
 Both channels use TLS, so apps never need to allow cleartext traffic. The desktop serves a self-signed certificate (SAN `localhost` / `127.0.0.1`) that clients **must accept without verifying it** (trust-all, hostname check disabled): the TLS layer only encrypts the channel, it does not authenticate the desktop. The plain `ws://` / `http://` ports are no longer served.
 
-On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024`, so `<host>` is `localhost`.
+The ports are defaults and are configurable in the desktop settings: `<ws port>` is `9023` and `<http port>` is `9024` by default (valid range 1024-65535, the two must differ, `9042` is reserved for MCP). The SDK exposes them as `websocketPort` / `httpPort` (and `host:ws:http` in the address; the ports in the address win over `websocketPort` / `httpPort` for that address). The desktop can also override them for one session with the `--websocket-port` / `--http-port` launch options (or `FLOCON_WEBSOCKET_PORT` / `FLOCON_HTTP_PORT`), see [setup](../docs2/setup.md#launch-options).
+
+On Android, the desktop runs `adb reverse tcp:9023 tcp:9023` and `adb reverse tcp:9024 tcp:9024` (default ports), so `<host>` is `localhost`; the device defaults keep working even when the desktop ports are changed. Clients that do not use `adb reverse` (real device over Wi-Fi, iOS, JVM, wasm) must use the configured desktop ports.
 
 ## Envelopes
 

@@ -15,11 +15,12 @@ const val TIMELINE_DATABASE_STATEMENT_ROOM = "ROOM"
 private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", TIMELINE_DATABASE_STATEMENT_ROOM, "OTHER")
 
 /**
- * The values hidden until the user shows them again: the noise nobody asked for.
+ * The values hidden until the user shows them again: the noise nobody asked for, what Room runs for itself and the
+ * begin, commit and rollback of the databases (a transaction is told by its header anyway).
  */
 // a getter, not a value: the facets use the values of this file when they are created, a value would be created with them
 val TIMELINE_DEFAULT_HIDDEN_FACETS: Map<TimelineFacet, Set<String>>
-    get() = mapOf(TimelineFacet.DatabaseStatement to setOf(TIMELINE_DATABASE_STATEMENT_ROOM))
+    get() = mapOf(TimelineFacet.DatabaseStatement to setOf(TIMELINE_DATABASE_STATEMENT_ROOM, "TRANSACTION"))
 
 // the types of log with their own look, they are not tagged logs: the tag and level filters never apply to them
 val TIMELINE_RESERVED_LOG_TYPES = listOf(TIMELINE_LOG_TYPE_NAVIGATION, TIMELINE_LOG_TYPE_USER_ACTION, TIMELINE_LOG_TYPE_LIFECYCLE)

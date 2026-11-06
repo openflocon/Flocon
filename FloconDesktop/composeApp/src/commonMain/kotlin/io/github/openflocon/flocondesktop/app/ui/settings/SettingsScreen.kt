@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -69,6 +70,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -121,6 +123,18 @@ import flocondesktop.composeapp.generated.resources.settings_purge_never
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
 import flocondesktop.composeapp.generated.resources.settings_scale_description
 import flocondesktop.composeapp.generated.resources.settings_scale_title
+import flocondesktop.composeapp.generated.resources.settings_server_ports_apply
+import flocondesktop.composeapp.generated.resources.settings_server_ports_description
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_mcp
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_range
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_reserved
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_same
+import flocondesktop.composeapp.generated.resources.settings_server_ports_hint
+import flocondesktop.composeapp.generated.resources.settings_server_ports_http
+import flocondesktop.composeapp.generated.resources.settings_server_ports_overridden
+import flocondesktop.composeapp.generated.resources.settings_server_ports_reset
+import flocondesktop.composeapp.generated.resources.settings_server_ports_title
+import flocondesktop.composeapp.generated.resources.settings_server_ports_websocket
 import flocondesktop.composeapp.generated.resources.settings_start_screen_description
 import flocondesktop.composeapp.generated.resources.settings_start_screen_title
 import flocondesktop.composeapp.generated.resources.settings_system_logs_title
@@ -136,6 +150,8 @@ import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
@@ -149,6 +165,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenuIt
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
@@ -185,6 +202,7 @@ fun SettingsScreen(
     val needsAdbSetup by viewModel.needsAdbSetup.collectAsState()
     val adbPathText by viewModel.adbPathInput.collectAsState()
     val floconDocumentsPathText by viewModel.floconDocumentsPathInput.collectAsState()
+    val serverPortsForm by viewModel.serverPortsForm.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val dataState by viewModel.dataState.collectAsStateWithLifecycle()
 
@@ -211,6 +229,11 @@ fun SettingsScreen(
         onSaveFloconDocumentsPath = viewModel::saveFloconDocumentsPath,
         onResetFloconDocumentsPath = viewModel::resetFloconDocumentsPath,
         onOpenFloconDocumentsFolder = viewModel::openFloconDocumentsFolder,
+        serverPortsForm = serverPortsForm,
+        onWebsocketPortChanged = viewModel::onWebsocketPortChanged,
+        onHttpPortChanged = viewModel::onHttpPortChanged,
+        onApplyServerPorts = viewModel::applyServerPorts,
+        onResetServerPorts = viewModel::resetServerPorts,
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         onToggleLogDomain = viewModel::toggleLogDomain,
@@ -246,6 +269,11 @@ private fun SettingsScreen(
     onSaveFloconDocumentsPath: () -> Unit,
     onResetFloconDocumentsPath: () -> Unit,
     onOpenFloconDocumentsFolder: () -> Unit,
+    serverPortsForm: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
@@ -292,6 +320,11 @@ private fun SettingsScreen(
                     onSavePath = onSaveFloconDocumentsPath,
                     onResetPath = onResetFloconDocumentsPath,
                     onOpenFolder = onOpenFloconDocumentsFolder,
+                    serverPortsForm = serverPortsForm,
+                    onWebsocketPortChanged = onWebsocketPortChanged,
+                    onHttpPortChanged = onHttpPortChanged,
+                    onApplyServerPorts = onApplyServerPorts,
+                    onResetServerPorts = onResetServerPorts,
                 )
 
                 SettingsTab.Adb -> AdbPane(
@@ -474,12 +507,25 @@ private fun GeneralPane(
     onSavePath: () -> Unit,
     onResetPath: () -> Unit,
     onOpenFolder: () -> Unit,
+    serverPortsForm: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
+        ServerPortsCard(
+            form = serverPortsForm,
+            onWebsocketPortChanged = onWebsocketPortChanged,
+            onHttpPortChanged = onHttpPortChanged,
+            onApply = onApplyServerPorts,
+            onReset = onResetServerPorts,
+        )
+
         SettingsCard(
             title = "Flocon Documents",
             icon = Icons.Outlined.Folder,
@@ -527,6 +573,106 @@ private fun GeneralPane(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ServerPortsCard(
+    form: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApply: () -> Unit,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsCard(
+        title = stringResource(Res.string.settings_server_ports_title),
+        icon = Icons.Outlined.Cable,
+        description = stringResource(Res.string.settings_server_ports_description),
+        modifier = modifier,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_server_ports_websocket),
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+                FloconTextField(
+                    value = form.websocketPort,
+                    onValueChange = onWebsocketPortChanged,
+                    isError = form.error != null,
+                    enabled = !form.websocketPortOverridden,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_server_ports_http),
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+                FloconTextField(
+                    value = form.httpPort,
+                    onValueChange = onHttpPortChanged,
+                    isError = form.error != null,
+                    enabled = !form.httpPortOverridden,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (form.canReset) {
+                SettingsButton(
+                    text = stringResource(Res.string.settings_server_ports_reset),
+                    onClick = onReset,
+                )
+            }
+        }
+
+        if (form.hasOverride) {
+            Text(
+                text = stringResource(Res.string.settings_server_ports_overridden),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.inkMuted,
+            )
+        }
+
+        form.error?.let { error ->
+            Text(
+                text = stringResource(
+                    when (error) {
+                        ServerPortsError.OutOfRange -> Res.string.settings_server_ports_error_range
+                        ServerPortsError.SamePorts -> Res.string.settings_server_ports_error_same
+                        ServerPortsError.McpPortReserved -> Res.string.settings_server_ports_error_mcp
+                        ServerPortsError.ReservedDefaultPort -> Res.string.settings_server_ports_error_reserved
+                    },
+                ),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.statusError,
+            )
+        }
+
+        Text(
+            text = stringResource(Res.string.settings_server_ports_hint),
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+
+        SettingsButton(
+            text = stringResource(Res.string.settings_server_ports_apply),
+            onClick = onApply,
+            primary = true,
+        )
     }
 }
 
@@ -1353,6 +1499,13 @@ private fun AboutPane(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
+            Text(
+                text = "Flocon Desktop v${BuildConfig.APP_VERSION}",
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.ink,
+            )
+        }
         Text(
             text = stringResource(Res.string.settings_open_source_licenses),
             style = FloconTheme.typography.titleMedium,
@@ -1561,6 +1714,11 @@ private fun SettingsScreenPreview() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1599,6 +1757,11 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1635,12 +1798,31 @@ private fun SettingsScreen_LogsPreview() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
             onToggleLogDomain = {},
             onToggleLogLevel = {},
             needsAdbSetup = false,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ServerPortsCardPreview() {
+    FloconTheme {
+        ServerPortsCard(
+            form = previewServerPortsFormUiModel(error = ServerPortsError.SamePorts),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApply = {},
+            onReset = {},
         )
     }
 }

@@ -5,5 +5,8 @@ import io.github.openflocon.domain.messages.repository.MessagesRepository
 class StartServerUseCase(
     private val messagesRepository: MessagesRepository,
 ) {
-    operator fun invoke() = messagesRepository.startServer()
+    operator fun invoke(websocketPort: Int, httpPort: Int) = messagesRepository.startServer(
+        websocketPort = websocketPort,
+        httpPort = httpPort,
+    )
 }

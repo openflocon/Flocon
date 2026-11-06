@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.Flow
 interface MessagesRepository {
     fun listenMessages(): Flow<FloconIncomingMessageDomainModel>
 
-    fun startServer()
+    fun startServer(websocketPort: Int, httpPort: Int)
+
+    fun stopServer()
 
     fun listenReceivedFiles(): Flow<FloconReceivedFileDomainModel>
 }

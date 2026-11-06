@@ -4,6 +4,8 @@
     <string name="release_notes_error">Impossible de charger les notes de version.</string>
     <string name="release_notes_retry">Réessayer</string>
     <string name="auto_scroll">Défilement automatique</string>
+    <string name="timeline_auto_scroll_follow">Suivre</string>
+    <string name="timeline_auto_scroll_following">Suivi</string>
     <string name="auto_update">Mise à jour automatique</string>
     <string name="clear_old_sessions">Effacer les anciennes sessions</string>
     <string name="close">Fermer</string>
@@ -140,18 +142,6 @@
         <item quantity="one">événement</item>
         <item quantity="other">événements</item>
     </plurals>
-    <plurals name="timeline_counter_sessions">
-        <item quantity="one">session</item>
-        <item quantity="other">sessions</item>
-    </plurals>
-    <plurals name="timeline_counter_http_errors">
-        <item quantity="one">erreur HTTP</item>
-        <item quantity="other">erreurs HTTP</item>
-    </plurals>
-    <plurals name="timeline_counter_crashes">
-        <item quantity="one">crash</item>
-        <item quantity="other">crashs</item>
-    </plurals>
     <plurals name="timeline_session_events">
         <item quantity="one">%1$d événement</item>
         <item quantity="other">%1$d événements</item>
@@ -205,11 +195,6 @@
     <string name="network_header_request_time">Date</string>
     <string name="network_header_status">Statut</string>
     <string name="network_header_time">Durée</string>
-    <string name="new_client_version">Nouvelle version du client disponible : %1$s</string>
-    <string name="new_client_version_desc">N’oubliez pas de mettre à jour la version de l’app\n(actuelle : %1$s)</string>
-    <string name="new_desktop_version">Nouvelle version desktop disponible : %1$s</string>
-    <string name="update_available_desktop">Mise à jour : %1$s</string>
-    <string name="update_available_client">Mise à jour du SDK : %1$s</string>
     <string name="no_analytics">Aucun analytics</string>
     <string name="no_devices_found">Aucun appareil trouvé</string>
     <string name="open_external">Ouvrir dans un éditeur externe</string>
@@ -427,6 +412,7 @@
     <string name="connect_hint">Même Wi-Fi que cet ordinateur, puis scannez, ou appelez Flocon.connect("%1$s")</string>
     <string name="connect_empty">Aucune adresse du réseau local trouvée. Vérifiez que cet ordinateur est connecté à un réseau.</string>
     <string name="connect_port">port %1$d</string>
+    <string name="connect_ports">ws: %1$d&#160;&#160;&#160;&#160;https: %2$d</string>
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
     <string name="topbar_screenshot">Capture d’écran</string>
@@ -499,6 +485,19 @@
     <string name="analytics_column_event">Événement</string>
     <string name="analytics_column_properties">Propriétés</string>
     <string name="images_column_format">Format</string>
+    <string name="settings_server_ports_title">Ports du serveur</string>
+    <string name="settings_server_ports_description">Ports utilisés par le desktop pour recevoir les connexions du SDK. Par défaut : 9023 (websocket) et 9024 (HTTP).</string>
+    <string name="settings_server_ports_websocket">Port websocket</string>
+    <string name="settings_server_ports_http">Port HTTP</string>
+    <string name="settings_server_ports_apply">Appliquer</string>
+    <string name="settings_server_ports_reset">Valeurs par défaut</string>
+    <string name="settings_server_ports_applied">Ports du serveur mis à jour</string>
+    <string name="settings_server_ports_hint">Les apps Android en USB ou sur émulateur passent par adb reverse. Les apps du SDK en Wi-Fi, et les apps iOS, doivent être configurées avec les mêmes ports.</string>
+    <string name="settings_server_ports_overridden">Défini par une option de lancement pour cette session</string>
+    <string name="settings_server_ports_error_range">Les ports doivent être compris entre 1024 et 65535.</string>
+    <string name="settings_server_ports_error_same">Les ports websocket et HTTP doivent être différents.</string>
+    <string name="settings_server_ports_error_mcp">9042 est réservé au serveur MCP.</string>
+    <string name="settings_server_ports_error_reserved">9023 ne peut être que le port websocket et 9024 que le port HTTP.</string>
     <string name="settings_data_title">Base de données</string>
     <string name="settings_data_description">Flocon conserve tout ce qu’il reçoit de vos apps (appels réseau, analytics, images, crashs…). Purgez les anciennes données pour libérer de l’espace disque.</string>
     <string name="settings_data_size">Taille sur le disque</string>
@@ -523,4 +522,13 @@
     <string name="settings_data_media_cleaning">Suppression…</string>
     <string name="settings_data_media_clean_failed">Échec du nettoyage</string>
     <string name="settings_purge_never">Jamais</string>
+    <string name="sdk_update_badge">SDK %1$s → %2$s</string>
+    <string name="sdk_update_title">Mise à jour du SDK pour cette app</string>
+    <string name="sdk_update_running">Version actuelle %1$s · dernière %2$s</string>
+    <string name="sdk_update_copy">Copier</string>
+    <string name="sdk_update_release_notes">Notes de version</string>
+    <string name="sdk_update_ignore">Ignorer</string>
+    <string name="desktop_update_chip">Mise à jour %1$s</string>
+    <string name="desktop_update_title">Flocon %1$s</string>
+    <string name="desktop_update_installed">Installée : %1$s</string>
 </resources>

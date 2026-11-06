@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -59,6 +60,8 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
+        override val savedServerPorts: Flow<ServerPortsDomainModel> = emptyFlow()
+        override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
@@ -202,5 +205,20 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         assertFalse(isRemoteVersionNewer(localVersion = "1.1.0", remoteVersion = "1.1.0"))
         assertFalse(isRemoteVersionNewer(localVersion = "1.2.0", remoteVersion = "1.1.0"))
         assertFalse(isRemoteVersionNewer(localVersion = "2.0.0", remoteVersion = "1.9.9"))
+    }
+
+    @Test
+    fun `test isRemoteVersionNewer with unusual versions`() {
+        // 1.10.0 is newer than 1.9.0 (numeric, not lexicographic)
+        assertTrue(isRemoteVersionNewer(localVersion = "1.9.0", remoteVersion = "1.10.0"))
+        assertFalse(isRemoteVersionNewer(localVersion = "1.10.0", remoteVersion = "1.9.0"))
+        // the "v" prefix is ignored, a pre-release is older than its release (semver)
+        assertTrue(isRemoteVersionNewer(localVersion = "1.10.0-SNAPSHOT", remoteVersion = "1.10.0"))
+        assertFalse(isRemoteVersionNewer(localVersion = "v1.10.0", remoteVersion = "1.10.0"))
+        assertTrue(isRemoteVersionNewer(localVersion = "1.9.2-rc1", remoteVersion = "1.10.0"))
+        // unknown versions never trigger an update
+        assertFalse(isRemoteVersionNewer(localVersion = "", remoteVersion = "1.10.0"))
+        assertFalse(isRemoteVersionNewer(localVersion = "unknown", remoteVersion = "1.10.0"))
+        assertFalse(isRemoteVersionNewer(localVersion = "1.10.0", remoteVersion = ""))
     }
 }

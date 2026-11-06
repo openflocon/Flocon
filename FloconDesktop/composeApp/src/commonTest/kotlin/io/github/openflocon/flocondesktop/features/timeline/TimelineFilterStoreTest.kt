@@ -75,11 +75,13 @@ class TimelineFilterStoreTest {
     }
 
     @Test
-    fun `what Room runs for itself is hidden by default, and can be shown again`() = runBlocking {
-        assertEquals(setOf(TIMELINE_DATABASE_STATEMENT_ROOM), provider.current().facets[TimelineFacet.DatabaseStatement])
+    fun `what Room runs for itself and the database transactions are hidden by default, and can be shown again`() = runBlocking {
+        assertEquals(setOf(TIMELINE_DATABASE_STATEMENT_ROOM, "TRANSACTION"), provider.current().facets[TimelineFacet.DatabaseStatement])
 
         store.toggleFacet(TimelineFacet.DatabaseStatement, TIMELINE_DATABASE_STATEMENT_ROOM)
+        assertEquals(setOf("TRANSACTION"), provider.current().facets[TimelineFacet.DatabaseStatement])
 
+        store.toggleFacet(TimelineFacet.DatabaseStatement, "TRANSACTION")
         assertEquals(null, provider.current().facets[TimelineFacet.DatabaseStatement])
     }
 

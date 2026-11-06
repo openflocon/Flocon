@@ -8,6 +8,7 @@ import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_data_media_clean_failed
 import flocondesktop.composeapp.generated.resources.settings_data_purge_failed
 import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
+import flocondesktop.composeapp.generated.resources.settings_server_ports_applied
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
@@ -27,16 +28,21 @@ import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
+import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
+import io.github.openflocon.domain.settings.usecase.ServerPortsError
 import io.github.openflocon.domain.settings.usecase.SetAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.SetMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
+import io.github.openflocon.domain.settings.usecase.UpdateServerPortsUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.id
@@ -68,6 +74,8 @@ class SettingsViewModel(
     observeThemeUseCase: ObserveThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
     observeMascotEnabledUseCase: ObserveMascotEnabledUseCase,
+    private val observeServerPortsUseCase: ObserveServerPortsUseCase,
+    private val updateServerPortsUseCase: UpdateServerPortsUseCase,
     private val setMascotEnabledUseCase: SetMascotEnabledUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val toggleHiddenMenuItemUseCase: ToggleHiddenMenuItemUseCase,
@@ -76,6 +84,7 @@ class SettingsViewModel(
     private val initialSetupStateHolder: InitialSetupStateHolder,
     private val dispatcherProvider: DispatcherProvider,
     private val logManager: LogManagerEditable,
+    private val serverPortsOverrides: ServerPortsOverrides,
     private val getDatabaseSizeUseCase: GetDatabaseSizeUseCase,
     private val purgeDatabaseUseCase: PurgeDatabaseUseCase,
     observeAutoPurgeIntervalUseCase: ObserveAutoPurgeIntervalUseCase,
@@ -97,6 +106,18 @@ class SettingsViewModel(
         settingsRepository.getFloconDocumentsPath() ?: GetFloconDocumentPathUseCase.defaultPath().absolutePath
     )
     val floconDocumentsPathInput = _floconDocumentsPathInput.asStateFlow()
+
+    private val _serverPortsForm = MutableStateFlow(
+        ServerPortsDomainModel().let {
+            ServerPortsFormUiModel(
+                websocketPort = it.websocketPort.toString(),
+                httpPort = it.httpPort.toString(),
+                websocketPortOverridden = serverPortsOverrides.websocketPort != null,
+                httpPortOverridden = serverPortsOverrides.httpPort != null,
+            )
+        },
+    )
+    val serverPortsForm = _serverPortsForm.asStateFlow()
 
     private val selectedLogDomains = MutableStateFlow(LogDomain.entries.toSet())
     private val selectedLogLevels = MutableStateFlow(LogLevel.entries.toSet())
@@ -153,6 +174,14 @@ class SettingsViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            // the fields follow the effective ports (saved ones, or the launch options)
+            observeServerPortsUseCase().collect { ports ->
+                _serverPortsForm.update {
+                    it.copy(websocketPort = ports.websocketPort.toString(), httpPort = ports.httpPort.toString())
+                }
+            }
+        }
         viewModelScope.launch {
             observeAutoPurgeIntervalUseCase().collect { interval ->
                 _dataState.update { it.copy(autoPurgeInterval = interval) }
@@ -215,6 +244,52 @@ class SettingsViewModel(
             setMascotEnabledUseCase(action.enabled)
         }
     }
+
+    fun onWebsocketPortChanged(value: String) {
+        _serverPortsForm.update { it.copy(websocketPort = value.toPortInput(), error = null) }
+    }
+
+    fun onHttpPortChanged(value: String) {
+        _serverPortsForm.update { it.copy(httpPort = value.toPortInput(), error = null) }
+    }
+
+    /** Puts the default ports back (the ones forced by a launch option are left alone) and applies them. */
+    fun resetServerPorts() {
+        val defaults = ServerPortsDomainModel()
+        _serverPortsForm.update {
+            it.copy(
+                websocketPort = if (it.websocketPortOverridden) it.websocketPort else defaults.websocketPort.toString(),
+                httpPort = if (it.httpPortOverridden) it.httpPort else defaults.httpPort.toString(),
+                error = null,
+            )
+        }
+        applyServerPorts()
+    }
+
+    fun applyServerPorts() {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            val form = _serverPortsForm.value
+            // nothing to save: both ports are forced by the launch options
+            if (form.websocketPortOverridden && form.httpPortOverridden) return@launch
+            val websocketPort = form.websocketPort.toIntOrNull()
+            val httpPort = form.httpPort.toIntOrNull()
+            if (websocketPort == null || httpPort == null) {
+                // an empty field is not a valid port
+                _serverPortsForm.update { it.copy(error = ServerPortsError.OutOfRange) }
+                return@launch
+            }
+            updateServerPortsUseCase(ServerPortsDomainModel(websocketPort = websocketPort, httpPort = httpPort)).fold(
+                doOnFailure = { error -> _serverPortsForm.update { it.copy(error = error) } },
+                doOnSuccess = {
+                    logManager.d(TAG, "Server ports applied: $websocketPort / $httpPort", domain = LogDomain.Default)
+                    feedbackDisplayer.displayMessage(getString(Res.string.settings_server_ports_applied))
+                },
+            )
+        }
+    }
+
+    // digits only, 5 at most
+    private fun String.toPortInput() = filter { it.isDigit() }.take(5)
 
     fun onAdbPathChanged(newPath: String) {
         _adbPathInput.value = newPath
