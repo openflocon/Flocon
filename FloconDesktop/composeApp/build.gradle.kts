@@ -129,6 +129,10 @@ compose.desktop {
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon_small.png"))
+                debMaintainer = "Florent Champigny <champigny.florent@gmail.com>"
+                appCategory = "Development"
+                menuGroup = "Development"
+                rpmLicenseType = "MIT"
             }
             windows {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.ico"))
