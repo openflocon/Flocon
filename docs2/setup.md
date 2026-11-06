@@ -279,6 +279,12 @@ brew install --cask openflocon/tap/flocon
 
 Update it later with `brew upgrade --cask flocon`.
 
+On Linux with [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), use the formula (no `--cask`), then install `adb` with your distribution (see the [Linux Setup Guide](linux-install.md)):
+
+```bash
+brew install openflocon/tap/flocon
+```
+
 On Windows and Linux (or on macOS without Homebrew), download the latest release for your operating system:
 
 [:octicons-download-24: Download Flocon Desktop](https://github.com/openflocon/Flocon/releases){ .md-button .md-button--primary }

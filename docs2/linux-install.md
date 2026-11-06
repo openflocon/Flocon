@@ -14,6 +14,17 @@ Flocon Desktop is published on [GitHub Releases](https://github.com/openflocon/F
 
 A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar`); it needs a JDK 21 to run.
 
+## Homebrew (Linuxbrew)
+
+If you use [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux), install the portable jar with its launcher (x64 and arm64). Homebrew installs OpenJDK 21 for you:
+
+```bash
+brew install openflocon/tap/flocon
+flocon
+```
+
+Update it later with `brew upgrade flocon`. Homebrew does not install `adb`: see [adb](#adb) below.
+
 ## Debian / Ubuntu
 
 ```bash
