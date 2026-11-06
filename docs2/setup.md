@@ -271,20 +271,12 @@ With `open -a`, the environment variables of your shell are not forwarded to an 
 
 ## 3. Install the Desktop Companion
 
-On macOS, install it with [Homebrew](https://brew.sh):
-
-```bash
-brew install --cask openflocon/tap/flocon
-```
-
-Update it later with `brew upgrade --cask flocon`.
-
-On Windows and Linux (or on macOS without Homebrew), download the latest release for your operating system:
+Download the latest release for your operating system:
 
 [:octicons-download-24: Download Flocon Desktop](https://github.com/openflocon/Flocon/releases){ .md-button .md-button--primary }
 
 !!! tip "macOS First Launch"
-    The Homebrew install takes care of this for you. With the DMG, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
+    On macOS, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
     ```bash
     xattr -cr /Applications/Flocon.app
     ```
