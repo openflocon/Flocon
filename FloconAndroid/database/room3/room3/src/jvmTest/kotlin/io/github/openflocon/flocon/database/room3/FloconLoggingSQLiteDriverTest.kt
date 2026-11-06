@@ -5,10 +5,12 @@ import androidx.sqlite.SQLiteDriver
 import androidx.sqlite.SQLiteStatement
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 
 class FloconLoggingSQLiteDriverTest {
 
-    private data class Log(val dbId: String, val sql: String, val bindArgs: List<Any?>)
+    private data class Log(val dbId: String, val sql: String, val bindArgs: List<Any?>, val transactionId: String? = null)
 
     private val logs = mutableListOf<Log>()
     private val statement = FakeStatement()
@@ -20,7 +22,7 @@ class FloconLoggingSQLiteDriverTest {
             }
         },
         dbId = "dogs",
-        logger = { dbId, sql, bindArgs -> logs += Log(dbId, sql, bindArgs) },
+        logger = { dbId, sql, bindArgs, transactionId -> logs += Log(dbId, sql, bindArgs, transactionId) },
     )
 
     private fun prepare(sql: String) = driver.open("dogs.db").prepare(sql)
@@ -60,6 +62,27 @@ class FloconLoggingSQLiteDriverTest {
         prepared.reset()
         prepared.step()
         assertEquals(2, logs.size)
+    }
+
+    @Test
+    fun `the queries of a transaction share its id, other connections are not mixed in`() {
+        val first = driver.open("dogs.db")
+        val second = driver.open("dogs.db")
+
+        first.prepare("BEGIN IMMEDIATE TRANSACTION").step()
+        first.prepare("INSERT INTO dog VALUES (1)").step()
+        second.prepare("BEGIN IMMEDIATE TRANSACTION").step()
+        second.prepare("INSERT INTO dog VALUES (2)").step()
+        first.prepare("COMMIT").step()
+        second.prepare("COMMIT").step()
+        first.prepare("SELECT 1").step()
+
+        val firstId = logs[0].transactionId
+        val secondId = logs[2].transactionId
+        assertNotNull(firstId)
+        assertNotNull(secondId)
+        assertNotEquals(firstId, secondId)
+        assertEquals(listOf(firstId, firstId, secondId, secondId, firstId, secondId, null), logs.map { it.transactionId })
     }
 
     @Test

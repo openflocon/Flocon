@@ -95,7 +95,9 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenuCallbacks
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineTransactionRow
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
+import io.github.openflocon.flocondesktop.features.timeline.view.transactionBranch
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -384,10 +386,20 @@ internal fun TimelineContent(
                                         },
                                         onClick = { onAction(TimelineAction.Open(it)) },
                                         highlight = filterText.value,
-                                        modifier = Modifier.fillMaxWidth(),
+                                        // the queries of a transaction hang from its header
+                                        modifier = Modifier.fillMaxWidth().then(
+                                            item.row.transaction?.let { transaction ->
+                                                Modifier.transactionBranch(isLast = isLastOfTransaction(rows, index, settings.invertList, transaction.id))
+                                            } ?: Modifier,
+                                        ),
                                     )
                                 }
                             }
+
+                            is TimelineItemUiModel.TransactionHeader -> TimelineTransactionRow(
+                                item = item,
+                                onClick = { onAction(TimelineAction.ToggleTransaction(item.transaction.id)) },
+                            )
 
                             is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
 
@@ -417,6 +429,16 @@ internal fun TimelineContent(
             }
         }
     }
+}
+
+/**
+ * The query is the last one of its transaction when the item displayed below it is not another query of it: the next one in the list,
+ * the previous one when the list is [inverted]. Only the items already loaded are looked at.
+ */
+private fun isLastOfTransaction(rows: LazyPagingItems<TimelineItemUiModel>, index: Int, inverted: Boolean, transactionId: String): Boolean {
+    val below = if (inverted) index - 1 else index + 1
+    if (below !in 0 until rows.itemCount) return true
+    return (rows.peek(below) as? TimelineItemUiModel.Row)?.row?.transaction?.id != transactionId
 }
 
 /**

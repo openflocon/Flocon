@@ -28,6 +28,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlin.let
 
+// the logs of a transaction form one entry, a query outside of a transaction is an entry by itself
+private const val ENTRY_KEY = "COALESCE(transactionId, 'q' || id)"
+
 internal class LocalDatabaseDataSourceRoom(
     private val queryDao: QueryDao,
     private val tablesDao: TablesDao,
@@ -196,6 +199,7 @@ internal class LocalDatabaseDataSourceRoom(
                 bindArgs = log.bindArgs?.let { json.encodeToString(it) },
                 timestamp = log.timestamp,
                 isTransaction = log.isTransaction,
+                transactionId = log.transactionId,
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 appInstance = log.appInstance
@@ -221,19 +225,7 @@ internal class LocalDatabaseDataSourceRoom(
         )
 
         return databaseQueryLogDao.observeLogs(query).map { list ->
-            list.map { entity ->
-                DatabaseQueryLogDomainModel(
-                    dbId = entity.dbId,
-                    dbName = entity.dbName,
-                    sqlQuery = entity.sqlQuery,
-                    bindArgs = entity.bindArgs?.let {
-                        json.decodeFromString(it)
-                    } ?: emptyList(),
-                    timestamp = entity.timestamp,
-                    isTransaction = entity.isTransaction,
-                    appInstance = entity.appInstance
-                )
-            }
+            list.map { entity -> entity.toDomain() }
         }
     }
 
@@ -266,19 +258,7 @@ internal class LocalDatabaseDataSourceRoom(
             limit = null,
             offset = null,
         )
-        return databaseQueryLogDao.getLogs(query).map { entity ->
-            DatabaseQueryLogDomainModel(
-                dbId = entity.dbId,
-                dbName = entity.dbName,
-                sqlQuery = entity.sqlQuery,
-                bindArgs = entity.bindArgs?.let {
-                    json.decodeFromString(it)
-                } ?: emptyList(),
-                timestamp = entity.timestamp,
-                isTransaction = entity.isTransaction,
-                appInstance = entity.appInstance
-            )
-        }
+        return databaseQueryLogDao.getLogs(query).map { entity -> entity.toDomain() }
     }
 
     override suspend fun getLatestQueryLogs(
@@ -287,6 +267,7 @@ internal class LocalDatabaseDataSourceRoom(
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,
+        transactionId: String?,
         limit: Int,
     ): List<DatabaseQueryLogDomainModel> {
         val (whereClause, queryParams) = buildWhereClauseAndParams(
@@ -295,40 +276,29 @@ internal class LocalDatabaseDataSourceRoom(
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
             appInstance = appInstance,
+            transactionId = transactionId,
         )
         queryParams.add(limit)
         val query = createRawQuery("SELECT * FROM DatabaseQueryLogEntity $whereClause ORDER BY timestamp DESC LIMIT ?", queryParams)
 
-        return databaseQueryLogDao.getLogs(query).map { entity ->
-            DatabaseQueryLogDomainModel(
-                dbId = entity.dbId,
-                dbName = entity.dbName,
-                sqlQuery = entity.sqlQuery,
-                bindArgs = entity.bindArgs?.let {
-                    json.decodeFromString(it)
-                } ?: emptyList(),
-                timestamp = entity.timestamp,
-                isTransaction = entity.isTransaction,
-                appInstance = entity.appInstance
-            )
-        }
+        return databaseQueryLogDao.getLogs(query).map { entity -> entity.toDomain() }
     }
 
     override fun observeQueryLog(id: Int): Flow<DatabaseQueryLogDomainModel?> = databaseQueryLogDao.observeLog(id).map { entity ->
-        entity?.let {
-            DatabaseQueryLogDomainModel(
-                dbId = it.dbId,
-                dbName = it.dbName,
-                sqlQuery = it.sqlQuery,
-                bindArgs = it.bindArgs?.let { args ->
-                    json.decodeFromString(args)
-                } ?: emptyList(),
-                timestamp = it.timestamp,
-                isTransaction = it.isTransaction,
-                appInstance = it.appInstance
-            )
-        }
+        entity?.toDomain()
     }
+
+    private fun DatabaseQueryLogEntity.toDomain() = DatabaseQueryLogDomainModel(
+        id = id,
+        dbId = dbId,
+        dbName = dbName,
+        sqlQuery = sqlQuery,
+        bindArgs = bindArgs?.let { json.decodeFromString(it) } ?: emptyList(),
+        timestamp = timestamp,
+        isTransaction = isTransaction,
+        transactionId = transactionId,
+        appInstance = appInstance,
+    )
 
     override suspend fun deleteAllQueryLogs(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         databaseQueryLogDao.deleteAll(
@@ -350,18 +320,25 @@ internal class LocalDatabaseDataSourceRoom(
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
+            // the full list (exports) is flat, only the pages of the screen are made of groups
+            keepGroupedControls = limit != null,
         )
 
-        var queryString = "SELECT * FROM DatabaseQueryLogEntity $whereClause"
-        queryString += " ORDER BY timestamp ASC"
-
-        if (limit != null && offset != null) {
-            queryString += " LIMIT ? OFFSET ?"
-            queryParams.add(limit)
-            queryParams.add(offset)
+        if (limit == null || offset == null) {
+            return createRawQuery("SELECT * FROM DatabaseQueryLogEntity $whereClause ORDER BY timestamp ASC, id ASC", queryParams)
         }
 
-        return createRawQuery(queryString, queryParams)
+        // the pages hold entries: all the logs of a transaction are in the same page, as a standalone query is one entry
+        val pageParams = ArrayList<Any>(queryParams).apply {
+            addAll(queryParams)
+            add(limit)
+            add(offset)
+        }
+        val queryString = "SELECT * FROM DatabaseQueryLogEntity $whereClause AND $ENTRY_KEY IN (" +
+            "SELECT $ENTRY_KEY FROM DatabaseQueryLogEntity $whereClause " +
+            "GROUP BY $ENTRY_KEY ORDER BY MIN(timestamp) ASC, MIN(id) ASC LIMIT ? OFFSET ?) " +
+            "ORDER BY timestamp ASC, id ASC"
+        return createRawQuery(queryString, pageParams)
     }
 
     private fun buildCountQuery(
@@ -375,9 +352,10 @@ internal class LocalDatabaseDataSourceRoom(
             showTransactions = showTransactions,
             filters = filters,
             deviceIdAndPackageName = deviceIdAndPackageName,
+            keepGroupedControls = true,
         )
 
-        val queryString = "SELECT COUNT(*) FROM DatabaseQueryLogEntity $whereClause"
+        val queryString = "SELECT COUNT(DISTINCT $ENTRY_KEY) FROM DatabaseQueryLogEntity $whereClause"
         return createRawQuery(queryString, queryParams)
     }
 
@@ -387,6 +365,8 @@ internal class LocalDatabaseDataSourceRoom(
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         appInstance: Long? = null,
+        transactionId: String? = null,
+        keepGroupedControls: Boolean = false,
     ): Pair<String, ArrayList<Any>> {
         val queryParams = ArrayList<Any>()
         var whereClause = "WHERE deviceId = ? AND packageName = ? AND dbId = ?"
@@ -399,8 +379,18 @@ internal class LocalDatabaseDataSourceRoom(
             queryParams.add(appInstance)
         }
 
+        if (transactionId != null) {
+            whereClause += " AND transactionId = ?"
+            queryParams.add(transactionId)
+        }
+
         if (!showTransactions) {
-            whereClause += " AND isTransaction = 0"
+            whereClause += if (keepGroupedControls) {
+                // the BEGIN / COMMIT of a transaction with an id are kept: the screen needs them for the status of the group
+                " AND (isTransaction = 0 OR transactionId IS NOT NULL)"
+            } else {
+                " AND isTransaction = 0"
+            }
         }
 
         val includes = filters.filter { it.type == FilterQueryLogDomainModel.FilterType.INCLUDE }

@@ -114,6 +114,7 @@ Sent for each query executed by the app (when query logging is enabled).
 | `sqlQuery`  | `String`        | Executed SQL                     |
 | `bindArgs`  | `List<String>?` | Bound arguments (`toString()`)   |
 | `timestamp` | `Long`          | Execution timestamp (ms)         |
+| `transactionId` | `String?`   | Optional. Same value for all the queries of a transaction, `BEGIN` and `COMMIT` / `ROLLBACK` included. Absent outside of a transaction, and with SDKs that don't send it |
 
 ```json
 {
@@ -121,5 +122,18 @@ Sent for each query executed by the app (when query logging is enabled).
   "sqlQuery": "SELECT * FROM user WHERE id = ?",
   "bindArgs": ["42"],
   "timestamp": 1729260000000
+}
+```
+
+The desktop groups the logs sharing a `transactionId` in one row. The id is only an opaque identifier (the SDK sends a random UUID),
+unique per transaction, so a client must not give it a meaning.
+
+```json
+{
+  "dbId": "app_database",
+  "sqlQuery": "INSERT INTO user (name) VALUES (?)",
+  "bindArgs": ["flo"],
+  "timestamp": 1729260000100,
+  "transactionId": "0b8f4c6e-5c3b-4f0e-9a52-3f1d2f7a9a10"
 }
 ```

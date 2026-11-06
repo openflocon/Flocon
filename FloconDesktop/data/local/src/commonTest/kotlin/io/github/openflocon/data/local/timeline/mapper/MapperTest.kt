@@ -9,6 +9,7 @@ import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -173,6 +174,26 @@ class MapperTest {
 
         assertTrue(row.toDomain().hasError)
         assertFalse(row.copy(hasError = false).toDomain().hasError)
+    }
+
+    @Test
+    fun `a database query of a transaction carries the transaction`() {
+        val row = networkRow(kind = KIND_DATABASE).copy(
+            transactionId = "tx",
+            txQueryCount = 2,
+            txStart = 100,
+            txEnd = 105,
+            isTransactionControl = true,
+        )
+
+        val transaction = row.toDomain().transaction
+
+        assertEquals(TimelineTransactionDomainModel(id = "tx", queryCount = 2, startTimestamp = 100, endTimestamp = 105, isControl = true), transaction)
+    }
+
+    @Test
+    fun `a query outside of a transaction has none`() {
+        assertNull(networkRow(kind = KIND_DATABASE).toDomain().transaction)
     }
 
     @Test

@@ -65,8 +65,8 @@ class DatabaseMcpToolProviderTest {
         ),
         logs = listOf(
             log("SELECT * FROM users WHERE id = ?", listOf("1"), timestamp = 10, appInstance = 1),
-            log("BEGIN TRANSACTION", null, timestamp = 20, appInstance = 2, isTransaction = true),
-            log("INSERT INTO users VALUES (?, ?)", listOf("2", "flo"), timestamp = 30, appInstance = 2),
+            log("BEGIN TRANSACTION", null, timestamp = 20, appInstance = 2, isTransaction = true, transactionId = "tx-1"),
+            log("INSERT INTO users VALUES (?, ?)", listOf("2", "flo"), timestamp = 30, appInstance = 2, transactionId = "tx-1"),
             log("SELECT * FROM dogs", null, timestamp = 40, appInstance = 2),
         ),
     )
@@ -194,6 +194,28 @@ class DatabaseMcpToolProviderTest {
         )
     }
 
+    @Test
+    fun `list_database_query_logs returns the transaction id`() = runBlocking {
+        val result = server.callTool("list_database_query_logs", mapOf("databaseId" to "/data/databases/app.db")).json()
+
+        val queries = result["queries"]!!.jsonArray.map { it.jsonObject }
+        assertEquals(null, queries[0]["transactionId"])
+        assertEquals("tx-1", queries[1]["transactionId"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `list_database_query_logs only returns the queries of a transaction`() = runBlocking {
+        val result = server.callTool(
+            "list_database_query_logs",
+            mapOf("databaseId" to "/data/databases/app.db", "transactionId" to "tx-1", "includeTransactions" to true),
+        ).json()
+
+        assertEquals(
+            listOf("INSERT INTO users VALUES ('2', 'flo')", "BEGIN TRANSACTION"),
+            result["queries"]!!.jsonArray.map { it.jsonObject["sql"]!!.jsonPrimitive.content },
+        )
+    }
+
     private fun select(columns: List<String>, vararg rows: List<String?>) = DatabaseExecuteSqlResponseDomainModel.Select(
         columns = columns,
         values = rows.toList(),
@@ -205,7 +227,9 @@ class DatabaseMcpToolProviderTest {
         timestamp: Long,
         appInstance: Long,
         isTransaction: Boolean = false,
+        transactionId: String? = null,
     ) = DatabaseQueryLogDomainModel(
+        transactionId = transactionId,
         dbId = "/data/databases/app.db",
         dbName = "app.db",
         sqlQuery = sql,
@@ -253,8 +277,10 @@ private class FakeDatabaseRepository(
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,
+        transactionId: String?,
     ) = logs
         .filter { it.dbId == dbId }
+        .filter { transactionId == null || it.transactionId == transactionId }
         .filter { showTransactions || !it.isTransaction }
         .filter { appInstance == null || it.appInstance == appInstance }
         .filter { log -> filters.all { log.sqlQuery.contains(it.text) || log.bindArgs.orEmpty().any { arg -> arg.contains(it.text) } } }
@@ -265,8 +291,9 @@ private class FakeDatabaseRepository(
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         appInstance: Long?,
+        transactionId: String?,
         limit: Int,
-    ): List<DatabaseQueryLogDomainModel> = filteredLogs(dbId, showTransactions, filters, appInstance)
+    ): List<DatabaseQueryLogDomainModel> = filteredLogs(dbId, showTransactions, filters, appInstance, transactionId)
         .sortedByDescending { it.timestamp }
         .take(limit)
 

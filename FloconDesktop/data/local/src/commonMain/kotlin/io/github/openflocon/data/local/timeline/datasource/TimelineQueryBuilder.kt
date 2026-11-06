@@ -1,6 +1,7 @@
 package io.github.openflocon.data.local.timeline.datasource
 
 import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_DATABASE_STATEMENT_ROOM
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_RESERVED_LOG_TYPES
@@ -30,7 +31,24 @@ internal const val MAX_DATABASE_LOGS = TIMELINE_MAX_DATABASE_LOGS
 private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity", "TimelineLogEntity")
 
 // columns only the network calls fill
-private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize"
+private const val NO_NETWORK_FIELDS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize"
+
+// columns only the database queries of a transaction fill: the id of the transaction, its number of queries and its first and last times
+private const val NO_TRANSACTION_COLUMNS = "NULL AS transactionId, NULL AS txQueryCount, NULL AS txStart, NULL AS txEnd, 0 AS isTransactionControl"
+
+private const val NO_NETWORK_COLUMNS = "$NO_NETWORK_FIELDS, $NO_TRANSACTION_COLUMNS"
+
+// the other queries of the transaction of a database log, null outside of a transaction
+private fun transactionAggregate(aggregate: String, extraCondition: String = ""): String = "CASE WHEN transactionId IS NULL THEN NULL ELSE (" +
+    "SELECT $aggregate FROM DatabaseQueryLogEntity t WHERE t.transactionId = DatabaseQueryLogEntity.transactionId " +
+    "AND t.deviceId = DatabaseQueryLogEntity.deviceId AND t.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND t.dbId = DatabaseQueryLogEntity.dbId$extraCondition) END"
+
+private val DATABASE_TRANSACTION_COLUMNS = "transactionId AS transactionId, " +
+    "${transactionAggregate("COUNT(*)", " AND t.isTransaction = 0")} AS txQueryCount, " +
+    "${transactionAggregate("MIN(t.timestamp)")} AS txStart, " +
+    "${transactionAggregate("MAX(t.timestamp)")} AS txEnd, " +
+    "isTransaction AS isTransactionControl"
 
 // the column of the union holding the value of a facet: the facets are the last columns of every member of the union
 private fun TimelineFacet.column(): String = "facet$name"
@@ -46,9 +64,17 @@ private const val NETWORK_STATUS_CODE = "COALESCE(response_http_responseHttpCode
 // 1xx, 2xx..., null without http code
 private const val NETWORK_STATUS_CLASS = "(CAST($NETWORK_STATUS_CODE AS INTEGER) / 100) || 'xx'"
 
+private const val ROOM_LOG_TABLE = "room_table_modification_log"
+
+// what Room runs for itself: a query on its modification log, or any query of a transaction that has one (its BEGIN and COMMIT too)
+private const val IS_ROOM_STATEMENT = "(sqlQuery LIKE '%$ROOM_LOG_TABLE%' OR (transactionId IS NOT NULL AND EXISTS (" +
+    "SELECT 1 FROM DatabaseQueryLogEntity r WHERE r.transactionId = DatabaseQueryLogEntity.transactionId " +
+    "AND r.deviceId = DatabaseQueryLogEntity.deviceId AND r.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND r.dbId = DatabaseQueryLogEntity.dbId AND r.sqlQuery LIKE '%$ROOM_LOG_TABLE%')))"
+
 // the kind of a SQL statement, from its first word. Same values as TimelineFacet.DatabaseStatement
 private val DATABASE_STATEMENT = buildString {
-    append("CASE")
+    append("CASE WHEN $IS_ROOM_STATEMENT THEN '$TIMELINE_DATABASE_STATEMENT_ROOM'")
     listOf(
         "SELECT" to listOf("SELECT", "WITH"),
         "INSERT" to listOf("INSERT", "REPLACE"),
@@ -315,7 +341,7 @@ private fun buildUnion(
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
                         "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
-                        "response_responseByteSize AS responseByteSize",
+                        "response_responseByteSize AS responseByteSize, $NO_TRANSACTION_COLUMNS",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -335,7 +361,7 @@ private fun buildUnion(
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
                         "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
-                        "response_responseByteSize AS responseByteSize",
+                        "response_responseByteSize AS responseByteSize, $NO_TRANSACTION_COLUMNS",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -351,7 +377,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
-                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
+                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_FIELDS, $DATABASE_TRANSACTION_COLUMNS",
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("sqlQuery", "dbName"),
@@ -453,7 +479,7 @@ private fun buildUnion(
                     select = "'$KIND_LOG' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
                         "value AS title, type AS subtitle, appInstance AS appInstance, " +
                         "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, " +
-                        "CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError, NULL AS responseByteSize",
+                        "CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError, NULL AS responseByteSize, $NO_TRANSACTION_COLUMNS",
                     from = "TimelineLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("value", "type"),
@@ -551,7 +577,8 @@ private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableLi
 
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
-        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, NULL AS level, NULL AS sessionStart WHERE 0"
+        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, $NO_TRANSACTION_COLUMNS, " +
+        "NULL AS level, NULL AS sessionStart WHERE 0"
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -595,7 +622,8 @@ internal fun buildTimelineQuery(
     val outerWhere = outerConditions(filter, params)
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, u.${TimelineFacet.LogLevel.column()} AS level, " +
+            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
+            "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.${TimelineFacet.LogLevel.column()} AS level, " +
             "$FACET_VALUES_JSON AS facetValues, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +

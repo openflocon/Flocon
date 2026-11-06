@@ -22,4 +22,16 @@ data class TimelineEventDomainModel(
     val level: TimelineLogLevel? = null, // log only
     // the value of the event for each facet of its source, ex: the method and the host of a call. What it can be excluded by
     val facets: Map<TimelineFacet, String> = emptyMap(),
+    val transaction: TimelineTransactionDomainModel? = null, // database only: the transaction the query ran in
+)
+
+/**
+ * The transaction of a database query. The queries of a transaction share its [id].
+ */
+data class TimelineTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // without the statements that open and close it (BEGIN, COMMIT...)
+    val startTimestamp: Long,
+    val endTimestamp: Long,
+    val isControl: Boolean, // this query is one of the statements that open or close the transaction
 )

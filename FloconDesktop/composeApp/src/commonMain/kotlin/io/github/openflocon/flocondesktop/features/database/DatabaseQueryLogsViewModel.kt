@@ -2,29 +2,28 @@ package io.github.openflocon.flocondesktop.features.database
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
-import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.usecase.ClearDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.utils.injectSqlArgs
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
-import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
+import io.github.openflocon.flocondesktop.features.database.mapper.toQueryLogEntries
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.flocondesktop.features.database.model.toDomain
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,9 +37,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
+private const val ROOM_LOG_TABLE = "room_table_modification_log"
 
 class DatabaseQueryLogsViewModel(
     private val dbId: String,
@@ -58,7 +56,10 @@ class DatabaseQueryLogsViewModel(
     private val _showTransactions = MutableStateFlow(false)
     val showTransactions = _showTransactions.asStateFlow()
 
-    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(persistentListOf())
+    // what Room runs for itself (its invalidation tracker) is hidden until the user removes the chip
+    private val _filterChips = MutableStateFlow<PersistentList<FilterChipUiModel>>(
+        persistentListOf(FilterChipUiModel(ROOM_LOG_TABLE, FilterChipUiModel.FilterType.EXCLUDE)),
+    )
     val filterChips = _filterChips.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -75,27 +76,40 @@ class DatabaseQueryLogsViewModel(
         observeCurrentDeviceIdAndPackageNameUseCase(),
     )
 
+    // the transactions are folded by default
+    private val expandedIds = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val logs: StateFlow<List<DatabaseQueryUiModel>> =
+    val logs: StateFlow<ImmutableList<DatabaseQueryLogEntryUiModel>> =
         combines(
             filtersFlow,
             _page,
         ).flatMapLatest { (filter, page) ->
             val (showTransactions, filterChips, currentDeviceAndPackage) = filter
-            observeDatabaseQueryLogsUseCase(
-                dbId = dbId,
-                showTransactions = showTransactions,
-                filters = filterChips,
-                limit = PAGE_SIZE,
-                offset = page * PAGE_SIZE,
-            ).map { list ->
-                list.map {
-                    it.toUi(currentDeviceAndPackage = currentDeviceAndPackage)
-                }
+            combine(
+                observeDatabaseQueryLogsUseCase(
+                    dbId = dbId,
+                    showTransactions = showTransactions,
+                    filters = filterChips,
+                    limit = PAGE_SIZE,
+                    offset = page * PAGE_SIZE,
+                ),
+                expandedIds,
+            ) { list, expandedTransactionIds ->
+                toQueryLogEntries(
+                    logs = list,
+                    showTransactions = showTransactions,
+                    expandedTransactionIds = expandedTransactionIds,
+                    currentAppInstance = currentDeviceAndPackage?.appInstance,
+                )
             }
         }
             .flowOn(dispatcherProvider.viewModel)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), persistentListOf())
+
+    fun toggleTransaction(id: String) {
+        expandedIds.update { if (id in it) it.removing(id) else it.adding(id) }
+    }
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val totalCount: Flow<Int> =
@@ -249,27 +263,4 @@ class DatabaseQueryLogsViewModel(
             clearDatabaseQueryLogsUseCase()
         }
     }
-}
-
-private fun DatabaseQueryLogDomainModel.toUi(currentDeviceAndPackage: DeviceIdAndPackageNameDomainModel?) = DatabaseQueryUiModel(
-    sqlQuery = sqlQuery,
-    bindArgs = bindArgs,
-    dateFormatted = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp)),
-    isTransaction = isTransaction,
-    isFromOldSession = currentDeviceAndPackage?.appInstance != appInstance,
-    type = findType(this),
-)
-
-private fun findType(model: DatabaseQueryLogDomainModel): DatabaseQueryUiModel.Type? = if (model.isTransaction) {
-    DatabaseQueryUiModel.Type.Transaction
-} else if (model.sqlQuery.startsWith("SELECT")) {
-    DatabaseQueryUiModel.Type.Select
-} else if (model.sqlQuery.startsWith("INSERT")) {
-    DatabaseQueryUiModel.Type.Insert
-} else if (model.sqlQuery.startsWith("UPDATE")) {
-    DatabaseQueryUiModel.Type.Update
-} else if (model.sqlQuery.startsWith("DELETE")) {
-    DatabaseQueryUiModel.Type.Delete
-} else {
-    null
 }

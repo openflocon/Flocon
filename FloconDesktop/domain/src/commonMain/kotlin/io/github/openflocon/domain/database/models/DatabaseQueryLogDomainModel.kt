@@ -11,6 +11,10 @@ data class DatabaseQueryLogDomainModel(
     val timestamp: Long,
     val isTransaction: Boolean,
     val appInstance: Long,
+    /** The queries of a transaction share the same id, BEGIN and COMMIT included. Null outside of a transaction. */
+    val transactionId: String? = null,
+    /** Local id of the log, 0 until it is saved. */
+    val id: Int = 0,
 )
 
 fun DatabaseQueryLogDomainModel.toFullSql(): String = injectSqlArgs(sqlQuery, bindArgs)

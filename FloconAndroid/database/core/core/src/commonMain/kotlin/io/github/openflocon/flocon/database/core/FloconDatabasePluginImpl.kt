@@ -17,6 +17,7 @@ import io.github.openflocon.flocon.database.core.model.fromdevice.sql.toRemoteRe
 import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
@@ -115,25 +116,52 @@ internal class FloconDatabasePluginImpl(
         sendDatabases(registeredDatabases.value)
     }
 
+    // one state per database, for the callers that do not know the transaction of their queries
+    private val transactionStates = mutableMapOf<String, FloconTransactionState>()
+    private val transactionLock = FloconLock()
+
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
-        scope.launch {
-            try {
-                sender.send(
-                    plugin = Protocol.FromDevice.Database.Plugin,
-                    method = Protocol.FromDevice.Database.Method.LogQuery,
-                    body = encoder.encode(
-                        DatabaseQueryLogModel(
-                            dbId = dbId,
-                            sqlQuery = sqlQuery,
-                            bindArgs = bindArgs.map { it.toString() },
-                            timestamp = currentTimeMillis()
-                        )
-                    )
-                )
-            } catch (t: Throwable) {
-                FloconLogger.logError("Database logging error", t)
+        // the queries can be logged from any thread
+        val transactionId = transactionLock.withLock {
+            val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
+            state.onQuery(sqlQuery).also { id ->
+                // outside of a transaction: nothing to remember for this database
+                if (id == null) transactionStates.remove(dbId)
             }
         }
+        logQuery(dbId, sqlQuery, bindArgs, transactionId)
+    }
+
+    // the queries are sent in the order they were logged: launching a coroutine for each one on a multi-threaded scope
+    // reorders them, and the queries of a transaction end up interleaved with the ones of the next one
+    private val pendingLogs = Channel<DatabaseQueryLogModel>(Channel.UNLIMITED)
+
+    init {
+        scope.launch {
+            for (log in pendingLogs) {
+                try {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Database.Plugin,
+                        method = Protocol.FromDevice.Database.Method.LogQuery,
+                        body = encoder.encode(log),
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("Database logging error", t)
+                }
+            }
+        }
+    }
+
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) {
+        pendingLogs.trySend(
+            DatabaseQueryLogModel(
+                dbId = dbId,
+                sqlQuery = sqlQuery,
+                bindArgs = bindArgs.map { it.toString() },
+                timestamp = currentTimeMillis(),
+                transactionId = transactionId,
+            ),
+        )
     }
 
     companion object {

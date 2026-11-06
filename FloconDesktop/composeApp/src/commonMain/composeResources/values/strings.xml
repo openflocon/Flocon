@@ -397,6 +397,15 @@
     <string name="database_query_log_panel_arguments">Arguments</string>
     <string name="database_query_log_panel_copy_arguments">Copy arguments</string>
     <string name="database_query_log_panel_transaction">Transaction</string>
+    <plurals name="database_transaction_queries">
+        <item quantity="one">query</item>
+        <item quantity="other">queries</item>
+    </plurals>
+    <string name="database_transaction_committed">Committed</string>
+    <string name="database_transaction_rolled_back">Rolled back</string>
+    <string name="database_transaction_open">In progress</string>
+    <string name="database_transaction_expand">Show the queries of the transaction</string>
+    <string name="database_transaction_collapse">Hide the queries of the transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>

@@ -124,6 +124,10 @@ Flocon can display all SQL queries executed by your app in real-time — great f
 
 <img width="1440" height="968" alt="Database Query Logging" src="https://github.com/user-attachments/assets/f7c06191-17c1-41f6-9184-86b50d6f9945" style="border-radius: 8px;" />
 
+The queries run in the same transaction are grouped in one row, with the number of queries, the duration and whether
+the transaction was committed or rolled back. Click the row to show or hide its queries. Room 2 and Room 3 logging group
+them automatically; with manual logging, pass the same `transactionId` to `logQuery` for every query of a transaction.
+
 === "Room 2 (Android)"
 
     ```kotlin
@@ -160,7 +164,8 @@ Flocon can display all SQL queries executed by your app in real-time — great f
     Flocon.databasePlugin.logQuery(
         dbId = "my_custom_db", // the id the database was registered with
         sqlQuery = "SELECT * FROM users WHERE id = ?",
-        bindArgs = listOf(42)
+        bindArgs = listOf(42),
+        transactionId = null, // optional, the same value for all the queries of a transaction
     )
     ```
 
