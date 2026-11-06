@@ -1,0 +1,95 @@
+name: Linux - Publish apt and rpm repository
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. 1.9.6)'
+        required: true
+        type: string
+
+# Serialize runs: they all push to gh-pages
+concurrency:
+  group: linux-repo
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout (scripts)
+        uses: actions/checkout@v6
+
+      - name: Install tooling
+        run: sudo apt-get update && sudo apt-get install -y reprepro createrepo-c rpm gnupg dpkg-dev
+
+      - name: Wait for release assets
+        run: |
+          # release.yml may upload the assets after the release is published
+          for i in $(seq 1 60); do
+            n=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
+              --jq '[.assets[].name | select(test("^Flocon-linux-(x64|arm64)\\.(deb|rpm)$"))] | length')
+            [ "$n" -ge 4 ] && exit 0
+            echo "assets: $n/4, waiting..."; sleep 30
+          done
+          echo "Linux assets not found on release $TAG"; exit 1
+
+      - name: Download release assets
+        run: |
+          mkdir -p assets
+          for f in x64.deb x64.rpm arm64.deb arm64.rpm; do
+            gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "Flocon-linux-$f" --dir assets
+          done
+          ls -l assets
+
+      - name: Import GPG key
+        id: gpg
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.LINUX_REPO_GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.LINUX_REPO_GPG_PASSPHRASE }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then echo "LINUX_REPO_GPG_PRIVATE_KEY is not set"; exit 1; fi
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -p "$GNUPGHOME"; chmod 700 "$GNUPGHOME"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          printf '%s\n' "allow-preset-passphrase" "max-cache-ttl 7200" "default-cache-ttl 7200" > "$GNUPGHOME/gpg-agent.conf"
+          gpgconf --kill gpg-agent || true
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          KEY=$(gpg --batch --list-secret-keys --with-colons | awk -F: '/^sec/{print $5; exit}')
+          echo "key_id=$KEY" >> "$GITHUB_OUTPUT"
+          # preset the passphrase for every (sub)key so reprepro/rpmsign/gpg never prompt
+          PRESET=$(find /usr/lib/gnupg* /usr/libexec -name gpg-preset-passphrase 2>/dev/null | head -1)
+          for grip in $(gpg --batch --list-secret-keys --with-keygrip --with-colons | awk -F: '/^grp/{print $10}'); do
+            "$PRESET" --preset --passphrase "$GPG_PASSPHRASE" "$grip"
+          done
+
+      - name: Prepare gh-pages tree
+        run: |
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads "$REMOTE" gh-pages >/dev/null 2>&1; then
+            git clone --branch gh-pages --depth 1 "$REMOTE" site
+          else
+            mkdir site && git -C site init -b gh-pages
+            git -C site remote add origin "$REMOTE"
+          fi
+
+      - name: Build and sign repository
+        run: scripts/build-linux-repo.sh assets site "${{ steps.gpg.outputs.key_id }}"
+
+      - name: Publish to gh-pages
+        run: |
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "nothing to publish"; exit 0; }
+          git commit -m "chore: Linux repository for $TAG"
+          git push origin gh-pages
