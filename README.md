@@ -48,16 +48,6 @@ flocon = "LASTEST_VERSION"
 flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
 ```
 
-## 💻 Install Flocon Desktop
-
-On macOS, with [Homebrew](https://brew.sh):
-
-```bash
-brew install --cask openflocon/tap/flocon
-```
-
-Update with `brew upgrade --cask flocon`. On Windows and Linux, download the latest build from the [releases page](https://github.com/openflocon/Flocon/releases).
-
 ## 📖 Documentation
 
 Visit the full documentation site for setup guides, feature details, and advanced usage:  
