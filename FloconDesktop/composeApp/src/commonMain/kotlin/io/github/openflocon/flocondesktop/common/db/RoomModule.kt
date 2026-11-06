@@ -4,6 +4,7 @@ import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
 import io.github.openflocon.domain.maintenance.repository.DatabaseMaintenanceRepository
 import io.github.openflocon.domain.maintenance.repository.MediaFilesRepository
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -90,12 +91,15 @@ val roomModule =
             get<AppDatabase>().maintenanceDao
         }
         singleOf(::DatabaseMaintenanceRepositoryImpl) bind DatabaseMaintenanceRepository::class
-        single<MediaFilesRepository> {
-            val getDocumentsFolder = get<GetFloconDocumentPathUseCase>()
-            MediaFilesRepositoryImpl(
-                mediaFiles = MediaFiles { getDocumentsFolder() },
-                dispatcherProvider = get(),
-                settingsDataSource = get(),
-            )
-        }
+        single<MediaFilesRepository> { createMediaFilesRepository() }
     }
+
+/** The screenshots and recordings saved in the Flocon documents folder (also wrapped by the mock mode). */
+internal fun Scope.createMediaFilesRepository(): MediaFilesRepository {
+    val getDocumentsFolder = get<GetFloconDocumentPathUseCase>()
+    return MediaFilesRepositoryImpl(
+        mediaFiles = MediaFiles { getDocumentsFolder() },
+        dispatcherProvider = get(),
+        settingsDataSource = get(),
+    )
+}

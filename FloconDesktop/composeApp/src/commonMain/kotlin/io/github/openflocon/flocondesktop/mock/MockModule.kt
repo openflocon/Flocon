@@ -8,8 +8,10 @@ import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
+import io.github.openflocon.domain.maintenance.repository.MediaFilesRepository
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.db.DatabaseFile
+import io.github.openflocon.flocondesktop.common.db.createMediaFilesRepository
 import io.github.openflocon.flocondesktop.common.db.getMockDatabaseFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -25,6 +27,15 @@ fun mockModule(scenario: MockScenario): Module = module {
     single { DatabaseFile(getMockDatabaseFile()) }
     single<AdbRepository> { NoOpAdbRepository }
     single<IosSimulatorRepository> { NoOpIosSimulatorRepository }
+    // the auto-clean at launch must not delete the user's real screenshots and recordings
+    single<MediaFilesRepository> { KeepMediaFilesRepository(createMediaFilesRepository()) }
+}
+
+/** In mock mode, the real media files can be measured but are never deleted. */
+internal class KeepMediaFilesRepository(
+    private val real: MediaFilesRepository,
+) : MediaFilesRepository by real {
+    override suspend fun deleteFilesBefore(beforeTimestampMs: Long) = Unit
 }
 
 /** In mock mode, adb must not run: a new mocked Android device would broadcast to the real phones. */
