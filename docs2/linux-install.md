@@ -26,6 +26,30 @@ sudo apt install ./Flocon-linux-x64.deb      # or Flocon-linux-arm64.deb
 sudo dnf install ./Flocon-linux-x64.rpm      # or Flocon-linux-arm64.rpm
 ```
 
+## Arch Linux (AUR)
+
+Flocon is packaged on the AUR as [`flocon-bin`](https://aur.archlinux.org/packages/flocon-bin) (x86_64 and aarch64). It repackages the release `.deb`, which bundles its own Java runtime.
+
+```bash
+yay -S flocon-bin        # or paru -S flocon-bin
+```
+
+`android-tools` (adb) is an optional dependency: install it for screenshots, screen recordings and deeplinks.
+
+```bash
+sudo pacman -S android-tools
+```
+
+### Maintainer setup (one time)
+
+The package is updated automatically on each published release by `.github/workflows/aur.yml`. It needs a manual setup:
+
+1. Create an account on [aur.archlinux.org](https://aur.archlinux.org).
+2. Generate a dedicated key: `ssh-keygen -t ed25519 -C "flocon-aur" -f aur_key` (no passphrase), and add `aur_key.pub` in your AUR account (My Account, SSH Public Key).
+3. Add the private key `aur_key` as the GitHub repository secret `AUR_SSH_PRIVATE_KEY`, then delete it locally.
+4. Create the package once: `git clone ssh://aur@aur.archlinux.org/flocon-bin.git`, copy `packaging/aur/flocon-bin/PKGBUILD` and `.SRCINFO` in it, set `pkgver` to a published release, run `updpkgsums && makepkg --printsrcinfo > .SRCINFO`, commit and push. The workflow can then take over.
+5. Without the secret the workflow only logs a warning and skips. It can also be run by hand (Actions, "Publish to AUR", with a version).
+
 ## adb
 
 Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Install it separately:

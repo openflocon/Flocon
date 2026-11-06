@@ -1,0 +1,60 @@
+# Maintainer: Florent Champigny <champigny.florent@gmail.com>
+# Template kept in the Flocon repo (packaging/aur/flocon-bin). The AUR workflow
+# (.github/workflows/aur.yml) bumps pkgver, refreshes the checksums and pushes it.
+pkgname=flocon-bin
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Desktop debugger for mobile apps (network, databases, analytics, ...) for Android, iOS and KMP'
+arch=('x86_64' 'aarch64')
+url='https://github.com/openflocon/Flocon'
+license=('MIT')
+# The .deb bundles its own JRE (jpackage); these are the native libs it loads.
+depends=('alsa-lib' 'fontconfig' 'freetype2' 'glibc' 'libx11' 'libxext' 'libxi'
+         'libxrender' 'libxtst' 'zlib' 'hicolor-icon-theme')
+optdepends=('android-tools: adb, needed for Android screenshots, screen recordings and deeplinks'
+            'xdg-utils: open the Flocon folder and links from the app')
+provides=('flocon')
+conflicts=('flocon')
+options=('!strip' '!debug')
+noextract=("Flocon-${pkgver}-x86_64.deb" "Flocon-${pkgver}-aarch64.deb")
+source=("LICENSE::https://raw.githubusercontent.com/openflocon/Flocon/${pkgver}/LICENSE")
+source_x86_64=("Flocon-${pkgver}-x86_64.deb::${url}/releases/download/${pkgver}/Flocon-linux-x64.deb")
+source_aarch64=("Flocon-${pkgver}-aarch64.deb::${url}/releases/download/${pkgver}/Flocon-linux-arm64.deb")
+sha256sums=('SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+prepare() {
+  mkdir -p deb root
+  bsdtar -xf "Flocon-${pkgver}-${CARCH}.deb" -C deb
+  bsdtar -xf deb/data.tar.* -C root
+}
+
+package() {
+  cp -a root/opt "$pkgdir/opt"
+
+  # Launcher on the PATH
+  install -d "$pkgdir/usr/bin"
+  ln -s /opt/flocon/bin/Flocon "$pkgdir/usr/bin/flocon"
+
+  # Icon: jpackage ships it inside the app folder
+  local icon
+  icon="$(find "$pkgdir/opt/flocon" -maxdepth 2 -name '*.png' | head -n 1)"
+  if [[ -n "$icon" ]]; then
+    install -Dm644 "$icon" "$pkgdir/usr/share/pixmaps/flocon.png"
+  fi
+
+  # The .desktop file of the deb is only symlinked by its postinst script, so install our own
+  install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/flocon.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=Flocon
+Comment=Desktop debugger for mobile apps
+Exec=/opt/flocon/bin/Flocon
+Icon=flocon
+Categories=Development;Debugger;
+Terminal=false
+DESKTOP
+
+  install -Dm644 "$srcdir/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

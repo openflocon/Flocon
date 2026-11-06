@@ -1,0 +1,60 @@
+name: Publish to AUR
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version to publish (X.Y.Z, without prefix)'
+        required: true
+
+jobs:
+  aur:
+    name: Update flocon-bin on the AUR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check prerequisites
+        id: check
+        env:
+          AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          RAW_VERSION: ${{ inputs.version || github.event.release.tag_name }}
+        run: |
+          VERSION="${RAW_VERSION#v}"
+          if [ -z "$AUR_KEY" ]; then
+            echo "::warning::AUR_SSH_PRIVATE_KEY is not set, skipping the AUR update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          elif ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::warning::'$VERSION' is not a release version (X.Y.Z), skipping the AUR update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout source
+        if: steps.check.outputs.run == 'true'
+        uses: actions/checkout@v6
+
+      - name: Bump pkgver in the PKGBUILD
+        if: steps.check.outputs.run == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          sed -i "s/^pkgver=.*/pkgver=${VERSION}/; s/^pkgrel=.*/pkgrel=1/" packaging/aur/flocon-bin/PKGBUILD
+          grep -E '^(pkgver|pkgrel)=' packaging/aur/flocon-bin/PKGBUILD
+
+      # Runs in an Arch container: updates the checksums (updpkgsums), regenerates
+      # .SRCINFO (makepkg --printsrcinfo) and pushes to the AUR.
+      - name: Publish to the AUR
+        if: steps.check.outputs.run == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        with:
+          pkgname: flocon-bin
+          pkgbuild: packaging/aur/flocon-bin/PKGBUILD
+          updpkgsums: true
+          test: false
+          commit_username: Florent Champigny
+          commit_email: champigny.florent@gmail.com
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update to ${{ steps.check.outputs.version }}
