@@ -14,6 +14,8 @@ Flocon Desktop is published on [GitHub Releases](https://github.com/openflocon/F
 
 A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar`); it needs a JDK 21 to run.
 
+A Flatpak bundle is also available, see [Flatpak Installation](flatpak-install.md).
+
 ## Debian / Ubuntu
 
 ```bash

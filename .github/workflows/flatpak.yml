@@ -1,0 +1,85 @@
+name: Desktop - Flatpak
+
+# Runs once "Desktop - Build and Release" has finished, so the release assets
+# (Flocon-linux-*.deb) exist and their sha256 can be pinned in the manifest.
+on:
+  workflow_run:
+    workflows: ["Desktop - Build and Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag to package (e.g. 1.9.6)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  flatpak:
+    name: Flatpak (${{ matrix.arch }})
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'release') }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+    env:
+      VERSION: ${{ inputs.version || github.event.workflow_run.head_branch }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Install flatpak tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder appstream desktop-file-utils
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Download release assets
+        run: |
+          mkdir -p assets
+          gh release download "$VERSION" --repo "${{ github.repository }}" \
+            --pattern 'Flocon-linux-x64.deb' --pattern 'Flocon-linux-arm64.deb' --dir assets
+
+      - name: Render manifest (pin sha256 from the release assets)
+        run: packaging/flatpak/render-manifest.sh "$VERSION" assets build-flatpak
+
+      - name: Validate metadata
+        working-directory: build-flatpak
+        run: |
+          desktop-file-validate io.github.openflocon.flocon.desktop
+          appstreamcli validate --no-net io.github.openflocon.flocon.metainfo.xml
+
+      - name: Build Flatpak
+        working-directory: build-flatpak
+        run: |
+          flatpak-builder --user --force-clean --arch=${{ matrix.arch }} \
+            --install-deps-from=flathub --disable-rofiles-fuse \
+            --repo=repo build io.github.openflocon.flocon.yml
+
+      - name: Create bundle
+        working-directory: build-flatpak
+        run: |
+          flatpak build-bundle --arch=${{ matrix.arch }} repo \
+            Flocon-linux-${{ matrix.arch }}.flatpak io.github.openflocon.flocon
+
+      - name: Attach bundle to the release
+        run: gh release upload "$VERSION" "build-flatpak/Flocon-linux-${{ matrix.arch }}.flatpak" --clobber --repo "${{ github.repository }}"
+
+      - name: Upload manifest (for the Flathub PR)
+        if: matrix.arch == 'x86_64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-manifest
+          path: |
+            build-flatpak/io.github.openflocon.flocon.yml
+            build-flatpak/io.github.openflocon.flocon.metainfo.xml
+          retention-days: 30
