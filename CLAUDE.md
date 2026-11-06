@@ -18,7 +18,7 @@ Route each task by its nature:
 | Simple lookup or read (where is X, who uses Y, read a file) | `Explore` | haiku |
 | Run module checks | `test-runner` | haiku |
 | CI failed: find out why | `ci-investigator` | haiku |
-| Update `protocol/`, `docs/`, README, MCP skill after a code change | `docs-sync` | haiku |
+| Update `internal-docs/protocol/`, `docs/`, README, MCP skill after a code change | `docs-sync` | haiku |
 | Branch, commit, PR | `git-setup` / `create-pull-request` skills (run in `git-ops`) | haiku |
 | Needs thinking (design, unclear bug, trade-off) | `planner`, then `architect` for new plugins / protocol / layering changes | opus |
 | Everything else (write Kotlin, tests, fix the cause of a CI failure, review) | main session, `implementer` or `reviewer` | sonnet |
@@ -36,7 +36,7 @@ Subagents live in `.claude/agents/`. The main session plans and writes code; del
 - **architect** (opus): before implementing a new plugin, a protocol change or a change to the layering between modules, send it the plan. Apply its changes before starting.
 - **test-runner** (haiku): running the module checks from `build-verification.md` after a change. It returns PASS/FAIL and only the failures.
 - **ci-investigator** (haiku): when a PR check fails, it reads the CI logs and returns the failing task and error lines. Don't read CI logs yourself.
-- **docs-sync** (haiku): once the code is done and tested, it updates `protocol/`, `docs/`, `mkdocs.yml`, README and the MCP skill from the diff, then runs `mkdocs build --strict`.
+- **docs-sync** (haiku): once the code is done and tested, it updates `internal-docs/protocol/`, `docs/`, `mkdocs.yml`, README and the MCP skill from the diff, then runs `mkdocs build --strict`.
 - **git-ops** (haiku): runs the `git-setup` and `create-pull-request` skills (branch, commits, draft PR). The main session then binds the PR with the ccd_pr tools.
 - **reviewer** (sonnet): reviewing the finished diff once, before committing or opening a PR, not after every edit. Fix what it reports, or say why it isn't a problem.
 
@@ -51,4 +51,4 @@ Project rules live in `.claude/rules/` and are loaded automatically (path-scoped
 - `compose.md`: Compose UI conventions: screen structure, state, design system, previews (`FloconDesktop/`)
 - `git-workflow.md`: commit message format, branches, PRs
 - `build-verification.md`: which Gradle / MkDocs checks to run locally, and which are left to CI
-- `docs-protocol-sync.md`: keep `protocol/`, `docs/`, MCP docs and README in sync with code
+- `docs-protocol-sync.md`: keep `internal-docs/protocol/`, `docs/`, MCP docs and README in sync with code
