@@ -138,7 +138,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val maintenanceDao: DatabaseMaintenanceDao
 }
 
-fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
+fun getRoomDatabase(file: java.io.File = getDatabaseFile()): AppDatabase = getDatabaseBuilder(file)
     .fallbackToDestructiveMigration(dropAllTables = true)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
@@ -150,7 +150,13 @@ fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
         )
     }
 
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
+expect fun getDatabaseBuilder(file: java.io.File): RoomDatabase.Builder<AppDatabase>
 
 /** The SQLite file of the Flocon database. */
 expect fun getDatabaseFile(): java.io.File
+
+/** The SQLite file the app opens, provided by Koin: [getDatabaseFile], or [getMockDatabaseFile] in mock mode. */
+data class DatabaseFile(val file: java.io.File)
+
+/** The SQLite file used in mock mode (`--mock=<name>`), wiped at each mock launch. */
+expect fun getMockDatabaseFile(): java.io.File

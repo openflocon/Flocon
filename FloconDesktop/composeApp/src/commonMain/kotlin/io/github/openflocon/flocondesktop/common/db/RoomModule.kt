@@ -9,8 +9,10 @@ import org.koin.dsl.module
 
 val roomModule =
     module {
+        // overridden in mock mode (MockModule), to use a separate file
+        single { DatabaseFile(getDatabaseFile()) }
         single<AppDatabase> {
-            getRoomDatabase()
+            getRoomDatabase(get<DatabaseFile>().file)
         }
         single {
             get<AppDatabase>().networkDao
