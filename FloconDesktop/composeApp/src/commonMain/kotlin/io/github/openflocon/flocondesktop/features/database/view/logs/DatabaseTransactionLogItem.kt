@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -49,6 +50,7 @@ fun DatabaseTransactionLogItem(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
+            .padding(vertical = FloconTheme.spacing.small)
             .then(if (transaction.isFromOldSession) Modifier.alpha(0.8f) else Modifier),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,

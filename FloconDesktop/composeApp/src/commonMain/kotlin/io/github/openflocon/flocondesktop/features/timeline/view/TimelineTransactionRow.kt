@@ -81,7 +81,7 @@ internal fun TimelineTransactionRow(
                 .weight(1f)
                 // the tint of the database events: the header is read as part of them, not as a grey bar
                 .background(categorySoft, FloconTheme.shapes.medium)
-                .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+                .padding(horizontal = spacing.compact, vertical = spacing.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
