@@ -2,7 +2,6 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -99,8 +98,7 @@ internal fun ScreenshotMarkerRow(
                     modifier = Modifier
                         .size(width = ThumbWidth, height = ThumbHeight)
                         .clip(FloconTheme.shapes.small)
-                        .background(colors.bg200)
-                        .border(1.dp, colors.accent, FloconTheme.shapes.small),
+                        .background(colors.bg200),
                 )
             }
             Text(
