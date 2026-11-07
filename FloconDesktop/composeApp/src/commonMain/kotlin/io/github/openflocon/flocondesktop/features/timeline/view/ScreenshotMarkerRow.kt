@@ -95,7 +95,7 @@ internal fun ScreenshotMarkerRow(
                 AsyncImage(
                     model = File(item.filePath),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(width = ThumbWidth, height = ThumbHeight)
                         .clip(FloconTheme.shapes.small)
