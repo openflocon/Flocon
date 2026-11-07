@@ -42,8 +42,8 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
-private val ThumbWidth = 40.dp
-private val ThumbHeight = 56.dp
+private val ThumbWidth = 56.dp
+private val ThumbHeight = 100.dp
 
 /**
  * A screenshot in the list, at the time it was taken. It has the layout of an event: the time, then the thumbnail where
@@ -85,7 +85,7 @@ internal fun ScreenshotMarkerRow(
                 .weight(1f)
                 .heightIn(min = ThumbHeight)
                 .background(if (hovered) colors.accentSoft else colors.bg100, shape)
-                .padding(horizontal = spacing.compact, vertical = spacing.tiny),
+                .padding(horizontal = spacing.medium, vertical = spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
@@ -115,7 +115,7 @@ internal fun ScreenshotMarkerRow(
         // the screenshot larger, like the thumbnails of the graph, on the right of the thumbnail
         val density = LocalDensity.current
         val thumbnailEnd = with(density) {
-            (FloconTheme.spacing.compact * 2 + FloconTheme.sizes.timeColumn + FloconTheme.sizes.categoryColumn + railGutter() + FloconTheme.spacing.small * 3).roundToPx()
+            (FloconTheme.spacing.compact + FloconTheme.spacing.medium * 2 + FloconTheme.sizes.timeColumn + FloconTheme.sizes.categoryColumn + railGutter() + FloconTheme.spacing.small * 3).roundToPx()
         }
         Popup(popupPositionProvider = remember(thumbnailEnd) { SideOfRowPositionProvider(thumbnailEnd) }) {
             ScreenshotPopover(
