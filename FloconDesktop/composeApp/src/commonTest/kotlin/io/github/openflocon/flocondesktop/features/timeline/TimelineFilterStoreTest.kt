@@ -93,7 +93,14 @@ class TimelineFilterStoreTest {
         store.hideFacetValue(TimelineFacet.DatabaseName, "app.db")
         store.hideFacetValue(TimelineFacet.DatabaseName, "other.db")
 
-        assertEquals(mapOf(TimelineFacet.DatabaseName to setOf("app.db", "other.db")), store.facets.value)
+        assertEquals(
+            mapOf(
+                // hidden by default
+                TimelineFacet.DatabaseStatement to setOf("TRANSACTION"),
+                TimelineFacet.DatabaseName to setOf("app.db", "other.db"),
+            ),
+            store.facets.value,
+        )
     }
 
     @Test

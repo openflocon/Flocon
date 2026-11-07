@@ -10,11 +10,12 @@ actual fun getDatabaseFile(): File {
     return File(folder, "flocon_room.db")
 }
 
-actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val dbFile = getDatabaseFile()
+actual fun getMockDatabaseFile(): File = File(File(System.getProperty("user.home"), ".flocon/mock"), "flocon_room.db")
+
+actual fun getDatabaseBuilder(file: File): RoomDatabase.Builder<AppDatabase> {
     // UNCOMMENT TO TEST ON AN EMPTY DB
-    // dbFile.delete()
+    // file.delete()
     return Room.databaseBuilder<AppDatabase>(
-        name = dbFile.absolutePath,
+        name = file.absolutePath,
     )
 }

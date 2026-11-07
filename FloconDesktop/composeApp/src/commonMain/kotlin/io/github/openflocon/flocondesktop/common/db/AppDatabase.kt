@@ -66,6 +66,7 @@ import io.github.openflocon.flocondesktop.common.db.converters.DashboardConverte
 import io.github.openflocon.flocondesktop.common.db.converters.ListStringsConverters
 import io.github.openflocon.flocondesktop.common.db.converters.MapStringsConverters
 import kotlinx.coroutines.Dispatchers
+import java.io.File
 
 @Database(
     version = 92,
@@ -138,7 +139,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val maintenanceDao: DatabaseMaintenanceDao
 }
 
-fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
+fun getRoomDatabase(file: File = getDatabaseFile()): AppDatabase = getDatabaseBuilder(file)
     .fallbackToDestructiveMigration(dropAllTables = true)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
@@ -150,7 +151,13 @@ fun getRoomDatabase(): AppDatabase = getDatabaseBuilder()
         )
     }
 
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
+expect fun getDatabaseBuilder(file: File): RoomDatabase.Builder<AppDatabase>
 
 /** The SQLite file of the Flocon database. */
-expect fun getDatabaseFile(): java.io.File
+expect fun getDatabaseFile(): File
+
+/** The SQLite file the app opens, provided by Koin: [getDatabaseFile], or [getMockDatabaseFile] in mock mode. */
+data class DatabaseFile(val file: File)
+
+/** The SQLite file used in mock mode (`--mock=<name>`), wiped at each mock launch. */
+expect fun getMockDatabaseFile(): File
