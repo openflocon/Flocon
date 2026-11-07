@@ -11,6 +11,7 @@ import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveTransactionsExpandedByDefaultUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ConsumeTimelineFocusUseCase
@@ -29,6 +30,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
@@ -90,6 +92,7 @@ internal class TimelineViewModel(
     private val navigationState: MainFloconNavigationState,
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
     observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
+    observeTransactionsExpandedByDefaultUseCase: ObserveTransactionsExpandedByDefaultUseCase,
     private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel() {
@@ -233,8 +236,16 @@ internal class TimelineViewModel(
     // read from the source, not from [settings], to wait for the stored value instead of reloading the list after the default one
     private val invertList: Flow<Boolean> = observeTimelineSettingsUseCase().map { it.invertList }.distinctUntilChanged()
 
-    // the ids of the transactions that show their queries: they are folded by default
-    private val collapsedTransactions = MutableStateFlow<Set<String>>(emptySet())
+    // which transactions show their queries: the setting, then what the user flipped since
+    private val transactionFolding = MutableStateFlow(TransactionFolding())
+
+    init {
+        viewModelScope.launch {
+            observeTransactionsExpandedByDefaultUseCase().distinctUntilChanged().collect { expandedByDefault ->
+                transactionFolding.value = TransactionFolding(expandedByDefault = expandedByDefault)
+            }
+        }
+    }
 
     val items: Flow<PagingData<TimelineItemUiModel>> = combine(filter, invertList) { filter, inverted -> filter to inverted }
         .flatMapLatest { (filter, inverted) ->
@@ -244,11 +255,11 @@ internal class TimelineViewModel(
                 val events = observeTimelineUseCase(filter)
                     .map { pagingData -> pagingData.map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) } }
                     .cachedIn(this)
-                combine(events, observeTimelineScreenshotsUseCase(), collapsedTransactions) { pagingData, shots, collapsed ->
+                combine(events, observeTimelineScreenshotsUseCase(), transactionFolding) { pagingData, shots, folding ->
                     // the header of a transaction goes above its queries, the ones of a folded transaction are hidden
                     val grouped = pagingData
-                        .insertSeparators { before, after -> transactionHeaderBetween(before, after, inverted, collapsed) }
-                        .filter { !it.isHiddenInTransaction(collapsed) }
+                        .insertSeparators { before, after -> transactionHeaderBetween(before, after, inverted, folding) }
+                        .filter { !it.isHiddenInTransaction(folding) }
                     // without screenshot the list is the one it always was
                     val withScreenshots = if (shots.isEmpty()) {
                         grouped
@@ -298,7 +309,9 @@ internal class TimelineViewModel(
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
             }
 
-            is TimelineAction.ToggleTransaction -> collapsedTransactions.update { if (action.id in it) it - action.id else it + action.id }
+            is TimelineAction.ToggleTransaction -> transactionFolding.update {
+                it.copy(toggled = if (action.id in it.toggled) it.toggled - action.id else it.toggled + action.id)
+            }
 
             is TimelineAction.Exclude -> filterStore.hideFacetValue(action.facet, action.value)
 

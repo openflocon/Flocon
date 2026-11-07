@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.mapper
 
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel.Transaction.Status
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
@@ -20,7 +21,7 @@ import java.util.Locale
 fun toQueryLogEntries(
     logs: List<DatabaseQueryLogDomainModel>,
     showTransactions: Boolean,
-    collapsedTransactionIds: Set<String>,
+    folding: TransactionFolding,
     currentAppInstance: Long?,
 ): ImmutableList<DatabaseQueryLogEntryUiModel> {
     val groups = LinkedHashMap<String, MutableList<DatabaseQueryLogDomainModel>>()
@@ -47,7 +48,7 @@ fun toQueryLogEntries(
                     durationLabel = "${group.last().timestamp - group.first().timestamp} ms",
                     queryCount = group.count { !it.isTransaction },
                     status = transactionStatus(group.map { it.sqlQuery }),
-                    isExpanded = transactionId !in collapsedTransactionIds,
+                    isExpanded = folding.isExpanded(transactionId),
                     isFromOldSession = group.first().appInstance != currentAppInstance,
                     queries = queries.toImmutableList(),
                 )

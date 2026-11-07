@@ -7,6 +7,7 @@ import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainModel
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineExcludeUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
@@ -129,13 +130,13 @@ private fun TimelineItemUiModel?.timestampOrNull(): Long? = when (this) {
 /**
  * The header of a transaction goes above its first query when the list goes down from the newest, above its last one
  * (so after it in the list order) when the list is [inverted]. The queries of a transaction are the ones sharing its id:
- * a query of another transaction, or none, ends the group. [collapsed] are the ids of the transactions folded by the user, the other ones show their queries.
+ * a query of another transaction, or none, ends the group. [folding] tells which transactions show their queries.
  */
 internal fun transactionHeaderBetween(
     before: TimelineItemUiModel?,
     after: TimelineItemUiModel?,
     inverted: Boolean,
-    collapsed: Set<String>,
+    folding: TransactionFolding,
 ): TimelineItemUiModel.TransactionHeader? {
     val first = (if (inverted) before else after) as? TimelineItemUiModel.Row ?: return null
     val neighbor = (if (inverted) after else before) as? TimelineItemUiModel.Row
@@ -146,7 +147,7 @@ internal fun transactionHeaderBetween(
         day = first.row.day,
         time = formatTimestamp(transaction.endTimestamp),
         databaseName = first.row.subtitle,
-        isExpanded = transaction.id !in collapsed,
+        isExpanded = folding.isExpanded(transaction.id),
         // a transaction can be interrupted by other events: each of its headers has its own key
         key = "transaction:${transaction.id}:${first.row.key}",
     )
@@ -156,9 +157,9 @@ internal fun transactionHeaderBetween(
  * The queries of a transaction are shown under its header unless it is folded. The statements that open and close it
  * (BEGIN, COMMIT...) are only told by the header.
  */
-internal fun TimelineItemUiModel.isHiddenInTransaction(collapsed: Set<String>): Boolean {
+internal fun TimelineItemUiModel.isHiddenInTransaction(folding: TransactionFolding): Boolean {
     val transaction = (this as? TimelineItemUiModel.Row)?.row?.transaction ?: return false
-    return transaction.isControl || transaction.id in collapsed
+    return transaction.isControl || !folding.isExpanded(transaction.id)
 }
 
 /**

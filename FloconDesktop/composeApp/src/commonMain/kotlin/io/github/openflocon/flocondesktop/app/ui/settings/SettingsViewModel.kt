@@ -37,10 +37,12 @@ import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveTransactionsExpandedByDefaultUseCase
 import io.github.openflocon.domain.settings.usecase.ServerPortsError
 import io.github.openflocon.domain.settings.usecase.SetAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.SetMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
+import io.github.openflocon.domain.settings.usecase.SetTransactionsExpandedByDefaultUseCase
 import io.github.openflocon.domain.settings.usecase.TestAdbUseCase
 import io.github.openflocon.domain.settings.usecase.UpdateServerPortsUseCase
 import io.github.openflocon.flocondesktop.app.InitialSetupStateHolder
@@ -77,6 +79,8 @@ class SettingsViewModel(
     private val observeServerPortsUseCase: ObserveServerPortsUseCase,
     private val updateServerPortsUseCase: UpdateServerPortsUseCase,
     private val setMascotEnabledUseCase: SetMascotEnabledUseCase,
+    observeTransactionsExpandedByDefaultUseCase: ObserveTransactionsExpandedByDefaultUseCase,
+    private val setTransactionsExpandedByDefaultUseCase: SetTransactionsExpandedByDefaultUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val toggleHiddenMenuItemUseCase: ToggleHiddenMenuItemUseCase,
     private val setStartScreenUseCase: SetStartScreenUseCase,
@@ -132,18 +136,21 @@ class SettingsViewModel(
 
     val uiState = combine(
         observeAppScaleUseCase(),
-        combine(observeThemeUseCase(), observeMascotEnabledUseCase()) { theme, mascotEnabled -> theme to mascotEnabled },
+        combine(observeThemeUseCase(), observeMascotEnabledUseCase(), observeTransactionsExpandedByDefaultUseCase()) { theme, mascotEnabled, expandTransactions ->
+            Triple(theme, mascotEnabled, expandTransactions)
+        },
         filteredLogs,
         settingsRepository.adbForwardStatus,
         combine(selectedLogDomains, selectedLogLevels, observeMenuPreferencesUseCase()) { domains, levels, menuPreferences ->
             Triple(domains, levels, menuPreferences)
         },
-    ) { appScale, (theme, mascotEnabled), logs, forwardStatus, (domains, levels, menuPreferences) ->
+    ) { appScale, (theme, mascotEnabled, expandTransactions), logs, forwardStatus, (domains, levels, menuPreferences) ->
         val startScreenOptions = startScreenCandidates(menuPreferences.hiddenItems)
         SettingsUiState(
             appScale = appScale,
             theme = theme,
             mascotEnabled = mascotEnabled,
+            transactionsExpandedByDefault = expandTransactions,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
             adbForwardStatus = forwardStatus,
             selectedLogDomains = domains,
@@ -166,6 +173,7 @@ class SettingsViewModel(
                 appScale = AppScaleSetting.DEFAULT,
                 theme = ThemeSetting.DEFAULT,
                 mascotEnabled = true,
+                transactionsExpandedByDefault = true,
                 logs = persistentListOf(),
                 adbForwardStatus = AdbForwardStatus.UNKNOWN,
                 selectedLogDomains = LogDomain.entries.toSet(),
@@ -208,9 +216,17 @@ class SettingsViewModel(
     fun onAction(action: SettingsAction) {
         when (action) {
             is SettingsAction.AppScaleChange -> onAppScaleChange(action)
+
             is SettingsAction.ThemeChange -> onThemeChange(action)
+
             is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
+
+            is SettingsAction.TransactionsExpandedByDefaultChange -> viewModelScope.launch {
+                setTransactionsExpandedByDefaultUseCase(action.expanded)
+            }
+
             is SettingsAction.ToggleMenuItem -> onToggleMenuItem(action)
+
             is SettingsAction.StartScreenChange -> onStartScreenChange(action)
         }
     }

@@ -11,6 +11,8 @@ import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseC
 import io.github.openflocon.domain.database.utils.injectSqlArgs
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.domain.settings.usecase.ObserveTransactionsExpandedByDefaultUseCase
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.database.mapper.toQueryLogEntries
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
@@ -20,10 +22,8 @@ import io.github.openflocon.flocondesktop.features.database.processor.ExportData
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,6 +51,7 @@ class DatabaseQueryLogsViewModel(
     private val exportDatabaseQueryLogsToMarkdownProcessor: ExportDatabaseQueryLogsToMarkdownProcessor,
     private val clearDatabaseQueryLogsUseCase: ClearDatabaseQueryLogsUseCase,
     private val dispatcherProvider: DispatcherProvider,
+    observeTransactionsExpandedByDefaultUseCase: ObserveTransactionsExpandedByDefaultUseCase,
 ) : ViewModel() {
 
     private val _showTransactions = MutableStateFlow(false)
@@ -76,8 +77,16 @@ class DatabaseQueryLogsViewModel(
         observeCurrentDeviceIdAndPackageNameUseCase(),
     )
 
-    // the transactions show their queries by default, the ones folded by the user are here
-    private val collapsedIds = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
+    // which transactions show their queries: the setting, then what the user flipped since
+    private val transactionFolding = MutableStateFlow(TransactionFolding())
+
+    init {
+        viewModelScope.launch {
+            observeTransactionsExpandedByDefaultUseCase().distinctUntilChanged().collect { expandedByDefault ->
+                transactionFolding.value = TransactionFolding(expandedByDefault = expandedByDefault)
+            }
+        }
+    }
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val logs: StateFlow<ImmutableList<DatabaseQueryLogEntryUiModel>> =
@@ -94,12 +103,12 @@ class DatabaseQueryLogsViewModel(
                     limit = PAGE_SIZE,
                     offset = page * PAGE_SIZE,
                 ),
-                collapsedIds,
-            ) { list, collapsedTransactionIds ->
+                transactionFolding,
+            ) { list, folding ->
                 toQueryLogEntries(
                     logs = list,
                     showTransactions = showTransactions,
-                    collapsedTransactionIds = collapsedTransactionIds,
+                    folding = folding,
                     currentAppInstance = currentDeviceAndPackage?.appInstance,
                 )
             }
@@ -108,7 +117,9 @@ class DatabaseQueryLogsViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), persistentListOf())
 
     fun toggleTransaction(id: String) {
-        collapsedIds.update { if (id in it) it.removing(id) else it.adding(id) }
+        transactionFolding.update {
+            it.copy(toggled = if (id in it.toggled) it.toggled - id else it.toggled + id)
+        }
     }
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

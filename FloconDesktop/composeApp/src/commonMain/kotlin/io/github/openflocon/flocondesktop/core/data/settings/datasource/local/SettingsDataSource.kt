@@ -48,6 +48,9 @@ internal interface SettingsDataSource {
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
 
+    val transactionsExpandedByDefault: Flow<Boolean>
+    suspend fun setTransactionsExpandedByDefault(expanded: Boolean)
+
     val timelineSettings: Flow<TimelineSettingsLocal>
 
     // the settings are one stored object: the changes are applied one after the other

@@ -11,6 +11,9 @@ sealed interface SettingsAction {
 
     data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
 
+    // the database transactions show their queries until the user folds them
+    data class TransactionsExpandedByDefaultChange(val expanded: Boolean) : SettingsAction
+
     // the screen displayed when the app starts
     data class StartScreenChange(val screenId: String) : SettingsAction
 

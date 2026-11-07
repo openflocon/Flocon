@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.database.mapper
 
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel.Transaction.Status
 import kotlin.test.Test
@@ -32,8 +33,8 @@ class DatabaseQueryLogMapperTest {
     private fun entries(
         logs: List<DatabaseQueryLogDomainModel>,
         showTransactions: Boolean = true,
-        collapsed: Set<String> = emptySet(),
-    ) = toQueryLogEntries(logs, showTransactions, collapsed, currentAppInstance = 1)
+        folding: TransactionFolding = TransactionFolding(),
+    ) = toQueryLogEntries(logs, showTransactions, folding, currentAppInstance = 1)
 
     @Test
     fun `the logs of a transaction are one row, in the order of its first log`() {
@@ -107,7 +108,16 @@ class DatabaseQueryLogMapperTest {
         val logs = listOf(log("BEGIN", 20, "tx", isTransaction = true), log("SELECT 1", 21, "tx"))
 
         assertEquals(true, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs).single()).isExpanded)
-        assertEquals(false, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, collapsed = setOf("tx")).single()).isExpanded)
+        assertEquals(false, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, folding = TransactionFolding(toggled = setOf("tx"))).single()).isExpanded)
+    }
+
+    @Test
+    fun `with the setting off a transaction is folded unless the user unfolds it`() {
+        val logs = listOf(log("BEGIN", 20, "tx", isTransaction = true), log("SELECT 1", 21, "tx"))
+        val off = TransactionFolding(expandedByDefault = false)
+
+        assertEquals(false, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, folding = off).single()).isExpanded)
+        assertEquals(true, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, folding = off.copy(toggled = setOf("tx"))).single()).isExpanded)
     }
 
     @Test
