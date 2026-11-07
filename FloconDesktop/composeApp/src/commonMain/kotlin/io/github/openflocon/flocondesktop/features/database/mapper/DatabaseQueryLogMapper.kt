@@ -20,7 +20,7 @@ import java.util.Locale
 fun toQueryLogEntries(
     logs: List<DatabaseQueryLogDomainModel>,
     showTransactions: Boolean,
-    expandedTransactionIds: Set<String>,
+    collapsedTransactionIds: Set<String>,
     currentAppInstance: Long?,
 ): ImmutableList<DatabaseQueryLogEntryUiModel> {
     val groups = LinkedHashMap<String, MutableList<DatabaseQueryLogDomainModel>>()
@@ -47,7 +47,7 @@ fun toQueryLogEntries(
                     durationLabel = "${group.last().timestamp - group.first().timestamp} ms",
                     queryCount = group.count { !it.isTransaction },
                     status = transactionStatus(group.map { it.sqlQuery }),
-                    isExpanded = transactionId in expandedTransactionIds,
+                    isExpanded = transactionId !in collapsedTransactionIds,
                     isFromOldSession = group.first().appInstance != currentAppInstance,
                     queries = queries.toImmutableList(),
                 )

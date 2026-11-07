@@ -32,8 +32,8 @@ class DatabaseQueryLogMapperTest {
     private fun entries(
         logs: List<DatabaseQueryLogDomainModel>,
         showTransactions: Boolean = true,
-        expanded: Set<String> = emptySet(),
-    ) = toQueryLogEntries(logs, showTransactions, expanded, currentAppInstance = 1)
+        collapsed: Set<String> = emptySet(),
+    ) = toQueryLogEntries(logs, showTransactions, collapsed, currentAppInstance = 1)
 
     @Test
     fun `the logs of a transaction are one row, in the order of its first log`() {
@@ -103,11 +103,11 @@ class DatabaseQueryLogMapperTest {
     }
 
     @Test
-    fun `a transaction is folded unless it is expanded`() {
+    fun `a transaction shows its queries unless it is folded`() {
         val logs = listOf(log("BEGIN", 20, "tx", isTransaction = true), log("SELECT 1", 21, "tx"))
 
-        assertEquals(false, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs).single()).isExpanded)
-        assertEquals(true, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, expanded = setOf("tx")).single()).isExpanded)
+        assertEquals(true, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs).single()).isExpanded)
+        assertEquals(false, assertIs<DatabaseQueryLogEntryUiModel.Transaction>(entries(logs, collapsed = setOf("tx")).single()).isExpanded)
     }
 
     @Test

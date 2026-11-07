@@ -26,7 +26,7 @@ class TransactionGroupTest {
 
     @Test
     fun `the header goes above the first query of a transaction`() {
-        val header = transactionHeaderBetween(before = query("0"), after = query("1", "tx"), inverted = false, expanded = emptySet())
+        val header = transactionHeaderBetween(before = query("0"), after = query("1", "tx"), inverted = false, collapsed = emptySet())
 
         assertEquals("tx", assertIs<TimelineItemUiModel.TransactionHeader>(header).transaction.id)
         assertEquals("app.db", header.databaseName)
@@ -35,10 +35,10 @@ class TransactionGroupTest {
     @Test
     fun `the header goes above the oldest query of a transaction when the list is inverted`() {
         // inverted: the older item is displayed above, so the header goes after the last query of the transaction
-        assertNull(transactionHeaderBetween(before = query("0"), after = query("1", "tx"), inverted = true, expanded = emptySet()))
+        assertNull(transactionHeaderBetween(before = query("0"), after = query("1", "tx"), inverted = true, collapsed = emptySet()))
         assertEquals(
             "tx",
-            transactionHeaderBetween(before = query("1", "tx"), after = query("0"), inverted = true, expanded = emptySet())?.transaction?.id,
+            transactionHeaderBetween(before = query("1", "tx"), after = query("0"), inverted = true, collapsed = emptySet())?.transaction?.id,
         )
     }
 
@@ -52,55 +52,55 @@ class TransactionGroupTest {
             ),
         )
 
-        assertNull(transactionHeaderBetween(before = query("0"), after = begin, inverted = false, expanded = emptySet()))
-        assertTrue(begin.isHiddenInTransaction(expanded = emptySet()))
+        assertNull(transactionHeaderBetween(before = query("0"), after = begin, inverted = false, collapsed = emptySet()))
+        assertTrue(begin.isHiddenInTransaction(collapsed = emptySet()))
     }
 
     @Test
     fun `the queries of a transaction have one header`() {
-        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = false, expanded = emptySet()))
-        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = true, expanded = emptySet()))
+        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = false, collapsed = emptySet()))
+        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2", "tx"), inverted = true, collapsed = emptySet()))
     }
 
     @Test
     fun `two transactions in a row have a header each`() {
-        assertNotEquals(null, transactionHeaderBetween(before = query("1", "tx1"), after = query("2", "tx2"), inverted = false, expanded = emptySet()))
+        assertNotEquals(null, transactionHeaderBetween(before = query("1", "tx1"), after = query("2", "tx2"), inverted = false, collapsed = emptySet()))
     }
 
     @Test
     fun `a query outside of a transaction has no header`() {
-        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2"), inverted = false, expanded = emptySet()))
-        assertNull(transactionHeaderBetween(before = null, after = null, inverted = false, expanded = emptySet()))
+        assertNull(transactionHeaderBetween(before = query("1", "tx"), after = query("2"), inverted = false, collapsed = emptySet()))
+        assertNull(transactionHeaderBetween(before = null, after = null, inverted = false, collapsed = emptySet()))
     }
 
     @Test
     fun `the header says if the transaction shows its queries`() {
-        assertFalse(transactionHeaderBetween(null, query("1", "tx"), inverted = false, expanded = emptySet())!!.isExpanded)
-        assertTrue(transactionHeaderBetween(null, query("1", "tx"), inverted = false, expanded = setOf("tx"))!!.isExpanded)
+        assertTrue(transactionHeaderBetween(null, query("1", "tx"), inverted = false, collapsed = emptySet())!!.isExpanded)
+        assertFalse(transactionHeaderBetween(null, query("1", "tx"), inverted = false, collapsed = setOf("tx"))!!.isExpanded)
     }
 
     @Test
     fun `the headers of a transaction interrupted by another event have different keys`() {
-        val first = transactionHeaderBetween(null, query("1", "tx"), inverted = false, expanded = emptySet())!!
-        val second = transactionHeaderBetween(query("0"), query("2", "tx"), inverted = false, expanded = emptySet())!!
+        val first = transactionHeaderBetween(null, query("1", "tx"), inverted = false, collapsed = emptySet())!!
+        val second = transactionHeaderBetween(query("0"), query("2", "tx"), inverted = false, collapsed = emptySet())!!
 
         assertNotEquals(first.key, second.key)
     }
 
     @Test
     fun `the queries of a folded transaction are hidden`() {
-        assertTrue(query("1", "tx").isHiddenInTransaction(expanded = emptySet()))
-        assertFalse(query("1", "tx").isHiddenInTransaction(expanded = setOf("tx")))
+        assertFalse(query("1", "tx").isHiddenInTransaction(collapsed = emptySet()))
+        assertTrue(query("1", "tx").isHiddenInTransaction(collapsed = setOf("tx")))
     }
 
     @Test
     fun `the statements that open and close a transaction are always hidden`() {
-        assertTrue(query("1", "tx", isControl = true).isHiddenInTransaction(expanded = setOf("tx")))
+        assertTrue(query("1", "tx", isControl = true).isHiddenInTransaction(collapsed = setOf("tx")))
     }
 
     @Test
     fun `the events outside of a transaction are never hidden`() {
-        assertFalse(query("1").isHiddenInTransaction(expanded = emptySet()))
-        assertFalse(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day").isHiddenInTransaction(expanded = emptySet()))
+        assertFalse(query("1").isHiddenInTransaction(collapsed = emptySet()))
+        assertFalse(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day").isHiddenInTransaction(collapsed = emptySet()))
     }
 }

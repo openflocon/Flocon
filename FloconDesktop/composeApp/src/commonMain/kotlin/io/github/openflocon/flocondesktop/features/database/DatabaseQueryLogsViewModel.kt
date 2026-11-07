@@ -76,8 +76,8 @@ class DatabaseQueryLogsViewModel(
         observeCurrentDeviceIdAndPackageNameUseCase(),
     )
 
-    // the transactions are folded by default
-    private val expandedIds = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
+    // the transactions show their queries by default, the ones folded by the user are here
+    private val collapsedIds = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val logs: StateFlow<ImmutableList<DatabaseQueryLogEntryUiModel>> =
@@ -94,12 +94,12 @@ class DatabaseQueryLogsViewModel(
                     limit = PAGE_SIZE,
                     offset = page * PAGE_SIZE,
                 ),
-                expandedIds,
-            ) { list, expandedTransactionIds ->
+                collapsedIds,
+            ) { list, collapsedTransactionIds ->
                 toQueryLogEntries(
                     logs = list,
                     showTransactions = showTransactions,
-                    expandedTransactionIds = expandedTransactionIds,
+                    collapsedTransactionIds = collapsedTransactionIds,
                     currentAppInstance = currentDeviceAndPackage?.appInstance,
                 )
             }
@@ -108,7 +108,7 @@ class DatabaseQueryLogsViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), persistentListOf())
 
     fun toggleTransaction(id: String) {
-        expandedIds.update { if (id in it) it.removing(id) else it.adding(id) }
+        collapsedIds.update { if (id in it) it.removing(id) else it.adding(id) }
     }
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

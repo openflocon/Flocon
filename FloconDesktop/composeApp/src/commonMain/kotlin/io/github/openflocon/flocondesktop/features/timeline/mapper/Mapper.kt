@@ -129,13 +129,13 @@ private fun TimelineItemUiModel?.timestampOrNull(): Long? = when (this) {
 /**
  * The header of a transaction goes above its first query when the list goes down from the newest, above its last one
  * (so after it in the list order) when the list is [inverted]. The queries of a transaction are the ones sharing its id:
- * a query of another transaction, or none, ends the group. [expanded] are the ids of the transactions that show their queries.
+ * a query of another transaction, or none, ends the group. [collapsed] are the ids of the transactions folded by the user, the other ones show their queries.
  */
 internal fun transactionHeaderBetween(
     before: TimelineItemUiModel?,
     after: TimelineItemUiModel?,
     inverted: Boolean,
-    expanded: Set<String>,
+    collapsed: Set<String>,
 ): TimelineItemUiModel.TransactionHeader? {
     val first = (if (inverted) before else after) as? TimelineItemUiModel.Row ?: return null
     val neighbor = (if (inverted) after else before) as? TimelineItemUiModel.Row
@@ -146,19 +146,19 @@ internal fun transactionHeaderBetween(
         day = first.row.day,
         time = formatTimestamp(transaction.endTimestamp),
         databaseName = first.row.subtitle,
-        isExpanded = transaction.id in expanded,
+        isExpanded = transaction.id !in collapsed,
         // a transaction can be interrupted by other events: each of its headers has its own key
         key = "transaction:${transaction.id}:${first.row.key}",
     )
 }
 
 /**
- * The queries of a transaction are shown under its header when it is expanded. The statements that open and close it
+ * The queries of a transaction are shown under its header unless it is folded. The statements that open and close it
  * (BEGIN, COMMIT...) are only told by the header.
  */
-internal fun TimelineItemUiModel.isHiddenInTransaction(expanded: Set<String>): Boolean {
+internal fun TimelineItemUiModel.isHiddenInTransaction(collapsed: Set<String>): Boolean {
     val transaction = (this as? TimelineItemUiModel.Row)?.row?.transaction ?: return false
-    return transaction.isControl || transaction.id !in expanded
+    return transaction.isControl || transaction.id in collapsed
 }
 
 /**
