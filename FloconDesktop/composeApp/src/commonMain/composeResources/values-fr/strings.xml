@@ -71,7 +71,6 @@
     <string name="timeline_screenshot_at">Écran à %1$s</string>
     <string name="timeline_screenshot_marker">Capture · %1$s</string>
     <string name="timeline_screenshot_label">Capture d’écran</string>
-    <string name="timeline_screenshot_until">jusqu’à %1$s</string>
     <string name="timeline_screenshots_failing">Les captures échouent : adb est-il disponible ?</string>
     <string name="timeline_screenshots_unavailable">Les captures ne sont pas disponibles en Wi-Fi : branche l’appareil avec un câble</string>
     <string name="timeline_filters_title">Filtres</string>

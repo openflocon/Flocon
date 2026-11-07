@@ -12,7 +12,8 @@ internal val timelineModule = module {
     singleOf(::TimelineFilterStore) {
         bind<TimelineUserFilterProvider>()
     }
-    viewModelOf(::TimelineViewModel)
+    // more parameters than viewModelOf supports
+    viewModel { TimelineViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModelOf(::TimelineFilterPanelViewModel)
     viewModel { (id: Long) -> TimelineLogDetailViewModel(id, get(), get()) }
     singleOf(::TimelinePanelPin) {

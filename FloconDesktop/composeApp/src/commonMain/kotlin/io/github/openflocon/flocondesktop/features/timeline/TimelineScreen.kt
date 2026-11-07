@@ -84,6 +84,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
@@ -123,6 +124,7 @@ fun TimelineScreen(
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
+    val screenshotContext by viewModel.screenshotContext.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
@@ -139,6 +141,7 @@ fun TimelineScreen(
         isLive = isLive,
         settings = settings,
         screenshotsStatus = screenshotsStatus,
+        screenshotContext = screenshotContext,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
@@ -167,6 +170,8 @@ internal fun TimelineContent(
     modifier: Modifier = Modifier,
     // a zone of the graph asked from outside, shown once
     graphFocus: GraphFocusUiModel? = null,
+    // the app and the device shown beside the screenshots
+    screenshotContext: TimelineScreenshotContextUiModel? = null,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
@@ -408,10 +413,7 @@ internal fun TimelineContent(
                             is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(
                                 item = item,
                                 screenName = remember(index, rows.itemCount) { screenshotScreenName(index, rows.itemCount) { rows.peek(it) } },
-                                until = remember(index, rows.itemCount) {
-                                    screenshotSpanIndices(index) { rows.peek(it) }.getOrNull(1)
-                                        ?.let { (rows.peek(it) as? TimelineItemUiModel.Row)?.row?.time?.substringBefore('.') }
-                                },
+                                context = screenshotContext,
                                 onHoverChange = { hovered ->
                                     if (hovered) {
                                         hoveredScreenshotKey = item.key

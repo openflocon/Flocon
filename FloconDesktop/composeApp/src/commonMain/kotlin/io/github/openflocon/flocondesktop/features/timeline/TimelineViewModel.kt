@@ -8,6 +8,7 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
@@ -39,9 +40,11 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDesti
 import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotMarkerBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
+import io.github.openflocon.flocondesktop.features.timeline.mapper.toScreenshotContextUi
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
@@ -89,6 +92,7 @@ internal class TimelineViewModel(
     observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
     private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
+    observeCurrentDeviceAndAppUseCase: ObserveCurrentDeviceAndAppUseCase,
 ) : ViewModel() {
 
     val filterText: StateFlow<String> = filterStore.text
@@ -121,6 +125,11 @@ internal class TimelineViewModel(
             else -> TimelineScreenshotsStatus.Working
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineScreenshotsStatus.Working)
+
+    // the app and the device shown beside the screenshots
+    val screenshotContext: StateFlow<TimelineScreenshotContextUiModel?> = observeCurrentDeviceAndAppUseCase()
+        .map { it?.toScreenshotContextUi() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     // the last event opened, highlighted in the list
     val selectedKey: StateFlow<String?>

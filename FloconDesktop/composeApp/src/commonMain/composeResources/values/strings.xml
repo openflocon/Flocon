@@ -111,7 +111,6 @@
     <string name="timeline_screenshot_at">Screen at %1$s</string>
     <string name="timeline_screenshot_marker">Screenshot · %1$s</string>
     <string name="timeline_screenshot_label">Screenshot</string>
-    <string name="timeline_screenshot_until">until %1$s</string>
     <string name="timeline_screenshots_failing">Screenshots are failing: is adb available?</string>
     <string name="timeline_screenshots_unavailable">Screenshots are not available over Wi-Fi: connect the device with a cable</string>
     <string name="timeline_filters_title">Filters</string>

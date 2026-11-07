@@ -76,6 +76,15 @@ internal sealed interface TimelineItemUiModel {
     ) : TimelineItemUiModel
 }
 
+// the app and the device of the screenshots, shown beside them
+@Immutable
+internal data class TimelineScreenshotContextUiModel(
+    val appName: String?,
+    val appIconEncoded: String?,
+    val deviceName: String,
+    val platform: String, // Android, iOS...
+)
+
 // what the header says about the screenshots, next to the switch: the device does not support them (an Android over Wi-Fi)
 internal enum class TimelineScreenshotsStatus { Working, Failing, Unavailable }
 

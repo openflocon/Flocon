@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,6 +32,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,30 +47,33 @@ import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_at
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_label
-import flocondesktop.composeapp.generated.resources.timeline_screenshot_marker
-import flocondesktop.composeapp.generated.resources.timeline_screenshot_until
 import io.github.openflocon.flocondesktop.features.timeline.graph.ScreenshotPopover
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
+import kotlin.io.encoding.Base64
+import org.jetbrains.skia.Image as SkiaImage
 
 private val PhoneWidth = 62.dp
 private val PhoneHeight = 112.dp
 private val PhoneBezel = 3.dp
 private val DashLength = 6.dp
 private val TailWidth = 40.dp
+private val AppIconSize = 20.dp
 
 /**
- * A screenshot in the list, at the time it was taken: a dashed separator with the name of the screen ([screenName], the
- * last navigation before it), and the screenshot in a phone frame under it. [until] is the time of the last event it covers.
+ * A screenshot in the list, at the time it was taken: a dashed separator, and the screenshot in a phone frame under it with
+ * the name of the screen ([screenName], the last navigation before it), the app and the device ([context]).
  * Hovering it shows it larger, and [onHoverChange] lets the list draw the bar of the events it covers.
  */
 @Composable
 internal fun ScreenshotMarkerRow(
     item: TimelineItemUiModel.Screenshot,
     screenName: String?,
-    until: String?,
+    context: TimelineScreenshotContextUiModel?,
     onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -76,11 +84,7 @@ internal fun ScreenshotMarkerRow(
     LaunchedEffect(hovered) { onHoverChange(hovered) }
     DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
 
-    val label = if (screenName != null) {
-        stringResource(Res.string.timeline_screenshot_marker, screenName)
-    } else {
-        stringResource(Res.string.timeline_screenshot_label)
-    }
+    val label = stringResource(Res.string.timeline_screenshot_label)
 
     Column(
         modifier = modifier
@@ -118,12 +122,10 @@ internal fun ScreenshotMarkerRow(
             Spacer(Modifier.width(FloconTheme.sizes.timeColumn))
             Spacer(Modifier.width(railGutter()))
             PhoneFrame(item = item, hovered = hovered, modifier = Modifier.padding(start = spacing.medium))
-            if (until != null) {
-                Text(
-                    text = stringResource(Res.string.timeline_screenshot_until, until),
-                    style = FloconTheme.typography.labelMedium,
-                    color = colors.accent,
-                    maxLines = 1,
+            if (screenName != null || context != null) {
+                ScreenshotContext(
+                    screenName = screenName,
+                    context = context,
                     modifier = Modifier.padding(start = spacing.small, bottom = spacing.tiny),
                 )
             }
@@ -143,6 +145,94 @@ internal fun ScreenshotMarkerRow(
             ScreenshotPopover(
                 filePath = item.filePath,
                 label = stringResource(Res.string.timeline_screenshot_at, item.time),
+            )
+        }
+    }
+}
+
+// what the screenshot shows: the screen, the app with its icon, and the device
+@Composable
+private fun ScreenshotContext(
+    screenName: String?,
+    context: TimelineScreenshotContextUiModel?,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        if (screenName != null) {
+            Text(
+                text = screenName,
+                style = FloconTheme.typography.titleSmall,
+                color = colors.ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        if (context != null) {
+            if (context.appName != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                ) {
+                    AppIcon(name = context.appName, iconEncoded = context.appIconEncoded)
+                    Text(
+                        text = context.appName,
+                        style = FloconTheme.typography.bodySmall,
+                        color = colors.ink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            ) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Smartphone,
+                    tint = colors.inkMuted,
+                    modifier = Modifier.size(AppIconSize),
+                )
+                Text(
+                    text = "${context.deviceName} · ${context.platform}",
+                    style = FloconTheme.typography.bodySmall,
+                    color = colors.inkMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+// the icon the app sent, or a soft square with its first letter
+@Composable
+private fun AppIcon(
+    name: String,
+    iconEncoded: String?,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val bitmap = remember(iconEncoded) {
+        iconEncoded?.let { encoded ->
+            runCatching { SkiaImage.makeFromEncoded(Base64.decode(encoded)).toComposeImageBitmap() }.getOrNull()
+        }
+    }
+    val shape = FloconTheme.shapes.small
+    if (bitmap != null) {
+        Image(bitmap = bitmap, contentDescription = null, modifier = modifier.size(AppIconSize).clip(shape))
+    } else {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier.size(AppIconSize).clip(shape).background(colors.catTableSoft),
+        ) {
+            Text(
+                text = name.take(1).uppercase(),
+                style = FloconTheme.typography.labelSmall,
+                color = colors.catTable,
             )
         }
     }
@@ -215,7 +305,7 @@ private fun ScreenshotMarkerRowPreview() {
         ScreenshotMarkerRow(
             item = TimelineItemUiModel.Screenshot(timestamp = 0L, day = "20/10/2026", filePath = "/missing.jpg", key = "screenshot:0", time = "12:00:30"),
             screenName = "FeedScreen",
-            until = "12:00:44",
+            context = TimelineScreenshotContextUiModel(appName = "Flocon Sample", appIconEncoded = null, deviceName = "Pixel 8", platform = "Android"),
             onHoverChange = {},
         )
     }
