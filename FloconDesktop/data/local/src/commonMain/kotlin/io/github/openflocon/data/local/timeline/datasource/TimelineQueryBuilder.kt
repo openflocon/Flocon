@@ -34,7 +34,8 @@ private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLog
 private const val NO_NETWORK_FIELDS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize"
 
 // columns only the database queries of a transaction fill: the id of the transaction, its number of queries and its first and last times
-private const val NO_TRANSACTION_COLUMNS = "NULL AS transactionId, NULL AS txQueryCount, NULL AS txStart, NULL AS txEnd, 0 AS isTransactionControl"
+private const val NO_TRANSACTION_COLUMNS = "NULL AS transactionId, NULL AS txQueryCount, NULL AS txStart, NULL AS txEnd, 0 AS isTransactionControl, " +
+    "NULL AS nestedTransactionId, NULL AS nestedQueryCount, 0 AS transactionDepth, NULL AS nestedPath"
 
 private const val NO_NETWORK_COLUMNS = "$NO_NETWORK_FIELDS, $NO_TRANSACTION_COLUMNS"
 
@@ -48,7 +49,15 @@ private val DATABASE_TRANSACTION_COLUMNS = "transactionId AS transactionId, " +
     "${transactionAggregate("COUNT(*)", " AND t.isTransaction = 0")} AS txQueryCount, " +
     "${transactionAggregate("MIN(t.timestamp)")} AS txStart, " +
     "${transactionAggregate("MAX(t.timestamp)")} AS txEnd, " +
-    "isTransaction AS isTransactionControl"
+    "isTransaction AS isTransactionControl, " +
+    "nestedTransactionId AS nestedTransactionId, " +
+    // the queries run directly in the nested transaction, the ones of the transactions nested in it are theirs
+    "CASE WHEN nestedTransactionId IS NULL THEN NULL ELSE (" +
+    "SELECT COUNT(*) FROM DatabaseQueryLogEntity n WHERE n.nestedTransactionId = DatabaseQueryLogEntity.nestedTransactionId " +
+    "AND n.deviceId = DatabaseQueryLogEntity.deviceId AND n.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND n.dbId = DatabaseQueryLogEntity.dbId AND n.isTransaction = 0) END AS nestedQueryCount, " +
+    "transactionDepth AS transactionDepth, " +
+    "nestedPath AS nestedPath"
 
 // the column of the union holding the value of a facet: the facets are the last columns of every member of the union
 private fun TimelineFacet.column(): String = "facet$name"
@@ -623,7 +632,7 @@ internal fun buildTimelineQuery(
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
             "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
-            "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.${TimelineFacet.LogLevel.column()} AS level, " +
+            "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath, u.${TimelineFacet.LogLevel.column()} AS level, " +
             "$FACET_VALUES_JSON AS facetValues, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +

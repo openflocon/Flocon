@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNestedUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineTransaction
 import kotlin.test.Test
@@ -114,5 +115,81 @@ class TransactionGroupTest {
     fun `the events outside of a transaction are never hidden`() {
         assertFalse(query("1").isHiddenInTransaction(folding = TransactionFolding()))
         assertFalse(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day").isHiddenInTransaction(folding = TransactionFolding()))
+    }
+
+    private fun nestedQuery(
+        id: String,
+        nestedId: String?,
+        path: List<String> = listOfNotNull(nestedId),
+        depth: Int = path.size,
+        nestedQueryCount: Int = 2,
+        isControl: Boolean = false,
+    ) = TimelineItemUiModel.Row(
+        previewTimelineRowUiModel(
+            source = TimelineSource.Database,
+            id = id,
+            title = "SELECT $id",
+            subtitle = "app.db",
+            transaction = previewTimelineTransaction(
+                id = "tx",
+                isControl = isControl,
+                nested = nestedId?.let { TimelineNestedUiModel(id = it, queryCount = nestedQueryCount, depth = depth, path = path) },
+            ),
+        ),
+    )
+
+    @Test
+    fun `the header of a nested transaction goes above its first query`() {
+        val header = nestedHeaderBetween(before = query("0", "tx"), after = nestedQuery("1", "a"), inverted = false, folding = TransactionFolding())
+
+        assertEquals("a", header!!.nested!!.id)
+        assertEquals("a", header.foldingId)
+        assertEquals(true, header.isExpanded)
+        // the queries of the nested transaction have one header
+        assertNull(nestedHeaderBetween(nestedQuery("1", "a"), nestedQuery("2", "a"), inverted = false, folding = TransactionFolding()))
+        // the next nested transaction has its own
+        assertEquals("b", nestedHeaderBetween(nestedQuery("2", "a"), nestedQuery("3", "b"), inverted = false, folding = TransactionFolding())!!.nested!!.id)
+    }
+
+    @Test
+    fun `a nested transaction of one query has no header`() {
+        val single = nestedQuery("1", "a", nestedQueryCount = 1)
+
+        assertNull(nestedHeaderBetween(query("0", "tx"), single, inverted = false, folding = TransactionFolding()))
+    }
+
+    @Test
+    fun `the queries of a folded nested transaction are hidden, and the ones nested in it`() {
+        val folding = TransactionFolding(toggled = setOf("a"))
+
+        assertTrue(nestedQuery("1", "a").isHiddenInTransaction(folding))
+        assertTrue(nestedQuery("2", "b", path = listOf("a", "b")).isHiddenInTransaction(folding))
+        assertFalse(nestedQuery("3", "c").isHiddenInTransaction(folding))
+        // the query of the transaction that holds it
+        assertFalse(query("0", "tx").isHiddenInTransaction(folding))
+    }
+
+    @Test
+    fun `the header of a nested transaction is hidden by the transactions that hold it`() {
+        val inner = nestedHeaderBetween(null, nestedQuery("2", "b", path = listOf("a", "b")), inverted = false, folding = TransactionFolding())!!
+
+        assertFalse(inner.isHiddenInTransaction(TransactionFolding()))
+        assertTrue(inner.isHiddenInTransaction(TransactionFolding(toggled = setOf("a"))))
+        // folding the nested transaction itself keeps its header, to unfold it
+        assertFalse(inner.isHiddenInTransaction(TransactionFolding(toggled = setOf("b"))))
+        assertTrue(inner.isHiddenInTransaction(TransactionFolding(toggled = setOf("tx"))))
+    }
+
+    @Test
+    fun `the branch of a line tells how far it is indented`() {
+        assertEquals("tx" to 0, query("1", "tx").branch())
+        assertEquals("tx" to 1, nestedQuery("1", "a", depth = 1).branch())
+        assertEquals("tx" to 2, nestedQuery("2", "b", path = listOf("a", "b")).branch())
+        // a nested transaction without header does not indent
+        assertEquals("tx" to 0, nestedQuery("3", "c", nestedQueryCount = 1).branch())
+        // the header of a nested transaction hangs from the one that holds it
+        assertEquals("tx" to 0, nestedHeaderBetween(null, nestedQuery("1", "a"), inverted = false, folding = TransactionFolding())!!.branch())
+        assertNull(query("1").branch())
+        assertNull(query("1", "tx", isControl = true).branch())
     }
 }

@@ -33,9 +33,11 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.database_query_log_panel_transaction
 import flocondesktop.composeapp.generated.resources.database_transaction_collapse
 import flocondesktop.composeapp.generated.resources.database_transaction_expand
+import flocondesktop.composeapp.generated.resources.database_transaction_nested
 import flocondesktop.composeapp.generated.resources.database_transaction_queries
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineNestedHeader
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineTransactionHeader
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.pluralStringResource
@@ -74,7 +76,10 @@ internal fun TimelineTransactionRow(
         )
         Spacer(Modifier.width(railGutter()))
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
-            EventBadge(source = TimelineSource.Database)
+            // the header of a nested transaction hangs from the one that holds it, which has the badge
+            if (item.nested == null) {
+                EventBadge(source = TimelineSource.Database)
+            }
         }
         Row(
             modifier = Modifier
@@ -94,22 +99,30 @@ internal fun TimelineTransactionRow(
                 modifier = Modifier.size(ChevronSize),
             )
             Text(
-                text = stringResource(Res.string.database_query_log_panel_transaction),
+                text = stringResource(
+                    if (item.nested == null) Res.string.database_query_log_panel_transaction else Res.string.database_transaction_nested,
+                ),
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = categoryColor,
                 maxLines = 1,
             )
             Text(
-                text = "${transaction.queryCount} ${pluralStringResource(Res.plurals.database_transaction_queries, transaction.queryCount)}" +
-                    " · ${transaction.durationLabel}",
+                text = if (item.nested == null) {
+                    "${transaction.queryCount} ${pluralStringResource(Res.plurals.database_transaction_queries, transaction.queryCount)}" +
+                        " · ${transaction.durationLabel}"
+                } else {
+                    "${item.nested.queryCount} ${pluralStringResource(Res.plurals.database_transaction_queries, item.nested.queryCount)}"
+                },
                 style = monoStyle(small = true),
                 color = colors.inkMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            item.databaseName?.let { TagPill(text = it) }
+            if (item.nested == null) {
+                item.databaseName?.let { TagPill(text = it) }
+            }
         }
     }
 }
@@ -117,13 +130,16 @@ internal fun TimelineTransactionRow(
 /**
  * The branch of a query of an expanded transaction: the query is indented, a line along the queries of the transaction
  * curves towards it. The line goes on below the query unless it is the [isLast] one of its transaction.
+ * [level] is how many transactions hold the transaction of the query, 0 for a query of the outermost one.
  */
 @Composable
-internal fun Modifier.transactionBranch(isLast: Boolean): Modifier {
+internal fun Modifier.transactionBranch(isLast: Boolean, level: Int = 0): Modifier {
     val color = FloconTheme.colors.inkFaint
     val spacing = FloconTheme.spacing
-    val indent = spacing.large + spacing.small
-    val lineX = spacing.compact + spacing.small / 2
+    val step = spacing.large + spacing.small
+    // each transaction nested in another one hangs one step further than the transaction that holds it
+    val indent = step * (level + 1)
+    val lineX = spacing.compact + spacing.small / 2 + step * level
     val radius = spacing.small
     val elbowEnd = spacing.compact + indent - BranchGap
     return this
@@ -162,6 +178,20 @@ private fun TimelineTransactionRowPreview() {
     FloconTheme {
         Box(modifier = Modifier.fillMaxWidth()) {
             TimelineTransactionRow(item = previewTimelineTransactionHeader(isExpanded = false), onClick = {})
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NestedTimelineTransactionRowPreview() {
+    FloconTheme {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            TimelineTransactionRow(
+                item = previewTimelineNestedHeader(),
+                onClick = {},
+                modifier = Modifier.transactionBranch(isLast = true),
+            )
         }
     }
 }

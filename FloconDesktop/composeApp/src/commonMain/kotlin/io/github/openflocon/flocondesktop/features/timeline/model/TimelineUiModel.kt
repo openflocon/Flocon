@@ -43,7 +43,24 @@ internal data class TimelineTransactionUiModel(
     val durationLabel: String,
     val endTimestamp: Long, // the time of the header
     val isControl: Boolean, // BEGIN, COMMIT...: only the header tells them
+    val nested: TimelineNestedUiModel? = null, // the transaction nested in it the query runs in
 )
+
+/**
+ * A transaction nested in another one (a savepoint). Its queries are grouped under a header of their own, unless it ran only one.
+ */
+@Immutable
+internal data class TimelineNestedUiModel(
+    val id: String,
+    val queryCount: Int, // the queries it ran itself, without its statements
+    val depth: Int, // 1 in a transaction nested in the outermost one, 2 in one nested in it...
+    val path: List<String>, // the ids of the nested transactions that hold the query, outermost first, this one last
+) {
+    val hasHeader: Boolean get() = queryCount > 1
+
+    /** How far the queries hang from the header of the transaction: a nested transaction without header does not indent them. */
+    val level: Int get() = if (hasHeader) depth else (depth - 1).coerceAtLeast(0)
+}
 
 // a value of the event that can be hidden from the timeline, ex: the GET method
 @Immutable
@@ -84,7 +101,12 @@ internal sealed interface TimelineItemUiModel {
         val databaseName: String?,
         val isExpanded: Boolean,
         override val key: String,
-    ) : TimelineItemUiModel
+        // set for the header of a transaction nested in [transaction], which has the id of the outermost one
+        val nested: TimelineNestedUiModel? = null,
+    ) : TimelineItemUiModel {
+        // the id to fold or unfold to show or hide the queries under this header
+        val foldingId: String get() = nested?.id ?: transaction.id
+    }
 
     // displayed above the first event of each day
     data class DayHeader(val day: String, override val key: String) : TimelineItemUiModel
@@ -230,7 +252,20 @@ internal fun previewTimelineTransaction(
     id: String = "tx-1",
     queryCount: Int = 2,
     isControl: Boolean = false,
-) = TimelineTransactionUiModel(id = id, queryCount = queryCount, durationLabel = "5 ms", endTimestamp = 0L, isControl = isControl)
+    nested: TimelineNestedUiModel? = null,
+) = TimelineTransactionUiModel(id = id, queryCount = queryCount, durationLabel = "5 ms", endTimestamp = 0L, isControl = isControl, nested = nested)
+
+internal fun previewTimelineNested(id: String = "nested-1", queryCount: Int = 2, depth: Int = 1) = TimelineNestedUiModel(id = id, queryCount = queryCount, depth = depth, path = listOf(id))
+
+internal fun previewTimelineNestedHeader(isExpanded: Boolean = true) = TimelineItemUiModel.TransactionHeader(
+    transaction = previewTimelineTransaction(),
+    day = "20/10/2026",
+    time = "12:00:00.000",
+    databaseName = "app.db",
+    isExpanded = isExpanded,
+    key = "nested:nested-1:preview",
+    nested = previewTimelineNested(),
+)
 
 internal fun previewTimelineTransactionHeader(isExpanded: Boolean = true) = TimelineItemUiModel.TransactionHeader(
     transaction = previewTimelineTransaction(),

@@ -10,6 +10,7 @@ import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotDomainM
 import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineExcludeUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNestedUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTransactionUiModel
@@ -38,6 +39,7 @@ private fun TimelineTransactionDomainModel.toUi() = TimelineTransactionUiModel(
     durationLabel = formatElapsed((endTimestamp - startTimestamp).coerceAtLeast(0).toDouble()),
     endTimestamp = endTimestamp,
     isControl = isControl,
+    nested = nested?.let { TimelineNestedUiModel(id = it.id, queryCount = it.queryCount, depth = it.depth, path = it.path) },
 )
 
 // the facets worth excluding an event by: not the duration bucket, the state or the content of a call
@@ -154,12 +156,60 @@ internal fun transactionHeaderBetween(
 }
 
 /**
- * The queries of a transaction are shown under its header unless it is folded. The statements that open and close it
- * (BEGIN, COMMIT...) are only told by the header.
+ * The header of a transaction nested in another one goes above its first query, like the one of the outermost transaction,
+ * and only when it ran more than one query. It is a second pass after [transactionHeaderBetween]: both headers can be
+ * needed between the same two queries, the one of the outermost transaction goes first.
  */
-internal fun TimelineItemUiModel.isHiddenInTransaction(folding: TransactionFolding): Boolean {
-    val transaction = (this as? TimelineItemUiModel.Row)?.row?.transaction ?: return false
-    return transaction.isControl || !folding.isExpanded(transaction.id)
+internal fun nestedHeaderBetween(
+    before: TimelineItemUiModel?,
+    after: TimelineItemUiModel?,
+    inverted: Boolean,
+    folding: TransactionFolding,
+): TimelineItemUiModel.TransactionHeader? {
+    val first = (if (inverted) before else after) as? TimelineItemUiModel.Row ?: return null
+    val neighbor = (if (inverted) after else before) as? TimelineItemUiModel.Row
+    val transaction = first.row.transaction ?: return null
+    val nested = transaction.nested?.takeIf { it.hasHeader } ?: return null
+    if (neighbor?.row?.transaction?.nested?.id == nested.id) return null
+    return TimelineItemUiModel.TransactionHeader(
+        transaction = transaction,
+        day = first.row.day,
+        time = formatTimestamp(first.row.timestamp),
+        databaseName = first.row.subtitle,
+        isExpanded = folding.isExpanded(nested.id),
+        key = "nested:${nested.id}:${first.row.key}",
+        nested = nested,
+    )
+}
+
+/**
+ * The queries of a transaction are shown under its header unless it is folded, or a transaction that holds them is. The
+ * statements that open and close it (BEGIN, COMMIT...) are only told by the header.
+ */
+internal fun TimelineItemUiModel.isHiddenInTransaction(folding: TransactionFolding): Boolean = when (this) {
+    is TimelineItemUiModel.Row -> {
+        val transaction = row.transaction
+        transaction != null &&
+            (transaction.isControl || !folding.isExpanded(transaction.id) || transaction.nested?.path.orEmpty().any { !folding.isExpanded(it) })
+    }
+
+    // the header of a nested transaction is hidden by the transactions that hold it
+    is TimelineItemUiModel.TransactionHeader ->
+        nested != null &&
+            (!folding.isExpanded(transaction.id) || nested.path.dropLast(1).any { !folding.isExpanded(it) })
+
+    else -> false
+}
+
+/**
+ * Where a line hangs in a transaction: the id of the outermost transaction and how far it is indented, null for what is not
+ * part of one. The queries of a transaction hang from its header; a nested transaction has a header that hangs from the
+ * transaction that holds it.
+ */
+internal fun TimelineItemUiModel?.branch(): Pair<String, Int>? = when (this) {
+    is TimelineItemUiModel.Row -> row.transaction?.takeIf { !it.isControl }?.let { it.id to (it.nested?.level ?: 0) }
+    is TimelineItemUiModel.TransactionHeader -> nested?.let { transaction.id to (it.depth - 1) }
+    else -> null
 }
 
 /**

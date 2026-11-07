@@ -41,6 +41,7 @@ import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
 import io.github.openflocon.flocondesktop.features.timeline.graph.screenshotsOfSession
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.isHiddenInTransaction
+import io.github.openflocon.flocondesktop.features.timeline.mapper.nestedHeaderBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotMarkerBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
@@ -264,6 +265,7 @@ internal class TimelineViewModel(
                     // the header of a transaction goes above its queries, the ones of a folded transaction are hidden
                     val grouped = pagingData
                         .insertSeparators { before, after -> transactionHeaderBetween(before, after, inverted, folding) }
+                        .insertSeparators { before, after -> nestedHeaderBetween(before, after, inverted, folding) }
                         .filter { !it.isHiddenInTransaction(folding) }
                     // without screenshot the list is the one it always was
                     val withScreenshots = if (shots.isEmpty()) {

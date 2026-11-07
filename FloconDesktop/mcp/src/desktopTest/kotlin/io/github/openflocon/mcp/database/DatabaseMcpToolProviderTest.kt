@@ -66,7 +66,15 @@ class DatabaseMcpToolProviderTest {
         logs = listOf(
             log("SELECT * FROM users WHERE id = ?", listOf("1"), timestamp = 10, appInstance = 1),
             log("BEGIN TRANSACTION", null, timestamp = 20, appInstance = 2, isTransaction = true, transactionId = "tx-1"),
-            log("INSERT INTO users VALUES (?, ?)", listOf("2", "flo"), timestamp = 30, appInstance = 2, transactionId = "tx-1"),
+            log(
+                "INSERT INTO users VALUES (?, ?)",
+                listOf("2", "flo"),
+                timestamp = 30,
+                appInstance = 2,
+                transactionId = "tx-1",
+                nestedTransactionId = "n-1",
+                parentTransactionId = "tx-1",
+            ),
             log("SELECT * FROM dogs", null, timestamp = 40, appInstance = 2),
         ),
     )
@@ -204,6 +212,16 @@ class DatabaseMcpToolProviderTest {
     }
 
     @Test
+    fun `list_database_query_logs returns the nested transaction of a query and its parent`() = runBlocking {
+        val result = server.callTool("list_database_query_logs", mapOf("databaseId" to "/data/databases/app.db")).json()
+
+        val queries = result["queries"]!!.jsonArray.map { it.jsonObject }
+        assertEquals(null, queries[0]["nestedTransactionId"])
+        assertEquals("n-1", queries[1]["nestedTransactionId"]!!.jsonPrimitive.content)
+        assertEquals("tx-1", queries[1]["parentTransactionId"]!!.jsonPrimitive.content)
+    }
+
+    @Test
     fun `list_database_query_logs only returns the queries of a transaction`() = runBlocking {
         val result = server.callTool(
             "list_database_query_logs",
@@ -228,8 +246,12 @@ class DatabaseMcpToolProviderTest {
         appInstance: Long,
         isTransaction: Boolean = false,
         transactionId: String? = null,
+        nestedTransactionId: String? = null,
+        parentTransactionId: String? = null,
     ) = DatabaseQueryLogDomainModel(
         transactionId = transactionId,
+        nestedTransactionId = nestedTransactionId,
+        parentTransactionId = parentTransactionId,
         dbId = "/data/databases/app.db",
         dbName = "app.db",
         sqlQuery = sql,

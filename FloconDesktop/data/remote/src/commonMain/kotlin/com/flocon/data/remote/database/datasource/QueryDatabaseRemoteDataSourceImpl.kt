@@ -95,6 +95,9 @@ class QueryDatabaseRemoteDataSourceImpl(
         DatabaseQueryLogDomainModel(
             id = 0,
             transactionId = it.transactionId,
+            nestedTransactionId = it.nestedTransactionId,
+            parentTransactionId = it.parentTransactionId,
+            transactionDepth = it.transactionDepth ?: 0,
             dbId = it.dbId,
             dbName = it.dbId, // the repository replaces it with the name of the database
             sqlQuery = it.sqlQuery,

@@ -122,14 +122,14 @@ internal class FloconDatabasePluginImpl(
 
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
         // the queries can be logged from any thread
-        val transactionId = transactionLock.withLock {
+        val transaction = transactionLock.withLock {
             val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
-            state.onQuery(sqlQuery).also { id ->
+            state.track(sqlQuery).also { info ->
                 // outside of a transaction: nothing to remember for this database
-                if (id == null) transactionStates.remove(dbId)
+                if (info == null) transactionStates.remove(dbId)
             }
         }
-        logQuery(dbId, sqlQuery, bindArgs, transactionId)
+        logQuery(dbId, sqlQuery, bindArgs, transaction)
     }
 
     // the queries are sent in the order they were logged: launching a coroutine for each one on a multi-threaded scope
@@ -152,14 +152,17 @@ internal class FloconDatabasePluginImpl(
         }
     }
 
-    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) {
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transaction: FloconTransactionInfo?) {
         pendingLogs.trySend(
             DatabaseQueryLogModel(
                 dbId = dbId,
                 sqlQuery = sqlQuery,
                 bindArgs = bindArgs.map { it.toString() },
                 timestamp = currentTimeMillis(),
-                transactionId = transactionId,
+                transactionId = transaction?.transactionId,
+                nestedTransactionId = transaction?.nestedTransactionId,
+                parentTransactionId = transaction?.parentTransactionId,
+                transactionDepth = transaction?.depth?.takeIf { it > 0 },
             ),
         )
     }

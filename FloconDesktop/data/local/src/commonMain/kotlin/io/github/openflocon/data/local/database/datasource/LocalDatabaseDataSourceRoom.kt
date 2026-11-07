@@ -191,6 +191,7 @@ internal class LocalDatabaseDataSourceRoom(
         log: DatabaseQueryLogDomainModel,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
     ) {
+        val nestedPath = nestedPathOf(log, deviceIdAndPackageName)
         databaseQueryLogDao.insert(
             DatabaseQueryLogEntity(
                 dbId = log.dbId,
@@ -200,11 +201,38 @@ internal class LocalDatabaseDataSourceRoom(
                 timestamp = log.timestamp,
                 isTransaction = log.isTransaction,
                 transactionId = log.transactionId,
+                nestedTransactionId = log.nestedTransactionId,
+                parentTransactionId = log.parentTransactionId,
+                transactionDepth = log.transactionDepth,
+                nestedPath = nestedPath,
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
                 appInstance = log.appInstance
             )
         )
+    }
+
+    // the path of a nested transaction is the one of its parent and its own id. The first query of a nested transaction (its savepoint)
+    // is logged after its parent has logged some, so the parent is known
+    private suspend fun nestedPathOf(
+        log: DatabaseQueryLogDomainModel,
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+    ): String? {
+        val transactionId = log.transactionId ?: return null
+        val nestedId = log.nestedTransactionId ?: return null
+        val parentId = log.parentTransactionId
+        val parentPath = if (parentId == null || parentId == transactionId) {
+            null
+        } else {
+            databaseQueryLogDao.findNestedPath(
+                deviceId = deviceIdAndPackageName.deviceId,
+                packageName = deviceIdAndPackageName.packageName,
+                dbId = log.dbId,
+                transactionId = transactionId,
+                nestedTransactionId = parentId,
+            )
+        }
+        return if (parentPath.isNullOrEmpty()) nestedId else "$parentPath,$nestedId"
     }
 
     override fun observeQueryLogs(
@@ -297,6 +325,9 @@ internal class LocalDatabaseDataSourceRoom(
         timestamp = timestamp,
         isTransaction = isTransaction,
         transactionId = transactionId,
+        nestedTransactionId = nestedTransactionId,
+        parentTransactionId = parentTransactionId,
+        transactionDepth = transactionDepth,
         appInstance = appInstance,
     )
 

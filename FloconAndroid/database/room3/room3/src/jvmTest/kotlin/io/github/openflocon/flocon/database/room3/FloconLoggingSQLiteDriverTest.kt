@@ -22,7 +22,7 @@ class FloconLoggingSQLiteDriverTest {
             }
         },
         dbId = "dogs",
-        logger = { dbId, sql, bindArgs, transactionId -> logs += Log(dbId, sql, bindArgs, transactionId) },
+        logger = { dbId, sql, bindArgs, transaction -> logs += Log(dbId, sql, bindArgs, transaction?.transactionId) },
     )
 
     private fun prepare(sql: String) = driver.open("dogs.db").prepare(sql)

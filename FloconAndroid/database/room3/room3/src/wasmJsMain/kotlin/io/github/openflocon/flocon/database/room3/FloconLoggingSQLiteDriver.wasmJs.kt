@@ -77,7 +77,7 @@ private class FloconLoggingStatement(
                 dbId = dbId,
                 sql = sql,
                 bindArgs = bindArgs.entries.sortedBy { it.key }.map { it.value },
-                transactionId = transactionState.onQuery(sql),
+                transaction = transactionState.track(sql),
             )
         }
         return delegate.step()

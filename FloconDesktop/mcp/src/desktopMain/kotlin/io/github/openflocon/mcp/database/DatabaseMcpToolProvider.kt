@@ -154,6 +154,8 @@ internal class DatabaseMcpToolProvider(
                     timestampMs = it.timestamp,
                     isTransaction = it.isTransaction,
                     transactionId = it.transactionId,
+                    nestedTransactionId = it.nestedTransactionId,
+                    parentTransactionId = it.parentTransactionId,
                     sessionId = it.appInstance,
                     isCurrentSession = it.appInstance == target.appInstance,
                 )

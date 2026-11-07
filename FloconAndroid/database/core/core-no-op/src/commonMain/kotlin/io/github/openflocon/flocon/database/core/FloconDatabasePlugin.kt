@@ -13,7 +13,7 @@ interface FloconDatabasePlugin : FloconPlugin {
 
     fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>)
 
-    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?)
+    fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transaction: FloconTransactionInfo?)
 
 }
 
@@ -22,7 +22,7 @@ internal object FloconDatabasePluginNoOp : FloconDatabasePlugin {
     override val providers: List<FloconDatabaseProvider> = emptyList()
     override fun register(floconDatabaseModel: FloconDatabaseModel) = Unit
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) = Unit
-    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transactionId: String?) = Unit
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transaction: FloconTransactionInfo?) = Unit
     override suspend fun onMessageReceived(method: String, body: String) = Unit
     override suspend fun onConnectedToServer() = Unit
 }

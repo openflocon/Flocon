@@ -42,9 +42,18 @@ class FloconDatabasePluginTest {
 
     @Test
     fun `logQuery sends the transaction id`() {
-        plugin.logQuery(dbId = "dogs", sqlQuery = "BEGIN", bindArgs = emptyList(), transactionId = "tx-1")
+        plugin.logQuery(
+            dbId = "dogs",
+            sqlQuery = "SAVEPOINT s1",
+            bindArgs = emptyList(),
+            transaction = FloconTransactionInfo(transactionId = "tx-1", nestedTransactionId = "n-1", parentTransactionId = "tx-1", depth = 1),
+        )
 
-        assertContains(sender.messages.single().third, "\"transactionId\":\"tx-1\"")
+        val body = sender.messages.single().third
+        assertContains(body, "\"transactionId\":\"tx-1\"")
+        assertContains(body, "\"nestedTransactionId\":\"n-1\"")
+        assertContains(body, "\"parentTransactionId\":\"tx-1\"")
+        assertContains(body, "\"transactionDepth\":1")
     }
 
     @Test

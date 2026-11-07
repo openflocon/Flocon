@@ -32,15 +32,14 @@ fun toQueryLogEntries(
         if (transactionId == null) {
             DatabaseQueryLogEntryUiModel.Query(group.single().toUi(currentAppInstance))
         } else {
-            val queries = group
-                .filter { showTransactions || !it.isTransaction }
-                .map { it.toUi(currentAppInstance) }
-            if (queries.isEmpty()) {
+            val items = transactionItems(group, showTransactions, folding, currentAppInstance)
+            val onlyItem = items.singleOrNull() as? DatabaseQueryLogEntryUiModel.Transaction.Item.Query
+            if (items.isEmpty()) {
                 // nothing left to show once the statements of the transaction are hidden
                 null
-            } else if (queries.size == 1 && !showTransactions) {
+            } else if (onlyItem != null && !showTransactions) {
                 // a transaction of one query is not worth a group
-                DatabaseQueryLogEntryUiModel.Query(queries.single())
+                DatabaseQueryLogEntryUiModel.Query(onlyItem.log)
             } else {
                 DatabaseQueryLogEntryUiModel.Transaction(
                     id = transactionId,
@@ -50,11 +49,85 @@ fun toQueryLogEntries(
                     status = transactionStatus(group.map { it.sqlQuery }),
                     isExpanded = folding.isExpanded(transactionId),
                     isFromOldSession = group.first().appInstance != currentAppInstance,
-                    queries = queries.toImmutableList(),
+                    items = items.toImmutableList(),
                 )
             }
         }
     }.toImmutableList()
+}
+
+/**
+ * What an expanded transaction shows: its queries in order, each transaction nested in it with a line of its own before its
+ * queries. The queries of a folded nested transaction (or held by one) are left out, and so are the nested transactions
+ * of a single query: that query is shown like the others.
+ */
+private fun transactionItems(
+    group: List<DatabaseQueryLogDomainModel>,
+    showTransactions: Boolean,
+    folding: TransactionFolding,
+    currentAppInstance: Long?,
+): List<DatabaseQueryLogEntryUiModel.Transaction.Item> {
+    // the nested transactions of the group: who holds them and what they ran
+    val parents = HashMap<String, String?>()
+    val logsOf = HashMap<String, MutableList<DatabaseQueryLogDomainModel>>()
+    group.forEach { log ->
+        val nestedId = log.nestedTransactionId ?: return@forEach
+        parents.getOrPut(nestedId) { log.parentTransactionId?.takeIf { it != log.transactionId } }
+        logsOf.getOrPut(nestedId) { mutableListOf() } += log
+    }
+    // the logs of a nested transaction and of the ones nested in it
+    val subtrees = HashMap<String, List<DatabaseQueryLogDomainModel>>()
+    fun subtree(id: String): List<DatabaseQueryLogDomainModel> = subtrees.getOrPut(id) {
+        logsOf.entries
+            .filter { (nestedId, _) -> generateSequence(nestedId) { parents[it] }.any { it == id } }
+            .flatMap { it.value }
+            .sortedBy { it.id }
+    }
+    // a nested transaction is worth a line when it ran more than one query, or when its statements are shown
+    val headers = HashMap<String, Boolean>()
+    fun hasHeader(id: String): Boolean = headers.getOrPut(id) { showTransactions || subtree(id).count { !it.isTransaction } > 1 }
+
+    // the nested transactions that have a line and hold a log, from the outermost
+    fun headersOf(nestedId: String?): List<String> = generateSequence(nestedId) { parents[it] }
+        .toList()
+        .reversed()
+        .filter { hasHeader(it) }
+
+    val items = mutableListOf<DatabaseQueryLogEntryUiModel.Transaction.Item>()
+    val shown = HashSet<String>()
+    group.forEach { log ->
+        val holders = headersOf(log.nestedTransactionId)
+        // the line of each nested transaction that holds the log, the first time one of its logs comes
+        holders.forEachIndexed { index, id ->
+            if (shown.add(id) && holders.take(index).all { folding.isExpanded(it) }) {
+                val logs = subtree(id)
+                items += DatabaseQueryLogEntryUiModel.Transaction.Item.Nested(
+                    id = id,
+                    durationLabel = "${logs.last().timestamp - logs.first().timestamp} ms",
+                    queryCount = logs.count { !it.isTransaction },
+                    status = nestedStatus(logsOf[id].orEmpty().map { it.sqlQuery }),
+                    isExpanded = folding.isExpanded(id),
+                    depth = index,
+                )
+            }
+        }
+        if ((showTransactions || !log.isTransaction) && holders.all { folding.isExpanded(it) }) {
+            items += DatabaseQueryLogEntryUiModel.Transaction.Item.Query(log.toUi(currentAppInstance), depth = holders.size)
+        }
+    }
+    return items
+}
+
+/**
+ * @param sqls the statements the nested transaction ran itself, in the order they were run
+ */
+internal fun nestedStatus(sqls: List<String>): Status {
+    val statements = sqls.map { it.trim().uppercase() }
+    return when {
+        statements.any { it.startsWith("ROLLBACK") } -> Status.RolledBack
+        statements.any { it.startsWith("RELEASE") || it.startsWith("COMMIT") || it.startsWith("END") } -> Status.Committed
+        else -> Status.Open
+    }
 }
 
 /**

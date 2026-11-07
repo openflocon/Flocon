@@ -205,9 +205,18 @@ fun DatabaseQueryLogs(
                                 HorizontalDivider(color = FloconTheme.colors.bg200)
                             }
                             if (entry.isExpanded) {
-                                items(entry.queries, key = { "${entry.key}-${it.id}" }) { log ->
-                                    // the queries of a transaction are indented under its header
-                                    queryRow(log, Modifier.padding(start = FloconTheme.spacing.large))
+                                items(entry.items, key = { "${entry.key}-${it.key}" }) { item ->
+                                    // what a transaction holds is indented under its header, one more level for each transaction nested in it
+                                    val indent = Modifier.padding(start = FloconTheme.spacing.large * (item.depth + 1))
+                                    when (item) {
+                                        is DatabaseQueryLogEntryUiModel.Transaction.Item.Query -> queryRow(item.log, indent)
+
+                                        is DatabaseQueryLogEntryUiModel.Transaction.Item.Nested -> DatabaseNestedTransactionLogItem(
+                                            nested = item,
+                                            onClick = { viewModel.toggleTransaction(item.id) },
+                                            modifier = indent.fillMaxWidth(),
+                                        )
+                                    }
                                 }
                             }
                         }

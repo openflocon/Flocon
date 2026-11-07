@@ -7,6 +7,7 @@ import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineNestedTransactionDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
@@ -189,6 +190,25 @@ class MapperTest {
         val transaction = row.toDomain().transaction
 
         assertEquals(TimelineTransactionDomainModel(id = "tx", queryCount = 2, startTimestamp = 100, endTimestamp = 105, isControl = true), transaction)
+    }
+
+    @Test
+    fun `a query of a nested transaction carries it, with the transactions that hold it`() {
+        val row = networkRow(kind = KIND_DATABASE).copy(
+            transactionId = "tx",
+            txQueryCount = 3,
+            nestedTransactionId = "b",
+            nestedQueryCount = 2,
+            transactionDepth = 2,
+            nestedPath = "a,b",
+        )
+
+        val nested = row.toDomain().transaction!!.nested
+
+        assertEquals(TimelineNestedTransactionDomainModel(id = "b", queryCount = 2, depth = 2, path = listOf("a", "b")), nested)
+        // an older row has no path
+        assertEquals(listOf("b"), row.copy(nestedPath = null).toDomain().transaction!!.nested!!.path)
+        assertNull(row.copy(nestedTransactionId = null).toDomain().transaction!!.nested)
     }
 
     @Test

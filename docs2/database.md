@@ -126,7 +126,9 @@ Flocon can display all SQL queries executed by your app in real-time — great f
 
 The queries run in the same transaction are grouped in one row, with the number of queries, the duration and whether
 the transaction was committed or rolled back. Click the row to show or hide its queries. Room 2 and Room 3 logging group
-them automatically; with manual logging, pass the same `transactionId` to `logQuery` for every query of a transaction.
+them automatically, and the transactions nested in a transaction (savepoints) get a row of their own inside it, which you can
+fold too. A transaction of a single query is shown as a plain row. With manual logging, `logQuery` finds the transaction of a
+query from the `BEGIN`, `SAVEPOINT`, `COMMIT`... statements you log before it.
 
 === "Room 2 (Android)"
 
@@ -165,7 +167,6 @@ them automatically; with manual logging, pass the same `transactionId` to `logQu
         dbId = "my_custom_db", // the id the database was registered with
         sqlQuery = "SELECT * FROM users WHERE id = ?",
         bindArgs = listOf(42),
-        transactionId = null, // optional, the same value for all the queries of a transaction
     )
     ```
 

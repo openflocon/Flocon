@@ -18,6 +18,7 @@ import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntit
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineNestedTransactionDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
@@ -84,6 +85,14 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
             startTimestamp = txStart ?: ts,
             endTimestamp = txEnd ?: ts,
             isControl = isTransactionControl,
+            nested = nestedTransactionId?.let {
+                TimelineNestedTransactionDomainModel(
+                    id = it,
+                    queryCount = nestedQueryCount ?: 0,
+                    depth = transactionDepth,
+                    path = nestedPath?.split(',')?.filter { id -> id.isNotEmpty() } ?: listOf(it),
+                )
+            },
         )
     },
 )

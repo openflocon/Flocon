@@ -100,6 +100,31 @@ class QueryDatabaseRemoteDataSourceImplTest {
     }
 
     @Test
+    fun `the nested transaction, its parent and its depth are read`() {
+        val log = dataSource.getQueryLogs(
+            message(
+                """{"dbId":"cats","sqlQuery":"SAVEPOINT 's1'","bindArgs":null,"timestamp":1000,"transactionId":"tx-1",""" +
+                    """"nestedTransactionId":"n-1","parentTransactionId":"tx-1","transactionDepth":1}""",
+            ),
+        )!!
+
+        assertEquals("n-1", log.nestedTransactionId)
+        assertEquals("tx-1", log.parentTransactionId)
+        assertEquals(1, log.transactionDepth)
+    }
+
+    @Test
+    fun `an older sdk sends no nested transaction`() {
+        val log = dataSource.getQueryLogs(
+            message("""{"dbId":"cats","sqlQuery":"COMMIT","bindArgs":null,"timestamp":1000,"transactionId":"tx-1"}"""),
+        )!!
+
+        assertNull(log.nestedTransactionId)
+        assertNull(log.parentTransactionId)
+        assertEquals(0, log.transactionDepth)
+    }
+
+    @Test
     fun `the transaction id is optional`() {
         val log = dataSource.getQueryLogs(
             message("""{"dbId":"cats","sqlQuery":"SELECT 1","bindArgs":null,"timestamp":1000}"""),

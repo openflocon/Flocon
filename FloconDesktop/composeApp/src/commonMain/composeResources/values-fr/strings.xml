@@ -532,4 +532,5 @@
     <string name="desktop_update_title">Flocon %1$s</string>
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
+    <string name="database_transaction_nested">Transaction imbriquée</string>
 </resources>

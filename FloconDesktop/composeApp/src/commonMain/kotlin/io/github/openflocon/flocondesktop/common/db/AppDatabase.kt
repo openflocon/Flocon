@@ -69,7 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 @Database(
-    version = 93,
+    version = 94,
     entities = [
         FloconNetworkCallEntity::class,
         FileEntity::class,

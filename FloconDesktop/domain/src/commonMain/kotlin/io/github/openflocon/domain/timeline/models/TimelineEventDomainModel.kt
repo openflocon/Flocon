@@ -34,4 +34,15 @@ data class TimelineTransactionDomainModel(
     val startTimestamp: Long,
     val endTimestamp: Long,
     val isControl: Boolean, // this query is one of the statements that open or close the transaction
+    val nested: TimelineNestedTransactionDomainModel? = null, // the transaction nested in it the query runs in
+)
+
+/**
+ * A transaction nested in another one (a savepoint, a nested begin) the queries of which run in it.
+ */
+data class TimelineNestedTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // the queries it ran itself, without the ones of the transactions nested in it and without its statements
+    val depth: Int, // 1 in a transaction nested in the outermost one, 2 in one nested in it...
+    val path: List<String>, // the ids of the nested transactions that hold the query, outermost first, this one last
 )

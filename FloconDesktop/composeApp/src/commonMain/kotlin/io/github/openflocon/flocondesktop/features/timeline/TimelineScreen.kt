@@ -75,6 +75,7 @@ import io.github.openflocon.flocondesktop.features.timeline.graph.TimelineGraph
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.previewGraphEvents
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
+import io.github.openflocon.flocondesktop.features.timeline.mapper.branch
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkedRowIndices
@@ -388,8 +389,11 @@ internal fun TimelineContent(
                                         highlight = filterText.value,
                                         // the queries of a transaction hang from its header
                                         modifier = Modifier.fillMaxWidth().then(
-                                            item.row.transaction?.let { transaction ->
-                                                Modifier.transactionBranch(isLast = isLastOfTransaction(rows, index, settings.invertList, transaction.id))
+                                            item.branch()?.let { (transactionId, level) ->
+                                                Modifier.transactionBranch(
+                                                    isLast = isLastOfTransaction(rows, index, settings.invertList, transactionId, level),
+                                                    level = level,
+                                                )
                                             } ?: Modifier,
                                         ),
                                     )
@@ -398,7 +402,14 @@ internal fun TimelineContent(
 
                             is TimelineItemUiModel.TransactionHeader -> TimelineTransactionRow(
                                 item = item,
-                                onClick = { onAction(TimelineAction.ToggleTransaction(item.transaction.id)) },
+                                onClick = { onAction(TimelineAction.ToggleTransaction(item.foldingId)) },
+                                // the header of a nested transaction hangs from the transaction that holds it
+                                modifier = item.branch()?.let { (transactionId, level) ->
+                                    Modifier.transactionBranch(
+                                        isLast = isLastOfTransaction(rows, index, settings.invertList, transactionId, level),
+                                        level = level,
+                                    )
+                                } ?: Modifier,
                             )
 
                             is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
@@ -435,10 +446,18 @@ internal fun TimelineContent(
  * The query is the last one of its transaction when the item displayed below it is not another query of it: the next one in the list,
  * the previous one when the list is [inverted]. Only the items already loaded are looked at.
  */
-private fun isLastOfTransaction(rows: LazyPagingItems<TimelineItemUiModel>, index: Int, inverted: Boolean, transactionId: String): Boolean {
+private fun isLastOfTransaction(
+    rows: LazyPagingItems<TimelineItemUiModel>,
+    index: Int,
+    inverted: Boolean,
+    transactionId: String,
+    level: Int,
+): Boolean {
     val below = if (inverted) index - 1 else index + 1
     if (below !in 0 until rows.itemCount) return true
-    return (rows.peek(below) as? TimelineItemUiModel.Row)?.row?.transaction?.id != transactionId
+    // the line goes on while what comes next hangs from the same transaction, at this level or deeper
+    val next = rows.peek(below).branch()
+    return next == null || next.first != transactionId || next.second < level
 }
 
 /**

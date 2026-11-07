@@ -299,4 +299,120 @@ class FloconTransactionStateTest {
         assertEquals(begin, state.onQuery("ROLLBACK TRANSACTION"))
         assertNull(state.onQuery("SELECT 1"))
     }
+
+    @Test
+    fun `a query of the outermost transaction has no nested transaction`() {
+        val begin = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        val insert = state.track("INSERT INTO dog VALUES (1)")!!
+
+        assertEquals(FloconTransactionInfo(transactionId = begin.transactionId), begin)
+        assertEquals(begin, insert)
+    }
+
+    @Test
+    fun `a savepoint is a transaction nested in the outermost one`() {
+        val begin = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        val savepoint = state.track("SAVEPOINT 's1'")!!
+        val insert = state.track("INSERT INTO user VALUES (1)")!!
+        val release = state.track("RELEASE SAVEPOINT 's1'")!!
+        val after = state.track("INSERT INTO post VALUES (1)")!!
+
+        assertNotNull(savepoint.nestedTransactionId)
+        assertEquals(begin.transactionId, savepoint.transactionId)
+        assertEquals(begin.transactionId, savepoint.parentTransactionId)
+        assertEquals(1, savepoint.depth)
+        // the savepoint statements and what they hold share the nested id
+        assertEquals(savepoint, insert)
+        assertEquals(savepoint, release)
+        // back in the outermost transaction
+        assertEquals(FloconTransactionInfo(transactionId = begin.transactionId), after)
+    }
+
+    @Test
+    fun `two savepoints in a row are two nested transactions`() {
+        state.track("BEGIN IMMEDIATE TRANSACTION")
+        val first = state.track("SAVEPOINT 'a'")!!
+        state.track("RELEASE SAVEPOINT 'a'")
+        val second = state.track("SAVEPOINT 'a'")!!
+
+        assertNotEquals(first.nestedTransactionId, second.nestedTransactionId)
+        assertEquals(first.parentTransactionId, second.parentTransactionId)
+    }
+
+    @Test
+    fun `a savepoint in a savepoint has the first one as parent`() {
+        val begin = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        val outer = state.track("SAVEPOINT 'a'")!!
+        val inner = state.track("SAVEPOINT 'b'")!!
+        val innerInsert = state.track("INSERT INTO dog VALUES (1)")!!
+        val innerRelease = state.track("RELEASE SAVEPOINT 'b'")!!
+        val outerInsert = state.track("INSERT INTO dog VALUES (2)")!!
+        val outerRelease = state.track("RELEASE SAVEPOINT 'a'")!!
+
+        assertEquals(outer.nestedTransactionId, inner.parentTransactionId)
+        assertEquals(2, inner.depth)
+        assertEquals(inner, innerInsert)
+        assertEquals(inner, innerRelease)
+        assertEquals(outer, outerInsert)
+        assertEquals(outer, outerRelease)
+        assertEquals(begin.transactionId, inner.transactionId)
+    }
+
+    @Test
+    fun `a rollback to a savepoint ends the nested transaction`() {
+        state.track("BEGIN IMMEDIATE TRANSACTION")
+        val savepoint = state.track("SAVEPOINT 's1'")!!
+
+        assertEquals(savepoint, state.track("ROLLBACK TRANSACTION TO SAVEPOINT 's1'"))
+        assertEquals(null, state.track("INSERT INTO dog VALUES (1)")!!.nestedTransactionId)
+    }
+
+    @Test
+    fun `the end of the outermost transaction closes the nested ones still open`() {
+        val begin = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        val savepoint = state.track("SAVEPOINT 's1'")!!
+
+        assertEquals(savepoint, state.track("END TRANSACTION"))
+        assertNull(state.track("SELECT 1"))
+        // a new transaction does not inherit them
+        val next = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        assertNotEquals(begin.transactionId, next.transactionId)
+        assertNull(next.nestedTransactionId)
+    }
+
+    @Test
+    fun `a nested begin of room 2 is a nested transaction ended by its own end`() {
+        val begin = state.track("BEGIN EXCLUSIVE TRANSACTION")!!
+        val nestedBegin = state.track("BEGIN EXCLUSIVE TRANSACTION")!!
+        val insert = state.track("INSERT INTO user VALUES (1)")!!
+        val nestedEnd = state.track("END TRANSACTION")!!
+        val outerInsert = state.track("INSERT INTO post VALUES (1)")!!
+        val end = state.track("END TRANSACTION")!!
+
+        assertEquals(begin.transactionId, nestedBegin.transactionId)
+        assertEquals(begin.transactionId, nestedBegin.parentTransactionId)
+        assertEquals(nestedBegin, insert)
+        assertEquals(nestedBegin, nestedEnd)
+        assertEquals(FloconTransactionInfo(transactionId = begin.transactionId), outerInsert)
+        assertEquals(FloconTransactionInfo(transactionId = begin.transactionId), end)
+        assertNull(state.track("SELECT 1"))
+    }
+
+    @Test
+    fun `the sample of nested transactions gives each block its own nested transaction`() {
+        // transaction { transaction { insertUsers() } transaction { insertPosts() insertComments() } }
+        val begin = state.track("BEGIN IMMEDIATE TRANSACTION")!!
+        val users = state.track("SAVEPOINT 'sp1'")!!
+        assertEquals(users, state.track("INSERT INTO user VALUES (1)"))
+        state.track("RELEASE SAVEPOINT 'sp1'")
+        val posts = state.track("SAVEPOINT 'sp2'")!!
+        assertEquals(posts, state.track("INSERT INTO post VALUES (1)"))
+        assertEquals(posts, state.track("INSERT INTO comment VALUES (1)"))
+        state.track("RELEASE SAVEPOINT 'sp2'")
+        state.track("END TRANSACTION")
+
+        assertNotEquals(users.nestedTransactionId, posts.nestedTransactionId)
+        assertEquals(begin.transactionId, users.parentTransactionId)
+        assertEquals(begin.transactionId, posts.parentTransactionId)
+    }
 }

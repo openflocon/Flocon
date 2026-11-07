@@ -107,6 +107,10 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("transactionId AS transactionId"))
         assertTrue(query.sql.contains("u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl"))
         assertTrue(query.sql.contains("isTransaction AS isTransactionControl"))
+        // and the nested transaction of the query, with the transactions that hold it
+        assertEquals(eventBranches + 1, Regex("AS nestedTransactionId").findAll(query.sql).count())
+        assertEquals(eventBranches + 1, Regex("AS nestedPath").findAll(query.sql).count())
+        assertTrue(query.sql.contains("u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath"))
     }
 
     @Test

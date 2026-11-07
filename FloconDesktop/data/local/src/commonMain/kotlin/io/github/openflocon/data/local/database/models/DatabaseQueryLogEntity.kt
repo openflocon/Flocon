@@ -22,6 +22,11 @@ data class DatabaseQueryLogEntity(
     val timestamp: Long,
     val isTransaction: Boolean,
     val transactionId: String? = null,
+    val nestedTransactionId: String? = null,
+    val parentTransactionId: String? = null,
+    val transactionDepth: Int = 0,
+    // the ids of the nested transactions that hold the query, from the outermost to the innermost, joined by a comma
+    val nestedPath: String? = null,
 
     val deviceId: String,
     val packageName: String,
