@@ -90,15 +90,16 @@ internal fun ScreenshotMarkerRow(
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
-                // a file that is gone (cap, temporary folder cleaned) loads nothing: the empty box stays
+                // no background behind it: the bands left by the fit would show as a grey box.
+                // A file that is gone (cap, temporary folder cleaned) loads nothing: the space stays empty
                 AsyncImage(
                     model = File(item.filePath),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
+                    alignment = Alignment.CenterStart,
                     modifier = Modifier
                         .size(width = ThumbWidth, height = ThumbHeight)
-                        .clip(FloconTheme.shapes.small)
-                        .background(colors.bg200),
+                        .clip(FloconTheme.shapes.small),
                 )
             }
             Text(
