@@ -110,6 +110,7 @@ internal data class TimelineSettingsUiModel(
     val graph: Boolean = true,
     val screenshots: Boolean = false,
     val screenshotIntervalSeconds: Int = 5,
+    val transactionsExpandedByDefault: Boolean = true, // a setting of the database transactions, shared with their logs screen
 )
 
 internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
@@ -131,6 +132,7 @@ internal sealed interface TimelineAction {
     data class ToggleAutoScroll(val value: Boolean) : TimelineAction
     data class InvertList(val value: Boolean) : TimelineAction
     data class PinPanel(val value: Boolean) : TimelineAction
+    data class TransactionsExpandedByDefault(val value: Boolean) : TimelineAction
     data class SetGraph(val value: Boolean) : TimelineAction
     data class SetScreenshots(val value: Boolean) : TimelineAction
     data class SetScreenshotInterval(val seconds: Int) : TimelineAction

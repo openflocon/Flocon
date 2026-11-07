@@ -144,8 +144,6 @@ import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
-import flocondesktop.composeapp.generated.resources.settings_transactions_description
-import flocondesktop.composeapp.generated.resources.settings_transactions_title
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
@@ -342,7 +340,6 @@ private fun SettingsScreen(
                     appScale = uiState.appScale,
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
-                    transactionsExpandedByDefault = uiState.transactionsExpandedByDefault,
                     onAction = onAction,
                 )
 
@@ -868,7 +865,6 @@ private fun AppearancePane(
     appScale: AppScaleSetting,
     currentTheme: ThemeSetting,
     mascotEnabled: Boolean,
-    transactionsExpandedByDefault: Boolean,
     onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -930,17 +926,6 @@ private fun AppearancePane(
                     onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
                 )
             }
-        }
-
-        SettingsCard(
-            title = stringResource(Res.string.settings_transactions_title),
-            icon = Icons.Outlined.Storage,
-            description = stringResource(Res.string.settings_transactions_description)
-        ) {
-            FloconSwitch(
-                checked = transactionsExpandedByDefault,
-                onCheckedChange = { onAction(SettingsAction.TransactionsExpandedByDefaultChange(it)) },
-            )
         }
     }
 }

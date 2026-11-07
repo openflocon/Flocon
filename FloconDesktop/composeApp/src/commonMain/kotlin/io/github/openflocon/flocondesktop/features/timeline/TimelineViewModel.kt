@@ -12,6 +12,7 @@ import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveTransactionsExpandedByDefaultUseCase
+import io.github.openflocon.domain.settings.usecase.SetTransactionsExpandedByDefaultUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ConsumeTimelineFocusUseCase
@@ -93,6 +94,7 @@ internal class TimelineViewModel(
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
     observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
     observeTransactionsExpandedByDefaultUseCase: ObserveTransactionsExpandedByDefaultUseCase,
+    private val setTransactionsExpandedByDefaultUseCase: SetTransactionsExpandedByDefaultUseCase,
     private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel() {
@@ -103,17 +105,20 @@ internal class TimelineViewModel(
     val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
-        .map {
-            TimelineSettingsUiModel(
-                autoScroll = it.autoScroll,
-                invertList = it.invertList,
-                pinPanel = it.pinPanel,
-                graph = it.graph,
-                screenshots = it.screenshots,
-                screenshotIntervalSeconds = it.screenshotIntervalSeconds,
-            )
-        }
+    val settings: StateFlow<TimelineSettingsUiModel> = combine(
+        observeTimelineSettingsUseCase(),
+        observeTransactionsExpandedByDefaultUseCase(),
+    ) { timelineSettings, transactionsExpandedByDefault ->
+        TimelineSettingsUiModel(
+            autoScroll = timelineSettings.autoScroll,
+            invertList = timelineSettings.invertList,
+            pinPanel = timelineSettings.pinPanel,
+            graph = timelineSettings.graph,
+            screenshots = timelineSettings.screenshots,
+            screenshotIntervalSeconds = timelineSettings.screenshotIntervalSeconds,
+            transactionsExpandedByDefault = transactionsExpandedByDefault,
+        )
+    }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
 
     // the last screenshots failed, or the device cannot take them: the control of the header says it
@@ -286,6 +291,8 @@ internal class TimelineViewModel(
             is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }
 
             is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
+
+            is TimelineAction.TransactionsExpandedByDefault -> viewModelScope.launch { setTransactionsExpandedByDefaultUseCase(action.value) }
 
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 

@@ -36,6 +36,7 @@ internal val timelineModule = module {
             networkItemOptionsDelegate = get(),
             observeTimelineFocusUseCase = get(),
             observeTransactionsExpandedByDefaultUseCase = get(),
+            setTransactionsExpandedByDefaultUseCase = get(),
             consumeTimelineFocusUseCase = get(),
             observeCurrentDeviceIdAndPackageNameUseCase = get(),
         )
