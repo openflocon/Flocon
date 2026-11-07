@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 
 /**
@@ -72,4 +73,27 @@ internal fun linkedRowIndices(
         val row = rowAt(index) ?: return@filter false
         if (callKey != null) row.callKey == callKey else row.linkKey() == linkKey
     }
+}
+
+/**
+ * The indices linked by a hovered screenshot: the screenshot itself, then the last event it covers.
+ * A screenshot covers the events taken after it, up to the next screenshot. The list goes from the newest, so those are
+ * the items above [shotIndex], until the next screenshot or the top of the list. The headers are skipped.
+ * Only the screenshot when it covers no event.
+ */
+internal fun screenshotSpanIndices(
+    shotIndex: Int,
+    itemAt: (Int) -> TimelineItemUiModel?,
+): List<Int> {
+    var end: Int? = null
+    var index = shotIndex - 1
+    while (index >= 0) {
+        when (itemAt(index)) {
+            is TimelineItemUiModel.Screenshot -> break
+            is TimelineItemUiModel.Row -> end = index
+            is TimelineItemUiModel.DayHeader, null -> Unit
+        }
+        index--
+    }
+    return listOfNotNull(shotIndex, end)
 }

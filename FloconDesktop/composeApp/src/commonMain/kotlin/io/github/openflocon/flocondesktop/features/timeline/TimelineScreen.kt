@@ -78,6 +78,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallI
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkedRowIndices
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotSpanIndices
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
@@ -296,7 +297,14 @@ internal fun TimelineContent(
         // the links only show while the pointer is over the list: a row can miss its exit, ex: when the detail panel opens
         val listInteraction = remember { MutableInteractionSource() }
         val listHovered by listInteraction.collectIsHoveredAsState()
-        LaunchedEffect(listHovered) { if (!listHovered) hoveredRows.clear() }
+        // the screenshot hovered, by key: the bar shows the events it covers
+        var hoveredScreenshotKey by remember { mutableStateOf<String?>(null) }
+        LaunchedEffect(listHovered) {
+            if (!listHovered) {
+                hoveredRows.clear()
+                hoveredScreenshotKey = null
+            }
+        }
         val hoveredNow = if (listHovered) hoveredRows.values.toList() else emptyList()
         val hoveredCallKeys = hoveredNow.mapTo(mutableSetOf()) { it.callKey }
         val hoveredLinkKeys = hoveredNow.mapNotNullTo(mutableSetOf()) { it.linkKey() }
@@ -317,7 +325,14 @@ internal fun TimelineContent(
         val railLinkKey = railRow?.linkKey()
         val railCallKey = railRow?.callKey.takeIf { railRow?.source == TimelineSource.Network }
         val itemCount = rows.itemCount
-        val linkedIndices = remember(railLinkKey, railCallKey, itemCount) {
+        val screenshotIndices = remember(hoveredScreenshotKey, itemCount) {
+            hoveredScreenshotKey?.let { key ->
+                (0 until itemCount).firstOrNull { rows.peek(it)?.key == key }?.let { shotIndex ->
+                    screenshotSpanIndices(shotIndex) { rows.peek(it) }
+                }
+            }
+        }
+        val linkedIndices = screenshotIndices ?: remember(railLinkKey, railCallKey, itemCount) {
             linkedRowIndices(itemCount, railCallKey, railLinkKey) { (rows.peek(it) as? TimelineItemUiModel.Row)?.row }
         }
 
@@ -389,7 +404,17 @@ internal fun TimelineContent(
                                 }
                             }
 
-                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(
+                                item = item,
+                                onHoverChange = { hovered ->
+                                    if (hovered) {
+                                        hoveredScreenshotKey = item.key
+                                    } else if (hoveredScreenshotKey == item.key) {
+                                        hoveredScreenshotKey = null
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),
@@ -410,8 +435,8 @@ internal fun TimelineContent(
                     listState = listState,
                     linkedIndices = linkedIndices,
                     // the request of a call can be older than the events loaded
-                    leavesAfterLoaded = railCallKey != null && linkedIndices.size < 2,
-                    color = railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
+                    leavesAfterLoaded = screenshotIndices == null && railCallKey != null && linkedIndices.size < 2,
+                    color = if (screenshotIndices != null) colors.accent else railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
