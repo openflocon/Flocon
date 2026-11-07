@@ -1,16 +1,17 @@
 package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,8 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -36,78 +42,91 @@ import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_at
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_label
+import flocondesktop.composeapp.generated.resources.timeline_screenshot_marker
+import flocondesktop.composeapp.generated.resources.timeline_screenshot_until
 import io.github.openflocon.flocondesktop.features.timeline.graph.ScreenshotPopover
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
-private val ThumbWidth = 56.dp
-private val ThumbHeight = 100.dp
+private val PhoneWidth = 62.dp
+private val PhoneHeight = 112.dp
+private val PhoneBezel = 3.dp
+private val DashLength = 6.dp
+private val TailWidth = 40.dp
 
 /**
- * A screenshot in the list, at the time it was taken. It has the layout of an event: the time, then the thumbnail where
- * the category goes. Hovering it shows it larger, and [onHoverChange] lets the list draw the bar of the events it covers.
+ * A screenshot in the list, at the time it was taken: a dashed separator with the name of the screen ([screenName], the
+ * last navigation before it), and the screenshot in a phone frame under it. [until] is the time of the last event it covers.
+ * Hovering it shows it larger, and [onHoverChange] lets the list draw the bar of the events it covers.
  */
 @Composable
 internal fun ScreenshotMarkerRow(
     item: TimelineItemUiModel.Screenshot,
+    screenName: String?,
+    until: String?,
     onHoverChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val spacing = FloconTheme.spacing
-    val shape = FloconTheme.shapes.medium
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     LaunchedEffect(hovered) { onHoverChange(hovered) }
     DisposableEffect(Unit) { onDispose { onHoverChange(false) } }
 
-    Row(
+    val label = if (screenName != null) {
+        stringResource(Res.string.timeline_screenshot_marker, screenName)
+    } else {
+        stringResource(Res.string.timeline_screenshot_label)
+    }
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .hoverable(interactionSource)
-            .padding(horizontal = spacing.compact, vertical = spacing.tiny),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.small),
+            .padding(horizontal = spacing.compact, vertical = spacing.small),
+        verticalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
-        Text(
-            text = item.time,
-            style = monoStyle(),
-            color = colors.accent,
-            maxLines = 1,
-            modifier = Modifier.width(FloconTheme.sizes.timeColumn),
-        )
-        // the free space where the bar of the covered events goes, like in the other rows
-        Spacer(Modifier.width(railGutter()))
         Row(
-            modifier = Modifier
-                .weight(1f)
-                .heightIn(min = ThumbHeight)
-                .background(if (hovered) colors.accentSoft else colors.bg100, shape)
-                .padding(horizontal = spacing.medium, vertical = spacing.tiny),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
-            Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
-                // no background behind it: the bands left by the fit would show as a grey box.
-                // A file that is gone (cap, temporary folder cleaned) loads nothing: the space stays empty
-                AsyncImage(
-                    model = File(item.filePath),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    alignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .size(width = ThumbWidth, height = ThumbHeight)
-                        .clip(FloconTheme.shapes.small),
+            Text(
+                text = item.time,
+                style = monoStyle(),
+                color = colors.accent,
+                maxLines = 1,
+                modifier = Modifier.width(FloconTheme.sizes.timeColumn),
+            )
+            DashedLine(modifier = Modifier.weight(1f))
+            Text(
+                text = label.uppercase(),
+                style = FloconTheme.typography.labelSmall,
+                color = colors.inkMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            DashedLine(modifier = Modifier.width(TailWidth))
+        }
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(spacing.small),
+        ) {
+            // the time column and the free space where the bar of the covered events goes, like in the other rows
+            Spacer(Modifier.width(FloconTheme.sizes.timeColumn))
+            Spacer(Modifier.width(railGutter()))
+            PhoneFrame(item = item, hovered = hovered, modifier = Modifier.padding(start = spacing.medium))
+            if (until != null) {
+                Text(
+                    text = stringResource(Res.string.timeline_screenshot_until, until),
+                    style = FloconTheme.typography.labelMedium,
+                    color = colors.accent,
+                    maxLines = 1,
+                    modifier = Modifier.padding(start = spacing.small, bottom = spacing.tiny),
                 )
             }
-            Text(
-                text = stringResource(Res.string.timeline_screenshot_label),
-                style = FloconTheme.typography.bodyMedium,
-                color = colors.ink,
-                maxLines = 1,
-            )
         }
     }
 
@@ -115,7 +134,10 @@ internal fun ScreenshotMarkerRow(
         // the screenshot larger, like the thumbnails of the graph, on the right of the thumbnail
         val density = LocalDensity.current
         val thumbnailEnd = with(density) {
-            (FloconTheme.spacing.compact + FloconTheme.spacing.medium * 2 + FloconTheme.sizes.timeColumn + FloconTheme.sizes.categoryColumn + railGutter() + FloconTheme.spacing.small * 3).roundToPx()
+            (
+                FloconTheme.spacing.compact + FloconTheme.sizes.timeColumn + railGutter() + FloconTheme.spacing.small * 2 +
+                    FloconTheme.spacing.medium * 2 + PhoneWidth
+                ).roundToPx()
         }
         Popup(popupPositionProvider = remember(thumbnailEnd) { SideOfRowPositionProvider(thumbnailEnd) }) {
             ScreenshotPopover(
@@ -124,6 +146,52 @@ internal fun ScreenshotMarkerRow(
             )
         }
     }
+}
+
+// the screenshot like on a phone: a dark bezel, and a shadow to lift it from the list
+@Composable
+private fun PhoneFrame(
+    item: TimelineItemUiModel.Screenshot,
+    hovered: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val shape = FloconTheme.shapes.large
+    // a file that is gone (cap, temporary folder cleaned) loads nothing: the frame stays empty
+    Box(
+        modifier = modifier
+            .size(width = PhoneWidth, height = PhoneHeight)
+            .shadow(elevation = 8.dp, shape = shape)
+            .clip(shape)
+            .border(PhoneBezel, colors.bg300, shape)
+            .border(1.dp, if (hovered) colors.accent else colors.line, shape),
+    ) {
+        AsyncImage(
+            model = File(item.filePath),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(width = PhoneWidth, height = PhoneHeight).padding(PhoneBezel).clip(shape),
+        )
+    }
+}
+
+@Composable
+private fun DashedLine(modifier: Modifier = Modifier) {
+    val color = FloconTheme.colors.line
+    val dash = DashLength.value
+    Box(
+        modifier = modifier
+            .height(1.dp)
+            .drawBehind {
+                drawLine(
+                    color = color,
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = 1.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash.dp.toPx(), dash.dp.toPx())),
+                )
+            },
+    )
 }
 
 /** Next to the row, [startOffset] pixels after its start, centered on it and kept inside the window. */
@@ -146,6 +214,8 @@ private fun ScreenshotMarkerRowPreview() {
     FloconTheme {
         ScreenshotMarkerRow(
             item = TimelineItemUiModel.Screenshot(timestamp = 0L, day = "20/10/2026", filePath = "/missing.jpg", key = "screenshot:0", time = "12:00:30"),
+            screenName = "FeedScreen",
+            until = "12:00:44",
             onHoverChange = {},
         )
     }

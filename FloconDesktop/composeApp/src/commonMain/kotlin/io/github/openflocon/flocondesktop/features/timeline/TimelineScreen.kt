@@ -78,6 +78,7 @@ import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallI
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkedRowIndices
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotScreenName
 import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotSpanIndices
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
@@ -406,6 +407,11 @@ internal fun TimelineContent(
 
                             is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(
                                 item = item,
+                                screenName = remember(index, rows.itemCount) { screenshotScreenName(index, rows.itemCount) { rows.peek(it) } },
+                                until = remember(index, rows.itemCount) {
+                                    screenshotSpanIndices(index) { rows.peek(it) }.getOrNull(1)
+                                        ?.let { (rows.peek(it) as? TimelineItemUiModel.Row)?.row?.time?.substringBefore('.') }
+                                },
                                 onHoverChange = { hovered ->
                                     if (hovered) {
                                         hoveredScreenshotKey = item.key

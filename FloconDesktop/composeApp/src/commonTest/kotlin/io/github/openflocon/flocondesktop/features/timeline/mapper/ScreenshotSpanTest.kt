@@ -50,4 +50,30 @@ class ScreenshotSpanTest {
         assertEquals(listOf(3, 0), screenshotSpanIndices(3, items::getOrNull))
         assertEquals(listOf(1), screenshotSpanIndices(1, listOf<TimelineItemUiModel?>(null, shot(10))::getOrNull))
     }
+
+    private fun navigation(id: Int, title: String) = TimelineItemUiModel.Row(
+        TimelineRowUiModel(
+            id = "$id",
+            source = TimelineSource.Log,
+            day = "20/10/2026",
+            time = "12:00:00.000",
+            timestamp = id.toLong(),
+            title = title,
+            subtitle = "navigation",
+        ),
+    )
+
+    @Test
+    fun `the screen is the last navigation before the screenshot`() {
+        // newest first: [shot, 3, nav Detail, 2, nav Feed, 1]
+        val items = listOf(shot(30), row(3), navigation(20, "Detail"), row(2), navigation(10, "Feed"), row(1))
+        assertEquals("Detail", screenshotScreenName(0, items.size, items::getOrNull))
+        assertEquals("Feed", screenshotScreenName(3, items.size, items::getOrNull))
+    }
+
+    @Test
+    fun `no screen without a navigation below the screenshot`() {
+        val items = listOf(navigation(20, "Detail"), shot(10), row(1))
+        assertEquals(null, screenshotScreenName(1, items.size, items::getOrNull))
+    }
 }

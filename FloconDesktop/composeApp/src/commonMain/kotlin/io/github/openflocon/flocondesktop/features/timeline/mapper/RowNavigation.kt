@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 
@@ -96,4 +97,24 @@ internal fun screenshotSpanIndices(
         index--
     }
     return listOfNotNull(shotIndex, end)
+}
+
+private const val NavigationLookBack = 300
+
+/**
+ * The name of the screen of a screenshot: the title of the last navigation event before it, so the first one below it as
+ * the list goes from the newest. Null when there is none in the items already loaded, [NavigationLookBack] at most.
+ */
+internal fun screenshotScreenName(
+    shotIndex: Int,
+    count: Int,
+    itemAt: (Int) -> TimelineItemUiModel?,
+): String? {
+    for (index in shotIndex + 1..minOf(shotIndex + NavigationLookBack, count - 1)) {
+        val row = (itemAt(index) as? TimelineItemUiModel.Row)?.row ?: continue
+        if (row.source == TimelineSource.Log && row.subtitle.equals(TIMELINE_LOG_TYPE_NAVIGATION, ignoreCase = true) && row.title.isNotBlank()) {
+            return row.title
+        }
+    }
+    return null
 }
