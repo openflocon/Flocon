@@ -22,6 +22,7 @@ Route each task by its nature:
 | Branch, commit, PR | `git-setup` / `create-pull-request` skills (run in `git-ops`) | haiku |
 | Needs thinking (design, unclear bug, trade-off) | `planner`, then `architect` for new plugins / protocol / layering changes | opus |
 | Everything else (write Kotlin, tests, fix the cause of a CI failure, review) | main session, `implementer` or `reviewer` | sonnet |
+| See Flocon Desktop with data and no phone (doc screenshots, UI states, MCP tests, edge cases) | `flocon-mock-mode` skill (`--mock=<scenario>`) | any |
 
 Typical flow: `Explore` locates → `planner` decides (only if the approach isn't obvious) → `implementer` / main session codes → `test-runner` verifies → `docs-sync` updates the docs → `reviewer` checks the finished diff → `create-pull-request` opens the PR.
 The main session uses `opusplan` (`.claude/settings.json`): Opus in plan mode, Sonnet otherwise. The `dev-workflow` skill and the agent descriptions route tasks automatically, no need to name them.
