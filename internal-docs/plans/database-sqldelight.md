@@ -1,6 +1,6 @@
 # Plan: SQLDelight support for the Flocon database plugin
 
-Status: proposal, no code. Coordinates with `plans/database-profiler.md` (separate branch/PR) for the profiler fields.
+Status: proposal, no code. Coordinates with `internal-docs/plans/database-profiler.md` (separate branch/PR) for the profiler fields.
 
 ## 1. Goal
 
@@ -9,7 +9,7 @@ exactly like Room 2 (`flocon-database-room`) and Room 3 (`flocon-database-room3`
 modules, `flocon-database-sqldelight` and `flocon-database-sqldelight-no-op`, following the same layout, publishing and
 no-op rules as the Room modules.
 
-Non-goals: designing the database profiler (see `plans/database-profiler.md`), changing the desktop database screen,
+Non-goals: designing the database profiler (see `internal-docs/plans/database-profiler.md`), changing the desktop database screen,
 supporting non-SQLite SQLDelight dialects (Postgres/MySQL via R2DBC are out of scope, see open questions).
 
 ## 2. What exists today (studied)
@@ -150,7 +150,7 @@ The desktop lists tables by running SQL itself (`sqlite_master`, `PRAGMA table_i
 - Logging must never break a query: `try/catch` around every logger call, like Room 3.
 - `logQueries = false` registers the database for browsing only.
 
-### 3.6 Profiler fields (coordination with `plans/database-profiler.md`)
+### 3.6 Profiler fields (coordination with `internal-docs/plans/database-profiler.md`)
 
 That plan owns the protocol and desktop design of the optional `durationMs`, `threadName`, `isMainThread`, `rowCount`,
 `transactionId` on `log_query`. This module only makes them **measurable in the wrapper** and passes them through the plugin
@@ -173,7 +173,7 @@ transactionId)` and calls `logger.log(event)`. Until the profiler plan lands, th
 
 **No protocol change.** `get_databases`, `query` and `log_query` are reused as is: both `Protocol.kt` files and
 `protocol/database.md` stay untouched. The only additive, backward-compatible additions (optional, default null) are the
-profiler fields on `log_query`, owned by `plans/database-profiler.md`. Optional idea, not required: a provider label
+profiler fields on `log_query`, owned by `internal-docs/plans/database-profiler.md`. Optional idea, not required: a provider label
 (e.g. `"sqldelight"`) on `Database` in `get_databases`, only if the desktop wants a badge.
 
 ## 5. Desktop
@@ -268,5 +268,5 @@ Docs (same PR as the code, `docs2/` only, never `docs/`):
 
 1. **Core spike + skeleton**: catalog entries, both modules compiling, model + `register` + `executeQuery`, tests, no logging. Resolves risk 1.
 2. **Logging**: `FloconLoggingSqlDriver`, `withFlocon`/`floconLogs`, async handling, tests. Logs sql + args as today.
-3. **Profiler fields**: `durationMs`, `threadName`, `isMainThread`, `rowCount`, `transactionId`, after `plans/database-profiler.md` lands its protocol/SDK changes.
+3. **Profiler fields**: `durationMs`, `threadName`, `isMainThread`, `rowCount`, `transactionId`, after `internal-docs/plans/database-profiler.md` lands its protocol/SDK changes.
 4. **Samples + docs + skill**: all samples, `docs2`, README, setup skill (can be folded into PR 2 if small).
