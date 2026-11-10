@@ -29,6 +29,8 @@ jobs:
             platform: macos-arm64
           - os: ubuntu-latest
             platform: linux-x64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
           - os: windows-latest
             platform: windows-x64
 
@@ -46,7 +48,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Install rpmbuild (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y rpm
 
       - name: Build with Gradle
@@ -65,10 +67,10 @@ jobs:
           elif [ "${{ matrix.platform }}" = "macos-x64" ]; then
             mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg dist/Flocon-macos-x64.dmg
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-macos-x64.jar
-          elif [ "${{ matrix.platform }}" = "linux-x64" ]; then
-            mv FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb dist/
-            mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/
-            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-linux-x64.jar
+          elif [ "${{ matrix.platform }}" = "linux-x64" ] || [ "${{ matrix.platform }}" = "linux-arm64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb dist/Flocon-${{ matrix.platform }}.deb
+            mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/Flocon-${{ matrix.platform }}.rpm
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-${{ matrix.platform }}.jar
           elif [ "${{ matrix.platform }}" = "windows-x64" ]; then
             mv FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi dist/
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-windows-x64.jar
