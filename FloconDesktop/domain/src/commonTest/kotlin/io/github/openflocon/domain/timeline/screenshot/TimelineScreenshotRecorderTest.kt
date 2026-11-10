@@ -38,6 +38,7 @@ class TimelineScreenshotRecorderTest {
         override suspend fun setPinPanel(pinPanel: Boolean) = Unit
         override suspend fun setGraph(graph: Boolean) = Unit
         override suspend fun setMergePlugins(mergePlugins: Boolean) = Unit
+        override suspend fun setClusterEvents(clusterEvents: Boolean) = Unit
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) = Unit
         override suspend fun setScreenshots(screenshots: Boolean) {
             state.value = state.value.copy(screenshots = screenshots)

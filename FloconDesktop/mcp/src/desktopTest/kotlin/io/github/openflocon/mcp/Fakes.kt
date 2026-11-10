@@ -249,6 +249,7 @@ internal class FakeTimelinePreferencesRepository : TimelinePreferencesRepository
     }
 
     override suspend fun setMergePlugins(mergePlugins: Boolean) = error("not used")
+    override suspend fun setClusterEvents(clusterEvents: Boolean) = error("not used")
     override suspend fun setAutoScroll(autoScroll: Boolean) = error("not used")
     override suspend fun setInvertList(invertList: Boolean) = error("not used")
     override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")

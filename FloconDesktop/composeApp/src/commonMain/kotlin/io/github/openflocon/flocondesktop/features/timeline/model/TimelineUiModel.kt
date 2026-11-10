@@ -140,6 +140,7 @@ internal data class TimelineSettingsUiModel(
     val pinPanel: Boolean,
     val graph: Boolean = true,
     val mergePlugins: Boolean = false, // one graph for every type instead of one lane per type
+    val clusterEvents: Boolean = true, // the events closer than a few px of the graph are one marker
     val screenshots: Boolean = false,
     val screenshotIntervalSeconds: Int = 5,
     val transactionsExpandedByDefault: Boolean = true, // a setting of the database transactions, shared with their logs screen
@@ -151,6 +152,7 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     pinPanel = false,
     graph = false,
     mergePlugins = false,
+    clusterEvents = true,
     screenshots = false,
     screenshotIntervalSeconds = 5,
 )
@@ -168,6 +170,7 @@ internal sealed interface TimelineAction {
     data class TransactionsExpandedByDefault(val value: Boolean) : TimelineAction
     data class SetGraph(val value: Boolean) : TimelineAction
     data class SetMergePlugins(val value: Boolean) : TimelineAction
+    data class SetClusterEvents(val value: Boolean) : TimelineAction
     data class SetScreenshots(val value: Boolean) : TimelineAction
     data class SetScreenshotInterval(val seconds: Int) : TimelineAction
 

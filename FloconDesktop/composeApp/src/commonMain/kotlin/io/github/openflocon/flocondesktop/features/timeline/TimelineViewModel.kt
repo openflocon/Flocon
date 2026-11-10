@@ -26,6 +26,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCa
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineClusterEventsUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineMergePluginsUseCase
@@ -91,6 +92,7 @@ internal class TimelineViewModel(
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
     private val setTimelineMergePluginsUseCase: SetTimelineMergePluginsUseCase,
+    private val setTimelineClusterEventsUseCase: SetTimelineClusterEventsUseCase,
     private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
     private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
@@ -122,6 +124,7 @@ internal class TimelineViewModel(
             pinPanel = timelineSettings.pinPanel,
             graph = timelineSettings.graph,
             mergePlugins = timelineSettings.mergePlugins,
+            clusterEvents = timelineSettings.clusterEvents,
             screenshots = timelineSettings.screenshots,
             screenshotIntervalSeconds = timelineSettings.screenshotIntervalSeconds,
             transactionsExpandedByDefault = transactionsExpandedByDefault,
@@ -313,6 +316,8 @@ internal class TimelineViewModel(
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
 
             is TimelineAction.SetMergePlugins -> viewModelScope.launch { setTimelineMergePluginsUseCase(action.value) }
+
+            is TimelineAction.SetClusterEvents -> viewModelScope.launch { setTimelineClusterEventsUseCase(action.value) }
 
             is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
 

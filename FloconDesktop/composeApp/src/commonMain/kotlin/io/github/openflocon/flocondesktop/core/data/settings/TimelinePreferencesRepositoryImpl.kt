@@ -35,6 +35,10 @@ internal class TimelinePreferencesRepositoryImpl(
         localSettingsDataSource.updateTimelineSettings { it.copy(mergePlugins = mergePlugins) }
     }
 
+    override suspend fun setClusterEvents(clusterEvents: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(clusterEvents = clusterEvents) }
+    }
+
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
         localSettingsDataSource.updateTimelineSettings { current ->
             current.copy(

@@ -17,6 +17,8 @@ interface TimelinePreferencesRepository {
 
     suspend fun setMergePlugins(mergePlugins: Boolean)
 
+    suspend fun setClusterEvents(clusterEvents: Boolean)
+
     suspend fun setSelectedSources(sources: Set<TimelineSource>)
 
     suspend fun setScreenshots(screenshots: Boolean)

@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.ui.Modifier
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.invert_list
 import flocondesktop.composeapp.generated.resources.network_pin_panel
+import flocondesktop.composeapp.generated.resources.timeline_cluster_events
 import flocondesktop.composeapp.generated.resources.timeline_transactions_expanded
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
@@ -44,5 +46,14 @@ internal fun TimelineOverflowMenu(
             leadingIcon = Icons.Sharp.PushPin,
             onCheckedChange = { checked -> onAction(TimelineAction.PinPanel(checked)) }
         )
+        // the grouping of close events means nothing to the list
+        if (settings.graph) {
+            FloconDropdownMenuItem(
+                checked = settings.clusterEvents,
+                text = stringResource(Res.string.timeline_cluster_events),
+                leadingIcon = Icons.Outlined.BubbleChart,
+                onCheckedChange = { checked -> onAction(TimelineAction.SetClusterEvents(checked)) }
+            )
+        }
     }
 }

@@ -27,6 +27,44 @@ internal fun packLane(lane: GraphLane?, events: List<GraphEventUiModel>): GraphL
     return GraphLaneUiModel(lane = lane, rows = rows)
 }
 
+/**
+ * Same as above, with groups of events: a group takes one slot of a row, as wide as its marker at [pxPerMs] (see clusterWidthPx).
+ * The rows and the clusters of the lane are in parallel: the same index is the same row.
+ */
+internal fun packLane(
+    lane: GraphLane?,
+    events: List<GraphEventUiModel>,
+    clusters: List<GraphClusterUiModel>,
+    pxPerMs: Double,
+): GraphLaneUiModel {
+    // what is placed: where it starts (the marker of a group starts before its first event) and where its room ends
+    class Item(val startMs: Long, val key: String, val fromMs: Double, val toMs: Double, val event: GraphEventUiModel?, val cluster: GraphClusterUiModel?)
+
+    val items = events.map {
+        val occupied = if (it.durationMs > 0L) it.durationMs else INSTANT_OCCUPANCY_MS
+        Item(it.startMs, it.key, it.startMs.toDouble(), (it.startMs + occupied + GAP_MS).toDouble(), it, null)
+    } + clusters.map {
+        val fromMs = it.startMs - DiamondSizePx / 2.0 / pxPerMs
+        Item(it.startMs, it.key, fromMs, fromMs + (clusterWidthPx(it, pxPerMs) + ClusterGapPx) / pxPerMs, null, it)
+    }
+    val rowEnds = ArrayList<Double>()
+    val rows = ArrayList<MutableList<GraphEventUiModel>>()
+    val clusterRows = ArrayList<MutableList<GraphClusterUiModel>>()
+    for (item in items.sortedWith(compareBy({ it.startMs }, { it.key }))) {
+        var row = rowEnds.indexOfFirst { it <= item.fromMs }
+        if (row < 0) {
+            row = rowEnds.size
+            rowEnds.add(0.0)
+            rows.add(mutableListOf())
+            clusterRows.add(mutableListOf())
+        }
+        rowEnds[row] = item.toMs
+        item.event?.let { rows[row].add(it) }
+        item.cluster?.let { clusterRows[row].add(it) }
+    }
+    return GraphLaneUiModel(lane = lane, rows = rows, clusters = clusterRows)
+}
+
 // the lanes in their order, the ones without event are hidden
 internal fun packLanes(events: List<GraphEventUiModel>): List<GraphLaneUiModel> {
     val byLane = events.groupBy { it.lane }

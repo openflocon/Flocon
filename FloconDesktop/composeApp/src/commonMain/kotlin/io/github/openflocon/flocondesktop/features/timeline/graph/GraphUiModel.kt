@@ -73,6 +73,8 @@ internal data class GraphFocusUiModel(
 internal data class GraphLaneUiModel(
     val lane: GraphLane?,
     val rows: List<List<GraphEventUiModel>>,
+    // the groups of close events (see GraphClustering), one list per row like [rows]: empty when the events are not grouped
+    val clusters: List<List<GraphClusterUiModel>> = emptyList(),
 )
 
 @Immutable

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
@@ -79,6 +81,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.timeline_cluster_events_count
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
 import flocondesktop.composeapp.generated.resources.timeline_graph_empty
 import flocondesktop.composeapp.generated.resources.timeline_graph_fit
@@ -146,6 +149,15 @@ private const val CursorPillPaddingYPx = 2f
 private const val CursorLineWidthPx = 3f
 private const val CursorGuideAlpha = 0.8f
 private const val PopoverWidthPx = 214f
+private const val ClusterSeparatorPx = 1f
+private const val ClusterErrorDotPx = 4f
+private const val ClusterPillPaddingPx = 3f
+
+// the popover of a group: its size is about, to keep it in the graph
+private const val ClusterPopoverHeightPx = 220f
+
+// the zone shown by the zoom of a group: at least this, so a group on one instant is not zoomed to the maximum
+private const val ClusterZoomMinWidthMs = 50L
 
 /** The previous and next session of the graph: [position] starts at 1. */
 internal data class GraphSessionUiModel(val position: Int, val total: Int) {
@@ -180,6 +192,8 @@ internal fun TimelineGraph(
     // a zone asked from outside (the MCP): shown once, then the graph is free again
     focus: GraphFocusUiModel? = null,
     onFocusApplied: () -> Unit = {},
+    // the events closer than a few px are one marker, which a click opens
+    clusterEvents: Boolean = true,
 ) {
     val colors = FloconTheme.colors
     val density = LocalDensity.current.density
@@ -189,13 +203,27 @@ internal fun TimelineGraph(
     val heightPx = canvasSize.height / density
     val trackWidth = trackWidthOf(widthPx)
     val trackHeight = max(heightPx - AxisHeightPx, 0f)
-    val contentHeight = model.contentHeightPx()
 
     // fitted: the whole session is shown and follows the new events, until the user zooms or moves. Opens at 100 %
     var fitted by remember { mutableStateOf(false) }
     var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
+    // the markers are computed again only past a 15 % zoom step, so a wheel zoom does not group the events at every tick
+    val zoomBucket = bucketOf(viewport.pxPerMs)
+    val displayModel = remember(model, clusterEvents, zoomBucket) {
+        if (clusterEvents) model.clustered(bucketPxPerMs(zoomBucket)) else model
+    }
+    val contentHeight = displayModel.contentHeightPx()
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
+    // the group under the pointer, and the one whose popover is open: by key, the groups change with the zoom
+    var hoveredClusterKey by remember { mutableStateOf<String?>(null) }
+    var selectedClusterKey by remember { mutableStateOf<String?>(null) }
+    val hoveredCluster = remember(displayModel, hoveredClusterKey) { displayModel.clusterByKey(hoveredClusterKey) }
+    val selectedCluster = remember(displayModel, selectedClusterKey) { displayModel.clusterByKey(selectedClusterKey) }
+    // the group is gone (zoomed in, new events): its popover goes with it
+    LaunchedEffect(selectedClusterKey, selectedCluster == null) {
+        if (selectedClusterKey != null && selectedCluster == null) selectedClusterKey = null
+    }
     // the screenshot of the strip under the pointer, shown larger
     var hoveredScreenshot by remember { mutableStateOf<GraphScreenshotUiModel?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
@@ -220,6 +248,7 @@ internal fun TimelineGraph(
     val latestMs = remember(model) { model.latestMs() }
     // read by the pointer handlers, which are not restarted for a screenshot: they must see the latest graph
     val currentModel by rememberUpdatedState(model)
+    val currentDisplayModel by rememberUpdatedState(displayModel)
     val currentFollowsLatest by rememberUpdatedState(followsLatest)
     // the auto scroll follows the present moment, frame by frame, and not only the events: the right of the graph is now.
     // The user turns it off by moving back in time or by selecting an event, and on with its switch or by reaching the
@@ -253,9 +282,12 @@ internal fun TimelineGraph(
         // not fitted nor following: the zone stays where it was put until the user turns the auto scroll on again
         fitted = false
         stopAutoScroll()
-        val rowTop = focusedEvent?.let { model.rowTopOf(it) }
-        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(contentHeight - trackHeight, 0f)) } ?: 0f
-        viewport = focusedViewport(focus.fromMs, focus.toMs, trackWidth).copy(scrollY = scrollY)
+        val focused = focusedViewport(focus.fromMs, focus.toMs, trackWidth)
+        // the rows are those of the new zoom: the groups change with it
+        val focusedModel = if (clusterEvents) model.clustered(bucketPxPerMs(bucketOf(focused.pxPerMs))) else model
+        val rowTop = focusedEvent?.let { focusedModel.rowTopOf(it) }
+        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
+        viewport = focused.copy(scrollY = scrollY)
         onFocusApplied()
     }
     val maxScroll = max(contentHeight - trackHeight, 0f)
@@ -316,7 +348,7 @@ internal fun TimelineGraph(
             },
             onLatest = {
                 fitted = false
-                viewport = currentViewport.jumpedToLatest(model, trackWidth, trackHeight)
+                viewport = currentViewport.jumpedToLatest(displayModel, trackWidth, trackHeight)
             },
         )
 
@@ -375,9 +407,9 @@ internal fun TimelineGraph(
                 modifier = Modifier
                     .fillMaxSize()
                     .semantics { contentDescription = description }
-                    .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
+                    .pointerHoverIcon(if (hovered != null || hoveredCluster != null) PointerIcon.Hand else PointerIcon.Default)
                     .onSizeChanged { canvasSize = it }
-                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
+                    .pointerInput(density, trackWidth, maxScroll) {
                         awaitPointerEventScope {
                             while (true) {
                                 val event = awaitPointerEvent()
@@ -391,8 +423,10 @@ internal fun TimelineGraph(
 
                                     PointerEventType.Move, PointerEventType.Enter -> {
                                         cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
-                                        hovered = if (x >= 0f && y >= 0f) {
-                                            model.hitTest(viewport, x, y + viewport.scrollY)
+                                        val cluster = if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
+                                        hoveredClusterKey = cluster?.key
+                                        hovered = if (cluster == null && x >= 0f && y >= 0f) {
+                                            currentDisplayModel.hitTest(viewport, x, y + viewport.scrollY)
                                         } else {
                                             null
                                         }
@@ -400,25 +434,31 @@ internal fun TimelineGraph(
 
                                     PointerEventType.Exit -> {
                                         hovered = null
+                                        hoveredClusterKey = null
                                         cursorMs = null
                                     }
                                 }
                             }
                         }
                     }
-                    .pointerInput(model.lanes, density, maxScroll) {
+                    .pointerInput(density, maxScroll) {
                         detectTapGestures { offset ->
                             val x = offset.x / density - LaneLabelWidthPx
                             val y = offset.y / density - AxisHeightPx
-                            if (x >= 0f && y >= 0f) {
-                                model.hitTest(viewport, x, y + viewport.scrollY)?.let {
+                            // a group opens its popover, a click anywhere else closes it
+                            val cluster = if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
+                            selectedClusterKey = cluster?.key
+                            if (cluster != null) {
+                                stopAutoScroll()
+                            } else if (x >= 0f && y >= 0f) {
+                                currentDisplayModel.hitTest(viewport, x, y + viewport.scrollY)?.let {
                                     stopAutoScroll()
                                     onSelect(it.row)
                                 }
                             }
                         }
                     }
-                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
+                    .pointerInput(density, trackWidth, maxScroll) {
                         detectDragGestures(
                             onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
                             onDragEnd = {
@@ -444,12 +484,14 @@ internal fun TimelineGraph(
             ) {
                 scale(density, density, pivot = Offset.Zero) {
                     drawGraph(
-                        model = model,
+                        model = displayModel,
                         viewport = currentViewport,
                         width = widthPx,
                         height = heightPx,
                         selectedKey = selectedKey,
                         hoveredKey = hovered?.key,
+                        selectedClusterKey = selectedClusterKey,
+                        hoveredClusterKey = hoveredClusterKey,
                         cursorMs = cursorMs,
                         palette = palette,
                         laneColors = laneColors,
@@ -467,6 +509,33 @@ internal fun TimelineGraph(
                         drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
                     }
                 }
+            }
+
+            // the popover of the group clicked, under its marker (above it when there is no room below)
+            selectedCluster?.let { cluster ->
+                val rowTop = displayModel.rowTopOf(cluster.events.first()) ?: return@let
+                val left = LaneLabelWidthPx + currentViewport.clusterLeftPx(cluster)
+                val below = AxisHeightPx + rowTop - currentViewport.scrollY + RowHeightPx
+                GraphClusterPopover(
+                    cluster = cluster,
+                    laneColors = laneColors,
+                    laneLabels = laneLabels,
+                    onZoom = {
+                        fitted = false
+                        stopAutoScroll()
+                        viewport = focusedViewport(cluster.startMs, cluster.endMs, trackWidth, minWidthMs = ClusterZoomMinWidthMs).copy(scrollY = viewport.scrollY)
+                        selectedClusterKey = null
+                    },
+                    onSelectEvent = {
+                        selectedClusterKey = null
+                        stopAutoScroll()
+                        onSelect(it.row)
+                    },
+                    modifier = Modifier.offset(
+                        x = left.coerceIn(0f, max(widthPx - ClusterPopoverWidthPx, 0f)).dp,
+                        y = (if (below + ClusterPopoverHeightPx <= heightPx) below else AxisHeightPx + rowTop - currentViewport.scrollY - ClusterPopoverHeightPx).coerceAtLeast(0f).dp,
+                    ),
+                )
             }
 
             // the hovered thumbnail, larger, under its place in the strip. A screenshot that left the strip (cap, new session) is not shown
@@ -505,7 +574,10 @@ internal fun TimelineGraph(
                 color = colors.inkMuted,
             )
         }
-        GraphLegend(hovered = hovered)
+        val clusterHoverText = hoveredCluster?.let {
+            "${stringResource(Res.string.timeline_cluster_events_count, it.size)} - ${formatGraphStart(it.startMs)} - ${formatGraphStart(it.endMs)}"
+        }
+        GraphLegend(hovered = hovered, hoveredText = clusterHoverText)
     }
 }
 
@@ -627,6 +699,8 @@ private fun GraphZoomField(
 private fun GraphLegend(
     hovered: GraphEventUiModel?,
     modifier: Modifier = Modifier,
+    // what a hovered group says, when no event is hovered
+    hoveredText: String? = null,
 ) {
     val colors = FloconTheme.colors
     Row(
@@ -637,10 +711,10 @@ private fun GraphLegend(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
-        if (hovered != null) {
+        if (hovered != null || hoveredText != null) {
             // what is under the pointer, the bars can be too narrow to hold their text
             Text(
-                text = hovered.tooltip(),
+                text = hovered?.tooltip() ?: hoveredText.orEmpty(),
                 style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
                 color = colors.ink,
                 maxLines = 1,
@@ -680,6 +754,8 @@ private fun DrawScope.drawGraph(
     height: Float,
     selectedKey: String?,
     hoveredKey: String?,
+    selectedClusterKey: String?,
+    hoveredClusterKey: String?,
     cursorMs: Long?,
     palette: GraphPalette,
     laneColors: Map<GraphLane, Color>,
@@ -745,6 +821,14 @@ private fun DrawScope.drawGraph(
                         }
                     }
                     i++
+                }
+                // the groups of the row, over the events: one slot of the row each
+                lane.clusters.getOrNull(rowIndex)?.forEach { cluster ->
+                    val left = LaneLabelWidthPx + viewport.clusterLeftPx(cluster)
+                    val clusterWidth = clusterWidthPx(cluster, viewport.pxPerMs)
+                    if (left + clusterWidth < LaneLabelWidthPx || left > width) return@forEach
+                    val selected = cluster.key == selectedClusterKey || cluster.key == hoveredClusterKey || cluster.events.any { it.key == selectedKey }
+                    drawCluster(cluster, left, clusterWidth, rowTop, selected, palette, laneColors, measurer, chipStyle, unit)
                 }
             }
             if (laneIndex < model.lanes.lastIndex) {
@@ -848,6 +932,46 @@ private fun DrawScope.drawGraph(
             }
         }
     }
+}
+
+// a rounded capsule cut in one segment per source, with the number of events on top
+private fun DrawScope.drawCluster(
+    cluster: GraphClusterUiModel,
+    left: Float,
+    widthPx: Float,
+    rowTop: Float,
+    selected: Boolean,
+    palette: GraphPalette,
+    laneColors: Map<GraphLane, Color>,
+    measurer: TextMeasurer,
+    chipStyle: TextStyle,
+    unit: Density,
+) {
+    val top = rowTop + BarTopPx
+    val radius = CornerRadius(BarHeightPx / 2f)
+    val capsule = Path().apply { addRoundRect(RoundRect(left, top, left + widthPx, top + BarHeightPx, radius)) }
+    clipPath(capsule) {
+        var x = left
+        clusterSegments(cluster, widthPx).forEachIndexed { index, segment ->
+            drawRect(laneColors.getValue(segment.lane), Offset(x, top), Size(segment.widthPx, BarHeightPx))
+            // a thin line tells two sources apart even when their colors are close
+            if (index > 0) drawLine(palette.panel, Offset(x, top), Offset(x, top + BarHeightPx), strokeWidth = ClusterSeparatorPx)
+            x += segment.widthPx
+        }
+    }
+    if (cluster.errorCount > 0) {
+        drawCircle(palette.error, ClusterErrorDotPx, Offset(left + widthPx - ClusterErrorDotPx, top + ClusterErrorDotPx))
+    }
+    if (selected) {
+        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarHeightPx / 2f + 1f), style = Stroke(2f))
+    }
+    // the total, on a small pill: readable whatever the colors under it
+    val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = palette.ink), density = unit, maxLines = 1)
+    val pillWidth = count.size.width + 2 * ClusterPillPaddingPx
+    val centerX = left + widthPx / 2f
+    val centerY = top + BarHeightPx / 2f
+    drawRoundRect(palette.chip, Offset(centerX - pillWidth / 2f, centerY - ChipHeightPx / 2f), Size(pillWidth, ChipHeightPx), CornerRadius(ChipHeightPx / 2f))
+    drawText(count, topLeft = Offset(centerX - count.size.width / 2f, centerY - count.size.height / 2f))
 }
 
 private fun DrawScope.drawBar(
