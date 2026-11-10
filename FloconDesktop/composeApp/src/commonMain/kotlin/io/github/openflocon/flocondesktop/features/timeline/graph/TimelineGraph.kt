@@ -773,8 +773,10 @@ private fun DrawScope.drawGraph(
     }
 
     // the time under the pointer: a line through the lanes, and the exact time of day on the axis
+    // the graph can move under a still pointer: the cursor is then out of the track, and not drawn
     cursorMs?.let { ms ->
         val x = LaneLabelWidthPx + viewport.xOf(ms)
+        if (x < LaneLabelWidthPx || x > width) return@let
         drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
         val pill = measurer.measure(
             formatTimestamp(model.sessionStartTimestamp + ms),
@@ -785,7 +787,7 @@ private fun DrawScope.drawGraph(
         val pillWidth = pill.size.width + 2 * CursorPillPaddingXPx
         val pillHeight = pill.size.height + 2 * CursorPillPaddingYPx
         // on the left of the line when there is no room on its right
-        val pillLeft = if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth
+        val pillLeft = (if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth).coerceAtLeast(LaneLabelWidthPx)
         val pillTop = (AxisHeightPx - pillHeight) / 2f
         drawRoundRect(palette.cursor, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
         drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = CursorLineWidthPx)
