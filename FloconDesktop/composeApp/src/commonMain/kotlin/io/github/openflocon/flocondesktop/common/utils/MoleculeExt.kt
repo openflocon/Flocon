@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
  * snapshot locks: it deadlocked with a background thread sending the notifications at the same time
  * (the app froze when scrolling the network list). Dispatchers.Main posts it after the write instead.
  */
-fun <T> CoroutineScope.launchUiMolecule(body: @Composable () -> T): StateFlow<T> = launchMolecule(
+fun <T> CoroutineScope.launchMainMolecule(body: @Composable () -> T): StateFlow<T> = launchMolecule(
     mode = RecompositionMode.Immediate,
     context = Dispatchers.Main,
     body = body,

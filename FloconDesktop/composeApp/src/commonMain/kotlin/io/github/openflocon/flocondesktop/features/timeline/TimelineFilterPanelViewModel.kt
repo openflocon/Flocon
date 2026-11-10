@@ -13,7 +13,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.parseTimelineStatusRules
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
-import io.github.openflocon.flocondesktop.common.utils.launchUiMolecule
+import io.github.openflocon.flocondesktop.common.utils.launchMainMolecule
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
@@ -67,7 +67,7 @@ internal class TimelineFilterPanelViewModel(
     private val logTagInput = TimelineLogTagInput()
     val logTagText: State<String> get() = logTagInput.text
 
-    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchUiMolecule {
+    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMainMolecule {
         val summary by summary.collectAsState()
 
         // read from the settings: the panel is never empty, the switches settle once the stored selection is known

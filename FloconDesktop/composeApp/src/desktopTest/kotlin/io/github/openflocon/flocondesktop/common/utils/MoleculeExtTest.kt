@@ -21,7 +21,7 @@ class MoleculeExtTest {
         withContext(Dispatchers.Main) {
             val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
             val state = mutableStateOf(0)
-            viewModelScope.launchUiMolecule { state.value }
+            viewModelScope.launchMainMolecule { state.value }
 
             var writing = false
             var notifiedDuringWrite = false
