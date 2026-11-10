@@ -136,6 +136,7 @@ private const val LongTickPx = 8f
 private const val CursorPillPaddingXPx = 6f
 private const val CursorPillPaddingYPx = 2f
 private const val CursorLineWidthPx = 3f
+private const val CursorGuideAlpha = 0.8f
 private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
@@ -759,7 +760,7 @@ private fun DrawScope.drawGraph(
     // the time under the pointer: a line through the lanes, and the exact time of day on the axis
     cursorMs?.let { ms ->
         val x = LaneLabelWidthPx + viewport.xOf(ms)
-        drawLine(palette.cursor, Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
+        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
         val pill = measurer.measure(
             formatTimestamp(model.sessionStartTimestamp + ms),
             TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = readableInkOn(palette.cursor)),
