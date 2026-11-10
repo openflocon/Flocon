@@ -66,7 +66,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [gRPC](https://openflocon.github.io/Flocon/grpc)
     - [WebSockets](https://openflocon.github.io/Flocon/websocket)
 - 💾 **[Local Storage](https://openflocon.github.io/Flocon/database)**
-    - [Database Explorer (Room & SQLite)](https://openflocon.github.io/Flocon/database)
+    - [Database Explorer (Room, SQLDelight & SQLite)](https://openflocon.github.io/Flocon/database)
     - [Shared Preferences (Android)](https://openflocon.github.io/Flocon/sharedpref)
 - 🛠️ **[Advanced Debugging](https://openflocon.github.io/Flocon/dashboard)**
     - [Custom Dashboards](https://openflocon.github.io/Flocon/dashboard)
@@ -85,7 +85,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 | Feature | Android | KMP (JVM/iOS) |
 |---|:---:|:---:|
 | **Network (HTTP/Mocking)** | ✅ | ✅ |
-| **Database (Room/SQLite)** | ✅ | ✅ |
+| **Database (Room/SQLDelight/SQLite)** | ✅ | ✅ |
 | **Preferences** | ✅ | ❌ |
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |

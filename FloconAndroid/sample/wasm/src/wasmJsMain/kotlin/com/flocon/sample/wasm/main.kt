@@ -107,6 +107,7 @@ private fun registerWasmSampleFeatures() {
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         Databases.foodDatabase.foodDao().insertFood(newFood())
     }
+    SampleFeatures.unavailable(SampleFeature.DatabaseSqlDelight, "The SQLDelight web worker driver needs its own worker, not set up in this sample")
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 does not support Wasm")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")

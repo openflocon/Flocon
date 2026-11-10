@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS dog (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    breed TEXT NOT NULL,
+    age INTEGER NOT NULL
+);
+
+insertDog:
+INSERT INTO dog (name, breed, age) VALUES (?, ?, ?);
+
+selectAll:
+SELECT * FROM dog;
