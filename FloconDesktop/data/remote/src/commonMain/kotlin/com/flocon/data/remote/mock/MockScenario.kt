@@ -90,6 +90,34 @@ sealed interface MockEvent {
         )
     }
 
+    /** The deeplinks (and their variables) the app declares. */
+    data class Deeplinks(
+        override val at: Duration,
+        val deeplinks: List<Deeplink>,
+        val variables: List<Variable>,
+    ) : MockEvent {
+        data class Deeplink(
+            val link: String,
+            val label: String? = null,
+            val description: String? = null,
+            val parameters: List<Parameter> = emptyList(),
+        )
+
+        sealed interface Parameter {
+            val name: String
+
+            data class AutoComplete(override val name: String, val values: List<String>) : Parameter
+
+            data class Variable(override val name: String, val variableName: String) : Parameter
+        }
+
+        data class Variable(
+            val name: String,
+            val description: String? = null,
+            val suggestions: List<String>? = null, // null = free input
+        )
+    }
+
     /** A message sent as is, to test what a real SDK should not send (invalid body…). */
     data class Raw(
         override val at: Duration,

@@ -17,6 +17,7 @@ internal val defaultScenario = scenario("default", description = "A Pixel 8 with
         sampleAnalytics()
         sampleFeatureFlags()
         sampleDatabases()
+        sampleDeeplinks()
     }
 }
 
@@ -38,6 +39,10 @@ internal val docAnalyticsScenario = scenario("doc-analytics", description = "Ana
 
 internal val docFeatureFlagsScenario = scenario("doc-featureflags", description = "Feature flags only, from two providers (firebase, statsig)") {
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleFeatureFlags() }
+}
+
+internal val docDeeplinksScenario = scenario("doc-deeplinks", description = "Deeplinks only: plain, with variables, with autocomplete parameters, universal link") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleDeeplinks() }
 }
 
 internal val emptyScenario = scenario("empty", description = "A connected Pixel 8 with no data, to see the empty states") {

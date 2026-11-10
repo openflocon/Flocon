@@ -217,6 +217,31 @@ internal fun MockDeviceBuilder.sampleDatabases() {
     )
 }
 
+internal fun MockDeviceBuilder.sampleDeeplinks() {
+    deeplinks(at = 10.minutes.ago) {
+        deeplink("flocon-shop://home", label = "Home", description = "Opens the home tab")
+        deeplink("flocon-shop://product/[productId]", label = "Product", description = "A product page") {
+            variable("productId", "productId")
+        }
+        deeplink("flocon-shop://catalog?category=[category]&sort=[sort]", label = "Catalog", description = "Catalog filtered by category") {
+            autoComplete("category", "shoes", "shirts", "jackets", "accessories")
+            autoComplete("sort", "price_asc", "price_desc", "newest")
+        }
+        deeplink("flocon-shop://checkout?cartId=[cartId]&promo=[promo]", label = "Checkout") {
+            variable("cartId", "cartId")
+            variable("promo", "promoCode")
+        }
+        deeplink("https://flocon-shop.com/orders/[orderId]", label = "Order tracking (universal link)") {
+            variable("orderId", "orderId")
+        }
+        deeplink("flocon-shop://settings")
+        variable("productId", description = "Id of a product, e.g. p-1042")
+        variable("cartId", description = "Current cart id")
+        variable("promoCode", description = "Promo code to apply", suggestions = listOf("WELCOME10", "SUMMER25", "FREESHIP"))
+        variable("orderId", suggestions = listOf("o-5521", "o-5522", "o-5523"))
+    }
+}
+
 internal fun MockDeviceBuilder.sampleFeatureFlags() {
     featureFlags("firebase", at = 12.minutes.ago) {
         flag("checkout_v2", state = "custom", variant = "treatment", payload = """{"buttonColor":"#FF5722","oneClick":true}""")

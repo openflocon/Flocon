@@ -3,6 +3,9 @@ package com.flocon.data.remote.mock
 import com.flocon.data.remote.analytics.model.AnalyticsItemDataModel
 import com.flocon.data.remote.analytics.model.AnalyticsPropertyDataModel
 import com.flocon.data.remote.crashreporter.model.CrashReportDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinkReceivedDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinkVariableReceivedDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagsDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
@@ -105,6 +108,38 @@ internal class MockMessageEncoder(private val json: Json) {
                         provider = event.provider,
                         flags = event.flags.map {
                             FeatureFlagDataModel(name = it.name, state = it.state, variant = it.variant, payload = it.payload)
+                        },
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.Deeplinks -> listOf(
+            Triple(
+                Protocol.FromDevice.Deeplink.Plugin,
+                Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
+                json.encodeToString(
+                    DeeplinksReceivedDataModel(
+                        deeplinks = event.deeplinks.map { deeplink ->
+                            DeeplinkReceivedDataModel(
+                                label = deeplink.label,
+                                link = deeplink.link,
+                                description = deeplink.description,
+                                parameters = deeplink.parameters.map {
+                                    when (it) {
+                                        is MockEvent.Deeplinks.Parameter.AutoComplete -> DeeplinkReceivedDataModel.Parameter.AutoComplete(it.name, it.values)
+                                        is MockEvent.Deeplinks.Parameter.Variable -> DeeplinkReceivedDataModel.Parameter.Variable(it.name, it.variableName)
+                                    }
+                                },
+                            )
+                        },
+                        variables = event.variables.map {
+                            DeeplinkVariableReceivedDataModel(
+                                name = it.name,
+                                mode = it.suggestions?.let(DeeplinkVariableReceivedDataModel.Mode::AutoComplete)
+                                    ?: DeeplinkVariableReceivedDataModel.Mode.Input,
+                                description = it.description,
+                            )
                         },
                     ),
                 ),
