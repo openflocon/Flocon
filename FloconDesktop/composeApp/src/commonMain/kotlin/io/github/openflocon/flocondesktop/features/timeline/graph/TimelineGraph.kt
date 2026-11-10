@@ -309,7 +309,7 @@ internal fun TimelineGraph(
             logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
-            cursor = colors.accent,
+            cursor = TimelineSource.Network.categoryColors().first,
         )
 
         if (screenshotsAvailable) {
