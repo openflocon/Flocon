@@ -20,10 +20,16 @@ A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar
 sudo apt install ./Flocon-linux-x64.deb      # or Flocon-linux-arm64.deb
 ```
 
-## Fedora / RHEL / openSUSE
+## Fedora / RHEL
 
 ```bash
 sudo dnf install ./Flocon-linux-x64.rpm      # or Flocon-linux-arm64.rpm
+```
+
+## openSUSE
+
+```bash
+sudo zypper install ./Flocon-linux-x64.rpm   # or Flocon-linux-arm64.rpm
 ```
 
 ## adb
@@ -33,6 +39,7 @@ Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Inst
 ```bash
 sudo apt install android-tools-adb   # Debian / Ubuntu
 sudo dnf install android-tools       # Fedora
+sudo zypper install android-tools    # openSUSE
 ```
 
 Flocon starts from the app menu (Development) or with `/opt/flocon/bin/Flocon`.
