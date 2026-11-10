@@ -1,6 +1,8 @@
 # Plan: SQLDelight support for the Flocon database plugin
 
-Status: proposal, no code. Coordinates with `internal-docs/plans/database-profiler.md` (separate branch/PR) for the profiler fields.
+Status: PR 1, PR 2 and PR 4 implemented (module, query logging, samples, docs); PR 3 (profiler fields, transactions), the `sqlDelight()` provider and the wasm sample are not done. Notes from the implementation: `SqlCursor` has no column names nor count (2.4.1), they are read through a temporary view inside a rolled back transaction, `column_N` for PRAGMA/EXPLAIN; transactions are not tracked yet (SQLDelight does not run them through `execute`).
+
+Original status: proposal. Coordinates with `internal-docs/plans/database-profiler.md` (separate branch/PR) for the profiler fields.
 
 ## 1. Goal
 
@@ -232,34 +234,34 @@ Docs (same PR as the code, `docs2/` only, never `docs/`):
 ## 9. TODO checklist
 
 ### SDK
-- [ ] Add SQLDelight 2.x entries to `FloconAndroid/gradle/libs.versions.toml` (runtime, sample drivers, plugin)
-- [ ] Spike: `SqlCursor` column-name access in the pinned version, pick the fallback (3.3)
-- [ ] Create `database/sqldelight/sqldelight` (Android, JVM, iOS, wasmJs), publish `flocon-database-sqldelight`
-- [ ] Create `database/sqldelight/sqldelight-no-op` with the same public API, publish `flocon-database-sqldelight-no-op`
-- [ ] Include both modules in `FloconAndroid/settings.gradle.kts`
-- [ ] `FloconSqlDelightDatabaseModel` (`executeQuery`, sync and async `QueryResult`)
-- [ ] `FloconDatabasePlugin.register(id, displayName, driver)`, `SqlDriver.withFlocon(...)`, `SqlDriver.floconLogs(id)`
+- [x] Add SQLDelight 2.x entries to `FloconAndroid/gradle/libs.versions.toml` (runtime, sample drivers, plugin)
+- [x] Spike: `SqlCursor` column-name access in the pinned version, pick the fallback (3.3)
+- [x] Create `database/sqldelight/sqldelight` (Android, JVM, iOS, wasmJs), publish `flocon-database-sqldelight`
+- [x] Create `database/sqldelight/sqldelight-no-op` with the same public API, publish `flocon-database-sqldelight-no-op`
+- [x] Include both modules in `FloconAndroid/settings.gradle.kts`
+- [x] `FloconSqlDelightDatabaseModel` (`executeQuery`, sync and async `QueryResult`)
+- [x] `FloconDatabasePlugin.register(id, displayName, driver)`, `SqlDriver.withFlocon(...)`, `SqlDriver.floconLogs(id)`
 - [ ] `sqlDelight()` provider on `FloconDatabaseConfig`, Android file scan, path de-duplication
-- [ ] `FloconLoggingSqlDriver` (recording `SqlPreparedStatement`, wrapped transactions, async-safe)
+- [x] `FloconLoggingSqlDriver` (recording `SqlPreparedStatement`, wrapped transactions, async-safe)
 - [ ] Measure `durationMs`, `threadName`, `isMainThread`, `rowCount`, `transactionId` (internal `QueryLogEvent`)
 - [ ] Plug the event into `logQuery` once the profiler plan adds the optional params
 - [ ] Settle open questions 6 and 7 (unregister / re-register), core change only if needed
 
 ### Tests
-- [ ] `src/jvmTest`: logging driver, bind args, measured fields, transactions
-- [ ] `src/jvmTest`: model `executeQuery` (select, PRAGMA, insert, update/delete, raw, error)
-- [ ] `src/jvmTest`: async `AsyncValue` fake driver, duplicate registration
-- [ ] No-op `compileKotlinJvm`
+- [x] `src/jvmTest`: logging driver, bind args, measured fields, transactions
+- [x] `src/jvmTest`: model `executeQuery` (select, PRAGMA, insert, update/delete, raw, error)
+- [x] `src/jvmTest`: async `AsyncValue` fake driver, duplicate registration
+- [x] No-op `compileKotlinJvm`
 
 ### Samples
-- [ ] `sample-multiplatform` (Android + iOS) registered in `Databases.kt`
-- [ ] `sample/android` (+ release swap), `sample/desktop`, `sample/ios`, `sample/wasm`
-- [ ] `:sample:android:assembleDebug :sample:android:assembleRelease` passes
+- [x] `sample-multiplatform` (Android + iOS) registered in `Databases.kt`
+- [x] `sample/android` (+ release swap), `sample/desktop`, `sample/ios`, `sample/wasm`
+- [x] `:sample:android:assembleDebug :sample:android:assembleRelease` passes
 
 ### Docs
-- [ ] `docs2/database.md` SQLDelight tab, `docs2/setup.md` row, README snippet
-- [ ] Setup skill references `android.md` and `kmp.md`
-- [ ] Confirm `protocol/` and MCP docs are unchanged
+- [x] `docs2/database.md` SQLDelight tab, `docs2/setup.md` row, README snippet
+- [x] Setup skill references `android.md` and `kmp.md`
+- [x] Confirm `protocol/` and MCP docs are unchanged
 
 ### Desktop (only if needed)
 - [ ] Verify the Database screen with explicit + scanned registrations; optional provider label
