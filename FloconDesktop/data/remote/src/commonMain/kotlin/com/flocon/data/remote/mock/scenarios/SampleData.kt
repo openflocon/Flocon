@@ -112,7 +112,9 @@ internal fun MockDeviceBuilder.sampleNetworkCalls() {
         responseBody("""{"productId":1007,"available":true,"stores":["Paris 11","Lyon 2","Marseille 1"]}""")
     }
     // very big payloads
-    network(5.minutes.ago + 10.seconds, "GET", "$API/catalog/export?format=json", duration = 3_400.milliseconds) {
+    network(5.minutes.ago + 10.seconds, "POST", "$API/catalog/export?format=json", duration = 3_400.milliseconds) {
+        requestHeader("content-type", JSON)
+        requestBody(bigCatalogJson(2_500))
         responseHeader("content-type", JSON)
         responseHeader("content-length", "${bigCatalogJson(4_000).length}")
         responseBody(bigCatalogJson(4_000))
