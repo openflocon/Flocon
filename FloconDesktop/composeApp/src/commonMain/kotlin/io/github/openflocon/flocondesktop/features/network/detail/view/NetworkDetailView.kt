@@ -5,9 +5,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -25,6 +27,8 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.Difference
@@ -43,10 +47,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
@@ -111,6 +118,7 @@ import flocondesktop.composeapp.generated.resources.network_response_size
 import flocondesktop.composeapp.generated.resources.network_save_full_log_image
 import flocondesktop.composeapp.generated.resources.network_save_html
 import flocondesktop.composeapp.generated.resources.network_share_export
+import flocondesktop.composeapp.generated.resources.network_tab_error
 import flocondesktop.composeapp.generated.resources.network_view_body_in_app
 import flocondesktop.composeapp.generated.resources.network_view_in_app
 import flocondesktop.composeapp.generated.resources.network_waiting_response
@@ -139,6 +147,7 @@ import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCodeBlock
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
+import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
@@ -162,6 +171,7 @@ private val KeyWidth = 140.dp
 private val HeadersLabelWidth = 150.dp
 private val JsonTreeHeight = 600.dp
 private val ImageHeight = 300.dp
+private val TabShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
 
 @Composable
 fun NetworkDetailScreen(
@@ -298,99 +308,180 @@ private fun NetworkDetailContent(
             }
         }
 
-        DetailPanel(
-            modifier = Modifier.fillMaxSize(),
-            header = {
-                DetailHeader(
-                    label = uiState.host.ifEmpty { stringResource(Res.string.network_details_title) },
-                    title = uiState.path.ifEmpty { uiState.fullUrl },
-                    chips = {
-                        when (val method = uiState.method) {
-                            is NetworkDetailViewState.Method.Http -> MethodTag(method = method.method)
-                            is NetworkDetailViewState.Method.MethodName -> DetailChip(text = method.name)
-                        }
-                        StatusCell(status = uiState.status)
-                        uiState.durationFormatted?.let { DetailChip(text = it) }
-                        DetailChip(text = uiState.requestTimeFormatted)
-                    },
-                    actions = {
-                        ShareMenu(
-                            expanded = shareMenuExpanded,
-                            onExpandedChange = { shareMenuExpanded = it },
-                            onAction = onAction,
-                            onSaveFullLogImage = {
-                                coroutineScope.launch {
-                                    try {
-                                        val bitmap = fullLogGraphicsLayer.toImageBitmap()
-                                        onAction(NetworkDetailAction.SaveImage(bitmap))
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
-                                }
-                            },
-                        )
-                    },
-                )
-            },
+        val scrollState = rememberScrollState()
+        val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(FloconTheme.spacing.medium),
         ) {
-            CompactTabRow {
-                FloconTab(
-                    text = "Request (${uiState.requestSize})",
-                    verticalPadding = FloconTheme.spacing.extraSmall,
-                    isSelected = selectedTab == NetworkDetailTab.Request,
-                    tabType = TabType.Start,
-                    onSelected = { selectedTab = NetworkDetailTab.Request },
-                    modifier = Modifier.weight(1f)
-                )
-                val responseSizeText = when (val res = uiState.response) {
-                    is NetworkDetailViewState.Response.Success -> " (${res.size})"
-                    is NetworkDetailViewState.Response.Error -> " (Error)"
-                    null -> ""
-                }
-                FloconTab(
-                    text = "Response$responseSizeText",
-                    verticalPadding = FloconTheme.spacing.extraSmall,
-                    isSelected = selectedTab == NetworkDetailTab.Response,
-                    tabType = TabType.End,
-                    onSelected = { selectedTab = NetworkDetailTab.Response },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Crossfade(
-                targetState = selectedTab,
-                animationSpec = tween(durationMillis = 200),
-            ) { currentTab ->
-                when (currentTab) {
-                    NetworkDetailTab.Request -> RequestTab(
-                        state = uiState,
-                        onAction = onAction,
+            NetworkDetailCard(
+                header = {
+                    DetailHeader(
+                        label = uiState.host.ifEmpty { stringResource(Res.string.network_details_title) },
+                        title = uiState.path.ifEmpty { uiState.fullUrl },
+                        chips = {
+                            when (val method = uiState.method) {
+                                is NetworkDetailViewState.Method.Http -> MethodTag(method = method.method)
+                                is NetworkDetailViewState.Method.MethodName -> DetailChip(text = method.name)
+                            }
+                            StatusCell(status = uiState.status)
+                            uiState.durationFormatted?.let { DetailChip(text = it) }
+                            DetailChip(text = uiState.requestTimeFormatted)
+                        },
+                        actions = {
+                            ShareMenu(
+                                expanded = shareMenuExpanded,
+                                onExpandedChange = { shareMenuExpanded = it },
+                                onAction = onAction,
+                                onSaveFullLogImage = {
+                                    coroutineScope.launch {
+                                        try {
+                                            val bitmap = fullLogGraphicsLayer.toImageBitmap()
+                                            onAction(NetworkDetailAction.SaveImage(bitmap))
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                },
+                            )
+                        },
                     )
-
-                    NetworkDetailTab.Response -> ResponseTab(
-                        state = uiState,
-                        onAction = onAction,
+                },
+                tabs = {
+                    NetworkDetailTabItem(
+                        label = stringResource(Res.string.network_request_info),
+                        detail = uiState.requestSize,
+                        icon = Icons.Outlined.ArrowUpward,
+                        iconTint = FloconTheme.colors.statusInfo,
+                        isSelected = selectedTab == NetworkDetailTab.Request,
+                        onSelected = { selectedTab = NetworkDetailTab.Request },
                     )
+                    NetworkDetailTabItem(
+                        label = stringResource(Res.string.network_response_info),
+                        detail = when (val res = uiState.response) {
+                            is NetworkDetailViewState.Response.Success -> res.size
+                            is NetworkDetailViewState.Response.Error -> stringResource(Res.string.network_tab_error)
+                            null -> null
+                        },
+                        icon = Icons.Outlined.ArrowDownward,
+                        iconTint = FloconTheme.colors.statusSuccess,
+                        isSelected = selectedTab == NetworkDetailTab.Response,
+                        onSelected = { selectedTab = NetworkDetailTab.Response },
+                    )
+                },
+            ) {
+                Crossfade(
+                    targetState = selectedTab,
+                    animationSpec = tween(durationMillis = 200),
+                ) { currentTab ->
+                    when (currentTab) {
+                        NetworkDetailTab.Request -> RequestTab(
+                            state = uiState,
+                            onAction = onAction,
+                        )
+
+                        NetworkDetailTab.Response -> ResponseTab(
+                            state = uiState,
+                            onAction = onAction,
+                        )
+                    }
                 }
             }
         }
+        FloconVerticalScrollbar(
+            adapter = scrollAdapter,
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.TopEnd),
+        )
+    }
+}
+
+/**
+ * The header and its tabs on a dark block, the selected tab melts into the panel holding the content
+ */
+@Composable
+private fun NetworkDetailCard(
+    header: @Composable () -> Unit,
+    tabs: @Composable RowScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val shape = FloconTheme.shapes.large
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(FloconTheme.colors.bg000)
+            .border(width = 1.dp, color = FloconTheme.colors.line, shape = shape),
+    ) {
+        Box(
+            modifier = Modifier.padding(
+                start = FloconTheme.spacing.large,
+                end = FloconTheme.spacing.large,
+                top = FloconTheme.spacing.large,
+                bottom = FloconTheme.spacing.medium,
+            ),
+        ) {
+            header()
+        }
+        Row(
+            modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+            verticalAlignment = Alignment.Bottom,
+            content = tabs,
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colors.bg200)
+                .padding(FloconTheme.spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+            content = content,
+        )
     }
 }
 
 @Composable
-private fun CompactTabRow(
+private fun NetworkDetailTabItem(
+    label: String,
+    detail: String?,
+    icon: ImageVector,
+    iconTint: Color,
+    isSelected: Boolean,
+    onSelected: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
-            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
-            .padding(FloconTheme.spacing.tiny),
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-        content = content,
-    )
+            .clip(TabShape)
+            .then(if (isSelected) Modifier.background(FloconTheme.colors.bg200) else Modifier)
+            .clickable(onClick = onSelected)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FloconIcon(
+            imageVector = icon,
+            tint = iconTint,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = label,
+            style = FloconTheme.typography.bodyMedium,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+            color = if (isSelected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
+        )
+        detail?.let {
+            Text(
+                text = it,
+                style = FloconTheme.typography.monoSmall,
+                color = FloconTheme.colors.inkMuted,
+            )
+        }
+    }
 }
 
 @Composable

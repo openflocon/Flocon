@@ -535,6 +535,7 @@
     <string name="network_action_decode">Decode</string>
     <string name="network_jwt">Authorization (JWT)</string>
     <string name="network_open_jwt_decoder">Open JWT decoder</string>
+    <string name="network_tab_error">Error</string>
     <string name="network_mock_tag">MOCK</string>
     <string name="network_request">Request</string>
     <string name="network_request_headers">Request Headers</string>

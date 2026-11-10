@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 
@@ -46,7 +45,6 @@ fun FloconTab(
     onSelected: () -> Unit,
     @Suppress("UNUSED_PARAMETER") tabType: TabType,
     modifier: Modifier = Modifier,
-    verticalPadding: Dp = FloconTheme.spacing.small,
 ) {
     val colors = FloconTheme.colors
     val shape = RoundedCornerShape(6.dp)
@@ -56,7 +54,7 @@ fun FloconTab(
             .background(if (isSelected) colors.bg300 else Color.Transparent)
             .then(if (isSelected) Modifier.border(1.dp, colors.lineStrong, shape) else Modifier)
             .clickable { onSelected() }
-            .padding(vertical = verticalPadding),
+            .padding(vertical = FloconTheme.spacing.small),
         text = text,
         textAlign = TextAlign.Center,
         style = FloconTheme.typography.bodyMedium,
