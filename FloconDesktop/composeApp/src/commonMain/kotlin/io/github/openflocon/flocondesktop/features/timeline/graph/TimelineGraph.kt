@@ -50,8 +50,10 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.isMetaPressed
 import androidx.compose.ui.input.pointer.isShiftPressed
@@ -253,6 +255,29 @@ internal fun TimelineGraph(
     val maxScroll = max(contentHeight - trackHeight, 0f)
     val currentViewport = viewport.copy(scrollY = viewport.scrollY.coerceIn(0f, maxScroll))
 
+    // the wheel / trackpad scroll, shared by the graph and the screenshot strip: [x] is in the track coordinates
+    fun onScroll(event: PointerEvent, change: PointerInputChange, x: Float) {
+        val delta = change.scrollDelta
+        val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
+        fitted = false
+        viewport = if (zoom) {
+            val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
+            viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
+        } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
+            // a real move along the time: the trackpad also sends a small horizontal drift
+            val ticks = if (delta.x != 0f) delta.x else delta.y
+            val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
+            val moved = viewport.panned(ticks * 40 / viewport.pxPerMs, limitMs, trackWidth)
+            // going back in time leaves the present: no more auto scroll
+            if (moved.startMs < viewport.startMs) stopAutoScroll()
+            if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
+            moved
+        } else {
+            viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
+        }
+        change.consume()
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -322,6 +347,16 @@ internal fun TimelineGraph(
                 hoveredTimeMs = hoveredScreenshot?.timeMs,
                 onHover = { hoveredScreenshot = it },
                 onTurnOn = onTurnOnScreenshots,
+                // the strip scrolls the graph too: the thumbnails do not consume the wheel
+                modifier = Modifier.pointerInput(density, trackWidth, maxScroll) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull() ?: continue
+                            if (event.type == PointerEventType.Scroll) onScroll(event, change, change.position.x / density - LaneLabelWidthPx)
+                        }
+                    }
+                },
             )
         }
 
@@ -342,27 +377,7 @@ internal fun TimelineGraph(
                                 pointerX = x
                                 val y = change.position.y / density - AxisHeightPx
                                 when (event.type) {
-                                    PointerEventType.Scroll -> {
-                                        val delta = change.scrollDelta
-                                        val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
-                                        fitted = false
-                                        viewport = if (zoom) {
-                                            val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
-                                            viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
-                                        } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
-                                            // a real move along the time: the trackpad also sends a small horizontal drift
-                                            val ticks = if (delta.x != 0f) delta.x else delta.y
-                                            val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
-                                            val moved = viewport.panned(ticks * 40 / viewport.pxPerMs, limitMs, trackWidth)
-                                            // going back in time leaves the present: no more auto scroll
-                                            if (moved.startMs < viewport.startMs) stopAutoScroll()
-                                            if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
-                                            moved
-                                        } else {
-                                            viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
-                                        }
-                                        change.consume()
-                                    }
+                                    PointerEventType.Scroll -> onScroll(event, change, x)
 
                                     PointerEventType.Move, PointerEventType.Enter -> {
                                         cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
