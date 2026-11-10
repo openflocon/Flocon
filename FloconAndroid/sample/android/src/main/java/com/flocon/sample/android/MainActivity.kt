@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.flocon.sample.android.grpc.GrpcController
+import com.posthog.PostHog
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
@@ -121,6 +122,11 @@ class MainActivity : ComponentActivity() {
         SampleQrScanner.scan = { Flocon.scanQrCodeAndConnect(this@MainActivity) }
         registerAndroidSampleWebView()
         SampleFeatures.on(SampleFeature.Accessibility) {
+            PostHog.capture(event = "accessibility_announcement_triggered")
+            PostHogAppLogger.info(
+                message = "accessibility announcement triggered",
+                attributes = mapOf("feature" to "accessibility"),
+            )
             val announcement = "Item added to the cart"
             // announced to TalkBack and captured automatically when it is on
             window.decorView.post { window.decorView.announceForAccessibility(announcement) }

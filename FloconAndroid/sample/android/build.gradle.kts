@@ -22,6 +22,8 @@ android {
 
         // optional, used by the GraphQL test (the calls are rejected without it, but still visible in Flocon)
         buildConfigField("String", "GITHUB_TOKEN", "\"${System.getenv("GITHUB_TOKEN") ?: ""}\"")
+        buildConfigField("String", "POSTHOG_API_KEY", "\"${System.getenv("POSTHOG_API_KEY") ?: ""}\"")
+        buildConfigField("String", "POSTHOG_HOST", "\"${System.getenv("POSTHOG_HOST") ?: ""}\"")
     }
 
     buildTypes {
@@ -45,6 +47,9 @@ android {
 
 dependencies {
     implementation(projects.sampleMultiplatform)
+
+    // PostHog Android SDK
+    implementation("com.posthog:posthog-android:3.+")
 
     implementation(projects.flocon.flocon)
     implementation(projects.deeplinks.deeplinks)

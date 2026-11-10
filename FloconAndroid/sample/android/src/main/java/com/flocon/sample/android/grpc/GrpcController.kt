@@ -1,5 +1,7 @@
 package com.flocon.sample.android.grpc
 
+import com.flocon.sample.android.PostHogAppLogger
+import com.posthog.PostHog
 import io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
 import io.grpc.CallOptions
 import io.grpc.ManagedChannel
@@ -29,12 +31,28 @@ object GrpcController {
     }
 
     suspend fun sayHello(): String? {
+        PostHog.capture(
+            event = "grpc_hello_requested",
+            properties = mapOf("rpc_method" to "say_hello"),
+        )
         return try {
             val request = helloRequest {
                 name = "florent"
             }
-            greeterClient.sayHello(request).message
+            greeterClient.sayHello(request).message.also {
+                PostHogAppLogger.info(
+                    message = "grpc hello request completed",
+                    attributes = mapOf("rpc_method" to "say_hello"),
+                )
+            }
         } catch (t: Throwable) {
+            PostHogAppLogger.error(
+                message = "grpc hello request failed",
+                attributes = mapOf(
+                    "rpc_method" to "say_hello",
+                    "error_type" to t.javaClass.simpleName,
+                ),
+            )
             t.printStackTrace()
             null
         }
