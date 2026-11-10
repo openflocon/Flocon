@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.mapper
 
 import io.github.openflocon.domain.common.time.formatDate
 import io.github.openflocon.domain.common.time.formatTimestamp
+import io.github.openflocon.domain.device.models.CurrentDeviceAndAppDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
@@ -13,6 +14,7 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNestedUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineTransactionUiModel
 import kotlinx.collections.immutable.toImmutableList
 
@@ -247,3 +249,15 @@ internal fun screenshotMarkerBetween(
         time = formatTimestamp(shot.timestamp).substringBefore('.'),
     )
 }
+
+internal fun CurrentDeviceAndAppDomainModel.toScreenshotContextUi() = TimelineScreenshotContextUiModel(
+    appName = app?.name?.takeIf { it.isNotBlank() },
+    appIconEncoded = app?.iconEncoded,
+    deviceName = device.deviceName,
+    platform = when (device.platform.lowercase()) {
+        "android" -> "Android"
+        "ios" -> "iOS"
+        "desktop" -> "Desktop"
+        else -> device.platform
+    },
+)

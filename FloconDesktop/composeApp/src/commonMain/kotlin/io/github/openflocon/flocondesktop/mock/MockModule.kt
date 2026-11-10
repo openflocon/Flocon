@@ -9,6 +9,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.maintenance.repository.MediaFilesRepository
+import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRepository
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.db.DatabaseFile
 import io.github.openflocon.flocondesktop.common.db.createMediaFilesRepository
@@ -27,6 +28,8 @@ fun mockModule(scenario: MockScenario): Module = module {
     single { DatabaseFile(getMockDatabaseFile()) }
     single<AdbRepository> { NoOpAdbRepository }
     single<IosSimulatorRepository> { NoOpIosSimulatorRepository }
+    // no adb to take screenshots: a few drawn ones, to see them in the timeline
+    single<TimelineScreenshotRepository> { MockTimelineScreenshotRepository() }
     // the auto-clean at launch must not delete the user's real screenshots and recordings
     single<MediaFilesRepository> { KeepMediaFilesRepository(createMediaFilesRepository()) }
 }

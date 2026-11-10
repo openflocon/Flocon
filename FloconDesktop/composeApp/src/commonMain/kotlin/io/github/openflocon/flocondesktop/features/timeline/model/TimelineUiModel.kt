@@ -121,6 +121,15 @@ internal sealed interface TimelineItemUiModel {
     ) : TimelineItemUiModel
 }
 
+// the app and the device of the screenshots, shown beside them
+@Immutable
+internal data class TimelineScreenshotContextUiModel(
+    val appName: String?,
+    val appIconEncoded: String?,
+    val deviceName: String,
+    val platform: String, // Android, iOS...
+)
+
 // what the header says about the screenshots, next to the switch: the device does not support them (an Android over Wi-Fi)
 internal enum class TimelineScreenshotsStatus { Working, Failing, Unavailable }
 
@@ -348,7 +357,13 @@ internal fun previewTimelineItems(): List<TimelineItemUiModel> {
     val rows = previewTimelineRows()
     return buildList {
         add(TimelineItemUiModel.DayHeader(day = "20/10/2026", key = "day:20/10/2026"))
-        rows.forEach { add(TimelineItemUiModel.Row(it)) }
+        rows.forEachIndexed { index, row ->
+            add(TimelineItemUiModel.Row(row))
+            // a screenshot every few events, to try its rail (the files do not exist: the thumbnails are empty boxes)
+            if (index % PreviewScreenshotEvery == PreviewScreenshotEvery - 1 && index < rows.lastIndex) {
+                add(previewTimelineScreenshot(timestamp = row.timestamp - 1, day = row.day, time = row.time.substringBefore('.')))
+            }
+        }
         add(previewTimelineTransactionHeader())
         add(
             TimelineItemUiModel.Row(
@@ -374,3 +389,17 @@ internal fun previewTimelineItems(): List<TimelineItemUiModel> {
         )
     }
 }
+
+private const val PreviewScreenshotEvery = 4
+
+internal fun previewTimelineScreenshot(
+    timestamp: Long = 0L,
+    day: String = "20/10/2026",
+    time: String = "12:00:30",
+) = TimelineItemUiModel.Screenshot(
+    timestamp = timestamp,
+    day = day,
+    filePath = "/missing/$timestamp.jpg",
+    key = "screenshot:$timestamp",
+    time = time,
+)
