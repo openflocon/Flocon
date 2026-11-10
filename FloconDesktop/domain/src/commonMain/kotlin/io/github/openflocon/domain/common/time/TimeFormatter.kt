@@ -2,11 +2,26 @@ package io.github.openflocon.domain.common.time
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.round
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 
-fun formatDuration(duration: Double): String = duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
+/** `212ms`, `1.2s`, `10s`, `1m 5s`: milliseconds under a second, then the biggest readable unit */
+fun formatDuration(duration: Double): String {
+    if (duration < 1_000) return duration.milliseconds.toString(unit = DurationUnit.MILLISECONDS)
+
+    val seconds = duration / 1_000
+    if (seconds < 60) {
+        val tenths = round(seconds * 10).toLong()
+        return if (tenths % 10 == 0L) "${tenths / 10}s" else "${tenths / 10}.${tenths % 10}s"
+    }
+
+    val totalSeconds = round(seconds).toLong()
+    val minutes = totalSeconds / 60
+    val remaining = totalSeconds % 60
+    return if (remaining == 0L) "${minutes}m" else "${minutes}m ${remaining}s"
+}
 
 fun formatTimestamp(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)

@@ -148,7 +148,10 @@ internal fun TimelineRow(
         )
         Spacer(Modifier.width(railGutter()))
         Box(modifier = Modifier.width(FloconTheme.sizes.categoryColumn)) {
-            EventBadge(source = row.source)
+            // the badge of the queries of a transaction is the one of its header
+            if (row.transaction == null) {
+                EventBadge(source = row.source)
+            }
         }
         Row(
             modifier = Modifier
@@ -198,7 +201,7 @@ internal fun TimelineRow(
 }
 
 @Composable
-private fun TimeColumn(
+internal fun TimeColumn(
     time: String,
     delta: String?,
     modifier: Modifier = Modifier,

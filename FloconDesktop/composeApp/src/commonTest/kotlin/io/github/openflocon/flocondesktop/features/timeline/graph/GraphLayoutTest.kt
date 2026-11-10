@@ -91,6 +91,17 @@ class GraphLayoutTest {
     }
 
     @Test
+    fun `the scrollbar spans the session up to the pan limit`() {
+        // 1 px/ms, a 600 px track: from -1000 ms (before the start of the session) to the limit 2830 ms + the 80 px margin
+        val view = viewport.copy(startMs = 1_000.0, pxPerMs = 1.0)
+        assertEquals(2_000.0, view.scrollbarOffsetPx(), 0.001)
+        assertEquals(3_910.0, view.scrollbarContentPx(2_830L, 600f), 0.001)
+        // without a limit the content is what the viewport shows, and the end of the viewport when the limit is behind it
+        assertEquals(2_600.0, view.scrollbarContentPx(null, 600f), 0.001)
+        assertEquals(2_600.0, view.scrollbarContentPx(100L, 600f), 0.001)
+    }
+
+    @Test
     fun `the viewport cannot be panned past the limit`() {
         // a limit at 2830 ms: at the right of a 600 px track, with the 80 px margin, the start is 2310 ms
         assertEquals(2_310.0, viewport.copy(startMs = 2_000.0).panned(5_000.0, 2_830L, 600f).startMs, 0.001)

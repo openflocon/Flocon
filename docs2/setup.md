@@ -170,7 +170,7 @@ The available plugins:
 | Plugin | Module | Page |
 | :--- | :--- | :--- |
 | `FloconNetwork` | `flocon-network-core` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
-| `FloconDatabase` | `flocon-database-core` + `flocon-database-room` or `-room3` | [Databases](database.md) |
+| `FloconDatabase` | `flocon-database-core` + `flocon-database-room`, `-room3` or `-sqldelight` | [Databases](database.md) |
 | `FloconPreferences` | `flocon-sharedprefs` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
 | `FloconFiles` | `flocon-files` | [Files](files.md) |
 | `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |
@@ -278,6 +278,12 @@ brew install --cask openflocon/tap/flocon
 ```
 
 Update it later with `brew upgrade --cask flocon`.
+
+On Linux with [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), use the formula (no `--cask`), then install `adb` with your distribution (see the [Linux Setup Guide](linux-install.md)):
+
+```bash
+brew install openflocon/tap/flocon
+```
 
 On Windows and Linux (or on macOS without Homebrew), download the latest release for your operating system:
 

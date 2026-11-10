@@ -38,8 +38,6 @@ internal data class GraphEventUiModel(
     val isImage: Boolean = false,
     // the call failed without an http error: an exception, a cancellation…
     val hasError: Boolean = false,
-    // the response did not arrive yet: the bar goes up to the last event received
-    val inProgress: Boolean = false,
     // logs only: the shape and the color of the marker (see logGlyphOf)
     val logLevel: TimelineLogLevel? = null,
     val logType: String? = null,
@@ -69,10 +67,11 @@ internal data class GraphFocusUiModel(
     val token: Long,
 )
 
-// the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end
+// the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end.
+// A null [lane] is the single graph: every type shares the same rows
 @Immutable
 internal data class GraphLaneUiModel(
-    val lane: GraphLane,
+    val lane: GraphLane?,
     val rows: List<List<GraphEventUiModel>>,
 )
 

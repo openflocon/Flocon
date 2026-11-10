@@ -87,8 +87,17 @@ internal fun GraphUiModel.toSummaryText(total: Int = eventCount) = GraphSummaryT
     slowestDuration = slowest?.durationMs?.let(::formatGraphDuration),
 )
 
-// a time of day above one tick out of this many, the ticks are about 100 px apart: some on any screen
-internal const val CLOCK_EVERY_TICKS = 4
+// the ticks are about this far apart
+internal const val AXIS_TICK_PX = 50.0
+
+// one tick out of this many is longer and has a line in the lanes
+internal const val LONG_TICK_EVERY = 2
+
+// a duration under one tick out of this many: about 200 px apart, some on any screen
+internal const val LABEL_EVERY_TICKS = 4
+
+// a time of day above one tick out of this many, so one label out of two
+internal const val CLOCK_EVERY_TICKS = 8
 
 // "12:00:05.123" is "12:00:05" when the ticks are a second apart or more
 internal fun formatClockLabel(timeOfDay: String, stepMs: Long): String = if (stepMs >= 1_000L) timeOfDay.substringBefore('.') else timeOfDay

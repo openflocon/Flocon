@@ -16,16 +16,33 @@ A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar
 
 A Flatpak bundle is also available, see [Flatpak Installation](flatpak-install.md).
 
+## Homebrew (Linuxbrew)
+
+If you use [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux), install the portable jar with its launcher (x64 and arm64). Homebrew installs OpenJDK 21 for you:
+
+```bash
+brew install openflocon/tap/flocon
+flocon
+```
+
+Update it later with `brew upgrade flocon`. Homebrew does not install `adb`: see [adb](#adb) below.
+
 ## Debian / Ubuntu
 
 ```bash
 sudo apt install ./Flocon-linux-x64.deb      # or Flocon-linux-arm64.deb
 ```
 
-## Fedora / RHEL / openSUSE
+## Fedora / RHEL
 
 ```bash
 sudo dnf install ./Flocon-linux-x64.rpm      # or Flocon-linux-arm64.rpm
+```
+
+## openSUSE
+
+```bash
+sudo zypper install ./Flocon-linux-x64.rpm   # or Flocon-linux-arm64.rpm
 ```
 
 ## adb
@@ -35,6 +52,7 @@ Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Inst
 ```bash
 sudo apt install android-tools-adb   # Debian / Ubuntu
 sudo dnf install android-tools       # Fedora
+sudo zypper install android-tools    # openSUSE
 ```
 
 Flocon starts from the app menu (Development) or with `/opt/flocon/bin/Flocon`.

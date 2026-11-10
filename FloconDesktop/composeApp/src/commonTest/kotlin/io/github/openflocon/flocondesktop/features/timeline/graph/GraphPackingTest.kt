@@ -48,7 +48,6 @@ class GraphPackingTest {
         val marker = model.lanes.single().rows.single().single()
         assertEquals(GraphLane.Log, marker.lane)
         assertTrue(marker.isInstant)
-        assertFalse(marker.inProgress)
         assertEquals(250L, marker.startMs)
         assertEquals("Opened the feed", marker.name)
         assertFalse(marker.isError)
@@ -129,6 +128,21 @@ class GraphPackingTest {
         val model = buildGraphUiModel(previewGraphEvents().reversed(), PreviewSessionDurationMs)
 
         assertEquals(GraphLane.entries, model.lanes.map { it.lane })
+    }
+
+    @Test
+    fun `the single graph packs every type in one lane, shorter than the lanes`() {
+        val events = previewGraphEvents()
+        val lanes = buildGraphUiModel(events, PreviewSessionDurationMs)
+        val single = buildGraphUiModel(events, PreviewSessionDurationMs, single = true)
+
+        assertEquals(listOf<GraphLane?>(null), single.lanes.map { it.lane })
+        assertEquals(events.size, single.lanes.single().rows.sumOf { it.size })
+        // the types keep their own color: it is the one of the event
+        assertEquals(GraphLane.entries.toSet(), single.lanes.single().rows.flatten().map { it.lane }.toSet())
+        assertTrue(single.rowCount < lanes.rowCount)
+        assertEquals(lanes.eventCount, single.eventCount)
+        assertTrue(buildGraphUiModel(emptyList(), 0L, single = true).lanes.isEmpty())
     }
 
     @Test
@@ -232,7 +246,7 @@ class GraphPackingTest {
     }
 
     @Test
-    fun `a call without response goes up to the last event`() {
+    fun `a call without response is not drawn`() {
         val model = buildGraph(
             listOf(
                 domain("1", TimelinePhase.Request, ts = 1_100L, duration = null),
@@ -241,9 +255,7 @@ class GraphPackingTest {
             sessionStart = 1_000L,
         )
 
-        val pending = model.lanes.single().rows.flatten().first { it.row.id == "1" }
-        assertTrue(pending.inProgress)
-        assertEquals(800L, pending.durationMs)
+        assertEquals(listOf("a"), model.lanes.single().rows.flatten().map { it.row.id })
     }
 
     @Test
@@ -285,7 +297,6 @@ class GraphPackingTest {
 
         val message = model.lanes.single().rows.flatten().first { it.row.id == "ws1" }
         assertTrue(message.isInstant)
-        assertFalse(message.inProgress)
         assertEquals(100L, message.startMs)
     }
 
