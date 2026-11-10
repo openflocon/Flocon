@@ -10,7 +10,6 @@ enum class SamplePlatform(val label: String, val displayName: String) {
     Desktop("Desktop", "Desktop (JVM)"),
     Web("Web", "Web (Wasm)"),
     IosSwift("iOS Swift", "iOS (Swift native)"),
-    Flutter("Flutter", "Flutter"),
     ;
 
     companion object {
