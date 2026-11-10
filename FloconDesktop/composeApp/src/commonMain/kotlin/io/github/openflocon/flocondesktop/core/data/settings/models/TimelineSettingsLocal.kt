@@ -22,7 +22,7 @@ internal data class TimelineSettingsLocal(
     @SerialName("graph")
     val graph: Boolean = true,
 
-    @SerialName("graph_single")
+    @SerialName("merge_sections")
     val graphSingle: Boolean = false,
 
     // the sources turned off, so a source added later is on by default
