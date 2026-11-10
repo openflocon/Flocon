@@ -54,12 +54,12 @@ Add the database core and the module matching your Room version:
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
         debugImplementation("io.github.openflocon:flocon-database-sqldelight:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
         releaseImplementation("io.github.openflocon:flocon-database-sqldelight-no-op:LAST_VERSION")
     }
     ```
+
+    `flocon-database-core` (and `-no-op` for release) comes with it.
 
 For Room, install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
 
