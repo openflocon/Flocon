@@ -31,6 +31,10 @@ class TimelineSettingsUseCasesTest {
             state.value = state.value.copy(graph = graph)
         }
 
+        override suspend fun setGraphSingle(graphSingle: Boolean) {
+            state.value = state.value.copy(graphSingle = graphSingle)
+        }
+
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
             state.value = state.value.copy(selectedSources = sources)
         }
@@ -60,6 +64,18 @@ class TimelineSettingsUseCasesTest {
 
         assertEquals(
             TimelineSettingsDomainModel(autoScroll = true, invertList = false),
+            ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `the single graph is off by default and set without changing the graph`() = runBlocking {
+        assertEquals(false, ObserveTimelineSettingsUseCase(repository)().first().graphSingle)
+
+        SetTimelineGraphSingleUseCase(repository)(true)
+
+        assertEquals(
+            TimelineSettingsDomainModel(graph = true, graphSingle = true),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }

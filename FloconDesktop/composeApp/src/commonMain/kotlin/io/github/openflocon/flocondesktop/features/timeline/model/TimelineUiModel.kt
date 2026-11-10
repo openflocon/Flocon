@@ -139,6 +139,7 @@ internal data class TimelineSettingsUiModel(
     val invertList: Boolean,
     val pinPanel: Boolean,
     val graph: Boolean = true,
+    val graphSingle: Boolean = false, // one graph for every type instead of one lane per type
     val screenshots: Boolean = false,
     val screenshotIntervalSeconds: Int = 5,
     val transactionsExpandedByDefault: Boolean = true, // a setting of the database transactions, shared with their logs screen
@@ -149,6 +150,7 @@ internal fun previewTimelineSettingsUiModel() = TimelineSettingsUiModel(
     invertList = false,
     pinPanel = false,
     graph = false,
+    graphSingle = false,
     screenshots = false,
     screenshotIntervalSeconds = 5,
 )
@@ -165,6 +167,7 @@ internal sealed interface TimelineAction {
     data class PinPanel(val value: Boolean) : TimelineAction
     data class TransactionsExpandedByDefault(val value: Boolean) : TimelineAction
     data class SetGraph(val value: Boolean) : TimelineAction
+    data class SetGraphSingle(val value: Boolean) : TimelineAction
     data class SetScreenshots(val value: Boolean) : TimelineAction
     data class SetScreenshotInterval(val seconds: Int) : TimelineAction
 

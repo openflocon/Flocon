@@ -15,6 +15,8 @@ interface TimelinePreferencesRepository {
 
     suspend fun setGraph(graph: Boolean)
 
+    suspend fun setGraphSingle(graphSingle: Boolean)
+
     suspend fun setSelectedSources(sources: Set<TimelineSource>)
 
     suspend fun setScreenshots(screenshots: Boolean)

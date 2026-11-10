@@ -31,6 +31,10 @@ internal class TimelinePreferencesRepositoryImpl(
         localSettingsDataSource.updateTimelineSettings { it.copy(graph = graph) }
     }
 
+    override suspend fun setGraphSingle(graphSingle: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(graphSingle = graphSingle) }
+    }
+
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
         localSettingsDataSource.updateTimelineSettings { current ->
             current.copy(

@@ -15,7 +15,7 @@ import kotlin.math.roundToLong
  * took. A WebSocket message is an instant. A call without response (pending, or a stream that never ends) is not drawn: its bar would have no end. The database and analytics events have no
  * duration in the protocol: they are instants, like the logs. The other sources are not drawn.
  */
-internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Long): GraphUiModel {
+internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Long, single: Boolean = false): GraphUiModel {
     val requestIds = events
         .filter { it.source == TimelineSource.Network && it.phase == TimelinePhase.Request }
         .mapTo(HashSet()) { it.id }
@@ -59,7 +59,7 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
         }
     }
     val sessionDuration = mapped.maxOfOrNull { it.endMs } ?: 0L
-    return buildGraphUiModel(mapped, sessionDuration, sessionStartTimestamp = sessionStart, hasAppStart = hasAppStart)
+    return buildGraphUiModel(mapped, sessionDuration, sessionStartTimestamp = sessionStart, hasAppStart = hasAppStart, single = single)
 }
 
 private const val WEB_SOCKET_METHOD = "WS"

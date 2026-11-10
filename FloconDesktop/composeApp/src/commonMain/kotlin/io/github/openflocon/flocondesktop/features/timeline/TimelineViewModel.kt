@@ -26,6 +26,7 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCa
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphSingleUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
@@ -89,6 +90,7 @@ internal class TimelineViewModel(
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
+    private val setTimelineGraphSingleUseCase: SetTimelineGraphSingleUseCase,
     private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
     private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
@@ -119,6 +121,7 @@ internal class TimelineViewModel(
             invertList = timelineSettings.invertList,
             pinPanel = timelineSettings.pinPanel,
             graph = timelineSettings.graph,
+            graphSingle = timelineSettings.graphSingle,
             screenshots = timelineSettings.screenshots,
             screenshotIntervalSeconds = timelineSettings.screenshotIntervalSeconds,
             transactionsExpandedByDefault = transactionsExpandedByDefault,
@@ -191,9 +194,9 @@ internal class TimelineViewModel(
     // does not pack the lanes once per event
     @OptIn(FlowPreview::class)
     val graph: StateFlow<GraphUiModel> = settings
-        .map { it.graph }
+        .map { it.graph to it.graphSingle }
         .distinctUntilChanged()
-        .flatMapLatest { enabled ->
+        .flatMapLatest { (enabled, single) ->
             if (!enabled) {
                 flowOf(GraphUiModel.Empty)
             } else {
@@ -208,7 +211,7 @@ internal class TimelineViewModel(
                             val start = sessionStart ?: events.minOfOrNull { it.timestamp } ?: 0L
                             // a session that is not known has no screenshot to place
                             val screenshots = if (sessionStart == null) emptyList() else screenshotsOfSession(shots, start, nextSessionStart)
-                            buildGraph(events, start).copy(screenshots = screenshots)
+                            buildGraph(events, start, single).copy(screenshots = screenshots)
                         }
                     }
             }
@@ -308,6 +311,8 @@ internal class TimelineViewModel(
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
+
+            is TimelineAction.SetGraphSingle -> viewModelScope.launch { setTimelineGraphSingleUseCase(action.value) }
 
             is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
 

@@ -248,6 +248,7 @@ internal class FakeTimelinePreferencesRepository : TimelinePreferencesRepository
         graphCalls += graph
     }
 
+    override suspend fun setGraphSingle(graphSingle: Boolean) = error("not used")
     override suspend fun setAutoScroll(autoScroll: Boolean) = error("not used")
     override suspend fun setInvertList(invertList: Boolean) = error("not used")
     override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
