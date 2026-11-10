@@ -806,7 +806,6 @@ private fun ResponseTab(
                         size = response.size,
                         onOpenExternally = { onAction(NetworkDetailAction.OpenBodyExternally.Response(response)) },
                         onAction = onAction,
-                        withJsonTree = true,
                         withDiff = true,
                     )
                 }
@@ -925,7 +924,6 @@ private fun BodyCard(
     onOpenExternally: () -> Unit,
     onAction: (NetworkDetailAction) -> Unit,
     modifier: Modifier = Modifier,
-    withJsonTree: Boolean = false,
     withDiff: Boolean = false,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -982,7 +980,6 @@ private fun BodyCard(
             BodyContent(
                 body = body,
                 size = size,
-                withJsonTree = withJsonTree,
                 modifier = Modifier.recordInto(graphicsLayer),
             )
         }
@@ -993,12 +990,11 @@ private fun BodyCard(
 private fun BodyContent(
     body: String,
     size: String,
-    withJsonTree: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var jsonError by remember(body) { mutableStateOf(false) }
 
-    if (withJsonTree && !jsonError) {
+    if (!jsonError) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
