@@ -105,7 +105,9 @@ import io.github.openflocon.flocondesktop.features.timeline.view.drawLogGlyph
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconHorizontalScrollbar
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
@@ -255,6 +257,15 @@ internal fun TimelineGraph(
     val maxScroll = max(contentHeight - trackHeight, 0f)
     val currentViewport = viewport.copy(scrollY = viewport.scrollY.coerceIn(0f, maxScroll))
 
+    // moves along the time: the viewport moved, going back leaves the present (no more auto scroll), reaching it goes back to it
+    fun pannedBy(deltaMs: Double): GraphViewport {
+        val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
+        val moved = viewport.panned(deltaMs, limitMs, trackWidth)
+        if (moved.startMs < viewport.startMs) stopAutoScroll()
+        if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
+        return moved
+    }
+
     // the wheel / trackpad scroll, shared by the graph and the screenshot strip: [x] is in the track coordinates
     fun onScroll(event: PointerEvent, change: PointerInputChange, x: Float) {
         val delta = change.scrollDelta
@@ -266,12 +277,7 @@ internal fun TimelineGraph(
         } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
             // a real move along the time: the trackpad also sends a small horizontal drift
             val ticks = if (delta.x != 0f) delta.x else delta.y
-            val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
-            val moved = viewport.panned(ticks * 40 / viewport.pxPerMs, limitMs, trackWidth)
-            // going back in time leaves the present: no more auto scroll
-            if (moved.startMs < viewport.startMs) stopAutoScroll()
-            if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
-            moved
+            pannedBy(ticks * 40 / viewport.pxPerMs)
         } else {
             viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
         }
@@ -427,11 +433,7 @@ internal fun TimelineGraph(
                                 zoomBox = box.first to change.position
                             } else {
                                 fitted = false
-                                val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
-                                val moved = viewport.panned(-drag.x / density / viewport.pxPerMs, limitMs, trackWidth)
-                                if (moved.startMs < viewport.startMs) stopAutoScroll()
-                                if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
-                                viewport = moved.copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
                             }
                         }
                     },
@@ -475,6 +477,21 @@ internal fun TimelineGraph(
                 )
             }
         }
+
+        // moves along the time with the mouse, under the track (not under the names of the lanes)
+        val scrollbarAdapter = rememberFloconScrollbarAdapter(
+            scrollOffset = { viewport.scrollbarOffsetPx() },
+            contentSize = { viewport.scrollbarContentPx(currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs), trackWidth) },
+            viewportSize = { trackWidth.toDouble() },
+            scrollTo = { offsetPx ->
+                fitted = false
+                viewport = pannedBy((offsetPx - viewport.scrollbarOffsetPx()) / viewport.pxPerMs)
+            },
+        )
+        FloconHorizontalScrollbar(
+            adapter = scrollbarAdapter,
+            modifier = Modifier.padding(start = LaneLabelWidthPx.dp).width(trackWidth.dp),
+        )
 
         if (model.eventCount == 0) {
             Text(
