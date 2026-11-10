@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -59,7 +58,6 @@ import kotlin.io.encoding.Base64
 import org.jetbrains.skia.Image as SkiaImage
 
 private val ScreenshotHeight = 112.dp
-private val ScreenshotWidthEstimate = 62.dp
 private val DashLength = 6.dp
 private val AppIconSize = 20.dp
 
@@ -88,7 +86,6 @@ internal fun ScreenshotMarkerRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .hoverable(interactionSource)
             .padding(horizontal = spacing.compact, vertical = spacing.small),
         verticalArrangement = Arrangement.spacedBy(spacing.small),
     ) {
@@ -125,6 +122,8 @@ internal fun ScreenshotMarkerRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small),
                 modifier = Modifier
+                    // only the card is hovered: the popover opens beside it, never under the pointer
+                    .hoverable(interactionSource)
                     .background(colors.bg100, shape = shape)
                     .border(1.dp, FloconTheme.colors.line, shape)
                     .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -142,30 +141,16 @@ internal fun ScreenshotMarkerRow(
                         ),
                     )
                 }
+                if (hovered) {
+                    // the screenshot larger, like the thumbnails of the graph, beside the card: it never covers what is hovered
+                    Popup(popupPositionProvider = BesideCardPositionProvider) {
+                        ScreenshotPopover(
+                            filePath = item.filePath,
+                            label = stringResource(Res.string.timeline_screenshot_at, item.time),
+                        )
+                    }
+                }
             }
-        }
-    }
-
-    if (hovered) {
-        // the screenshot larger, like the thumbnails of the graph, on the right of the thumbnail
-        val density = LocalDensity.current
-        val thumbnailEnd = with(density) {
-            (
-                FloconTheme.spacing.compact + FloconTheme.sizes.timeColumn + railGutter() + FloconTheme.spacing.small * 2 +
-                    FloconTheme.spacing.medium * 2 + ScreenshotWidthEstimate
-                ).roundToPx()
-        }
-        Popup(
-            popupPositionProvider = remember(thumbnailEnd) {
-                SideOfRowPositionProvider(
-                    thumbnailEnd
-                )
-            }
-        ) {
-            ScreenshotPopover(
-                filePath = item.filePath,
-                label = stringResource(Res.string.timeline_screenshot_at, item.time),
-            )
         }
     }
 }
@@ -316,22 +301,16 @@ private fun DashedLine(modifier: Modifier = Modifier) {
     )
 }
 
-/** Next to the row, [startOffset] pixels after its start, centered on it and kept inside the window. */
-private class SideOfRowPositionProvider(private val startOffset: Int) : PopupPositionProvider {
+/** On the right of the card (the anchor), centered on it and kept inside the window. */
+private object BesideCardPositionProvider : PopupPositionProvider {
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val x = (anchorBounds.left + startOffset).coerceIn(
-            0,
-            (windowSize.width - popupContentSize.width).coerceAtLeast(0)
-        )
-        val y = (anchorBounds.center.y - popupContentSize.height / 2).coerceIn(
-            0,
-            (windowSize.height - popupContentSize.height).coerceAtLeast(0)
-        )
+        val x = anchorBounds.right.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0))
+        val y = (anchorBounds.center.y - popupContentSize.height / 2).coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0))
         return IntOffset(x, y)
     }
 }
