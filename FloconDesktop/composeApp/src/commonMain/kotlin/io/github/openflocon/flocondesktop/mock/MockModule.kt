@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.common.db.DatabaseFile
 import io.github.openflocon.flocondesktop.common.db.createMediaFilesRepository
 import io.github.openflocon.flocondesktop.common.db.getMockDatabaseFile
+import io.github.openflocon.flocondesktop.telemetry.TelemetryConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.koin.core.module.Module
@@ -32,6 +33,8 @@ fun mockModule(scenario: MockScenario): Module = module {
     single<TimelineScreenshotRepository> { MockTimelineScreenshotRepository() }
     // the auto-clean at launch must not delete the user's real screenshots and recordings
     single<MediaFilesRepository> { KeepMediaFilesRepository(createMediaFilesRepository()) }
+    // mock data is not real usage: no consent card, nothing sent
+    single { TelemetryConfig.fromBuildConfig().copy(apiKey = "") }
 }
 
 /** In mock mode, the real media files can be measured but are never deleted. */

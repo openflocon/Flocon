@@ -69,7 +69,7 @@ class TelemetryManagerTest {
     }
 
     @Test
-    fun `undecided user is anonymous and is asked for consent`() {
+    fun `undecided user is asked for consent and nothing is sent`() {
         val preferences = FakePreferences()
         val client = FakeClient()
         val manager = manager(preferences, client)
@@ -77,9 +77,21 @@ class TelemetryManagerTest {
         manager.track(TelemetryEvents.APP_STARTED)
 
         assertTrue(manager.state.value.shouldAskConsent)
-        assertEquals(TelemetryLevel.Anonymous, manager.state.value.level)
+        assertEquals(TelemetryLevel.Disabled, manager.state.value.level)
+        assertTrue(client.events.isEmpty(), "opt-in: nothing is sent before the user answers")
+        assertNull(preferences.installationId)
+    }
+
+    @Test
+    fun `events are sent once the user opted in`() {
+        val client = FakeClient()
+        val manager = manager(FakePreferences(), client)
+
+        manager.setLevel(TelemetryLevel.Anonymous)
+        manager.track(TelemetryEvents.APP_STARTED)
+
+        assertFalse(manager.state.value.shouldAskConsent)
         assertEquals(1, client.events.size)
-        assertNull(preferences.installationId, "anonymous mode must not persist any identifier")
     }
 
     @Test

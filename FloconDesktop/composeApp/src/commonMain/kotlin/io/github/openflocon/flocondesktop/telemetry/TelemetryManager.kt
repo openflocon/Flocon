@@ -11,8 +11,9 @@ data class TelemetryState(
     /** `false` on builds without an API key, or when DO_NOT_TRACK is set: nothing is ever sent. */
     val isAvailable: Boolean,
     val doNotTrack: Boolean,
-    /** `true` once the user answered the consent prompt. */
+    /** `true` once the user answered the consent prompt. Nothing is sent before that. */
     val hasChosen: Boolean,
+    /** [TelemetryLevel.Disabled] until the user explicitly picks another level. */
     val level: TelemetryLevel,
 ) {
     val shouldAskConsent: Boolean get() = isAvailable && !hasChosen
@@ -50,7 +51,8 @@ class TelemetryManager(
 
     fun track(event: String, properties: Map<String, Any> = emptyMap()) {
         val current = _state.value
-        if (!current.isAvailable) return
+        // Opt-in: nothing leaves the computer before the user answered the consent prompt.
+        if (!current.isAvailable || !current.hasChosen) return
 
         val distinctId = when (current.level) {
             TelemetryLevel.Disabled -> return
@@ -88,7 +90,7 @@ class TelemetryManager(
             hasChosen = chosen != null,
             level = when {
                 !config.isAvailable -> TelemetryLevel.Disabled
-                else -> chosen ?: TelemetryLevel.Anonymous
+                else -> chosen ?: TelemetryLevel.Disabled
             },
         )
     }

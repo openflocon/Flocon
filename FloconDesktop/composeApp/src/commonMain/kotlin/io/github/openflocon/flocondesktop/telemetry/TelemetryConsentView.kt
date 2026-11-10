@@ -24,17 +24,16 @@ import flocondesktop.composeapp.generated.resources.telemetry_allow_full
 import flocondesktop.composeapp.generated.resources.telemetry_consent_message
 import flocondesktop.composeapp.generated.resources.telemetry_disable
 import flocondesktop.composeapp.generated.resources.telemetry_learn_more
-import flocondesktop.composeapp.generated.resources.telemetry_stay_anonymous
+import flocondesktop.composeapp.generated.resources.telemetry_share_anonymous
 import flocondesktop.composeapp.generated.resources.telemetry_title
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-const val TELEMETRY_DOC_URL = "https://openflocon.github.io/Flocon/telemetry/"
+const val TELEMETRY_DOC_URL = "https://github.com/openflocon/Flocon/blob/main/docs2/telemetry.md"
 
-/** First-launch consent card. Only displayed on official builds, until the user picks a level. */
+/** First-launch consent card. Only displayed on official builds, until the user picks a level: nothing is sent before. */
 @Composable
 internal fun BoxScope.TelemetryConsentView() {
     val viewModel = koinViewModel<TelemetryViewModel>()
@@ -89,24 +88,32 @@ private fun TelemetryConsentCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FloconButton(
-                containerColor = FloconTheme.colors.accent,
-                onClick = { onLevelSelected(TelemetryLevel.Full) },
-            ) {
-                Text(stringResource(Res.string.telemetry_allow_full), color = FloconTheme.colors.accentInk)
-            }
-            FloconOutlinedButton(
-                borderColor = FloconTheme.colors.accent,
-                onClick = { onLevelSelected(TelemetryLevel.Anonymous) },
-            ) {
-                Text(stringResource(Res.string.telemetry_stay_anonymous), color = FloconTheme.colors.accent)
-            }
-            FloconOutlinedButton(
-                borderColor = FloconTheme.colors.accent,
+            ConsentButton(
+                text = stringResource(Res.string.telemetry_disable),
                 onClick = { onLevelSelected(TelemetryLevel.Disabled) },
-            ) {
-                Text(stringResource(Res.string.telemetry_disable), color = FloconTheme.colors.accent)
-            }
+            )
+            ConsentButton(
+                text = stringResource(Res.string.telemetry_share_anonymous),
+                onClick = { onLevelSelected(TelemetryLevel.Anonymous) },
+            )
+            ConsentButton(
+                text = stringResource(Res.string.telemetry_allow_full),
+                onClick = { onLevelSelected(TelemetryLevel.Full) },
+            )
         }
+    }
+}
+
+/** Same style for every choice: refusing must be as easy as accepting. */
+@Composable
+private fun ConsentButton(
+    text: String,
+    onClick: () -> Unit,
+) {
+    FloconOutlinedButton(
+        borderColor = FloconTheme.colors.accent,
+        onClick = onClick,
+    ) {
+        Text(text, color = FloconTheme.colors.accent)
     }
 }

@@ -13,11 +13,11 @@ enum class TelemetryLevel {
     Full,
 
     /**
-     * Default. A random identifier is generated in memory for each launch and never written to disk:
+     * A random identifier is generated in memory for each launch and never written to disk:
      * Flocon can count sessions and feature usage, but cannot recognise the same user across launches.
      */
     Anonymous,
 
-    /** Nothing is sent. */
+    /** Nothing is sent. Also the effective level until the user answers the consent prompt. */
     Disabled,
 }
