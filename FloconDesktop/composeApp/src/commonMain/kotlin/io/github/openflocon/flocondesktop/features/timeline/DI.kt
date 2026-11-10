@@ -39,6 +39,7 @@ internal val timelineModule = module {
             setTransactionsExpandedByDefaultUseCase = get(),
             consumeTimelineFocusUseCase = get(),
             observeCurrentDeviceIdAndPackageNameUseCase = get(),
+            observeCurrentDeviceAndAppUseCase = get(),
         )
     }
     viewModelOf(::TimelineFilterPanelViewModel)
