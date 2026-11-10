@@ -3,6 +3,8 @@ package io.github.openflocon.flocondesktop.device.pages.memory
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.adb.usecase.SendCommandUseCase
 import io.github.openflocon.flocondesktop.device.PageViewModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,7 @@ class MemoryViewModel(
     sendCommandUseCase: SendCommandUseCase
 ) : PageViewModel(deviceSerial, sendCommandUseCase) {
 
-    private val _uiState = MutableStateFlow(MemoryUiState(emptyList()))
+    private val _uiState = MutableStateFlow(MemoryUiState(persistentListOf()))
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -33,25 +35,25 @@ class MemoryViewModel(
 
     private suspend fun refreshMemory() {
         val output = sendCommand("shell", "dumpsys", "meminfo")
-        val regex = MEM_REGEX.toRegex()
         val items = output.lineSequence()
             .map { it.trim() }
-            .mapNotNull { regex.find(it) }
+            .mapNotNull { MEM_REGEX.find(it) }
             .mapNotNull {
-                try {
-                    MemoryItem(
-                        memoryUsage = formatMemoryUsage(
-                            memoryUsageKB = it.groupValues[1].replace(",", "").toDoubleOrNull()
-                        ),
-                        processName = it.groupValues[2],
-                        pid = it.groupValues[3].toIntOrNull() ?: return@mapNotNull null
-                    )
-                } catch (e: NumberFormatException) {
-                    // Handle parsing errors gracefully (e.g., log the error)
-                    null
-                }
+                val memoryUsageKB = it.groupValues[1].replace(",", "").toDoubleOrNull()
+                val pid = it.groupValues[3].toIntOrNull() ?: return@mapNotNull null
+                Triple(memoryUsageKB ?: 0.0, it.groupValues[2], pid)
             }
-            .toList()
+            // a process is listed in several sections of the dump, and the pid is the list key
+            .distinctBy { (_, _, pid) -> pid }
+            .sortedByDescending { (memoryUsageKB, _, _) -> memoryUsageKB }
+            .map { (memoryUsageKB, processName, pid) ->
+                MemoryItem(
+                    memoryUsage = formatMemoryUsage(memoryUsageKB),
+                    processName = processName,
+                    pid = pid
+                )
+            }
+            .toImmutableList()
 
         _uiState.update { it.copy(list = items) }
     }
@@ -72,6 +74,7 @@ class MemoryViewModel(
     }
 
     companion object {
-        private const val MEM_REGEX = """([\d,]+)K:\s+([a-zA-Z0-9._:-]+)\s+$${"pid"}\s+(\d+)(?:\s+/\s+([a-zA-Z\s]+))?$"""
+        // e.g. "157,332K: com.example.app (pid 1234 / activities)"
+        private val MEM_REGEX = """([\d,]+)K:\s+(\S+)\s+\(pid\s+(\d+)[^)]*\)""".toRegex()
     }
 }

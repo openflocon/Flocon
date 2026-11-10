@@ -30,7 +30,6 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.FloconScrollableTabRow
-import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.TabType
 import org.koin.compose.viewmodel.koinViewModel
@@ -63,62 +62,58 @@ private fun Content(
         pagerState.animateScrollToPage(uiState.contentState.selectedTab.ordinal)
     }
 
-    FloconSurface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FloconScaffold(
-            topBar = {
-                Column(
+    FloconScaffold(
+        topBar = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                FloconScrollableTabRow(
+                    selectedTabIndex = uiState.contentState.selectedTab.ordinal,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    FloconScrollableTabRow(
-                        selectedTabIndex = uiState.contentState.selectedTab.ordinal,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        tabs.forEachIndexed { index, tab ->
-                            FloconTab(
-                                text = tab.title,
-                                isSelected = uiState.contentState.selectedTab == tab,
-                                onSelected = { onAction(DeviceAction.SelectTab(tab)) },
-                                tabType = when (index) {
-                                    0 -> TabType.Start
-                                    tabs.lastIndex -> TabType.End
-                                    else -> TabType.Middle
-                                },
-                            )
-                        }
+                    tabs.forEachIndexed { index, tab ->
+                        FloconTab(
+                            text = tab.title,
+                            isSelected = uiState.contentState.selectedTab == tab,
+                            onSelected = { onAction(DeviceAction.SelectTab(tab)) },
+                            tabType = when (index) {
+                                0 -> TabType.Start
+                                tabs.lastIndex -> TabType.End
+                                else -> TabType.Middle
+                            },
+                        )
                     }
-                    FloconHorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = FloconTheme.colors.line
-                    )
                 }
+                FloconHorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = FloconTheme.colors.line
+                )
             }
-        ) {
-            if (uiState.deviceSerial.isEmpty()) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloconCircularProgressIndicator()
-                }
-            } else {
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = false,
-                    contentPadding = PaddingValues(8.dp),
-                    pageSpacing = 8.dp,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) { index ->
-                    when (tabs[index]) {
-                        DeviceTab.INFORMATION -> InfoPage(uiState.deviceSerial)
-                        DeviceTab.BATTERY -> BatteryPage(uiState.deviceSerial)
-                        DeviceTab.CPU -> CpuPage(uiState.deviceSerial)
-                        DeviceTab.MEMORY -> MemoryPage(uiState.deviceSerial)
-                        DeviceTab.PERMISSION -> PermissionPage(uiState.deviceSerial)
-                    }
+        }
+    ) {
+        if (uiState.deviceSerial.isEmpty()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                FloconCircularProgressIndicator()
+            }
+        } else {
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+                contentPadding = PaddingValues(8.dp),
+                pageSpacing = 8.dp,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) { index ->
+                when (tabs[index]) {
+                    DeviceTab.INFORMATION -> InfoPage(uiState.deviceSerial)
+                    DeviceTab.BATTERY -> BatteryPage(uiState.deviceSerial)
+                    DeviceTab.CPU -> CpuPage(uiState.deviceSerial)
+                    DeviceTab.MEMORY -> MemoryPage(uiState.deviceSerial)
+                    DeviceTab.PERMISSION -> PermissionPage(uiState.deviceSerial)
                 }
             }
         }

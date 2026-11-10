@@ -695,4 +695,8 @@
     <string name="desktop_update_installed">Installed: %1$s</string>
     <string name="timeline_transactions_expanded">Expand transactions by default</string>
     <string name="database_transaction_nested">Nested transaction</string>
+    <string name="device_memory_column_process">Process</string>
+    <string name="device_memory_column_pid">PID</string>
+    <string name="device_memory_column_usage">Memory</string>
+    <string name="device_memory_empty">No process memory info yet</string>
 </resources>

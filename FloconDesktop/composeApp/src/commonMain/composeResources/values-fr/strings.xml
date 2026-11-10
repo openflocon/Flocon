@@ -535,4 +535,8 @@
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
     <string name="database_transaction_nested">Transaction imbriquée</string>
+    <string name="device_memory_column_process">Processus</string>
+    <string name="device_memory_column_pid">PID</string>
+    <string name="device_memory_column_usage">Mémoire</string>
+    <string name="device_memory_empty">Pas encore d\'infos mémoire par processus</string>
 </resources>

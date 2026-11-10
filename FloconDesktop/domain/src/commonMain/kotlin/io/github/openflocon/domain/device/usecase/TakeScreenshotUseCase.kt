@@ -1,9 +1,8 @@
 package io.github.openflocon.domain.device.usecase
 
-import io.github.openflocon.domain.adb.ADB_NOT_AVAILABLE_OVER_WIFI
-import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
+import io.github.openflocon.domain.adb.usecase.ADB_NOT_AVAILABLE_OVER_WIFI
 import io.github.openflocon.domain.adb.usecase.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
