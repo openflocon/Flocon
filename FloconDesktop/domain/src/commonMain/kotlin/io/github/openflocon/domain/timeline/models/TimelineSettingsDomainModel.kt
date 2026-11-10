@@ -5,6 +5,7 @@ data class TimelineSettingsDomainModel(
     val invertList: Boolean = false, // the newest event at the bottom instead of the top
     val pinPanel: Boolean = false, // the detail panel of an event stays next to the list instead of covering it
     val graph: Boolean = true, // the graph of the session instead of the list
+    val clusterEvents: Boolean = true, // the graph merges the events closer than a few px in one marker
     val mergePlugins: Boolean = false, // the graph packs every type in one set of rows instead of one lane per type
     val selectedSources: Set<TimelineSource> = TimelineSource.entries.toSet(), // the sources displayed: the chips at the top of the timeline
     val screenshots: Boolean = false, // a screenshot of the app is taken at a regular interval, to show next to the events

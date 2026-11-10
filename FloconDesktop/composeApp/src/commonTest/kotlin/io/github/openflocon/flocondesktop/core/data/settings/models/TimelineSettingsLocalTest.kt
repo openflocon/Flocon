@@ -77,4 +77,13 @@ class TimelineSettingsLocalTest {
         val domain = TimelineSettingsDomainModel(mergePlugins = true)
         assertEquals(domain, domain.toLocal().toDomain())
     }
+
+    @Test
+    fun `the clustering is on when missing from the stored json and round trips`() {
+        assertEquals(true, TimelineSettingsLocal().toDomain().clusterEvents)
+
+        val domain = TimelineSettingsDomainModel(clusterEvents = false)
+        assertEquals(false, domain.toLocal().clusterEvents)
+        assertEquals(domain, domain.toLocal().toDomain())
+    }
 }

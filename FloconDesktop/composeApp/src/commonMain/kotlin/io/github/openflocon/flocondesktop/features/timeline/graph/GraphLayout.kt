@@ -51,10 +51,10 @@ internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphVie
 
 /**
  * The graph showing the zone [fromMs]..[toMs] centered, with a margin on each side. A zone shorter than [MIN_FOCUS_WIDTH_MS]
- * is widened to it, and the zoom stays between its limits: the zone remains centered.
+ * is widened to [minWidthMs], and the zoom stays between its limits: the zone remains centered.
  */
-internal fun focusedViewport(fromMs: Long, toMs: Long, trackWidthPx: Float): GraphViewport {
-    val width = max(toMs - fromMs, MIN_FOCUS_WIDTH_MS)
+internal fun focusedViewport(fromMs: Long, toMs: Long, trackWidthPx: Float, minWidthMs: Long = MIN_FOCUS_WIDTH_MS): GraphViewport {
+    val width = max(toMs - fromMs, minWidthMs)
     val visibleMs = width * (1 + 2 * FOCUS_MARGIN)
     val centerMs = (fromMs + toMs) / 2.0
     val pxPerMs = (trackWidthPx / visibleMs).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
@@ -226,9 +226,28 @@ internal fun GraphUiModel.hitTest(viewport: GraphViewport, x: Float, yInContent:
     return null
 }
 
-// the most recent event: the one that ends last, the latest started when several end together
+/**
+ * The group of events under a point of the track, same lookup as [hitTest]. The marker of a group is as wide as
+ * clusterWidthPx at the zoom of the viewport, with the margin of a few px.
+ */
+internal fun GraphUiModel.hitTestCluster(viewport: GraphViewport, x: Float, yInContent: Float): GraphClusterUiModel? {
+    val tops = laneTops()
+    val laneIndex = tops.indexOfLast { it <= yInContent }.takeIf { it >= 0 } ?: return null
+    val lane = lanes[laneIndex]
+    val rowIndex = ((yInContent - tops[laneIndex]) / RowHeightPx).toInt()
+    val row = lane.clusters.getOrNull(rowIndex) ?: return null
+    return row.firstOrNull { cluster ->
+        val left = viewport.clusterLeftPx(cluster)
+        x >= left - HitTolerancePx && x <= left + clusterWidthPx(cluster, viewport.pxPerMs) + HitTolerancePx
+    }
+}
+
+// the most recent event: the one that ends last, the latest started when several end together. The ones of a group count
 internal fun GraphUiModel.latestEvent(): GraphEventUiModel? = lanes
-    .flatMap { lane -> lane.rows.map { row -> row.lastOrNull() } }
+    .flatMap { lane ->
+        lane.rows.map { row -> row.lastOrNull() } +
+            lane.clusters.map { row -> row.lastOrNull()?.events?.maxWithOrNull(compareBy({ it.endMs }, { it.startMs })) }
+    }
     .filterNotNull()
     .maxWithOrNull(compareBy({ it.endMs }, { it.startMs }))
 
@@ -241,6 +260,9 @@ internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
     lanes.forEachIndexed { laneIndex, lane ->
         val rowIndex = lane.rows.indexOfFirst { row -> row.any { it.key == event.key } }
         if (rowIndex >= 0) return tops[laneIndex] + rowIndex * RowHeightPx
+        // an event of a group is in the row of its marker
+        val clusterRowIndex = lane.clusters.indexOfFirst { row -> row.any { cluster -> cluster.events.any { it.key == event.key } } }
+        if (clusterRowIndex >= 0) return tops[laneIndex] + clusterRowIndex * RowHeightPx
     }
     return null
 }

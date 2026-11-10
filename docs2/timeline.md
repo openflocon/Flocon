@@ -41,6 +41,15 @@ The **Graph** view shows one session at a time on a time axis, with the app star
 | **Fit** | Shows the whole session again and follows the new events |
 | `‹` / `›` | Previous / next session |
 
+### Grouped events
+
+Events closer than about 14 px on the graph are merged into one rounded marker, so a burst of 100 events takes one slot of a row instead of 100 rows.
+
+- **The marker** is cut in one segment per type (in the order of the lanes), each as wide as its share of the events (never under 8 %), with the same colors as the lanes. The total number of events is written on top. A marker with failed events has a small red badge on its top right corner with their number, and the failed events are tinted red in the popover.
+- **Click a marker** to open a popover: the number of events and the time the group spans, then one chip per type with its count (click a chip to hide or show that type), and the list of **every event** of the group in start order, filtered by the chips. Each row gives the time since the start of the group, the type, the duration, the name and the status code of a network call; click a row to open the event in the detail panel. **Zoom on the group** zooms on it, **Show every event** opens the group into rows, like without grouping: it is the way to see events at the very same instant, which no zoom can separate. Turning the option off and on again groups them back.
+- **Zooming in splits the markers**, until each event is back to its own bar or diamond. Events are grouped by their start, whatever their duration.
+- **Turn it off** with **Cluster close events** in the overflow menu of the timeline (on by default, remembered).
+
 ---
 
 ## Logs from your app

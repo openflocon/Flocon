@@ -35,6 +35,10 @@ class TimelineSettingsUseCasesTest {
             state.value = state.value.copy(mergePlugins = mergePlugins)
         }
 
+        override suspend fun setClusterEvents(clusterEvents: Boolean) {
+            state.value = state.value.copy(clusterEvents = clusterEvents)
+        }
+
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
             state.value = state.value.copy(selectedSources = sources)
         }
@@ -76,6 +80,18 @@ class TimelineSettingsUseCasesTest {
 
         assertEquals(
             TimelineSettingsDomainModel(graph = true, mergePlugins = true),
+            ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `the clustering is on by default and set without changing the graph`() = runBlocking {
+        assertEquals(true, ObserveTimelineSettingsUseCase(repository)().first().clusterEvents)
+
+        SetTimelineClusterEventsUseCase(repository)(false)
+
+        assertEquals(
+            TimelineSettingsDomainModel(graph = true, clusterEvents = false),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }

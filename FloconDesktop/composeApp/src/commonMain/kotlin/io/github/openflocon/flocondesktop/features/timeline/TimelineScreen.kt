@@ -379,6 +379,7 @@ internal fun TimelineContent(
                 screenshotsEnabled = settings.screenshots,
                 screenshotsAvailable = screenshotsStatus != TimelineScreenshotsStatus.Unavailable,
                 onTurnOnScreenshots = { onAction(TimelineAction.SetScreenshots(true)) },
+                clusterEvents = settings.clusterEvents,
                 focus = graphFocus,
                 onFocusApplied = { onAction(TimelineAction.GraphFocusApplied) },
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = FloconTheme.spacing.large),
