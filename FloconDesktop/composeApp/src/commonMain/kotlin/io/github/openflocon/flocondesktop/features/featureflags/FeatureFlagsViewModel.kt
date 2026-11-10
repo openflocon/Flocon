@@ -24,6 +24,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -85,6 +87,10 @@ class FeatureFlagsViewModel(
     }
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(persistentListOf())
+
+    val numberOfFlags: StateFlow<Int?> = rows.map { it.size }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
 
     fun onStateToggled(state: FeatureFlagStateUiModel) {
         _selectedStates.update { if (state in it) it - state else it + state }
