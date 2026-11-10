@@ -10,7 +10,7 @@ internal const val INSTANT_OCCUPANCY_MS = 320L
  * Places the events of a lane on the first row where they do not overlap the previous ones.
  * Pure: sorted by (start, key), so the same events always give the same rows.
  */
-internal fun packLane(lane: GraphLane, events: List<GraphEventUiModel>): GraphLaneUiModel {
+internal fun packLane(lane: GraphLane?, events: List<GraphEventUiModel>): GraphLaneUiModel {
     val rowEnds = ArrayList<Long>()
     val rows = ArrayList<MutableList<GraphEventUiModel>>()
     for (event in events.sortedWith(compareBy({ it.startMs }, { it.key }))) {
@@ -33,10 +33,19 @@ internal fun packLanes(events: List<GraphEventUiModel>): List<GraphLaneUiModel> 
     return GraphLane.entries.mapNotNull { lane -> byLane[lane]?.let { packLane(lane, it) } }
 }
 
-internal fun buildGraphUiModel(events: List<GraphEventUiModel>, sessionDurationMs: Long, sessionStartTimestamp: Long = 0L, hasAppStart: Boolean = false): GraphUiModel {
+// every type in one lane: the rows are shared, a type is told by its color
+internal fun packSingleLane(events: List<GraphEventUiModel>): List<GraphLaneUiModel> = if (events.isEmpty()) emptyList() else listOf(packLane(null, events))
+
+internal fun buildGraphUiModel(
+    events: List<GraphEventUiModel>,
+    sessionDurationMs: Long,
+    sessionStartTimestamp: Long = 0L,
+    hasAppStart: Boolean = false,
+    single: Boolean = false,
+): GraphUiModel {
     val completed = events.filter { it.lane == GraphLane.Network && it.durationMs > 0L }
     return GraphUiModel(
-        lanes = packLanes(events),
+        lanes = if (single) packSingleLane(events) else packLanes(events),
         sessionDurationMs = sessionDurationMs,
         sessionStartTimestamp = sessionStartTimestamp,
         hasAppStart = hasAppStart,
