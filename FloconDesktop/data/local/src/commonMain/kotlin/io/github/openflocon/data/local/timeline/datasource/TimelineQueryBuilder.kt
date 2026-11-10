@@ -118,6 +118,9 @@ private val NETWORK_SPEED = buildString {
 private const val NETWORK_CONTENT = "CASE WHEN type = 'WEBSOCKET' THEN 'WEBSOCKET' " +
     "WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
 
+// a gRPC call url is the server authority and its method is the full method name: the title is the url of the call, so the host and the path are told apart like an http one
+private const val NETWORK_TITLE =
+    "CASE WHEN type = 'GRPC' THEN 'grpc://' || request_url || '/' || LTRIM(request_method, '/') ELSE request_url END"
 private const val NETWORK_HOST = "request_domainFormatted"
 private const val NETWORK_PATH = "request_queryFormatted" // the path and the query, without the domain
 
@@ -345,7 +348,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_NETWORK' AS kind, callId AS id, request_startTime AS ts, " +
-                        "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
+                        "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
@@ -365,7 +368,7 @@ private fun buildUnion(
                 branch(
                     select = "'$KIND_NETWORK_RESPONSE' AS kind, callId AS id, " +
                         "request_startTime + CAST(response_durationMs AS INTEGER) AS ts, " +
-                        "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
+                        "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +

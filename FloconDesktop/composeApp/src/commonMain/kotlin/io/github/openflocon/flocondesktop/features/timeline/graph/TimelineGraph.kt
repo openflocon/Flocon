@@ -983,9 +983,8 @@ private fun DrawScope.drawInstantFullLabel(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
-    // a log marker has a wide range of colors: the text is picked by contrast against it. The other lanes keep their ink
-    val textColor = if (event.logGlyph != null) readableInkOn(fill) else palette.ink
-    val text = measurer.measure(event.name, labelStyle.copy(color = textColor, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    // the lanes (a yellow one, the log markers) have a wide range of colors: the text is picked by contrast against the fill
+    val text = measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through

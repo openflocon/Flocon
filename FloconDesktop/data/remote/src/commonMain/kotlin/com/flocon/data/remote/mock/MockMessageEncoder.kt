@@ -125,7 +125,7 @@ internal class MockMessageEncoder(private val json: Json) {
             json.encodeToString(
                 FloconNetworkRequestDataModel(
                     floconCallId = callId,
-                    floconNetworkType = "http",
+                    floconNetworkType = if (call.grpcStatus != null) "grpc" else "http",
                     url = call.url,
                     method = call.method,
                     startTime = timestamp,
@@ -144,9 +144,10 @@ internal class MockMessageEncoder(private val json: Json) {
             json.encodeToString(
                 FloconNetworkResponseDataModel(
                     floconCallId = callId,
-                    floconNetworkType = "http",
+                    floconNetworkType = if (call.grpcStatus != null) "grpc" else "http",
                     durationMs = call.duration.inWholeMicroseconds / 1000.0,
-                    responseHttpCode = call.status.takeIf { call.error == null },
+                    responseHttpCode = call.status.takeIf { call.error == null && call.grpcStatus == null },
+                    responseGrpcStatus = call.grpcStatus,
                     responseContentType = call.contentType ?: call.responseHeaders.entries
                         .firstOrNull { it.key.equals("content-type", ignoreCase = true) }?.value,
                     responseBody = call.responseBody,

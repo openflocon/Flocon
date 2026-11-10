@@ -52,6 +52,7 @@ sealed interface MockEvent {
         val contentType: String? = null,
         val error: String? = null, // the call failed without an http response (timeout, no network…)
         val pending: Boolean = false, // no response yet
+        val grpcStatus: String? = null, // set for a gRPC call: [url] is the server authority and [method] the full method name
     ) : MockEvent
 
     data class TimelineLog(
