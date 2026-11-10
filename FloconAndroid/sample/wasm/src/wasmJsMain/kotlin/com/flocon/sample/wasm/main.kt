@@ -8,10 +8,12 @@ import coil3.SingletonImageLoader
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room3.room
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.deeplinks.FloconDeeplinks
 import io.github.openflocon.flocon.ktor.FloconKtorPlugin
 import io.github.openflocon.flocon.myapplication.multi.DummyHttpKtorCaller
@@ -41,7 +43,9 @@ fun main() {
         install(FloconDashboard)
         install(FloconTable)
         install(FloconAnalytics)
+        install(FloconAccessibility)
         install(FloconFeatureFlags)
+        install(FloconTimeline)
         install(FloconPreferences)
         install(FloconDatabase) {
             room()
@@ -105,6 +109,10 @@ private fun registerWasmSampleFeatures() {
     }
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 does not support Wasm")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom2, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom2, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not available on Wasm")
     SampleFeatures.unavailable(SampleFeature.Files, "No file browsing in the browser")
     SampleFeatures.unavailable(SampleFeature.CrashReporter, "Crashes are not captured nor stored in the browser")

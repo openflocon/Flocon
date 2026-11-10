@@ -30,7 +30,10 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
             val index = _stack.indexOfFirst { it is PanelRoute }
 
             if (index != -1) {
-                _stack[index] = route
+                // replacing a panel by an equal route duplicates its key in the nav display
+                if (_stack[index] != route) {
+                    _stack[index] = route
+                }
             } else {
                 _stack.add(route)
             }

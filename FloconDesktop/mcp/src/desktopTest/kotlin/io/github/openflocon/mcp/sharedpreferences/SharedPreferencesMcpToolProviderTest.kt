@@ -38,7 +38,7 @@ class SharedPreferencesMcpToolProviderTest {
         selectedApps = mapOf("pixel" to "io.flocon.sample"),
     )
     private val repository = FakeSharedPreferencesRepository(
-        files = listOf(DeviceSharedPreferenceDomainModel(id = "settings", name = "settings")),
+        files = listOf(DeviceSharedPreferenceDomainModel(id = "settings", name = "settings", type = "DataStore")),
         values = mapOf(
             "settings" to listOf(
                 SharedPreferenceRowDomainModel("theme", Value.StringValue("dark")),
@@ -79,6 +79,7 @@ class SharedPreferencesMcpToolProviderTest {
         assertEquals(1, repository.askedForFiles)
         val files = result["sharedPreferences"]!!.jsonArray
         assertEquals(listOf("settings"), files.map { it.jsonObject["sharedPreferenceId"]!!.jsonPrimitive.content })
+        assertEquals(listOf("DataStore"), files.map { it.jsonObject["type"]!!.jsonPrimitive.content })
     }
 
     @Test
@@ -167,5 +168,11 @@ private class FakeSharedPreferencesRepository(
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
         value: Value,
+    ) = error("not used")
+
+    override suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
     ) = error("not used")
 }

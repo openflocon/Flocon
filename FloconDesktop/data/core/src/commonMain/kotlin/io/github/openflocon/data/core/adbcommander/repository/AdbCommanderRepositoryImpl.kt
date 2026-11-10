@@ -31,6 +31,8 @@ class AdbCommanderRepositoryImpl(
 
     override fun observeHistory(deviceId: String): Flow<List<AdbCommandHistoryDomainModel>> = localDataSource.observeHistory(deviceId).flowOn(dispatcherProvider.data)
 
+    override fun observeHistoryItem(id: Long): Flow<AdbCommandHistoryDomainModel?> = localDataSource.observeHistoryItem(id).flowOn(dispatcherProvider.data)
+
     override suspend fun addToHistory(
         deviceId: String,
         command: String,

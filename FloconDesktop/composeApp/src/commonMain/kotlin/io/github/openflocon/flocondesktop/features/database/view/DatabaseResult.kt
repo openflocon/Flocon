@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.database.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
@@ -51,6 +52,9 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiM
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeader
+import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -91,6 +95,7 @@ fun DatabaseResult(
                 var selectedItem by remember(result) {
                     mutableStateOf<DetailResultItem?>(null)
                 }
+                val horizontalScrollState = rememberScrollState()
 
                 Column(
                     modifier = Modifier
@@ -113,10 +118,17 @@ fun DatabaseResult(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    ResultColumnsHeader(
+                        columns = result.columns,
+                        columnsWidth = columnsWidth,
+                        scrollState = horizontalScrollState,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .horizontalScroll(rememberScrollState())
+                            .horizontalScroll(horizontalScrollState)
                             .onPreviewKeyEvent { event ->
                                 if (event.type != KeyEventType.KeyDown) {
                                     return@onPreviewKeyEvent false
@@ -175,33 +187,6 @@ fun DatabaseResult(
                                 }
                             }
                     ) {
-                        stickyHeader {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(FloconTheme.colors.bg100)
-                                    .height(FloconTheme.sizes.headerHeight)
-                                    .padding(horizontal = FloconTheme.spacing.small),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                result.columns
-                                    .fastForEachIndexed { index, item ->
-                                        Text(
-                                            item,
-                                            style = FloconTheme.typography.bodySmall.copy(
-                                                fontWeight = FontWeight.Medium,
-                                                fontFamily = FontFamily.Monospace,
-                                            ),
-                                            color = FloconTheme.colors.inkFaint,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier
-                                                .width(columnsWidth)
-                                                .padding(all = FloconTheme.spacing.extraSmall),
-                                        )
-                                    }
-                            }
-                        }
                         itemsIndexed(result.rows) { index, row ->
                             val selected = index == selectedItem?.index
 
@@ -282,6 +267,32 @@ private fun DatabaseResultRow(
 }
 
 @Composable
+private fun ResultColumnsHeader(
+    columns: List<String>,
+    columnsWidth: Dp,
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .floconTableHeader()
+            .horizontalScroll(scrollState)
+            .padding(horizontal = FloconTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        columns.fastForEach { column ->
+            FloconTableHeaderLabel(
+                text = column,
+                uppercase = false,
+                modifier = Modifier
+                    .width(columnsWidth)
+                    .padding(all = FloconTheme.spacing.extraSmall),
+            )
+        }
+    }
+}
+
+@Composable
 private fun ResultHeader(
     result: QueryResultUiModel.Values,
     onExportCsvClicked: () -> Unit,
@@ -289,7 +300,7 @@ private fun ResultHeader(
 ) {
     Row(
         modifier
-            .background(FloconTheme.colors.bg100)
+            .floconTableHeaderBackground()
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -311,7 +322,7 @@ private fun ResultHeader(
             Image(
                 imageVector = Icons.AutoMirrored.Outlined.DriveFileMove,
                 modifier = Modifier.fillMaxSize(),
-                colorFilter = ColorFilter.tint(FloconTheme.colors.inkFaint),
+                colorFilter = ColorFilter.tint(FloconTheme.colors.ink),
                 contentDescription = null,
             )
         }

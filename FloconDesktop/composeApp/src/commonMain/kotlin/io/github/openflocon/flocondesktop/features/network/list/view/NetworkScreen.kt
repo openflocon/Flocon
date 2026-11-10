@@ -1,8 +1,8 @@
 package io.github.openflocon.flocondesktop.features.network.list.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,8 +18,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
@@ -34,15 +36,15 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiS
 import io.github.openflocon.flocondesktop.features.network.list.model.previewGraphQlItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkUiState
-import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkPageHeader
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkRowsList
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkTopBar
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkWindows
 import io.github.openflocon.flocondesktop.features.network.list.view.components.networkKeyboardNavigation
 import io.github.openflocon.flocondesktop.features.network.list.view.header.NetworkItemHeader
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.floconIsland
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -65,6 +67,9 @@ fun NetworkScreen(
     )
 }
 
+private const val FocusRetryCount = 8
+private const val FocusRetryDelayMs = 100L
+
 @Composable
 fun NetworkScreen(
     uiState: NetworkUiState,
@@ -76,6 +81,22 @@ fun NetworkScreen(
 ) {
     val lazyListState = rememberLazyListState()
     val columnWidths: NetworkItemColumnWidths = remember { NetworkItemColumnWidths() }
+    val listFocusRequester = remember { FocusRequester() }
+    var listHasFocus by remember { mutableStateOf(false) }
+
+    // a click on a row does not focus anything on desktop, so Up / Down would never reach the key handler.
+    // The first selection also swaps the scene (list alone -> list + panel): the previous list instance
+    // fades out and takes the focus with it, so the focus is taken back while the transition runs.
+    LaunchedEffect(uiState.contentState.selectedRequestId) {
+        if (uiState.contentState.selectedRequestId != null) {
+            repeat(FocusRetryCount) {
+                if (!listHasFocus) {
+                    runCatching { listFocusRequester.requestFocus() }
+                }
+                delay(FocusRetryDelayMs)
+            }
+        }
+    }
 
     LaunchedEffect(uiState.settings.autoScroll, rows.itemCount) {
         if (uiState.settings.autoScroll && rows.itemCount != -1) {
@@ -92,29 +113,21 @@ fun NetworkScreen(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-                .clip(FloconTheme.shapes.large)
-                .floconIsland(FloconTheme.colors.bg100)
+                .networkKeyboardNavigation(
+                    rows = rows,
+                    uiState = uiState,
+                    onAction = onAction,
+                )
+                .focusRequester(listFocusRequester)
+                .onFocusChanged { listHasFocus = it.hasFocus }
+                .focusable()
                 .clickable(
                     interactionSource = null,
                     indication = null,
                     enabled = uiState.contentState.selectedRequestId != null,
                     onClick = { onAction(NetworkAction.ClosePanel) },
                 )
-                .networkKeyboardNavigation(
-                    rows = rows,
-                    uiState = uiState,
-                    onAction = onAction,
-                )
-                .mascotPlatform()
         ) {
-            NetworkPageHeader(
-                requestCount = rows.itemCount,
-                modifier = Modifier.padding(
-                    top = FloconTheme.spacing.small,
-                    start = FloconTheme.spacing.small,
-                    end = FloconTheme.spacing.small
-                )
-            )
             NetworkTopBar(
                 filterText = filterText,
                 filterState = uiState.filterState,
@@ -122,10 +135,13 @@ fun NetworkScreen(
                 onAction = onAction,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = FloconTheme.spacing.small),
+                    .mascotPlatform(),
             )
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .floconPanel()
             ) {
                 NetworkItemHeader(
                     columnWidths = columnWidths,

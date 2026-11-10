@@ -4,13 +4,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import java.io.File
 
-actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
+actual fun getDatabaseFile(): File {
     val folder = File(System.getProperty("user.home"), ".flocon")
     folder.mkdirs()
-    val dbFile = File(folder, "flocon_room.db")
+    return File(folder, "flocon_room.db")
+}
+
+actual fun getMockDatabaseFile(): File = File(File(System.getProperty("user.home"), ".flocon/mock"), "flocon_room.db")
+
+actual fun getDatabaseBuilder(file: File): RoomDatabase.Builder<AppDatabase> {
     // UNCOMMENT TO TEST ON AN EMPTY DB
-    // dbFile.delete()
+    // file.delete()
     return Room.databaseBuilder<AppDatabase>(
-        name = dbFile.absolutePath,
+        name = file.absolutePath,
     )
 }

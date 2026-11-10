@@ -4,6 +4,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.EntryProviderScope
@@ -13,6 +14,7 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import dev.chrisbanes.haze.rememberHazeState
 import kotlin.collections.listOf
 
 @Composable
@@ -23,21 +25,25 @@ fun <T : Any> FloconNavigation(
     sceneDecoratorStrategies: List<SceneDecoratorStrategy<T>> = emptyList(),
     builder: EntryProviderScope<T>.() -> Unit
 ) {
-    NavDisplay(
-        backStack = navigationState.stack,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-        popTransitionSpec = { fadeIn() togetherWith fadeOut() },
-        predictivePopTransitionSpec = { fadeIn() togetherWith fadeOut() },
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        sceneStrategies = sceneStrategies,
-        sceneDecoratorStrategies = sceneDecoratorStrategies,
-        onBack = { navigationState.back(1) }, // TODO
-        entryProvider = entryProvider {
-            builder()
-        },
-        modifier = modifier
-    )
+    val hazeState = rememberHazeState()
+
+    CompositionLocalProvider(LocalHazeState provides hazeState) {
+        NavDisplay(
+            backStack = navigationState.stack,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            popTransitionSpec = { fadeIn() togetherWith fadeOut() },
+            predictivePopTransitionSpec = { fadeIn() togetherWith fadeOut() },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            sceneStrategies = sceneStrategies,
+            sceneDecoratorStrategies = sceneDecoratorStrategies,
+            onBack = { navigationState.back(1) }, // TODO
+            entryProvider = entryProvider {
+                builder()
+            },
+            modifier = modifier
+        )
+    }
 }

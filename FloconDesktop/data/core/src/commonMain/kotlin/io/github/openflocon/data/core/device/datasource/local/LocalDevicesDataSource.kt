@@ -3,6 +3,7 @@ package io.github.openflocon.data.core.device.datasource.local
 import io.github.openflocon.data.core.device.datasource.local.model.InsertResult
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,8 @@ interface LocalDevicesDataSource {
     suspend fun getDeviceAppByPackage(deviceId: DeviceId, packageName: AppPackageName): DeviceAppDomainModel?
     fun observeDeviceAppByPackage(deviceId: DeviceId, packageName: AppPackageName): Flow<DeviceAppDomainModel?>
     // endregion
+
+    suspend fun saveConnectionType(deviceId: DeviceId, connectionType: DeviceConnectionType)
 
     suspend fun saveInstalledPlugins(deviceId: DeviceId, appPackageName: AppPackageName, installedPlugins: Set<String>?)
 

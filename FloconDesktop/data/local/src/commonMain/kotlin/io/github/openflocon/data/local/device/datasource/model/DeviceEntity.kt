@@ -9,4 +9,5 @@ data class DeviceEntity(
     val deviceId: String,
     val deviceName: String,
     val platform: String,
+    val connectionType: String = "default",
 )

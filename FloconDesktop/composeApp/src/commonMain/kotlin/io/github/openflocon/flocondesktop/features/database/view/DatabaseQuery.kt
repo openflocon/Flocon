@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -31,6 +33,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,8 +51,8 @@ import flocondesktop.composeapp.generated.resources.database_run_query
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
-import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.FloconToggleSwitch
 import io.github.openflocon.library.designsystem.theme.FloconColors
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -84,55 +87,15 @@ class ColorsTransformation(
 ) : VisualTransformation {
 
     private fun buildAnnotatedStringWithColors(text: AnnotatedString): AnnotatedString = buildAnnotatedString {
-        val sqlKeywords = listOf(
-            "SELECT", "FROM", "WHERE", "AND", "OR", "INSERT", "INTO", "VALUES",
-            "UPDATE", "SET", "DELETE", "CREATE", "TABLE", "DROP", "ALTER",
-            "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "AS", "DISTINCT",
-            "GROUP", "BY", "ORDER", "LIMIT", "HAVING"
-        )
-
-        // Regex to split the SQL text into tokens:
-        // - block comments /* ... */
-        // - string literals '...'
-        // - numbers
-        // - words and whitespace
-        // - any other characters
-        val regex = Regex(
-            """(/\*[\s\S]*?\*/|'[^']*'|\b\d+\b|\b\w+\b|\s+|.)""",
-            RegexOption.MULTILINE
-        )
-
-        val matches = regex.findAll(text.text)
-        for (match in matches) {
-            val token = match.value
-            val upper = token.uppercase()
-
-            when {
-                // Block comment: /* ... */
-                token.startsWith("/*") && token.endsWith("*/") -> withStyle(
-                    SpanStyle(color = colorPalette.comments)
-                ) { append(token) }
-
-                // String literal: '...'
-                token.startsWith("'") && token.endsWith("'") -> withStyle(
-                    SpanStyle(color = colorPalette.stringColor)
-                ) { append(token) }
-
-                // Numeric literal
-                token.matches(Regex("\\d+")) -> withStyle(
-                    SpanStyle(color = colorPalette.numberColor)
-                ) { append(token) }
-
-                // SQL keyword
-                sqlKeywords.contains(upper.trim()) -> withStyle(
-                    SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
-                ) { append(token) }
-
-                // Default text color
-                else -> withStyle(
-                    SpanStyle(color = colorPalette.textColor)
-                ) { append(token) }
+        for (token in sqlTokens(text.text)) {
+            val style = when (token.type) {
+                SqlTokenType.Comment -> SpanStyle(color = colorPalette.comments)
+                SqlTokenType.String -> SpanStyle(color = colorPalette.stringColor)
+                SqlTokenType.Number -> SpanStyle(color = colorPalette.numberColor)
+                SqlTokenType.Keyword -> SpanStyle(color = colorPalette.keywordColor, fontWeight = FontWeight.Bold)
+                SqlTokenType.Text -> SpanStyle(color = colorPalette.textColor)
             }
+            withStyle(style) { append(token.text) }
         }
     }
 
@@ -237,18 +200,26 @@ fun DatabaseQuery(
             }
 
             Row(
+                modifier = Modifier
+                    .height(FloconTheme.sizes.controlHeight)
+                    .toggleable(
+                        value = autoUpdate,
+                        role = Role.Switch,
+                        // no hover / press highlight (it is tinted with the accent color)
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onValueChange = {
+                            onAction(DatabaseTabAction.UpdateAutoUpdate(it))
+                        },
+                    )
+                    .padding(horizontal = FloconTheme.spacing.extraSmall),
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FloconCheckbox(
-                    checked = autoUpdate,
-                    onCheckedChange = {
-                        onAction(DatabaseTabAction.UpdateAutoUpdate(it))
-                    },
-                )
+                FloconToggleSwitch(checked = autoUpdate, width = 44.dp, height = 24.dp)
                 Text(
                     stringResource(Res.string.auto_update),
-                    color = colors.inkMuted,
+                    color = if (autoUpdate) colors.ink else colors.inkMuted,
                     style = FloconTheme.typography.bodyMedium
                 )
             }

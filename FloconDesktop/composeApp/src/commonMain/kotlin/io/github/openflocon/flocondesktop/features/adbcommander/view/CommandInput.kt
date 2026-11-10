@@ -45,8 +45,6 @@ import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.adb_commander_execute
 import flocondesktop.composeapp.generated.resources.adb_commander_input_placeholder
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
-import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.HistoryEntryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -168,11 +166,6 @@ fun CommandInput(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            FeatureDocButton(
-                doc = FeatureDoc.AdbCommander,
-                modifier = Modifier.align(Alignment.CenterVertically),
-            )
-
             // Clear/Delete icon
             Box(
                 modifier = Modifier.clip(RoundedCornerShape(2.dp)).clickable {
@@ -230,7 +223,7 @@ fun CommandInput(
                         if (isInputEmpty) alpha = 0.6f
                     }
             ) {
-                val contentColor = FloconTheme.colors.bg100
+                val contentColor = FloconTheme.colors.floating
                 Row(
                     Modifier.padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),

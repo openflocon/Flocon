@@ -75,6 +75,11 @@ val okHttpClient = OkHttpClient.Builder()
     .build()
 ```
 
+!!! note "OkHttp version"
+    Flocon is compatible with OkHttp **4.12+ and 5.x**. It declares OkHttp 4.12.0 as its minimum version,
+    so your app keeps the OkHttp version it already uses: Gradle resolves the highest version in your dependency graph
+    (OkHttp 5.x if your app uses it, 4.12.0 otherwise).
+
 ---
 
 ### With Ktor (Kotlin Multiplatform)

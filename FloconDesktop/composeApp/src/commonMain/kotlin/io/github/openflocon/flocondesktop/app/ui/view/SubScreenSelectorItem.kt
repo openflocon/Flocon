@@ -3,12 +3,14 @@ package io.github.openflocon.flocondesktop.app.ui.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.NetworkWifi
+import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StackedBarChart
 import androidx.compose.material.icons.outlined.Storage
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.menu_item_accessibility
 import flocondesktop.composeapp.generated.resources.menu_item_adbCommander
 import flocondesktop.composeapp.generated.resources.menu_item_analytics
 import flocondesktop.composeapp.generated.resources.menu_item_crashReporter
@@ -32,6 +35,7 @@ import flocondesktop.composeapp.generated.resources.menu_item_settings
 import flocondesktop.composeapp.generated.resources.menu_item_sharedPreferences
 import flocondesktop.composeapp.generated.resources.menu_item_tables
 import flocondesktop.composeapp.generated.resources.menu_item_timeline
+import flocondesktop.composeapp.generated.resources.menu_item_webview
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -41,6 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.Analytics -> Res.string.menu_item_analytics
     SubScreen.FeatureFlags -> Res.string.menu_item_feature_flags
+    SubScreen.Accessibility -> Res.string.menu_item_accessibility
     SubScreen.Network -> Res.string.menu_item_network
     SubScreen.Database -> Res.string.menu_item_database
     SubScreen.Files -> Res.string.menu_item_files
@@ -53,6 +58,7 @@ fun SubScreen.displayName(): StringResource = when (this) {
     SubScreen.AdbCommander -> Res.string.menu_item_adbCommander
     SubScreen.CrashReporter -> Res.string.menu_item_crashReporter
     SubScreen.Timeline -> Res.string.menu_item_timeline
+    SubScreen.WebView -> Res.string.menu_item_webview
 }
 
 // Extension function to get the icon for each SubScreen
@@ -85,4 +91,8 @@ fun SubScreen.icon(): ImageVector = when (this) {
     SubScreen.CrashReporter -> Icons.Outlined.BugReport
 
     SubScreen.Timeline -> Icons.Outlined.Timeline
+
+    SubScreen.Accessibility -> Icons.Outlined.Accessibility
+
+    SubScreen.WebView -> Icons.Outlined.Language
 }

@@ -19,6 +19,8 @@ sealed interface SubScreen {
 
     data object FeatureFlags : SubScreen
 
+    data object Accessibility : SubScreen
+
     data object Tables : SubScreen
 
     data object Settings : SubScreen
@@ -27,6 +29,7 @@ sealed interface SubScreen {
     data object AdbCommander : SubScreen
     data object CrashReporter : SubScreen
     data object Timeline : SubScreen
+    data object WebView : SubScreen
 }
 
 val SubScreen.id: String

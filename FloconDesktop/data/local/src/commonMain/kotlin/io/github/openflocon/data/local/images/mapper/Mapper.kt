@@ -9,6 +9,8 @@ fun DeviceImageEntity.toDomainModel(json: Json): DeviceImageDomainModel = Device
     url = this.url,
     time = this.time,
     headers = this.headersJsonEncoded.decodeMap(json),
+    byteSize = this.byteSize,
+    contentType = this.contentType,
 )
 
 private fun String.decodeMap(json: Json): Map<String, String> = try {
@@ -34,4 +36,6 @@ fun DeviceImageDomainModel.toEntity(
     url = this.url,
     time = this.time,
     headersJsonEncoded = this.headers.encodeMap(json),
+    byteSize = this.byteSize,
+    contentType = this.contentType,
 )

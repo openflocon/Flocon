@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.app.ui.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 sealed interface DevicesStateUiModel {
@@ -21,8 +23,28 @@ sealed interface DevicesStateUiModel {
     data class WithDevices(
         val devices: List<DeviceItemUiModel>,
         override val deviceSelected: DeviceItemUiModel,
-    ) : DevicesStateUiModel
+    ) : DevicesStateUiModel {
+        /** The devices grouped by platform, in the order Android, iOS, Desktop, others. */
+        val groups: ImmutableList<DevicePlatformGroupUiModel> = PlatformsOrder.mapNotNull { platform ->
+            devices.filter { it.platform == platform }
+                .takeIf { it.isNotEmpty() }
+                ?.let { DevicePlatformGroupUiModel(platform = platform, devices = it.toImmutableList()) }
+        }.toImmutableList()
+    }
 }
+
+@Immutable
+data class DevicePlatformGroupUiModel(
+    val platform: DeviceItemUiModel.Platform,
+    val devices: ImmutableList<DeviceItemUiModel>,
+)
+
+private val PlatformsOrder = listOf(
+    DeviceItemUiModel.Platform.Android,
+    DeviceItemUiModel.Platform.ios,
+    DeviceItemUiModel.Platform.Desktop,
+    DeviceItemUiModel.Platform.Unknown,
+)
 
 @Immutable
 sealed interface AppsStateUiModel {
@@ -52,38 +74,38 @@ fun previewDevicesStateUiModel(): DevicesStateUiModel = DevicesStateUiModel.With
             id = "id1",
             deviceName = "deviceName1",
             isActive = true,
+            isWifi = false,
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
         DeviceItemUiModel(
             id = "id2",
             deviceName = "deviceName2",
             isActive = true,
+            isWifi = false,
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
         DeviceItemUiModel(
             id = "id",
             deviceName = "deviceName",
             isActive = true,
+            isWifi = false,
             platform = DeviceItemUiModel.Platform.Android,
             canScreenshot = true,
             canScreenRecord = true,
-            canRestart = true,
         ),
     ),
     deviceSelected = DeviceItemUiModel(
         id = "id",
         deviceName = "deviceName",
         isActive = true,
+        isWifi = false,
         platform = DeviceItemUiModel.Platform.Android,
         canScreenshot = true,
         canScreenRecord = true,
-        canRestart = true,
     ),
 )
 

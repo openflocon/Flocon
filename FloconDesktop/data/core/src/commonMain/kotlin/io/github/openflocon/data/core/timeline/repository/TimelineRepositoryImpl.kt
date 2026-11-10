@@ -24,6 +24,14 @@ class TimelineRepositoryImpl(
         filter = filter,
     ).flowOn(dispatcherProvider.data)
 
+    override fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>> = localDataSource.observeTimelineEvents(
+        deviceIdAndPackageName = deviceIdAndPackageName,
+        filter = filter,
+    ).flowOn(dispatcherProvider.data)
+
     override fun observeTimeline(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         filter: TimelineFilterDomainModel,

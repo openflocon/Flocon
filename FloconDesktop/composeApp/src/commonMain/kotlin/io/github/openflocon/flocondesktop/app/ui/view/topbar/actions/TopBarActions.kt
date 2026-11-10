@@ -23,7 +23,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.topbar_device_info
 import flocondesktop.composeapp.generated.resources.topbar_open_folder
 import flocondesktop.composeapp.generated.resources.topbar_record
-import flocondesktop.composeapp.generated.resources.topbar_restart
 import flocondesktop.composeapp.generated.resources.topbar_screenshot
 import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
@@ -36,7 +35,6 @@ internal fun TopBarActions(
     recordState: RecordVideoStateUiModel,
     devicesState: DevicesStateUiModel,
     onRecordClicked: () -> Unit,
-    onRestartClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
     onDeviceInfoClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -51,13 +49,6 @@ internal fun TopBarActions(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)
     ) {
-        TopBarButton(
-            active = false,
-            imageVector = Icons.Outlined.RestartAlt,
-            contentDescription = stringResource(Res.string.topbar_restart),
-            onClicked = onRestartClicked,
-            isEnabled = devicesState.deviceSelected?.canRestart == true && devicesState.deviceSelected?.isActive == true,
-        )
         TopBarButton(
             active = recordState == RecordVideoStateUiModel.Recording,
             imageVector = when (recordState) {

@@ -5,17 +5,23 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
+import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.models.settings.AppScaleSetting
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
+import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -43,6 +49,14 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { json.decodeFromString<NetworkSettingsLocal>(it) }
         .stateIn(networkSettings)
 
+    // both ports live in a single "websocket:http" key so reads and writes are atomic
+    override val serverPorts: Flow<ServerPortsDomainModel> = flowSettings.getStringOrNullFlow(SERVER_PORTS)
+        .map { parseServerPorts(it) }
+
+    override suspend fun setServerPorts(ports: ServerPortsDomainModel) {
+        settings.putString(SERVER_PORTS, "${ports.websocketPort}:${ports.httpPort}")
+    }
+
     override val floconDocumentsPath: Flow<String?> = flowSettings.getStringOrNullFlow(FLOCON_DOCUMENTS_PATH)
 
     override val adbPath: Flow<String?> = flowSettings.getStringOrNullFlow(ADB_PATH)
@@ -62,6 +76,18 @@ internal class SettingsDataSourcePrefs(
         .mapLatest { it.toThemeSetting() }
         .stateIn(ThemeSetting.DEFAULT)
 
+    override val autoPurgeDays: Flow<Int?> = flowSettings.getIntOrNullFlow(AUTO_PURGE_DAYS)
+
+    override suspend fun setAutoPurgeDays(days: Int) {
+        settings.putInt(AUTO_PURGE_DAYS, days)
+    }
+
+    override val autoMediaCleanupDays: Flow<Int?> = flowSettings.getIntOrNullFlow(AUTO_MEDIA_CLEANUP_DAYS)
+
+    override suspend fun setAutoMediaCleanupDays(days: Int) {
+        settings.putInt(AUTO_MEDIA_CLEANUP_DAYS, days)
+    }
+
     override val mascotEnabled: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(MASCOT_ENABLED)
         .mapLatest { it ?: true }
 
@@ -69,11 +95,52 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(MASCOT_ENABLED, enabled)
     }
 
+    override val transactionsExpandedByDefault: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TRANSACTIONS_EXPANDED_BY_DEFAULT)
+        .mapLatest { it ?: true }
+
+    override suspend fun setTransactionsExpandedByDefault(expanded: Boolean) {
+        settings.putBoolean(TRANSACTIONS_EXPANDED_BY_DEFAULT, expanded)
+    }
+
+    private val timelineSettingsMutex = Mutex()
+
+    override val timelineSettings: Flow<TimelineSettingsLocal> = flowSettings.getStringOrNullFlow(TIMELINE_SETTINGS)
+        .mapLatest { it.toTimelineSettings() }
+
+    override suspend fun updateTimelineSettings(transform: (TimelineSettingsLocal) -> TimelineSettingsLocal) {
+        timelineSettingsMutex.withLock {
+            val updated = transform(settings.getStringOrNull(TIMELINE_SETTINGS).toTimelineSettings())
+            settings.putString(TIMELINE_SETTINGS, json.encodeToString(TimelineSettingsLocal.serializer(), updated))
+        }
+    }
+
+    // the defaults when nothing is stored, or when what is stored cannot be read
+    private fun String?.toTimelineSettings(): TimelineSettingsLocal = this
+        ?.let { runCatching { json.decodeFromString(TimelineSettingsLocal.serializer(), it) }.getOrNull() }
+        ?: TimelineSettingsLocal()
+
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
 
     override val collapsedMenuSections: Flow<Set<String>> = flowSettings.getStringOrNullFlow(COLLAPSED_MENU_SECTIONS)
         .mapLatest { it.toIdList().toSet() }
+
+    override val startScreen: Flow<String?> = flowSettings.getStringOrNullFlow(START_SCREEN)
+
+    override suspend fun setStartScreen(screenId: String?) {
+        if (screenId == null) {
+            settings.remove(START_SCREEN)
+        } else {
+            settings.putString(START_SCREEN, screenId)
+        }
+    }
+
+    override val hiddenMenuItems: Flow<Set<String>> = flowSettings.getStringOrNullFlow(HIDDEN_MENU_ITEMS)
+        .mapLatest { it.toIdList().toSet() }
+
+    override suspend fun setHiddenMenuItems(items: Set<String>) {
+        settings.putString(HIDDEN_MENU_ITEMS, items.joinToString(ID_SEPARATOR))
+    }
 
     override suspend fun setPinnedMenuItems(items: List<String>) {
         settings.putString(PINNED_MENU_ITEMS, items.joinToString(ID_SEPARATOR))
@@ -162,11 +229,31 @@ internal class SettingsDataSourcePrefs(
 
     companion object {
         private const val ADB_PATH = "adb_path"
+        internal const val SERVER_PORTS = "server_ports"
+
+        // the defaults when nothing is stored, or when what is stored cannot be read
+        internal fun parseServerPorts(raw: String?): ServerPortsDomainModel {
+            val parts = raw?.split(":")
+            val websocketPort = parts?.getOrNull(0)?.toIntOrNull()
+            val httpPort = parts?.getOrNull(1)?.toIntOrNull()
+            return if (websocketPort != null && httpPort != null) {
+                ServerPortsDomainModel(websocketPort = websocketPort, httpPort = httpPort)
+            } else {
+                ServerPortsDomainModel(
+                    websocketPort = Constant.SERVER_WEBSOCKET_PORT,
+                    httpPort = Constant.SERVER_HTTP_PORT,
+                )
+            }
+        }
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val APP_SCALE = "app_scale"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
+        private const val TRANSACTIONS_EXPANDED_BY_DEFAULT = "transactions_expanded_by_default"
+        private const val AUTO_PURGE_DAYS = "auto_purge_days"
+        private const val AUTO_MEDIA_CLEANUP_DAYS = "auto_media_cleanup_days"
+        private const val TIMELINE_SETTINGS = "timeline_settings"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"
@@ -175,6 +262,8 @@ internal class SettingsDataSourcePrefs(
 
         private const val PINNED_MENU_ITEMS = "pinned_menu_items"
         private const val COLLAPSED_MENU_SECTIONS = "collapsed_menu_sections"
+        private const val HIDDEN_MENU_ITEMS = "hidden_menu_items"
+        private const val START_SCREEN = "start_screen"
         private const val ID_SEPARATOR = ","
     }
 }

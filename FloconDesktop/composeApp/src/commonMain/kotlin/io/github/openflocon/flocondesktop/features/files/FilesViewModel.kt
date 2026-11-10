@@ -5,10 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.ByteFormatter
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
+import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.files.models.FileDomainModel
 import io.github.openflocon.domain.files.models.FilePathDomainModel
@@ -24,6 +27,7 @@ import io.github.openflocon.domain.files.usecase.RefreshFileRootsUseCase
 import io.github.openflocon.domain.files.usecase.RefreshFolderContentUseCase
 import io.github.openflocon.domain.files.usecase.UpdateWithFoldersSizeUseCase
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import io.github.openflocon.flocondesktop.features.files.mapper.shortDevicePath
 import io.github.openflocon.flocondesktop.features.files.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.files.mapper.toUi
 import io.github.openflocon.flocondesktop.features.files.model.FileColumnUiModel
@@ -31,14 +35,21 @@ import io.github.openflocon.flocondesktop.features.files.model.FilePathUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileTypeUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
+import io.github.openflocon.flocondesktop.features.files.model.FilesFooterUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
+import io.github.openflocon.flocondesktop.features.files.model.FilesViewModeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -46,6 +57,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class FilesViewModel(
     private val dispatcherProvider: DispatcherProvider,
@@ -60,6 +72,7 @@ class FilesViewModel(
     private val observeWithFoldersSizeUseCase: ObserveWithFoldersSizeUseCase,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val refreshFileRootsUseCase: RefreshFileRootsUseCase,
+    private val observeIsCurrentDeviceAndAppIsActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeFileRootsUseCase: ObserveFileRootsUseCase,
 ) : ViewModel() {
 
@@ -67,6 +80,9 @@ class FilesViewModel(
     val filterText: State<String> = _filterText
 
     private val sortedBy = MutableStateFlow<FilesHeaderStateUiModel.SortedBy?>(null)
+
+    // list or grid, kept in memory while the app is running
+    private val viewMode = MutableStateFlow(FilesViewModeUiModel.List)
 
     // Multi-selection state
     private val selecting = MutableStateFlow(false)
@@ -95,21 +111,34 @@ class FilesViewModel(
                 .distinctUntilChanged()
                 .collect { refreshFileRootsUseCase() }
         }
+        // the same app reconnecting (cable plugged again, wifi back) keeps its instance: reload what is displayed
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            observeIsCurrentDeviceAndAppIsActiveUseCase()
+                .drop(1) // the screen opening is already handled above
+                .filter { isActive -> isActive }
+                .collect { onRefresh() }
+        }
     }
 
     private fun defaultValue(roots: List<FileRootDomainModel> = this.roots.value) = FilesStateUiModel(
         current = null,
-        backStack = emptyList(),
-        files = roots.map { it.toUi() },
+        backStack = persistentListOf(),
+        files = roots.map { it.toUi() }.toImmutableList(),
         headerState = FilesHeaderStateUiModel(
             sortedBy = sortedBy.value,
             totalSizeFormatted = null,
         ),
+        footer = FilesFooterUiModel(
+            itemCount = roots.size,
+            folderCount = roots.size,
+            path = null,
+            displayPath = null,
+        ),
         options = options.value,
+        viewMode = viewMode.value,
         isSelecting = selecting.value,
-        multiSelectedPaths = multiSelectedPaths.value,
+        multiSelectedPaths = multiSelectedPaths.value.toImmutableSet(),
         selectingAll = false,
-        numberOfFiles = null,
         canSelect = false,
         showEmptyState = roots.isEmpty(),
     )
@@ -128,10 +157,17 @@ class FilesViewModel(
             selecting,
             multiSelectedPaths,
             roots,
+            viewMode,
         )
-            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths, roots) ->
+            .flatMapLatest { (selectedFile, sortedBy, options, selecting, multiSelectedPaths, roots, viewMode) ->
                 if (selectedFile == null) {
-                    flowOf(defaultValue(roots).copy(isSelecting = selecting, multiSelectedPaths = multiSelectedPaths))
+                    flowOf(
+                        defaultValue(roots).copy(
+                            isSelecting = selecting,
+                            multiSelectedPaths = multiSelectedPaths.toImmutableSet(),
+                            viewMode = viewMode,
+                        ),
+                    )
                 } else {
                     combines(
                         observeFolderContentUseCase(
@@ -140,21 +176,21 @@ class FilesViewModel(
                         ),
                         snapshotFlow { _filterText.value },
                         observeWithFoldersSizeUseCase(),
-                    ).map { (files, filter, withFoldersSize) ->
+                    ).map { (rawFiles, filter, withFoldersSize) ->
+                        // the local table can hold the same path twice (overlapping refreshes): one entry per path,
+                        // the lists are keyed by it
+                        val files = rawFiles?.distinctBy { it.path }
                         val filtered = if (filter.isNotBlank()) {
                             files?.filter { it.name.contains(filter, ignoreCase = true) }
                         } else {
                             files
                         }
                         val sorted = filtered?.let { sort(it, sortedBy) }
+                        val displayed = sorted.orEmpty()
                         FilesStateUiModel(
-                            backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) },
+                            backStack = selectedFile.backStack.map { it.toUi(options.withFoldersSize) }.toImmutableList(),
                             current = selectedFile.current.toUi(options.withFoldersSize),
-                            files = (
-                                sorted
-                                    ?: emptyList()
-                                ).map { it.toUi(options.withFoldersSize) },
-                            numberOfFiles = sorted?.size,
+                            files = displayed.toUi(options.withFoldersSize),
                             headerState = FilesHeaderStateUiModel(
                                 sortedBy = sortedBy,
                                 totalSizeFormatted = computeTotalSize(
@@ -162,10 +198,19 @@ class FilesViewModel(
                                     sorted
                                 )
                             ),
+                            footer = devicePathOf(selectedFile.current.path, roots).let { path ->
+                                FilesFooterUiModel(
+                                    itemCount = displayed.size,
+                                    folderCount = displayed.count { it.isDirectory },
+                                    path = path,
+                                    displayPath = path?.let { shortDevicePath(it, roots.map { root -> root.path }) },
+                                )
+                            },
                             canSelect = true,
                             options = options,
+                            viewMode = viewMode,
                             isSelecting = selecting,
-                            multiSelectedPaths = multiSelectedPaths,
+                            multiSelectedPaths = multiSelectedPaths.toImmutableSet(),
                             selectingAll = multiSelectedPaths.isNotEmpty() && multiSelectedPaths.size == sorted?.size
                         )
                     }
@@ -173,6 +218,15 @@ class FilesViewModel(
             }
             .flowOn(dispatcherProvider.viewModel)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), defaultValue())
+
+    // the roots are only known by their id: their absolute path comes with the list of the roots
+    private fun devicePathOf(
+        path: FilePathDomainModel,
+        roots: List<FileRootDomainModel>,
+    ): String? = when (path) {
+        is FilePathDomainModel.Real -> path.absolutePath
+        is FilePathDomainModel.Root -> roots.firstOrNull { it.id == path.id }?.path
+    }?.takeIf { it.isNotBlank() }
 
     private fun computeTotalSize(
         withFoldersSize: Boolean,
@@ -236,6 +290,27 @@ class FilesViewModel(
         onClearMultiSelect()
     }
 
+    private fun onNavigateToRoot() {
+        selectedFile.value = null
+        _filterText.value = ""
+        onClearMultiSelect()
+    }
+
+    private fun onNavigateToBackStackEntry(index: Int) {
+        selectedFile.update {
+            if (it == null || index !in it.backStack.indices) {
+                it // no op
+            } else {
+                it.copy(
+                    backStack = it.backStack.take(index),
+                    current = it.backStack[index],
+                )
+            }
+        }
+        _filterText.value = ""
+        onClearMultiSelect()
+    }
+
     private fun onFilterTextChanged(value: String) {
         _filterText.value = value
     }
@@ -268,6 +343,9 @@ class FilesViewModel(
                 onClearMultiSelect()
             }
 
+            FileTypeUiModel.Json,
+            FileTypeUiModel.Proto,
+            FileTypeUiModel.Database,
             FileTypeUiModel.Image,
             FileTypeUiModel.Video,
             FileTypeUiModel.Text,
@@ -345,6 +423,13 @@ class FilesViewModel(
         }
     }
 
+    private fun onCopyPath(path: String) {
+        viewModelScope.launch(dispatcherProvider.viewModel) {
+            copyToClipboard(path)
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
+    }
+
     fun onVisible() {
     }
 
@@ -355,8 +440,12 @@ class FilesViewModel(
         when (action) {
             is FilesAction.FileClicked -> onFileClicked(action.file)
             is FilesAction.NavigateUp -> onNavigateUp()
+            is FilesAction.NavigateToRoot -> onNavigateToRoot()
+            is FilesAction.NavigateToBackStackEntry -> onNavigateToBackStackEntry(action.index)
+            is FilesAction.ChangeViewMode -> viewMode.value = action.viewMode
             is FilesAction.ContextualAction -> onContextualAction(action.file, action.action)
             is FilesAction.Refresh -> onRefresh()
+            is FilesAction.CopyPath -> onCopyPath(action.path)
             is FilesAction.DeleteContent -> onDeleteContent()
             is FilesAction.FilterTextChanged -> onFilterTextChanged(action.value)
             is FilesAction.ClickOnSort -> clickOnSort(action.column, action.sortedBy)

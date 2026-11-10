@@ -59,7 +59,7 @@ private fun selectPreviousRow(
         } else {
             selectedIndex - 1
         }
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        newIndex.takeIf { it >= 0 && it <= rows.itemSnapshotList.lastIndex }
     }?.let {
         rows[it]
     }
@@ -75,7 +75,7 @@ private fun selectNextRow(
         } else {
             selectedIndex + 1
         }
-        newIndex.takeIf { it > 0 && it <= rows.itemSnapshotList.lastIndex }
+        newIndex.takeIf { it >= 0 && it <= rows.itemSnapshotList.lastIndex }
     }?.let {
         rows[it]
     }

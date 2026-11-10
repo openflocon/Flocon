@@ -1,0 +1,173 @@
+package io.github.openflocon.flocon.database.core
+
+import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconPlugin
+import io.github.openflocon.flocon.Protocol
+import io.github.openflocon.flocon.core.FloconEncoder
+import io.github.openflocon.flocon.core.FloconMessageSender
+import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.core.encode
+import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
+import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.DatabaseExecuteSqlResponse
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DatabaseQueryLogModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.DeviceDataBaseDataModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.QueryResultDataModel
+import io.github.openflocon.flocon.database.core.model.fromdevice.sql.toRemoteResult
+import io.github.openflocon.flocon.database.core.model.todevice.DatabaseQueryMessage
+import io.github.openflocon.flocon.utils.currentTimeMillis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
+
+internal class FloconDatabasePluginImpl(
+    private var sender: FloconMessageSender,
+    private val scope: CoroutineScope,
+    override val providers: List<FloconDatabaseProvider>,
+    private val encoder: FloconEncoder
+) : FloconPlugin, FloconDatabasePlugin {
+
+    override val key: String = Protocol.ToDevice.Database.Plugin
+
+    private val registeredDatabases = MutableStateFlow<List<FloconDatabaseModel>>(emptyList())
+
+    override suspend fun onMessageReceived(
+        method: String,
+        body: String
+    ) {
+        when (method) {
+            Protocol.ToDevice.Database.Method.GetDatabases -> sendAllDatabases(sender)
+
+            Protocol.ToDevice.Database.Method.Query -> {
+                val queryMessage = encoder.decode<DatabaseQueryMessage>(body) ?: return
+                val databaseModel = registeredDatabases.value
+                    .find { it.id == queryMessage.database }
+
+                val result = databaseModel?.executeQuery(query = queryMessage.query)
+                    ?: DatabaseExecuteSqlResponse.Error(
+                        message = "Database not found",
+                        originalSql = queryMessage.query,
+                    )
+
+                try {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Database.Plugin,
+                        method = Protocol.FromDevice.Database.Method.Query,
+                        body = encoder.encode(
+                            QueryResultDataModel(
+                                requestId = queryMessage.requestId,
+                                result = result.toRemoteResult(encoder)
+                            )
+                        )
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("Database parsing error", t)
+                }
+            }
+        }
+    }
+
+    override suspend fun onConnectedToServer() {
+        sendAllDatabases(sender)
+    }
+
+    private fun sendAllDatabases(sender: FloconMessageSender) {
+        val databases = providers.flatMap { it.getAllDataBases(emptyList()) }
+        
+        val updatedDatabases = registeredDatabases.updateAndGet { currentList ->
+            val dbMap = currentList.associateBy { it.id }.toMutableMap()
+            databases.forEach { db ->
+                dbMap[db.id] = db
+            }
+            dbMap.values.toList()
+        }
+
+        sendDatabases(updatedDatabases)
+    }
+
+    private fun sendDatabases(databases: List<FloconDatabaseModel>) {
+        val all = databases.map { DeviceDataBaseDataModel(id = it.id, name = it.displayName) }
+
+        try {
+            sender.send(
+                plugin = Protocol.FromDevice.Database.Plugin,
+                method = Protocol.FromDevice.Database.Method.GetDatabases,
+                body = encoder.encode(all),
+            )
+        } catch (t: Throwable) {
+            FloconLogger.logError("Database parsing error", t)
+        }
+    }
+
+    override fun register(floconDatabaseModel: FloconDatabaseModel) {
+        registeredDatabases.update { currentList ->
+            val existing = currentList.firstOrNull { it.id == floconDatabaseModel.id }
+            require(existing == null || existing == floconDatabaseModel) {
+                "A database is already registered with the id \"${floconDatabaseModel.id}\", the ids must be unique"
+            }
+            val dbMap = currentList.associateBy { it.id }.toMutableMap()
+            dbMap[floconDatabaseModel.id] = floconDatabaseModel
+            dbMap.values.toList()
+        }
+        // the desktop shows the database, and the name of its logs, as soon as it is registered
+        sendDatabases(registeredDatabases.value)
+    }
+
+    // one state per database, for the callers that do not know the transaction of their queries
+    private val transactionStates = mutableMapOf<String, FloconTransactionState>()
+    private val transactionLock = FloconLock()
+
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
+        // the queries can be logged from any thread
+        val transaction = transactionLock.withLock {
+            val state = transactionStates.getOrPut(dbId) { FloconTransactionState() }
+            state.track(sqlQuery).also { info ->
+                // outside of a transaction: nothing to remember for this database
+                if (info == null) transactionStates.remove(dbId)
+            }
+        }
+        logQuery(dbId, sqlQuery, bindArgs, transaction)
+    }
+
+    // the queries are sent in the order they were logged: launching a coroutine for each one on a multi-threaded scope
+    // reorders them, and the queries of a transaction end up interleaved with the ones of the next one
+    private val pendingLogs = Channel<DatabaseQueryLogModel>(Channel.UNLIMITED)
+
+    init {
+        scope.launch {
+            for (log in pendingLogs) {
+                try {
+                    sender.send(
+                        plugin = Protocol.FromDevice.Database.Plugin,
+                        method = Protocol.FromDevice.Database.Method.LogQuery,
+                        body = encoder.encode(log),
+                    )
+                } catch (t: Throwable) {
+                    FloconLogger.logError("Database logging error", t)
+                }
+            }
+        }
+    }
+
+    override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>, transaction: FloconTransactionInfo?) {
+        pendingLogs.trySend(
+            DatabaseQueryLogModel(
+                dbId = dbId,
+                sqlQuery = sqlQuery,
+                bindArgs = bindArgs.map { it.toString() },
+                timestamp = currentTimeMillis(),
+                transactionId = transaction?.transactionId,
+                nestedTransactionId = transaction?.nestedTransactionId,
+                parentTransactionId = transaction?.parentTransactionId,
+                transactionDepth = transaction?.depth?.takeIf { it > 0 },
+            ),
+        )
+    }
+
+    companion object {
+        var plugin: FloconDatabasePlugin? = null
+    }
+}

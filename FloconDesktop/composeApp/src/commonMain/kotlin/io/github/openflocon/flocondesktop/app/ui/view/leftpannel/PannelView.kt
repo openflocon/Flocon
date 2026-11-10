@@ -58,7 +58,7 @@ fun SidePanel(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val shape = FloconTheme.shapes.medium
+    val shape = FloconTheme.shapes.large
     val color by animateColorAsState(
         targetValue = when {
             isSelected -> FloconTheme.colors.accentSoft

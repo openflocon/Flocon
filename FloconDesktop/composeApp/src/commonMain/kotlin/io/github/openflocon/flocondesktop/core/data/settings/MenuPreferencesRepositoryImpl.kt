@@ -12,6 +12,18 @@ internal class MenuPreferencesRepositoryImpl(
 
     override val collapsedSections: Flow<Set<String>> = localSettingsDataSource.collapsedMenuSections
 
+    override val startScreen: Flow<String?> = localSettingsDataSource.startScreen
+
+    override suspend fun setStartScreen(screenId: String?) {
+        localSettingsDataSource.setStartScreen(screenId)
+    }
+
+    override val hiddenItems: Flow<Set<String>> = localSettingsDataSource.hiddenMenuItems
+
+    override suspend fun setHiddenItems(items: Set<String>) {
+        localSettingsDataSource.setHiddenMenuItems(items)
+    }
+
     override suspend fun setPinnedItems(items: List<String>) {
         localSettingsDataSource.setPinnedMenuItems(items)
     }

@@ -1,5 +1,6 @@
 package io.github.openflocon.data.core
 
+import io.github.openflocon.data.core.accessibility.accessibilityModule
 import io.github.openflocon.data.core.adbcommander.adbCommanderModule
 import io.github.openflocon.data.core.analytics.analyticsModule
 import io.github.openflocon.data.core.crashreporter.crashReporterModule
@@ -11,14 +12,18 @@ import io.github.openflocon.data.core.files.filesModule
 import io.github.openflocon.data.core.images.imagesModule
 import io.github.openflocon.data.core.messages.messageModule
 import io.github.openflocon.data.core.network.networkModule
+import io.github.openflocon.data.core.screen.screenModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
 import io.github.openflocon.data.core.timeline.timelineModule
+import io.github.openflocon.data.core.timelinelog.timelineLogModule
 import io.github.openflocon.data.core.versions.versionModule
+import io.github.openflocon.data.core.webview.webViewModule
 import org.koin.dsl.module
 
 val dataCoreModule = module {
     includes(
+        accessibilityModule,
         adbCommanderModule,
         analyticsModule,
         featureFlagsModule,
@@ -28,11 +33,14 @@ val dataCoreModule = module {
         filesModule,
         imagesModule,
         networkModule,
+        screenModule,
         sharedPreferenceModule,
         tableModule,
         messageModule,
         versionModule,
         crashReporterModule,
         timelineModule,
+        timelineLogModule,
+        webViewModule,
     )
 }

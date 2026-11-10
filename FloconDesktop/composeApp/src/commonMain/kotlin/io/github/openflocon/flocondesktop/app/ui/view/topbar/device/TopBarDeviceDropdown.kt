@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
@@ -22,6 +20,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -52,24 +51,32 @@ internal fun TopBarDeviceDropdown(
                 }
             },
         ) {
-            state.devices.forEach { device ->
-                val isSelected = state.deviceSelected.id == device.id
-
-                TopBarDevice(
-                    modifier = Modifier
-                        .width(FloconTheme.sizes.deviceDropdownWidth)
-                        .clip(FloconTheme.shapes.medium)
-                        .clickable {
+            state.groups.forEachIndexed { index, group ->
+                if (index > 0) {
+                    FloconHorizontalDivider(
+                        modifier = Modifier.padding(vertical = FloconTheme.spacing.extraSmall),
+                    )
+                }
+                TopBarDeviceGroupHeader(
+                    platform = group.platform,
+                    count = group.devices.size,
+                    modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                )
+                group.devices.forEach { device ->
+                    TopBarDeviceRow(
+                        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                        device = device,
+                        selected = state.deviceSelected.id == device.id,
+                        onClick = {
                             onDeviceSelected(device)
                             expanded = false
                         },
-                    device = device,
-                    selected = isSelected,
-                    deleteClick = {
-                        deleteDevice(device)
-                        expanded = false
-                    },
-                )
+                        deleteClick = {
+                            deleteDevice(device)
+                            expanded = false
+                        },
+                    )
+                }
             }
         }
     }

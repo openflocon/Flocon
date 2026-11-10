@@ -21,17 +21,19 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 
 ## 📂 Module Structure
 
-- `:flocon`: Core library providing the plugin registration and context management.
-- `:database`: 
-    - `:database:core`: Abstractions for database providers.
-    - `:database:room` / `:database:room3`: Room-based implementations.
+Each feature lives in its own folder holding the implementation and its no-op sibling (`<feature>/<feature>` and `<feature>/<feature>-no-op`, Gradle path `:<feature>:<feature>`). Maven `artifactId`s are declared explicitly per module and do not depend on the path.
+
+- `:flocon:flocon`: Core library providing the plugin registration and context management.
+- `:database`:
+    - `:database:core:core`: Abstractions for database providers.
+    - `:database:room:room` / `:database:room3:room3`: Room-based implementations.
 - `:network`:
-    - `:network:core`: Core networking abstractions.
-    - `:network:okhttp-interceptor` / `:network:ktor-interceptor`: Client-specific interceptors.
+    - `:network:core:core`: Core networking abstractions.
+    - `:network:okhttp-interceptor:okhttp-interceptor` / `:network:ktor-interceptor:ktor-interceptor`: Client-specific interceptors.
 - `:grpc`:
-    - `:grpc-interceptor`: Interceptors for gRPC calls.
-- `:datastores`: Modules for Typed DataStore integration.
-- `:deeplinks`: Abstractions and implementations for handling deep links.
+    - `:grpc:grpc-interceptor:grpc-interceptor`: Interceptors for gRPC calls.
+- `:datastores:datastores`: Modules for Typed DataStore integration.
+- `:deeplinks:deeplinks`: Abstractions and implementations for handling deep links.
 
 ## 🧩 Core Concepts
 

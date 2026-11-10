@@ -13,18 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,8 +43,6 @@ import io.github.openflocon.library.designsystem.common.buildMenu
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
-private val TabIndicatorHeight = 2.dp
-
 @Composable
 fun DatabaseTabs(
     tabs: ImmutableList<DatabaseTabState>,
@@ -52,19 +50,23 @@ fun DatabaseTabs(
     onAction: (DatabaseTabViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lineColor = FloconTheme.colors.line
+    val listState = rememberLazyListState()
+
+    // a new or selected tab can be out of the visible area
+    LaunchedEffect(selected?.id, tabs.size) {
+        val index = tabs.indexOfFirst { it.id == selected?.id }
+        if (index >= 0) {
+            listState.animateScrollToItem(index)
+        }
+    }
+
     LazyRow(
-        modifier = modifier.drawBehind {
-            drawRect(
-                color = lineColor,
-                topLeft = Offset(0f, size.height - 1.dp.toPx()),
-                size = Size(size.width, 1.dp.toPx()),
-            )
-        },
+        state = listState,
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(tabs) {
+        items(tabs, key = { it.id }) {
             DatabaseTabItem(
                 state = it,
                 selected = selected,
@@ -81,10 +83,7 @@ private fun DatabaseTabItem(
     onAction: (DatabaseTabViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(
-        topStart = 6.dp,
-        topEnd = 6.dp,
-    )
+    val shape = RoundedCornerShape(6.dp)
     val contentColor = if (state == selected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
     // the labels are resolved here: the menu is built outside of the composition
     val close = stringResource(Res.string.close)
@@ -116,21 +115,13 @@ private fun DatabaseTabItem(
             }
         }
     ) {
-        val indicatorColor = FloconTheme.colors.accent
+        val background = if (state == selected) FloconTheme.colors.bg100 else Color.Transparent
         Row(
             modifier = modifier
                 .clip(shape)
+                .background(background)
                 .clickable {
                     onAction(DatabaseTabViewAction.OnTabSelected(state))
-                }
-                .drawBehind {
-                    if (state == selected) {
-                        drawRect(
-                            color = indicatorColor,
-                            topLeft = Offset(0f, size.height - TabIndicatorHeight.toPx()),
-                            size = Size(size.width, TabIndicatorHeight.toPx()),
-                        )
-                    }
                 }
                 .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.medium),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),

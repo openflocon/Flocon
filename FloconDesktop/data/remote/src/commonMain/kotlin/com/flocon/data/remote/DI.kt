@@ -1,6 +1,8 @@
 package com.flocon.data.remote
 
+import com.flocon.data.remote.accessibility.accessibilityModule
 import com.flocon.data.remote.analytics.analyticsModule
+import com.flocon.data.remote.connect.connectModule
 import com.flocon.data.remote.crashreporter.crashReportModule
 import com.flocon.data.remote.dashboard.dashboardModule
 import com.flocon.data.remote.database.databaseModule
@@ -12,13 +14,17 @@ import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.network.networkModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
 import com.flocon.data.remote.table.tableModule
+import com.flocon.data.remote.timelinelog.timelineLogModule
 import com.flocon.data.remote.version.versionModule
+import com.flocon.data.remote.webview.webViewModule
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 val dataRemoteModule = module {
     includes(
+        accessibilityModule,
         analyticsModule,
+        connectModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,
@@ -28,9 +34,11 @@ val dataRemoteModule = module {
         networkModule,
         sharedPreferencesModule,
         tableModule,
+        timelineLogModule,
         deviceModule,
         versionModule,
         crashReportModule,
+        webViewModule,
     )
 
     single {

@@ -6,8 +6,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
+import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
+import io.github.openflocon.flocondesktop.features.network.badquality.list.view.BadNetworkQualityScreen
 import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.NetworkJsonScreen
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
@@ -15,9 +17,11 @@ import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDe
 import io.github.openflocon.flocondesktop.features.network.list.NetworkViewModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
+import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkMockEditionScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
 import io.github.openflocon.flocondesktop.features.network.search.view.NetworkSearchScreen
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
 import io.github.openflocon.navigation.WindowRoute
 import io.github.openflocon.navigation.scene.BigDialogProperties
@@ -40,10 +44,28 @@ internal sealed interface NetworkRoutes : FloconRoute {
     @Serializable
     data class Mocks(val id: String?) : NetworkRoutes
 
+    // both null: a new mock, mockId: an existing one, fromNetworkCallId: a mock generated from a network call
     @Serializable
-    data class Panel(val requestId: String) :
-        NetworkRoutes,
-        PanelRoute
+    data class MockEdition(
+        val mockId: String? = null,
+        val fromNetworkCallId: String? = null,
+    ) : NetworkRoutes
+
+    @Serializable
+    data object BadNetworkQuality : NetworkRoutes
+
+    @Serializable
+    data class Panel(
+        val requestId: String,
+        val tab: NetworkDetailTab? = null, // null: the default tab of the settings
+        val fromTimeline: Boolean = false,
+    ) : NetworkRoutes,
+        PanelRoute {
+
+        // opened from the timeline: its pin state is the one of the timeline
+        override val pinGroup: String?
+            get() = if (fromTimeline) PanelPinGroups.Timeline else null
+    }
 
     @Serializable
     data class WindowDetail(
@@ -96,7 +118,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
             keepMenu()
         }
     ) {
-        NetworkDetailScreen(requestId = it.requestId)
+        NetworkDetailScreen(requestId = it.requestId, tab = it.tab)
     }
     entry<NetworkRoutes.Mocks>(
         metadata = BigDialogSceneStrategy.bigDialog(
@@ -106,6 +128,23 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
         NetworkMocksWindow(
             fromNetworkCallId = it.id
         )
+    }
+    entry<NetworkRoutes.MockEdition>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Mock")
+        )
+    ) {
+        NetworkMockEditionScreen(
+            mockId = it.mockId,
+            fromNetworkCallId = it.fromNetworkCallId,
+        )
+    }
+    entry<NetworkRoutes.BadNetworkQuality>(
+        metadata = BigDialogSceneStrategy.bigDialog(
+            BigDialogProperties(title = "Bad network")
+        )
+    ) {
+        BadNetworkQualityScreen()
     }
     entry<NetworkRoutes.WindowDetail>(
         metadata = WindowSceneStrategy.window()

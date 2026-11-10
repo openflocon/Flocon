@@ -1,12 +1,22 @@
 package io.github.openflocon.data.local.timeline.mapper
 
+import io.github.openflocon.data.local.timeline.datasource.KIND_DATABASE
+import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK
+import io.github.openflocon.data.local.timeline.datasource.KIND_NETWORK_RESPONSE
 import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntity
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
+import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineNestedTransactionDomainModel
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class MapperTest {
 
@@ -30,6 +40,27 @@ class MapperTest {
         assertEquals(200, event.statusCode)
         assertEquals(120.5, event.durationMs)
         assertEquals(1000L, event.sessionStart)
+        assertEquals(TimelinePhase.Request, event.phase)
+    }
+
+    @Test
+    fun `the response of a network call is a network event of the response phase`() {
+        val event = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1220L,
+            title = "https://a/login",
+            subtitle = "200",
+            appInstance = 1000L,
+            method = "POST",
+            statusCode = 200,
+            durationMs = 120.5,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.Network, event.source)
+        assertEquals(TimelinePhase.Response, event.phase)
+        assertEquals("c1", event.id)
     }
 
     @Test
@@ -53,6 +84,44 @@ class MapperTest {
     }
 
     @Test
+    fun `an accessibility row is an accessibility event`() {
+        val event = TimelineRowEntity(
+            kind = "accessibility",
+            id = "a1",
+            ts = 1200L,
+            title = "Add to cart",
+            subtitle = "VIEW_FOCUSED",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.Accessibility, event.source)
+        assertEquals("VIEW_FOCUSED", event.subtitle)
+    }
+
+    @Test
+    fun `a webview row is a webview event`() {
+        val event = TimelineRowEntity(
+            kind = "webview",
+            id = "w1",
+            ts = 1200L,
+            title = "x is undefined",
+            subtitle = "error",
+            appInstance = null,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        ).toDomain()
+
+        assertEquals(TimelineSource.WebView, event.source)
+        assertEquals("error", event.subtitle)
+    }
+
+    @Test
     fun `the summary is indexed by source and by session`() {
         val summary = toSummaryDomain(
             summaryRows = listOf(
@@ -66,5 +135,179 @@ class MapperTest {
         assertEquals(2, summary.sources.getValue(TimelineSource.Network).httpErrorCount)
         assertEquals(2, summary.sources.getValue(TimelineSource.AppStart).count)
         assertEquals(mapOf(3000L to 6), summary.sessionEventCounts)
+    }
+
+    @Test
+    fun `a row tells if the response of the call is an image`() {
+        val row = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1100L,
+            title = "https://a/logo.png",
+            subtitle = "200",
+            appInstance = 1000L,
+            method = "GET",
+            statusCode = 200,
+            durationMs = 20.0,
+            sessionStart = 1000L,
+            isImage = true,
+        )
+
+        assertTrue(row.toDomain().isImage)
+        assertFalse(row.copy(isImage = false).toDomain().isImage)
+    }
+
+    @Test
+    fun `a failed call keeps its error`() {
+        val row = TimelineRowEntity(
+            kind = "network_response",
+            id = "c1",
+            ts = 1000L,
+            title = "https://api.acme.io/v1/users",
+            subtitle = null,
+            appInstance = 1000L,
+            method = "GET",
+            statusCode = null,
+            durationMs = 20.0,
+            sessionStart = 1000L,
+            hasError = true,
+        )
+
+        assertTrue(row.toDomain().hasError)
+        assertFalse(row.copy(hasError = false).toDomain().hasError)
+    }
+
+    @Test
+    fun `a database query of a transaction carries the transaction`() {
+        val row = networkRow(kind = KIND_DATABASE).copy(
+            transactionId = "tx",
+            txQueryCount = 2,
+            txStart = 100,
+            txEnd = 105,
+            isTransactionControl = true,
+        )
+
+        val transaction = row.toDomain().transaction
+
+        assertEquals(TimelineTransactionDomainModel(id = "tx", queryCount = 2, startTimestamp = 100, endTimestamp = 105, isControl = true), transaction)
+    }
+
+    @Test
+    fun `a query of a nested transaction carries it, with the transactions that hold it`() {
+        val row = networkRow(kind = KIND_DATABASE).copy(
+            transactionId = "tx",
+            txQueryCount = 3,
+            nestedTransactionId = "b",
+            nestedQueryCount = 2,
+            transactionDepth = 2,
+            nestedPath = "a,b",
+        )
+
+        val nested = row.toDomain().transaction!!.nested
+
+        assertEquals(TimelineNestedTransactionDomainModel(id = "b", queryCount = 2, depth = 2, path = listOf("a", "b")), nested)
+        // an older row has no path
+        assertEquals(listOf("b"), row.copy(nestedPath = null).toDomain().transaction!!.nested!!.path)
+        assertNull(row.copy(nestedTransactionId = null).toDomain().transaction!!.nested)
+    }
+
+    @Test
+    fun `a query outside of a transaction has none`() {
+        assertNull(networkRow(kind = KIND_DATABASE).toDomain().transaction)
+    }
+
+    @Test
+    fun `the facet values of an event are read from its json`() {
+        val facets = parseTimelineFacets("""{"NetworkMethod":"GET","NetworkStatus":null,"DatabaseName":"app.db","Unknown":"x"}""")
+
+        assertEquals(mapOf(TimelineFacet.NetworkMethod to "GET", TimelineFacet.DatabaseName to "app.db"), facets)
+    }
+
+    @Test
+    fun `an event without usable facet values has none`() {
+        assertEquals(emptyMap(), parseTimelineFacets(null))
+        assertEquals(emptyMap(), parseTimelineFacets(""))
+        assertEquals(emptyMap(), parseTimelineFacets("not json"))
+        assertEquals(emptyMap(), parseTimelineFacets("[1, 2]"))
+    }
+
+    private fun networkRow(kind: String = KIND_NETWORK, responseByteSize: Long? = null) = TimelineRowEntity(
+        kind = kind,
+        id = "c1",
+        ts = 1000L,
+        title = "https://api.acme.io/v1/users",
+        subtitle = null,
+        appInstance = 1000L,
+        method = "GET",
+        statusCode = 200,
+        durationMs = 20.0,
+        sessionStart = 1000L,
+        responseByteSize = responseByteSize,
+    )
+
+    @Test
+    fun `a call keeps the size of its response`() {
+        assertEquals(2_048L, networkRow(responseByteSize = 2_048L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `a call without response yet has no size`() {
+        assertNull(networkRow(responseByteSize = null).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `an empty response has a size of 0, not an unknown one`() {
+        assertEquals(0L, networkRow(responseByteSize = 0L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `a size over Int MAX_VALUE is kept`() {
+        assertEquals(3_000_000_000L, networkRow(responseByteSize = 3_000_000_000L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `the response event of a call carries the size too`() {
+        assertEquals(2_048L, networkRow(kind = KIND_NETWORK_RESPONSE, responseByteSize = 2_048L).toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `an event that is not a network call has no size`() {
+        val row = TimelineRowEntity(
+            kind = KIND_DATABASE,
+            id = "q1",
+            ts = 1000L,
+            title = "SELECT 1",
+            subtitle = null,
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+        )
+
+        assertNull(row.toDomain().responseByteSize)
+    }
+
+    @Test
+    fun `mapperMapsLogKindToSourceLogWithLevel`() {
+        val event = TimelineRowEntity(
+            kind = "log",
+            id = "42",
+            ts = 1100L,
+            title = "checkout failed",
+            subtitle = "billing",
+            appInstance = 1000L,
+            method = null,
+            statusCode = null,
+            durationMs = null,
+            sessionStart = 1000L,
+            hasError = true,
+            level = "ERROR",
+        ).toDomain()
+
+        assertEquals(TimelineSource.Log, event.source)
+        assertEquals(TimelineLogLevel.Error, event.level)
+        assertEquals("42", event.id)
+        assertTrue(event.hasError)
     }
 }

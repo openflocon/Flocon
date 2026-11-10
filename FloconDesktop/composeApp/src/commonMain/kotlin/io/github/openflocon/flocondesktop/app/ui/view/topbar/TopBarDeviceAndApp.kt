@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,7 +39,8 @@ internal fun TopBarDeviceAndApp(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val shape = FloconTheme.shapes.medium
+    // concentric with the 6dp tiles inside: 12 outer radius - 6 padding
+    val shape = RoundedCornerShape(12.dp)
 
     // device and app are one segmented control
     CompositionLocalProvider(LocalTopBarSelectorJoined provides true) {

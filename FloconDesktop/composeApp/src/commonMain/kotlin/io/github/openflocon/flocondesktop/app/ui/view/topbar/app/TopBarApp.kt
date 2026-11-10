@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.Check
@@ -46,10 +47,10 @@ internal fun TopBarApp(
 
     Row(
         modifier = modifier.padding(
-            start = FloconTheme.spacing.small,
+            start = FloconTheme.spacing.compact + FloconTheme.spacing.extraSmall,
             end = FloconTheme.spacing.extraSmall,
-            top = FloconTheme.spacing.small,
-            bottom = FloconTheme.spacing.small
+            top = FloconTheme.spacing.compact,
+            bottom = FloconTheme.spacing.compact
         ),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically,
@@ -59,7 +60,7 @@ internal fun TopBarApp(
             platform = platform,
             modifier = Modifier
                 .size(32.dp)
-                .clip(FloconTheme.shapes.medium),
+                .clip(RoundedCornerShape(6.dp)),
         )
         Column {
             Text(

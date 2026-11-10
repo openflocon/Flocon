@@ -135,6 +135,7 @@ private const val LARGE_BODY_LENGTH = 1_000_000
 fun NetworkDetailScreen(
     requestId: String,
     key: String = requestId,
+    tab: NetworkDetailTab? = null, // null: the default tab of the settings
 ) {
     val viewModel = koinViewModel<NetworkDetailViewModel>(key = key) {
         parametersOf(requestId)
@@ -143,6 +144,7 @@ fun NetworkDetailScreen(
 
     NetworkDetailContent(
         uiState = uiState,
+        tab = tab,
         onAction = viewModel::onAction
     )
 }
@@ -208,9 +210,10 @@ private fun ExportImageDropdown(
 @Composable
 private fun NetworkDetailContent(
     uiState: NetworkDetailViewState,
+    tab: NetworkDetailTab?,
     onAction: (NetworkDetailAction) -> Unit
 ) {
-    var selectedTab by remember(uiState.callId) { mutableStateOf(uiState.defaultSelectedTab) }
+    var selectedTab by remember(uiState.callId, tab) { mutableStateOf(tab ?: uiState.defaultSelectedTab) }
 
     val scrollState: ScrollState = rememberScrollState()
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
@@ -1421,6 +1424,7 @@ private fun NetworkDetailPreview() {
                 imageHeaders = persistentMapOf(),
                 defaultSelectedTab = NetworkDetailTab.Request,
             ),
+            tab = null,
             onAction = {}
         )
     }

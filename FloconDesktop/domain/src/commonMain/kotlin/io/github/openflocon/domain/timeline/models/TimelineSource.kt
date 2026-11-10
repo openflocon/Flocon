@@ -4,9 +4,12 @@ enum class TimelineSource {
     Network,
     Database,
     Analytics,
+    Accessibility,
+    WebView,
     Crash,
     Table,
     Deeplink,
     Adb,
+    Log,
     AppStart,
 }

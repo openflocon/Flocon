@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.dashboard.model.DashboardContainerViewState
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -21,22 +22,22 @@ internal fun DashboardButton(
     rowItem: DashboardContainerViewState.RowItem.Button,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(FloconTheme.colors.ink)
-                .clickable(onClick = {
-                    onClickButton(rowItem.id)
-                })
-                .padding(all = FloconTheme.spacing.small),
-        ) {
-            Text(
-                text = rowItem.text,
-                color = FloconTheme.colors.bg100,
-                style = FloconTheme.typography.bodySmall,
-            )
-        }
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(FloconTheme.colors.accent)
+            .clickable(onClick = {
+                onClickButton(rowItem.id)
+            })
+            .padding(all = FloconTheme.spacing.medium),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = rowItem.text,
+            color = FloconTheme.colors.accentInk,
+            style = FloconTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 

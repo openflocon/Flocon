@@ -98,6 +98,79 @@ Initialize Flocon as early as possible in your application lifecycle:
 
 ---
 
+### Connecting to another address
+
+By default Flocon tries the address it can guess (`localhost` on an emulator or a simulator) and keeps retrying every 3 seconds. On a real device, that address does not reach your computer: let the user type its address (in a debug menu, for example) and add it with `Flocon.connect`. Flocon keeps trying the default address and also connects to the one you give. This lives in the optional `flocon-connect` module:
+
+```kotlin
+debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
+releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
+```
+
+It also allows the cleartext `ws://` connection to any IP address (Android cannot allow an IP range), for debug builds only. If your app declares its own `networkSecurityConfig`, it takes precedence: see [Troubleshooting](troubleshooting.md).
+
+```kotlin
+import io.github.openflocon.flocon.connect
+import io.github.openflocon.flocon.connectionState
+
+startFlocon(FloconContext(this)) {
+    connect { } // optional, see below
+    install(FloconNetwork)
+    install(FloconAnalytics)
+}
+
+// later, once the address is known
+Flocon.connect("192.168.1.20")
+```
+
+Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. The desktop shows a wifi icon next to a device connected this way. These devices have no adb link, so the features that rely on adb (screenshot, screen recording, deeplinks on Android, ADB Commander and their MCP tools) are disabled for them. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
+
+`Flocon.disconnect()` (a `suspend` function too) closes the connection added with `Flocon.connect`, and forgets its address so it is not tried again at the next launch. The default address stays, and what the plugins log is kept in memory again until a desktop is reachable. It does nothing when there is no such connection.
+
+### Connecting with a QR code
+
+The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`.
+
+To scan it from the app, add the optional `flocon-qr-scanner` module (and `flocon-qr-scanner-no-op` for release builds). `Flocon.scanQrCodeAndConnect(context)` opens the Google code scanner (a Google Play Services screen, no camera permission needed), then connects. It returns the `FloconConnectResult`, or `null` if the user closes the scanner. Without Google Play Services (an AOSP emulator, a Huawei device) it returns `Failed`: use `Flocon.connect("192.168.1.20")` instead. To use your own camera screen, pass the text it reads to `Flocon.connect(address)`.
+
+Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
+
+`connect { ... }` has two more options, all set here with a computer that has a fixed IP:
+
+```kotlin
+startFlocon(FloconContext(this)) {
+    connect {
+        bufferCapacity = 10_000       // messages kept while no desktop is reachable
+        address = "192.168.1.20"      // also tried at start, next to the default address
+        rememberLastAddress = true    // the last connected address is tried again at the next launch
+    }
+    install(FloconNetwork)
+}
+```
+
+- `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connect { address = "192.168.1.20" }`). Same rules as `Flocon.connect`: no port nor scheme.
+- `rememberLastAddress` (`true` by default): the last address Flocon connected to (given here or typed with `Flocon.connect`) is kept in the app preferences (SharedPreferences on Android, UserDefaults on iOS, `java.util.prefs` on desktop, `localStorage` on web) and tried again at the next launch, next to the default address. It wins over `address`. Pass `false` to disable it.
+
+The saving and the retry at launch work when `connect { }` is called in the `startFlocon` block.
+
+The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
+
+Follow the connection with `Flocon.connectionState`, a `StateFlow<FloconConnectionState>` (`Connected` as soon as one address is connected):
+
+```kotlin
+Flocon.connectionState.collect { state ->
+    when (state) {
+        FloconConnectionState.Idle -> Unit       // Flocon is not started
+        FloconConnectionState.Buffering -> Unit  // not connected, the messages are kept
+        FloconConnectionState.Connecting -> Unit
+        FloconConnectionState.Connected -> Unit  // the messages are sent right away
+        is FloconConnectionState.Failed -> Unit  // state.reason, the messages are still kept
+    }
+}
+```
+
+---
+
 ## 3. Install the Desktop Companion
 
 Download the latest release for your operating system:

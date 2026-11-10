@@ -47,22 +47,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.filter_exclude
 import flocondesktop.composeapp.generated.resources.filter_include
-import flocondesktop.composeapp.generated.resources.network_copy_curl
-import flocondesktop.composeapp.generated.resources.network_copy_url
-import flocondesktop.composeapp.generated.resources.network_create_mock
 import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_request
 import flocondesktop.composeapp.generated.resources.network_image_response
 import flocondesktop.composeapp.generated.resources.network_mock_tag
-import flocondesktop.composeapp.generated.resources.network_replay
 import flocondesktop.composeapp.generated.resources.network_select_item
-import flocondesktop.composeapp.generated.resources.network_share_markdown
 import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.remove_lines_above
 import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
@@ -79,9 +73,11 @@ import io.github.openflocon.flocondesktop.features.network.list.model.previewMoc
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.model.previewNetworkItemViewStateError
 import io.github.openflocon.flocondesktop.features.network.list.view.components.MethodTag
+import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusCell
 import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
-import io.github.openflocon.flocondesktop.features.timeline.view.Rail
+import io.github.openflocon.flocondesktop.features.network.options.networkItemOptions
+import io.github.openflocon.flocondesktop.features.network.options.rememberNetworkItemOptionLabels
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.common.buildMenu
@@ -160,7 +156,7 @@ fun NetworkItem(
             ) {
                 Text(
                     state.dateFormatted,
-                    style = FloconTheme.typography.monoMedium,
+                    style = FloconTheme.typography.listItemMono,
                     fontWeight = FontWeight.Medium,
                     color = colors.ink,
                     maxLines = 1,
@@ -180,8 +176,7 @@ fun NetworkItem(
                 text = state.domain,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
-                fontSize = 12.sp,
+                style = FloconTheme.typography.listItem,
                 color = colors.inkFaint,
                 modifier = Modifier
                     .width(columnWidths.domainWidth)
@@ -204,7 +199,7 @@ fun NetworkItem(
             ) {
                 Text(
                     state.timeFormatted ?: "",
-                    style = FloconTheme.typography.monoMedium,
+                    style = FloconTheme.typography.listItemMono,
                     color = colors.inkFaint,
                     maxLines = 1,
                 )
@@ -256,28 +251,14 @@ private fun RequestCell(
             Spacer(Modifier.width(8.dp))
         }
         if (state.isImage) {
-            Box(
-                modifier = Modifier
-                    .size(width = 20.dp, height = 18.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(colors.catNetwork.copy(alpha = 0.16f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Image,
-                    contentDescription = stringResource(Res.string.network_image_response),
-                    tint = colors.catNetwork,
-                    modifier = Modifier.size(12.dp),
-                )
-            }
+            NetworkImageBadge()
             Spacer(Modifier.width(8.dp))
         }
         Text(
             text = requestText(text = state.type.query, queryColor = colors.inkFaint),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = FloconTheme.typography.bodySmall,
-            fontSize = 12.sp,
+            style = FloconTheme.typography.listItem,
             color = colors.ink,
             // the path gives way to the error message only when both do not fit
             modifier = Modifier
@@ -292,8 +273,7 @@ private fun RequestCell(
                 text = message,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall,
-                fontSize = 12.sp,
+                style = FloconTheme.typography.listItem,
                 color = colors.statusError,
                 modifier = Modifier
                     .padding(start = 10.dp)
@@ -320,11 +300,7 @@ private fun contextualActions(
 ): ImmutableList<FloconContextMenuItem> {
     val onActionCallback by rememberUpdatedState(onAction)
     // labels are resolved here: the menu is built outside of the composition
-    val copyUrl = stringResource(Res.string.network_copy_url)
-    val copyCurl = stringResource(Res.string.network_copy_curl)
-    val createMock = stringResource(Res.string.network_create_mock)
-    val replay = stringResource(Res.string.network_replay)
-    val shareMarkdown = stringResource(Res.string.network_share_markdown)
+    val optionLabels = rememberNetworkItemOptionLabels()
     val selectItem = stringResource(Res.string.network_select_item)
     val filter = stringResource(Res.string.filter)
     val include = stringResource(Res.string.filter_include)
@@ -334,27 +310,13 @@ private fun contextualActions(
     val remove = stringResource(Res.string.remove)
     val removeLinesAbove = stringResource(Res.string.remove_lines_above)
     val clearOldSessions = stringResource(Res.string.clear_old_sessions)
-    return remember(state, copyUrl) {
+    return remember(state, optionLabels) {
         buildMenu {
-            item(label = copyUrl, onClick = { onActionCallback(NetworkAction.CopyUrl(state)) })
-            if (state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket) {
-                item(
-                    label = copyCurl,
-                    onClick = { onActionCallback(NetworkAction.CopyCUrl(state)) }
-                )
-                item(
-                    label = createMock,
-                    onClick = { onActionCallback(NetworkAction.CreateMock(state)) }
-                )
-                item(
-                    label = replay,
-                    onClick = { onActionCallback(NetworkAction.Replay(state)) }
-                )
-                item(
-                    label = shareMarkdown,
-                    onClick = { onActionCallback(NetworkAction.ShareAsMarkdown(state)) }
-                )
-            }
+            networkItemOptions(
+                labels = optionLabels,
+                httpActions = state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket,
+                onOption = { onActionCallback(NetworkAction.ItemOption(state.uuid, it)) },
+            )
             item(label = selectItem, onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
             separator()
             subMenu(label = filter) {

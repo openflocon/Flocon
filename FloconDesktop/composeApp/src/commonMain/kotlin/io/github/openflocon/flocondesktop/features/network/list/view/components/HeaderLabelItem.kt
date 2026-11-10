@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,12 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
+import io.github.openflocon.library.designsystem.components.floconTableHeaderTextColor
 
 private const val NOT_ENABLED_OPACITY = 0.3f
 
@@ -54,9 +52,7 @@ fun HeaderLabelItem(
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val shape = RoundedCornerShape(4.dp)
-    // small capitals, like the titles of the groups of the design system
-    val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)
-    val textColor = FloconTheme.colors.inkFaint
+    val textColor = floconTableHeaderTextColor
 
     Row(
         modifier = modifier
@@ -75,10 +71,8 @@ fun HeaderLabelItem(
                 .background(if (filtered) FloconTheme.colors.accentSoft else Color.Transparent)
                 .clickable(onClick = clickOnFilter),
         ) {
-            Text(
-                text = text.uppercase(),
-                style = typo,
-                textAlign = TextAlign.Center,
+            FloconTableHeaderLabel(
+                text = text,
                 color = textColor,
                 modifier = Modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
             )

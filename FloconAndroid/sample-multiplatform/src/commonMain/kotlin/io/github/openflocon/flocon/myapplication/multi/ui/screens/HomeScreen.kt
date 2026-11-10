@@ -39,7 +39,7 @@ private val mainScreens = listOf(
 private val otherScreens = SampleScreen.entries - mainScreens.toSet()
 
 @Composable
-fun HomeScreen(onOpen: (SampleScreen) -> Unit) {
+fun HomeScreen(onOpen: (SampleScreen) -> Unit, onOpenConnection: () -> Unit) {
     val colors = SampleTheme.colors
     Column(
         modifier = Modifier
@@ -60,7 +60,13 @@ fun HomeScreen(onOpen: (SampleScreen) -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = colors.inkMuted,
                 )
-                Pill(text = SampleFeatures.platformName, color = colors.accent)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ConnectionChip(onClick = onOpenConnection)
+                    Pill(text = SampleFeatures.platformName, color = colors.accent)
+                }
             }
             Text(
                 "Try every plugin,\none screen each",

@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.features.crashreporter.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -8,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.openflocon.flocondesktop.features.crashreporter.CrashReporterPanelViewModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,7 +23,6 @@ internal fun CrashReportPanel(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(FloconTheme.colors.bg100)
     ) {
         crash?.let {
             CrashReportDetail(

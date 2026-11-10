@@ -9,8 +9,6 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.domain.network.usecase.CreateNetworkLogHtmlUseCase
 import io.github.openflocon.domain.network.usecase.DecodeJwtTokenUseCase
-import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
@@ -20,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkD
 import io.github.openflocon.flocondesktop.features.network.list.delegate.OpenBodyDelegate
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.library.designsystem.common.saveImageToFile
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -48,9 +47,8 @@ class NetworkDetailViewModel(
     KoinComponent {
 
     private val openBodyDelegate: OpenBodyDelegate by inject()
-    private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
+    private val networkItemOptionsDelegate: NetworkItemOptionsDelegate by inject()
     private val createNetworkLogHtmlUseCase: CreateNetworkLogHtmlUseCase by inject()
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase by inject()
 
     val uiState: StateFlow<NetworkDetailViewState> = combine(
@@ -98,8 +96,8 @@ class NetworkDetailViewModel(
             is NetworkDetailAction.DiffWithClipboard -> onDiffWithClipboard(action)
             is NetworkDetailAction.OpenBodyExternally.Request -> openBodyDelegate.openBodyExternally(action.item)
             is NetworkDetailAction.OpenBodyExternally.Response -> openBodyDelegate.openBodyExternally(action.item)
-            is NetworkDetailAction.ShareAsMarkdown -> copyAsMarkdown()
-            is NetworkDetailAction.CopyCurl -> onCopyCurl()
+            is NetworkDetailAction.ShareAsMarkdown -> onOption(NetworkItemOption.ShareAsMarkdown)
+            is NetworkDetailAction.CopyCurl -> onOption(NetworkItemOption.CopyCurl)
             is NetworkDetailAction.SaveAsHtml -> onSaveHtml()
         }
     }
@@ -155,22 +153,9 @@ class NetworkDetailViewModel(
         }
     }
 
-    private fun copyAsMarkdown() {
+    private fun onOption(option: NetworkItemOption) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            getNetworkCallAsMarkdownUseCase(requestId)?.let {
-                copyToClipboard(it)
-                feedbackDisplayer.displayMessage("Markdown copied to clipboard")
-            }
-        }
-    }
-
-    private fun onCopyCurl() {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            observeNetworkRequestsByIdUseCase(requestId).firstOrNull()?.let { model ->
-                val curl = generateCurlCommandUseCase(model)
-                copyToClipboard(curl)
-                feedbackDisplayer.displayMessage("cURL copied to clipboard")
-            }
+            networkItemOptionsDelegate.onOption(callId = requestId, option = option)
         }
     }
 }

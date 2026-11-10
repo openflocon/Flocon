@@ -30,12 +30,18 @@ kotlin {
             implementation(libs.kotlin.test)
         }
 
+        getByName("desktopTest").dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.core)
+        }
+
         getByName("desktopMain").dependencies {
             implementation(libs.ktor.server.core)
             implementation(libs.ktor.server.netty)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.server.content.negotiation)
             implementation(libs.ktor.server.websockets)
+            implementation(libs.ktor.network.tls.certificates)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
 

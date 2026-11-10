@@ -25,7 +25,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -35,7 +38,9 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
@@ -43,6 +48,7 @@ import androidx.compose.material.icons.outlined.ModeNight
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
@@ -51,6 +57,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,6 +70,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -79,16 +87,56 @@ import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
 import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
+import flocondesktop.composeapp.generated.resources.settings_data_auto_description
+import flocondesktop.composeapp.generated.resources.settings_data_auto_title
+import flocondesktop.composeapp.generated.resources.settings_data_description
+import flocondesktop.composeapp.generated.resources.settings_data_kept
+import flocondesktop.composeapp.generated.resources.settings_data_manual_title
+import flocondesktop.composeapp.generated.resources.settings_data_media_auto_description
+import flocondesktop.composeapp.generated.resources.settings_data_media_clean
+import flocondesktop.composeapp.generated.resources.settings_data_media_cleaning
+import flocondesktop.composeapp.generated.resources.settings_data_media_recordings_size
+import flocondesktop.composeapp.generated.resources.settings_data_media_screenshots_size
+import flocondesktop.composeapp.generated.resources.settings_data_media_title
+import flocondesktop.composeapp.generated.resources.settings_data_purge
+import flocondesktop.composeapp.generated.resources.settings_data_purging
+import flocondesktop.composeapp.generated.resources.settings_data_size
+import flocondesktop.composeapp.generated.resources.settings_data_title
 import flocondesktop.composeapp.generated.resources.settings_documents_description
 import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
 import flocondesktop.composeapp.generated.resources.settings_licenses_description
 import flocondesktop.composeapp.generated.resources.settings_mascot_description
+import flocondesktop.composeapp.generated.resources.settings_mascot_hide
+import flocondesktop.composeapp.generated.resources.settings_mascot_show
 import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
+import flocondesktop.composeapp.generated.resources.settings_plugins_description
+import flocondesktop.composeapp.generated.resources.settings_plugins_title
+import flocondesktop.composeapp.generated.resources.settings_purge_14_days
+import flocondesktop.composeapp.generated.resources.settings_purge_1_day
+import flocondesktop.composeapp.generated.resources.settings_purge_30_days
+import flocondesktop.composeapp.generated.resources.settings_purge_3_days
+import flocondesktop.composeapp.generated.resources.settings_purge_7_days
+import flocondesktop.composeapp.generated.resources.settings_purge_all
+import flocondesktop.composeapp.generated.resources.settings_purge_never
 import flocondesktop.composeapp.generated.resources.settings_reverse_forwarding_description
 import flocondesktop.composeapp.generated.resources.settings_scale_description
 import flocondesktop.composeapp.generated.resources.settings_scale_title
+import flocondesktop.composeapp.generated.resources.settings_server_ports_apply
+import flocondesktop.composeapp.generated.resources.settings_server_ports_description
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_mcp
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_range
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_reserved
+import flocondesktop.composeapp.generated.resources.settings_server_ports_error_same
+import flocondesktop.composeapp.generated.resources.settings_server_ports_hint
+import flocondesktop.composeapp.generated.resources.settings_server_ports_http
+import flocondesktop.composeapp.generated.resources.settings_server_ports_overridden
+import flocondesktop.composeapp.generated.resources.settings_server_ports_reset
+import flocondesktop.composeapp.generated.resources.settings_server_ports_title
+import flocondesktop.composeapp.generated.resources.settings_server_ports_websocket
+import flocondesktop.composeapp.generated.resources.settings_start_screen_description
+import flocondesktop.composeapp.generated.resources.settings_start_screen_title
 import flocondesktop.composeapp.generated.resources.settings_system_logs_title
 import flocondesktop.composeapp.generated.resources.settings_test
 import flocondesktop.composeapp.generated.resources.settings_theme
@@ -97,25 +145,33 @@ import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
 import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
+import io.github.openflocon.domain.models.maintenance.PurgeInterval
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
+import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
+import io.github.openflocon.library.designsystem.components.FloconDoghouse
+import io.github.openflocon.library.designsystem.components.FloconDoghouseWidth
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.theme.AppScale
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -127,6 +183,8 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
     Appearance("Appearance", Icons.Outlined.TextFields),
+    Plugins("Plugins", Icons.Outlined.Extension),
+    Data("Data", Icons.Outlined.Storage),
     Logs("Logs", Icons.AutoMirrored.Outlined.List),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
@@ -144,10 +202,22 @@ fun SettingsScreen(
     val needsAdbSetup by viewModel.needsAdbSetup.collectAsState()
     val adbPathText by viewModel.adbPathInput.collectAsState()
     val floconDocumentsPathText by viewModel.floconDocumentsPathInput.collectAsState()
+    val serverPortsForm by viewModel.serverPortsForm.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val dataState by viewModel.dataState.collectAsStateWithLifecycle()
 
     SettingsScreen(
         uiState = uiState,
+        dataState = dataState,
+        onRefreshDatabaseSize = viewModel::refreshDatabaseSize,
+        onAutoPurgeIntervalChanged = viewModel::onAutoPurgeIntervalChanged,
+        onPurgeIntervalChanged = viewModel::onPurgeIntervalChanged,
+        onPurgeDatabase = viewModel::purgeDatabase,
+        onRefreshMediaSize = viewModel::refreshMediaSize,
+        onAutoMediaCleanupIntervalChanged = viewModel::onAutoMediaCleanupIntervalChanged,
+        onMediaCleanupIntervalChanged = viewModel::onMediaCleanupIntervalChanged,
+        onCleanMediaFiles = viewModel::cleanMediaFiles,
+        onOpenMediaFolder = viewModel::openFloconDocumentsFolder,
         modifier = modifier.fillMaxSize(),
         adbPathText = adbPathText,
         onAdbPathChanged = viewModel::onAdbPathChanged,
@@ -159,6 +229,11 @@ fun SettingsScreen(
         onSaveFloconDocumentsPath = viewModel::saveFloconDocumentsPath,
         onResetFloconDocumentsPath = viewModel::resetFloconDocumentsPath,
         onOpenFloconDocumentsFolder = viewModel::openFloconDocumentsFolder,
+        serverPortsForm = serverPortsForm,
+        onWebsocketPortChanged = viewModel::onWebsocketPortChanged,
+        onHttpPortChanged = viewModel::onHttpPortChanged,
+        onApplyServerPorts = viewModel::applyServerPorts,
+        onResetServerPorts = viewModel::resetServerPorts,
         onAction = viewModel::onAction,
         onClearLogs = viewModel::clearLogs,
         onToggleLogDomain = viewModel::toggleLogDomain,
@@ -174,6 +249,16 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScreen(
     uiState: SettingsUiState,
+    dataState: DataUiState,
+    onRefreshDatabaseSize: () -> Unit,
+    onAutoPurgeIntervalChanged: (AutoPurgeInterval) -> Unit,
+    onPurgeIntervalChanged: (PurgeInterval) -> Unit,
+    onPurgeDatabase: () -> Unit,
+    onRefreshMediaSize: () -> Unit,
+    onAutoMediaCleanupIntervalChanged: (AutoPurgeInterval) -> Unit,
+    onMediaCleanupIntervalChanged: (PurgeInterval) -> Unit,
+    onCleanMediaFiles: () -> Unit,
+    onOpenMediaFolder: () -> Unit,
     adbPathText: String,
     onAdbPathChanged: (String) -> Unit,
     saveAdbPath: () -> Unit,
@@ -184,6 +269,11 @@ private fun SettingsScreen(
     onSaveFloconDocumentsPath: () -> Unit,
     onResetFloconDocumentsPath: () -> Unit,
     onOpenFloconDocumentsFolder: () -> Unit,
+    serverPortsForm: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     needsAdbSetup: Boolean,
     onAction: (SettingsAction) -> Unit,
     onClearLogs: () -> Unit,
@@ -230,6 +320,11 @@ private fun SettingsScreen(
                     onSavePath = onSaveFloconDocumentsPath,
                     onResetPath = onResetFloconDocumentsPath,
                     onOpenFolder = onOpenFloconDocumentsFolder,
+                    serverPortsForm = serverPortsForm,
+                    onWebsocketPortChanged = onWebsocketPortChanged,
+                    onHttpPortChanged = onHttpPortChanged,
+                    onApplyServerPorts = onApplyServerPorts,
+                    onResetServerPorts = onResetServerPorts,
                 )
 
                 SettingsTab.Adb -> AdbPane(
@@ -246,6 +341,26 @@ private fun SettingsScreen(
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
                     onAction = onAction,
+                )
+
+                SettingsTab.Plugins -> PluginsPane(
+                    items = uiState.menuItems,
+                    startScreenOptions = uiState.startScreenOptions,
+                    startScreenId = uiState.startScreenId,
+                    onAction = onAction,
+                )
+
+                SettingsTab.Data -> DataPane(
+                    state = dataState,
+                    onRefreshSize = onRefreshDatabaseSize,
+                    onAutoIntervalChanged = onAutoPurgeIntervalChanged,
+                    onIntervalChanged = onPurgeIntervalChanged,
+                    onPurge = onPurgeDatabase,
+                    onRefreshMediaSize = onRefreshMediaSize,
+                    onAutoMediaIntervalChanged = onAutoMediaCleanupIntervalChanged,
+                    onMediaIntervalChanged = onMediaCleanupIntervalChanged,
+                    onCleanMedia = onCleanMediaFiles,
+                    onOpenMediaFolder = onOpenMediaFolder,
                 )
 
                 SettingsTab.Logs -> LogsPane(
@@ -392,12 +507,25 @@ private fun GeneralPane(
     onSavePath: () -> Unit,
     onResetPath: () -> Unit,
     onOpenFolder: () -> Unit,
+    serverPortsForm: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApplyServerPorts: () -> Unit,
+    onResetServerPorts: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
         modifier = modifier
     ) {
+        ServerPortsCard(
+            form = serverPortsForm,
+            onWebsocketPortChanged = onWebsocketPortChanged,
+            onHttpPortChanged = onHttpPortChanged,
+            onApply = onApplyServerPorts,
+            onReset = onResetServerPorts,
+        )
+
         SettingsCard(
             title = "Flocon Documents",
             icon = Icons.Outlined.Folder,
@@ -445,6 +573,106 @@ private fun GeneralPane(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ServerPortsCard(
+    form: ServerPortsFormUiModel,
+    onWebsocketPortChanged: (String) -> Unit,
+    onHttpPortChanged: (String) -> Unit,
+    onApply: () -> Unit,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsCard(
+        title = stringResource(Res.string.settings_server_ports_title),
+        icon = Icons.Outlined.Cable,
+        description = stringResource(Res.string.settings_server_ports_description),
+        modifier = modifier,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_server_ports_websocket),
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+                FloconTextField(
+                    value = form.websocketPort,
+                    onValueChange = onWebsocketPortChanged,
+                    isError = form.error != null,
+                    enabled = !form.websocketPortOverridden,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                modifier = Modifier.width(FloconTheme.sizes.columnLarge),
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_server_ports_http),
+                    style = FloconTheme.typography.labelSmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+                FloconTextField(
+                    value = form.httpPort,
+                    onValueChange = onHttpPortChanged,
+                    isError = form.error != null,
+                    enabled = !form.httpPortOverridden,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (form.canReset) {
+                SettingsButton(
+                    text = stringResource(Res.string.settings_server_ports_reset),
+                    onClick = onReset,
+                )
+            }
+        }
+
+        if (form.hasOverride) {
+            Text(
+                text = stringResource(Res.string.settings_server_ports_overridden),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.inkMuted,
+            )
+        }
+
+        form.error?.let { error ->
+            Text(
+                text = stringResource(
+                    when (error) {
+                        ServerPortsError.OutOfRange -> Res.string.settings_server_ports_error_range
+                        ServerPortsError.SamePorts -> Res.string.settings_server_ports_error_same
+                        ServerPortsError.McpPortReserved -> Res.string.settings_server_ports_error_mcp
+                        ServerPortsError.ReservedDefaultPort -> Res.string.settings_server_ports_error_reserved
+                    },
+                ),
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.statusError,
+            )
+        }
+
+        Text(
+            text = stringResource(Res.string.settings_server_ports_hint),
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+
+        SettingsButton(
+            text = stringResource(Res.string.settings_server_ports_apply),
+            onClick = onApply,
+            primary = true,
+        )
     }
 }
 
@@ -680,9 +908,366 @@ private fun AppearancePane(
             icon = Icons.Outlined.Pets,
             description = stringResource(Res.string.settings_mascot_description)
         ) {
-            FloconSwitch(
-                checked = mascotEnabled,
-                onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
+            // the dog is out when the mascot is on, it sleeps in its doghouse when it is off
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+            ) {
+                FloconDoghouse(
+                    expanded = mascotEnabled,
+                    onToggleExpanded = { onAction(SettingsAction.MascotEnabledChange(!mascotEnabled)) },
+                    contentDescription = stringResource(
+                        if (mascotEnabled) Res.string.settings_mascot_hide else Res.string.settings_mascot_show,
+                    ),
+                    modifier = Modifier.width(FloconDoghouseWidth),
+                )
+                FloconSwitch(
+                    checked = mascotEnabled,
+                    onCheckedChange = { onAction(SettingsAction.MascotEnabledChange(it)) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PluginsPane(
+    items: ImmutableList<MenuItemVisibilityUiModel>,
+    startScreenOptions: ImmutableList<MenuItemVisibilityUiModel>,
+    startScreenId: String?,
+    onAction: (SettingsAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+        modifier = modifier.verticalScroll(rememberScrollState()),
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.settings_start_screen_title),
+            icon = Icons.Outlined.Home,
+            description = stringResource(Res.string.settings_start_screen_description),
+        ) {
+            StartScreenDropdown(
+                options = startScreenOptions,
+                selectedId = startScreenId,
+                onSelect = { onAction(SettingsAction.StartScreenChange(it)) },
+            )
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_plugins_title),
+            icon = Icons.Outlined.Extension,
+            description = stringResource(Res.string.settings_plugins_description),
+        ) {
+            items.forEach { item ->
+                key(item.id) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(FloconTheme.shapes.small)
+                            .background(FloconTheme.colors.bg200)
+                            .padding(FloconTheme.spacing.medium),
+                    ) {
+                        FloconIcon(
+                            imageVector = item.icon,
+                            tint = FloconTheme.colors.inkMuted,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Text(
+                            text = stringResource(item.name),
+                            style = FloconTheme.typography.bodyMedium,
+                            color = FloconTheme.colors.ink,
+                            modifier = Modifier.weight(1f),
+                        )
+                        FloconSwitch(
+                            checked = item.isVisible,
+                            onCheckedChange = { onAction(SettingsAction.ToggleMenuItem(item.id)) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StartScreenDropdown(
+    options: ImmutableList<MenuItemVisibilityUiModel>,
+    selectedId: String?,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selected = options.firstOrNull { it.id == selectedId } ?: options.firstOrNull()
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                if (selected != null) {
+                    Text(
+                        text = stringResource(selected.name),
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colors.ink,
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
+                )
+            }
+        },
+    ) {
+        options.forEach { option ->
+            FloconDropdownMenuItem(
+                text = stringResource(option.name),
+                leadingIcon = if (option.id == selected?.id) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(option.id)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DataPane(
+    state: DataUiState,
+    onRefreshSize: () -> Unit,
+    onAutoIntervalChanged: (AutoPurgeInterval) -> Unit,
+    onIntervalChanged: (PurgeInterval) -> Unit,
+    onPurge: () -> Unit,
+    onRefreshMediaSize: () -> Unit,
+    onAutoMediaIntervalChanged: (AutoPurgeInterval) -> Unit,
+    onMediaIntervalChanged: (PurgeInterval) -> Unit,
+    onCleanMedia: () -> Unit,
+    onOpenMediaFolder: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // the sizes are computed each time the screen is displayed
+    LaunchedEffect(Unit) {
+        onRefreshSize()
+        onRefreshMediaSize()
+    }
+
+    // one compact card per kind of data, side by side, so that the whole screen fits without scrolling
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+        modifier = modifier
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.settings_data_title),
+            icon = Icons.Outlined.Storage,
+            description = stringResource(Res.string.settings_data_description),
+            modifier = Modifier.weight(1f),
+        ) {
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_size),
+                bytes = state.databaseSizeBytes,
+            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_auto_title)) {
+                IntervalDropdown(
+                    selected = state.autoPurgeInterval,
+                    options = AutoPurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onAutoIntervalChanged,
+                )
+            }
+            DataSettingRow(label = stringResource(Res.string.settings_data_manual_title)) {
+                IntervalDropdown(
+                    selected = state.purgeInterval,
+                    options = PurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onIntervalChanged,
+                )
+                SettingsButton(
+                    text = stringResource(if (state.isPurging) Res.string.settings_data_purging else Res.string.settings_data_purge),
+                    onClick = { if (!state.isPurging) onPurge() },
+                    primary = true,
+                )
+            }
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_data_media_title),
+            icon = Icons.Outlined.Storage,
+            description = stringResource(Res.string.settings_data_media_auto_description),
+            modifier = Modifier.weight(1f),
+        ) {
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_media_screenshots_size),
+                bytes = state.screenshotsSizeBytes,
+            )
+            DataSizeRow(
+                label = stringResource(Res.string.settings_data_media_recordings_size),
+                bytes = state.recordingsSizeBytes,
+            )
+            DataSettingRow(label = stringResource(Res.string.settings_data_auto_title)) {
+                IntervalDropdown(
+                    selected = state.autoMediaCleanupInterval,
+                    options = AutoPurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onAutoMediaIntervalChanged,
+                )
+            }
+            DataSettingRow(label = stringResource(Res.string.settings_data_manual_title)) {
+                IntervalDropdown(
+                    selected = state.mediaCleanupInterval,
+                    options = PurgeInterval.entries,
+                    label = { stringResource(it.labelRes()) },
+                    onSelect = onMediaIntervalChanged,
+                )
+                SettingsButton(
+                    text = stringResource(if (state.isCleaningMedia) Res.string.settings_data_media_cleaning else Res.string.settings_data_media_clean),
+                    onClick = { if (!state.isCleaningMedia) onCleanMedia() },
+                    primary = true,
+                )
+            }
+            SettingsButton(
+                text = stringResource(Res.string.general_open_folder),
+                onClick = onOpenMediaFolder,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DataSettingRow(
+    label: String,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.labelSmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun DataSizeRow(
+    label: String,
+    bytes: Long?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.labelSmall,
+            color = FloconTheme.colors.inkMuted,
+        )
+        Text(
+            text = bytes?.let(::formatDatabaseSize) ?: "…",
+            style = FloconTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = FloconTheme.colors.ink,
+        )
+    }
+}
+
+private fun AutoPurgeInterval.labelRes(): StringResource = when (this) {
+    AutoPurgeInterval.Never -> Res.string.settings_purge_never
+    AutoPurgeInterval.OneDay -> Res.string.settings_purge_1_day
+    AutoPurgeInterval.ThreeDays -> Res.string.settings_purge_3_days
+    AutoPurgeInterval.OneWeek -> Res.string.settings_purge_7_days
+    AutoPurgeInterval.TwoWeeks -> Res.string.settings_purge_14_days
+    AutoPurgeInterval.OneMonth -> Res.string.settings_purge_30_days
+}
+
+private fun PurgeInterval.labelRes(): StringResource = when (this) {
+    PurgeInterval.OneDay -> Res.string.settings_purge_1_day
+    PurgeInterval.ThreeDays -> Res.string.settings_purge_3_days
+    PurgeInterval.OneWeek -> Res.string.settings_purge_7_days
+    PurgeInterval.TwoWeeks -> Res.string.settings_purge_14_days
+    PurgeInterval.OneMonth -> Res.string.settings_purge_30_days
+    PurgeInterval.Everything -> Res.string.settings_purge_all
+}
+
+@Composable
+private fun <T> IntervalDropdown(
+    selected: T,
+    options: List<T>,
+    label: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                Text(
+                    text = label(selected),
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.ink,
+                )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
+                )
+            }
+        },
+    ) {
+        options.forEach { interval ->
+            FloconDropdownMenuItem(
+                text = label(interval),
+                leadingIcon = if (interval == selected) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(interval)
+                },
             )
         }
     }
@@ -914,6 +1499,13 @@ private fun AboutPane(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
+            Text(
+                text = "Flocon Desktop v${BuildConfig.APP_VERSION}",
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.ink,
+            )
+        }
         Text(
             text = stringResource(Res.string.settings_open_source_licenses),
             style = FloconTheme.typography.titleMedium,
@@ -1102,6 +1694,16 @@ private fun SettingsScreenPreview() {
         var floconPath by remember { mutableStateOf("/Users/user/Documents/Flocon") }
         SettingsScreen(
             uiState = previewSettingsUiState(),
+            dataState = DataUiState(databaseSizeBytes = 123_456_789L),
+            onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
+            onPurgeIntervalChanged = {},
+            onPurgeDatabase = {},
+            onRefreshMediaSize = {},
+            onAutoMediaCleanupIntervalChanged = {},
+            onMediaCleanupIntervalChanged = {},
+            onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
@@ -1112,6 +1714,11 @@ private fun SettingsScreenPreview() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1130,6 +1737,16 @@ private fun SettingsScreenPreview_needsAdbSetup() {
         var floconPath by remember { mutableStateOf("/Users/user/Documents/Flocon") }
         SettingsScreen(
             uiState = previewSettingsUiState(),
+            dataState = DataUiState(databaseSizeBytes = 123_456_789L),
+            onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
+            onPurgeIntervalChanged = {},
+            onPurgeDatabase = {},
+            onRefreshMediaSize = {},
+            onAutoMediaCleanupIntervalChanged = {},
+            onMediaCleanupIntervalChanged = {},
+            onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = adbPath,
             onAdbPathChanged = { adbPath = it },
             saveAdbPath = { Logger.d { "Save ADB: $adbPath" } },
@@ -1140,6 +1757,11 @@ private fun SettingsScreenPreview_needsAdbSetup() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
@@ -1156,6 +1778,16 @@ private fun SettingsScreen_LogsPreview() {
     FloconTheme {
         SettingsScreen(
             uiState = previewSettingsUiState(),
+            dataState = DataUiState(databaseSizeBytes = 123_456_789L),
+            onRefreshDatabaseSize = {},
+            onAutoPurgeIntervalChanged = {},
+            onPurgeIntervalChanged = {},
+            onPurgeDatabase = {},
+            onRefreshMediaSize = {},
+            onAutoMediaCleanupIntervalChanged = {},
+            onMediaCleanupIntervalChanged = {},
+            onCleanMediaFiles = {},
+            onOpenMediaFolder = {},
             adbPathText = "/usr/local/bin/adb",
             onAdbPathChanged = {},
             saveAdbPath = {},
@@ -1166,12 +1798,31 @@ private fun SettingsScreen_LogsPreview() {
             onSaveFloconDocumentsPath = {},
             onResetFloconDocumentsPath = {},
             onOpenFloconDocumentsFolder = {},
+            serverPortsForm = previewServerPortsFormUiModel(),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApplyServerPorts = {},
+            onResetServerPorts = {},
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClearLogs = {},
             onToggleLogDomain = {},
             onToggleLogLevel = {},
             needsAdbSetup = false,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ServerPortsCardPreview() {
+    FloconTheme {
+        ServerPortsCard(
+            form = previewServerPortsFormUiModel(error = ServerPortsError.SamePorts),
+            onWebsocketPortChanged = {},
+            onHttpPortChanged = {},
+            onApply = {},
+            onReset = {},
         )
     }
 }

@@ -225,6 +225,9 @@ class DevicesRepositoryImpl(
     ) {
         when (message.method) {
             Protocol.FromDevice.Bonjour.Method.Bonjour -> {
+                remoteDeviceDataSource.getConnectionType(message)?.let {
+                    localDevicesDataSource.saveConnectionType(deviceId = message.deviceId, connectionType = it)
+                }
                 // null for an SDK that does not send its plugins: everything is displayed
                 localDevicesDataSource.saveInstalledPlugins(
                     deviceId = message.deviceId,
@@ -257,15 +260,5 @@ class DevicesRepositoryImpl(
         isNewDevice: Boolean,
     ) {
         // no op
-    }
-
-    override suspend fun restartApp(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
-    ) {
-        withContext(dispatcherProvider.data) {
-            remoteDeviceDataSource.restartApp(
-                deviceIdAndPackageName = deviceIdAndPackageName,
-            )
-        }
     }
 }

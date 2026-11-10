@@ -10,4 +10,10 @@ sealed interface SettingsAction {
     data class ThemeChange(val value: ThemeSetting) : SettingsAction
 
     data class MascotEnabledChange(val enabled: Boolean) : SettingsAction
+
+    // the screen displayed when the app starts
+    data class StartScreenChange(val screenId: String) : SettingsAction
+
+    // shows or hides a plugin in the left panel
+    data class ToggleMenuItem(val itemId: String) : SettingsAction
 }

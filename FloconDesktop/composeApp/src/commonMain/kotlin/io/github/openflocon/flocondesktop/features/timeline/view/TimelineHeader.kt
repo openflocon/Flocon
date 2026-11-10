@@ -12,20 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.menu_item_timeline
-import flocondesktop.composeapp.generated.resources.timeline_counter_crashes
-import flocondesktop.composeapp.generated.resources.timeline_counter_events
-import flocondesktop.composeapp.generated.resources.timeline_counter_http_errors
-import flocondesktop.composeapp.generated.resources.timeline_counter_sessions
 import flocondesktop.composeapp.generated.resources.timeline_live
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -36,6 +33,9 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TimelineHeader(
     summary: TimelineSummaryUiModel,
     isLive: Boolean,
+    settings: TimelineSettingsUiModel,
+    screenshotsStatus: TimelineScreenshotsStatus,
+    onAction: (TimelineAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -71,25 +71,21 @@ internal fun TimelineHeader(
             }
         }
         Spacer(Modifier.weight(1f))
-        Counter(
-            count = summary.eventCount,
-            label = pluralStringResource(Res.plurals.timeline_counter_events, summary.eventCount),
+        ScreenshotsControl(
+            enabled = settings.screenshots,
+            intervalSeconds = settings.screenshotIntervalSeconds,
+            status = screenshotsStatus,
+            onAction = onAction,
         )
-        Counter(
-            count = summary.sessionCount,
-            label = pluralStringResource(Res.plurals.timeline_counter_sessions, summary.sessionCount),
-        )
-        Counter(
-            count = summary.httpErrorCount,
-            label = pluralStringResource(Res.plurals.timeline_counter_http_errors, summary.httpErrorCount),
-            highlight = colors.statusWarning,
-        )
-        Counter(
-            count = summary.crashCount,
-            label = pluralStringResource(Res.plurals.timeline_counter_crashes, summary.crashCount),
-            highlight = colors.catCrash,
+        AutoScrollControl(
+            enabled = settings.autoScroll,
+            onAction = onAction,
         )
         FeatureDocButton(doc = FeatureDoc.Timeline)
+        TimelineOverflowMenu(
+            settings = settings,
+            onAction = onAction,
+        )
     }
 }
 
@@ -109,35 +105,6 @@ private fun LivePill(modifier: Modifier = Modifier) {
             style = FloconTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = color,
-            maxLines = 1,
-        )
-    }
-}
-
-// [highlight] colors the number when there is something to look at, an empty counter stays neutral
-@Composable
-private fun Counter(
-    count: Int,
-    label: String,
-    modifier: Modifier = Modifier,
-    highlight: Color? = null,
-) {
-    val colors = FloconTheme.colors
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.End,
-    ) {
-        Text(
-            text = count.toString(),
-            style = monoStyle().copy(fontSize = FloconTheme.typography.titleMedium.fontSize),
-            fontWeight = FontWeight.SemiBold,
-            color = if (highlight != null && count > 0) highlight else colors.ink,
-            maxLines = 1,
-        )
-        Text(
-            text = label,
-            style = FloconTheme.typography.labelSmall,
-            color = colors.inkFaint,
             maxLines = 1,
         )
     }

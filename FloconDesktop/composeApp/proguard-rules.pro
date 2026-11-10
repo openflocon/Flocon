@@ -4,6 +4,7 @@
 -dontwarn org.conscrypt.**
 -dontwarn org.openjsse.**
 -dontwarn android.**
+-dontwarn com.apple.eawt.**
 
 #OkHttp
 -keepattributes Signature

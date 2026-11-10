@@ -110,6 +110,17 @@ private fun Menu(
                             parent = interactionSource
                         )
 
+                        is FloconContextMenuItem.Header -> FloconMenuHeader(text = item.label)
+
+                        is FloconContextMenuItem.Detail -> FloconMenuDetail(
+                            caption = item.label,
+                            onClick = {
+                                item.onClick()
+                                hide()
+                            },
+                            content = item.content,
+                        )
+
                         is FloconContextMenuItem.Separator -> FloconMenuSeparator()
                     }
                 }
@@ -128,7 +139,9 @@ private fun Item(
         onClick = {
             item.onClick()
             hide()
-        }
+        },
+        leadingIcon = item.icon,
+        secondaryAction = item.shortcut?.let { shortcut -> { FloconMenuShortcut(shortcut) } },
     )
 }
 
@@ -160,6 +173,7 @@ private fun SubMenu(
     FloconMenuItem(
         text = item.label,
         onClick = {},
+        leadingIcon = item.icon,
         trailingIcon = Icons.Outlined.ChevronRight,
         modifier = Modifier
             .hoverable(interactionSource)

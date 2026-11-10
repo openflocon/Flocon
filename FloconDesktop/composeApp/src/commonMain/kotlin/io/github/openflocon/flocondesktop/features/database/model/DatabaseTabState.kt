@@ -5,7 +5,6 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class DatabaseTabState(
     val databaseId: String,
-    val databaseName: String,
     val tableName: String?,
     val generatedName: String,
     val index: Int,

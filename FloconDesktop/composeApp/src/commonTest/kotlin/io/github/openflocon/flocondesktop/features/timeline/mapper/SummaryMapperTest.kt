@@ -46,6 +46,34 @@ class SummaryMapperTest {
     }
 
     @Test
+    fun `the accessibility events are counted like the other events`() {
+        val withAccessibility = summary.copy(
+            sources = summary.sources + (
+                TimelineSource.Accessibility to TimelineSourceSummaryDomainModel(count = 3, httpErrorCount = 0, firstTimestamp = 600L, lastTimestamp = 2_500L)
+                ),
+        )
+
+        val ui = withAccessibility.toUi(selected = setOf(TimelineSource.Network, TimelineSource.Accessibility))
+
+        assertEquals(3, ui.sourceCounts[TimelineSource.Accessibility])
+        assertEquals(7, ui.eventCount)
+    }
+
+    @Test
+    fun `summaryCountsLogRows`() {
+        val withLogs = summary.copy(
+            sources = summary.sources + (
+                TimelineSource.Log to TimelineSourceSummaryDomainModel(count = 5, httpErrorCount = 0, firstTimestamp = 700L, lastTimestamp = 2_800L)
+                ),
+        )
+
+        val ui = withLogs.toUi(selected = setOf(TimelineSource.Network, TimelineSource.Log))
+
+        assertEquals(5, ui.sourceCounts[TimelineSource.Log])
+        assertEquals(9, ui.eventCount)
+    }
+
+    @Test
     fun `the app starts are sessions, not events`() {
         val ui = summary.toUi(selected = TimelineSource.entries.toSet())
 

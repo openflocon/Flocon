@@ -5,9 +5,11 @@ package io.github.openflocon.flocondesktop.app.ui.view.leftpannel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +46,7 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuSection
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
@@ -66,6 +69,7 @@ fun LeftPanel(
     modifier: Modifier = Modifier,
     onTogglePin: (MenuItem) -> Unit = {},
     onToggleSection: (MenuSection) -> Unit = {},
+    desktopUpdate: VersionCheckerViewModel.DesktopUpdateUiModel? = null,
 ) {
     val scrollState = rememberScrollState()
 
@@ -107,6 +111,15 @@ fun LeftPanel(
             )
             Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             Spacer(Modifier.weight(1f))
+            if (desktopUpdate != null) {
+                DesktopUpdateChip(
+                    update = desktopUpdate,
+                    expanded = expanded,
+                    modifier = Modifier
+                        .padding(bottom = FloconTheme.spacing.small)
+                        .then(if (expanded) Modifier.fillMaxWidth() else Modifier.align(Alignment.End)),
+                )
+            }
             ToggleExpandedButton(
                 expanded = expanded,
                 onClick = onToggleExpanded,

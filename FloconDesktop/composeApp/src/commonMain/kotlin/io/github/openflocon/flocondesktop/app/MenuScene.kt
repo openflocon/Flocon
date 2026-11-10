@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.app
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +34,19 @@ import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
+import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.hazeBackground
 import io.github.openflocon.navigation.mascot.LocalMascot
+import io.github.openflocon.navigation.mascot.LocalMascotCommands
+import io.github.openflocon.navigation.mascot.MascotCommands
 import io.github.openflocon.navigation.mascot.MascotOverlay
 import io.github.openflocon.navigation.mascot.MascotPlatforms
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import io.github.openflocon.navigation.scene.PanelScene
 import kotlinx.collections.immutable.toImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,11 +66,13 @@ data class MenuScene(
         var origin by remember { mutableStateOf(Offset.Zero) }
         var pointer by remember { mutableStateOf<Offset?>(null) }
         val mascotPlatforms = remember { MascotPlatforms() }
+        val mascotCommands = remember { MascotCommands() }
         val mascotMargin = with(LocalDensity.current) { FloconTheme.spacing.medium.toPx() }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .hazeBackground()
                 .onGloballyPositioned { origin = it.positionInRoot() }
                 .pointerInput(Unit) {
                     // watches the pointer without consuming anything
@@ -79,14 +87,21 @@ data class MenuScene(
             FloconScaffold(
                 containerColor = Color.Transparent,
                 topBar = {
-                    Box(
-                        modifier = Modifier.padding(
-                            start = FloconTheme.spacing.medium,
-                            top = FloconTheme.spacing.medium,
-                            end = FloconTheme.spacing.medium,
-                        ),
-                    ) {
-                        topBarContent?.invoke()
+                    // the top bar replaces the window title bar: it moves the window and sits
+                    // below the window buttons
+                    val titleBar = LocalWindowTitleBar.current
+                    titleBar.DragArea {
+                        Box(
+                            modifier = Modifier.padding(
+                                start = FloconTheme.spacing.medium,
+                                top = FloconTheme.spacing.medium + titleBar.topInset,
+                                end = FloconTheme.spacing.medium,
+                            ),
+                        ) {
+                            CompositionLocalProvider(LocalMascotCommands provides mascotCommands) {
+                                topBarContent?.invoke()
+                            }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()
@@ -104,8 +119,8 @@ data class MenuScene(
                             .width(width)
                             .fillMaxHeight()
                             .floconIsland(FloconTheme.colors.islandSidebar)
-                            .padding(FloconTheme.spacing.small)
-                            .mascotPlatform(platforms = mascotPlatforms),
+                            .mascotPlatform(platforms = mascotPlatforms)
+                            .padding(FloconTheme.spacing.small),
                     ) {
                         menuContent(expanded) { expanded = !expanded }
                     }
@@ -115,7 +130,13 @@ data class MenuScene(
                             .fillMaxHeight()
                     ) {
                         CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
-                            scene.content()
+                            if (scene !is PanelScene) {
+                                Crossfade(scene) {
+                                    it.content()
+                                }
+                            } else {
+                                scene.content()
+                            }
                         }
                     }
                 }
@@ -138,6 +159,7 @@ data class MenuScene(
                 MascotOverlay(
                     pointerX = pointer?.x,
                     platforms = platforms,
+                    barkCount = mascotCommands.barkCount,
                 )
             }
         }

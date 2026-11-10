@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 
 import androidx.compose.runtime.mutableStateMapOf
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.analyticsPlugin
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty
@@ -45,9 +46,21 @@ enum class SampleFeature(
     DatabaseRoom2(SampleScreen.Database, "Cat, Room 2", "Insert a cat in the Room 2 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
     DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
     DatabaseFood(SampleScreen.Database, "Food, Room 3", "Insert food in the second database", buttonLabel = "Insert"),
+    DatabaseTransactionRoom3(SampleScreen.Database, "Transaction, Room 3", "A dog, a human and their link inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom3(SampleScreen.Database, "Nested transactions, Room 3", "A transaction with two transactions inside (humans, then dogs and their links), run with savepoints", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom2(SampleScreen.Database, "Nested transactions, Room 2", "A transaction with two transactions inside (cats, then more cats): Room 2 sends one transaction", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseTransactionRoom2(SampleScreen.Database, "Transaction, Room 2", "Three cats inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
 
     AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),
     AnalyticsEvents(SampleScreen.Analytics, "Firebase-style events", "Two events from one sender", buttonLabel = "Send"),
+
+    Accessibility(SampleScreen.Accessibility, "Announce", "Announces \"Item added to the cart\" to the screen reader", buttonLabel = "Announce"),
+
+    WebViewConsole(SampleScreen.WebView, "Console messages", "console.log, info, warn and error from the page", buttonLabel = "Log", platforms = SamplePlatform.AndroidOnly),
+    WebViewJsError(SampleScreen.WebView, "Uncaught JS error", "Throws a TypeError in the page", buttonLabel = "Throw", platforms = SamplePlatform.AndroidOnly),
+    WebViewBridge(SampleScreen.WebView, "Bridge call", "The page calls the native object \"FloconSample\"", buttonLabel = "Call", platforms = SamplePlatform.AndroidOnly),
+    WebViewNotFound(SampleScreen.WebView, "HTTP 404", "Loads a page that does not exist", buttonLabel = "Load", platforms = SamplePlatform.AndroidOnly),
+    WebViewReload(SampleScreen.WebView, "Reload the sample page", "Back to the local page used by the other rows", buttonLabel = "Reload", platforms = SamplePlatform.AndroidOnly),
 
     FeatureFlags(SampleScreen.FeatureFlags, "Register flags", "Firebase and Statsig flags, with variants and payloads", buttonLabel = "Register"),
 
@@ -132,6 +145,7 @@ object SampleFeatures {
         on(SampleFeature.Dashboard) {
             userFlow.update { it.copy(userName = "flo-${Random.nextInt(100)}") }
         }
+        on(SampleFeature.Accessibility) { Flocon.accessibilityPlugin.announce("Item added to the cart") }
         on(SampleFeature.FeatureFlags) { initializeFeatureFlags() }
         on(SampleFeature.Deeplink) {
             Flocon.deeplinksPlugin.register {

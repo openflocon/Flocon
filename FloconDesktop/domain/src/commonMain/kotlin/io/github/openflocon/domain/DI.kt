@@ -1,8 +1,10 @@
 package io.github.openflocon.domain
 
+import io.github.openflocon.domain.accessibility.accessibilityModule
 import io.github.openflocon.domain.adb.adbModule
 import io.github.openflocon.domain.adbcommander.adbCommanderModule
 import io.github.openflocon.domain.analytics.analyticsModule
+import io.github.openflocon.domain.connect.connectModule
 import io.github.openflocon.domain.crashreporter.crashReporterDomainModule
 import io.github.openflocon.domain.dashboard.dashboardModule
 import io.github.openflocon.domain.database.databaseModule
@@ -11,22 +13,28 @@ import io.github.openflocon.domain.device.deviceModule
 import io.github.openflocon.domain.featureflags.featureFlagsModule
 import io.github.openflocon.domain.files.filesModule
 import io.github.openflocon.domain.images.imagesModule
+import io.github.openflocon.domain.maintenance.maintenanceModule
 import io.github.openflocon.domain.mcp.mcpDomainModule
 import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
+import io.github.openflocon.domain.screen.screenModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
 import io.github.openflocon.domain.table.tableModule
 import io.github.openflocon.domain.timeline.timelineDomainModule
+import io.github.openflocon.domain.timelinelog.timelineLogModule
 import io.github.openflocon.domain.versions.versionModule
+import io.github.openflocon.domain.webview.webViewDomainModule
 import org.koin.dsl.module
 
 val domainModule = module {
     includes(
+        accessibilityModule,
         adbModule,
         adbCommanderModule,
         analyticsModule,
+        connectModule,
         featureFlagsModule,
         dashboardModule,
         databaseModule,
@@ -36,6 +44,7 @@ val domainModule = module {
         imagesModule,
         networkModule,
         settingsModule,
+        maintenanceModule,
         sharedPreferencesModule,
         tableModule,
         messagesModule,
@@ -43,6 +52,9 @@ val domainModule = module {
         crashReporterDomainModule,
         mcpDomainModule,
         menuModule,
+        screenModule,
         timelineDomainModule,
+        timelineLogModule,
+        webViewDomainModule,
     )
 }

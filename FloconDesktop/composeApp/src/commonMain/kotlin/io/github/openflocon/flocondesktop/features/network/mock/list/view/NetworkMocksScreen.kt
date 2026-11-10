@@ -31,7 +31,6 @@ import flocondesktop.composeapp.generated.resources.general_export
 import flocondesktop.composeapp.generated.resources.general_import
 import flocondesktop.composeapp.generated.resources.mocks_subtitle
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
-import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkEditionWindow
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -54,23 +53,12 @@ fun NetworkMocksWindow(
         viewModel.initWith(fromNetworkCallId)
     }
     val mocks by viewModel.items.collectAsStateWithLifecycle()
-    val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
 
     NetworkMocksContent(
         mocks = mocks,
         modifier = modifier.fillMaxWidth(),
         onAction = viewModel::onAction,
     )
-
-    editionWindow?.let {
-        NetworkEditionWindow(
-            instanceId = it.windowInstanceId,
-            state = it.selectedMockUiModel,
-            onCloseRequest = viewModel::cancelMockCreation,
-            onCancel = viewModel::cancelMockCreation,
-            onSave = viewModel::addMock,
-        )
-    }
 }
 
 sealed interface NetworkMockAction {

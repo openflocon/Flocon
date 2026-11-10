@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -37,7 +38,8 @@ fun FloconMenuItem(
     modifier: Modifier = Modifier,
     secondaryAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
-    trailingIcon: ImageVector? = null
+    trailingIcon: ImageVector? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
 
@@ -52,8 +54,10 @@ fun FloconMenuItem(
             )
             .padding(horizontal = FloconTheme.spacing.small)
     ) {
-        leadingIcon?.let { FloconMenuIcon(leadingIcon) } ?: run {
-            Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
+        when {
+            leadingContent != null -> leadingContent()
+            leadingIcon != null -> FloconMenuIcon(leadingIcon)
+            else -> Spacer(Modifier.width(FloconTheme.spacing.extraSmall))
         }
         MenuItemText(text)
         secondaryAction?.invoke()
@@ -90,12 +94,84 @@ fun FloconMenuItem(
     }
 }
 
+/**
+ * The shortcut of an item, ex: "Ctrl ⇧ C". Only a hint: the screen handles the keys.
+ */
+@Composable
+fun FloconMenuShortcut(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+        color = FloconTheme.colors.inkFaint,
+        maxLines = 1,
+        modifier = modifier,
+    )
+}
+
+/**
+ * A small title above a group of lines of a menu.
+ */
+@Composable
+fun FloconMenuHeader(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text.uppercase(),
+        style = FloconTheme.typography.labelSmall,
+        fontWeight = FontWeight.SemiBold,
+        color = FloconTheme.colors.inkMuted,
+        maxLines = 1,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+    )
+}
+
+/**
+ * A "caption / value" line: the captions have the same width so the values are aligned.
+ */
+@Composable
+fun FloconMenuDetail(
+    caption: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val interaction = remember { MutableInteractionSource() }
+
+    FloconDropdownMenuItem(
+        interactionSource = interaction,
+        modifier = modifier
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = interaction,
+            )
+            .padding(horizontal = FloconTheme.spacing.small)
+    ) {
+        Text(
+            text = caption,
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colors.inkMuted,
+            maxLines = 1,
+            modifier = Modifier.width(FloconTheme.sizes.menuDetailCaptionWidth),
+        )
+        Box(modifier = Modifier.weight(1f)) {
+            content()
+        }
+    }
+}
+
 @Composable
 fun FloconMenuSeparator(
     modifier: Modifier = Modifier
 ) {
     FloconHorizontalDivider(
-        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall, vertical = FloconTheme.spacing.compact),
+        modifier = modifier.padding(horizontal = FloconTheme.spacing.extraSmall),
         color = FloconTheme.colors.line
     )
 }

@@ -31,7 +31,7 @@ dependencies {
 ```
 
 ```kotlin
-startFlocon(context) {
+startFlocon(FloconContext(context)) {
     install(FloconTable)
 }
 ```

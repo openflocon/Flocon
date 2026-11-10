@@ -9,6 +9,18 @@ Because Flocon Desktop is distributed directly via GitHub Releases and not the M
 
 ---
 
+## 🍺 Homebrew (recommended)
+
+Installing with Homebrew skips the Gatekeeper prompt entirely:
+
+```bash
+brew install --cask openflocon/tap/flocon
+```
+
+Update with `brew upgrade --cask flocon`. The steps below are only needed if you installed the DMG manually.
+
+---
+
 ## ⚡ Quick Fix (Terminal)
 
 You can remove the quarantine flag instantly via Terminal:
