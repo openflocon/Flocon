@@ -8,6 +8,7 @@ import com.flocon.data.remote.mock.scenarios.docNetworkScenario
 import com.flocon.data.remote.mock.scenarios.docTimelineScenario
 import com.flocon.data.remote.mock.scenarios.emptyScenario
 import com.flocon.data.remote.mock.scenarios.multiDeviceScenario
+import com.flocon.data.remote.mock.scenarios.stressTimelineScenario
 import com.flocon.data.remote.mock.scenarios.weirdScenario
 
 /** Every scenario available with `--mock=<name>`. Add a new scenario here. */
@@ -23,6 +24,7 @@ object MockScenarios {
             emptyScenario,
             multiDeviceScenario,
             weirdScenario,
+            stressTimelineScenario,
         )
     }
 

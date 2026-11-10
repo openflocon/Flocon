@@ -25,6 +25,7 @@ class MockScenariosTest {
                 "empty",
                 "multi-device",
                 "weird",
+                "stress-timeline",
             ),
             MockScenarios.all.map { it.name },
         )
