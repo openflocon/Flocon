@@ -316,7 +316,9 @@ private fun NetworkDetailContent(
         val scrollAdapter = rememberFloconScrollbarAdapter(listState)
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .solidBackground(),
         ) {
             networkDetailSections(
                 header = {
@@ -402,19 +404,16 @@ private fun NetworkDetailContent(
 }
 
 /**
- * The theme surfaces can be translucent: lay them over an opaque base (the page, then the panel surface they normally sit on) so the content scrolling under the tabs doesn't show through
+ * The theme surfaces can be translucent: lay the panel surface over the page so the content scrolling under the tabs doesn't show through
  */
 @Composable
-private fun Modifier.solidBackground(raised: Boolean = false): Modifier {
+private fun Modifier.solidBackground(): Modifier {
     val colors = FloconTheme.colors
-    return background(colors.pageMid)
-        .background(colors.islandSidebar)
-        .background(colors.bg000)
-        .then(if (raised) Modifier.background(colors.bg200) else Modifier)
+    return background(colors.pageMid).background(colors.islandSidebar)
 }
 
 /**
- * The header and its tabs on a dark block, the selected tab melts into the panel holding the content.
+ * The header, the tabs and the content share the panel background, the selected tab is highlighted.
  * The tabs stay on top while the content scrolls.
  * It has no border nor corners: the side panel / window already is the container
  */
@@ -428,7 +427,6 @@ private fun LazyListScope.networkDetailSections(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .solidBackground()
                 .padding(
                     start = FloconTheme.spacing.large,
                     end = FloconTheme.spacing.large,
@@ -454,7 +452,6 @@ private fun LazyListScope.networkDetailSections(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .solidBackground(raised = true)
                 .padding(FloconTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
             content = content,
