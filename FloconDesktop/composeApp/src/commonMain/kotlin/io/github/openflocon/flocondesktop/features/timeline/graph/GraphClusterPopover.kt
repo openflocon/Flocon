@@ -56,6 +56,7 @@ private const val MaxVisibleRows = 6.5f
 private val RelativeTimeWidth = 72.dp
 private val DurationWidth = 64.dp
 private val StatusWidth = 40.dp
+private const val ErrorRowAlpha = 0.4f
 
 /**
  * The events of a group that belong to one of the [activeLanes], in their order (by start).
@@ -174,7 +175,7 @@ private fun ClusterEventRow(
             // a failed event is tinted red, the others alternate
             .background(
                 when {
-                    event.isError -> colors.catCrashSoft
+                    event.isError -> colors.statusError.copy(alpha = ErrorRowAlpha)
                     striped -> colors.bg200
                     else -> Color.Transparent
                 },
