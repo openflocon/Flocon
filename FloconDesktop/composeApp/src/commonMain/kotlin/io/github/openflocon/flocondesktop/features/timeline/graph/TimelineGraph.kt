@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -151,7 +152,8 @@ private const val CursorGuideAlpha = 0.8f
 private const val PopoverWidthPx = 214f
 private const val ClusterSeparatorPx = 1f
 private const val ClusterErrorDotPx = 4f
-private const val ClusterPillPaddingPx = 3f
+private val ClusterCountColor = Color.White
+private val ClusterCountShadow = Shadow(Color.Black.copy(alpha = 0.65f), Offset(0f, 1f), 3f)
 
 // the popover of a group: its size is about, to keep it in the graph
 private const val ClusterPopoverHeightPx = 220f
@@ -948,7 +950,7 @@ private fun DrawScope.drawCluster(
     unit: Density,
 ) {
     val top = rowTop + BarTopPx
-    val radius = CornerRadius(BarHeightPx / 2f)
+    val radius = CornerRadius(BarRadiusPx)
     val capsule = Path().apply { addRoundRect(RoundRect(left, top, left + widthPx, top + BarHeightPx, radius)) }
     clipPath(capsule) {
         var x = left
@@ -963,15 +965,11 @@ private fun DrawScope.drawCluster(
         drawCircle(palette.error, ClusterErrorDotPx, Offset(left + widthPx - ClusterErrorDotPx, top + ClusterErrorDotPx))
     }
     if (selected) {
-        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarHeightPx / 2f + 1f), style = Stroke(2f))
+        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
     }
-    // the total, on a small pill: readable whatever the colors under it
-    val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = palette.ink), density = unit, maxLines = 1)
-    val pillWidth = count.size.width + 2 * ClusterPillPaddingPx
-    val centerX = left + widthPx / 2f
-    val centerY = top + BarHeightPx / 2f
-    drawRoundRect(palette.chip, Offset(centerX - pillWidth / 2f, centerY - ChipHeightPx / 2f), Size(pillWidth, ChipHeightPx), CornerRadius(ChipHeightPx / 2f))
-    drawText(count, topLeft = Offset(centerX - count.size.width / 2f, centerY - count.size.height / 2f))
+    // the total, white with a shadow: readable whatever the colors under it
+    val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow), density = unit, maxLines = 1)
+    drawText(count, topLeft = Offset(left + (widthPx - count.size.width) / 2f, top + (BarHeightPx - count.size.height) / 2f))
 }
 
 private fun DrawScope.drawBar(
