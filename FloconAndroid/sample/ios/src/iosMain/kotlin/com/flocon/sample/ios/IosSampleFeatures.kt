@@ -4,7 +4,9 @@ package com.flocon.sample.ios
 
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.insertSampleDog
 import io.github.openflocon.flocon.myapplication.multi.database.newFood
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
@@ -18,7 +20,7 @@ import platform.Foundation.create
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 
-fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
+fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase, sqlDelightDatabase: SqlDelightDatabase) {
     SampleFeatures.platform = SamplePlatform.Ios
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
@@ -32,6 +34,9 @@ fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDataba
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseSqlDelight) {
+        sqlDelightDatabase.insertSampleDog()
     }
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         foodDatabase.foodDao().insertFood(newFood())

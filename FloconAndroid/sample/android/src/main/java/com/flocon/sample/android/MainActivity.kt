@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
         initializeDatastores(applicationContext)
 
         val dogDatabase = getDogDatabase(this)
+        Databases.getSqlDelightDatabase(this) // registered in Flocon
 
         initializeDatabases(
             dogDatabase = dogDatabase,

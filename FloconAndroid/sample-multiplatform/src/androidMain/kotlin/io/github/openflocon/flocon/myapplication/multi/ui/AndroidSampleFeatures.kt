@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.room3.immediateTransaction
 import androidx.room3.useWriterConnection
 import io.github.openflocon.flocon.myapplication.multi.Databases
+import io.github.openflocon.flocon.myapplication.multi.database.insertSampleDog
 import io.github.openflocon.flocon.myapplication.multi.database.newFood
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.database.model.HumanEntity
@@ -37,6 +38,9 @@ fun registerAndroidSampleFeatures(context: Context) {
     SampleFeatures.on(SampleFeature.Grpc) { AndroidTestContext.grpcSayHello() }
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         Databases.getDogDatabase(context).dogDao().insertDog(newDog("Flocon"))
+    }
+    SampleFeatures.on(SampleFeature.DatabaseSqlDelight) {
+        Databases.getSqlDelightDatabase(context).insertSampleDog()
     }
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         Databases.getFoodDatabase(context).foodDao().insertFood(newFood())

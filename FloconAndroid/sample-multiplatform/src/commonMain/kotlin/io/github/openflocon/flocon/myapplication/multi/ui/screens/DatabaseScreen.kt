@@ -15,6 +15,7 @@ fun DatabaseScreen(onBack: () -> Unit) = PluginScreen(SampleScreen.Database, onB
             SampleFeature.DatabaseRoom3,
             SampleFeature.DatabaseFood,
             SampleFeature.DatabaseRoom2,
+            SampleFeature.DatabaseSqlDelight,
             SampleFeature.DatabaseInMemory,
         ),
     )

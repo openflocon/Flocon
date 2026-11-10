@@ -50,7 +50,18 @@ Add the database core and the module matching your Room version:
     }
     ```
 
-Then install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
+=== "SQLDelight 2"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-database-sqldelight:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-sqldelight-no-op:LAST_VERSION")
+    }
+    ```
+
+    `flocon-database-core` (and `-no-op` for release) comes with it.
+
+For Room, install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
 
 ```kotlin
 startFlocon(FloconContext(context)) {
@@ -85,6 +96,25 @@ The `id` is required, stable and **unique**: registering two different databases
 query logs), so the query logs of a database must be sent with the same id (see below).
 
 `register(id, displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
+
+### SQLDelight Databases
+
+SQLDelight drivers are plain objects, so the database is registered through its driver. `withFlocon` registers it
+and shows its queries in the desktop app (see "Real-Time Query Logging" below):
+
+```kotlin
+val driver = AndroidSqliteDriver(AppDatabase.Schema, context, "app.db")
+    .withFlocon(id = "app", displayName = "App database") // io.github.openflocon.flocon.database.sqldelight.withFlocon
+val database = AppDatabase(driver)
+```
+
+It works with every driver (`AndroidSqliteDriver`, `JdbcSqliteDriver`, `NativeSqliteDriver`) and needs
+`install(FloconDatabase)`, with no provider: `FloconDatabase` itself is enough.
+Same rules on `id` as for Room. To only browse the database, without the query logs, use
+`withFlocon(id, displayName, logQueries = false)`, or `Flocon.databasePlugin.register(id, displayName, driver)`.
+
+The SQL you run from the desktop app does not refresh the SQLDelight `Flow`s of your app, and the column names
+of `PRAGMA` and `EXPLAIN` results are `column_0`, `column_1`... The web worker driver is not supported yet.
 
 ### Room 3 on the web (Wasm)
 
@@ -159,6 +189,16 @@ query from the `BEGIN`, `SAVEPOINT`, `COMMIT`... statements you log before it.
 
     Wraps any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
     is logged when it runs, with its arguments. Same rule as Room 2: the `id` is the one the database is registered with.
+
+=== "SQLDelight"
+
+    ```kotlin
+    val driver = AndroidSqliteDriver(AppDatabase.Schema, context, "app.db")
+        .floconLogs(id = "app") // io.github.openflocon.flocon.database.sqldelight.floconLogs
+    ```
+
+    `withFlocon` does this and registers the database. Each query is logged once, when it is done, with its arguments
+    (blobs are shown as their size). Failing queries are logged too. Unlike Room, the transactions are not grouped yet.
 
 === "Manual Query Logging"
 
