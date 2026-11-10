@@ -464,7 +464,7 @@ private fun SummaryCard(
                             color = FloconTheme.colors.inkMuted,
                             modifier = Modifier.weight(2f)
                                 .background(
-                                    color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
+                                    color = FloconTheme.colors.bg100,
                                     shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(
@@ -1104,7 +1104,7 @@ private fun FullLogExport(
                             color = FloconTheme.colors.inkMuted,
                             modifier = Modifier
                                 .background(
-                                    color = FloconTheme.colors.bg100.copy(alpha = 0.8f),
+                                    color = FloconTheme.colors.bg100,
                                     shape = RoundedCornerShape(4.dp),
                                 )
                                 .padding(

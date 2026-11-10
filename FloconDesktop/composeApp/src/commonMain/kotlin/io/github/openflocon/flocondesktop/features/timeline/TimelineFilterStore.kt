@@ -4,6 +4,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
+import io.github.openflocon.domain.timeline.models.TIMELINE_DEFAULT_HIDDEN_FACETS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
@@ -26,9 +27,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
-
-// the value of [TimelineFacet.DatabaseStatement] for BEGIN, COMMIT, ROLLBACK...
-private const val DATABASE_TRANSACTION = "TRANSACTION"
 
 /**
  * What the user typed or moved in the network card of the filter panel, next to the values hidden by facet.
@@ -90,11 +88,9 @@ internal class TimelineFilterStore(
     val text: StateFlow<String>
         field = MutableStateFlow("")
 
-    // the values hidden by facet: the begin, commit and rollback of the databases are noise, hidden until the filter is removed
+    // the values hidden by facet: the noise is hidden until the user shows it again (what Room runs for itself)
     val facets: StateFlow<Map<TimelineFacet, Set<String>>>
-        field = MutableStateFlow<Map<TimelineFacet, Set<String>>>(
-            mapOf(TimelineFacet.DatabaseStatement to setOf(DATABASE_TRANSACTION)),
-        )
+        field = MutableStateFlow(TIMELINE_DEFAULT_HIDDEN_FACETS)
 
     // the status, host and duration rules of the network calls
     val network: StateFlow<TimelineNetworkRules>

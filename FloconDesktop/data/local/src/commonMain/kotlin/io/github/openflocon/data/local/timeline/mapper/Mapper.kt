@@ -18,10 +18,12 @@ import io.github.openflocon.data.local.timeline.models.TimelineSessionCountEntit
 import io.github.openflocon.data.local.timeline.models.TimelineSummaryRowEntity
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFacet
+import io.github.openflocon.domain.timeline.models.TimelineNestedTransactionDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineTransactionDomainModel
 import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
@@ -76,6 +78,23 @@ internal fun TimelineRowEntity.toDomain(): TimelineEventDomainModel = TimelineEv
     responseByteSize = responseByteSize,
     level = level?.toTimelineLogLevel(),
     facets = parseTimelineFacets(facetValues),
+    transaction = transactionId?.let {
+        TimelineTransactionDomainModel(
+            id = it,
+            queryCount = txQueryCount ?: 0,
+            startTimestamp = txStart ?: ts,
+            endTimestamp = txEnd ?: ts,
+            isControl = isTransactionControl,
+            nested = nestedTransactionId?.let {
+                TimelineNestedTransactionDomainModel(
+                    id = it,
+                    queryCount = nestedQueryCount ?: 0,
+                    depth = transactionDepth,
+                    path = nestedPath?.split(',')?.filter { id -> id.isNotEmpty() } ?: listOf(it),
+                )
+            },
+        )
+    },
 )
 
 // the level is stored upper-case, an unknown one is not shown rather than failing the whole timeline
