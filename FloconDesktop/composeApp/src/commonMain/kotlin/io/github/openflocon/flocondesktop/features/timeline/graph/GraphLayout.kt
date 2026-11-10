@@ -132,6 +132,20 @@ internal fun GraphViewport.panned(deltaMs: Double, limitMs: Long?, trackWidthPx:
 }
 
 /**
+ * The scrollbar of the time axis, in px of the track: its content goes from the start of the session (or the viewport when
+ * it is before) to the limit of the pan (see panned), the viewport is the track. Without a limit, or with a viewport already
+ * past it, the content is what the viewport shows: nothing to scroll.
+ */
+internal fun GraphViewport.scrollbarOffsetPx(): Double = (startMs - scrollbarStartMs()) * pxPerMs
+
+internal fun GraphViewport.scrollbarContentPx(limitMs: Long?, trackWidthPx: Float): Double {
+    val endMs = max(startMs + trackWidthPx / pxPerMs, limitMs?.let { it + JumpMarginPx / pxPerMs } ?: Double.NEGATIVE_INFINITY)
+    return (endMs - scrollbarStartMs()) * pxPerMs
+}
+
+private fun GraphViewport.scrollbarStartMs() = minOf(MIN_START_MS, startMs)
+
+/**
  * A move to the right that arrives at the end of the graph (see panned): the viewport was short of it and [moved] is on it.
  * Already there, or moving away from it, is not arriving. Without a limit there is no end.
  */
