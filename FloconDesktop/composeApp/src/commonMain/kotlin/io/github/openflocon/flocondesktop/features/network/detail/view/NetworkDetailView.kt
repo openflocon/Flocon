@@ -406,6 +406,18 @@ private fun NetworkDetailContent(
  * The tabs stay on top while the content scrolls.
  * It has no border nor corners: the side panel / window already is the container
  */
+
+/**
+ * The theme surfaces can be translucent: lay them over an opaque base so the content scrolling under the tabs doesn't show through
+ */
+@Composable
+private fun Modifier.solidBackground(raised: Boolean = false): Modifier {
+    val colors = FloconTheme.colors
+    return background(colors.pageMid)
+        .background(colors.bg000)
+        .then(if (raised) Modifier.background(colors.bg200) else Modifier)
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.networkDetailSections(
     header: @Composable () -> Unit,
@@ -416,7 +428,7 @@ private fun LazyListScope.networkDetailSections(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colors.bg000)
+                .solidBackground()
                 .padding(
                     start = FloconTheme.spacing.large,
                     end = FloconTheme.spacing.large,
@@ -431,7 +443,7 @@ private fun LazyListScope.networkDetailSections(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colors.bg000)
+                .solidBackground()
                 .padding(horizontal = FloconTheme.spacing.small),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
             verticalAlignment = Alignment.Bottom,
@@ -442,7 +454,7 @@ private fun LazyListScope.networkDetailSections(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(FloconTheme.colors.bg200)
+                .solidBackground(raised = true)
                 .padding(FloconTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
             content = content,
