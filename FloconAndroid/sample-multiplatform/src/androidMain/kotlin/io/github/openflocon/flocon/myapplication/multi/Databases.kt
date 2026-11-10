@@ -9,6 +9,9 @@ import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import io.github.openflocon.flocon.database.sqldelight.withFlocon
 
 object Databases {
     @Volatile
@@ -73,6 +76,17 @@ object Databases {
                 database = instance
             )
             instance
+        }
+    }
+
+    @Volatile
+    private var sqlDelightDatabase: SqlDelightDatabase? = null
+
+    fun getSqlDelightDatabase(context: Context): SqlDelightDatabase {
+        return sqlDelightDatabase ?: synchronized(this) {
+            val driver = AndroidSqliteDriver(SqlDelightDatabase.Schema, context.applicationContext, "sqldelight_dogs.db")
+                .withFlocon(id = "dogs_sqldelight", displayName = "dogs (SQLDelight)")
+            SqlDelightDatabase(driver).also { sqlDelightDatabase = it }
         }
     }
 }

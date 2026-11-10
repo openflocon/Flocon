@@ -3,6 +3,10 @@ package com.flocon.sample.desktop
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.room3.Room
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import io.github.openflocon.flocon.database.sqldelight.withFlocon
+import io.github.openflocon.flocon.myapplication.multi.database.insertSampleDog
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.openflocon.flocon.database.room3.floconLogs
 import coil3.ImageLoader
@@ -96,7 +100,7 @@ fun main() {
 
     initializeDatabases(dogDatabase = dogDatabase, foodDatabase = foodDatabase)
 
-    registerDesktopSampleFeatures(dogDatabase, foodDatabase)
+    registerDesktopSampleFeatures(dogDatabase, foodDatabase, sqlDelightDatabase())
 
     application {
         Window(onCloseRequest = ::exitApplication, title = "Flocon Sample - Desktop") {
@@ -114,6 +118,15 @@ private fun dogDatabase(): DogDatabase {
         .build()
 }
 
+private fun sqlDelightDatabase(): SqlDelightDatabase {
+    val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_sqldelight_dogs.db")
+    val driver = JdbcSqliteDriver("jdbc:sqlite:${dbFile.absolutePath}")
+        .withFlocon(id = "dogs_sqldelight_jvm", displayName = "dogs (SQLDelight)")
+    // the schema uses CREATE TABLE IF NOT EXISTS: safe to run at each start
+    SqlDelightDatabase.Schema.create(driver)
+    return SqlDelightDatabase(driver)
+}
+
 private fun foodDatabase(): FoodDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
     return Room.databaseBuilder<FoodDatabase>(name = dbFile.absolutePath)
@@ -123,7 +136,7 @@ private fun foodDatabase(): FoodDatabase {
         .build()
 }
 
-private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
+private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase, sqlDelightDatabase: SqlDelightDatabase) {
     SampleFeatures.platform = SamplePlatform.Desktop
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
@@ -136,6 +149,9 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseSqlDelight) {
+        sqlDelightDatabase.insertSampleDog()
     }
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         foodDatabase.foodDao().insertFood(newFood())

@@ -30,6 +30,8 @@ kotlin {
             implementation(projects.crashreporter.crashreporter)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
             implementation(projects.database.room3.room3)
+            implementation(projects.database.sqldelight.sqldelight)
+            implementation(libs.sqldelight.native.driver)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

@@ -8,6 +8,9 @@ import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
+import app.cash.sqldelight.driver.native.NativeSqliteDriver
+import io.github.openflocon.flocon.database.sqldelight.withFlocon
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -27,6 +30,12 @@ object Databases {
             Flocon.databasePlugin.register(id = "dogs_ios", displayName = "Dog Database", database = instance)
             instance
         }
+    }
+
+    val sqlDelightDatabase: SqlDelightDatabase by lazy {
+        val driver = NativeSqliteDriver(SqlDelightDatabase.Schema, "sqldelight_dogs.db")
+            .withFlocon(id = "dogs_sqldelight_ios", displayName = "dogs (SQLDelight)")
+        SqlDelightDatabase(driver)
     }
 
     private var foodDatabase: FoodDatabase? = null
