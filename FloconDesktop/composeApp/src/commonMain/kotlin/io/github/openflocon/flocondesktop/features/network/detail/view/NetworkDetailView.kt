@@ -402,12 +402,13 @@ private fun NetworkDetailContent(
 }
 
 /**
- * The theme surfaces can be translucent: lay them over an opaque base so the content scrolling under the tabs doesn't show through
+ * The theme surfaces can be translucent: lay them over an opaque base (the page, then the panel surface they normally sit on) so the content scrolling under the tabs doesn't show through
  */
 @Composable
 private fun Modifier.solidBackground(raised: Boolean = false): Modifier {
     val colors = FloconTheme.colors
     return background(colors.pageMid)
+        .background(colors.islandSidebar)
         .background(colors.bg000)
         .then(if (raised) Modifier.background(colors.bg200) else Modifier)
 }
