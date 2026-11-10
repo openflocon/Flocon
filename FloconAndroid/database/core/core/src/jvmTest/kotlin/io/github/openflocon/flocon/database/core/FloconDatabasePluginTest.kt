@@ -5,7 +5,11 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.database.core.model.FloconFileDatabaseModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import io.github.openflocon.flocon.utils.currentTimeMillis
+import kotlin.coroutines.CoroutineContext
+import kotlin.test.assertTrue
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -38,6 +42,34 @@ class FloconDatabasePluginTest {
         assertEquals(Protocol.FromDevice.Database.Method.LogQuery, method)
         assertContains(body, "\"dbId\":\"dogs\"")
         assertContains(body, "\"bindArgs\":[\"1\"]")
+    }
+
+    @Test
+    fun `logQuery timestamp is the time of the call, not the time the message is sent`() {
+        // a dispatcher that holds the launched coroutine until we run it, like a busy dispatcher
+        val queued = mutableListOf<Runnable>()
+        val delayedDispatcher = object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                queued += block
+            }
+        }
+        val delayedSender = FakeFloconMessageSender()
+        val delayedPlugin = FloconDatabasePluginImpl(
+            sender = delayedSender,
+            scope = CoroutineScope(delayedDispatcher),
+            providers = emptyList(),
+            encoder = FloconEncoder(FloconDatabaseEncoding().serializersModule),
+        )
+
+        val before = currentTimeMillis()
+        delayedPlugin.logQuery(dbId = "dogs", sqlQuery = "SELECT 1", bindArgs = emptyList())
+        val afterCall = currentTimeMillis()
+        Thread.sleep(50)
+        queued.toList().forEach { it.run() }
+
+        val body = delayedSender.messages.single().third
+        val timestamp = Regex("\"timestamp\":(\\d+)").find(body)!!.groupValues[1].toLong()
+        assertTrue(timestamp in before..afterCall, "timestamp $timestamp is not in $before..$afterCall")
     }
 
     @Test
