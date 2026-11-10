@@ -9,7 +9,24 @@ data class DeeplinkViewState(
     val parts: List<DeeplinkPart>,
     val description: String?,
     val isHistory: Boolean,
-)
+) {
+    /** The label, or the link itself with its fields as [name]. */
+    val displayName: String
+        get() = label ?: parts.joinToString(separator = "") {
+            when (it) {
+                is DeeplinkPart.Text -> it.value
+                is DeeplinkPart.TextField -> "[${it.label}]"
+                is DeeplinkPart.Variable -> it.value
+            }
+        }
+
+    val variableNames: List<String>
+        get() = parts.filterIsInstance<DeeplinkPart.Variable>().map { it.name }
+
+    /** Variables of the link that have no value yet: the link can't be sent. */
+    val missingVariablesCount: Int
+        get() = parts.count { it is DeeplinkPart.Variable && !it.isResolved }
+}
 
 fun previewDeeplinkViewState() = DeeplinkViewState(
     label = "label",

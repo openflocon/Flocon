@@ -8,6 +8,8 @@ data class DeeplinkVariableViewState(
     val description: String?,
     val value: String,
     val mode: Mode = Mode.Input,
+    // number of declared deeplinks that use this variable
+    val usedByCount: Int = 0,
 ) {
     @Immutable
     sealed interface Mode {

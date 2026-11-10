@@ -45,8 +45,6 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeepli
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
 
 @Composable
 fun DeeplinkRow(
@@ -55,7 +53,6 @@ fun DeeplinkRow(
     removeFromHistory: (DeeplinkViewState) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    variableValues: ImmutableMap<String, String> = persistentMapOf(),
 ) {
     val values = remember(item.deeplinkId) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
 
@@ -93,7 +90,6 @@ fun DeeplinkRow(
                 item.parts.fastForEach { part ->
                     TextFieldPart(
                         part = part,
-                        variableValues = variableValues,
                         onFieldValueChanged = { field, value -> values.put(field, value) },
                     )
                 }
@@ -139,7 +135,6 @@ fun DeeplinkRow(
 @Composable
 private fun TextFieldPart(
     part: DeeplinkPart,
-    variableValues: ImmutableMap<String, String>,
     onFieldValueChanged: (DeeplinkPart.TextField, value: String) -> Unit
 ) {
     when (part) {
@@ -208,24 +203,23 @@ private fun TextFieldPart(
         }
 
         is DeeplinkPart.Variable -> {
-            val resolved = variableValues[part.value]
             Text(
-                text = resolved.takeIf { !it.isNullOrEmpty() } ?: part.value,
+                text = part.value,
                 style =
                 FloconTheme.typography.bodySmall.copy(
                     color =
-                    if (resolved.isNullOrEmpty()) {
+                    if (part.isResolved) {
+                        FloconTheme.colors.ink
+                    } else {
                         FloconTheme.colors.ink.copy(
                             alpha = 0.4f
                         )
-                    } else {
-                        FloconTheme.colors.ink
                     },
                     fontWeight =
-                    if (resolved.isNullOrEmpty()) {
-                        FontWeight.Normal
-                    } else {
+                    if (part.isResolved) {
                         FontWeight.Bold
+                    } else {
+                        FontWeight.Normal
                     },
                 ),
             )
