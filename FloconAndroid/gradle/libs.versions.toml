@@ -32,6 +32,7 @@ room = "2.8.5"
 room3 = "3.0.3"
 sqlite = "2.7.1"
 sqlite-jdbc = "3.53.4.0"
+sqldelight = "2.4.1"
 
 android-minSdk = "23"
 android-compileSdk = "37"
@@ -121,6 +122,8 @@ okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp
 
 # SQLite
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 
 # Third Party
 brotli-dec = { module = "org.brotli:dec", version.ref = "brotli" }
