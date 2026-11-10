@@ -6,8 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
 import io.github.openflocon.domain.timeline.models.TimelineDurationRangeDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
@@ -15,6 +13,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.parseTimelineStatusRules
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.common.utils.launchMainMolecule
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toFilterPanel
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineFilterAction
@@ -68,7 +67,7 @@ internal class TimelineFilterPanelViewModel(
     private val logTagInput = TimelineLogTagInput()
     val logTagText: State<String> get() = logTagInput.text
 
-    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
+    val panel: StateFlow<TimelineFilterPanelUiModel> = viewModelScope.launchMainMolecule {
         val summary by summary.collectAsState()
 
         // read from the settings: the panel is never empty, the switches settle once the stored selection is known

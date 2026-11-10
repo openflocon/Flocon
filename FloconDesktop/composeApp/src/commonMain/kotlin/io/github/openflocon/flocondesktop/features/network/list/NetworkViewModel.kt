@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -33,6 +31,7 @@ import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequest
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
+import io.github.openflocon.flocondesktop.common.utils.launchMainMolecule
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
@@ -130,7 +129,7 @@ class NetworkViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val uiState = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
+    val uiState = viewModelScope.launchMainMolecule {
         val showEmptyState by showEmptyState.collectAsState()
         val settings by settings.collectAsState()
         val content by contentState.collectAsState()
@@ -162,7 +161,7 @@ class NetworkViewModel(
     private val deviceIdAndPackageName = observeCurrentDeviceIdAndPackageNameUseCase()
         .stateInWhileSubscribed(null)
 
-    private val query = viewModelScope.launchMolecule(RecompositionMode.Immediate) {
+    private val query = viewModelScope.launchMainMolecule {
         val device by deviceIdAndPackageName.collectAsState()
         val clearing by isClearing.collectAsState()
         val header by headerDelegate.queryInputs.collectAsState()
