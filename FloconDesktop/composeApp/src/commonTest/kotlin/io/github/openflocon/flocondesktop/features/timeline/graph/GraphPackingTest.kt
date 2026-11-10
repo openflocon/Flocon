@@ -131,6 +131,21 @@ class GraphPackingTest {
     }
 
     @Test
+    fun `the single graph packs every type in one lane, shorter than the lanes`() {
+        val events = previewGraphEvents()
+        val lanes = buildGraphUiModel(events, PreviewSessionDurationMs)
+        val single = buildGraphUiModel(events, PreviewSessionDurationMs, single = true)
+
+        assertEquals(listOf<GraphLane?>(null), single.lanes.map { it.lane })
+        assertEquals(events.size, single.lanes.single().rows.sumOf { it.size })
+        // the types keep their own color: it is the one of the event
+        assertEquals(GraphLane.entries.toSet(), single.lanes.single().rows.flatten().map { it.lane }.toSet())
+        assertTrue(single.rowCount < lanes.rowCount)
+        assertEquals(lanes.eventCount, single.eventCount)
+        assertTrue(buildGraphUiModel(emptyList(), 0L, single = true).lanes.isEmpty())
+    }
+
+    @Test
     fun `the summary of the reference session`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 

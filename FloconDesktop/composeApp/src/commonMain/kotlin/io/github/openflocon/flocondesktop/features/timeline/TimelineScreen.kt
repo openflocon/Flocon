@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Reorder
+import androidx.compose.material.icons.outlined.ScatterPlot
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +62,8 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
 import flocondesktop.composeapp.generated.resources.timeline_filters_toggle
+import flocondesktop.composeapp.generated.resources.timeline_graph_lanes
+import flocondesktop.composeapp.generated.resources.timeline_graph_single
 import flocondesktop.composeapp.generated.resources.timeline_view_graph
 import flocondesktop.composeapp.generated.resources.timeline_view_list
 import io.github.openflocon.domain.timeline.models.TimelinePhase
@@ -272,6 +276,21 @@ internal fun TimelineContent(
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
+            // how the graph groups the events, it means nothing to the list
+            if (settings.graph) {
+                val lanesTooltip = stringResource(Res.string.timeline_graph_lanes)
+                val singleTooltip = stringResource(Res.string.timeline_graph_single)
+                FloconSegmentedIconToggle(
+                    options = remember(lanesTooltip, singleTooltip) {
+                        persistentListOf(
+                            FloconSegmentedIconOption(icon = Icons.Outlined.Reorder, tooltip = lanesTooltip),
+                            FloconSegmentedIconOption(icon = Icons.Outlined.ScatterPlot, tooltip = singleTooltip),
+                        )
+                    },
+                    selectedIndex = if (settings.mergePlugins) 1 else 0,
+                    onSelect = { onAction(TimelineAction.SetMergePlugins(it == 1)) },
+                )
+            }
             // the same switch as the files: the list or the graph of the session
             val listTooltip = stringResource(Res.string.timeline_view_list)
             val graphTooltip = stringResource(Res.string.timeline_view_graph)

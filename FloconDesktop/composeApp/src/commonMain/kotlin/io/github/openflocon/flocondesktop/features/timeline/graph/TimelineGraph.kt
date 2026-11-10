@@ -677,7 +677,6 @@ private fun DrawScope.drawGraph(
         model.lanes.forEachIndexed { laneIndex, lane ->
             val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
             if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
-            val color = laneColors.getValue(lane.lane)
             lane.rows.forEachIndexed { rowIndex, row ->
                 val rowTop = laneTop + rowIndex * RowHeightPx
                 if (rowTop + RowHeightPx < AxisHeightPx || rowTop > height) return@forEachIndexed
@@ -688,7 +687,7 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else color
+                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
@@ -783,23 +782,32 @@ private fun DrawScope.drawGraph(
     drawRect(palette.panel, Offset(0f, AxisHeightPx), Size(LaneLabelWidthPx, height - AxisHeightPx))
     drawLine(palette.line, Offset(LaneLabelWidthPx, 0f), Offset(LaneLabelWidthPx, height), strokeWidth = 1f)
     clipRect(left = 0f, top = AxisHeightPx, right = LaneLabelWidthPx, bottom = height) {
-        model.lanes.forEachIndexed { laneIndex, lane ->
-            val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
-            if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
+        // the name of a type with its color, in a row of [RowHeightPx] starting at [top]
+        fun drawTypeLabel(type: GraphLane, top: Float) {
             val text = measurer.measure(
-                laneLabels.getValue(lane.lane),
+                laneLabels.getValue(type),
                 labelStyle.copy(color = palette.ink),
                 density = unit,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 constraints = Constraints(maxWidth = (LaneLabelWidthPx - 40f).toInt()),
             )
-            val y = laneTop + (RowHeightPx - text.size.height) / 2f
-            drawCircle(laneColors.getValue(lane.lane), radius = 3f, center = Offset(22f, y + text.size.height / 2f))
+            val y = top + (RowHeightPx - text.size.height) / 2f
+            drawCircle(laneColors.getValue(type), radius = 3f, center = Offset(22f, y + text.size.height / 2f))
             drawText(text, topLeft = Offset(32f, y))
-            if (laneIndex < model.lanes.lastIndex) {
-                val line = laneTop + lane.heightPx()
-                drawLine(palette.line, Offset(0f, line), Offset(LaneLabelWidthPx, line), strokeWidth = LaneSeparatorPx)
+        }
+        // the single graph has no lane to name: the column is the legend of the colors, it does not scroll
+        if (model.lanes.singleOrNull()?.lane == null && model.lanes.isNotEmpty()) {
+            GraphLane.entries.forEachIndexed { index, type -> drawTypeLabel(type, AxisHeightPx + index * RowHeightPx) }
+        } else {
+            model.lanes.forEachIndexed { laneIndex, lane ->
+                val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
+                if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
+                lane.lane?.let { drawTypeLabel(it, laneTop) }
+                if (laneIndex < model.lanes.lastIndex) {
+                    val line = laneTop + lane.heightPx()
+                    drawLine(palette.line, Offset(0f, line), Offset(LaneLabelWidthPx, line), strokeWidth = LaneSeparatorPx)
+                }
             }
         }
     }
