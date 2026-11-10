@@ -151,7 +151,11 @@ private const val CursorLineWidthPx = 3f
 private const val CursorGuideAlpha = 0.8f
 private const val PopoverWidthPx = 214f
 private const val ClusterSeparatorPx = 1f
-private const val ClusterErrorDotPx = 4f
+private const val ClusterBadgeHeightPx = 16f
+private const val ClusterBadgeMinWidthPx = 18f
+private const val ClusterBadgePaddingPx = 4f
+private const val ClusterBadgeOverhangPx = 6f
+private const val ClusterBadgeBorderPx = 1.5f
 private val ClusterCountColor = Color.White
 private val ClusterCountShadow = Shadow(Color.Black.copy(alpha = 0.65f), Offset(0f, 1f), 3f)
 
@@ -967,15 +971,22 @@ private fun DrawScope.drawCluster(
             x += segment.widthPx
         }
     }
-    if (cluster.errorCount > 0) {
-        drawCircle(palette.error, ClusterErrorDotPx, Offset(left + widthPx - ClusterErrorDotPx, top + ClusterErrorDotPx))
-    }
     if (selected) {
         drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
     }
     // the total, white with a shadow: readable whatever the colors under it
     val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow), density = unit, maxLines = 1)
     drawText(count, topLeft = Offset(left + (widthPx - count.size.width) / 2f, top + (BarHeightPx - count.size.height) / 2f))
+    // the number of failed events, in a small rounded badge on the top right corner
+    if (cluster.errorCount > 0) {
+        val errors = measurer.measure(cluster.errorCount.toString(), chipStyle.copy(color = ClusterCountColor), density = unit, maxLines = 1)
+        val badgeWidth = max(ClusterBadgeMinWidthPx, errors.size.width + 2 * ClusterBadgePaddingPx)
+        val badgeLeft = left + widthPx - badgeWidth + ClusterBadgeOverhangPx
+        val badgeTop = top - ClusterBadgeHeightPx / 4f
+        drawRoundRect(palette.panel, Offset(badgeLeft - ClusterBadgeBorderPx, badgeTop - ClusterBadgeBorderPx), Size(badgeWidth + 2 * ClusterBadgeBorderPx, ClusterBadgeHeightPx + 2 * ClusterBadgeBorderPx), CornerRadius(BarRadiusPx))
+        drawRoundRect(palette.error, Offset(badgeLeft, badgeTop), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx - ClusterBadgeBorderPx))
+        drawText(errors, topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f))
+    }
 }
 
 private fun DrawScope.drawBar(
