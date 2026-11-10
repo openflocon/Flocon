@@ -77,6 +77,10 @@ internal fun MockDeviceBuilder.sampleNetworkCalls() {
         requestBody("""{"newsletter":false,"theme":"dark"}""")
     }
     network(30.seconds.ago, "DELETE", "$API/cart/c-981", duration = 52.milliseconds)
+    grpc(150.seconds.ago, "grpc.example.com", "shop.catalog.CatalogService/ListProducts", duration = 140.milliseconds)
+    grpc(100.seconds.ago, "grpc.example.com", "shop.cart.CartService/AddItem", duration = 65.milliseconds)
+    grpc(45.seconds.ago, "grpc.example.com", "shop.payment.PaymentService/Charge", grpcStatus = "UNAVAILABLE", duration = 2_100.milliseconds)
+    grpc(20.seconds.ago, "grpc.example.com", "shop.orders.OrderService/WatchOrder", pending = true)
     network(10.seconds.ago, "GET", "$API/orders/o-5521/tracking", pending = true)
 }
 

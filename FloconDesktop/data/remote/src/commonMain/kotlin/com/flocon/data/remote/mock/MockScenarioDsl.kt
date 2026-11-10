@@ -97,6 +97,25 @@ class MockDeviceBuilder internal constructor() {
         )
     }
 
+    /** A gRPC call: like the SDK sends it, the url is the server authority and the method the full method name. */
+    fun grpc(
+        at: Duration,
+        authority: String,
+        method: String,
+        grpcStatus: String = "OK",
+        duration: Duration = 100.milliseconds,
+        pending: Boolean = false,
+    ) {
+        events += MockEvent.NetworkCall(
+            at = at,
+            method = method,
+            url = authority,
+            duration = duration,
+            pending = pending,
+            grpcStatus = grpcStatus,
+        )
+    }
+
     fun timeline(
         at: Duration,
         value: String,
