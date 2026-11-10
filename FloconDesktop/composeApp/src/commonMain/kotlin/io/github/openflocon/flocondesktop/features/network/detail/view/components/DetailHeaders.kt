@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_copy_value
-import flocondesktop.composeapp.generated.resources.network_decode_jwt
 import io.github.openflocon.flocondesktop.features.network.detail.model.NetworkDetailHeaderUi
 import io.github.openflocon.flocondesktop.features.network.detail.model.previewNetworkDetailHeaderUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -57,17 +56,24 @@ import org.jetbrains.compose.resources.stringResource
 fun DetailHeaders(
     headers: ImmutableList<NetworkDetailHeaderUi>,
     labelWidth: Dp,
-    onAuthorizationClicked: (value: String) -> Unit,
     modifier: Modifier = Modifier,
     onCopyValue: ((value: String) -> Unit)? = null,
+    framed: Boolean = true,
 ) {
     Column(
         modifier = modifier
-            .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
-            .border(
-                width = 1.dp,
-                color = FloconTheme.colors.line,
-                shape = FloconTheme.shapes.medium
+            .then(
+                if (framed) {
+                    Modifier
+                        .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
+                        .border(
+                            width = 1.dp,
+                            color = FloconTheme.colors.line,
+                            shape = FloconTheme.shapes.medium
+                        )
+                } else {
+                    Modifier
+                }
             )
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall)
     ) {
@@ -75,7 +81,6 @@ fun DetailHeaders(
             HeaderItemRow(
                 item = item,
                 labelWidth = labelWidth,
-                onAuthorizationClicked = onAuthorizationClicked,
                 onCopyValue = onCopyValue,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -94,14 +99,10 @@ fun DetailHeaders(
 private fun HeaderItemRow(
     item: NetworkDetailHeaderUi,
     labelWidth: Dp,
-    onAuthorizationClicked: (value: String) -> Unit,
     onCopyValue: ((value: String) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     var isTitleHovered by remember { mutableStateOf(false) }
-    val isAuthBearer = remember(item.name, item.value) {
-        item.name.equals("authorization", ignoreCase = true) && item.value.startsWith("Bearer ")
-    }
 
     Row(
         modifier = modifier
@@ -146,15 +147,6 @@ private fun HeaderItemRow(
             value = item.value,
             modifier = Modifier.weight(1f)
         )
-
-        if (isAuthBearer) {
-            Spacer(modifier = Modifier.width(FloconTheme.spacing.extraSmall))
-            FloconButton(
-                onClick = { onAuthorizationClicked(item.value) }
-            ) {
-                Text(stringResource(Res.string.network_decode_jwt), textAlign = TextAlign.Center, color = FloconTheme.colors.ink)
-            }
-        }
     }
 }
 
@@ -226,7 +218,6 @@ private fun DetailHeadersPreview() {
             ),
             labelWidth = 100.dp,
             modifier = Modifier.fillMaxWidth(),
-            onAuthorizationClicked = {},
             onCopyValue = {},
         )
     }

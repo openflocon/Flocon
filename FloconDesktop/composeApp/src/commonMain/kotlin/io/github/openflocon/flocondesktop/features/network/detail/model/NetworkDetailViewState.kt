@@ -11,6 +11,9 @@ import kotlinx.collections.immutable.PersistentMap
 data class NetworkDetailViewState(
     val callId: String,
     val fullUrl: String,
+    val host: String = "",
+    val path: String = "",
+    val queryParams: ImmutableList<NetworkDetailHeaderUi>? = null,
     val requestTimeFormatted: String,
     val durationFormatted: String?,
 
@@ -28,6 +31,7 @@ data class NetworkDetailViewState(
 
     val requestSize: String,
     val requestHeaders: ImmutableList<NetworkDetailHeaderUi>?,
+    val jwt: Jwt? = null,
     val imageUrl: String?, // filled only if it's an image url
     val imageHeaders: PersistentMap<String, String>?,
     // response
@@ -36,6 +40,14 @@ data class NetworkDetailViewState(
 
     val showHtmlDialog: Boolean = false
 ) {
+
+    @Immutable
+    data class Jwt(
+        val token: String,
+        val claims: ImmutableList<NetworkDetailHeaderUi>,
+        val expiration: String?,
+        val isExpired: Boolean,
+    )
 
     @Immutable
     sealed interface Response {

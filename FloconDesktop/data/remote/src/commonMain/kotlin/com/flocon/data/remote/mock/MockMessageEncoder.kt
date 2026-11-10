@@ -138,6 +138,8 @@ internal class MockMessageEncoder(private val json: Json) {
         )
         if (call.pending) return listOf(request)
 
+        val responseContentType = call.contentType ?: call.responseHeaders.entries
+            .firstOrNull { it.key.equals("content-type", ignoreCase = true) }?.value
         val response = Triple(
             Protocol.FromDevice.Network.Plugin,
             Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
@@ -148,8 +150,8 @@ internal class MockMessageEncoder(private val json: Json) {
                     durationMs = call.duration.inWholeMicroseconds / 1000.0,
                     responseHttpCode = call.status.takeIf { call.error == null && call.grpcStatus == null },
                     responseGrpcStatus = call.grpcStatus,
-                    responseContentType = call.contentType ?: call.responseHeaders.entries
-                        .firstOrNull { it.key.equals("content-type", ignoreCase = true) }?.value,
+                    responseContentType = responseContentType,
+                    isImage = responseContentType?.startsWith("image/", ignoreCase = true) == true,
                     responseBody = call.responseBody,
                     responseHeaders = call.responseHeaders,
                     responseSize = call.responseBody?.encodeToByteArray()?.size?.toLong() ?: 0L,

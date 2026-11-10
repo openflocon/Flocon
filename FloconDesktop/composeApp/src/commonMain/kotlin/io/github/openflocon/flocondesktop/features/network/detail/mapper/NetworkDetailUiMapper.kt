@@ -21,14 +21,25 @@ import io.github.openflocon.library.designsystem.common.isImageUrl
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.longOrNull
+import kotlin.math.absoluteValue
 
 fun FloconNetworkCallDomainModel.toDetailUi(
     defaultSelectedTab: NetworkDetailTab = NetworkDetailTab.Request,
+    decodeJwtPayload: (token: String) -> String? = { null },
+    nowSeconds: Long = System.currentTimeMillis() / 1_000,
 ): NetworkDetailViewState {
     val imageUrl = request.url.takeIf { response?.isImage() == true || it.isImageUrl() }
+    val urlParts = splitUrl(request.url)
     return NetworkDetailViewState(
         callId = callId,
         fullUrl = request.url,
+        host = urlParts.host,
+        path = urlParts.path,
+        queryParams = urlParts.queryParams.takeIf { it.isNotEmpty() }?.toImmutableList(),
         method = toDetailMethodUi(this),
         statusLabel = toDetailStatusLabel(this),
         status = toDetailHttpStatusUi(this),
@@ -43,6 +54,7 @@ fun FloconNetworkCallDomainModel.toDetailUi(
         canOpenRequestBody = canOpenExternal(request.body),
         // headers.,
         requestHeaders = toNetworkHeadersUi(request.headers),
+        jwt = toJwtUi(request.headers, decodeJwtPayload, nowSeconds),
         requestSize = request.byteSizeFormatted,
         // response
         response = response?.let {
@@ -174,3 +186,83 @@ fun toDetailMethodUi(request: FloconNetworkCallDomainModel): NetworkDetailViewSt
 }
 
 private fun canOpenExternal(body: String?): Boolean = body != null && body.isNotBlank() && OpenFile.isSupported()
+
+internal data class UrlParts(
+    val host: String,
+    val path: String,
+    val queryParams: List<NetworkDetailHeaderUi>,
+)
+
+/**
+ * Splits `scheme://host/path?a=1&b=2#fragment` for the detail header.
+ * Without a scheme (grpc method, websocket event...) the whole input is the path.
+ */
+internal fun splitUrl(url: String): UrlParts {
+    val withoutFragment = url.substringBefore('#')
+    val schemeEnd = withoutFragment.indexOf("://")
+    val firstDelimiter = withoutFragment.indexOfFirst { it == '/' || it == '?' }
+    val hasScheme = schemeEnd > 0 && (firstDelimiter == -1 || schemeEnd < firstDelimiter)
+    val withoutScheme = if (hasScheme) withoutFragment.substring(schemeEnd + 3) else withoutFragment
+    val beforeQuery = withoutScheme.substringBefore('?')
+    val query = withoutScheme.substringAfter('?', missingDelimiterValue = "")
+
+    val host = if (hasScheme) beforeQuery.substringBefore('/') else ""
+    val path = if (hasScheme) beforeQuery.removePrefix(host).ifEmpty { "/" } else beforeQuery
+
+    val queryParams = query
+        .split('&')
+        .filter { it.isNotEmpty() && !it.startsWith('=') }
+        .map { param ->
+            NetworkDetailHeaderUi(
+                name = param.substringBefore('='),
+                value = param.substringAfter('=', missingDelimiterValue = ""),
+            )
+        }
+
+    return UrlParts(host = host, path = path, queryParams = queryParams)
+}
+
+private const val BEARER_PREFIX = "Bearer "
+
+internal fun toJwtUi(
+    headers: Map<String, String>?,
+    decodeJwtPayload: (token: String) -> String?,
+    nowSeconds: Long,
+): NetworkDetailViewState.Jwt? {
+    val token = headers
+        ?.entries
+        ?.firstOrNull { it.key.equals("authorization", ignoreCase = true) && it.value.startsWith(BEARER_PREFIX) }
+        ?.value
+        ?.removePrefix(BEARER_PREFIX)
+        ?.trim()
+        ?: return null
+    val payload = decodeJwtPayload(token)
+        ?.let { runCatching { Json.parseToJsonElement(it) as? JsonObject }.getOrNull() }
+        ?: return null
+
+    val exp = (payload["exp"] as? JsonPrimitive)?.longOrNull
+    return NetworkDetailViewState.Jwt(
+        token = token,
+        claims = payload
+            .map { (key, value) ->
+                NetworkDetailHeaderUi(
+                    name = key,
+                    value = (value as? JsonPrimitive)?.content ?: value.toString(),
+                )
+            }
+            .toImmutableList(),
+        expiration = exp?.let { formatExpiration(exp - nowSeconds) },
+        isExpired = exp != null && exp <= nowSeconds,
+    )
+}
+
+internal fun formatExpiration(secondsLeft: Long): String {
+    val seconds = secondsLeft.absoluteValue
+    val duration = when {
+        seconds < 60 -> "$seconds s"
+        seconds < 3_600 -> "${seconds / 60} min"
+        seconds < 86_400 -> "${seconds / 3_600} h"
+        else -> "${seconds / 86_400} d"
+    }
+    return if (secondsLeft > 0) "Expires in $duration" else "Expired $duration ago"
+}

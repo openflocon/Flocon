@@ -11,7 +11,18 @@ import kotlin.time.Duration.Companion.seconds
 internal const val SAMPLE_APP = "Flocon Sample"
 internal const val SAMPLE_PACKAGE = "io.github.openflocon.sample"
 private const val API = "https://api.flocon-shop.com/v1"
+private const val IMAGES = "https://picsum.photos"
 private const val JSON = "application/json"
+
+/** An unsigned-looking RS256 JWT expiring in 5 minutes, so the detail shows its claims and expiration. */
+private fun sampleJwt(): String {
+    val encoder = java.util.Base64.getUrlEncoder().withoutPadding()
+    fun part(json: String) = encoder.encodeToString(json.toByteArray())
+    val now = System.currentTimeMillis() / 1_000
+    return part("""{"alg":"RS256","typ":"JWT"}""") + "." +
+        part("""{"sub":"user_42","name":"Jane Doe","role":"admin","iat":${now - 600},"exp":${now + 300}}""") + "." +
+        "c2FtcGxlLXNpZ25hdHVyZQ"
+}
 
 internal fun MockDeviceBuilder.sampleNetworkCalls() {
     network(12.minutes.ago, "GET", "$API/config", duration = 84.milliseconds) {
@@ -23,10 +34,10 @@ internal fun MockDeviceBuilder.sampleNetworkCalls() {
         requestBody("""{"email":"jane.doe@example.com","password":"••••••••"}""")
         responseHeader("content-type", JSON)
         responseHeader("set-cookie", "session=abc123; HttpOnly")
-        responseBody("""{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MiJ9.sig","expiresIn":3600,"user":{"id":42,"name":"Jane Doe"}}""")
+        responseBody("""{"token":"${sampleJwt()}","expiresIn":3600,"user":{"id":42,"name":"Jane Doe"}}""")
     }
     network(10.minutes.ago, "GET", "$API/users/42", duration = 95.milliseconds) {
-        requestHeader("authorization", "Bearer eyJhbGciOiJIUzI1NiJ9…")
+        requestHeader("authorization", "Bearer ${sampleJwt()}")
         responseHeader("content-type", JSON)
         responseBody("""{"id":42,"name":"Jane Doe","email":"jane.doe@example.com","premium":true,"addresses":[{"city":"Paris","zip":"75011"}]}""")
     }
@@ -71,6 +82,48 @@ internal fun MockDeviceBuilder.sampleNetworkCalls() {
         requestBody("""{"cartId":"c-981","paymentMethod":"card"}""")
         responseHeader("content-type", JSON)
         responseBody("""{"orderId":"o-5521","status":"confirmed","total":129.9}""")
+    }
+    // images: the response is previewed from the url
+    network(7.minutes.ago + 20.seconds, "GET", "$IMAGES/id/1025/600/400.jpg", duration = 142.milliseconds) {
+        responseHeader("content-type", "image/jpeg")
+        responseHeader("cache-control", "public, max-age=31536000, immutable")
+    }
+    network(7.minutes.ago + 10.seconds, "GET", "$IMAGES/id/237/400/400.jpg", duration = 98.milliseconds) {
+        requestHeader("authorization", "Bearer ${sampleJwt()}")
+        responseHeader("content-type", "image/jpeg")
+    }
+    network(6.minutes.ago + 30.seconds, "GET", "$IMAGES/id/1011/800/500.webp", duration = 176.milliseconds) {
+        responseHeader("content-type", "image/webp")
+    }
+    // an image url answering with a json error: the body must stay visible
+    network(6.minutes.ago + 20.seconds, "GET", "$API/avatars/missing.png", status = 404, duration = 55.milliseconds) {
+        responseHeader("content-type", JSON)
+        responseBody("""{"error":"not_found","message":"Avatar missing.png does not exist"}""")
+    }
+    // many headers on both sides
+    network(5.minutes.ago + 30.seconds, "GET", "$API/products/1007/availability?zip=75011", duration = 233.milliseconds) {
+        repeat(24) { requestHeader("x-client-trace-$it", "trace-value-$it-" + "a1b2c3".repeat(4)) }
+        requestHeader("authorization", "Bearer ${sampleJwt()}")
+        requestHeader("accept", "application/json")
+        requestHeader("user-agent", "okhttp/4.12.0")
+        responseHeader("content-type", JSON)
+        repeat(46) { responseHeader("x-edge-metric-$it", "region=eu-west-3;node=$it;cache=${if (it % 3 == 0) "HIT" else "MISS"}") }
+        responseHeader("set-cookie", "session=" + "x".repeat(260) + "; Path=/; HttpOnly; Secure")
+        responseBody("""{"productId":1007,"available":true,"stores":["Paris 11","Lyon 2","Marseille 1"]}""")
+    }
+    // very big payloads
+    network(5.minutes.ago + 10.seconds, "POST", "$API/catalog/export?format=json", duration = 3_400.milliseconds) {
+        requestHeader("content-type", JSON)
+        requestBody(bigCatalogJson(2_500))
+        responseHeader("content-type", JSON)
+        responseHeader("content-length", "${bigCatalogJson(4_000).length}")
+        responseBody(bigCatalogJson(4_000))
+    }
+    network(4.minutes.ago + 40.seconds, "POST", "$API/sync/batch", duration = 12_800.milliseconds) {
+        requestHeader("content-type", JSON)
+        requestBody(bigCatalogJson(1_500))
+        responseHeader("content-type", "text/plain")
+        responseBody("OK\n" + "synced item batch line with a long enough content to make the payload heavy\n".repeat(16_000))
     }
     network(60.seconds.ago, "PUT", "$API/users/42/preferences", status = 204, duration = 70.milliseconds) {
         requestHeader("content-type", JSON)
@@ -185,4 +238,14 @@ private fun productsJson(page: Int): String {
         """{"id":$id,"name":"${names[index % names.size]} ${index / names.size + 1}","price":${59 + index * 5}.9,"currency":"EUR"}"""
     }
     return """{"page":$page,"size":20,"total":40,"items":[$items]}"""
+}
+
+/** A catalog of [count] products: ~200 bytes each, the 4 000 version is a ~800 KB body */
+private fun bigCatalogJson(count: Int): String = buildString {
+    append("[")
+    repeat(count) { index ->
+        if (index > 0) append(",")
+        append("""{"id":${1000 + index},"sku":"SKU-${index.toString().padStart(6, '0')}","name":"Product $index","price":${(index % 200) + 9.9},"currency":"EUR","stock":${index % 40},"tags":["shoes","outdoor","sale"],"description":"A sample product used to test very large payloads"}""")
+    }
+    append("]")
 }

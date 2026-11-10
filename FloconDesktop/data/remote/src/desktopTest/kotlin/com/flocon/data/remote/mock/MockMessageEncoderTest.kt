@@ -83,6 +83,25 @@ class MockMessageEncoderTest {
     }
 
     @Test
+    fun `image response is flagged as an image`() {
+        val messages = encode {
+            network(1.minutes.ago, "GET", "https://cdn.example.com/avatar") {
+                responseHeader("content-type", "image/webp")
+            }
+            network(1.minutes.ago, "GET", "https://cdn.example.com/data") {
+                responseHeader("content-type", "application/json")
+            }
+        }
+
+        val network = NetworkRemoteDataSourceImpl(NoServer, json)
+        val (image, json) = listOf(1, 3).map {
+            assertIs<FloconNetworkCallDomainModel.Response.Success>(assertNotNull(network.getResponseData(messages[it].toDomain())).response)
+        }
+        assertEquals(true, image.isImage)
+        assertEquals(false, json.isImage)
+    }
+
+    @Test
     fun `pending call emits request only`() {
         val messages = encode {
             network(1.minutes.ago, "GET", "https://x", pending = true)
