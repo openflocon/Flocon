@@ -36,13 +36,15 @@ internal class CrashReporterLocalDataSourceRoom(
     }
 
     override fun observeAll(
-        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: String,
     ): Flow<PagingData<CrashReportDomainModel>> = Pager(
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
             crashReportDao.observeAll(
                 deviceId = deviceIdAndPackageName.deviceId,
                 packageName = deviceIdAndPackageName.packageName,
+                filter = filter.takeIf { it.isNotBlank() },
             )
         }
     ).flow.map { pagingData ->

@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local
 
+import io.github.openflocon.data.local.accessibility.accessibilityLocalModule
 import io.github.openflocon.data.local.adb.adbModule
 import io.github.openflocon.data.local.adbcommander.adbCommanderModule
 import io.github.openflocon.data.local.analytics.analyticsModule
@@ -17,6 +18,8 @@ import io.github.openflocon.data.local.network.networkModule
 import io.github.openflocon.data.local.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.local.table.tableModule
 import io.github.openflocon.data.local.timeline.timelineLocalModule
+import io.github.openflocon.data.local.timelinelog.timelineLogLocalModule
+import io.github.openflocon.data.local.webview.webViewLocalModule
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -48,6 +51,7 @@ val dataLocalModule = module {
         }
     }
     includes(
+        accessibilityLocalModule,
         adbModule,
         adbCommanderModule,
         analyticsModule,
@@ -63,5 +67,7 @@ val dataLocalModule = module {
         tableModule,
         crashReporterLocalModule,
         timelineLocalModule,
+        timelineLogLocalModule,
+        webViewLocalModule,
     )
 }

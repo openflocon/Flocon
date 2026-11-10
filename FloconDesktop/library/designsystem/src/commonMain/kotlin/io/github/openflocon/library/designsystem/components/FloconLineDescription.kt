@@ -80,7 +80,7 @@ fun FloconLineDescription(
             // the values are technical data: urls, times, sizes
             Text(
                 text = value,
-                style = floconMonoStyle(),
+                style = FloconTheme.typography.monoMedium,
             )
         }
     }

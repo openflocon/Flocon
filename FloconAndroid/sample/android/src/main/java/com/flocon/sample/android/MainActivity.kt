@@ -6,10 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.flocon.sample.android.grpc.GrpcController
+import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.accessibility.FloconAccessibility
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.room.room
@@ -27,13 +31,19 @@ import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initial
 import io.github.openflocon.flocon.myapplication.multi.sharedpreferences.initializeSharedPreferences
 import io.github.openflocon.flocon.myapplication.multi.tester.AndroidTestContext
 import io.github.openflocon.flocon.myapplication.multi.ui.App
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SampleQrScanner
 import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.registerAndroidSampleWebView
+import io.github.openflocon.flocon.webview.FloconWebView
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.okhttp.FloconOkhttpInterceptor
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
-import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
+import io.github.openflocon.flocon.connect
+import io.github.openflocon.flocon.qrscanner.scanQrCodeAndConnect
 import io.github.openflocon.flocon.startFlocon
 import io.github.openflocon.flocon.tables.FloconTable
 import io.ktor.client.HttpClient
@@ -48,6 +58,8 @@ class MainActivity : ComponentActivity() {
         FloconLogger.enabled = true
 
         startFlocon(FloconContext(this)) {
+            // keep what is logged until a desktop is reachable (here, also by typing its IP in the app)
+            connect { }
             install(FloconDeeplinks) {
                 deeplink("flocon://home")
                 deeplink("flocon://test")
@@ -64,7 +76,10 @@ class MainActivity : ComponentActivity() {
             install(FloconDashboard)
             install(FloconTable)
             install(FloconAnalytics)
+            install(FloconAccessibility)
             install(FloconFeatureFlags)
+            install(FloconTimeline)
+            install(FloconWebView)
             install(FloconDatabase) {
                 room()
             }
@@ -76,9 +91,10 @@ class MainActivity : ComponentActivity() {
                     absolutePath = "${filesDir.parentFile!!.absolutePath}/shared_prefs",
                 )
             }
-            install(FloconDevice)
             install(FloconCrashReporter)
         }
+
+        logFloconLifecycle(lifecycle)
 
         intent.data?.let {
             Toast.makeText(this, "opened with : $it", Toast.LENGTH_LONG).show()
@@ -102,6 +118,15 @@ class MainActivity : ComponentActivity() {
         AndroidTestContext.inMemoryDb = Databases.getInMemoryDogDatabase(applicationContext)
         AndroidTestContext.grpcSayHello = { GrpcController.sayHello() }
         registerAndroidSampleFeatures(applicationContext)
+        SampleQrScanner.scan = { Flocon.scanQrCodeAndConnect(this@MainActivity) }
+        registerAndroidSampleWebView()
+        SampleFeatures.on(SampleFeature.Accessibility) {
+            val announcement = "Item added to the cart"
+            // announced to TalkBack and captured automatically when it is on
+            window.decorView.post { window.decorView.announceForAccessibility(announcement) }
+            // also logged manually, so the event is there even when no screen reader is running
+            Flocon.accessibilityPlugin.announce(announcement)
+        }
 
         initializeImages(context = this, okHttpClient = okHttpClient)
 
@@ -117,6 +142,7 @@ class MainActivity : ComponentActivity() {
         initializeDatastores(applicationContext)
 
         val dogDatabase = getDogDatabase(this)
+        Databases.getSqlDelightDatabase(this) // registered in Flocon
 
         initializeDatabases(
             dogDatabase = dogDatabase,

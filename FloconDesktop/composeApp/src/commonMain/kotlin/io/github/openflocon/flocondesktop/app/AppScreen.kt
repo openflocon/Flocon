@@ -1,6 +1,5 @@
 package io.github.openflocon.flocondesktop.app
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,16 +8,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
-import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanelView
+import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
-import io.github.openflocon.flocondesktop.app.version.VersionCheckerView
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
-import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackDisplayerView
+import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
+import io.github.openflocon.flocondesktop.features.accessibility.accessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterRoutes
@@ -32,8 +32,8 @@ import io.github.openflocon.flocondesktop.features.network.networkRoutes
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesRoutes
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
+import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
 import io.github.openflocon.flocondesktop.telemetry.TelemetryConsentView
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
@@ -42,25 +42,28 @@ import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import org.koin.compose.viewmodel.koinViewModel
 
+/** Above the big dialogs of the navigation (drawn at the depth of their entry in the stack): messages stay readable. */
+internal const val AboveDialogsZIndex = 1_000f
+
 @Composable
-fun AppScreen() {
+fun AppScreen(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<AppViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
-    val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
-    val uriHandler = LocalUriHandler.current
+    val desktopUpdate by versionCheckerViewModel.desktopUpdate.collectAsStateWithLifecycle()
+    val sdkUpdate by versionCheckerViewModel.sdkUpdate.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
             navigationState = viewModel.navigationState,
             onAction = viewModel::onAction,
-            updateChip = updateChip,
-            onUpdateChipClicked = { uriHandler.openUri(it.link) },
+            desktopUpdate = desktopUpdate,
+            sdkUpdate = sdkUpdate,
+            onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
         )
-        FeedbackDisplayerView()
-        VersionCheckerView()
         TelemetryConsentView()
+        FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
     }
 }
 
@@ -69,8 +72,9 @@ private fun Content(
     uiState: AppUiState,
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit,
-    updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
-    onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit,
+    desktopUpdate: VersionCheckerViewModel.DesktopUpdateUiModel?,
+    sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel?,
+    onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit,
 ) {
     val sceneStrategies = remember {
         listOf(
@@ -91,7 +95,7 @@ private fun Content(
             sceneDecoratorStrategies = listOf(
                 MenuSceneStrategy(
                     menuContent = { expanded, onToggleExpanded ->
-                        LeftPanelView(
+                        LeftPanel(
                             current = uiState.contentState.current,
                             state = uiState.menuState,
                             expanded = expanded,
@@ -99,6 +103,7 @@ private fun Content(
                             onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
                             onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
                             onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
+                            desktopUpdate = desktopUpdate,
                         )
                     },
                     topBarContent = {
@@ -111,11 +116,10 @@ private fun Content(
                             onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
-                            onRestartClicked = { onAction(AppAction.Restart) },
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
-                            updateChip = updateChip,
-                            onUpdateChipClicked = onUpdateChipClicked,
+                            sdkUpdate = sdkUpdate,
+                            onSdkUpdateIgnored = onSdkUpdateIgnored,
                         )
                     }
                 )
@@ -138,6 +142,8 @@ private fun Content(
             releaseNotesRoutes()
             crashReporterRoutes()
             timelineRoutes()
+            webViewRoutes()
+            accessibilityRoutes()
         }
     }
 }

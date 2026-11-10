@@ -7,6 +7,7 @@ import io.github.openflocon.domain.sharedpreference.usecase.GetCurrentDeviceShar
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSelectedSharedPreferenceUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDeviceSharedPreferenceValuesUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.ObserveDeviceSharedPreferencesUseCase
+import io.github.openflocon.domain.sharedpreference.usecase.RemoveSharedPrefFieldUseCase
 import io.github.openflocon.domain.sharedpreference.usecase.SelectCurrentDeviceSharedPreferenceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -20,4 +21,5 @@ internal val sharedPreferencesModule = module {
     factoryOf(::GetCurrentDeviceSharedPreferenceValuesUseCase)
     factoryOf(::ObserveCurrentDeviceSharedPreferenceValuesUseCase)
     factoryOf(::EditSharedPrefFieldUseCase)
+    factoryOf(::RemoveSharedPrefFieldUseCase)
 }

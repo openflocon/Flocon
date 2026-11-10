@@ -4,6 +4,7 @@ package io.github.openflocon.navigation.scene
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.rememberTransition
@@ -14,7 +15,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,19 +52,27 @@ import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.MainFloconNavigationState
+import io.github.openflocon.navigation.PanelRoute
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @Immutable
-private data class PanelScene(
+data class PanelScene(
     override val key: Any,
     private val allEntries: List<NavEntry<FloconRoute>>,
     private val properties: PaneProperties,
     private val onBack: () -> Unit
 ) : Scene<FloconRoute>,
     KoinComponent {
+
+    private val navigationState: MainFloconNavigationState by inject()
+    private val pinRegistry: PanelPinRegistry? by lazy { getKoin().getOrNull<PanelPinRegistry>() }
 
     private val mainEntry = allEntries.last { !it.metadata.contains(PanelKey) }
     private val panelEntry = allEntries.last { it.metadata.contains(PanelKey) }
@@ -82,7 +91,12 @@ private data class PanelScene(
 
     override val content: @Composable (() -> Unit) = {
         val scope = rememberCoroutineScope()
-        val onPin = properties.onPinHandler?.invoke()
+        // a panel opened from a group (the timeline) is pinned by the group, wherever its entry is declared
+        val groupOnPin = remember(panelEntry.contentKey) {
+            val group = (navigationState.stack.lastOrNull { it is PanelRoute } as? PanelRoute)?.pinGroup
+            group?.let { pinRegistry?.onPinFor(it) }
+        }
+        val onPin = groupOnPin ?: properties.onPinHandler?.invoke()
         val pinnable = remember(onPin) { onPin != null }
         val isPinned by onPin?.isPinned
             ?.collectAsStateWithLifecycle()
@@ -136,7 +150,7 @@ private data class PanelScene(
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(PANEL_WIDTH)
+                            .width(PANEL_WIDTH + FloconTheme.spacing.medium)
                     )
                 }
             }
@@ -194,15 +208,33 @@ private data class PanelScene(
                         },
                         modifier = Modifier.fillMaxHeight()
                     ) {
+                        val colors = FloconTheme.colors
+                        val islandColor by animateColorAsState(
+                            targetValue = if (transitionState.targetState.second) {
+                                colors.islandSidebar
+                            } else {
+                                colors.islandSidebar.copy(alpha = 1f)
+                            },
+                            animationSpec = tween(500)
+                        )
+
+                        // keyed by contentKey: nav entries are recreated on each change, so a fast A -> B -> A would
+                        // otherwise compose A twice (fading out + fading in) with the same saveable state key
+                        val panelEntries = remember { mutableMapOf<Any, NavEntry<FloconRoute>>() }
+                        panelEntries[panelEntry.contentKey] = panelEntry
+
                         Crossfade(
-                            targetState = panelEntry,
+                            targetState = panelEntry.contentKey,
                             animationSpec = tween(500),
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(PANEL_WIDTH)
-                                .background(FloconTheme.colors.floating)
+                                .floconIsland(islandColor)
+                                // the panel floats over the screen: its empty areas must not click through
+                                .clickable(onClick = {}, indication = null, interactionSource = null)
+                                .mascotPlatform(predicate = { transitionState.currentState.second })
                         ) { target ->
-                            target.Content()
+                            panelEntries[target]?.Content()
                         }
                     }
                 }
@@ -251,6 +283,14 @@ class PanelSceneStrategy : SceneStrategy<FloconRoute> {
 
 data object PanelKey : NavMetadataKey<PaneProperties>
 
+/**
+ * The pin state of the groups of panels, see [PanelRoute.pinGroup]. Provided by the app.
+ */
+interface PanelPinRegistry {
+
+    fun onPinFor(group: String): OnPin?
+}
+
 interface OnPin {
 
     val isPinned: StateFlow<Boolean>
@@ -258,7 +298,7 @@ interface OnPin {
     fun onPin(pinned: Boolean)
 }
 
-private data class PaneProperties(
+data class PaneProperties internal constructor(
     val closable: Boolean = false,
     val onPinHandler: @Composable (() -> OnPin)? = null
 )

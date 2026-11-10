@@ -214,7 +214,6 @@ fun FloconTextFieldWithoutM3(
                         val outline = shape.createOutline(size, layoutDirection, this)
                         onDrawBehind { drawOutline(outline, color = containerColor) }
                     }
-                    .background(containerColor)
                     .padding(horizontal = FloconTheme.spacing.extraSmall)
                     .padding(contentPadding)
             ) {
@@ -313,17 +312,21 @@ fun defaultLabel(text: String): @Composable () -> Unit = {
 }
 
 @Composable
-fun DefaultLabel(text: String) {
+fun DefaultLabel(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = text,
+        modifier = modifier,
         style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
         color = FloconTheme.colors.inkMuted,
     )
 }
 
-fun defaultPlaceHolder(text: String?, color: Color? = null): @Composable (() -> Unit)? = if (text.isNullOrEmpty())
+fun defaultPlaceHolder(text: String?, color: Color? = null): @Composable (() -> Unit)? = if (text.isNullOrEmpty()) {
     null
-else {
+} else {
     {
         val style = FloconTheme.typography.bodySmall
         Text(

@@ -80,12 +80,49 @@ class MenuStateTest {
     @Test
     fun `the feature flags are displayed when the plugin is installed`() {
         val menu = buildMenu().applyPreferences(
-            installedPlugins = setOf("featureflags"),
+            installedPlugins = setOf("feature_flags"),
             pinnedIds = emptyList(),
             collapsedSectionIds = emptySet(),
         )
 
         assertEquals(listOf(SubScreen.FeatureFlags, SubScreen.AdbCommander), menu.screens())
+    }
+
+    @Test
+    fun `the items hidden by the user are not displayed, even when pinned`() {
+        val menu = buildMenu().applyPreferences(
+            installedPlugins = null,
+            pinnedIds = listOf("Files", "Network"),
+            collapsedSectionIds = emptySet(),
+            hiddenIds = setOf("Files", "Tables", "Timeline", "Settings"),
+        )
+
+        assertEquals(listOf(SubScreen.Network), menu.pinnedItems.map { it.screen })
+        assertTrue(SubScreen.Files !in menu.screens())
+        assertTrue(SubScreen.Tables !in menu.screens())
+        // not hideable
+        assertEquals(listOf(SubScreen.Timeline), menu.topItems.map { it.screen })
+        assertEquals(listOf(SubScreen.Settings), menu.bottomItems.map { it.screen })
+    }
+
+    @Test
+    fun `every plugin screen can be hidden but not the timeline nor the settings`() {
+        val hideable = hideableMenuItems().map { it.screen }
+
+        assertTrue(SubScreen.Network in hideable)
+        assertTrue(SubScreen.AdbCommander in hideable)
+        assertTrue(SubScreen.Timeline !in hideable)
+        assertTrue(SubScreen.Settings !in hideable)
+    }
+
+    @Test
+    fun `the start screen can be the timeline or a plugin that is not hidden`() {
+        val candidates = startScreenCandidates(hiddenIds = setOf("Files")).map { it.screen }
+
+        assertTrue(SubScreen.Timeline in candidates)
+        assertTrue(SubScreen.Network in candidates)
+        assertTrue(SubScreen.Files !in candidates)
+        assertTrue(SubScreen.Settings !in candidates)
     }
 
     @Test

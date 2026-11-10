@@ -10,7 +10,7 @@ pluginManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
-        mavenCentral()
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") // Google mirror of Maven Central, avoids rate limits
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         gradlePluginPortal()
     }
@@ -26,7 +26,7 @@ dependencyResolutionManagement {
             }
         }
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        mavenCentral()
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") // Google mirror of Maven Central, avoids rate limits
     }
 }
 

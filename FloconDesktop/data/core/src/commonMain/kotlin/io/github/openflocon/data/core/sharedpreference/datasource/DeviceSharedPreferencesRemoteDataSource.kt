@@ -25,6 +25,12 @@ interface DeviceSharedPreferencesRemoteDataSource {
         value: SharedPreferenceRowDomainModel.Value,
     )
 
+    suspend fun removeSharedPrefField(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        sharedPreference: DeviceSharedPreferenceDomainModel,
+        key: String,
+    )
+
     fun getPreferences(message: FloconIncomingMessageDomainModel): List<DeviceSharedPreferenceDomainModel>
 
     fun getValues(message: FloconIncomingMessageDomainModel): SharedPreferenceValuesResponseDomainModel?

@@ -30,12 +30,13 @@ fun BadQuaityErrorExceptionEditor(
     errorException: BadQualityConfigUiModel.Error.Type.Exception,
     save: (BadQualityConfigUiModel.Error) -> Unit,
     cancel: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var weight by remember(error) { mutableStateOf<String>(error.weight.toString()) }
     var errorClassPath by remember(error) { mutableStateOf<String>(errorException.classPath) }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         FloconDialogHeader(
             title = stringResource(Res.string.general_exception),

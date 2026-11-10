@@ -31,14 +31,12 @@ import flocondesktop.composeapp.generated.resources.general_export
 import flocondesktop.composeapp.generated.resources.general_import
 import flocondesktop.composeapp.generated.resources.mocks_subtitle
 import io.github.openflocon.flocondesktop.features.network.mock.NetworkMocksViewModel
-import io.github.openflocon.flocondesktop.features.network.mock.edition.view.NetworkEditionWindow
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.previewMockNetworkLineUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconOverflow
-import io.github.openflocon.library.designsystem.components.floconMonoStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -47,30 +45,20 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NetworkMocksWindow(
-    fromNetworkCallId: String?
+    fromNetworkCallId: String?,
+    modifier: Modifier = Modifier,
 ) {
     val viewModel: NetworkMocksViewModel = koinViewModel()
     LaunchedEffect(viewModel, fromNetworkCallId) {
         viewModel.initWith(fromNetworkCallId)
     }
     val mocks by viewModel.items.collectAsStateWithLifecycle()
-    val editionWindow by viewModel.editionWindow.collectAsStateWithLifecycle()
 
     NetworkMocksContent(
         mocks = mocks,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onAction = viewModel::onAction,
     )
-
-    editionWindow?.let {
-        NetworkEditionWindow(
-            instanceId = it.windowInstanceId,
-            state = it.selectedMockUiModel,
-            onCloseRequest = viewModel::cancelMockCreation,
-            onCancel = viewModel::cancelMockCreation,
-            onSave = viewModel::addMock,
-        )
-    }
 }
 
 sealed interface NetworkMockAction {
@@ -106,7 +94,7 @@ internal fun NetworkMocksContent(
             ) {
                 Text(
                     text = mocks.size.toString(),
-                    style = floconMonoStyle(small = true),
+                    style = FloconTheme.typography.monoSmall,
                     color = colors.inkMuted,
                     modifier = Modifier
                         .background(colors.bg300, CircleShape)
@@ -143,7 +131,7 @@ internal fun NetworkMocksContent(
                 .background(colors.bg100, FloconTheme.shapes.large)
                 .border(1.dp, colors.line, FloconTheme.shapes.large)
         ) {
-            MocksHeaderView(Modifier.fillMaxWidth())
+            MocksHeader(Modifier.fillMaxWidth())
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,7 +141,7 @@ internal fun NetworkMocksContent(
                     items = mocks,
                     key = MockNetworkLineUiModel::id
                 ) {
-                    MockLineView(
+                    MockLine(
                         item = it,
                         onClicked = { id -> onAction(NetworkMockAction.OnItemClicked(id)) },
                         onDeleteClicked = { id -> onAction(NetworkMockAction.OnDeleteClicked(id)) },

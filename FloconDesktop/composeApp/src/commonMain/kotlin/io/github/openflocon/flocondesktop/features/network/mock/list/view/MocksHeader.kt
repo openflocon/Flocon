@@ -23,7 +23,7 @@ import io.github.openflocon.library.designsystem.FloconTheme
 
 // the columns of the list of mocks, shared by its header and its lines
 @Composable
-fun MocksHeaderView(modifier: Modifier = Modifier) {
+fun MocksHeader(modifier: Modifier = Modifier) {
     val colors = FloconTheme.colors
     // small capitals, like the titles of the groups of the design system
     val typo = FloconTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em)

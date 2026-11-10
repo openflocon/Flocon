@@ -46,12 +46,17 @@ interface CrashReportDao {
         SELECT * FROM CrashReportEntity
         WHERE deviceId = :deviceId
         AND packageName = :packageName
+        AND (:filter IS NULL
+            OR exceptionType LIKE '%' || :filter || '%'
+            OR exceptionMessage LIKE '%' || :filter || '%'
+            OR stackTrace LIKE '%' || :filter || '%')
         ORDER BY timestamp DESC
     """
     )
     fun observeAll(
         deviceId: String,
         packageName: String,
+        filter: String?,
     ): PagingSource<Int, CrashReportEntity>
 
     @Query(

@@ -60,17 +60,21 @@ class LocalCurrentDeviceDataSourceInMemory : LocalCurrentDeviceDataSource {
             }.toSet()
         }
         currentDeviceApp.update { map ->
-            if (map[deviceId] == packageName)
+            if (map[deviceId] == packageName) {
                 map - deviceId
-            else map
+            } else {
+                map
+            }
         }
     }
 
     override suspend fun delete(deviceId: DeviceId) {
         _currentDeviceId.update {
-            if (it == deviceId)
+            if (it == deviceId) {
                 null
-            else it
+            } else {
+                it
+            }
         }
         connectedDevicesAndAppsForSession.update {
             it.filterNot {

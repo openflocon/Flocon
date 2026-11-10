@@ -4,12 +4,14 @@ import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.DeviceWithSerialDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository
 import io.github.openflocon.domain.common.Either
+import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.domain.device.models.AppPackageName
 import io.github.openflocon.domain.device.models.DeviceAppDomainModel
+import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceDomainModel
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
@@ -21,6 +23,7 @@ import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 import io.github.openflocon.domain.iossimulator.repository.IosSimulatorRepository
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
+import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
@@ -54,6 +57,16 @@ class ExecuteDeeplinkUseCaseTest {
     }
 
     @Test
+    fun `android device connected over wifi does not run adb`() = runBlocking {
+        val env = Env(platform = "android", connectionType = DeviceConnectionType.Wifi)
+
+        val result = env.useCase(deeplink = "myapp://home", deeplinkId = -1L, saveIntoHistory = false)
+
+        assertIs<Failure<Throwable>>(result)
+        assertTrue(env.adbRepository.commands.isEmpty())
+    }
+
+    @Test
     fun `ios device opens the deeplink in the booted simulator`() = runBlocking {
         val env = Env(platform = "ios")
 
@@ -73,12 +86,12 @@ class ExecuteDeeplinkUseCaseTest {
         assertEquals(listOf("myapp://free"), env.deeplinkRepository.history.map { it.link })
     }
 
-    private inner class Env(platform: String) {
+    private inner class Env(platform: String, connectionType: DeviceConnectionType = DeviceConnectionType.Default) {
         val adbRepository = FakeAdbRepository()
         val iosSimulatorRepository = FakeIosSimulatorRepository()
         val deeplinkRepository = FakeDeeplinkRepository()
         private val devicesRepository = FakeDevicesRepository(
-            device = DeviceDomainModel(deviceId = deviceId, deviceName = "device", platform = platform),
+            device = DeviceDomainModel(deviceId = deviceId, deviceName = "device", platform = platform, connectionType = connectionType),
             app = DeviceAppDomainModel(
                 name = "app",
                 packageName = packageName,
@@ -96,6 +109,7 @@ class ExecuteDeeplinkUseCaseTest {
             executeAdbCommandUseCase = ExecuteAdbCommandUseCase(
                 adbRepository = adbRepository,
                 settingsRepository = FakeSettingsRepository(),
+                devicesRepository = devicesRepository,
             ),
             getCurrentDeviceIdAndPackageNameUseCase = getCurrentDeviceIdAndPackageNameUseCase,
             addToDeeplinkHistoryUseCase = AddToDeeplinkHistoryUseCase(
@@ -175,7 +189,6 @@ class ExecuteDeeplinkUseCaseTest {
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = emptyFlow()
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
-        override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
         override suspend fun clear() {}
         override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = MutableStateFlow(device)
     }
@@ -203,6 +216,8 @@ class ExecuteDeeplinkUseCaseTest {
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()
+        override val savedServerPorts: Flow<ServerPortsDomainModel> = emptyFlow()
+        override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)

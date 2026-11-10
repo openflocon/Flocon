@@ -17,7 +17,6 @@ kotlin {
         // Pour Kotlin 1.9+
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
     }
 
@@ -36,6 +35,10 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.library.designsystem)
+            implementation(libs.kotlinx.immutable)
+
+            implementation(libs.haze)
+            implementation(libs.haze.blur)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

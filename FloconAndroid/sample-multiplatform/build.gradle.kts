@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildconfig)
     alias(libs.plugins.apollo)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -20,14 +21,19 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.flocon)
-            implementation(projects.deeplinks)
-            implementation(projects.analytics)
-            implementation(projects.featureflags)
-            implementation(projects.tables)
-            implementation(projects.sharedprefs)
-            implementation(projects.network.ktorInterceptor)
-            implementation(projects.database.room3)
+            implementation(projects.flocon.flocon)
+            implementation(projects.deeplinks.deeplinks)
+            implementation(projects.analytics.analytics)
+            implementation(projects.accessibility.accessibility)
+            implementation(projects.featureflags.featureflags)
+            implementation(projects.timeline.timeline)
+            implementation(projects.tables.tables)
+            implementation(projects.sharedprefs.sharedprefs)
+            implementation(projects.network.ktorInterceptor.ktorInterceptor)
+            implementation(projects.database.room3.room3)
+            implementation(projects.database.sqldelight.sqldelight)
+            // the SQLDelight runtime and the generated database are used by the samples
+            api(libs.sqldelight.runtime)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
@@ -71,16 +77,18 @@ kotlin {
             // Datastore
             implementation(libs.androidx.datastore.preferences)
 
-            implementation(projects.network.ktorInterceptor)
-            implementation(projects.network.okhttpInterceptor)
-            implementation(projects.database.room3)
-            implementation(projects.database.room)
+            implementation(projects.network.ktorInterceptor.ktorInterceptor)
+            implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
+            implementation(projects.database.room3.room3)
+            implementation(projects.database.room.room)
+            implementation(libs.sqldelight.android.driver)
             implementation(libs.androidx.room.runtime)
-            implementation(projects.sharedprefs)
-            implementation(projects.datastores)
-            implementation(projects.analytics)
-            implementation(projects.crashreporter)
-            implementation(projects.tables)
+            implementation(projects.sharedprefs.sharedprefs)
+            implementation(projects.datastores.datastores)
+            implementation(projects.analytics.analytics)
+            implementation(projects.crashreporter.crashreporter)
+            implementation(projects.tables.tables)
+            implementation(projects.webview.webview)
         }
 
     }
@@ -99,6 +107,14 @@ dependencies {
     // Room 2, used by an Android only database to test the Room 2 module
     add("kspAndroid", libs.androidx.room.compiler)
 
+}
+
+sqldelight {
+    databases {
+        create("SqlDelightDatabase") {
+            packageName.set("io.github.openflocon.flocon.myapplication.multi.sqldelight")
+        }
+    }
 }
 
 apollo {

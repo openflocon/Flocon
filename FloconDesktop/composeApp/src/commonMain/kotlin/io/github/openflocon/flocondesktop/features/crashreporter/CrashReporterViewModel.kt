@@ -20,10 +20,14 @@ import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashRepo
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterSelectedUiModel
 import io.github.openflocon.flocondesktop.features.crashreporter.model.CrashReporterUiModel
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -43,7 +47,14 @@ internal class CrashReporterViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
 ) : ViewModel() {
 
-    val crashReports: Flow<PagingData<CrashReporterUiModel>> = observeCrashReportsUseCase()
+    private val _filter = MutableStateFlow("")
+    val filter: StateFlow<String> = _filter
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val crashReports: Flow<PagingData<CrashReporterUiModel>> = _filter
+        .debounce(250)
+        .distinctUntilChanged()
+        .flatMapLatest { observeCrashReportsUseCase(it.trim()) }
         .map { pagingData -> pagingData.map { it.mapToUi() } }
         .flowOn(dispatcherProvider.viewModel)
         .cachedIn(viewModelScope)
@@ -75,6 +86,8 @@ internal class CrashReporterViewModel(
                 is CrashReporterAction.Select -> {
                     selectedId.update { action.crashId }
                 }
+
+                is CrashReporterAction.Filter -> _filter.value = action.text
 
                 is CrashReporterAction.Clean -> {
                     clearAllCrashReportUseCase()

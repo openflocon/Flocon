@@ -24,6 +24,25 @@ expect fun rememberFloconScrollbarAdapter(scrollState: LazyGridState): FloconScr
 @Composable
 expect fun FloconVerticalScrollbar(
     adapter: FloconScrollAdapter,
-    style: ScrollbarStyle = LocalScrollbarStyle.current,
     modifier: Modifier = Modifier,
+    style: ScrollbarStyle = LocalScrollbarStyle.current,
+)
+
+/**
+ * An adapter for a content that is not a scrollable container (a time axis, a canvas): the sizes and the offset are in px,
+ * read when the scrollbar needs them, [scrollTo] is called while the thumb is dragged or the track clicked.
+ */
+@Composable
+expect fun rememberFloconScrollbarAdapter(
+    scrollOffset: () -> Double,
+    contentSize: () -> Double,
+    viewportSize: () -> Double,
+    scrollTo: suspend (Double) -> Unit,
+): FloconScrollAdapter
+
+@Composable
+expect fun FloconHorizontalScrollbar(
+    adapter: FloconScrollAdapter,
+    modifier: Modifier = Modifier,
+    style: ScrollbarStyle = LocalScrollbarStyle.current,
 )

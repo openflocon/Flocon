@@ -4,6 +4,7 @@ import io.github.openflocon.domain.adbcommander.models.AdbCommandDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbCommandHistoryDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbFlowDomainModel
 import io.github.openflocon.domain.adbcommander.models.AdbFlowExecutionState
+import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommandPanelUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowExecutionStepUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowExecutionUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowUiModel
@@ -36,6 +37,13 @@ fun AdbCommandHistoryDomainModel.toUiModel() = HistoryEntryUiModel(
     executedAt = formatTimestamp(executedAt),
 )
 
+fun AdbCommandHistoryDomainModel.toPanelUiModel() = AdbCommandPanelUiModel(
+    command = command,
+    output = output,
+    isSuccess = isSuccess,
+    executedAt = panelTimestampFormatter.format(Date(executedAt)),
+)
+
 fun AdbFlowExecutionState.toUiModel() = FlowExecutionUiModel(
     flowName = flowName,
     steps = steps.map { stepState ->
@@ -55,5 +63,7 @@ fun AdbFlowExecutionState.toUiModel() = FlowExecutionUiModel(
 )
 
 private val timestampFormatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+
+private val panelTimestampFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
 private fun formatTimestamp(epochMs: Long): String = timestampFormatter.format(Date(epochMs))

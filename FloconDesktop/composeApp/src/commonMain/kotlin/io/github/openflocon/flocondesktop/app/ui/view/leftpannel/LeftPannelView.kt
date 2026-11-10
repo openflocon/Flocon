@@ -16,11 +16,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuOpen
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MenuOpen
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -28,9 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -44,22 +46,21 @@ import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuSection
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.MenuState
 import io.github.openflocon.flocondesktop.app.ui.model.leftpanel.previewMenuState
 import io.github.openflocon.flocondesktop.app.ui.view.displayName
+import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 val PanelMaxWidth = 232.dp
-val PanelMinWidth = 64.dp
-val PanelContentMinSize = 34.dp
+val PanelMinWidth = 56.dp
+val PanelContentMinSize = 40.dp
 
 @Composable
-fun LeftPanelView(
+fun LeftPanel(
     state: MenuState,
     current: SubScreen,
     expanded: Boolean,
@@ -68,17 +69,12 @@ fun LeftPanelView(
     modifier: Modifier = Modifier,
     onTogglePin: (MenuItem) -> Unit = {},
     onToggleSection: (MenuSection) -> Unit = {},
+    desktopUpdate: VersionCheckerViewModel.DesktopUpdateUiModel? = null,
 ) {
     val scrollState = rememberScrollState()
+
     Box(
         modifier = modifier
-            .floconIsland(FloconTheme.colors.islandSidebar)
-            .padding(
-                start = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
-                end = if (expanded) FloconTheme.spacing.medium else FloconTheme.spacing.small,
-                top = FloconTheme.spacing.medium,
-                bottom = FloconTheme.spacing.large,
-            ),
     ) {
         Column(
             modifier = Modifier
@@ -92,12 +88,8 @@ fun LeftPanelView(
                     expanded = expanded,
                     onClickItem = onClickItem,
                 )
-                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(FloconTheme.spacing.extraSmall))
             }
             if (state.pinnedItems.isNotEmpty()) {
-                // always visible, whatever the collapsed sections
                 MenuItems(
                     current = current,
                     items = state.pinnedItems,
@@ -119,36 +111,29 @@ fun LeftPanelView(
             )
             Spacer(modifier = Modifier.height(FloconTheme.spacing.medium))
             Spacer(Modifier.weight(1f))
-            // the settings item and the button folding the menu share the same footer
-            if (expanded) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        MenuItems(
-                            current = current,
-                            items = state.bottomItems,
-                            expanded = true,
-                            onClickItem = onClickItem,
-                        )
-                    }
-                    ToggleExpandedButton(expanded = true, onClick = onToggleExpanded)
-                }
-            } else {
-                MenuItems(
-                    current = current,
-                    items = state.bottomItems,
-                    expanded = false,
-                    onClickItem = onClickItem,
-                )
-                Spacer(Modifier.height(FloconTheme.spacing.tiny))
-                ToggleExpandedButton(
-                    expanded = false,
-                    onClick = onToggleExpanded,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+            if (desktopUpdate != null) {
+                DesktopUpdateChip(
+                    update = desktopUpdate,
+                    expanded = expanded,
+                    modifier = Modifier
+                        .padding(bottom = FloconTheme.spacing.small)
+                        .then(if (expanded) Modifier.fillMaxWidth() else Modifier.align(Alignment.End)),
                 )
             }
+            ToggleExpandedButton(
+                expanded = expanded,
+                onClick = onToggleExpanded,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .size(PanelContentMinSize)
+            )
+            Spacer(Modifier.height(FloconTheme.spacing.tiny))
+            MenuItems(
+                current = current,
+                items = state.bottomItems,
+                expanded = expanded,
+                onClickItem = onClickItem,
+            )
         }
 
         if (expanded) {
@@ -170,17 +155,26 @@ private fun ToggleExpandedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val description = stringResource(if (expanded) Res.string.menu_collapse else Res.string.menu_expand)
+    val description = stringResource(
+        resource = if (expanded) {
+            Res.string.menu_collapse
+        } else {
+            Res.string.menu_expand
+        }
+    )
 
     FloconIconButton(
         onClick = onClick,
         modifier = modifier.semantics { contentDescription = description },
     ) {
         FloconIcon(
-            imageVector = Icons.Outlined.ChevronRight,
+            imageVector = if (expanded) {
+                Icons.AutoMirrored.Filled.MenuOpen
+            } else {
+                Icons.Filled.Menu
+            },
             tint = FloconTheme.colors.inkMuted,
-            // points to the left to fold the menu, to the right to unfold it
-            modifier = Modifier.fillMaxSize().rotate(if (expanded) 180f else 0f),
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -226,7 +220,7 @@ private fun ColumnScope.MenuItems(
     onTogglePin: (MenuItem) -> Unit = {},
 ) {
     items.fastForEachIndexed { index, item ->
-        PanelView(
+        SidePanel(
             modifier = Modifier
                 .height(PanelContentMinSize)
                 .fillMaxWidth(),
@@ -240,19 +234,20 @@ private fun ColumnScope.MenuItems(
             isPinned = item.isPinned,
             onTogglePin = { onTogglePin(item) },
         )
-        if (index != items.lastIndex)
+        if (index != items.lastIndex) {
             Spacer(Modifier.height(FloconTheme.spacing.tiny))
+        }
     }
 }
 
 @Composable
 @Preview
-private fun LeftPanelViewPreview() {
+private fun LeftPanelPreview() {
     val selectedItem = remember { mutableStateOf<SubScreen>(SubScreen.Network) }
 
     FloconTheme {
         Box(modifier = Modifier.background(FloconTheme.colors.bg000))
-        LeftPanelView(
+        LeftPanel(
             current = selectedItem.value,
             state = previewMenuState(),
             onClickItem = { selectedItem.value = it.screen },

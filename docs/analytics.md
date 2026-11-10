@@ -22,45 +22,19 @@ Every recorded event details:
 
 ---
 
-## Setup
-
-```kotlin
-dependencies {
-    debugImplementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
-    releaseImplementation("io.github.openflocon:flocon-analytics-no-op:LAST_VERSION")
-}
-```
-
-```kotlin
-startFlocon(context) {
-    install(FloconAnalytics)
-}
-```
-
----
-
 ## Usage
 
-Log individual or batched events; the `analyticsTableId` is the stream they are displayed in on the desktop (e.g. `firebase`):
+Log individual or batched events by stream name:
 
 ```kotlin
-Flocon.analyticsPlugin.log(
+floconAnalytics("firebase").logEvents(
     AnalyticsEvent(
         eventName = "button_clicked",
-        analyticsTableId = "firebase",
         "button_id" analyticsProperty "checkout_pay",
         "cart_total" analyticsProperty "49.99",
         "currency" analyticsProperty "EUR"
     )
 )
-```
-
-To log several events to the same stream, create a sender once and reuse it:
-
-```kotlin
-val firebase = Flocon.analyticsPlugin.sender("firebase")
-
-firebase.log("button_clicked", "button_id" analyticsProperty "checkout_pay")
 ```
 
 ---
@@ -72,14 +46,13 @@ Forward all app tracking calls to Flocon alongside your existing provider:
 ```kotlin
 class AnalyticsTracker(private val firebaseAnalytics: FirebaseAnalytics) {
 
-    // bound to the "app_telemetry" stream: no need to repeat it at each call
-    private val flocon = Flocon.analyticsPlugin.sender("app_telemetry")
-
     fun track(event: String, parameters: Map<String, Any> = emptyMap()) {
         // 1. Forward to Flocon Desktop
-        flocon.log(
-            eventName = event,
-            properties = parameters.map { it.key analyticsProperty it.value.toString() }
+        floconAnalytics("app_telemetry").logEvents(
+            AnalyticsEvent(
+                eventName = event,
+                parameters.map { it.key analyticsProperty it.value.toString() }
+            )
         )
 
         // 2. Forward to Firebase

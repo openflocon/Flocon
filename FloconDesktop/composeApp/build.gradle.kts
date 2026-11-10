@@ -56,6 +56,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.zxing.core)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -95,7 +96,7 @@ kotlin {
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
 
-//            implementation(libs.material3.adaptive)
+            implementation(libs.molecule.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -120,6 +121,8 @@ room {
 compose.desktop {
     application {
         mainClass = "io.github.openflocon.flocondesktop.MainKt"
+        // macOS trackpad pinch (see PinchZoomEffect): the gesture API of the JDK is not exported by default
+        jvmArgs += listOf("--add-exports=java.desktop/com.apple.eawt.event=ALL-UNNAMED")
 
         buildTypes.release {
             proguard {
@@ -141,6 +144,10 @@ compose.desktop {
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon_small.png"))
+                debMaintainer = "Florent Champigny <champigny.florent@gmail.com>"
+                appCategory = "Development"
+                menuGroup = "Development"
+                rpmLicenseType = "MIT"
             }
             windows {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.ico"))

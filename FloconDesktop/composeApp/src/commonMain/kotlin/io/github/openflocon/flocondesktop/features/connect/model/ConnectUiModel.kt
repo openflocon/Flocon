@@ -1,0 +1,41 @@
+package io.github.openflocon.flocondesktop.features.connect.model
+
+import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+
+@Immutable
+data class LocalAddressUiModel(
+    val interfaceName: String,
+    val ip: String,
+    /** What the SDK is given (QR code, copy, hint): the bare ip on the default port, `ip:port` otherwise. */
+    val connectAddress: String = ip,
+    /** Only when one of the ports is not the default one (the default ports are not worth showing). */
+    val customPorts: ConnectPortsUiModel? = null,
+)
+
+@Immutable
+data class ConnectPortsUiModel(
+    val websocket: Int,
+    val http: Int,
+)
+
+@Immutable
+data class ConnectUiState(
+    val addresses: ImmutableList<LocalAddressUiModel>,
+    val port: Int,
+    val mascotEnabled: Boolean,
+)
+
+fun previewConnectUiState() = ConnectUiState(
+    addresses = persistentListOf(
+        LocalAddressUiModel(interfaceName = "en0", ip = "192.168.1.20"),
+        LocalAddressUiModel(interfaceName = "en5", ip = "10.0.0.12"),
+        LocalAddressUiModel(interfaceName = "bridge0", ip = "172.20.10.4"),
+    ),
+    port = 9023,
+    mascotEnabled = true,
+)
+
+fun previewSingleConnectUiState() = previewConnectUiState().let { it.copy(addresses = it.addresses.take(1).toImmutableList()) }

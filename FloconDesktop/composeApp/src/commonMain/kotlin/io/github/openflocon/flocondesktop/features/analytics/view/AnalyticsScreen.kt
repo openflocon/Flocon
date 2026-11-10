@@ -1,8 +1,5 @@
 package io.github.openflocon.flocondesktop.features.analytics.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.CleaningServices
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ImportExport
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.HorizontalDivider
@@ -32,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -45,7 +42,10 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.export_csv
+import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.invert_list
+import flocondesktop.composeapp.generated.resources.menu_item_analytics
+import flocondesktop.composeapp.generated.resources.timeline_counter_events
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
@@ -59,13 +59,17 @@ import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyti
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsRowUiModel
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsScreenUiState
 import io.github.openflocon.flocondesktop.features.analytics.model.previewAnalyticsStateUiModel
+import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconDropdownSeparator
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOverflow
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import io.github.openflocon.navigation.mascot.mascotPlatform
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -136,24 +140,33 @@ fun AnalyticsScreen(
             )
     ) {
         FloconPageTopBar(
-            modifier = Modifier.fillMaxWidth(),
-            selector = {
-                AnalyticsSelectorView(
-                    analyticsState = itemsState,
-                    onAnalyticsSelected = onAnalyticsSelected,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            modifier = Modifier
+                .fillMaxWidth()
+                .mascotPlatform(),
+            trailing = { FeatureDocButton(doc = FeatureDoc.Analytics) },
+            selector = if (itemsState is AnalyticsStateUiModel.Empty) {
+                null
+            } else {
+                {
+                    AnalyticsSelector(
+                        analyticsState = itemsState,
+                        onAnalyticsSelected = onAnalyticsSelected,
+                    )
+                }
             },
             filterBar = {
-                AnalyticsFilterBar(
-                    onFilterTextChanged = onFilterTextChanged,
+                FilterBar(
                     filterText = filterText,
-                    onResetClicked = onResetClicked,
-                    modifier = Modifier.fillMaxWidth(),
+                    placeholderText = stringResource(Res.string.filter),
+                    onTextChange = onFilterTextChanged,
+                    modifier = Modifier.weight(1f),
                 )
             },
             actions = {
-                FeatureDocButton(doc = FeatureDoc.Analytics)
+                FloconIconButton(
+                    imageVector = Icons.Outlined.Delete,
+                    onClick = onResetClicked,
+                )
                 FloconOverflow {
                     FloconDropdownMenuItem(
                         text = stringResource(Res.string.export_csv),
@@ -189,13 +202,7 @@ fun AnalyticsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(FloconTheme.shapes.medium)
-                .background(FloconTheme.colors.bg100)
-                .border(
-                    width = 1.dp,
-                    color = FloconTheme.colors.bg200,
-                    shape = FloconTheme.shapes.medium
-                )
+                .floconPanel()
                 .onSizeChanged {
                     widthPx = max(widthPx, it.width.toFloat())
                 }
@@ -205,34 +212,38 @@ fun AnalyticsScreen(
                     .fillMaxSize()
                     .horizontalScroll(rememberScrollState())
             ) {
-                LazyColumn(
-                    state = listState,
-                    reverseLayout = screenState.invertList,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .onSizeChanged {
-                            widthPx = max(widthPx, it.width.toFloat())
-                        },
-                    contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
-                ) {
-                    items(
-                        count = rows.itemCount,
-                        key = rows.itemKey { it.id },
-                    ) { index ->
-                        val item = rows[index]
-                        if (item != null) {
-                            AnalyticsRowView(
-                                model = item,
-                                modifier = Modifier.fillMaxWidth(),
-                                onAction = onAction,
-                            )
-                            if (index != rows.itemSnapshotList.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.width(dpWidth)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    AnalyticsHeader(modifier = Modifier.width(dpWidth))
+                    LazyColumn(
+                        state = listState,
+                        reverseLayout = screenState.invertList,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .onSizeChanged {
+                                widthPx = max(widthPx, it.width.toFloat())
+                            },
+                        contentPadding = PaddingValues(vertical = FloconTheme.spacing.small),
+                    ) {
+                        items(
+                            count = rows.itemCount,
+                            key = rows.itemKey { it.id },
+                        ) { index ->
+                            val item = rows[index]
+                            if (item != null) {
+                                AnalyticsRow(
+                                    model = item,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onAction = onAction,
                                 )
+                                if (index != rows.itemSnapshotList.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.width(dpWidth)
+                                    )
+                                }
+                            } else {
+                                Box(Modifier) // display nothing during load
                             }
-                        } else {
-                            Box(Modifier) // display nothing during load
                         }
                     }
                 }
@@ -253,7 +264,7 @@ fun AnalyticsScreen(
 }
 
 @Composable
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 private fun AnalyticsScreenPreview() {
     val rows = remember {
         flowOf(
@@ -278,7 +289,7 @@ private fun AnalyticsScreenPreview() {
             screenState = previewAnalyticsScreenUiState(),
             onFilterTextChanged = {},
             onResetClicked = {},
-            filterText = mutableStateOf(""),
+            filterText = remember { mutableStateOf("") },
         )
     }
 }

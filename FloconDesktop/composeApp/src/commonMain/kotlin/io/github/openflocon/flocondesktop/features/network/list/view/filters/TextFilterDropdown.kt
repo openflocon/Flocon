@@ -53,14 +53,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TextFilterDropdownContent(
-    modifier: Modifier = Modifier,
     filterState: TextFilterStateUiModel,
+    modifier: Modifier = Modifier,
     textFilterAction: (TextFilterAction) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        TextFilterFieldView(
+        TextFilterField(
             submitTextField = { text, toInclude ->
                 if (toInclude) {
                     textFilterAction.invoke(TextFilterAction.Include(text))
@@ -91,7 +91,7 @@ fun TextFilterDropdownContent(
                     )
 
                     filterState.includedFilters.fastForEach {
-                        FilterItemView(
+                        FilterEntry(
                             item = it,
                             modifier = Modifier.fillMaxWidth(),
                             clickDelete = {
@@ -124,7 +124,7 @@ fun TextFilterDropdownContent(
                     )
 
                     filterState.excludedFilters.fastForEach {
-                        FilterItemView(
+                        FilterEntry(
                             item = it,
                             modifier = Modifier.fillMaxWidth(),
                             clickDelete = {
@@ -147,10 +147,10 @@ fun TextFilterDropdownContent(
 }
 
 @Composable
-private fun FilterItemView(
+private fun FilterEntry(
     item: TextFilterStateUiModel.FilterItem,
-    modifier: Modifier = Modifier,
     changeIsActive: (item: TextFilterStateUiModel.FilterItem, newValue: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     clickDelete: (item: TextFilterStateUiModel.FilterItem) -> Unit,
 ) {
     var isHover by remember { mutableStateOf(false) }
@@ -198,7 +198,7 @@ private fun FilterItemView(
 }
 
 @Composable
-private fun TextFilterFieldView(
+private fun TextFilterField(
     submitTextField: (value: String, toInclude: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {

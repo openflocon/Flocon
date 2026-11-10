@@ -7,6 +7,7 @@ import io.github.openflocon.flocondesktop.features.database.processor.ExportData
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -20,4 +21,5 @@ internal val databaseModule = module {
     factoryOf(::ExportDatabaseQueryLogsToMarkdownProcessor)
     factoryOf(::GetDatabaseQueryLogsUseCase)
     viewModelOf(::DatabaseQueryLogsViewModel)
+    viewModel { (id: Int) -> DatabaseQueryLogPanelViewModel(id, get(), get()) }
 }

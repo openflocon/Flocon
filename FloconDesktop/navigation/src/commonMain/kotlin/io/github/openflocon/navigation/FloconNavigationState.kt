@@ -15,6 +15,8 @@ interface FloconNavigationState<T : Any> {
     fun back(count: Int = 1)
 
     fun remove(route: FloconRoute)
+
+    fun closePanel()
 }
 
 @Immutable
@@ -28,7 +30,10 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
             val index = _stack.indexOfFirst { it is PanelRoute }
 
             if (index != -1) {
-                _stack[index] = route
+                // replacing a panel by an equal route duplicates its key in the nav display
+                if (_stack[index] != route) {
+                    _stack[index] = route
+                }
             } else {
                 _stack.add(route)
             }
@@ -50,6 +55,10 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
         if (_stack.indexOf(route) > 0) {
             _stack.remove(route)
         }
+    }
+
+    override fun closePanel() {
+        _stack.removeAll { it is PanelRoute }
     }
 
     fun menu(route: FloconRoute) {

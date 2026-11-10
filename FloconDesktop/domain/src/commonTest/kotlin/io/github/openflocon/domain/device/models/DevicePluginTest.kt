@@ -28,8 +28,14 @@ class DevicePluginTest {
 
     @Test
     fun `feature flags need the feature flags plugin`() {
-        assertTrue(DevicePlugin.FeatureFlags.isInstalled(setOf("featureflags")))
+        assertTrue(DevicePlugin.FeatureFlags.isInstalled(setOf("feature_flags")))
         assertFalse(DevicePlugin.FeatureFlags.isInstalled(setOf("network")))
+    }
+
+    @Test
+    fun `accessibility needs the accessibility plugin`() {
+        assertTrue(DevicePlugin.Accessibility.isInstalled(setOf("accessibility")))
+        assertFalse(DevicePlugin.Accessibility.isInstalled(setOf("network")))
     }
 
     @Test

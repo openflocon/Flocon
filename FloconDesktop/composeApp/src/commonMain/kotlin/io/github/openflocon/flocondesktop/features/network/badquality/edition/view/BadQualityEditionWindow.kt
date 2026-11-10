@@ -57,12 +57,13 @@ fun BadQualityEditionWindow(
     onCloseRequest: () -> Unit,
     save: (state: BadQualityConfigUiModel) -> Unit,
     state: SelectedBadQualityUiModel,
+    modifier: Modifier = Modifier,
 ) {
     FloconDialog(
         onDismissRequest = onCloseRequest,
         // two cards side by side: the default width of a dialog is too narrow
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.width(920.dp),
+        modifier = modifier.width(920.dp),
     ) {
         BadNetworkQualityEditionContent(
             state = state,
@@ -233,7 +234,7 @@ fun BadNetworkQualityEditionContent(
                     suffix = { Text(text = "%") },
                     containerColor = FloconTheme.colors.bg200,
                 )
-                BadQualityErrorsListView(
+                BadQualityErrorsList(
                     modifier = Modifier
                         .padding(top = FloconTheme.spacing.medium),
                     errors = errors,
@@ -266,7 +267,9 @@ fun BadNetworkQualityEditionContent(
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {
                                                 error
-                                            } else it
+                                            } else {
+                                                it
+                                            }
                                         }.toPersistentList()
                                     } else {
                                         errors.adding(error)
@@ -288,7 +291,9 @@ fun BadNetworkQualityEditionContent(
                                         errors.map {
                                             if (it.uuid == selectedError.uuid) {
                                                 error
-                                            } else it
+                                            } else {
+                                                it
+                                            }
                                         }.toPersistentList()
                                     } else {
                                         errors.adding(error)

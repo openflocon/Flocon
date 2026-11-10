@@ -1,6 +1,7 @@
 package io.github.openflocon.domain.timeline.models
 
 import io.github.openflocon.domain.device.models.AppInstance
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 
 data class TimelineEventDomainModel(
     val id: String, // the id of the event in the table of its source
@@ -12,6 +13,36 @@ data class TimelineEventDomainModel(
     val method: String? = null, // network only: GET, POST, WS, GRPC…
     val statusCode: Int? = null, // network only: null when there is no http code (no response yet, gRPC…)
     val durationMs: Double? = null, // network only: null while waiting for the response
+    val phase: TimelinePhase = TimelinePhase.Request, // network only: a call has a request event and a response event
+    val isImage: Boolean = false, // network only: the response is an image
+    val hasError: Boolean = false, // network only: the call failed (exception, cancelled…), whatever its http code
+    val responseByteSize: Long? = null, // network only: size of the response in bytes, null while waiting for it
     // the start of the session the event belongs to: the latest app start before it, null if none is known
     val sessionStart: AppInstance? = null,
+    val level: TimelineLogLevel? = null, // log only
+    // the value of the event for each facet of its source, ex: the method and the host of a call. What it can be excluded by
+    val facets: Map<TimelineFacet, String> = emptyMap(),
+    val transaction: TimelineTransactionDomainModel? = null, // database only: the transaction the query ran in
+)
+
+/**
+ * The transaction of a database query. The queries of a transaction share its [id].
+ */
+data class TimelineTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // without the statements that open and close it (BEGIN, COMMIT...)
+    val startTimestamp: Long,
+    val endTimestamp: Long,
+    val isControl: Boolean, // this query is one of the statements that open or close the transaction
+    val nested: TimelineNestedTransactionDomainModel? = null, // the transaction nested in it the query runs in
+)
+
+/**
+ * A transaction nested in another one (a savepoint, a nested begin) the queries of which run in it.
+ */
+data class TimelineNestedTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // the queries it ran itself, without the ones of the transactions nested in it and without its statements
+    val depth: Int, // 1 in a transaction nested in the outermost one, 2 in one nested in it...
+    val path: List<String>, // the ids of the nested transactions that hold the query, outermost first, this one last
 )

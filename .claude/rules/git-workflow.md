@@ -12,8 +12,10 @@
 - Never commit secrets, `local.properties`, signing keys or build outputs.
 
 ## Branches & PRs
+- Branch name is `<type>/<feature-kebab>` (e.g. `feat/device-selector-logos`), never `claude/...`. The `git-setup` skill applies this and the commit format; `create-pull-request` opens the PR.
 - Never push directly to `main`; work on a feature branch and open a PR against `main`.
 - Never force-push, rebase or amend on a branch someone else owns. Use merge commits to bring `main` in.
 - PR title follows the commit format above (PRs are squash-merged, so the title becomes the commit).
 - Use `.github/PULL_REQUEST_TEMPLATE/pull_request_template.md`: fill in `### Description` (what changed and why, which parts: SDK / Desktop / MCP / docs) and keep the `/gemini review` line.
+- Open PRs as drafts by default (`gh pr create --draft`); mark them ready for review only when the user asks.
 - Only open a PR when asked to.

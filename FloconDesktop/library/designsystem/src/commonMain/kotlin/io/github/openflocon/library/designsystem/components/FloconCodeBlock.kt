@@ -34,11 +34,15 @@ fun FloconCodeBlock(
                 shape = RoundedCornerShape(8.dp),
             )
             .then(
-                if (borderColor != null) Modifier.border(
-                    1.dp,
-                    borderColor,
-                    RoundedCornerShape(8.dp)
-                ) else Modifier
+                if (borderColor != null) {
+                    Modifier.border(
+                        1.dp,
+                        borderColor,
+                        RoundedCornerShape(8.dp)
+                    )
+                } else {
+                    Modifier
+                }
             )
             .padding(FloconTheme.spacing.small),
     ) {

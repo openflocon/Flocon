@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
@@ -47,15 +48,18 @@ fun FloconIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    size: Dp = Size,
+    shape: Shape = FloconTheme.shapes.medium,
+    padding: PaddingValues = PaddingValues(FloconTheme.spacing.small),
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
-            .size(Size)
-            .clip(FloconTheme.shapes.medium)
+            .size(size)
+            .clip(shape)
             .clickable(enabled = enabled, onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
-            .padding(all = FloconTheme.spacing.small)
+            .padding(padding)
     ) {
         CompositionLocalProvider(LocalContentColor provides FloconTheme.colors.ink) {
             content()
@@ -156,10 +160,10 @@ fun FloconIconToggleButton(
 
 @Composable
 fun FloconIconButton(
-    modifier: Modifier = Modifier,
     tooltip: String,
-    size: Dp = Size,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = Size,
     containerColor: Color = FloconTheme.colors.bg200,
     contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
     content: @Composable () -> Unit
@@ -191,6 +195,7 @@ fun FloconIconButton(
 @Composable
 fun WithTooltip(
     tooltip: String?,
+    modifier: Modifier = Modifier,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
         offset = DpOffset(x = FloconTheme.spacing.none, y = FloconTheme.spacing.tiny)
     ),
@@ -198,6 +203,7 @@ fun WithTooltip(
 ) {
     if (tooltip != null) {
         TooltipArea(
+            modifier = modifier,
             tooltip = {
                 Text(
                     text = tooltip,
@@ -215,7 +221,9 @@ fun WithTooltip(
             content()
         }
     } else {
-        content()
+        Box(modifier = modifier) {
+            content()
+        }
     }
 }
 

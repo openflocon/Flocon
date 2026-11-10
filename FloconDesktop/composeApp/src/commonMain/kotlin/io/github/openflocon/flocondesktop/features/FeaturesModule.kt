@@ -2,8 +2,10 @@ package io.github.openflocon.flocondesktop.features
 
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesModule
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsModule
+import io.github.openflocon.flocondesktop.features.accessibility.accessibilityModule
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderModule
 import io.github.openflocon.flocondesktop.features.analytics.analyticsModule
+import io.github.openflocon.flocondesktop.features.connect.connectModule
 import io.github.openflocon.flocondesktop.features.crashreporter.crashReporterModule
 import io.github.openflocon.flocondesktop.features.dashboard.dashboardModule
 import io.github.openflocon.flocondesktop.features.database.databaseModule
@@ -15,13 +17,16 @@ import io.github.openflocon.flocondesktop.features.network.networkModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesModule
 import io.github.openflocon.flocondesktop.features.table.tableModule
 import io.github.openflocon.flocondesktop.features.timeline.timelineModule
+import io.github.openflocon.flocondesktop.features.webview.webViewModule
 import io.github.openflocon.flocondesktop.messages.di.messagesModule
 import org.koin.dsl.module
 
 val featuresModule = module {
     includes(
         analyticsModule,
+        connectModule,
         featureFlagsModule,
+        accessibilityModule,
         databaseModule,
         filesModule,
         imagesModule,
@@ -36,5 +41,6 @@ val featuresModule = module {
         releaseNotesModule,
         crashReporterModule,
         timelineModule,
+        webViewModule,
     )
 }

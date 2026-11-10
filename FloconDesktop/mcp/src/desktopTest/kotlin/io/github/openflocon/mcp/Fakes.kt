@@ -14,8 +14,24 @@ import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.NetworkCallWithDeviceId
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
 import io.github.openflocon.domain.network.models.NetworkSortDomainModel
+import io.github.openflocon.domain.screen.models.FloconScreen
+import io.github.openflocon.domain.screen.models.ScreenRequestDomainModel
+import io.github.openflocon.domain.screen.repository.DesktopNavigationRepository
+import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineEventRef
+import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineFocusRequestDomainModel
+import io.github.openflocon.domain.timeline.models.TimelinePhase
+import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timeline.models.TimelineSourceSummaryDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
+import io.github.openflocon.domain.timeline.repository.TimelineFocusRepository
+import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
+import io.github.openflocon.domain.timeline.repository.TimelineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -98,14 +114,25 @@ internal class FakeDevicesRepository(
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
-    override suspend fun selectDevice(deviceId: DeviceId) = error("not used")
-    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) = error("not used")
+
+    /** What was selected in Flocon, in order: "device:<id>" then "app:<id>/<package>" */
+    val selections = mutableListOf<String>()
+
+    override suspend fun selectDevice(deviceId: DeviceId) {
+        selections += "device:$deviceId"
+        currentDeviceIdValue = deviceId
+    }
+
+    override suspend fun selectApp(deviceId: DeviceId, app: DeviceAppDomainModel) {
+        selections += "app:$deviceId/${app.packageName}"
+        selectedApps = selectedApps + (deviceId to app.packageName)
+    }
+
     override suspend fun saveAppIcon(deviceId: DeviceId, appPackageName: String, iconEncoded: String) = error("not used")
     override suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean = error("not used")
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
     override suspend fun deleteDevice(deviceId: DeviceId) = error("not used")
     override suspend fun deleteApplication(deviceId: DeviceId, packageName: String) = error("not used")
-    override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
     override suspend fun clear() = error("not used")
 }
 
@@ -159,3 +186,92 @@ internal fun targetResolver(devicesRepository: DevicesRepository) = McpTargetRes
         devicesRepository = devicesRepository,
     ),
 )
+
+internal class FakeDesktopNavigationRepository : DesktopNavigationRepository {
+    val requestedScreens = mutableListOf<FloconScreen>()
+
+    override fun requestScreen(screen: FloconScreen) {
+        requestedScreens += screen
+    }
+
+    override fun observeRequestedScreen(): Flow<ScreenRequestDomainModel> = emptyFlow()
+
+    override fun consumeRequestedScreen(request: ScreenRequestDomainModel) = Unit
+}
+
+/** The events of the timeline, filtered like the Room query: sources, time bounds and event refs (a call is its request event) */
+internal class FakeTimelineRepository(private val events: List<TimelineEventDomainModel>) : TimelineRepository {
+
+    override fun observeSummary(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<TimelineSummaryDomainModel> = flowOf(
+        TimelineSummaryDomainModel(
+            sources = events.groupBy { it.source }.mapValues { (_, events) ->
+                TimelineSourceSummaryDomainModel(
+                    count = events.size,
+                    httpErrorCount = events.count { (it.statusCode ?: 0) >= 400 },
+                    firstTimestamp = events.minOf { it.timestamp },
+                    lastTimestamp = events.maxOf { it.timestamp },
+                )
+            },
+            sessionEventCounts = emptyMap(),
+        )
+    )
+
+    override fun observeTimelineEvents(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<List<TimelineEventDomainModel>> = flowOf(
+        events
+            .filter { it.source in filter.sources }
+            .filter { filter.fromMs == null || it.timestamp >= filter.fromMs!! }
+            .filter { filter.toMs == null || it.timestamp <= filter.toMs!! }
+            .filter { event ->
+                filter.events == null || (event.phase == TimelinePhase.Request && TimelineEventRef(event.source, event.id) in filter.events!!)
+            }
+            .sortedByDescending { it.timestamp }
+    )
+
+    override fun observeTimeline(
+        deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: TimelineFilterDomainModel,
+    ): Flow<PagingData<TimelineEventDomainModel>> = error("not used")
+}
+
+internal class FakeTimelinePreferencesRepository : TimelinePreferencesRepository {
+    val graphCalls = mutableListOf<Boolean>()
+
+    override val settings: Flow<TimelineSettingsDomainModel> = MutableStateFlow(TimelineSettingsDomainModel())
+
+    override suspend fun setGraph(graph: Boolean) {
+        graphCalls += graph
+    }
+
+    override suspend fun setMergePlugins(mergePlugins: Boolean) = error("not used")
+    override suspend fun setClusterEvents(clusterEvents: Boolean) = error("not used")
+    override suspend fun setAutoScroll(autoScroll: Boolean) = error("not used")
+    override suspend fun setInvertList(invertList: Boolean) = error("not used")
+    override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
+    override suspend fun setSelectedSources(sources: Set<TimelineSource>) = error("not used")
+    override suspend fun setScreenshots(screenshots: Boolean) = error("not used")
+    override suspend fun setScreenshotIntervalSeconds(seconds: Int) = error("not used")
+}
+
+internal class FakeTimelineFocusRepository : TimelineFocusRepository {
+    val requests = mutableListOf<TimelineFocusRequestDomainModel>()
+
+    override fun requestFocus(
+        target: DeviceIdAndPackageNameDomainModel,
+        sessionStart: Long?,
+        event: TimelineEventRef?,
+        fromMs: Long,
+        toMs: Long,
+    ) {
+        requests += TimelineFocusRequestDomainModel(target, sessionStart, event, fromMs, toMs, requestedAtMs = 0L)
+    }
+
+    override fun observeFocus(): Flow<TimelineFocusRequestDomainModel> = emptyFlow()
+
+    override fun consumeFocus(request: TimelineFocusRequestDomainModel) = Unit
+}

@@ -8,6 +8,7 @@ import com.flocon.data.remote.models.toRemote
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataSource
 import io.github.openflocon.domain.Protocol
+import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -39,23 +40,16 @@ class DeviceRemoteDataSourceImpl(
         ?.map { it.lowercase() }
         ?.toSet()
 
+    override fun getConnectionType(message: FloconIncomingMessageDomainModel): DeviceConnectionType? = json.safeDecodeFromString<BonjourDataModel>(message.body)
+        ?.connectionType
+        ?.let { if (it == "wifi") DeviceConnectionType.Wifi else DeviceConnectionType.Default }
+
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
             message = FloconOutgoingMessageDataModel(
                 plugin = Protocol.ToDevice.Device.Plugin,
                 method = Protocol.ToDevice.Device.Method.GetAppIcon,
-                body = "",
-            ),
-        )
-    }
-
-    override suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
-        server.sendMessageToClient(
-            deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),
-            message = FloconOutgoingMessageDataModel(
-                plugin = Protocol.ToDevice.Device.Plugin,
-                method = Protocol.ToDevice.Device.Method.RestartApp,
                 body = "",
             ),
         )

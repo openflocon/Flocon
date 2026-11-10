@@ -20,7 +20,19 @@ object SampleIcons {
         "M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6",
     )
     val Analytics = icon("analytics", "M4 20V10M10 20V4M16 20v-7M22 20H2")
-    val FeatureFlags = icon("flags", "M5 21V4M5 4h11l-2 4 2 4H5")
+    val Accessibility = icon(
+        "accessibility",
+        "M12 5.5a1 1 0 1 0 0 .01",
+        "M5 9l7 1.5L19 9",
+        "M12 10.5V15l-3 5M12 15l3 5",
+    )
+    val WebView = icon(
+        "webview",
+        "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
+        "M3 12h18",
+        "M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z",
+    )
+    val FeatureFlags = icon("flags","M5 21V4M5 4h11l-2 4 2 4H5")
     val Preferences = icon(
         "preferences",
         "M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z",
@@ -43,6 +55,8 @@ object SampleIcons {
         "M21 16l-5-5-8 8",
         "M9 8.5a1 1 0 1 0 0 .01",
     )
+    val Timeline = icon("timeline", "M5 4v16", "M5 7h14M5 12h9M5 17h12")
+    val Connection = icon("connection", "M5 12.5a10 10 0 0 1 14 0", "M8.5 16a5 5 0 0 1 7 0", "M12 19.5v.01")
     val Crash = icon("crash", "M12 3L2 20h20z", "M12 10v5M12 18v.01")
 
     private fun icon(name: String, vararg paths: String): ImageVector =

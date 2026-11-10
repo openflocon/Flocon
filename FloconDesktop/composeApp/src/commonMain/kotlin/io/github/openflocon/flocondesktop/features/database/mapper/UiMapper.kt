@@ -25,7 +25,9 @@ fun DeviceDataBaseDomainModel.toUi(selected: DatabaseAndTablesDomainModel): Devi
             selected.tables.map {
                 it.toUi()
             }.toImmutableList()
-        } else null
+        } else {
+            null
+        }
     )
 }
 
@@ -35,12 +37,8 @@ fun DatabaseTableDomainModel.toUi(): TableUiModel = TableUiModel(
         TableUiModel.ColumnUiModel(
             name = it.name,
             isPrimaryKey = it.primaryKey,
-            type = buildString {
-                append(it.type)
-                if (!it.nullable) {
-                    append(", NOT NULL")
-                }
-            },
+            type = it.type,
+            isNotNull = !it.nullable,
         )
     }.toImmutableList()
 )

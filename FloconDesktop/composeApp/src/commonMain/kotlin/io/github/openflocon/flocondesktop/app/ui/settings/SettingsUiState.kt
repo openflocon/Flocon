@@ -16,8 +16,12 @@ data class SettingsUiState(
     val logs: ImmutableList<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
     val theme: ThemeSetting,
+    val mascotEnabled: Boolean,
     val selectedLogDomains: Set<LogDomain>,
     val selectedLogLevels: Set<LogLevel>,
+    val menuItems: ImmutableList<MenuItemVisibilityUiModel> = persistentListOf(),
+    val startScreenOptions: ImmutableList<MenuItemVisibilityUiModel> = persistentListOf(),
+    val startScreenId: String? = null,
 )
 
 fun previewSettingsUiState() = SettingsUiState(
@@ -30,6 +34,10 @@ fun previewSettingsUiState() = SettingsUiState(
         LogEntryUiModel(LogLevel.INFO, "[MCP] list_devices ok in 12 ms", "12:00:03", LogDomain.Mcp),
     ),
     theme = ThemeSetting.DEFAULT,
+    mascotEnabled = true,
     selectedLogDomains = LogDomain.entries.toSet(),
     selectedLogLevels = LogLevel.entries.toSet(),
+    menuItems = previewMenuItemVisibilities(),
+    startScreenOptions = previewMenuItemVisibilities(),
+    startScreenId = previewMenuItemVisibilities().first().id,
 )

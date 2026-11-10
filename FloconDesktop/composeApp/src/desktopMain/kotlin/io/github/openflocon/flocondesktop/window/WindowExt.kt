@@ -22,7 +22,8 @@ fun WindowStateData?.size(): DpSize {
     ).dp
 
     return DpSize(
-        width = width, height = height,
+        width = width,
+        height = height,
     )
 }
 

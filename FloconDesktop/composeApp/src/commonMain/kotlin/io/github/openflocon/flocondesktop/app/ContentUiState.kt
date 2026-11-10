@@ -9,5 +9,5 @@ data class ContentUiState(
 )
 
 fun previewContentUiState() = ContentUiState(
-    current = SubScreen.Network
+    current = SubScreen.Timeline
 )

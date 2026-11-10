@@ -13,12 +13,13 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class FloconSizes(
     val controlHeight: Dp = 32.dp,
+    val pageBarControlHeight: Dp = 32.dp,
     val rowHeight: Dp = 32.dp,
     val headerHeight: Dp = 32.dp,
     val menuItemHeight: Dp = 36.dp,
+    val menuDetailCaptionWidth: Dp = 72.dp, // the caption of a "caption / value" line of a menu
     val pillMinWidth: Dp = 38.dp,
     val timeColumn: Dp = 96.dp,
-    val markerColumn: Dp = 22.dp,
     val categoryColumn: Dp = 104.dp,
     val sidePanelWidth: Dp = 280.dp,
     val deviceDropdownWidth: Dp = 220.dp,

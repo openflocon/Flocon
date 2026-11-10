@@ -17,35 +17,19 @@ Features:
 - **Auto-Discovery**: Automatically finds and lists default `SharedPreferences` files on Android.
 - **DataStore Support**: Seamlessly browse and mutate `PreferencesDataStore` keys.
 - **Live Mutation**: Edit booleans, numbers, strings, and JSON objects in real-time.
+- **Delete a key**: Right-click a row and choose **Delete**, then confirm. The key is removed from the app (SharedPreferences, DataStore and iOS UserDefaults).
 
 ---
 
 ## Setup & Registration
 
-=== "build.gradle.kts"
-
-    ```kotlin
-    dependencies {
-        debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
-    }
-    ```
-
-Install the plugin:
-
-```kotlin
-startFlocon(context) {
-    install(FloconPreferences)
-}
-```
-
 ### Standard SharedPreferences (Android)
 
-All the `SharedPreferences` files of the app are automatically detected on Android. To register one with a custom display name:
+Default SharedPreferences are automatically indexed. To provide a custom display name:
 
 ```kotlin
 val userPrefs = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
-Flocon.preferencesPlugin.register(FloconSharedPreference(name = "User Settings", userPrefs))
+floconRegisterPreference(FloconSharedPreference(name = "User Settings", userPrefs))
 ```
 
 ---
@@ -69,25 +53,20 @@ Flocon.preferencesPlugin.register(FloconSharedPreference(name = "User Settings",
     }
     ```
 
-Register your DataStore instance (Android, JVM and iOS):
+Register your DataStore instance:
 
 ```kotlin
 val Context.dataStore by preferencesDataStore(name = "settings")
 
-Flocon.preferencesPlugin.register(FloconDatastorePreference(name = "App Settings", context.dataStore))
-```
-
-If the values are encrypted, pass a `FloconDatastoreMapper` to decode / encode them:
-
-```kotlin
-FloconDatastorePreference(name = "Secure Settings", context.secureDataStore, mapper = myCipherMapper)
+// Register with Flocon
+floconRegisterPreference(FloconDatastorePreference(name = "App Settings", context.dataStore))
 ```
 
 ---
 
 ### Custom Key-Value Storage
 
-You can expose any proprietary storage system (such as EncryptedSharedPreferences or custom key-value stores, on every platform) by implementing `FloconPreference`:
+You can expose any proprietary storage system (such as EncryptedSharedPreferences or custom key-value stores) by implementing `FloconPreference`:
 
 ```kotlin
 class MyCustomPreference : FloconPreference {
@@ -102,7 +81,12 @@ class MyCustomPreference : FloconPreference {
     override suspend fun set(columnName: String, value: FloconPreferenceValue) {
         writeSecureKey(columnName, value.stringValue)
     }
+
+    // optional: called when a key is deleted from the desktop (does nothing by default)
+    override suspend fun remove(columnName: String) {
+        deleteSecureKey(columnName)
+    }
 }
 
-Flocon.preferencesPlugin.register(MyCustomPreference())
+floconRegisterPreference(MyCustomPreference())
 ```

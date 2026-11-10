@@ -44,12 +44,15 @@ class ImagesRepositoryImpl(
         call: FloconNetworkCallDomainModel,
     ) {
         val duration = call.response?.durationMs ?: return
+        val success = call.response as? FloconNetworkCallDomainModel.Response.Success
         imagesLocalDataSource.addImage(
             deviceIdAndPackageName = deviceIdAndPackageName,
             image = DeviceImageDomainModel(
                 url = call.request.url,
                 headers = call.request.headers,
                 time = (call.request.startTime + duration).toLong(),
+                byteSize = success?.byteSize,
+                contentType = success?.contentType,
             ),
         )
     }

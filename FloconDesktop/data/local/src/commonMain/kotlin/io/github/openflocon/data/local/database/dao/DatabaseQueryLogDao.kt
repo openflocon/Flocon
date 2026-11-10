@@ -31,6 +31,22 @@ interface DatabaseQueryLogDao {
         query: RoomRawQuery,
     ): List<DatabaseQueryLogEntity>
 
+    @androidx.room.Query("SELECT * FROM DatabaseQueryLogEntity WHERE id = :id LIMIT 1")
+    fun observeLog(id: Int): kotlinx.coroutines.flow.Flow<DatabaseQueryLogEntity?>
+
+    // the path of a nested transaction already logged, to give the path of the ones nested in it
+    @androidx.room.Query(
+        "SELECT nestedPath FROM DatabaseQueryLogEntity WHERE deviceId = :deviceId AND packageName = :packageName AND dbId = :dbId " +
+            "AND transactionId = :transactionId AND nestedTransactionId = :nestedTransactionId LIMIT 1",
+    )
+    suspend fun findNestedPath(
+        deviceId: String,
+        packageName: String,
+        dbId: String,
+        transactionId: String,
+        nestedTransactionId: String,
+    ): String?
+
     @androidx.room.Query("DELETE FROM DatabaseQueryLogEntity WHERE deviceId = :deviceId AND packageName = :packageName")
     suspend fun deleteAll(deviceId: String, packageName: String)
 }

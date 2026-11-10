@@ -19,7 +19,7 @@ Reference implementation: `composeApp/.../features/featureflags/`.
 - Every public composable that emits UI takes `modifier` and applies it **once, to its root**. Children start from a fresh `Modifier`.
 - Events go up as lambdas named `onXxx` (`onProviderSelected`, `onFilterTextChanged`). When a screen has many row-level events, group them in a `sealed interface <Feature>Action` and pass a single `onAction: (<Feature>Action) -> Unit`.
 - Pass method references (`viewModel::onAction`) instead of new lambdas where possible.
-- Naming: full screens `<Feature>Screen`, reusable pieces `<Thing>View` (`FeatureFlagRowView`). Composables that return `Unit` are PascalCase nouns; ones that return a value are camelCase (`rememberFloconScrollbarAdapter`).
+- Naming: full screens `<Feature>Screen`, reusable pieces named after what they show (`FeatureFlagRow`, `NetworkItem`). Never use the word `View` in a composable or its file name (`ViewModel` is not a composable and is unaffected). Composables that return `Unit` are PascalCase nouns; ones that return a value are camelCase (`rememberFloconScrollbarAdapter`).
 
 ## State & stability
 - UI models live in `model/`, are `data class`/`sealed interface` named `*UiModel`, and are annotated `@Immutable`.

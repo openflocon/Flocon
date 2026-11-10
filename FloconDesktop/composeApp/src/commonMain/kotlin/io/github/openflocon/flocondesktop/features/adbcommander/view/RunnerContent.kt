@@ -79,7 +79,7 @@ fun RunnerContent(
 
         // Flow execution progress
         if (flowExecution != null) {
-            FlowExecutionView(
+            FlowExecution(
                 execution = flowExecution,
                 modifier = Modifier.fillMaxWidth().padding(FloconTheme.spacing.small),
             )
@@ -93,14 +93,14 @@ fun RunnerContent(
             modifier = Modifier.weight(1f),
         ) {
             items(consoleOutput) { entry ->
-                ConsoleEntryView(entry = entry, modifier = Modifier.fillMaxWidth())
+                ConsoleEntry(entry = entry, modifier = Modifier.fillMaxWidth())
             }
         }
     }
 }
 
 @Composable
-private fun ConsoleEntryView(
+private fun ConsoleEntry(
     entry: ConsoleOutputEntry,
     modifier: Modifier = Modifier,
 ) {
@@ -126,7 +126,7 @@ private fun ConsoleEntryView(
 }
 
 @Composable
-private fun FlowExecutionView(
+private fun FlowExecution(
     execution: FlowExecutionUiModel,
     modifier: Modifier = Modifier,
 ) {

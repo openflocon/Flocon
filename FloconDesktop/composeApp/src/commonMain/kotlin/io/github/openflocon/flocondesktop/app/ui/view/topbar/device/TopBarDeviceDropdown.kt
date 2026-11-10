@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -10,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.no_devices_found
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel
@@ -19,6 +20,7 @@ import io.github.openflocon.flocondesktop.app.ui.view.topbar.TopBarSelector
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -45,28 +47,36 @@ internal fun TopBarDeviceDropdown(
                     onClick = { expanded = true },
                     modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
                 ) {
-                    TopBarDeviceView(device = state.deviceSelected)
+                    TopBarDevice(device = state.deviceSelected)
                 }
             },
         ) {
-            state.devices.forEach { device ->
-                val isSelected = state.deviceSelected.id == device.id
-
-                TopBarDeviceView(
-                    modifier = Modifier
-                        .width(FloconTheme.sizes.deviceDropdownWidth)
-                        .clip(FloconTheme.shapes.medium)
-                        .clickable {
+            state.groups.forEachIndexed { index, group ->
+                if (index > 0) {
+                    FloconHorizontalDivider(
+                        modifier = Modifier.padding(vertical = FloconTheme.spacing.extraSmall),
+                    )
+                }
+                TopBarDeviceGroupHeader(
+                    platform = group.platform,
+                    count = group.devices.size,
+                    modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                )
+                group.devices.forEach { device ->
+                    TopBarDeviceRow(
+                        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                        device = device,
+                        selected = state.deviceSelected.id == device.id,
+                        onClick = {
                             onDeviceSelected(device)
                             expanded = false
                         },
-                    device = device,
-                    selected = isSelected,
-                    deleteClick = {
-                        deleteDevice(device)
-                        expanded = false
-                    },
-                )
+                        deleteClick = {
+                            deleteDevice(device)
+                            expanded = false
+                        },
+                    )
+                }
             }
         }
     }
@@ -76,14 +86,18 @@ internal fun TopBarDeviceDropdown(
 private fun Empty() {
     TopBarSelector(
         onClick = {},
-        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+        modifier = Modifier
+            .height(48.dp)
+            .width(FloconTheme.sizes.deviceDropdownWidth)
     ) {
         Text(
             text = stringResource(Res.string.no_devices_found),
-            modifier = Modifier.padding(
-                vertical = FloconTheme.spacing.extraSmall,
-                horizontal = FloconTheme.spacing.medium
-            ),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(
+                    vertical = FloconTheme.spacing.extraSmall,
+                    horizontal = FloconTheme.spacing.medium
+                ),
             style = FloconTheme.typography.bodyMedium,
             color = FloconTheme.colors.ink,
         )

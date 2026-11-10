@@ -12,6 +12,9 @@ interface TableLocalDataSource {
 
     fun observe(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, tableId: TableId): Flow<TableDomainModel?>
 
+    /** The table the item belongs to, containing only this item */
+    fun observeItem(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, itemId: String): Flow<TableDomainModel?>
+
     fun observeDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<TableIdentifierDomainModel>>
 
     suspend fun getDeviceTables(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): List<TableIdentifierDomainModel>

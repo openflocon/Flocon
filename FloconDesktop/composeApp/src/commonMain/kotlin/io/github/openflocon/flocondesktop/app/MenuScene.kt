@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.app
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,25 +10,45 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.MetadataScope
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.get
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
+import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMaxWidth
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.PanelMinWidth
+import io.github.openflocon.flocondesktop.common.ui.window.LocalWindowTitleBar
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconScaffold
 import io.github.openflocon.library.designsystem.components.floconIsland
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.hazeBackground
+import io.github.openflocon.navigation.mascot.LocalMascot
+import io.github.openflocon.navigation.mascot.LocalMascotCommands
+import io.github.openflocon.navigation.mascot.MascotCommands
+import io.github.openflocon.navigation.mascot.MascotOverlay
+import io.github.openflocon.navigation.mascot.MascotPlatforms
+import io.github.openflocon.navigation.mascot.mascotPlatform
+import io.github.openflocon.navigation.scene.PanelScene
+import kotlinx.collections.immutable.toImmutableList
+import org.koin.compose.viewmodel.koinViewModel
 
 @Immutable
 data class MenuScene(
@@ -40,47 +62,105 @@ data class MenuScene(
         var expanded by remember { mutableStateOf(true) }
         val width by animateDpAsState(targetValue = if (expanded) PanelMaxWidth else PanelMinWidth)
 
-        FloconScaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                Box(
-                    modifier = Modifier.padding(
-                        start = FloconTheme.spacing.medium,
-                        top = FloconTheme.spacing.medium,
-                        end = FloconTheme.spacing.medium,
-                    ),
-                ) {
-                    topBarContent?.invoke()
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        ) { padding ->
-            // the sidebar and the content float as islands over the page background
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(width)
-                        .fillMaxHeight()
-                        .padding(
-                            start = FloconTheme.spacing.medium,
-                            top = FloconTheme.spacing.medium,
-                            bottom = FloconTheme.spacing.medium,
-                        ),
-                ) {
-                    menuContent(expanded) { expanded = !expanded }
-                }
+        val mascotEnabled by koinViewModel<MascotViewModel>().isEnabled.collectAsStateWithLifecycle()
+        var origin by remember { mutableStateOf(Offset.Zero) }
+        var pointer by remember { mutableStateOf<Offset?>(null) }
+        val mascotPlatforms = remember { MascotPlatforms() }
+        val mascotCommands = remember { MascotCommands() }
+        val mascotMargin = with(LocalDensity.current) { FloconTheme.spacing.medium.toPx() }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .hazeBackground()
+                .onGloballyPositioned { origin = it.positionInRoot() }
+                .pointerInput(Unit) {
+                    // watches the pointer without consuming anything
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            event.changes.firstOrNull()?.let { pointer = it.position }
+                        }
+                    }
+                },
+        ) {
+            FloconScaffold(
+                containerColor = Color.Transparent,
+                topBar = {
+                    // the top bar replaces the window title bar: it moves the window and sits
+                    // below the window buttons
+                    val titleBar = LocalWindowTitleBar.current
+                    titleBar.DragArea {
+                        Box(
+                            modifier = Modifier.padding(
+                                start = FloconTheme.spacing.medium,
+                                top = FloconTheme.spacing.medium + titleBar.topInset,
+                                end = FloconTheme.spacing.medium,
+                            ),
+                        ) {
+                            CompositionLocalProvider(LocalMascotCommands provides mascotCommands) {
+                                topBarContent?.invoke()
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            ) { padding ->
+                // the sidebar and the content float as islands over the page background
                 Row(
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(FloconTheme.spacing.medium),
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(FloconTheme.spacing.medium)
                 ) {
-                    scene.content()
+                    Box(
+                        modifier = Modifier
+                            .width(width)
+                            .fillMaxHeight()
+                            .floconIsland(FloconTheme.colors.islandSidebar)
+                            .mascotPlatform(platforms = mascotPlatforms)
+                            .padding(FloconTheme.spacing.small),
+                    ) {
+                        menuContent(expanded) { expanded = !expanded }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        CompositionLocalProvider(LocalMascot provides mascotPlatforms) {
+                            if (scene !is PanelScene) {
+                                Crossfade(scene) {
+                                    it.content()
+                                }
+                            } else {
+                                scene.content()
+                            }
+                        }
+                    }
                 }
+            }
+            val registered = mascotPlatforms.bounds.values
+            if (mascotEnabled && registered.isNotEmpty()) {
+                // the mascot walks on the top edge of every element marked with `mascotPlatform`
+                // (the sidebar and the content island first, then the ones the screens add), and
+                // jumps over the gaps between them
+                val platforms = registered
+                    .map {
+                        mascotPlatform(
+                            left = it.left - origin.x,
+                            right = it.right - origin.x,
+                            top = it.top - origin.y,
+                            inset = mascotMargin * 2,
+                        )
+                    }
+                    .toImmutableList()
+                MascotOverlay(
+                    pointerX = pointer?.x,
+                    platforms = platforms,
+                    barkCount = mascotCommands.barkCount,
+                )
             }
         }
     }

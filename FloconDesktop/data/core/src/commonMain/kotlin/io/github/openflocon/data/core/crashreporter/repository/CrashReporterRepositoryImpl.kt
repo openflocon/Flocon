@@ -62,8 +62,10 @@ class CrashReporterRepositoryImpl(
 
     override fun observeCrashReports(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
+        filter: String,
     ): Flow<PagingData<CrashReportDomainModel>> = localDataSource.observeAll(
         deviceIdAndPackageName = deviceIdAndPackageName,
+        filter = filter,
     ).flowOn(dispatcherProvider.data)
 
     override fun observeHasCrashReports(

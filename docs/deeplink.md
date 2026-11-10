@@ -22,60 +22,33 @@ From the desktop UI, you can:
 
 ## Defining Deeplinks in Kotlin
 
-Add the module:
+Declare deeplink routes and test variables directly from your Android codebase:
 
 ```kotlin
-dependencies {
-    debugImplementation("io.github.openflocon:flocon-deeplinks:LAST_VERSION")
-    releaseImplementation("io.github.openflocon:flocon-deeplinks-no-op:LAST_VERSION")
-}
-```
-
-Then declare deeplink routes and test variables when installing the plugin:
-
-```kotlin
-startFlocon(FloconContext(context)) {
-    install(FloconDeeplinks) {
-        variable("host") {
-            description = "Host scheme/domain"
-            autoComplete(listOf("flocon", "myapp"))
-        }
-
-        variable("sample_comment")
-
-        deeplink("[host]://home") {
-            "host" withVariable "host"
-        }
-
-        deeplink("[host]://user/[userId]") {
-            label = "User Profile"
-            "userId" withAutoComplete listOf("101", "202", "303")
-            "host" withVariable "host"
-        }
-
-        deeplink("[host]://post/[postId]?comment=[commentText]") {
-            label = "Post Detail"
-            description = "Opens a post and pre-fills comment text"
-            "postId" withAutoComplete listOf("1", "2", "3")
-            "commentText" withVariable "sample_comment"
-            "host" withVariable "host"
-        }
+Flocon.deeplinks {
+    variable("host") {
+        description = "Host scheme/domain"
+        autoComplete(listOf("flocon", "myapp"))
     }
-}
-```
 
-### Register deeplinks later
+    variable("sample_comment")
 
-Some values are only known after `startFlocon` (a user id after login, a feature enabled remotely...).
-Register more deeplinks and variables at any time. A deeplink with the same link, or a variable with
-the same name, replaces the previous one; the desktop is updated immediately and after each reconnection:
+    deeplink("[host]://home") {
+        "host" withVariable "host"
+    }
 
-```kotlin
-Flocon.deeplinksPlugin.register {
-    variable("userId")
+    deeplink("[host]://user/[userId]") {
+        label = "User Profile"
+        "userId" withAutoComplete listOf("101", "202", "303")
+        "host" withVariable "host"
+    }
 
-    deeplink("myapp://user/[userId]") {
-        "userId" withVariable "userId"
+    deeplink("[host]://post/[postId]?comment=[commentText]") {
+        label = "Post Detail"
+        description = "Opens a post and pre-fills comment text"
+        "postId" withAutoComplete listOf("1", "2", "3")
+        "commentText" withVariable "sample_comment"
+        "host" withVariable "host"
     }
 }
 ```

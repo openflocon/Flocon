@@ -1,12 +1,18 @@
 package io.github.openflocon.flocon.myapplication.multi
 
 import android.content.Context
+import java.util.concurrent.atomic.AtomicReference
 import androidx.room3.Room
+import androidx.sqlite.driver.AndroidSQLiteDriver
+import io.github.openflocon.flocon.database.room3.floconLogs
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import io.github.openflocon.flocon.database.sqldelight.withFlocon
 
 object Databases {
     @Volatile
@@ -19,10 +25,12 @@ object Databases {
                 klass = DogDatabase::class.java,
                 name = "dogs_database"
             )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs_room3"))
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
             dogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "dogs_room3",
                 displayName = "dogs",
                 database = instance
             )
@@ -38,9 +46,12 @@ object Databases {
                 context = context.applicationContext,
                 klass = FoodDatabase::class.java,
                 name = "food_database"
-            ).build()
+            )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "food_room3"))
+                .build()
             foodDatabase = instance
             Flocon.databasePlugin.register(
+                id = "food_room3",
                 displayName = "food",
                 database = instance
             )
@@ -56,13 +67,29 @@ object Databases {
             val instance = Room.inMemoryDatabaseBuilder(
                 context.applicationContext,
                 DogDatabase::class.java,
-            ).build()
+            )
+                .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs_room3_memory"))
+                .build()
             inMemoryDogDatabase = instance
             Flocon.databasePlugin.register(
+                id = "dogs_room3_memory",
                 displayName = "inmemory_dogs",
                 database = instance
             )
             instance
+        }
+    }
+
+    private val sqlDelightDatabase = AtomicReference<SqlDelightDatabase?>(null)
+
+    fun getSqlDelightDatabase(context: Context): SqlDelightDatabase {
+        return sqlDelightDatabase.get() ?: synchronized(this) {
+            // checked again: another thread can have created it while this one was waiting
+            sqlDelightDatabase.get() ?: run {
+                val driver = AndroidSqliteDriver(SqlDelightDatabase.Schema, context.applicationContext, "sqldelight_dogs.db")
+                    .withFlocon(id = "dogs_sqldelight", displayName = "dogs (SQLDelight)")
+                SqlDelightDatabase(driver).also { sqlDelightDatabase.set(it) }
+            }
         }
     }
 }

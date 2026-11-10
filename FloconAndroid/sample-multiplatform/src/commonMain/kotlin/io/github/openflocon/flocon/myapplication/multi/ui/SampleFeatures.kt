@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.myapplication.multi.ui
 
 import androidx.compose.runtime.mutableStateMapOf
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.accessibility.accessibilityPlugin
 import io.github.openflocon.flocon.analytics.analyticsPlugin
 import io.github.openflocon.flocon.analytics.model.AnalyticsEvent
 import io.github.openflocon.flocon.analytics.model.analyticsProperty
@@ -20,6 +21,8 @@ import kotlin.time.TimeSource
  * Every feature of the SDK that can be triggered from the sample app. Each one is displayed on the
  * screen of its plugin ([screen]).
  *
+ * @param platforms where the sample can run it. Keep it in line with the registrations of each
+ *   platform entry point ([SampleFeatures.on] / [SampleFeatures.unavailable]).
  * @param crashes the action is expected to crash the app, so its failure is not caught.
  */
 enum class SampleFeature(
@@ -27,37 +30,51 @@ enum class SampleFeature(
     val title: String,
     val description: String,
     val buttonLabel: String = "Run",
+    val platforms: Set<SamplePlatform> = SamplePlatform.All,
     val crashes: Boolean = false,
 ) {
     KtorGet(SampleScreen.Network, "Ktor GET", "Simple JSON request"),
     KtorPost(SampleScreen.Network, "Ktor POST", "JSON body and response"),
     KtorNotFound(SampleScreen.Network, "Ktor 404", "A failing request"),
-    OkHttp(SampleScreen.Network, "OkHttp", "Interceptor on an OkHttp client"),
-    OkHttpGzip(SampleScreen.Network, "OkHttp gzip", "Compressed response body"),
-    WebSocket(SampleScreen.Network, "WebSocket", "Send a message on the open socket", buttonLabel = "Send"),
-    GraphQl(SampleScreen.Network, "GraphQL", "Apollo query on the GitHub API"),
-    Grpc(SampleScreen.Network, "gRPC", "SayHello unary call"),
+    OkHttp(SampleScreen.Network, "OkHttp", "Interceptor on an OkHttp client", platforms = SamplePlatform.Jvm),
+    OkHttpGzip(SampleScreen.Network, "OkHttp gzip", "Compressed response body", platforms = SamplePlatform.Jvm),
+    WebSocket(SampleScreen.Network, "WebSocket", "Send a message on the open socket", buttonLabel = "Send", platforms = SamplePlatform.AndroidOnly),
+    GraphQl(SampleScreen.Network, "GraphQL", "Apollo query on the GitHub API", platforms = SamplePlatform.AndroidOnly),
+    Grpc(SampleScreen.Network, "gRPC", "SayHello unary call", platforms = SamplePlatform.AndroidOnly),
 
     DatabaseRoom3(SampleScreen.Database, "Dog, Room 3", "Insert a dog in the dogs database", buttonLabel = "Insert"),
-    DatabaseRoom2(SampleScreen.Database, "Cat, Room 2", "Insert a cat in the Room 2 database", buttonLabel = "Insert"),
-    DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert"),
+    DatabaseRoom2(SampleScreen.Database, "Cat, Room 2", "Insert a cat in the Room 2 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
+    DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
+    DatabaseSqlDelight(SampleScreen.Database, "Dog, SQLDelight", "Insert a dog in the SQLDelight database", buttonLabel = "Insert", platforms = SamplePlatform.NotWeb),
     DatabaseFood(SampleScreen.Database, "Food, Room 3", "Insert food in the second database", buttonLabel = "Insert"),
+    DatabaseTransactionRoom3(SampleScreen.Database, "Transaction, Room 3", "A dog, a human and their link inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom3(SampleScreen.Database, "Nested transactions, Room 3", "A transaction with two transactions inside (humans, then dogs and their links), run with savepoints", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseNestedTransactionRoom2(SampleScreen.Database, "Nested transactions, Room 2", "A transaction with two transactions inside (cats, then more cats): Room 2 sends one transaction", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
+    DatabaseTransactionRoom2(SampleScreen.Database, "Transaction, Room 2", "Three cats inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
 
     AnalyticsTable(SampleScreen.Analytics, "Table event", "One event in the table \"analytics\"", buttonLabel = "Send"),
     AnalyticsEvents(SampleScreen.Analytics, "Firebase-style events", "Two events from one sender", buttonLabel = "Send"),
 
+    Accessibility(SampleScreen.Accessibility, "Announce", "Announces \"Item added to the cart\" to the screen reader", buttonLabel = "Announce"),
+
+    WebViewConsole(SampleScreen.WebView, "Console messages", "console.log, info, warn and error from the page", buttonLabel = "Log", platforms = SamplePlatform.AndroidOnly),
+    WebViewJsError(SampleScreen.WebView, "Uncaught JS error", "Throws a TypeError in the page", buttonLabel = "Throw", platforms = SamplePlatform.AndroidOnly),
+    WebViewBridge(SampleScreen.WebView, "Bridge call", "The page calls the native object \"FloconSample\"", buttonLabel = "Call", platforms = SamplePlatform.AndroidOnly),
+    WebViewNotFound(SampleScreen.WebView, "HTTP 404", "Loads a page that does not exist", buttonLabel = "Load", platforms = SamplePlatform.AndroidOnly),
+    WebViewReload(SampleScreen.WebView, "Reload the sample page", "Back to the local page used by the other rows", buttonLabel = "Reload", platforms = SamplePlatform.AndroidOnly),
+
     FeatureFlags(SampleScreen.FeatureFlags, "Register flags", "Firebase and Statsig flags, with variants and payloads", buttonLabel = "Register"),
 
-    DataStore(SampleScreen.Preferences, "DataStore", "Update the age stored in a DataStore", buttonLabel = "Update"),
+    DataStore(SampleScreen.Preferences, "DataStore", "Update the age stored in a DataStore", buttonLabel = "Update", platforms = SamplePlatform.AndroidOnly),
 
-    Files(SampleScreen.Files, "Write a file", "Creates flocon_sample.txt, then browse it in Flocon", buttonLabel = "Write"),
+    Files(SampleScreen.Files, "Write a file", "Creates flocon_sample.txt, then browse it in Flocon", buttonLabel = "Write", platforms = SamplePlatform.NotWeb),
 
     Dashboard(SampleScreen.Dashboard, "Change user", "Updates the live \"User\" section", buttonLabel = "Change"),
     Table(SampleScreen.Dashboard, "Add table row", "Adds a row to the table \"active_sessions\"", buttonLabel = "Add"),
 
     Deeplink(SampleScreen.Deeplinks, "Register a deeplink", "Registers flocon://runtime/[id] after the install", buttonLabel = "Register"),
 
-    CrashReporter(SampleScreen.Crash, "Crash the app", "Throws an IllegalStateException", buttonLabel = "Crash", crashes = true),
+    CrashReporter(SampleScreen.Crash, "Crash the app", "Throws an IllegalStateException", buttonLabel = "Crash", platforms = SamplePlatform.NotWeb, crashes = true),
 }
 
 sealed interface SampleFeatureStatus {
@@ -78,7 +95,10 @@ sealed interface ActionResult {
  * An action can return a String, it is displayed next to the duration.
  */
 object SampleFeatures {
-    var platformName: String = "this platform"
+    /** Set by the entry point of each platform. */
+    var platform: SamplePlatform? = null
+
+    val platformName: String get() = platform?.displayName ?: "this platform"
 
     val results = mutableStateMapOf<SampleFeature, ActionResult>()
 
@@ -126,6 +146,7 @@ object SampleFeatures {
         on(SampleFeature.Dashboard) {
             userFlow.update { it.copy(userName = "flo-${Random.nextInt(100)}") }
         }
+        on(SampleFeature.Accessibility) { Flocon.accessibilityPlugin.announce("Item added to the cart") }
         on(SampleFeature.FeatureFlags) { initializeFeatureFlags() }
         on(SampleFeature.Deeplink) {
             Flocon.deeplinksPlugin.register {

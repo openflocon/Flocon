@@ -15,7 +15,7 @@ class CountDatabaseQueryLogsUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) {
     operator fun invoke(
-        dbName: String,
+        dbId: String,
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>
     ): Flow<Int> {
@@ -24,7 +24,7 @@ class CountDatabaseQueryLogsUseCase(
                 return@flatMapLatest flowOf(0)
             } else {
                 databaseRepository.countQueryLogs(
-                    dbName = dbName,
+                    dbId = dbId,
                     showTransactions = showTransactions,
                     filters = filters,
                     deviceIdAndPackageName = current,

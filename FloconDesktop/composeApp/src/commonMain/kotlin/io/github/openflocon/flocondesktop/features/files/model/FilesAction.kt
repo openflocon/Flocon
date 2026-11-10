@@ -5,11 +5,18 @@ import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUi
 sealed interface FilesAction {
     data class FileClicked(val file: FileUiModel) : FilesAction
     data object NavigateUp : FilesAction
+
+    // breadcrumb: back to the list of the root folders
+    data object NavigateToRoot : FilesAction
+
+    // breadcrumb: back to the folder at this index of the back stack
+    data class NavigateToBackStackEntry(val index: Int) : FilesAction
     data class ContextualAction(
         val file: FileUiModel,
         val action: FileUiModel.ContextualAction.Action,
     ) : FilesAction
     data object Refresh : FilesAction
+    data class CopyPath(val path: String) : FilesAction
     data object DeleteContent : FilesAction
     data class FilterTextChanged(val value: String) : FilesAction
     data class ClickOnSort(
@@ -17,6 +24,7 @@ sealed interface FilesAction {
         val sortedBy: SortedByUiModel,
     ) : FilesAction
     data class UpdateWithFoldersSize(val value: Boolean) : FilesAction
+    data class ChangeViewMode(val viewMode: FilesViewModeUiModel) : FilesAction
     data object MultiSelect : FilesAction
     data object ClearMultiSelect : FilesAction
     data class SelectFile(

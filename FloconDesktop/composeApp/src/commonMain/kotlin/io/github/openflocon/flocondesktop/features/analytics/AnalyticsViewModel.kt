@@ -85,13 +85,14 @@ class AnalyticsViewModel(
         selectedItemId,
         observeCurrentDeviceIdAndPackageNameUseCase(),
     ).flatMapLatest { (id, device) ->
-        if (id == null)
+        if (id == null) {
             flowOf(null)
-        else
+        } else {
             observeAnalyticsByIdUseCase(id)
                 .map {
                     it?.mapToDetailUi(device)
                 }
+        }
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
             viewModelScope,

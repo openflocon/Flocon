@@ -1,17 +1,16 @@
 package io.github.openflocon.flocondesktop.features.network.list
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.common.combines
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.models.settings.NetworkSettings
@@ -19,50 +18,41 @@ import io.github.openflocon.domain.network.models.BadQualityConfigDomainModel
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.MockNetworkDomainModel
 import io.github.openflocon.domain.network.models.NetworkFilterDomainModel
-import io.github.openflocon.domain.network.models.NetworkFilterDomainModel.Filters
-import io.github.openflocon.domain.network.models.NetworkTextFilterColumns
+import io.github.openflocon.domain.network.models.NetworkSortDomainModel
 import io.github.openflocon.domain.network.usecase.ExportNetworkCallsToCsvUseCase
-import io.github.openflocon.domain.network.usecase.GenerateCurlCommandUseCase
-import io.github.openflocon.domain.network.usecase.GetNetworkCallAsMarkdownUseCase
 import io.github.openflocon.domain.network.usecase.GetNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.ImportNetworkCallsFromCsvUseCase
 import io.github.openflocon.domain.network.usecase.ObserveCurrentDeviceHasNetworkRequestsUseCase
-import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsByIdUseCase
 import io.github.openflocon.domain.network.usecase.ObserveNetworkRequestsUseCase
 import io.github.openflocon.domain.network.usecase.RemoveHttpRequestsBeforeUseCase
 import io.github.openflocon.domain.network.usecase.RemoveNetworkRequestUseCase
 import io.github.openflocon.domain.network.usecase.RemoveOldSessionsNetworkRequestUseCase
-import io.github.openflocon.domain.network.usecase.ReplayNetworkCallUseCase
 import io.github.openflocon.domain.network.usecase.ResetCurrentDeviceHttpRequestsUseCase
 import io.github.openflocon.domain.network.usecase.badquality.ObserveAllNetworkBadQualitiesUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkMocksUseCase
 import io.github.openflocon.domain.network.usecase.mocks.ObserveNetworkWebsocketIdsUseCase
+import io.github.openflocon.flocondesktop.common.utils.launchMainMolecule
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.ObserveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.core.data.settings.usecase.SaveNetworkSettingsUseCase
 import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.network.body.model.ContentUiState
-import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailDelegate
 import io.github.openflocon.flocondesktop.features.network.list.delegate.HeaderDelegate
-import io.github.openflocon.flocondesktop.features.network.list.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.network.list.mapper.toUi
+import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
-import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
+import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSettingsUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
-import io.github.openflocon.flocondesktop.features.network.list.model.TopBarUiState
-import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.filter.TextFilterStateUiModel
-import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
+import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -79,7 +69,6 @@ import kotlin.uuid.Uuid
 class NetworkViewModel(
     observeNetworkRequestsUseCase: ObserveNetworkRequestsUseCase,
     observeCurrentDeviceHasNetworkRequestsUseCase: ObserveCurrentDeviceHasNetworkRequestsUseCase,
-    private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val removeHttpRequestsBeforeUseCase: RemoveHttpRequestsBeforeUseCase,
     private val removeNetworkRequestUseCase: RemoveNetworkRequestUseCase,
     private val mocksUseCase: ObserveNetworkMocksUseCase,
@@ -88,9 +77,9 @@ class NetworkViewModel(
     private val headerDelegate: HeaderDelegate,
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val navigationState: MainFloconNavigationState,
-    private val detailDelegate: NetworkDetailDelegate,
     private val observeNetworkSettingsUseCase: ObserveNetworkSettingsUseCase,
     private val observeNetworkWebsocketIdsUseCase: ObserveNetworkWebsocketIdsUseCase,
+    private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
 ) : ViewModel(headerDelegate),
     KoinComponent {
 
@@ -98,18 +87,14 @@ class NetworkViewModel(
     private val importNetworkCallsFromCsvUseCase: ImportNetworkCallsFromCsvUseCase by inject()
     private val saveNetworkSettingsUseCase: SaveNetworkSettingsUseCase by inject()
     private val removeOldSessionsNetworkRequestUseCase: RemoveOldSessionsNetworkRequestUseCase by inject()
-    private val generateCurlCommandUseCase: GenerateCurlCommandUseCase by inject()
     private val resetCurrentDeviceHttpRequestsUseCase: ResetCurrentDeviceHttpRequestsUseCase by inject()
     private val getNetworkRequestsUseCase: GetNetworkRequestsUseCase by inject()
     private val feedbackDisplayer: FeedbackDisplayer by inject()
     private val exportNetworkCallsToCsv: ExportNetworkCallsToCsvUseCase by inject()
-    private val replayNetworkCallUseCase: ReplayNetworkCallUseCase by inject()
-    private val getNetworkCallAsMarkdownUseCase: GetNetworkCallAsMarkdownUseCase by inject()
 
     private val contentState = MutableStateFlow(
         ContentUiState(
             selectedRequestId = null,
-            badNetworkQualityDisplayed = false,
             websocketMocksDisplayed = false,
             selecting = false,
             multiSelectedIds = emptySet()
@@ -119,137 +104,93 @@ class NetworkViewModel(
     private val _filterText = mutableStateOf("")
     val filterText: State<String> = _filterText
 
-    private val defaultNetworkSettings = NetworkSettings(
-        displayOldSessions = true,
-        autoScroll = false,
-        invertList = false,
-        pinnedDetails = false
-    )
+    private val settings: StateFlow<NetworkSettingsUiModel> = observeNetworkSettingsUseCase()
+        .map { it.toUi() }
+        .stateInWhileSubscribed(defaultNetworkSettings.toUi())
 
-    private val settings: StateFlow<NetworkSettings> = observeNetworkSettingsUseCase()
-        .flowOn(dispatcherProvider.viewModel)
-        .stateInWhileSubscribed(defaultNetworkSettings)
+    val isPinned = settings.map { it.pinPanel }
+        .stateInWhileSubscribed(settings.value.pinPanel)
 
-    val isPinned = settings.map { it.pinnedDetails }
-        .stateInWhileSubscribed(settings.value.pinnedDetails)
+    private val mocks = mocksUseCase()
+        .map { it.any(MockNetworkDomainModel::isEnabled) }
+        .stateInWhileSubscribed(false)
 
-    private val filterUiState = combine(
-        mocksUseCase().map { it.any(MockNetworkDomainModel::isEnabled) }.distinctUntilChanged(),
-        badNetworkUseCase().map { it.any(BadQualityConfigDomainModel::isEnabled) }
-            .distinctUntilChanged(),
-        settings,
-        observeNetworkWebsocketIdsUseCase().map { it.isNotEmpty() },
-    ) { mockEnabled, badNetworkEnabled, settings, hasWebsockets ->
-        TopBarUiState(
-            hasBadNetwork = badNetworkEnabled,
-            hasMocks = mockEnabled,
-            displayOldSessions = settings.displayOldSessions,
-            hasWebsockets = hasWebsockets,
-        )
-    }
-        .stateInWhileSubscribed(
-            TopBarUiState(
-                hasBadNetwork = false,
-                hasMocks = false,
-                displayOldSessions = false,
-                hasWebsockets = false,
-            )
-        )
+    private val badNetwork = badNetworkUseCase()
+        .map { it.any(BadQualityConfigDomainModel::isEnabled) }
+        .stateInWhileSubscribed(false)
 
-    private val filter = combines(
-        snapshotFlow { _filterText.value }.map { it.takeIf { it.isNotBlank() } }
-            .distinctUntilChanged(),
-        headerDelegate.textFiltersState.map { it.toDomain() }.distinctUntilChanged(),
-        headerDelegate.allowedMethods().map { items -> methodsToDomain(items) }
-            .distinctUntilChanged(),
-        settings,
-    )
-        .map { (textFilters, filterOnAllColumns, methods, settings) ->
-            NetworkFilterDomainModel(
-                filterOnAllColumns = textFilters,
-                textsFilters = filterOnAllColumns,
-                methodFilter = methods,
-                displayOldSessions = settings.displayOldSessions,
-            )
-        }
-
-    private val sortAndFilter = combines(
-        headerDelegate.sorted.map { it?.toDomain() }.distinctUntilChanged(),
-        filter,
-    )
-        .distinctUntilChanged()
-
-    // true while the reset is running: the paging list can take a few seconds to reflect
-    // the delete, so we display an empty list immediately instead of waiting for Room
-    private val isClearing = MutableStateFlow(false)
+    private val hasWebsockets = observeNetworkWebsocketIdsUseCase()
+        .map { it.isNotEmpty() }
+        .stateInWhileSubscribed(false)
 
     // no call at all for the app, whatever the filters
-    val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasNetworkRequestsUseCase()
+    private val showEmptyState: StateFlow<Boolean> = observeCurrentDeviceHasNetworkRequestsUseCase()
         .map { hasRequests -> !hasRequests }
         .flowOn(dispatcherProvider.viewModel)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val items: Flow<PagingData<NetworkItemViewState>> =
-        combine(
-            observeCurrentDeviceIdAndPackageNameUseCase(),
-            isClearing,
-        ) { deviceIdAndPackageName, isClearing -> deviceIdAndPackageName to isClearing }
-            .distinctUntilChanged()
-            .flatMapLatest { (deviceIdAndPackageName, isClearing) ->
-                if (isClearing) return@flatMapLatest flowOf(PagingData.empty())
-                sortAndFilter.flatMapLatest { (sorted, filter) ->
-                    observeNetworkRequestsUseCase(
-                        sortedBy = sorted,
-                        filter = filter,
-                        deviceIdAndPackageName = deviceIdAndPackageName,
-                    ).map { networkCallPagingData ->
-                        networkCallPagingData.map {
-                            it.toUi(
-                                deviceIdAndPackageName = deviceIdAndPackageName
-                            )
-                        }
-                    }
-                }
-            }
-            .flowOn(dispatcherProvider.viewModel)
-            .cachedIn(viewModelScope)
+    val uiState = viewModelScope.launchMainMolecule {
+        val showEmptyState by showEmptyState.collectAsState()
+        val settings by settings.collectAsState()
+        val content by contentState.collectAsState()
+        val header by headerDelegate.headerState.collectAsState()
+        val mockEnabled by mocks.collectAsState()
+        val badNetworkEnabled by badNetwork.collectAsState()
+        val hasWebsockets by hasWebsockets.collectAsState()
 
-    private val detailState = combine(
-        detailDelegate.uiState,
-        contentState,
-        settings
-    ) { state, content, settings ->
-        state.takeIf { settings.pinnedDetails && content.selectedRequestId != null }
-    }
-        .stateInWhileSubscribed(null)
+        val filter = FilterUiState(
+            hasBadNetwork = badNetworkEnabled,
+            hasMocks = mockEnabled,
+            displayOldSessions = settings.displayOldSessions,
+            hasWebsockets = hasWebsockets
+        )
 
-    val uiState = combine(
-        contentState,
-        detailState,
-        filterUiState,
-        headerDelegate.headerUiState,
-        settings.map { it.toUi() },
-    ) { content, detail, filter, header, settings ->
         NetworkUiState(
+            showEmptyState = showEmptyState,
             contentState = content,
-            detailState = detail,
             filterState = filter,
             headerState = header,
             settings = settings,
         )
     }
-        .flowOn(dispatcherProvider.viewModel)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = NetworkUiState(
-                detailState = detailState.value,
-                contentState = contentState.value,
-                filterState = filterUiState.value,
-                headerState = headerDelegate.headerUiState.value,
-                settings = settings.value.toUi(),
-            ),
+
+    // true while the reset is running: the paging list can take a few seconds to reflect
+    // the delete, so we display an empty list immediately instead of waiting for Room
+    private val isClearing = MutableStateFlow(false)
+
+    private val deviceIdAndPackageName = observeCurrentDeviceIdAndPackageNameUseCase()
+        .stateInWhileSubscribed(null)
+
+    private val query = viewModelScope.launchMainMolecule {
+        val device by deviceIdAndPackageName.collectAsState()
+        val clearing by isClearing.collectAsState()
+        val header by headerDelegate.queryInputs.collectAsState()
+        val settings by settings.collectAsState()
+
+        buildNetworkListQuery(
+            deviceIdAndPackageName = device,
+            isClearing = clearing,
+            header = header,
+            filterText = filterText.value,
+            displayOldSessions = settings.displayOldSessions,
         )
+    }
+
+    val items: Flow<PagingData<NetworkItemViewState>> = query
+        .flatMapLatest { query ->
+            if (query.isClearing) return@flatMapLatest flowOf(PagingData.empty())
+            observeNetworkRequestsUseCase(
+                sortedBy = query.sort,
+                filter = query.filter,
+                deviceIdAndPackageName = query.deviceIdAndPackageName,
+            ).map { networkCallPagingData ->
+                networkCallPagingData.map {
+                    it.toUi(deviceIdAndPackageName = query.deviceIdAndPackageName)
+                }
+            }
+        }
+        .flowOn(dispatcherProvider.viewModel)
+        .cachedIn(viewModelScope)
 
     fun onAction(action: NetworkAction) {
         when (action) {
@@ -261,19 +202,9 @@ class NetworkViewModel(
 
             is NetworkAction.OpenMocks -> openMocks(callId = null)
 
-            is NetworkAction.CreateMock -> {
-                openMocks(callId = action.item.uuid)
-            }
-
             is NetworkAction.OpenBadNetworkQuality -> openBadNetworkQuality()
 
-            is NetworkAction.CloseBadNetworkQuality -> closeBadNetworkQuality()
-
-            is NetworkAction.CopyCUrl -> onCopyCUrl(action)
-
-            is NetworkAction.Replay -> onReplay(action)
-
-            is NetworkAction.CopyUrl -> onCopyUrl(action)
+            is NetworkAction.ItemOption -> onItemOption(action)
 
             is NetworkAction.Remove -> onRemove(action)
 
@@ -318,8 +249,6 @@ class NetworkViewModel(
 
             is NetworkAction.SetDefaultSelectedTab -> setDefaultSelectedTab(action)
 
-            is NetworkAction.DetailAction -> detailDelegate.onAction(action.action)
-
             is NetworkAction.SelectLine -> onSelectLine(action)
 
             NetworkAction.ClearMultiSelect -> onClearMultiSelect()
@@ -331,17 +260,12 @@ class NetworkViewModel(
             is NetworkAction.DoubleClicked -> onDoubleClicked(action)
 
             NetworkAction.OpenDeepSearch -> navigationState.navigate(NetworkRoutes.DeepSearch)
-
-            is NetworkAction.ShareAsMarkdown -> onShareAsMarkdown(action)
         }
     }
 
-    private fun onShareAsMarkdown(action: NetworkAction.ShareAsMarkdown) {
+    private fun onItemOption(action: NetworkAction.ItemOption) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            getNetworkCallAsMarkdownUseCase(action.item.uuid)?.let {
-                copyToClipboard(it)
-                feedbackDisplayer.displayMessage("Markdown copied to clipboard")
-            }
+            networkItemOptionsDelegate.onOption(callId = action.id, option = action.option)
         }
     }
 
@@ -382,8 +306,10 @@ class NetworkViewModel(
 
     private fun onPinned(action: NetworkAction.Pinned) {
         viewModelScope.launch {
+            val settings = observeNetworkSettingsUseCase().firstOrNull() ?: return@launch
+
             saveNetworkSettingsUseCase(
-                settings.value.copy(
+                settings.copy(
                     pinnedDetails = action.value
                 )
             )
@@ -398,8 +324,10 @@ class NetworkViewModel(
 
     private fun toggleAutoScroll(action: NetworkAction.ToggleAutoScroll) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val settings = observeNetworkSettingsUseCase().firstOrNull() ?: return@launch
+
             saveNetworkSettingsUseCase(
-                settings.value.copy(
+                settings.copy(
                     autoScroll = action.value
                 )
             )
@@ -408,8 +336,10 @@ class NetworkViewModel(
 
     private fun toggleDisplayOldSessions(action: NetworkAction.UpdateDisplayOldSessions) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val settings = observeNetworkSettingsUseCase().firstOrNull() ?: return@launch
+
             saveNetworkSettingsUseCase(
-                settings.value.copy(
+                settings.copy(
                     displayOldSessions = action.value
                 )
             )
@@ -418,8 +348,10 @@ class NetworkViewModel(
 
     private fun toggleInvertList(action: NetworkAction.InvertList) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val settings = observeNetworkSettingsUseCase().firstOrNull() ?: return@launch
+
             saveNetworkSettingsUseCase(
-                settings.value.copy(
+                settings.copy(
                     invertList = action.value
                 )
             )
@@ -428,8 +360,10 @@ class NetworkViewModel(
 
     private fun setDefaultSelectedTab(action: NetworkAction.SetDefaultSelectedTab) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
+            val settings = observeNetworkSettingsUseCase().firstOrNull() ?: return@launch
+
             saveNetworkSettingsUseCase(
-                settings.value.copy(
+                settings.copy(
                     defaultSelectedTab = action.tab
                 )
             )
@@ -451,30 +385,17 @@ class NetworkViewModel(
 
     private fun openWebsocketMocks() {
         contentState.update { state ->
-            state.copy(
-                websocketMocksDisplayed = true,
-            )
+            state.copy(websocketMocksDisplayed = true)
         }
     }
 
     private fun openBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(
-                badNetworkQualityDisplayed = true,
-            )
-        }
-    }
-
-    private fun closeBadNetworkQuality() {
-        contentState.update { state ->
-            state.copy(
-                badNetworkQualityDisplayed = false,
-            )
-        }
+        navigationState.navigate(NetworkRoutes.BadNetworkQuality)
     }
 
     private fun onClosePanel() {
         contentState.update { it.copy(selectedRequestId = null) }
+        navigationState.closePanel()
     }
 
     private fun onReset() {
@@ -492,29 +413,6 @@ class NetworkViewModel(
             } finally {
                 isClearing.value = false
             }
-        }
-    }
-
-    private fun onCopyCUrl(action: NetworkAction.CopyCUrl) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                ?: return@launch
-            val curl = generateCurlCommandUseCase(domainModel)
-            copyToClipboard(curl)
-        }
-    }
-
-    private fun onReplay(action: NetworkAction.Replay) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            replayNetworkCallUseCase(action.item.uuid)
-        }
-    }
-
-    private fun onCopyUrl(action: NetworkAction.CopyUrl) {
-        viewModelScope.launch(dispatcherProvider.viewModel) {
-            val domainModel = observeNetworkRequestsByIdUseCase(action.item.uuid).firstOrNull()
-                ?: return@launch
-            copyToClipboard(domainModel.request.url)
         }
     }
 
@@ -553,10 +451,10 @@ class NetworkViewModel(
 
     private fun onExportCsv() {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            val sortAndFilter = sortAndFilter.firstOrNull() ?: return@launch
+            val query = query.value
             val requestIds = getNetworkRequestsUseCase(
-                sortedBy = sortAndFilter.first,
-                filter = sortAndFilter.second,
+                sortedBy = query.sort,
+                filter = query.filter,
             )
                 .map(FloconNetworkCallDomainModel::callId)
             val ids = if (uiState.value.contentState.selecting) {
@@ -591,37 +489,38 @@ class NetworkViewModel(
             )
         )
     }
-}
 
-private fun Map<NetworkTextFilterColumns, TextFilterStateUiModel>.toDomain(): List<Filters> = buildList {
-    this@toDomain.forEach { (column, filter) ->
-        if (filter.isEnabled) {
-            val includedFilters = filter.includedFilters.mapNotNull {
-                it.toDomain()
-            }
-            val excludedFilters = filter.excludedFilters.mapNotNull {
-                it.toDomain()
-            }
-            if (includedFilters.isNotEmpty() || excludedFilters.isNotEmpty()) {
-                add(
-                    Filters(
-                        column = column,
-                        includedFilters = includedFilters,
-                        excludedFilters = excludedFilters,
-                    )
-                )
-            }
-        }
+    companion object {
+        private val defaultNetworkSettings = NetworkSettings(
+            displayOldSessions = true,
+            autoScroll = false,
+            invertList = false,
+            pinnedDetails = false
+        )
     }
 }
 
-private fun TextFilterStateUiModel.FilterItem.toDomain(): Filters.FilterItem? = if (isActive) {
-    Filters.FilterItem(
-        text = text,
-    )
-} else null
+internal data class NetworkListQuery(
+    val deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
+    val isClearing: Boolean,
+    val sort: NetworkSortDomainModel?,
+    val filter: NetworkFilterDomainModel,
+)
 
-private fun methodsToDomain(items: List<NetworkMethodUi>): List<String>? {
-    return items.map { it.text }.takeIf { it.isNotEmpty() }
-        ?.takeIf { it.size != NetworkMethodUi.all().size } // returns null if we accept all
-}
+internal fun buildNetworkListQuery(
+    deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?,
+    isClearing: Boolean,
+    header: HeaderDelegate.HeaderQuery,
+    filterText: String,
+    displayOldSessions: Boolean,
+) = NetworkListQuery(
+    deviceIdAndPackageName = deviceIdAndPackageName,
+    isClearing = isClearing,
+    sort = header.sort,
+    filter = NetworkFilterDomainModel(
+        filterOnAllColumns = filterText.takeIf(String::isNotBlank),
+        textsFilters = header.textFilters,
+        methodFilter = header.methods,
+        displayOldSessions = displayOldSessions,
+    ),
+)

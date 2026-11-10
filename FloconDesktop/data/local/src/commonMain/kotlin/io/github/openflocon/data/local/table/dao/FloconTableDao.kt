@@ -71,6 +71,29 @@ interface FloconTableDao {
     @Query(
         """
         SELECT * 
+        FROM TableEntity 
+        WHERE id = :tableId
+        LIMIT 1
+    """,
+    )
+    fun observeTableById(tableId: TableId): Flow<TableEntity?>
+
+    @Query(
+        """
+        SELECT TIE.* 
+        FROM TableItemEntity AS TIE
+        JOIN TableEntity AS TE ON TIE.tableId = TE.id
+        WHERE TIE.itemId = :itemId
+          AND TE.deviceId = :deviceId
+          AND TE.packageName = :packageName
+        LIMIT 1
+    """,
+    )
+    fun observeItem(deviceId: DeviceId, packageName: String, itemId: String): Flow<TableItemEntity?>
+
+    @Query(
+        """
+        SELECT * 
         FROM TableItemEntity 
         WHERE tableId = :tableId 
         ORDER BY createdAt ASC

@@ -37,7 +37,7 @@ With Flocon's Bad Network Simulation, you can configure:
 
 ## Supported Clients
 
-The Bad Network Simulation engine works automatically with any client using the Flocon interceptors, once the network plugin is installed (`install(FloconNetwork)`, module `flocon-network-core`):
+The Bad Network Simulation engine works automatically with any client using the Flocon network plugins:
 
 === "OkHttp (Android)"
     ```kotlin

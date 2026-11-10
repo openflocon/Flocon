@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.PushPin
@@ -40,12 +41,10 @@ import flocondesktop.composeapp.generated.resources.app_logo_content_description
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
 
-private val NavItemHorizontalPadding = 10.dp
 private val NavItemGap = 10.dp
-private val NavIconSize = 16.dp
 
 @Composable
-fun PanelView(
+fun SidePanel(
     icon: ImageVector,
     text: String,
     isSelected: Boolean,
@@ -59,7 +58,7 @@ fun PanelView(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val shape = FloconTheme.shapes.medium
+    val shape = FloconTheme.shapes.large
     val color by animateColorAsState(
         targetValue = when {
             isSelected -> FloconTheme.colors.accentSoft
@@ -81,8 +80,11 @@ fun PanelView(
     val lineAlpha by animateFloatAsState(
         if (isEnabled.not() && isSelected.not()) {
             0.3f
-        } else 1f
+        } else {
+            1f
+        }
     )
+
     Row(
         modifier = modifier
             .clip(shape)
@@ -90,20 +92,20 @@ fun PanelView(
             .graphicsLayer {
                 alpha = lineAlpha
             }
-            .clickable(onClick = onClick, interactionSource = interactionSource, indication = null)
-            // collapsed: the icon is centered in the 64dp rail
-            .padding(horizontal = if (expanded) NavItemHorizontalPadding else 0.dp),
-        horizontalArrangement = if (expanded) Arrangement.Start else Arrangement.Center,
+            .clickable(onClick = onClick, interactionSource = interactionSource, indication = null),
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = Modifier.size(NavIconSize),
+            modifier = Modifier
+                .size(PanelContentMinSize)
+                .padding(FloconTheme.spacing.medium),
             imageVector = icon,
             contentDescription = stringResource(Res.string.app_logo_content_description),
             tint = iconColor,
         )
         AnimatedVisibility(
-            expanded,
+            visible = expanded,
             enter = fadeIn(),
             exit = fadeOut(tween(100)),
         ) {
@@ -134,9 +136,9 @@ fun PanelView(
 
 @Composable
 @Preview
-private fun PannelViewPreview() {
+private fun PannelPreview() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,
@@ -151,7 +153,7 @@ private fun PannelViewPreview() {
 @Preview
 private fun PannelViewPreview_Selected() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = true,
@@ -166,7 +168,7 @@ private fun PannelViewPreview_Selected() {
 @Preview
 private fun PannelViewPreview_Disabled() {
     FloconTheme {
-        PanelView(
+        SidePanel(
             icon = Icons.Outlined.Settings,
             text = "text",
             isSelected = false,

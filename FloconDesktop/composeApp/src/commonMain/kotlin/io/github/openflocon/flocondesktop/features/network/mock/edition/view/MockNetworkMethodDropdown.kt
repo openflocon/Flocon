@@ -25,10 +25,10 @@ fun MockNetworkMethodDropdown(
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
-        MockNetworkLabelView(label)
+        MockNetworkLabel(label)
 
         Box {
-            MockNetworkMethodView(
+            MockNetworkMethod(
                 method = value,
                 onClick = {
                     expanded = true
@@ -39,7 +39,7 @@ fun MockNetworkMethodDropdown(
                 onDismissRequest = { expanded = false },
             ) {
                 MockNetworkMethodUi.entries.forEach { method ->
-                    MockNetworkMethodView(
+                    MockNetworkMethod(
                         modifier = Modifier.padding(all = FloconTheme.spacing.extraSmall),
                         method = method,
                         onClick = {

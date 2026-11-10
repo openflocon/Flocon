@@ -154,7 +154,7 @@ private fun VariableInputField(
 
 @Composable
 @Preview
-private fun DeeplinkVariablesPanelViewPreview() {
+private fun DeeplinkVariablesPanelPreview() {
     FloconTheme {
         Column(
             modifier = Modifier.background(FloconTheme.colors.bg100)

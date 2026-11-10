@@ -12,6 +12,7 @@ import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkHistoryUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.RemoveFromDeeplinkHistoryUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
@@ -35,6 +36,7 @@ class DeepLinkViewModel(
     private val feedbackDisplayer: FeedbackDisplayer,
     observeCurrentDeviceDeeplinkUseCase: ObserveCurrentDeviceDeeplinkUseCase,
     observeCurrentDeviceDeeplinkHistoryUseCase: ObserveCurrentDeviceDeeplinkHistoryUseCase,
+    observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
     private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
 ) : ViewModel() {
@@ -44,8 +46,9 @@ class DeepLinkViewModel(
     val state: StateFlow<DeeplinkScreenState> = combine(
         observeCurrentDeviceDeeplinkUseCase(),
         observeCurrentDeviceDeeplinkHistoryUseCase(),
-        variableValues.asStateFlow()
-    ) { deepLinks, history, variablesValues ->
+        variableValues.asStateFlow(),
+        observeCurrentDeviceCapabilitiesUseCase(),
+    ) { deepLinks, history, variablesValues, capabilities ->
         DeeplinkScreenState(
             deepLinks = mapToUi(
                 history = history,
@@ -77,7 +80,12 @@ class DeepLinkViewModel(
                     }
                 )
             }
-        ).let { it.copy(showEmptyState = it.deepLinks.isEmpty() && it.variables.isEmpty()) }
+        ).let {
+            it.copy(
+                showEmptyState = it.deepLinks.isEmpty() && it.variables.isEmpty(),
+                canSend = capabilities?.deeplinks ?: true,
+            )
+        }
     }
         .stateInWhileSubscribed(DeeplinkScreenState(emptyList(), emptyList()))
 

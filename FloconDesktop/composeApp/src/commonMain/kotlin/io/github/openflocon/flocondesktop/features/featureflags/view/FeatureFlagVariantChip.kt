@@ -71,7 +71,9 @@ internal fun FeatureFlagVariantChip(
             .then(
                 if (state == FeatureFlagStateUiModel.Off) {
                     Modifier.border(width = 1.dp, color = FloconTheme.colors.bg200, shape = FloconTheme.shapes.extraLarge)
-                } else Modifier
+                } else {
+                    Modifier
+                }
             )
             .padding(horizontal = 8.dp, vertical = 1.dp),
     )

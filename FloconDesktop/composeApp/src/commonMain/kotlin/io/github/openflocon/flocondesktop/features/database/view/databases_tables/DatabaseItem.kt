@@ -1,0 +1,235 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
+package io.github.openflocon.flocondesktop.features.database.view.databases_tables
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_see_all_queries
+import flocondesktop.composeapp.generated.resources.ic_db_chevron
+import flocondesktop.composeapp.generated.resources.ic_db_database
+import flocondesktop.composeapp.generated.resources.ic_db_eye
+import io.github.openflocon.domain.database.models.DeviceDataBaseId
+import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
+import io.github.openflocon.flocondesktop.features.database.model.DeviceDataBaseUiModel
+import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
+import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
+import io.github.openflocon.library.designsystem.components.WithTooltip
+import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun DatabaseItem(
+    state: DeviceDataBaseUiModel,
+    onSelect: (id: DeviceDataBaseId) -> Unit,
+    onTableDoubleClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
+    onTableColumnClicked: (TableUiModel.ColumnUiModel) -> Unit,
+    onDeleteContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    onInsertContentClicked: (databaseId: DeviceDataBaseId, TableUiModel) -> Unit,
+    onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
+    modifier: Modifier = Modifier,
+    isFiltering: Boolean = false,
+) {
+    // a database is "selected" by default as soon as the list arrives, but it is only opened by a click
+    var expanded by remember { mutableStateOf(false) }
+    LaunchedEffect(state.isSelected) {
+        if (!state.isSelected) expanded = false
+    }
+    val isExpanded = state.isSelected && (expanded || isFiltering)
+    // the tables are dropped as soon as another database is selected: keep the last ones so the collapse can be animated
+    var lastTables by remember { mutableStateOf(state.tables) }
+    LaunchedEffect(state.tables) {
+        if (state.tables != null) lastTables = state.tables
+    }
+    val displayedTables = state.tables ?: lastTables
+    val groupBackground by animateColorAsState(
+        if (isExpanded) {
+            FloconTheme.colors.ink.copy(alpha = 0.05f)
+        } else {
+            Color.Transparent
+        },
+    )
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(groupBackground),
+    ) {
+        DatabaseEntry(
+            modifier = Modifier.fillMaxWidth(),
+            isExpanded = isExpanded,
+            onClicked = {
+                onSelect(state.id)
+                expanded = if (state.isSelected) !expanded else true
+            },
+            state = state,
+            onDatabaseDoubleClicked = onDatabaseDoubleClicked,
+            onSeeAllQueriesClicked = onSeeAllQueriesClicked,
+        )
+        AnimatedVisibility(
+            visible = isExpanded && displayedTables != null,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            val tables = displayedTables ?: return@AnimatedVisibility
+            val guideColor = FloconTheme.colors.line
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize()
+                    .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall)
+                    .drawBehind {
+                        drawLine(
+                            color = guideColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 1.dp.toPx(),
+                        )
+                    }
+                    .padding(start = FloconTheme.spacing.small),
+            ) {
+                tables.fastForEach {
+                    TableEntry(
+                        item = it,
+                        modifier = Modifier.fillMaxWidth(),
+                        isFiltering = isFiltering,
+                        onTableDoubleClicked = {
+                            onTableDoubleClicked(state.id, it)
+                        },
+                        onTableColumnClicked = onTableColumnClicked,
+                        onDeleteContentClicked = {
+                            onDeleteContentClicked(state.id, it)
+                        },
+                        onInsertContentClicked = {
+                            onInsertContentClicked(state.id, it)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DatabaseEntry(
+    isExpanded: Boolean,
+    onClicked: () -> Unit,
+    state: DeviceDataBaseUiModel,
+    onDatabaseDoubleClicked: (DeviceDataBaseUiModel) -> Unit,
+    onSeeAllQueriesClicked: (DeviceDataBaseId, String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val textColor = FloconTheme.colors.ink
+    val iconColor = if (isExpanded) FloconTheme.colors.ink else FloconTheme.colors.inkMuted
+    val chevronRotation by animateFloatAsState(if (isExpanded) 90f else 0f)
+
+    ContextualMenu(
+        persistentListOf(
+            FloconContextMenuItem.Item(
+                label = stringResource(Res.string.database_see_all_queries),
+                onClick = {
+                    onSeeAllQueriesClicked(state.id, state.name)
+                }
+            )
+        )
+    ) {
+        Row(
+            modifier = modifier
+                .height(FloconTheme.sizes.rowHeight)
+                .clip(RoundedCornerShape(10.dp))
+                .combinedClickable(
+                    onClick = onClicked,
+                    onDoubleClick = {
+                        onDatabaseDoubleClicked(state)
+                    }
+                ).padding(horizontal = FloconTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                modifier = Modifier.size(14.dp).graphicsLayer {
+                    rotationZ = chevronRotation
+                },
+                painter = painterResource(Res.drawable.ic_db_chevron),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(FloconTheme.colors.inkMuted),
+            )
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
+            Image(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(Res.drawable.ic_db_database),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(iconColor),
+            )
+            Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
+            WithTooltip(
+                tooltip = state.name,
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    state.name,
+                    color = textColor,
+                    style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            WithTooltip("See logs") {
+                Box(
+                    modifier = Modifier.width(20.dp)
+                        .clickable(onClick = {
+                            onSeeAllQueriesClicked(state.id, state.name)
+                        })
+                ) {
+                    Image(
+                        modifier = Modifier.width(16.dp),
+                        painter = painterResource(Res.drawable.ic_db_eye),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(iconColor),
+                    )
+                }
+            }
+        }
+    }
+}

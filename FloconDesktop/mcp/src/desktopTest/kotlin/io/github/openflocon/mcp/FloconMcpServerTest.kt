@@ -81,6 +81,13 @@ class FloconMcpServerTest {
     }
 
     @Test
+    fun `server info exposes the Flocon icon`() {
+        val icon = client.serverVersion?.icons?.singleOrNull()
+        assertEquals("image/png", icon?.mimeType)
+        assertTrue(icon?.src.orEmpty().startsWith("data:image/png;base64,"))
+    }
+
+    @Test
     fun `exposes the read only tools`() = runBlocking {
         val tools = client.listTools().tools
 
@@ -97,6 +104,7 @@ class FloconMcpServerTest {
 
         val device = result["devices"]!!.jsonArray.single().jsonObject
         assertEquals("pixel", device["deviceId"]!!.jsonPrimitive.content)
+        assertEquals("default", device["connectionType"]!!.jsonPrimitive.content)
         assertEquals("io.flocon.sample", device["apps"]!!.jsonArray.single().jsonObject["packageName"]!!.jsonPrimitive.content)
     }
 

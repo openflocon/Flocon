@@ -7,5 +7,6 @@ import org.koin.dsl.module
 
 internal val sharedPreferencesModule = module {
     viewModelOf(::SharedPreferencesViewModel)
+    viewModelOf(::SharedPreferenceEditViewModel)
     factoryOf(::SharedPrefSelectorDelegate)
 }

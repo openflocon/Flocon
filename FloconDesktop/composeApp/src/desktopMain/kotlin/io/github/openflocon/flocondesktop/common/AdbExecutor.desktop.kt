@@ -72,8 +72,9 @@ actual fun localExecuteAdbCommand(
             }.let {
                 it.forEach {
                     // return a failure if there's on in the list
-                    if (it is Failure)
+                    if (it is Failure) {
                         return it
+                    }
                 }
                 return it.firstOrNull() ?: Success("")
             }
@@ -89,8 +90,9 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
     }.let {
         it.forEach {
             // return a failure if there's on in the list
-            if (it is Failure)
+            if (it is Failure) {
                 return it
+            }
         }
         return it.firstOrNull() ?: Success("")
     }
@@ -100,8 +102,9 @@ actual fun askSerialToAllDevices(adbPath: String, command: String, serialVariabl
 
 private fun singleDeviceExecuteSystemCommand(adbPath: String, command: String): Either<Throwable, String> = try {
     val process = Runtime.getRuntime().exec("$adbPath $command")
-    if (command.contains("reverse").not())
+    if (command.contains("reverse").not()) {
         Logger.d("Executing command: $adbPath $command")
+    }
 
     val output = process.inputStream.bufferedReader().use { it.readText() }
     val error = process.errorStream.bufferedReader().use { it.readText() }

@@ -6,7 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,7 +22,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.timeline_network_request
+import flocondesktop.composeapp.generated.resources.timeline_network_response
+import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.library.designsystem.FloconTheme
+import org.jetbrains.compose.resources.stringResource
 
 // the mono style of the data: times, http codes, methods, paths
 @Composable
@@ -75,6 +85,25 @@ internal fun StatusPill(
             maxLines = 1,
         )
     }
+}
+
+// the direction of a network call line: the request goes to the server, the response comes back
+@Composable
+internal fun PhaseArrow(
+    phase: TimelinePhase,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FloconTheme.colors
+    val (image, color, description) = when (phase) {
+        TimelinePhase.Request -> Triple(Icons.AutoMirrored.Outlined.ArrowForward, colors.catNetwork, Res.string.timeline_network_request)
+        TimelinePhase.Response -> Triple(Icons.AutoMirrored.Outlined.ArrowBack, colors.statusSuccess, Res.string.timeline_network_response)
+    }
+    Icon(
+        imageVector = image,
+        contentDescription = stringResource(description),
+        tint = color,
+        modifier = modifier.size(16.dp),
+    )
 }
 
 // a small neutral label, ex: the provider of an analytics event

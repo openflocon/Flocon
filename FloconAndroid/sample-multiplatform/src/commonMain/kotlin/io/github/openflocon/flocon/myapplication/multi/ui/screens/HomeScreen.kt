@@ -23,6 +23,8 @@ import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.components.CategoryIcon
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Card
+import io.github.openflocon.flocon.myapplication.multi.ui.components.PlatformChips
+import io.github.openflocon.flocon.myapplication.multi.ui.components.PlatformSummary
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Pill
 import io.github.openflocon.flocon.myapplication.multi.ui.components.SectionLabel
 import io.github.openflocon.flocon.myapplication.multi.ui.theme.SampleIcons
@@ -38,7 +40,7 @@ private val mainScreens = listOf(
 private val otherScreens = SampleScreen.entries - mainScreens.toSet()
 
 @Composable
-fun HomeScreen(onOpen: (SampleScreen) -> Unit) {
+fun HomeScreen(onOpen: (SampleScreen) -> Unit, onOpenConnection: () -> Unit) {
     val colors = SampleTheme.colors
     Column(
         modifier = Modifier
@@ -59,7 +61,13 @@ fun HomeScreen(onOpen: (SampleScreen) -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = colors.inkMuted,
                 )
-                Pill(text = SampleFeatures.platformName, color = colors.accent)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ConnectionChip(onClick = onOpenConnection)
+                    Pill(text = SampleFeatures.platformName, color = colors.accent)
+                }
             }
             Text(
                 "Try every plugin,\none screen each",
@@ -71,6 +79,11 @@ fun HomeScreen(onOpen: (SampleScreen) -> Unit) {
                 "Trigger an action here, find it in Flocon Desktop.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.inkMuted,
+            )
+            Text(
+                "✓ available on a platform, ✕ not available. The outlined chip is the one you are running on.",
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.inkFaint,
             )
         }
 
@@ -114,6 +127,7 @@ private fun PluginTile(screen: SampleScreen, onClick: () -> Unit, modifier: Modi
                 )
                 Text(screen.subtitle, style = MaterialTheme.typography.bodySmall, color = colors.inkMuted)
             }
+            PlatformSummary(screen.platforms, SampleFeatures.platform)
         }
     }
 }
@@ -138,6 +152,7 @@ private fun PluginRow(screen: SampleScreen, onClick: () -> Unit) {
                 color = colors.ink,
             )
             Text(screen.subtitle, style = MaterialTheme.typography.bodySmall, color = colors.inkMuted)
+            PlatformChips(screen.platforms, SampleFeatures.platform, Modifier.padding(top = 6.dp))
         }
         Icon(SampleIcons.Chevron, contentDescription = null, tint = colors.inkFaint, modifier = Modifier.size(18.dp))
     }

@@ -5,4 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 class BonjourDataModel(
     val plugins: List<String>? = null,
+    val connectionType: String,
 )

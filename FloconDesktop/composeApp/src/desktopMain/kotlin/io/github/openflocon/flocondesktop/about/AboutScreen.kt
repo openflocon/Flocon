@@ -12,6 +12,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onFirstVisible
@@ -57,7 +60,7 @@ internal fun AboutScreen(
         state = windowState,
         resizable = false
     ) {
-        FloconSurface {
+        FloconSurface(color = FloconTheme.colors.islandSidebar) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
@@ -82,9 +85,11 @@ internal fun AboutScreen(
                     onClick = {
                         openInBrowser(URI.create("https://github.com/openflocon/Flocon"))
                     },
+                    containerColor = FloconTheme.colors.ink,
                 ) {
                     Text(
-                        text = "GitHub"
+                        text = "GitHub",
+                        color = FloconTheme.colors.bg000,
                     )
                 }
                 FlowRow(
@@ -99,7 +104,7 @@ internal fun AboutScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     contributors.fastForEach {
-                        ContributorView(it)
+                        ContributorItem(it)
                     }
                 }
             }

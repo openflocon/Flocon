@@ -30,7 +30,8 @@ import kotlinx.collections.immutable.ImmutableSet
 fun SaveFavoriteDialog(
     favoritesTitles: ImmutableSet<String>,
     onDismiss: () -> Unit,
-    onSave: (queryName: String) -> Unit
+    onSave: (queryName: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var favoriteName by remember { mutableStateOf("") }
 
@@ -38,8 +39,9 @@ fun SaveFavoriteDialog(
 
     FloconDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier,
     ) {
-        Column(modifier = Modifier) {
+        Column {
             Text(
                 "Save as favorite",
                 modifier = Modifier.fillMaxWidth().background(FloconTheme.colors.floating)

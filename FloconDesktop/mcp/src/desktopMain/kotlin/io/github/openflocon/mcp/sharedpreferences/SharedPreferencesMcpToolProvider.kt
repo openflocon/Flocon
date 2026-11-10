@@ -29,7 +29,7 @@ internal class SharedPreferencesMcpToolProvider(
             name = "list_shared_preferences",
             title = "List shared preferences",
             description = "Lists the SharedPreferences files (Android) / UserDefaults suites (iOS) of the mobile app, with their id " +
-                "(to give to get_shared_preference_values).",
+                "(to give to get_shared_preference_values) and their storage type (SharedPreferences, DataStore, UserDefaults, Keychain...).",
             annotations = readOnlyToolAnnotations,
             handler = ::listSharedPreferences,
         )
@@ -56,7 +56,7 @@ internal class SharedPreferencesMcpToolProvider(
         return SharedPreferencesMcpResult(
             deviceId = target.deviceId,
             packageName = target.packageName,
-            sharedPreferences = preferences.map { SharedPreferenceMcpModel(sharedPreferenceId = it.id, name = it.name) },
+            sharedPreferences = preferences.map { SharedPreferenceMcpModel(sharedPreferenceId = it.id, name = it.name, type = it.type) },
         )
     }
 

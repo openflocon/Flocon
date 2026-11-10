@@ -35,6 +35,7 @@ internal class DevicesMcpToolProvider(
                     deviceId = device.deviceId,
                     name = device.deviceName,
                     platform = device.platform,
+                    connectionType = device.connectionType.name.lowercase(),
                     isSelectedInFlocon = device.deviceId == currentDeviceId,
                     apps = devicesRepository.observeDeviceApps(device.deviceId).first().map { app ->
                         DeviceAppMcpModel(

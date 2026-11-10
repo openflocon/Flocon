@@ -59,6 +59,8 @@ internal data class ListDatabaseQueryLogsInput(
     val includeTransactions: Boolean = false,
     @McpDescription("Include queries from previous app launches. Default false.")
     val includeOldSessions: Boolean = false,
+    @McpDescription("Only the queries of this transaction, the transactionId of a previous result. BEGIN / COMMIT are included when includeTransactions is true.")
+    val transactionId: String? = null,
     @McpDescription("Maximum number of queries returned, from 1 to $MAX_LOGS_LIMIT. Default $DEFAULT_LOGS_LIMIT.")
     val limit: Int = DEFAULT_LOGS_LIMIT,
     @McpDescription(DEVICE_ID_DESCRIPTION)

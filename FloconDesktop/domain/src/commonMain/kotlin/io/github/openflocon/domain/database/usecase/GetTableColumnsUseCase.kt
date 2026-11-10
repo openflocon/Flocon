@@ -46,7 +46,9 @@ class GetTableColumnsUseCase(
                     nullable = notnull == "0",
                     primaryKey = primaryKey == "1",
                 )
-            } else null
+            } else {
+                null
+            }
         }
     } ?: emptyList()
 }

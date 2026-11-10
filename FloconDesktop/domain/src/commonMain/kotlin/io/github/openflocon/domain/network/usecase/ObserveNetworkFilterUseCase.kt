@@ -14,7 +14,10 @@ class ObserveNetworkFilterUseCase(
     private val networkFilterRepository: NetworkFilterRepository,
 ) {
     operator fun invoke(): Flow<Map<NetworkTextFilterColumns, TextFilterStateDomainModel>> = observeCurrentDeviceIdAndPackageNameUseCase().flatMapLatest { current ->
-        if (current == null) flowOf(emptyMap())
-        else networkFilterRepository.observe(deviceAndApp = current)
+        if (current == null) {
+            flowOf(emptyMap())
+        } else {
+            networkFilterRepository.observe(deviceAndApp = current)
+        }
     }.distinctUntilChanged()
 }

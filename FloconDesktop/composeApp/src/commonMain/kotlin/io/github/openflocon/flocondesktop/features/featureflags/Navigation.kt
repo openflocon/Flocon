@@ -5,7 +5,7 @@ import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
-import io.github.openflocon.flocondesktop.features.featureflags.view.FeatureFlagDetailView
+import io.github.openflocon.flocondesktop.features.featureflags.view.FeatureFlagDetail
 import io.github.openflocon.flocondesktop.features.featureflags.view.FeatureFlagsScreen
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelRoute
@@ -39,7 +39,7 @@ fun EntryProviderScope<FloconRoute>.featureFlagsRoutes() {
             keepMenu()
         }
     ) {
-        FeatureFlagDetailView(
+        FeatureFlagDetail(
             provider = it.provider,
             name = it.name,
         )

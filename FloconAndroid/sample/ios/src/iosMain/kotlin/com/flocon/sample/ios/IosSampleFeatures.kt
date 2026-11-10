@@ -4,10 +4,13 @@ package com.flocon.sample.ios
 
 import io.github.openflocon.flocon.myapplication.multi.database.DogDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.FoodDatabase
+import io.github.openflocon.flocon.myapplication.multi.database.insertSampleDog
 import io.github.openflocon.flocon.myapplication.multi.database.newFood
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
 import io.github.openflocon.flocon.myapplication.multi.database.model.DogEntity
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
+import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSString
@@ -17,8 +20,8 @@ import platform.Foundation.create
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 
-fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
-    SampleFeatures.platformName = "iOS"
+fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase, sqlDelightDatabase: SqlDelightDatabase) {
+    SampleFeatures.platform = SamplePlatform.Ios
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
         val now = (NSDate().timeIntervalSince1970 * 1000).toLong()
@@ -31,6 +34,9 @@ fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDataba
                 pictureUrl = "https://picsum.photos/501/500.jpg",
             )
         )
+    }
+    SampleFeatures.on(SampleFeature.DatabaseSqlDelight) {
+        sqlDelightDatabase.insertSampleDog()
     }
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         foodDatabase.foodDao().insertFood(newFood())
@@ -52,5 +58,9 @@ fun registerIosSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDataba
     SampleFeatures.unavailable(SampleFeature.Grpc, "The gRPC interceptor is Android only")
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 is only set up on Android in this sample (the Flocon Room 2 module also supports JVM and iOS)")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom2, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom2, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not set up in the iOS sample")
 }

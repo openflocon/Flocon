@@ -26,11 +26,14 @@ internal fun TimelineSource.category(): EventCategory = when (this) {
     TimelineSource.Network -> EventCategory.Network
     TimelineSource.Database -> EventCategory.Database
     TimelineSource.Analytics -> EventCategory.Analytics
+    TimelineSource.Accessibility -> EventCategory.Accessibility
+    TimelineSource.WebView -> EventCategory.WebView
     TimelineSource.Crash -> EventCategory.Crash
     TimelineSource.Table -> EventCategory.Table
     TimelineSource.Deeplink -> EventCategory.Deeplink
     TimelineSource.Adb -> EventCategory.Adb
     TimelineSource.AppStart -> EventCategory.AppStart
+    TimelineSource.Log -> EventCategory.Log
 }
 
 // the color of the category and its soft background

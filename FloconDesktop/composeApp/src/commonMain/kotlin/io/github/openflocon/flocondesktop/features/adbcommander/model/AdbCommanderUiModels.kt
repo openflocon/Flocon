@@ -14,6 +14,7 @@ data class AdbCommanderUiState(
     val history: ImmutableList<HistoryEntryUiModel> = persistentListOf(),
     val flowExecution: FlowExecutionUiModel? = null,
     val isExecuting: Boolean = false,
+    val adbAvailable: Boolean = true,
     val showFlowEditor: Boolean = false,
     val flowEditorState: FlowEditorState = FlowEditorState(),
 )
@@ -48,6 +49,21 @@ data class HistoryEntryUiModel(
     val output: String,
     val isSuccess: Boolean,
     val executedAt: String,
+)
+
+@Immutable
+data class AdbCommandPanelUiModel(
+    val command: String,
+    val output: String,
+    val isSuccess: Boolean,
+    val executedAt: String,
+)
+
+fun previewAdbCommandPanelUiModel(isSuccess: Boolean = true) = AdbCommandPanelUiModel(
+    command = "shell getprop ro.build.version.sdk",
+    output = "34",
+    isSuccess = isSuccess,
+    executedAt = "2023-01-01 00:00:00",
 )
 
 @Immutable

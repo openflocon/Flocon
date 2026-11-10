@@ -29,6 +29,8 @@ jobs:
             platform: macos-arm64
           - os: ubuntu-latest
             platform: linux-x64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
           - os: windows-latest
             platform: windows-x64
 
@@ -46,7 +48,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Install rpmbuild (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y rpm
 
       - name: Build with Gradle
@@ -67,10 +69,10 @@ jobs:
           elif [ "${{ matrix.platform }}" = "macos-x64" ]; then
             mv FloconDesktop/composeApp/build/compose/binaries/main/dmg/*.dmg dist/Flocon-macos-x64.dmg
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-macos-x64.jar
-          elif [ "${{ matrix.platform }}" = "linux-x64" ]; then
-            mv FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb dist/
-            mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/
-            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-linux-x64.jar
+          elif [ "${{ matrix.platform }}" = "linux-x64" ] || [ "${{ matrix.platform }}" = "linux-arm64" ]; then
+            mv FloconDesktop/composeApp/build/compose/binaries/main/deb/*.deb dist/Flocon-${{ matrix.platform }}.deb
+            mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/Flocon-${{ matrix.platform }}.rpm
+            mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-${{ matrix.platform }}.jar
           elif [ "${{ matrix.platform }}" = "windows-x64" ]; then
             mv FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi dist/
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-windows-x64.jar
@@ -108,3 +110,101 @@ jobs:
           files: release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  homebrew:
+    name: Update Homebrew tap
+    needs: release
+    if: ${{ !inputs.draft }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check prerequisites
+        id: check
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          if [ -z "$TAP_TOKEN" ]; then
+            echo "::warning::HOMEBREW_TAP_TOKEN is not set, skipping the Homebrew tap update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          elif ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::warning::'$VERSION' is not a release version (X.Y.Z), skipping the Homebrew tap update."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout cask template
+        if: steps.check.outputs.run == 'true'
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/homebrew
+          path: flocon
+
+      - name: Checkout Homebrew tap
+        if: steps.check.outputs.run == 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: openflocon/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Download macOS artifacts
+        if: steps.check.outputs.run == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-macos-*
+          path: macos-assets
+          merge-multiple: true
+
+      - name: Generate cask
+        if: steps.check.outputs.run == 'true'
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          SHA_ARM64=$(sha256sum macos-assets/Flocon-macos-arm64.dmg | cut -d' ' -f1)
+          SHA_X64=$(sha256sum macos-assets/Flocon-macos-x64.dmg | cut -d' ' -f1)
+          mkdir -p tap/Casks
+          sed -e "s/__VERSION__/$VERSION/" \
+              -e "s/__SHA256_ARM64__/$SHA_ARM64/" \
+              -e "s/__SHA256_X64__/$SHA_X64/" \
+              flocon/.github/homebrew/flocon.rb.template > tap/Casks/flocon.rb
+          cat tap/Casks/flocon.rb
+
+      - name: Download Linux artifacts
+        if: steps.check.outputs.run == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-linux-*
+          path: linux-assets
+          merge-multiple: true
+
+      - name: Generate Linux formula
+        if: steps.check.outputs.run == 'true'
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          SHA_LINUX_ARM64=$(sha256sum linux-assets/Flocon-linux-arm64.jar | cut -d' ' -f1)
+          SHA_LINUX_X64=$(sha256sum linux-assets/Flocon-linux-x64.jar | cut -d' ' -f1)
+          mkdir -p tap/Formula
+          sed -e "s/__VERSION__/$VERSION/g" \
+              -e "s/__SHA256_LINUX_ARM64__/$SHA_LINUX_ARM64/" \
+              -e "s/__SHA256_LINUX_X64__/$SHA_LINUX_X64/" \
+              flocon/.github/homebrew/flocon-linux.rb.template > tap/Formula/flocon.rb
+          cat tap/Formula/flocon.rb
+
+      - name: Push to tap
+        if: steps.check.outputs.run == 'true'
+        working-directory: tap
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/flocon.rb Formula/flocon.rb
+          if git diff --cached --quiet; then
+            echo "Cask and formula already up to date."
+            exit 0
+          fi
+          git commit -m "flocon $VERSION"
+          git push

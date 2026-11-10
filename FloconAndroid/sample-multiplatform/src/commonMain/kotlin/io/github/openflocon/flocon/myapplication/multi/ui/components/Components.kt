@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocon.myapplication.multi.ui.ActionResult
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeature
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatureStatus
+import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleFeatures
 import io.github.openflocon.flocon.myapplication.multi.ui.theme.SampleCategory
 import io.github.openflocon.flocon.myapplication.multi.ui.theme.SampleIcons
@@ -52,6 +53,7 @@ fun ScreenScaffold(
     icon: ImageVector,
     onBack: () -> Unit,
     scrollable: Boolean = true,
+    platforms: Set<SamplePlatform>? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = SampleTheme.colors
@@ -77,6 +79,13 @@ fun ScreenScaffold(
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = colors.inkMuted)
             }
             CategoryIcon(icon = icon, category = category, size = 44.dp)
+        }
+        if (platforms != null) {
+            PlatformChips(
+                supported = platforms,
+                current = SampleFeatures.platform,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
+            )
         }
         val body = if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier
         Column(
@@ -232,6 +241,13 @@ fun ActionRow(feature: SampleFeature) {
                         )
                     }
                 }
+            }
+            if (feature.platforms != SamplePlatform.All) {
+                PlatformChips(
+                    supported = feature.platforms,
+                    current = SampleFeatures.platform,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
         }
         AccentButton(
