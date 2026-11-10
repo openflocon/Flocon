@@ -116,6 +116,8 @@ internal class FloconDatabasePluginImpl(
     }
 
     override fun logQuery(dbId: String, sqlQuery: String, bindArgs: List<Any?>) {
+        // taken here, not in the coroutine: the launch can run (much) later than the query
+        val timestamp = currentTimeMillis()
         scope.launch {
             try {
                 sender.send(
@@ -126,7 +128,7 @@ internal class FloconDatabasePluginImpl(
                             dbId = dbId,
                             sqlQuery = sqlQuery,
                             bindArgs = bindArgs.map { it.toString() },
-                            timestamp = currentTimeMillis()
+                            timestamp = timestamp
                         )
                     )
                 )
