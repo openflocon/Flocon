@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -57,11 +55,9 @@ import java.io.File
 import kotlin.io.encoding.Base64
 import org.jetbrains.skia.Image as SkiaImage
 
-private val PhoneWidth = 62.dp
-private val PhoneHeight = 112.dp
-private val PhoneBezel = 3.dp
+private val ScreenshotHeight = 112.dp
+private val ScreenshotWidthEstimate = 62.dp
 private val DashLength = 6.dp
-private val TailWidth = 40.dp
 private val AppIconSize = 20.dp
 
 /**
@@ -112,7 +108,7 @@ internal fun ScreenshotMarkerRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            DashedLine(modifier = Modifier.width(TailWidth))
+            DashedLine(modifier = Modifier.weight(1f))
         }
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -121,7 +117,7 @@ internal fun ScreenshotMarkerRow(
             // the time column and the free space where the bar of the covered events goes, like in the other rows
             Spacer(Modifier.width(FloconTheme.sizes.timeColumn))
             Spacer(Modifier.width(railGutter()))
-            PhoneFrame(item = item, hovered = hovered, modifier = Modifier.padding(start = spacing.medium))
+            ScreenshotImage(item = item, modifier = Modifier.padding(start = spacing.medium))
             if (screenName != null || context != null) {
                 ScreenshotContext(
                     screenName = screenName,
@@ -138,7 +134,7 @@ internal fun ScreenshotMarkerRow(
         val thumbnailEnd = with(density) {
             (
                 FloconTheme.spacing.compact + FloconTheme.sizes.timeColumn + railGutter() + FloconTheme.spacing.small * 2 +
-                    FloconTheme.spacing.medium * 2 + PhoneWidth
+                    FloconTheme.spacing.medium * 2 + ScreenshotWidthEstimate
                 ).roundToPx()
         }
         Popup(popupPositionProvider = remember(thumbnailEnd) { SideOfRowPositionProvider(thumbnailEnd) }) {
@@ -238,31 +234,21 @@ private fun AppIcon(
     }
 }
 
-// the screenshot like on a phone: a dark bezel, and a shadow to lift it from the list
+// the screenshot with rounded corners, at its own ratio: the height is fixed, the width follows the image.
+// A file that is gone (cap, temporary folder cleaned) loads nothing: nothing is drawn
 @Composable
-private fun PhoneFrame(
+private fun ScreenshotImage(
     item: TimelineItemUiModel.Screenshot,
-    hovered: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val colors = FloconTheme.colors
-    val shape = FloconTheme.shapes.large
-    // a file that is gone (cap, temporary folder cleaned) loads nothing: the frame stays empty
-    Box(
+    AsyncImage(
+        model = File(item.filePath),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
         modifier = modifier
-            .size(width = PhoneWidth, height = PhoneHeight)
-            .shadow(elevation = 8.dp, shape = shape)
-            .clip(shape)
-            .border(PhoneBezel, colors.bg300, shape)
-            .border(1.dp, if (hovered) colors.accent else colors.line, shape),
-    ) {
-        AsyncImage(
-            model = File(item.filePath),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(width = PhoneWidth, height = PhoneHeight).padding(PhoneBezel).clip(shape),
-        )
-    }
+            .height(ScreenshotHeight)
+            .clip(FloconTheme.shapes.large),
+    )
 }
 
 @Composable
