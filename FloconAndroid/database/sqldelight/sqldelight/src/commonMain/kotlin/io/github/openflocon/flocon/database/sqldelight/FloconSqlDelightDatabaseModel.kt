@@ -1,5 +1,6 @@
 package io.github.openflocon.flocon.database.sqldelight
 
+import app.cash.sqldelight.TransacterImpl
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor
 import app.cash.sqldelight.db.SqlDriver
@@ -106,28 +107,42 @@ private suspend fun SqlDriver.select(query: String): DatabaseExecuteSqlResponse 
 private suspend fun SqlDriver.columnNames(select: String): List<String>? {
     if (firstWord(select).uppercase() !in listOf("SELECT", "WITH")) return null
     val view = "flocon_columns_${Random.nextLong().toULong()}"
-    return try {
-        run("CREATE TEMP VIEW $view AS $select")
-        try {
-            executeQuery(
-                identifier = null,
-                sql = "PRAGMA table_info($view)",
-                mapper = { cursor ->
-                    val names = mutableListOf<String>()
-                    while (cursor.next().value) names += cursor.getString(1).orEmpty()
-                    QueryResult.Value(names)
-                },
-                parameters = 0,
-            ).await()
-        } finally {
-            run("DROP VIEW IF EXISTS $view")
+    // a temporary view only exists on its own connection, and a driver can have a pool: a transaction (rolled back,
+    // so no view is left) keeps the statements on one connection. Sync drivers only, the async ones have one connection.
+    val names = try {
+        object : TransacterImpl(this) {}.transactionWithResult {
+            execute(null, "CREATE TEMP VIEW $view AS $select", 0, null).value
+            rollback(tableInfoNames(view).value)
         }
     } catch (e: CancellationException) {
         throw e
     } catch (_: Throwable) {
-        null
+        try {
+            run("CREATE TEMP VIEW $view AS $select")
+            try {
+                tableInfoNames(view).await()
+            } finally {
+                run("DROP VIEW IF EXISTS $view")
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            null
+        }
     }
+    return names?.takeUnless { it.isEmpty() }
 }
+
+private fun SqlDriver.tableInfoNames(view: String): QueryResult<List<String>> = executeQuery(
+    identifier = null,
+    sql = "PRAGMA table_info($view)",
+    mapper = { cursor ->
+        val names = mutableListOf<String>()
+        while (cursor.next().value) names += cursor.getString(1).orEmpty()
+        QueryResult.Value(names)
+    },
+    parameters = 0,
+)
 
 // the drivers throw when the index is past the last column
 private fun SqlCursor.probeColumnCount(): Int {

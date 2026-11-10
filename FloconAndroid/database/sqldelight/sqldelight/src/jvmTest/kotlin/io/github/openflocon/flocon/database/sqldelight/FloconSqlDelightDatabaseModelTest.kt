@@ -89,4 +89,23 @@ class FloconSqlDelightDatabaseModelTest {
         assertIs<DatabaseExecuteSqlResponse.Error>(result)
         assertEquals("SELEC nope", result.originalSql)
     }
+
+    @Test
+    fun `select returns the column names on a file database with several connections`() {
+        val file = kotlin.io.path.createTempFile("flocon", ".db").toFile().also { it.deleteOnExit() }
+        val fileDriver = JdbcSqliteDriver("jdbc:sqlite:${file.absolutePath}")
+        val fileModel = FloconSqlDelightDatabaseModel("file", "File", fileDriver)
+        fun run(sql: String) = runBlocking { fileModel.executeQuery(sql) }
+        run("CREATE TABLE dog (id INTEGER PRIMARY KEY, name TEXT)")
+        run("INSERT INTO dog (name) VALUES ('Rex')")
+        // the driver keeps a pool of connections, used by the threads that ran a statement
+        (1..4).map { i -> Thread { run("INSERT INTO dog (name) VALUES ('dog$i')") }.also { it.start() } }.forEach { it.join() }
+
+        repeat(6) {
+            val result = run("SELECT id, name FROM dog ORDER BY id")
+            assertIs<DatabaseExecuteSqlResponse.Select>(result)
+            assertEquals(listOf("id", "name"), result.columns)
+            assertEquals(5, result.values.size)
+        }
+    }
 }
