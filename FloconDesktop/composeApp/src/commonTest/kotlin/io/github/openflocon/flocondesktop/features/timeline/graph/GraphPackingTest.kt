@@ -48,7 +48,6 @@ class GraphPackingTest {
         val marker = model.lanes.single().rows.single().single()
         assertEquals(GraphLane.Log, marker.lane)
         assertTrue(marker.isInstant)
-        assertFalse(marker.inProgress)
         assertEquals(250L, marker.startMs)
         assertEquals("Opened the feed", marker.name)
         assertFalse(marker.isError)
@@ -232,7 +231,7 @@ class GraphPackingTest {
     }
 
     @Test
-    fun `a call without response goes up to the last event`() {
+    fun `a call without response is not drawn`() {
         val model = buildGraph(
             listOf(
                 domain("1", TimelinePhase.Request, ts = 1_100L, duration = null),
@@ -241,9 +240,7 @@ class GraphPackingTest {
             sessionStart = 1_000L,
         )
 
-        val pending = model.lanes.single().rows.flatten().first { it.row.id == "1" }
-        assertTrue(pending.inProgress)
-        assertEquals(800L, pending.durationMs)
+        assertEquals(listOf("a"), model.lanes.single().rows.flatten().map { it.row.id })
     }
 
     @Test
@@ -285,7 +282,6 @@ class GraphPackingTest {
 
         val message = model.lanes.single().rows.flatten().first { it.row.id == "ws1" }
         assertTrue(message.isInstant)
-        assertFalse(message.inProgress)
         assertEquals(100L, message.startMs)
     }
 

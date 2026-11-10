@@ -95,6 +95,13 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(MASCOT_ENABLED, enabled)
     }
 
+    override val transactionsExpandedByDefault: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TRANSACTIONS_EXPANDED_BY_DEFAULT)
+        .mapLatest { it ?: true }
+
+    override suspend fun setTransactionsExpandedByDefault(expanded: Boolean) {
+        settings.putBoolean(TRANSACTIONS_EXPANDED_BY_DEFAULT, expanded)
+    }
+
     private val timelineSettingsMutex = Mutex()
 
     override val timelineSettings: Flow<TimelineSettingsLocal> = flowSettings.getStringOrNullFlow(TIMELINE_SETTINGS)
@@ -243,6 +250,7 @@ internal class SettingsDataSourcePrefs(
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
+        private const val TRANSACTIONS_EXPANDED_BY_DEFAULT = "transactions_expanded_by_default"
         private const val AUTO_PURGE_DAYS = "auto_purge_days"
         private const val AUTO_MEDIA_CLEANUP_DAYS = "auto_media_cleanup_days"
         private const val TIMELINE_SETTINGS = "timeline_settings"

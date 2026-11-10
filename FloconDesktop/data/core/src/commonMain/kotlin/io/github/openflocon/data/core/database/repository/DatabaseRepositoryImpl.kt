@@ -254,6 +254,7 @@ class DatabaseRepositoryImpl(
         filters: List<FilterQueryLogDomainModel>,
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         appInstance: Long?,
+        transactionId: String?,
         limit: Int,
     ): List<DatabaseQueryLogDomainModel> = withContext(dispatcherProvider.data) {
         localDatabaseDataSource.getLatestQueryLogs(
@@ -262,6 +263,7 @@ class DatabaseRepositoryImpl(
             showTransactions = showTransactions,
             filters = filters,
             appInstance = appInstance,
+            transactionId = transactionId,
             limit = limit,
         )
     }

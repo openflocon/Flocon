@@ -1,5 +1,7 @@
 package io.github.openflocon.flocondesktop.features.timeline
 
+import io.github.openflocon.domain.timeline.models.TIMELINE_DATABASE_STATEMENT_ROOM
+import io.github.openflocon.domain.timeline.models.TIMELINE_DEFAULT_HIDDEN_FACETS
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
@@ -44,13 +46,7 @@ class TimelineFilterStoreTest {
         // no wait for the debounce of the text
         assertEquals("checkout", filter.text)
         assertEquals(selected, filter.sources)
-        assertEquals(
-            mapOf(
-                TimelineFacet.DatabaseStatement to setOf("TRANSACTION"),
-                TimelineFacet.NetworkMethod to setOf("GET"),
-            ),
-            filter.facets,
-        )
+        assertEquals(TIMELINE_DEFAULT_HIDDEN_FACETS + (TimelineFacet.NetworkMethod to setOf("GET")), filter.facets)
         assertEquals(true, filter.currentSessionOnly)
         assertEquals(listOf(TimelineRuleDomainModel(value = "500", exclude = false)), filter.networkStatusRules)
     }
@@ -75,14 +71,23 @@ class TimelineFilterStoreTest {
         provider.current()
 
         assertEquals("checkout", store.text.value)
-        assertEquals(mapOf(TimelineFacet.DatabaseStatement to setOf("TRANSACTION")), store.facets.value)
+        assertEquals(TIMELINE_DEFAULT_HIDDEN_FACETS, store.facets.value)
     }
 
     @Test
-    fun `the database transactions are hidden until the filter is removed`() = runBlocking {
+    fun `what Room runs for itself and the database transactions are hidden by default, and can be shown again`() = runBlocking {
+        assertEquals(setOf(TIMELINE_DATABASE_STATEMENT_ROOM, "TRANSACTION"), provider.current().facets[TimelineFacet.DatabaseStatement])
+
+        store.toggleFacet(TimelineFacet.DatabaseStatement, TIMELINE_DATABASE_STATEMENT_ROOM)
         assertEquals(setOf("TRANSACTION"), provider.current().facets[TimelineFacet.DatabaseStatement])
 
         store.toggleFacet(TimelineFacet.DatabaseStatement, "TRANSACTION")
+        assertEquals(null, provider.current().facets[TimelineFacet.DatabaseStatement])
+    }
+
+    @Test
+    fun `clearing the filter shows what Room runs for itself too`() = runBlocking {
+        store.clear()
 
         assertEquals(emptyMap(), provider.current().facets)
     }
@@ -93,7 +98,7 @@ class TimelineFilterStoreTest {
         store.hideFacetValue(TimelineFacet.DatabaseName, "app.db")
         store.hideFacetValue(TimelineFacet.DatabaseName, "other.db")
 
-        assertEquals(mapOf(TimelineFacet.DatabaseName to setOf("app.db", "other.db")), store.facets.value)
+        assertEquals(TIMELINE_DEFAULT_HIDDEN_FACETS + (TimelineFacet.DatabaseName to setOf("app.db", "other.db")), store.facets.value)
     }
 
     @Test

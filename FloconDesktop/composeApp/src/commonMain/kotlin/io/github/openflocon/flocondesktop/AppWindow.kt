@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.flocon.data.remote.dataRemoteModule
+import com.flocon.data.remote.mock.MockScenario
 import io.github.openflocon.data.core.dataCoreModule
 import io.github.openflocon.data.local.dataLocalModule
 import io.github.openflocon.domain.adb.repository.AdbRepository
@@ -31,6 +32,7 @@ import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.iossimulator.IosSimulatorRepositoryImpl
+import io.github.openflocon.flocondesktop.mock.mockModule
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.mcp.mcpModule
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -43,7 +45,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @Composable
-fun App(serverPortsOverrides: ServerPortsOverrides = ServerPortsOverrides.None) {
+fun App(
+    serverPortsOverrides: ServerPortsOverrides = ServerPortsOverrides.None,
+    mockScenario: MockScenario? = null,
+) {
     ComposeFoundationFlags.isNewContextMenuEnabled = true
 
     KoinApplication(
@@ -70,6 +75,8 @@ fun App(serverPortsOverrides: ServerPortsOverrides = ServerPortsOverrides.None) 
                     singleOf(::IosSimulatorRepositoryImpl) bind IosSimulatorRepository::class
                 },
             )
+            // last, to override the real devices with the scenario of `--mock=<name>`
+            mockScenario?.let { modules(mockModule(it)) }
         },
     ) {
         val autoPurgeDatabase = koinInject<AutoPurgeDatabaseUseCase>()

@@ -38,8 +38,6 @@ internal data class GraphEventUiModel(
     val isImage: Boolean = false,
     // the call failed without an http error: an exception, a cancellation…
     val hasError: Boolean = false,
-    // the response did not arrive yet: the bar goes up to the last event received
-    val inProgress: Boolean = false,
     // logs only: the shape and the color of the marker (see logGlyphOf)
     val logLevel: TimelineLogLevel? = null,
     val logType: String? = null,

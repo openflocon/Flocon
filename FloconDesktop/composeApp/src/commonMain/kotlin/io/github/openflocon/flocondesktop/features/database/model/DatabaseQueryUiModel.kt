@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class DatabaseQueryUiModel(
+    val id: Int,
     val sqlQuery: String,
     val bindArgs: List<String>?,
     val dateFormatted: String,

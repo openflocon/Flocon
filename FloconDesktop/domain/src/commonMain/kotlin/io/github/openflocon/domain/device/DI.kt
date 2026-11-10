@@ -10,6 +10,7 @@ import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
@@ -34,6 +35,7 @@ internal val deviceModule = module {
     factoryOf(::HandleNewDeviceUseCase)
     factoryOf(::ObserveCurrentDeviceIdUseCase)
     factoryOf(::ObserveActiveDevicesUseCase)
+    factoryOf(::ObserveCurrentDeviceAndAppUseCase)
     factoryOf(::ObserveCurrentDeviceAppsUseCase)
     factoryOf(::ObserveCurrentDeviceIdAndPackageNameUseCase)
     factoryOf(::ObserveDevicesUseCase)

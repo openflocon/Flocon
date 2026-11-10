@@ -22,7 +22,10 @@ kotlin {
             implementation(projects.files.files)
             implementation(projects.crashreporter.crashreporter)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
+            implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
             implementation(projects.database.room3.room3)
+            implementation(projects.database.sqldelight.sqldelight)
+            implementation(libs.sqldelight.sqlite.driver)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -35,6 +38,7 @@ kotlin {
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
+            implementation(libs.okhttp)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
