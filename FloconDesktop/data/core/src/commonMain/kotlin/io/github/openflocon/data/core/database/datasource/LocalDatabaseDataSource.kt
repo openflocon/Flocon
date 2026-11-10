@@ -96,6 +96,7 @@ interface LocalDatabaseDataSource {
         showTransactions: Boolean,
         filters: List<FilterQueryLogDomainModel>,
         appInstance: Long?,
+        transactionId: String?,
         limit: Int,
     ): List<DatabaseQueryLogDomainModel>
 

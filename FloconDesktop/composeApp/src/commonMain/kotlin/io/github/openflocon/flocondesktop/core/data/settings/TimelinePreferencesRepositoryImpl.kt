@@ -31,6 +31,10 @@ internal class TimelinePreferencesRepositoryImpl(
         localSettingsDataSource.updateTimelineSettings { it.copy(graph = graph) }
     }
 
+    override suspend fun setMergePlugins(mergePlugins: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(mergePlugins = mergePlugins) }
+    }
+
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
         localSettingsDataSource.updateTimelineSettings { current ->
             current.copy(

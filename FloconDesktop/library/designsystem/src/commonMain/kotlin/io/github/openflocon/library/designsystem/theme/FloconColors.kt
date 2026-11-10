@@ -27,6 +27,8 @@ data class FloconColors(
     val catDatabaseSoft: Color,
     val catAnalytics: Color,
     val catAnalyticsSoft: Color,
+    val catAnalyticsEvent: Color,
+    val catAnalyticsEventSoft: Color,
     val catCrash: Color,
     val catCrashSoft: Color,
     val catTable: Color,
@@ -90,7 +92,7 @@ data class FloconColors(
     fun category(c: EventCategory): Pair<Color, Color> = when (c) {
         EventCategory.Network -> catNetwork to catNetworkSoft
         EventCategory.Database -> catDatabase to catDatabaseSoft
-        EventCategory.Analytics -> catAnalytics to catAnalyticsSoft
+        EventCategory.Analytics -> catAnalyticsEvent to catAnalyticsEventSoft
         EventCategory.Crash -> catCrash to catCrashSoft
         EventCategory.Table -> catTable to catTableSoft
         EventCategory.Deeplink -> catDeeplink to catDeeplinkSoft
@@ -132,6 +134,8 @@ val FloconDarkColors = FloconColors(
     catDatabaseSoft = Color(0x213FCFB5),
     catAnalytics = Color(0xFFB494FF),
     catAnalyticsSoft = Color(0x24B494FF),
+    catAnalyticsEvent = Color(0xFFF2DD4A),
+    catAnalyticsEventSoft = Color(0x24F2DD4A),
     catCrash = Color(0xFFFF6D6D),
     catCrashSoft = Color(0x1FFF6D6D),
     catTable = Color(0xFFA9D65E),
@@ -205,6 +209,8 @@ val FloconLightColors = FloconColors(
     catDatabaseSoft = Color(0xFFDFF5F0),
     catAnalytics = Color(0xFF6A45D6),
     catAnalyticsSoft = Color(0xFFEFE9FD),
+    catAnalyticsEvent = Color(0xFF9A7B00),
+    catAnalyticsEventSoft = Color(0xFFFBF3CC),
     catCrash = Color(0xFFC62F2F),
     catCrashSoft = Color(0xFFFDEAEA),
     catTable = Color(0xFF4D7A12),

@@ -23,6 +23,7 @@ import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconSurface
+import io.github.openflocon.library.designsystem.theme.FloconGlassBackground
 import io.github.openflocon.navigation.FloconRoute
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -55,10 +56,13 @@ data class WindowScene(
             state = state,
             title = windowProperties?.title ?: "",
         ) {
-            FloconSurface(
-                color = FloconTheme.colors.islandSidebar
-            ) {
-                entry.Content()
+            // the translucent surface needs the page scenery behind it, like in the main window
+            FloconGlassBackground {
+                FloconSurface(
+                    color = FloconTheme.colors.islandSidebar
+                ) {
+                    entry.Content()
+                }
             }
         }
     }

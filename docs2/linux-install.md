@@ -31,10 +31,16 @@ Update it later with `brew upgrade flocon`. Homebrew does not install `adb`: see
 sudo apt install ./Flocon-linux-x64.deb      # or Flocon-linux-arm64.deb
 ```
 
-## Fedora / RHEL / openSUSE
+## Fedora / RHEL
 
 ```bash
 sudo dnf install ./Flocon-linux-x64.rpm      # or Flocon-linux-arm64.rpm
+```
+
+## openSUSE
+
+```bash
+sudo zypper install ./Flocon-linux-x64.rpm   # or Flocon-linux-arm64.rpm
 ```
 
 ## adb
@@ -44,6 +50,7 @@ Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Inst
 ```bash
 sudo apt install android-tools-adb   # Debian / Ubuntu
 sudo dnf install android-tools       # Fedora
+sudo zypper install android-tools    # openSUSE
 ```
 
 Flocon starts from the app menu (Development) or with `/opt/flocon/bin/Flocon`.

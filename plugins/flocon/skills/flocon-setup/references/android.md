@@ -44,6 +44,7 @@ With debug-only dependencies, put this in a `debug` source set (and a no-op or e
 | OkHttp | `okHttpClientBuilder.addInterceptor(FloconOkhttpInterceptor())` |
 | gRPC | `FloconGrpcInterceptor()` from `flocon-grpc-interceptor-lite` as a client interceptor |
 | Room | `install(FloconDatabase) { room() }`, `Flocon.databasePlugin.register("id", "name", db)`, and `RoomDatabase.Builder.floconLogs("id")` for query logs |
+| SQLDelight | `flocon-database-sqldelight`: `driver.withFlocon("id", "name")` registers the database and logs its queries (`install(FloconDatabase)` is enough) |
 | Analytics | `Flocon.analyticsPlugin.log(AnalyticsEvent(name, "table", props))` |
 | Deeplinks | `install(FloconDeeplinks) { deeplink("myapp://home") }`, more later with `Flocon.deeplinksPlugin.register { }` |
 | Dashboards | `install(FloconDashboard)`, then `Flocon.dashboardPlugin.dashboard(id, scope) { ... }` |
