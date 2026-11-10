@@ -25,7 +25,7 @@ class TimelineFilterStoreTest {
         override suspend fun setInvertList(invertList: Boolean) = error("not used")
         override suspend fun setPinPanel(pinPanel: Boolean) = error("not used")
         override suspend fun setGraph(graph: Boolean) = error("not used")
-        override suspend fun setGraphSingle(graphSingle: Boolean) = error("not used")
+        override suspend fun setMergePlugins(mergePlugins: Boolean) = error("not used")
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) = error("not used")
         override suspend fun setScreenshots(screenshots: Boolean) = error("not used")
         override suspend fun setScreenshotIntervalSeconds(seconds: Int) = error("not used")

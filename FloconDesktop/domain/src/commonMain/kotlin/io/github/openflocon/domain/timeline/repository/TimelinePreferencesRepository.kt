@@ -15,7 +15,7 @@ interface TimelinePreferencesRepository {
 
     suspend fun setGraph(graph: Boolean)
 
-    suspend fun setGraphSingle(graphSingle: Boolean)
+    suspend fun setMergePlugins(mergePlugins: Boolean)
 
     suspend fun setSelectedSources(sources: Set<TimelineSource>)
 

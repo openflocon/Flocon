@@ -26,9 +26,9 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCa
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSummaryUseCase
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
-import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphSingleUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineMergePluginsUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
@@ -90,7 +90,7 @@ internal class TimelineViewModel(
     private val setTimelineInvertListUseCase: SetTimelineInvertListUseCase,
     private val setTimelinePinPanelUseCase: SetTimelinePinPanelUseCase,
     private val setTimelineGraphUseCase: SetTimelineGraphUseCase,
-    private val setTimelineGraphSingleUseCase: SetTimelineGraphSingleUseCase,
+    private val setTimelineMergePluginsUseCase: SetTimelineMergePluginsUseCase,
     private val setTimelineScreenshotsUseCase: SetTimelineScreenshotsUseCase,
     private val setTimelineScreenshotIntervalUseCase: SetTimelineScreenshotIntervalUseCase,
     private val setTimelineSelectedSourcesUseCase: SetTimelineSelectedSourcesUseCase,
@@ -121,7 +121,7 @@ internal class TimelineViewModel(
             invertList = timelineSettings.invertList,
             pinPanel = timelineSettings.pinPanel,
             graph = timelineSettings.graph,
-            graphSingle = timelineSettings.graphSingle,
+            mergePlugins = timelineSettings.mergePlugins,
             screenshots = timelineSettings.screenshots,
             screenshotIntervalSeconds = timelineSettings.screenshotIntervalSeconds,
             transactionsExpandedByDefault = transactionsExpandedByDefault,
@@ -194,7 +194,7 @@ internal class TimelineViewModel(
     // does not pack the lanes once per event
     @OptIn(FlowPreview::class)
     val graph: StateFlow<GraphUiModel> = settings
-        .map { it.graph to it.graphSingle }
+        .map { it.graph to it.mergePlugins }
         .distinctUntilChanged()
         .flatMapLatest { (enabled, single) ->
             if (!enabled) {
@@ -312,7 +312,7 @@ internal class TimelineViewModel(
 
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
 
-            is TimelineAction.SetGraphSingle -> viewModelScope.launch { setTimelineGraphSingleUseCase(action.value) }
+            is TimelineAction.SetMergePlugins -> viewModelScope.launch { setTimelineMergePluginsUseCase(action.value) }
 
             is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
 

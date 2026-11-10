@@ -287,8 +287,8 @@ internal fun TimelineContent(
                             FloconSegmentedIconOption(icon = Icons.Outlined.ScatterPlot, tooltip = singleTooltip),
                         )
                     },
-                    selectedIndex = if (settings.graphSingle) 1 else 0,
-                    onSelect = { onAction(TimelineAction.SetGraphSingle(it == 1)) },
+                    selectedIndex = if (settings.mergePlugins) 1 else 0,
+                    onSelect = { onAction(TimelineAction.SetMergePlugins(it == 1)) },
                 )
             }
             // the same switch as the files: the list or the graph of the session

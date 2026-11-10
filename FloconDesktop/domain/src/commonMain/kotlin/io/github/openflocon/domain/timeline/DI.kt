@@ -20,9 +20,9 @@ import io.github.openflocon.domain.timeline.usecase.ObserveTimelineUseCase
 import io.github.openflocon.domain.timeline.usecase.PurgeTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.RequestTimelineFocusUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineAutoScrollUseCase
-import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphSingleUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineInvertListUseCase
+import io.github.openflocon.domain.timeline.usecase.SetTimelineMergePluginsUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
@@ -48,7 +48,7 @@ internal val timelineDomainModule = module {
     factoryOf(::SetTimelinePinPanelUseCase)
     factoryOf(::SetTimelineSelectedSourcesUseCase)
     factoryOf(::SetTimelineGraphUseCase)
-    factoryOf(::SetTimelineGraphSingleUseCase)
+    factoryOf(::SetTimelineMergePluginsUseCase)
     factoryOf(::SetTimelineScreenshotsUseCase)
     factoryOf(::SetTimelineScreenshotIntervalUseCase)
     factoryOf(::ObserveTimelineScreenshotsUseCase)

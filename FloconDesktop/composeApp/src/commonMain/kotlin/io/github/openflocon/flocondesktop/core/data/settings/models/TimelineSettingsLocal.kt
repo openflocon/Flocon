@@ -23,7 +23,7 @@ internal data class TimelineSettingsLocal(
     val graph: Boolean = true,
 
     @SerialName("merge_plugins")
-    val graphSingle: Boolean = false,
+    val mergePlugins: Boolean = false,
 
     // the sources turned off, so a source added later is on by default
     @SerialName("disabled_sources")
@@ -42,7 +42,7 @@ internal fun TimelineSettingsLocal.toDomain() = TimelineSettingsDomainModel(
     invertList = invertList,
     pinPanel = pinPanel,
     graph = graph,
-    graphSingle = graphSingle,
+    mergePlugins = mergePlugins,
     // an unknown name (a source removed since) is ignored
     selectedSources = TimelineSource.entries.filter { it.name !in disabledSources }.toSet(),
     screenshots = screenshots,
@@ -56,7 +56,7 @@ internal fun TimelineSettingsDomainModel.toLocal() = TimelineSettingsLocal(
     invertList = invertList,
     pinPanel = pinPanel,
     graph = graph,
-    graphSingle = graphSingle,
+    mergePlugins = mergePlugins,
     disabledSources = TimelineSource.entries.filter { it !in selectedSources }.map { it.name }.toSet(),
     screenshots = screenshots,
     screenshotIntervalSeconds = screenshotIntervalSeconds,

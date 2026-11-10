@@ -31,8 +31,8 @@ class TimelineSettingsUseCasesTest {
             state.value = state.value.copy(graph = graph)
         }
 
-        override suspend fun setGraphSingle(graphSingle: Boolean) {
-            state.value = state.value.copy(graphSingle = graphSingle)
+        override suspend fun setMergePlugins(mergePlugins: Boolean) {
+            state.value = state.value.copy(mergePlugins = mergePlugins)
         }
 
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
@@ -70,12 +70,12 @@ class TimelineSettingsUseCasesTest {
 
     @Test
     fun `the single graph is off by default and set without changing the graph`() = runBlocking {
-        assertEquals(false, ObserveTimelineSettingsUseCase(repository)().first().graphSingle)
+        assertEquals(false, ObserveTimelineSettingsUseCase(repository)().first().mergePlugins)
 
-        SetTimelineGraphSingleUseCase(repository)(true)
+        SetTimelineMergePluginsUseCase(repository)(true)
 
         assertEquals(
-            TimelineSettingsDomainModel(graph = true, graphSingle = true),
+            TimelineSettingsDomainModel(graph = true, mergePlugins = true),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }
