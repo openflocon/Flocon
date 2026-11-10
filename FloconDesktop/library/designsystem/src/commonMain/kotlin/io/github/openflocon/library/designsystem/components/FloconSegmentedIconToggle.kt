@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -119,17 +121,17 @@ private fun SlidingSegmentedControl(
     val selectedWidth = segmentWidths.getOrElse(selectedIndex) { 0.dp }
     val indicatorOffset by animateDpAsState(
         targetValue = segmentWidths.take(selectedIndex).fold(0.dp) { acc, width -> acc + width },
-        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium),
     )
     val indicatorWidth by animateDpAsState(
         targetValue = selectedWidth,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium),
     )
     Box(
         modifier = modifier
             .height(FloconTheme.sizes.pageBarControlHeight)
             .clip(RoundedCornerShape(ControlRadius))
-            .background(FloconTheme.colors.bg200)
+            .background(FloconTheme.colors.bg100)
             .border(1.dp, FloconTheme.colors.line, RoundedCornerShape(ControlRadius))
             .padding(SegmentPadding),
     ) {
@@ -139,7 +141,8 @@ private fun SlidingSegmentedControl(
                 .fillMaxHeight()
                 .width(indicatorWidth)
                 .clip(RoundedCornerShape(SegmentRadius))
-                .background(FloconTheme.colors.bg300),
+                .background(FloconTheme.colors.bg300)
+                .border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(SegmentRadius)),
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             segmentWidths.forEachIndexed { index, width ->
@@ -156,12 +159,14 @@ private fun SegmentBox(
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    // no indication: the theme ripple is a yellow square
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = Modifier
             .fillMaxHeight()
             .width(width)
             .clip(RoundedCornerShape(SegmentRadius))
-            .clickable(onClick = onClick)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand),
         contentAlignment = Alignment.Center,
     ) {
