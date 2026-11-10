@@ -34,7 +34,7 @@ internal fun packLanes(events: List<GraphEventUiModel>): List<GraphLaneUiModel> 
 }
 
 internal fun buildGraphUiModel(events: List<GraphEventUiModel>, sessionDurationMs: Long, sessionStartTimestamp: Long = 0L, hasAppStart: Boolean = false): GraphUiModel {
-    val completed = events.filter { it.lane == GraphLane.Network && !it.inProgress && it.durationMs > 0L }
+    val completed = events.filter { it.lane == GraphLane.Network && it.durationMs > 0L }
     return GraphUiModel(
         lanes = packLanes(events),
         sessionDurationMs = sessionDurationMs,

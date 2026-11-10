@@ -11,11 +11,10 @@ import kotlin.math.roundToLong
  * The graph of one session, T0 is [sessionStart] (the start of the app).
  *
  * A network call is a request and a response in the timeline: one bar here, from the request, as long as the response
- * took. A WebSocket message is an instant. Without response yet, the bar goes up to the last event received. The database and analytics events have no
+ * took. A WebSocket message is an instant. A call without response (pending, or a stream that never ends) is not drawn: its bar would have no end. The database and analytics events have no
  * duration in the protocol: they are instants, like the logs. The other sources are not drawn.
  */
 internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Long): GraphUiModel {
-    val lastTimestamp = events.maxOfOrNull { it.timestamp } ?: sessionStart
     val requestIds = events
         .filter { it.source == TimelineSource.Network && it.phase == TimelinePhase.Request }
         .mapTo(HashSet()) { it.id }
@@ -29,20 +28,19 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
                 if (event.phase == TimelinePhase.Response && event.id in requestIds) return@mapNotNull null
                 // a WebSocket message happens at a time: no response to wait for, so no duration
                 val instant = event.method == WEB_SOCKET_METHOD
-                val duration = if (instant) 0L else event.durationMs?.roundToLong()
-                val start = if (event.phase == TimelinePhase.Response && duration != null) event.timestamp - duration else event.timestamp
+                val duration = (if (instant) 0L else event.durationMs?.roundToLong()) ?: return@mapNotNull null
+                val start = if (event.phase == TimelinePhase.Response) event.timestamp - duration else event.timestamp
                 val ui = event.toUi()
                 GraphEventUiModel(
                     row = ui,
                     lane = lane,
                     startMs = (start - sessionStart).coerceAtLeast(0L),
-                    durationMs = duration ?: (lastTimestamp - start).coerceAtLeast(0L),
+                    durationMs = duration,
                     name = (ui.network?.path ?: splitUrl(event.title).second).substringBefore('?'),
                     method = event.method?.takeIf { it.isNotEmpty() },
                     statusCode = event.statusCode,
                     isImage = event.isImage,
                     hasError = event.hasError,
-                    inProgress = duration == null,
                 )
             }
 
