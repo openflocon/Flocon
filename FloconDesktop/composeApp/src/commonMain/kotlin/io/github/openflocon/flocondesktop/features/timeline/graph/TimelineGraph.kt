@@ -130,6 +130,13 @@ private const val InstantLabelPaddingPx = 4f
 private const val AppStartLineWidthPx = 2f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
+private const val ClockGapPx = 5f
+private const val ShortTickPx = 4f
+private const val LongTickPx = 8f
+private const val CursorPillPaddingXPx = 6f
+private const val CursorPillPaddingYPx = 2f
+private const val CursorLineWidthPx = 3f
+private const val CursorGuideAlpha = 0.8f
 private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
@@ -187,6 +194,8 @@ internal fun TimelineGraph(
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // the last x of the pointer in the track: the pinch zooms around it
     var pointerX by remember { mutableStateOf(0f) }
+    // the time under the pointer, shown on the axis with a line through the lanes
+    var cursorMs by remember { mutableStateOf<Long?>(null) }
     // shift + drag moves the graph instead of drawing a box
     var shiftHeld by remember { mutableStateOf(false) }
     // opens at 100 % once the canvas has its real width, read when it is known and not from an earlier layout
@@ -301,6 +310,7 @@ internal fun TimelineGraph(
             logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
+            cursor = TimelineSource.Network.categoryColors().first,
         )
 
         if (screenshotsAvailable) {
@@ -354,7 +364,8 @@ internal fun TimelineGraph(
                                         change.consume()
                                     }
 
-                                    PointerEventType.Move -> {
+                                    PointerEventType.Move, PointerEventType.Enter -> {
+                                        cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
                                         hovered = if (x >= 0f && y >= 0f) {
                                             model.hitTest(viewport, x, y + viewport.scrollY)
                                         } else {
@@ -362,7 +373,10 @@ internal fun TimelineGraph(
                                         }
                                     }
 
-                                    PointerEventType.Exit -> hovered = null
+                                    PointerEventType.Exit -> {
+                                        hovered = null
+                                        cursorMs = null
+                                    }
                                 }
                             }
                         }
@@ -415,6 +429,7 @@ internal fun TimelineGraph(
                         height = heightPx,
                         selectedKey = selectedKey,
                         hoveredKey = hovered?.key,
+                        cursorMs = cursorMs,
                         palette = palette,
                         laneColors = laneColors,
                         laneLabels = laneLabels,
@@ -475,6 +490,7 @@ private class GraphPalette(
     val logGlyphColors: Map<LogGlyphColor, Color>,
     val appStart: Color,
     val selection: Color,
+    val cursor: Color,
 )
 
 @Composable
@@ -627,6 +643,7 @@ private fun DrawScope.drawGraph(
     height: Float,
     selectedKey: String?,
     hoveredKey: String?,
+    cursorMs: Long?,
     palette: GraphPalette,
     laneColors: Map<GraphLane, Color>,
     laneLabels: Map<GraphLane, String>,
@@ -643,7 +660,7 @@ private fun DrawScope.drawGraph(
 
     // the lanes
     clipRect(left = LaneLabelWidthPx, top = AxisHeightPx, right = width, bottom = height) {
-        val step = axisStepMs(viewport.pxPerMs)
+        val step = axisStepMs(viewport.pxPerMs, AXIS_TICK_PX) * LONG_TICK_EVERY
         // no tick before the start of the session
         var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
@@ -706,33 +723,58 @@ private fun DrawScope.drawGraph(
     drawRect(palette.axis, Offset.Zero, Size(width, AxisHeightPx))
     drawLine(palette.line, Offset(0f, AxisHeightPx), Offset(width, AxisHeightPx), strokeWidth = 1f)
     clipRect(left = LaneLabelWidthPx, top = 0f, right = width, bottom = AxisHeightPx) {
-        val step = axisStepMs(viewport.pxPerMs)
+        val step = axisStepMs(viewport.pxPerMs, AXIS_TICK_PX)
+        val labelStep = step * LABEL_EVERY_TICKS
         // no tick before the start of the session
         var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
+            val index = tick / step
             val x = LaneLabelWidthPx + viewport.xOf(tick)
-            val text = measurer.measure(
-                formatAxisLabel(tick, step),
-                TextStyle(fontSize = LabelFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkMuted),
-                density = unit,
-                maxLines = 1,
-            )
-            // the time of day above the duration, on some of the ticks: 5 s alone does not tell when it was
-            val showClock = (tick / step) % CLOCK_EVERY_TICKS == 0L
-            // the durations are all on the same line, at the bottom
-            val textTop = AxisHeightPx - text.size.height - AxisTextBottomPx
-            drawText(text, topLeft = Offset(x + 4f, textTop))
-            if (showClock) {
-                val clock = measurer.measure(
-                    formatClockLabel(formatTimestamp(model.sessionStartTimestamp + tick), step),
-                    TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkFaint),
+            val tickHeight = if (index % LONG_TICK_EVERY == 0L) LongTickPx else ShortTickPx
+            drawLine(palette.inkFaint, Offset(x, AxisHeightPx - tickHeight), Offset(x, AxisHeightPx), strokeWidth = 1f)
+            if (index % LABEL_EVERY_TICKS == 0L) {
+                val text = measurer.measure(
+                    formatAxisLabel(tick, labelStep),
+                    TextStyle(fontSize = LabelFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkMuted),
                     density = unit,
                     maxLines = 1,
                 )
-                drawText(clock, topLeft = Offset(x + 4f, textTop - clock.size.height))
+                // the durations are all on the same line, at the bottom
+                val textTop = AxisHeightPx - text.size.height - AxisTextBottomPx
+                drawText(text, topLeft = Offset(x + 4f, textTop))
+                // the time of day above the duration, on some of them: 5 s alone does not tell when it was
+                if (index % CLOCK_EVERY_TICKS == 0L) {
+                    val clock = measurer.measure(
+                        formatClockLabel(formatTimestamp(model.sessionStartTimestamp + tick), labelStep),
+                        TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkFaint),
+                        density = unit,
+                        maxLines = 1,
+                    )
+                    drawText(clock, topLeft = Offset(x + 4f, textTop - clock.size.height - ClockGapPx))
+                }
             }
             tick += step
         }
+    }
+
+    // the time under the pointer: a line through the lanes, and the exact time of day on the axis
+    cursorMs?.let { ms ->
+        val x = LaneLabelWidthPx + viewport.xOf(ms)
+        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
+        val pill = measurer.measure(
+            formatTimestamp(model.sessionStartTimestamp + ms),
+            TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = readableInkOn(palette.cursor)),
+            density = unit,
+            maxLines = 1,
+        )
+        val pillWidth = pill.size.width + 2 * CursorPillPaddingXPx
+        val pillHeight = pill.size.height + 2 * CursorPillPaddingYPx
+        // on the left of the line when there is no room on its right
+        val pillLeft = if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth
+        val pillTop = (AxisHeightPx - pillHeight) / 2f
+        drawRoundRect(palette.cursor, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
+        drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = CursorLineWidthPx)
+        drawText(pill, topLeft = Offset(pillLeft + CursorPillPaddingXPx, pillTop + CursorPillPaddingYPx))
     }
 
     // the column of the lanes, over everything
