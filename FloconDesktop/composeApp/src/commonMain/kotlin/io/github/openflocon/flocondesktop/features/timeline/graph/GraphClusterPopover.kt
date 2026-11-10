@@ -171,7 +171,14 @@ private fun ClusterEventRow(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = FloconTheme.sizes.rowHeight)
-            .background(if (striped) colors.bg200 else Color.Transparent)
+            // a failed event is tinted red, the others alternate
+            .background(
+                when {
+                    event.isError -> colors.catCrashSoft
+                    striped -> colors.bg200
+                    else -> Color.Transparent
+                },
+            )
             .clickable(onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
