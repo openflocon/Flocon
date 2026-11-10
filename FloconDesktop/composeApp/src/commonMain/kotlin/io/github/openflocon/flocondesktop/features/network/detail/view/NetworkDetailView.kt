@@ -318,7 +318,7 @@ private fun NetworkDetailContent(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .solidBackground(),
+                .panelBackground(),
         ) {
             networkDetailSections(
                 header = {
@@ -404,16 +404,28 @@ private fun NetworkDetailContent(
 }
 
 /**
- * The theme surfaces can be translucent: lay the panel surface over the page so the content scrolling under the tabs doesn't show through
+ * The theme surfaces can be translucent: lay them over the page and the panel surface so the content
+ * scrolling under the sticky tabs doesn't show through. The panel is the lighter one
  */
 @Composable
-private fun Modifier.solidBackground(): Modifier {
+private fun Modifier.panelBackground(): Modifier {
     val colors = FloconTheme.colors
-    return background(colors.pageMid).background(colors.islandSidebar)
+    return background(colors.pageMid)
+        .background(colors.islandSidebar)
+        .background(colors.bg200)
+}
+
+/** The dark block of the title and the tabs */
+@Composable
+private fun Modifier.headerBackground(): Modifier {
+    val colors = FloconTheme.colors
+    return background(colors.pageMid)
+        .background(colors.islandSidebar)
+        .background(colors.bg000)
 }
 
 /**
- * The header, the tabs and the content share the panel background, the selected tab is highlighted.
+ * The header and the tabs sit on a dark block, the selected tab melts into the lighter panel holding the content.
  * The tabs stay on top while the content scrolls.
  * It has no border nor corners: the side panel / window already is the container
  */
@@ -427,6 +439,7 @@ private fun LazyListScope.networkDetailSections(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .headerBackground()
                 .padding(
                     start = FloconTheme.spacing.large,
                     end = FloconTheme.spacing.large,
@@ -441,7 +454,7 @@ private fun LazyListScope.networkDetailSections(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .solidBackground()
+                .headerBackground()
                 .padding(horizontal = FloconTheme.spacing.small),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
             verticalAlignment = Alignment.Bottom,
@@ -472,7 +485,7 @@ private fun NetworkDetailTabItem(
     Row(
         modifier = modifier
             .clip(TabShape)
-            .then(if (isSelected) Modifier.background(FloconTheme.colors.bg200) else Modifier)
+            .then(if (isSelected) Modifier.panelBackground() else Modifier)
             .clickable(onClick = onSelected)
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
