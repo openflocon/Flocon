@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.seconds
 
 // The bundled scenarios, registered in MockScenarios. One device per scenario unless stated.
 
-internal val defaultScenario = scenario("default", description = "A Pixel 8 with a bit of every plugin: network, timeline, crashes, analytics, feature flags") {
+internal val defaultScenario = scenario("default", description = "A Pixel 8 with a bit of every plugin: network, timeline, crashes, analytics, feature flags, deeplinks") {
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) {
         sampleNetworkCalls()
         sampleTimeline()
@@ -41,7 +41,7 @@ internal val docFeatureFlagsScenario = scenario("doc-featureflags", description 
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleFeatureFlags() }
 }
 
-internal val docDeeplinksScenario = scenario("doc-deeplinks", description = "Deeplinks only: plain, with variables, with autocomplete parameters, universal link") {
+internal val docDeeplinksScenario = scenario("doc-deeplinks", description = "Deeplinks only: a variable-based link, a link with fields, a plain link, and three shared variables") {
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleDeeplinks() }
 }
 
