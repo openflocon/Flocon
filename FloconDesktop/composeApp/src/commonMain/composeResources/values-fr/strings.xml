@@ -49,7 +49,7 @@
     <string name="timeline_source_accessibility">Accessibilité</string>
     <string name="timeline_source_webview">WebView</string>
     <string name="timeline_source_crash">Crash</string>
-    <string name="timeline_source_database">Base de données</string>
+    <string name="timeline_source_database">Database</string>
     <string name="timeline_source_table">Table</string>
     <string name="timeline_source_adb">ADB</string>
     <string name="timeline_source_deeplink">Deeplink</string>
@@ -257,6 +257,15 @@
     <string name="database_query_log_panel_arguments">Arguments</string>
     <string name="database_query_log_panel_copy_arguments">Copier les arguments</string>
     <string name="database_query_log_panel_transaction">Transaction</string>
+    <plurals name="database_transaction_queries">
+        <item quantity="one">requête</item>
+        <item quantity="other">requêtes</item>
+    </plurals>
+    <string name="database_transaction_committed">Validée</string>
+    <string name="database_transaction_rolled_back">Annulée</string>
+    <string name="database_transaction_open">En cours</string>
+    <string name="database_transaction_expand">Afficher les requêtes de la transaction</string>
+    <string name="database_transaction_collapse">Masquer les requêtes de la transaction</string>
     <string name="deeplink_variables">Variables</string>
     <string name="diff_clipboard">Presse-papiers :</string>
     <string name="diff_compare_clipboard">Comparer avec le presse-papiers</string>
@@ -522,4 +531,6 @@
     <string name="desktop_update_chip">Mise à jour %1$s</string>
     <string name="desktop_update_title">Flocon %1$s</string>
     <string name="desktop_update_installed">Installée : %1$s</string>
+    <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
+    <string name="database_transaction_nested">Transaction imbriquée</string>
 </resources>

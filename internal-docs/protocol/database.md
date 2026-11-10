@@ -114,6 +114,10 @@ Sent for each query executed by the app (when query logging is enabled).
 | `sqlQuery`  | `String`        | Executed SQL                     |
 | `bindArgs`  | `List<String>?` | Bound arguments (`toString()`)   |
 | `timestamp` | `Long`          | Execution timestamp (ms)         |
+| `transactionId` | `String?`   | Optional. Same value for all the queries of a transaction, `BEGIN` and `COMMIT` / `ROLLBACK` included, the ones of the transactions nested in it too. Absent outside of a transaction, and with SDKs that don't send it |
+| `nestedTransactionId` | `String?` | Optional. Id of the transaction nested in `transactionId` (a savepoint, or a nested `BEGIN` of Room 2) the query runs in, its `SAVEPOINT` and `RELEASE` included. Absent in the outermost transaction |
+| `parentTransactionId` | `String?` | Optional. Id of the transaction that holds `nestedTransactionId`: another nested transaction, or `transactionId` for a transaction nested directly in the outermost one. Sent with `nestedTransactionId` |
+| `transactionDepth` | `Int?` | Optional. `1` in a transaction nested in the outermost one, `2` in one nested in it... Absent in the outermost transaction |
 
 ```json
 {
@@ -121,5 +125,35 @@ Sent for each query executed by the app (when query logging is enabled).
   "sqlQuery": "SELECT * FROM user WHERE id = ?",
   "bindArgs": ["42"],
   "timestamp": 1729260000000
+}
+```
+
+The desktop groups the logs sharing a `transactionId` in one row, and the logs sharing a `nestedTransactionId` in a row
+of that row. The ids are only opaque identifiers (the SDK sends random UUIDs), unique per transaction, so a client must
+not give them a meaning. The three nested fields are optional and independent of `transactionId`: an older desktop
+ignores them and shows a nested transaction's queries with the outermost one's.
+
+```json
+{
+  "dbId": "app_database",
+  "sqlQuery": "INSERT INTO user (name) VALUES (?)",
+  "bindArgs": ["flo"],
+  "timestamp": 1729260000100,
+  "transactionId": "0b8f4c6e-5c3b-4f0e-9a52-3f1d2f7a9a10"
+}
+```
+
+A query run in a savepoint of that transaction:
+
+```json
+{
+  "dbId": "app_database",
+  "sqlQuery": "INSERT INTO post (title) VALUES (?)",
+  "bindArgs": ["hello"],
+  "timestamp": 1729260000200,
+  "transactionId": "0b8f4c6e-5c3b-4f0e-9a52-3f1d2f7a9a10",
+  "nestedTransactionId": "6d1c0f52-72b2-4a53-b0a3-2f6a7d3f9c11",
+  "parentTransactionId": "0b8f4c6e-5c3b-4f0e-9a52-3f1d2f7a9a10",
+  "transactionDepth": 1
 }
 ```

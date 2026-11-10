@@ -98,6 +98,22 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `every member of the union carries the transaction columns, only the database queries fill them`() {
+        val query = build()
+
+        // the events of every source and the app starts: same columns everywhere, the union is positional
+        assertEquals(eventBranches + 1, Regex("AS transactionId").findAll(query.sql).count())
+        assertEquals(eventBranches + 1, Regex("AS isTransactionControl").findAll(query.sql).count())
+        assertTrue(query.sql.contains("transactionId AS transactionId"))
+        assertTrue(query.sql.contains("u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl"))
+        assertTrue(query.sql.contains("isTransaction AS isTransactionControl"))
+        // and the nested transaction of the query, with the transactions that hold it
+        assertEquals(eventBranches + 1, Regex("AS nestedTransactionId").findAll(query.sql).count())
+        assertEquals(eventBranches + 1, Regex("AS nestedPath").findAll(query.sql).count())
+        assertTrue(query.sql.contains("u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath"))
+    }
+
+    @Test
     fun `a network call with a response has a second event at the time the response arrived`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Network)))
 
@@ -276,6 +292,16 @@ class TimelineQueryBuilderTest {
         assertTrue(query.sql.contains("LIKE 'BEGIN%'"))
         assertTrue(query.sql.contains("THEN 'TRANSACTION'"))
         assertTrue(query.sql.contains("ELSE 'OTHER' END AS facetDatabaseStatement"))
+    }
+
+    @Test
+    fun `what Room runs for itself is told apart, with the whole of its transaction`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
+
+        // first of the statements: a query on the modification log of Room, or any query of a transaction that has one
+        assertTrue(query.sql.contains("CASE WHEN (sqlQuery LIKE '%room_table_modification_log%' OR (transactionId IS NOT NULL AND EXISTS ("))
+        assertTrue(query.sql.contains("THEN 'ROOM'"))
+        assertTrue(query.sql.indexOf("THEN 'ROOM'") < query.sql.indexOf("THEN 'SELECT'"))
     }
 
     @Test
@@ -518,7 +544,7 @@ class TimelineQueryBuilderTest {
         val sources = setOf(TimelineSource.Database)
 
         assertTrue(build(TimelineFilterDomainModel(sources = sources, hideDatabaseTransactions = true)).sql.contains("AND isTransaction = 0"))
-        assertFalse(build(TimelineFilterDomainModel(sources = sources)).sql.contains("isTransaction"))
+        assertFalse(build(TimelineFilterDomainModel(sources = sources)).sql.contains("AND isTransaction = 0"))
         // the rules of the database are not applied to the other sources
         assertFalse(
             build(

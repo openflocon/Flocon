@@ -90,15 +90,14 @@ class QueryDatabaseRemoteDataSourceImpl(
     override fun getQueryLogs(
         message: FloconIncomingMessageDomainModel,
     ): DatabaseQueryLogDomainModel? = json.decodeFromString<DatabaseQueryLogModel>(message.body)?.let {
-        val upperQuery = it.sqlQuery.trim().uppercase()
-        val isTransaction = upperQuery == "BEGIN TRANSACTION" ||
-            upperQuery == "COMMIT" ||
-            upperQuery == "ROLLBACK" ||
-            upperQuery == "END TRANSACTION" ||
-            upperQuery == "TRANSACTION SUCCESSFUL" ||
-            upperQuery == "BEGIN IMMEDIATE TRANSACTION"
+        val isTransaction = isTransactionControl(it.sqlQuery)
 
         DatabaseQueryLogDomainModel(
+            id = 0,
+            transactionId = it.transactionId,
+            nestedTransactionId = it.nestedTransactionId,
+            parentTransactionId = it.parentTransactionId,
+            transactionDepth = it.transactionDepth ?: 0,
             dbId = it.dbId,
             dbName = it.dbId, // the repository replaces it with the name of the database
             sqlQuery = it.sqlQuery,
@@ -109,6 +108,15 @@ class QueryDatabaseRemoteDataSourceImpl(
         )
     }
 }
+
+private val transactionControlRegex = Regex(
+    "^(BEGIN( (DEFERRED|IMMEDIATE|EXCLUSIVE))?( TRANSACTION)?|COMMIT( TRANSACTION)?|END( TRANSACTION)?|ROLLBACK( TRANSACTION)?( TO( SAVEPOINT)? .+)?|TRANSACTION SUCCESSFUL|SAVEPOINT .+|RELEASE( SAVEPOINT)? .+)$",
+)
+
+/**
+ * The statements that open, close or follow a transaction: they are not queries of the app
+ */
+internal fun isTransactionControl(sql: String): Boolean = transactionControlRegex.matches(sql.trim().trimEnd(';').uppercase())
 
 // TODO internal
 fun ResponseAndRequestIdDataModel.toDomain() = ResponseAndRequestIdDomainModel(
