@@ -9,10 +9,12 @@ enum class SamplePlatform(val label: String, val displayName: String) {
     Ios("iOS", "iOS"),
     Desktop("Desktop", "Desktop (JVM)"),
     Web("Web", "Web (Wasm)"),
+    IosSwift("iOS Swift", "iOS (Swift native)"),
     ;
 
     companion object {
         val All: Set<SamplePlatform> = entries.toSet()
+        val Jvm: Set<SamplePlatform> = setOf(Android, Desktop)
         val AndroidOnly: Set<SamplePlatform> = setOf(Android)
         val NotWeb: Set<SamplePlatform> = All - Web
     }

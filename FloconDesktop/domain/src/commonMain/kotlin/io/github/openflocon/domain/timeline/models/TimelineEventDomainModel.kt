@@ -22,4 +22,27 @@ data class TimelineEventDomainModel(
     val level: TimelineLogLevel? = null, // log only
     // the value of the event for each facet of its source, ex: the method and the host of a call. What it can be excluded by
     val facets: Map<TimelineFacet, String> = emptyMap(),
+    val transaction: TimelineTransactionDomainModel? = null, // database only: the transaction the query ran in
+)
+
+/**
+ * The transaction of a database query. The queries of a transaction share its [id].
+ */
+data class TimelineTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // without the statements that open and close it (BEGIN, COMMIT...)
+    val startTimestamp: Long,
+    val endTimestamp: Long,
+    val isControl: Boolean, // this query is one of the statements that open or close the transaction
+    val nested: TimelineNestedTransactionDomainModel? = null, // the transaction nested in it the query runs in
+)
+
+/**
+ * A transaction nested in another one (a savepoint, a nested begin) the queries of which run in it.
+ */
+data class TimelineNestedTransactionDomainModel(
+    val id: String,
+    val queryCount: Int, // the queries it ran itself, without the ones of the transactions nested in it and without its statements
+    val depth: Int, // 1 in a transaction nested in the outermost one, 2 in one nested in it...
+    val path: List<String>, // the ids of the nested transactions that hold the query, outermost first, this one last
 )

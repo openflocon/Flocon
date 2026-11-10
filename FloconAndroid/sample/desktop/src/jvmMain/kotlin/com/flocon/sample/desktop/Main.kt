@@ -146,13 +146,16 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase
             .writeText("Written by the sample at ${System.currentTimeMillis()}")
     }
 
-    val okHttpReason = "The OkHttp interceptor supports the JVM, but this sample uses the Ktor CIO engine"
-    SampleFeatures.unavailable(SampleFeature.OkHttp, okHttpReason)
-    SampleFeatures.unavailable(SampleFeature.OkHttpGzip, okHttpReason)
-    SampleFeatures.unavailable(SampleFeature.WebSocket, okHttpReason)
+    SampleFeatures.on(SampleFeature.OkHttp) { DesktopOkHttpTester.call() }
+    SampleFeatures.on(SampleFeature.OkHttpGzip) { DesktopOkHttpTester.callGzip() }
+    SampleFeatures.unavailable(SampleFeature.WebSocket, "The WebSocket sample is only set up on Android")
     SampleFeatures.unavailable(SampleFeature.GraphQl, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.Grpc, "The gRPC interceptor is Android only")
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 is only set up on Android in this sample (the Flocon Room 2 module also supports JVM and iOS)")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom2, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom2, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not set up in the desktop sample")
 }

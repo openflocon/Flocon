@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveTransactionsExpandedByDefaultUseCase
+import io.github.openflocon.domain.settings.usecase.SetTransactionsExpandedByDefaultUseCase
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.usecase.ConsumeTimelineFocusUseCase
@@ -28,6 +31,7 @@ import io.github.openflocon.domain.timeline.usecase.SetTimelinePinPanelUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotIntervalUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineScreenshotsUseCase
 import io.github.openflocon.domain.timeline.usecase.SetTimelineSelectedSourcesUseCase
+import io.github.openflocon.flocondesktop.common.ui.TransactionFolding
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
 import io.github.openflocon.flocondesktop.features.timeline.graph.GraphFocusUiModel
@@ -36,10 +40,13 @@ import io.github.openflocon.flocondesktop.features.timeline.graph.GraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraph
 import io.github.openflocon.flocondesktop.features.timeline.graph.screenshotsOfSession
 import io.github.openflocon.flocondesktop.features.timeline.mapper.TimelineDestination
+import io.github.openflocon.flocondesktop.features.timeline.mapper.isHiddenInTransaction
+import io.github.openflocon.flocondesktop.features.timeline.mapper.nestedHeaderBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotMarkerBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.separatorBetween
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
+import io.github.openflocon.flocondesktop.features.timeline.mapper.transactionHeaderBetween
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
@@ -87,6 +94,8 @@ internal class TimelineViewModel(
     private val navigationState: MainFloconNavigationState,
     private val networkItemOptionsDelegate: NetworkItemOptionsDelegate,
     observeTimelineFocusUseCase: ObserveTimelineFocusUseCase,
+    observeTransactionsExpandedByDefaultUseCase: ObserveTransactionsExpandedByDefaultUseCase,
+    private val setTransactionsExpandedByDefaultUseCase: SetTransactionsExpandedByDefaultUseCase,
     private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
 ) : ViewModel() {
@@ -97,17 +106,20 @@ internal class TimelineViewModel(
     val isLive: StateFlow<Boolean> = observeIsCurrentDeviceAndAppActiveUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val settings: StateFlow<TimelineSettingsUiModel> = observeTimelineSettingsUseCase()
-        .map {
-            TimelineSettingsUiModel(
-                autoScroll = it.autoScroll,
-                invertList = it.invertList,
-                pinPanel = it.pinPanel,
-                graph = it.graph,
-                screenshots = it.screenshots,
-                screenshotIntervalSeconds = it.screenshotIntervalSeconds,
-            )
-        }
+    val settings: StateFlow<TimelineSettingsUiModel> = combine(
+        observeTimelineSettingsUseCase(),
+        observeTransactionsExpandedByDefaultUseCase(),
+    ) { timelineSettings, transactionsExpandedByDefault ->
+        TimelineSettingsUiModel(
+            autoScroll = timelineSettings.autoScroll,
+            invertList = timelineSettings.invertList,
+            pinPanel = timelineSettings.pinPanel,
+            graph = timelineSettings.graph,
+            screenshots = timelineSettings.screenshots,
+            screenshotIntervalSeconds = timelineSettings.screenshotIntervalSeconds,
+            transactionsExpandedByDefault = transactionsExpandedByDefault,
+        )
+    }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), previewTimelineSettingsUiModel())
 
     // the last screenshots failed, or the device cannot take them: the control of the header says it
@@ -230,6 +242,17 @@ internal class TimelineViewModel(
     // read from the source, not from [settings], to wait for the stored value instead of reloading the list after the default one
     private val invertList: Flow<Boolean> = observeTimelineSettingsUseCase().map { it.invertList }.distinctUntilChanged()
 
+    // which transactions show their queries: the setting, then what the user flipped since
+    private val transactionFolding = MutableStateFlow(TransactionFolding())
+
+    init {
+        viewModelScope.launch {
+            observeTransactionsExpandedByDefaultUseCase().distinctUntilChanged().collect { expandedByDefault ->
+                transactionFolding.value = TransactionFolding(expandedByDefault = expandedByDefault)
+            }
+        }
+    }
+
     val items: Flow<PagingData<TimelineItemUiModel>> = combine(filter, invertList) { filter, inverted -> filter to inverted }
         .flatMapLatest { (filter, inverted) ->
             // the events of the filter are shared (cachedIn) to be combined with each new screenshot without a new query. The scope
@@ -238,12 +261,17 @@ internal class TimelineViewModel(
                 val events = observeTimelineUseCase(filter)
                     .map { pagingData -> pagingData.map<_, TimelineItemUiModel> { TimelineItemUiModel.Row(it.toUi()) } }
                     .cachedIn(this)
-                combine(events, observeTimelineScreenshotsUseCase()) { pagingData, shots ->
+                combine(events, observeTimelineScreenshotsUseCase(), transactionFolding) { pagingData, shots, folding ->
+                    // the header of a transaction goes above its queries, the ones of a folded transaction are hidden
+                    val grouped = pagingData
+                        .insertSeparators { before, after -> transactionHeaderBetween(before, after, inverted, folding) }
+                        .insertSeparators { before, after -> nestedHeaderBetween(before, after, inverted, folding) }
+                        .filter { !it.isHiddenInTransaction(folding) }
                     // without screenshot the list is the one it always was
                     val withScreenshots = if (shots.isEmpty()) {
-                        pagingData
+                        grouped
                     } else {
-                        pagingData.insertSeparators { before, after -> screenshotMarkerBetween(before, after, shots) }
+                        grouped.insertSeparators { before, after -> screenshotMarkerBetween(before, after, shots) }
                     }
                     withScreenshots.insertSeparators { before, after -> separatorBetween(before, after, inverted) }
                 }.collect { send(it) }
@@ -266,6 +294,8 @@ internal class TimelineViewModel(
 
             is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
 
+            is TimelineAction.TransactionsExpandedByDefault -> viewModelScope.launch { setTransactionsExpandedByDefaultUseCase(action.value) }
+
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
             is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
@@ -286,6 +316,10 @@ internal class TimelineViewModel(
 
             is TimelineAction.NetworkOption -> viewModelScope.launch(dispatcherProvider.viewModel) {
                 networkItemOptionsDelegate.onOption(callId = action.callId, option = action.option)
+            }
+
+            is TimelineAction.ToggleTransaction -> transactionFolding.update {
+                it.copy(toggled = if (action.id in it.toggled) it.toggled - action.id else it.toggled + action.id)
             }
 
             is TimelineAction.Exclude -> filterStore.hideFacetValue(action.facet, action.value)

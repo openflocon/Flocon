@@ -73,6 +73,37 @@ class FloconDatabasePluginTest {
     }
 
     @Test
+    fun `logQuery sends the transaction id`() {
+        plugin.logQuery(
+            dbId = "dogs",
+            sqlQuery = "SAVEPOINT s1",
+            bindArgs = emptyList(),
+            transaction = FloconTransactionInfo(transactionId = "tx-1", nestedTransactionId = "n-1", parentTransactionId = "tx-1", depth = 1),
+        )
+
+        val body = sender.messages.single().third
+        assertContains(body, "\"transactionId\":\"tx-1\"")
+        assertContains(body, "\"nestedTransactionId\":\"n-1\"")
+        assertContains(body, "\"parentTransactionId\":\"tx-1\"")
+        assertContains(body, "\"transactionDepth\":1")
+    }
+
+    @Test
+    fun `logQuery groups the queries of a transaction without a given id`() {
+        plugin.logQuery("dogs", "BEGIN", emptyList())
+        plugin.logQuery("dogs", "INSERT INTO dog VALUES (1)", emptyList())
+        plugin.logQuery("dogs", "COMMIT", emptyList())
+        plugin.logQuery("dogs", "SELECT 1", emptyList())
+        plugin.logQuery("cats", "BEGIN", emptyList())
+
+        val ids = sender.messages.map { Regex("\"transactionId\":\"([^\"]+)\"").find(it.third)?.groupValues?.get(1) }
+        assertEquals(ids[0], ids[1])
+        assertEquals(ids[0], ids[2])
+        assertEquals(null, ids[3])
+        assertEquals(true, ids[4] != null && ids[4] != ids[0])
+    }
+
+    @Test
     fun `register refuses a second database with the same id`() {
         plugin.register(FloconFileDatabaseModel(id = "dogs", displayName = "dogs", absolutePath = "/a"))
 

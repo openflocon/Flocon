@@ -12,7 +12,35 @@ internal val timelineModule = module {
     singleOf(::TimelineFilterStore) {
         bind<TimelineUserFilterProvider>()
     }
-    viewModelOf(::TimelineViewModel)
+    // viewModelOf only supports up to 22 constructor parameters, TimelineViewModel has more
+    viewModel {
+        TimelineViewModel(
+            observeTimelineUseCase = get(),
+            observeTimelineSummaryUseCase = get(),
+            observeTimelineEventsUseCase = get(),
+            observeIsCurrentDeviceAndAppActiveUseCase = get(),
+            observeTimelineSettingsUseCase = get(),
+            observeTimelineScreenshotsFailingUseCase = get(),
+            observeTimelineScreenshotsSupportedUseCase = get(),
+            observeTimelineScreenshotsUseCase = get(),
+            setTimelineAutoScrollUseCase = get(),
+            setTimelineInvertListUseCase = get(),
+            setTimelinePinPanelUseCase = get(),
+            setTimelineGraphUseCase = get(),
+            setTimelineScreenshotsUseCase = get(),
+            setTimelineScreenshotIntervalUseCase = get(),
+            setTimelineSelectedSourcesUseCase = get(),
+            filterStore = get(),
+            dispatcherProvider = get(),
+            navigationState = get(),
+            networkItemOptionsDelegate = get(),
+            observeTimelineFocusUseCase = get(),
+            observeTransactionsExpandedByDefaultUseCase = get(),
+            setTransactionsExpandedByDefaultUseCase = get(),
+            consumeTimelineFocusUseCase = get(),
+            observeCurrentDeviceIdAndPackageNameUseCase = get(),
+        )
+    }
     viewModelOf(::TimelineFilterPanelViewModel)
     viewModel { (id: Long) -> TimelineLogDetailViewModel(id, get(), get()) }
     singleOf(::TimelinePanelPin) {
