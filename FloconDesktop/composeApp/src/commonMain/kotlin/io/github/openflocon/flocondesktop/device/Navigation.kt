@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.device
 import androidx.navigation3.runtime.EntryProviderScope
 import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.navigation.FloconRoute
+import io.github.openflocon.navigation.scene.WindowProperties
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
 import kotlinx.serialization.Serializable
 
@@ -14,7 +15,7 @@ sealed interface DeviceRoutes : FloconRoute {
 
 fun EntryProviderScope<FloconRoute>.deviceRoutes() {
     entry<DeviceRoutes.Detail>(
-        metadata = WindowSceneStrategy.window()
+        metadata = WindowSceneStrategy.window(WindowProperties(modeless = true))
     ) {
         DeviceScreen(
             deviceId = it.id
