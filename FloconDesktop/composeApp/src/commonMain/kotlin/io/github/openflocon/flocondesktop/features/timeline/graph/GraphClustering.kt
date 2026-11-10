@@ -10,7 +10,7 @@ import kotlin.math.pow
 internal const val ClusterDistancePx = 14f
 
 // the width of a marker with one source, and what each other source adds
-internal const val ClusterMinWidthPx = 28f
+internal const val ClusterMinWidthPx = 48f
 internal const val ClusterSourceWidthPx = 8f
 
 // the room kept between a marker and the next one of its row
@@ -35,6 +35,9 @@ internal data class GraphClusterUiModel(
     val key: String = "cluster:" + events.first().key
     val startMs: Long = events.first().startMs
     val endMs: Long = events.maxOf { it.endMs }
+
+    // the start of the last one: the marker spans the starts, the bars it holds are not drawn
+    val lastStartMs: Long = events.last().startMs
     val errorCount: Int = events.count { it.isError }
     val size: Int get() = events.size
 }
@@ -54,7 +57,7 @@ internal data class ClusteredEvents(
 
 /**
  * Groups the events that start less than [ClusterDistancePx] from the first one of their group, at [pxPerMs].
- * An event as wide as that on screen is a bar worth reading: it is never grouped. A group of one stays an event.
+ * Only the start counts: a burst of calls that start together is one marker, whatever their duration. A group of one stays an event.
  * Pure: sorted by (start, key), so the same events always give the same groups.
  */
 internal fun clusterEvents(events: List<GraphEventUiModel>, pxPerMs: Double): ClusteredEvents {
@@ -71,11 +74,6 @@ internal fun clusterEvents(events: List<GraphEventUiModel>, pxPerMs: Double): Cl
     }
     val maxDistanceMs = ClusterDistancePx / pxPerMs
     for (event in events.sortedWith(compareBy({ it.startMs }, { it.key }))) {
-        if (event.durationMs * pxPerMs >= ClusterDistancePx) {
-            flush()
-            singles.add(event)
-            continue
-        }
         if (group.isNotEmpty() && event.startMs - group.first().startMs > maxDistanceMs) flush()
         group.add(event)
     }
@@ -83,10 +81,10 @@ internal fun clusterEvents(events: List<GraphEventUiModel>, pxPerMs: Double): Cl
     return ClusteredEvents(singles, clusters)
 }
 
-// the width of the marker of a cluster: enough for its sources, and for the time it spans
+// the width of the marker of a cluster: enough for its sources, and for the time its events start over
 internal fun clusterWidthPx(cluster: GraphClusterUiModel, pxPerMs: Double): Float = max(
     ClusterMinWidthPx + ClusterSourceWidthPx * (cluster.counts.size - 1),
-    ((cluster.endMs - cluster.startMs) * pxPerMs).toFloat() + DiamondSizePx,
+    ((cluster.lastStartMs - cluster.startMs) * pxPerMs).toFloat() + DiamondSizePx,
 )
 
 // the marker is centered on its first event, like a diamond

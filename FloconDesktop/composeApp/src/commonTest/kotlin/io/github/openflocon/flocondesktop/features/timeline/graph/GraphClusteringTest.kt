@@ -62,14 +62,17 @@ class GraphClusteringTest {
     }
 
     @Test
-    fun `a bar as wide as the distance is never grouped`() {
-        // 200 ms at 0.1 px/ms is 20 px
+    fun `a bar is grouped by its start, whatever its duration`() {
+        // 200 ms at 0.1 px/ms is 20 px wide, but it starts with the others
         val events = listOf(event("bar", 1_000L, duration = 200L), event("a", 1_010L), event("b", 1_020L))
         val clustered = model(events).clustered(0.1)
 
         val cluster = clustered.allClusters().single()
-        assertEquals(listOf("a", "b"), cluster.events.map { it.name })
-        assertEquals(listOf("bar"), clustered.lanes.flatMap { it.rows.flatten() }.map { it.name })
+        assertEquals(listOf("bar", "a", "b"), cluster.events.map { it.name })
+        assertEquals(1, clustered.rowCount)
+        // a bar that starts apart stays a bar
+        val apart = model(events + event("late", 9_000L, duration = 200L)).clustered(0.1)
+        assertEquals(listOf("late"), apart.lanes.flatMap { it.rows.flatten() }.map { it.name })
     }
 
     @Test
