@@ -53,6 +53,7 @@ fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val providersState by viewModel.providersState.collectAsStateWithLifecycle()
     val selectedStates by viewModel.selectedStates.collectAsStateWithLifecycle()
+    val numberOfFlags by viewModel.numberOfFlags.collectAsStateWithLifecycle()
 
     FeatureFlagsScreen(
         selectedStates = selectedStates,
@@ -60,6 +61,7 @@ fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
         providersState = providersState,
         onProviderSelected = viewModel::onProviderSelected,
         rows = rows,
+        numberOfFlags = numberOfFlags,
         filterText = viewModel.filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
         onAction = viewModel::onAction,
@@ -75,6 +77,7 @@ fun FeatureFlagsScreen(
     selectedStates: Set<FeatureFlagStateUiModel>,
     onStateToggled: (FeatureFlagStateUiModel) -> Unit,
     filterText: State<String>,
+    numberOfFlags: Int?,
     onFilterTextChanged: (String) -> Unit,
     onAction: (FeatureFlagsAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -137,7 +140,7 @@ fun FeatureFlagsScreen(
                 )
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    FeatureFlagsHeader(modifier = Modifier.fillMaxWidth())
+                    FeatureFlagsHeader(modifier = Modifier.fillMaxWidth(), numberOfFlags = numberOfFlags)
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -184,6 +187,7 @@ private fun FeatureFlagsScreenPreview() {
             filterText = remember { mutableStateOf("") },
             onFilterTextChanged = {},
             onAction = {},
+            numberOfFlags = 1,
             modifier = Modifier.fillMaxSize(),
         )
     }
