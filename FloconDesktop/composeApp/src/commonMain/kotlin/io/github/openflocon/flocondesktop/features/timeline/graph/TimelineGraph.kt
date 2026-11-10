@@ -136,6 +136,7 @@ private const val LongTickPx = 8f
 private const val CursorPillPaddingXPx = 6f
 private const val CursorPillPaddingYPx = 2f
 private const val CursorGuideAlpha = 0.6f
+private const val CursorLineWidthPx = 2f
 private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
@@ -759,7 +760,7 @@ private fun DrawScope.drawGraph(
     // the time under the pointer: a line through the lanes, and the exact time of day on the axis
     cursorMs?.let { ms ->
         val x = LaneLabelWidthPx + viewport.xOf(ms)
-        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = 1f)
+        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
         val pill = measurer.measure(
             formatTimestamp(model.sessionStartTimestamp + ms),
             TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = readableInkOn(palette.cursor)),
@@ -772,7 +773,7 @@ private fun DrawScope.drawGraph(
         val pillLeft = if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth
         val pillTop = (AxisHeightPx - pillHeight) / 2f
         drawRoundRect(palette.cursor, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
-        drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = 1f)
+        drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = CursorLineWidthPx)
         drawText(pill, topLeft = Offset(pillLeft + CursorPillPaddingXPx, pillTop + CursorPillPaddingYPx))
     }
 
