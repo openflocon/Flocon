@@ -76,6 +76,19 @@ class GraphClusteringTest {
     }
 
     @Test
+    fun `an expanded group puts its events back in the rows`() {
+        val events = List(10) { event("e$it", 5_000L) }
+        val grouped = model(events).clustered(0.1)
+        val key = grouped.allClusters().single().key
+
+        val expanded = model(events).clustered(0.1, expandedKeys = setOf(key))
+
+        assertTrue(expanded.allClusters().isEmpty())
+        assertEquals(10, expanded.rowCount)
+        assertEquals(1, model(events).clustered(0.1, expandedKeys = setOf("other")).rowCount)
+    }
+
+    @Test
     fun `a chain of events every 10 px is cut into several groups`() {
         // 100 ms at 0.1 px/ms: 10 px between two events, a group spans at most 14 px from its first event
         val events = List(10) { event("e$it", it * 100L) }

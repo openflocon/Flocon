@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_cluster_events_count
+import flocondesktop.composeapp.generated.resources.timeline_cluster_expand
 import flocondesktop.composeapp.generated.resources.timeline_cluster_more
 import flocondesktop.composeapp.generated.resources.timeline_cluster_zoom
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
@@ -49,6 +50,7 @@ internal fun GraphClusterPopover(
     laneColors: Map<GraphLane, Color>,
     laneLabels: Map<GraphLane, String>,
     onZoom: () -> Unit,
+    onExpand: () -> Unit,
     onSelectEvent: (GraphEventUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -113,7 +115,10 @@ internal fun GraphClusterPopover(
                 )
             }
         }
-        FloconButton(onClick = onZoom) { Text(stringResource(Res.string.timeline_cluster_zoom)) }
+        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
+            FloconButton(onClick = onZoom) { Text(stringResource(Res.string.timeline_cluster_zoom)) }
+            FloconButton(onClick = onExpand) { Text(stringResource(Res.string.timeline_cluster_expand)) }
+        }
     }
 }
 
@@ -127,6 +132,7 @@ private fun GraphClusterPopoverPreviewContent(isDarkTheme: Boolean) {
             laneColors = GraphLane.entries.associateWith { it.source.categoryColors().first },
             laneLabels = GraphLane.entries.associateWith { it.name },
             onZoom = {},
+            onExpand = {},
             onSelectEvent = {},
         )
     }

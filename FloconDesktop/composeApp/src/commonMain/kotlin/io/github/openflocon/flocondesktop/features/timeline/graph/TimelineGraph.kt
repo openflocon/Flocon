@@ -212,8 +212,10 @@ internal fun TimelineGraph(
     var viewport by remember { mutableStateOf(GraphViewport()) }
     // the markers are computed again only past a 15 % zoom step, so a wheel zoom does not group the events at every tick
     val zoomBucket = bucketOf(viewport.pxPerMs)
-    val displayModel = remember(model, clusterEvents, zoomBucket) {
-        if (clusterEvents) model.clustered(bucketPxPerMs(zoomBucket)) else model
+    // the groups opened to see every event (by key): back to grouped with the option or another session
+    var expandedClusterKeys by remember(clusterEvents, model.sessionStartTimestamp) { mutableStateOf(emptySet<String>()) }
+    val displayModel = remember(model, clusterEvents, zoomBucket, expandedClusterKeys) {
+        if (clusterEvents) model.clustered(bucketPxPerMs(zoomBucket), expandedClusterKeys) else model
     }
     val contentHeight = displayModel.contentHeightPx()
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
@@ -286,7 +288,7 @@ internal fun TimelineGraph(
         stopAutoScroll()
         val focused = focusedViewport(focus.fromMs, focus.toMs, trackWidth)
         // the rows are those of the new zoom: the groups change with it
-        val focusedModel = if (clusterEvents) model.clustered(bucketPxPerMs(bucketOf(focused.pxPerMs))) else model
+        val focusedModel = if (clusterEvents) model.clustered(bucketPxPerMs(bucketOf(focused.pxPerMs)), expandedClusterKeys) else model
         val rowTop = focusedEvent?.let { focusedModel.rowTopOf(it) }
         val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
         viewport = focused.copy(scrollY = scrollY)
@@ -526,6 +528,10 @@ internal fun TimelineGraph(
                         fitted = false
                         stopAutoScroll()
                         viewport = focusedViewport(cluster.startMs, cluster.endMs, trackWidth, minWidthMs = ClusterZoomMinWidthMs).copy(scrollY = viewport.scrollY)
+                        selectedClusterKey = null
+                    },
+                    onExpand = {
+                        expandedClusterKeys = expandedClusterKeys + cluster.key
                         selectedClusterKey = null
                     },
                     onSelectEvent = {

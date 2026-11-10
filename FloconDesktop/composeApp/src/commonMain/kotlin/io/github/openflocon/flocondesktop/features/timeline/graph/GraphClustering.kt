@@ -130,12 +130,18 @@ internal fun bucketPxPerMs(bucket: Int): Double = ZoomBucketStep.pow(bucket)
 
 /**
  * The graph with the close events grouped, for the zoom [pxPerMs]: each lane is packed again, a group taking one slot of a row.
- * A lane without group is left as it is.
+ * The groups in [expandedKeys] are opened: their events are in the rows, like when nothing is grouped (the only way to see
+ * events that no zoom can separate). A lane without group is left as it is.
  */
-internal fun GraphUiModel.clustered(pxPerMs: Double): GraphUiModel = copy(
+internal fun GraphUiModel.clustered(pxPerMs: Double, expandedKeys: Set<String> = emptySet()): GraphUiModel = copy(
     lanes = lanes.map { lane ->
         val clustered = clusterEvents(lane.rows.flatten() + lane.clusters.flatten().flatMap { it.events }, pxPerMs)
-        if (clustered.clusters.isEmpty()) lane else packLane(lane.lane, clustered.singles, clustered.clusters, pxPerMs)
+        val (opened, closed) = clustered.clusters.partition { it.key in expandedKeys }
+        if (clustered.clusters.isEmpty()) {
+            lane
+        } else {
+            packLane(lane.lane, clustered.singles + opened.flatMap { it.events }, closed, pxPerMs)
+        }
     },
 )
 

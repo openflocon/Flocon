@@ -46,8 +46,8 @@ The **Graph** view shows one session at a time on a time axis, with the app star
 Events closer than about 14 px on the graph are merged into one rounded marker, so a burst of 100 events takes one slot of a row instead of 100 rows.
 
 - **The marker** is cut in one segment per type (in the order of the lanes), each as wide as its share of the events (never under 8 %), with the same colors as the lanes. The total number of events is written on top. A marker with a failed event has a red dot.
-- **Click a marker** to open a popover: the number of events per type, the time it spans and a **Zoom on the group** button. Events at the very same instant cannot be separated by the zoom: they are listed in the popover (the first 8) and each one opens in the detail panel.
-- **Zooming in splits the markers**, until each event is back to its own bar or diamond. A bar wide enough to be read is never grouped.
+- **Click a marker** to open a popover: the number of events per type, the time it spans and a **Zoom on the group** button. **Show every event** opens the group into rows, like without grouping: it is the way to see events at the very same instant, which no zoom can separate. They are also listed in the popover (the first 8), and each one opens in the detail panel. Turning the option off and on again groups them back.
+- **Zooming in splits the markers**, until each event is back to its own bar or diamond. Events are grouped by their start, whatever their duration.
 - **Turn it off** with **Cluster close events** in the overflow menu of the timeline (on by default, remembered).
 
 ---

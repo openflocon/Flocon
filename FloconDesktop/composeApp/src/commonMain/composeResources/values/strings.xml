@@ -85,6 +85,7 @@
     <string name="timeline_cluster_events">Cluster close events</string>
     <string name="timeline_cluster_events_count">%1$d events</string>
     <string name="timeline_cluster_zoom">Zoom on the group</string>
+    <string name="timeline_cluster_expand">Show every event</string>
     <string name="timeline_cluster_more">+ %1$d more</string>
     <string name="timeline_graph_lanes">One lane per type</string>
     <string name="timeline_graph_single">One graph for all types</string>
