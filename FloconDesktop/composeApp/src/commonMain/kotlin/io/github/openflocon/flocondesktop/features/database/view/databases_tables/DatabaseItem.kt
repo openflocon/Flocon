@@ -203,14 +203,18 @@ private fun DatabaseEntry(
                 colorFilter = ColorFilter.tint(iconColor),
             )
             Spacer(modifier = Modifier.width(FloconTheme.spacing.small))
-            Text(
-                state.name,
-                color = textColor,
-                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
+            WithTooltip(
+                tooltip = state.name,
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    state.name,
+                    color = textColor,
+                    style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             WithTooltip("See logs") {
                 Box(
                     modifier = Modifier.width(20.dp)
