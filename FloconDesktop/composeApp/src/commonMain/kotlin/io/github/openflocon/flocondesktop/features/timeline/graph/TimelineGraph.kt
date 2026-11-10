@@ -135,7 +135,7 @@ private const val ShortTickPx = 4f
 private const val LongTickPx = 8f
 private const val CursorPillPaddingXPx = 6f
 private const val CursorPillPaddingYPx = 2f
-private const val CursorGuideAlpha = 0.35f
+private const val CursorGuideAlpha = 0.6f
 private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
@@ -309,6 +309,7 @@ internal fun TimelineGraph(
             logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
+            cursor = colors.accent,
         )
 
         if (screenshotsAvailable) {
@@ -488,6 +489,7 @@ private class GraphPalette(
     val logGlyphColors: Map<LogGlyphColor, Color>,
     val appStart: Color,
     val selection: Color,
+    val cursor: Color,
 )
 
 @Composable
@@ -757,10 +759,10 @@ private fun DrawScope.drawGraph(
     // the time under the pointer: a line through the lanes, and the exact time of day on the axis
     cursorMs?.let { ms ->
         val x = LaneLabelWidthPx + viewport.xOf(ms)
-        drawLine(palette.ink.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = 1f)
+        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = 1f)
         val pill = measurer.measure(
             formatTimestamp(model.sessionStartTimestamp + ms),
-            TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.axis),
+            TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = readableInkOn(palette.cursor)),
             density = unit,
             maxLines = 1,
         )
@@ -769,8 +771,8 @@ private fun DrawScope.drawGraph(
         // on the left of the line when there is no room on its right
         val pillLeft = if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth
         val pillTop = (AxisHeightPx - pillHeight) / 2f
-        drawRoundRect(palette.ink, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
-        drawLine(palette.ink, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = 1f)
+        drawRoundRect(palette.cursor, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
+        drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = 1f)
         drawText(pill, topLeft = Offset(pillLeft + CursorPillPaddingXPx, pillTop + CursorPillPaddingYPx))
     }
 
