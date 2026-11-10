@@ -402,12 +402,6 @@ private fun NetworkDetailContent(
 }
 
 /**
- * The header and its tabs on a dark block, the selected tab melts into the panel holding the content.
- * The tabs stay on top while the content scrolls.
- * It has no border nor corners: the side panel / window already is the container
- */
-
-/**
  * The theme surfaces can be translucent: lay them over an opaque base so the content scrolling under the tabs doesn't show through
  */
 @Composable
@@ -418,6 +412,11 @@ private fun Modifier.solidBackground(raised: Boolean = false): Modifier {
         .then(if (raised) Modifier.background(colors.bg200) else Modifier)
 }
 
+/**
+ * The header and its tabs on a dark block, the selected tab melts into the panel holding the content.
+ * The tabs stay on top while the content scrolls.
+ * It has no border nor corners: the side panel / window already is the container
+ */
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.networkDetailSections(
     header: @Composable () -> Unit,
