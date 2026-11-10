@@ -22,6 +22,7 @@ class MockScenariosTest {
                 "doc-crashreporter",
                 "doc-analytics",
                 "doc-featureflags",
+                "doc-deeplinks",
                 "empty",
                 "multi-device",
                 "weird",
@@ -62,5 +63,15 @@ class MockScenariosTest {
     @Test
     fun `empty scenario has no message`() {
         assertTrue(encoder.encode(MockScenarios.byName("empty")!!, Clock.System.now(), "9.9.9").isEmpty())
+    }
+
+    @Test
+    fun `deeplinks scenario sends the deeplink plugin message`() {
+        val messages = encoder.encode(MockScenarios.byName("doc-deeplinks")!!, Clock.System.now(), "9.9.9")
+        val message = messages.single()
+        assertEquals("deeplink", message.plugin)
+        assertEquals("get_deeplinks", message.method)
+        assertTrue(message.body.contains("flocon-shop://product/[productId]"))
+        assertTrue(message.body.contains("auto_complete"))
     }
 }

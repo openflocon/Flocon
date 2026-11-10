@@ -7,7 +7,7 @@ description: Use when you need Flocon Desktop running with data and no phone con
 
 `--mock=<scenario>` starts Flocon Desktop with fake connected devices and pre-filled data. The data goes through the real handlers, Room and UI, exactly like a real SDK would send it. Timestamps are relative to the launch time, so the screens always look recent.
 
-Covered plugins: **network, timeline, crash reporter, analytics, feature flags** (+ devices/apps). Not covered: database, files, shared preferences, images, dashboards… use the sample app for those.
+Covered plugins: **network, timeline, crash reporter, analytics, feature flags, deeplinks** (+ devices/apps). Not covered: database, files, shared preferences, images, dashboards… use the sample app for those.
 
 ## Launch
 
@@ -40,6 +40,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 | `doc-crashreporter` | Crashes with stack traces |
 | `doc-analytics` | Analytics events in two tables |
 | `doc-featureflags` | Feature flags from two providers |
+| `doc-deeplinks` | Deeplinks: plain, variables, autocomplete parameters, universal link |
 | `empty` | A connected device with no data (empty states) |
 | `multi-device` | Android with two apps + an iPhone |
 | `weird` | 5 MB body, invalid JSON, unicode, 50×500, 2 000-char URL, old SDK version, odd timestamps |
