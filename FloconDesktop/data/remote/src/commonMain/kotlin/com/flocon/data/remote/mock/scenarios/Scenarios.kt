@@ -16,6 +16,7 @@ internal val defaultScenario = scenario("default", description = "A Pixel 8 with
         sampleCrashes()
         sampleAnalytics()
         sampleFeatureFlags()
+        sampleDatabases()
     }
 }
 

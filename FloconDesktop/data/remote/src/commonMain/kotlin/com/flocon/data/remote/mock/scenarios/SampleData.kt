@@ -147,6 +147,23 @@ internal fun MockDeviceBuilder.sampleAnalytics() {
     analytics(9.minutes.ago, "experiment_exposure", "experiment" to "reviews_layout", "variant" to "control", tableId = "experiments")
 }
 
+/** Databases only (no tables: the mock ignores the queries sent by the desktop). Long names test the truncation. */
+internal fun MockDeviceBuilder.sampleDatabases() {
+    val names = listOf(
+        "app_database",
+        "cache.db",
+        "Application Support/BeReal.sqlite",
+        "Application Support/Google/FirebaseCore/Measurement/google-app-measurement.sqlite",
+        "Documents/very/long/path/to/a/database/shake.sqlite3",
+    )
+    raw(
+        at = 1.minutes.ago,
+        plugin = "database",
+        method = "get_databases",
+        body = names.joinToString(prefix = "[", postfix = "]") { """{"id":"$it","name":"$it"}""" },
+    )
+}
+
 internal fun MockDeviceBuilder.sampleFeatureFlags() {
     featureFlags("firebase", at = 12.minutes.ago) {
         flag("checkout_v2", state = "custom", variant = "treatment", payload = """{"buttonColor":"#FF5722","oneClick":true}""")
