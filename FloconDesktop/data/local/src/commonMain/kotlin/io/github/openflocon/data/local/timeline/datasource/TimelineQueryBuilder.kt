@@ -1,8 +1,13 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_DATABASE_STATEMENT_ROOM
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
+import io.github.openflocon.domain.timeline.models.TIMELINE_MAX_DATABASE_LOGS
+import io.github.openflocon.domain.timeline.models.TIMELINE_RESERVED_LOG_TYPES
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
+import io.github.openflocon.domain.timeline.models.TimelineRuleDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.domain.timeline.models.TimelineStatusMatcher
 
@@ -17,18 +22,48 @@ internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
 internal const val KIND_APP_START = "appstart"
 internal const val KIND_ADB = "adb"
+internal const val KIND_LOG = "log"
 
 // apps can log millions of queries: only the most recent ones are merged in the timeline
-internal const val MAX_DATABASE_LOGS = 20_000
+internal const val MAX_DATABASE_LOGS = TIMELINE_MAX_DATABASE_LOGS
 
 // the tables that store the session of their rows
-private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity")
+private val SESSION_TABLES = listOf("FloconNetworkCallEntity", "DatabaseQueryLogEntity", "AnalyticsItemEntity", "TimelineLogEntity")
 
 // columns only the network calls fill
-private const val NO_NETWORK_COLUMNS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError"
+private const val NO_NETWORK_FIELDS = "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize"
+
+// columns only the database queries of a transaction fill: the id of the transaction, its number of queries and its first and last times
+private const val NO_TRANSACTION_COLUMNS = "NULL AS transactionId, NULL AS txQueryCount, NULL AS txStart, NULL AS txEnd, 0 AS isTransactionControl, " +
+    "NULL AS nestedTransactionId, NULL AS nestedQueryCount, 0 AS transactionDepth, NULL AS nestedPath"
+
+private const val NO_NETWORK_COLUMNS = "$NO_NETWORK_FIELDS, $NO_TRANSACTION_COLUMNS"
+
+// the other queries of the transaction of a database log, null outside of a transaction
+private fun transactionAggregate(aggregate: String, extraCondition: String = ""): String = "CASE WHEN transactionId IS NULL THEN NULL ELSE (" +
+    "SELECT $aggregate FROM DatabaseQueryLogEntity t WHERE t.transactionId = DatabaseQueryLogEntity.transactionId " +
+    "AND t.deviceId = DatabaseQueryLogEntity.deviceId AND t.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND t.dbId = DatabaseQueryLogEntity.dbId$extraCondition) END"
+
+private val DATABASE_TRANSACTION_COLUMNS = "transactionId AS transactionId, " +
+    "${transactionAggregate("COUNT(*)", " AND t.isTransaction = 0")} AS txQueryCount, " +
+    "${transactionAggregate("MIN(t.timestamp)")} AS txStart, " +
+    "${transactionAggregate("MAX(t.timestamp)")} AS txEnd, " +
+    "isTransaction AS isTransactionControl, " +
+    "nestedTransactionId AS nestedTransactionId, " +
+    // the queries run directly in the nested transaction, the ones of the transactions nested in it are theirs
+    "CASE WHEN nestedTransactionId IS NULL THEN NULL ELSE (" +
+    "SELECT COUNT(*) FROM DatabaseQueryLogEntity n WHERE n.nestedTransactionId = DatabaseQueryLogEntity.nestedTransactionId " +
+    "AND n.deviceId = DatabaseQueryLogEntity.deviceId AND n.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND n.dbId = DatabaseQueryLogEntity.dbId AND n.isTransaction = 0) END AS nestedQueryCount, " +
+    "transactionDepth AS transactionDepth, " +
+    "nestedPath AS nestedPath"
 
 // the column of the union holding the value of a facet: the facets are the last columns of every member of the union
 private fun TimelineFacet.column(): String = "facet$name"
+
+// the value of each facet of an event, as a json object told by the name of the facet: what the event can be excluded by
+private val FACET_VALUES_JSON = TimelineFacet.entries.joinToString(prefix = "json_object(", postfix = ")") { "'${it.name}', u.${it.column()}" }
 
 private val NO_FACETS = TimelineFacet.entries.joinToString { "NULL AS ${it.column()}" }
 
@@ -38,9 +73,17 @@ private const val NETWORK_STATUS_CODE = "COALESCE(response_http_responseHttpCode
 // 1xx, 2xx..., null without http code
 private const val NETWORK_STATUS_CLASS = "(CAST($NETWORK_STATUS_CODE AS INTEGER) / 100) || 'xx'"
 
+private const val ROOM_LOG_TABLE = "room_table_modification_log"
+
+// what Room runs for itself: a query on its modification log, or any query of a transaction that has one (its BEGIN and COMMIT too)
+private const val IS_ROOM_STATEMENT = "(sqlQuery LIKE '%$ROOM_LOG_TABLE%' OR (transactionId IS NOT NULL AND EXISTS (" +
+    "SELECT 1 FROM DatabaseQueryLogEntity r WHERE r.transactionId = DatabaseQueryLogEntity.transactionId " +
+    "AND r.deviceId = DatabaseQueryLogEntity.deviceId AND r.packageName = DatabaseQueryLogEntity.packageName " +
+    "AND r.dbId = DatabaseQueryLogEntity.dbId AND r.sqlQuery LIKE '%$ROOM_LOG_TABLE%')))"
+
 // the kind of a SQL statement, from its first word. Same values as TimelineFacet.DatabaseStatement
 private val DATABASE_STATEMENT = buildString {
-    append("CASE")
+    append("CASE WHEN $IS_ROOM_STATEMENT THEN '$TIMELINE_DATABASE_STATEMENT_ROOM'")
     listOf(
         "SELECT" to listOf("SELECT", "WITH"),
         "INSERT" to listOf("INSERT", "REPLACE"),
@@ -75,7 +118,11 @@ private val NETWORK_SPEED = buildString {
 private const val NETWORK_CONTENT = "CASE WHEN type = 'WEBSOCKET' THEN 'WEBSOCKET' " +
     "WHEN COALESCE(response_isImage, 0) = 1 THEN 'IMAGE' ELSE 'OTHER' END"
 
+// a gRPC call url is the server authority and its method is the full method name: the title is the url of the call, so the host and the path are told apart like an http one
+private const val NETWORK_TITLE =
+    "CASE WHEN type = 'GRPC' THEN 'grpc://' || request_url || '/' || LTRIM(request_method, '/') ELSE request_url END"
 private const val NETWORK_HOST = "request_domainFormatted"
+private const val NETWORK_PATH = "request_queryFormatted" // the path and the query, without the domain
 
 private const val NETWORK_DURATION = "CAST(response_durationMs AS INTEGER)"
 
@@ -114,17 +161,14 @@ private fun networkRuleConditions(
     }
 
     if (TimelineFacet.NetworkHost !in ignoredFacets) {
-        val includes = filter.networkHostRules.filter { !it.exclude && it.value.isNotBlank() }
-        val excludes = filter.networkHostRules.filter { it.exclude && it.value.isNotBlank() }
-        if (includes.isNotEmpty()) {
-            sql.append(includes.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$NETWORK_HOST LIKE ?" })
-            includes.forEach { params.add("%${it.value}%") }
-        }
-        excludes.forEach {
-            sql.append(" AND COALESCE($NETWORK_HOST, '') NOT LIKE ?")
-            params.add("%${it.value}%")
-        }
+        val (hostSql, hostParams) = wordRuleConditions(NETWORK_HOST, filter.networkHostRules)
+        sql.append(hostSql)
+        params.addAll(hostParams)
     }
+
+    val (pathSql, pathParams) = wordRuleConditions(NETWORK_PATH, filter.networkPathRules)
+    sql.append(pathSql)
+    params.addAll(pathParams)
 
     val duration = filter.networkDuration
     if (duration != null && TimelineFacet.NetworkSpeed !in ignoredFacets) {
@@ -135,6 +179,41 @@ private fun networkRuleConditions(
             sql.append(" AND $NETWORK_DURATION <= ?")
             params.add(maxMs)
         }
+    }
+    return sql.toString() to params
+}
+
+// the logs with their own look (navigation, user action, lifecycle): the tag and level filters never apply to them
+private val LOG_IS_RESERVED = TIMELINE_RESERVED_LOG_TYPES.joinToString(prefix = "LOWER(type) IN (", postfix = ")") { "'${it.lowercase()}'" }
+
+// the level of the tagged logs, nothing for the reserved types (stored INFO but without level)
+private val LOG_TAGGED_LEVEL = "CASE WHEN $LOG_IS_RESERVED THEN NULL ELSE level END"
+
+// the wildcards of LIKE are matched as text
+private fun String.escapeLike(): String = replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+/**
+ * The conditions of the tag rules of the tagged logs, each starting with " AND ". The reserved types are never hidden by them.
+ * The rules of an ignored facet are not applied, to count its values.
+ */
+private fun logRuleConditions(
+    filter: TimelineFilterDomainModel,
+    ignoredFacets: Set<TimelineFacet>,
+): Pair<String, List<Any>> {
+    // every log that is not reserved is hidden, there is nothing left to narrow
+    if (!filter.logTaggedEnabled) return " AND $LOG_IS_RESERVED" to emptyList()
+    if (TimelineFacet.LogType in ignoredFacets) return "" to emptyList()
+    val sql = StringBuilder()
+    val params = ArrayList<Any>()
+    val includes = filter.logTagRules.filter { !it.exclude && it.value.isNotBlank() }
+    val excludes = filter.logTagRules.filter { it.exclude && it.value.isNotBlank() }
+    if (includes.isNotEmpty()) {
+        sql.append(includes.joinToString(prefix = " AND ($LOG_IS_RESERVED OR ", separator = " OR ", postfix = ")") { "type LIKE ? ESCAPE '\\'" })
+        includes.forEach { params.add("%${it.value.escapeLike()}%") }
+    }
+    excludes.forEach {
+        sql.append(" AND ($LOG_IS_RESERVED OR type NOT LIKE ? ESCAPE '\\')")
+        params.add("%${it.value.escapeLike()}%")
     }
     return sql.toString() to params
 }
@@ -150,7 +229,29 @@ private class Union(
 )
 
 /**
- * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs, isImage, hasError),
+ * The words to keep (include, any of them) or hide (exclude, none of them) in a [column], as conditions to add to a WHERE.
+ */
+private fun wordRuleConditions(
+    column: String,
+    rules: List<TimelineRuleDomainModel>,
+): Pair<String, List<Any>> {
+    val sql = StringBuilder()
+    val params = ArrayList<Any>()
+    val includes = rules.filter { !it.exclude && it.value.isNotBlank() }
+    val excludes = rules.filter { it.exclude && it.value.isNotBlank() }
+    if (includes.isNotEmpty()) {
+        sql.append(includes.joinToString(prefix = " AND (", separator = " OR ", postfix = ")") { "$column LIKE ?" })
+        includes.forEach { params.add("%${it.value}%") }
+    }
+    excludes.forEach {
+        sql.append(" AND COALESCE($column, '') NOT LIKE ?")
+        params.add("%${it.value}%")
+    }
+    return sql.toString() to params
+}
+
+/**
+ * One SELECT per source, with the same columns (kind, id, ts, title, subtitle, appInstance, method, statusCode, durationMs, isImage, hasError, responseByteSize),
  * merged by a UNION ALL. The app starts are not rows: they are the sessions, see [sessionsSql].
  */
 private fun buildUnion(
@@ -175,6 +276,8 @@ private fun buildUnion(
         timeColumn: String? = null, // the time of the event, to keep the current session only
         facetExpressions: Map<TimelineFacet, String> = emptyMap(), // what each facet of the source filters on
         networkRules: Boolean = false, // the status, host and duration rules of the network calls
+        databaseRules: Boolean = false, // the sql rules and the transactions of the database logs
+        logRules: Boolean = false, // the tagged logs switch and the tag rules of the logs
     ): String {
         val where = StringBuilder("WHERE deviceId = ?")
         params.add(deviceId)
@@ -193,7 +296,10 @@ private fun buildUnion(
             where.append(" AND $timeColumn >= ${latestSessionSql(deviceId, packageName, params)}")
         }
         facetExpressions.forEach { (facet, expression) ->
-            val ignored = facet in ignoredFacets || (facet.source == TimelineSource.Network && !filter.networkEnabled)
+            val ignored = facet in ignoredFacets ||
+                (facet.source == TimelineSource.Network && !filter.networkEnabled) ||
+                // the levels only filter the tagged logs, which are all hidden
+                (facet == TimelineFacet.LogTaggedLevel && !filter.logTaggedEnabled)
             val values = filter.facets[facet]?.takeIf { it.isNotEmpty() && !ignored }
             if (values != null) {
                 // an event without value (ex: a call without http code yet) is not one of the values hidden
@@ -203,6 +309,17 @@ private fun buildUnion(
         }
         if (networkRules) {
             val (sql, ruleParams) = networkRuleConditions(filter, ignoredFacets)
+            where.append(sql)
+            params.addAll(ruleParams)
+        }
+        if (databaseRules) {
+            val (sql, ruleParams) = wordRuleConditions("sqlQuery", filter.databaseRules)
+            where.append(sql)
+            params.addAll(ruleParams)
+            if (filter.hideDatabaseTransactions) where.append(" AND isTransaction = 0")
+        }
+        if (logRules) {
+            val (sql, ruleParams) = logRuleConditions(filter, ignoredFacets)
             where.append(sql)
             params.addAll(ruleParams)
         }
@@ -231,11 +348,12 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_NETWORK' AS kind, callId AS id, request_startTime AS ts, " +
-                        "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
+                        "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError",
+                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
+                        "response_responseByteSize AS responseByteSize, $NO_TRANSACTION_COLUMNS",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -250,11 +368,12 @@ private fun buildUnion(
                 branch(
                     select = "'$KIND_NETWORK_RESPONSE' AS kind, callId AS id, " +
                         "request_startTime + CAST(response_durationMs AS INTEGER) AS ts, " +
-                        "request_url AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
+                        "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
                         "$NETWORK_STATUS_CODE AS statusCode, " +
                         "response_durationMs AS durationMs, COALESCE(response_isImage, 0) AS isImage, " +
-                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError",
+                        "CASE WHEN response_responseError IS NOT NULL THEN 1 ELSE 0 END AS hasError, " +
+                        "response_responseByteSize AS responseByteSize, $NO_TRANSACTION_COLUMNS",
                     from = "FloconNetworkCallEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("request_url", "request_method"),
@@ -270,7 +389,7 @@ private fun buildUnion(
             add(
                 branch(
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
-                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
+                        "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_FIELDS, $DATABASE_TRANSACTION_COLUMNS",
                     from = "DatabaseQueryLogEntity",
                     appInstanceColumn = "appInstance",
                     textColumns = listOf("sqlQuery", "dbName"),
@@ -279,6 +398,7 @@ private fun buildUnion(
                         TimelineFacet.DatabaseName to "dbName",
                         TimelineFacet.DatabaseStatement to DATABASE_STATEMENT,
                     ),
+                    databaseRules = true,
                     orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_DATABASE_LOGS",
                 )
             )
@@ -290,7 +410,7 @@ private fun buildUnion(
                         "eventName AS title, analyticsTableId AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AnalyticsItemEntity",
                     appInstanceColumn = "appInstance",
-                    textColumns = listOf("eventName", "analyticsTableId"),
+                    textColumns = listOf("eventName", "analyticsTableId", "propertiesValues"),
                     timeColumn = "createdAt",
                     facetExpressions = mapOf(TimelineFacet.AnalyticsTable to "analyticsTableId"),
                 )
@@ -303,7 +423,7 @@ private fun buildUnion(
                         "COALESCE(text, contentDescription, type) AS title, type AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AccessibilityEventEntity",
                     appInstanceColumn = "appInstance",
-                    textColumns = listOf("text", "contentDescription"),
+                    textColumns = listOf("text", "contentDescription", "className", "screen"),
                     timeColumn = "createdAt",
                     facetExpressions = mapOf(TimelineFacet.AccessibilityAction to "type"),
                 )
@@ -319,6 +439,7 @@ private fun buildUnion(
                     appInstanceColumn = null, // the events do not store the session
                     // the text displayed in the row, and the WebView
                     textColumns = listOf("COALESCE(message, url, label)", "webViewId"),
+                    facetExpressions = mapOf(TimelineFacet.WebViewKind to "kind"),
                 )
             )
         }
@@ -329,7 +450,7 @@ private fun buildUnion(
                         "exceptionType AS title, exceptionMessage AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "CrashReportEntity",
                     appInstanceColumn = null, // crashes do not store the session
-                    textColumns = listOf("exceptionType", "exceptionMessage"),
+                    textColumns = listOf("exceptionType", "exceptionMessage", "stackTrace"),
                     timeColumn = "timestamp",
                     facetExpressions = mapOf(TimelineFacet.CrashException to "exceptionType"),
                 )
@@ -343,8 +464,9 @@ private fun buildUnion(
                         "TableEntity.name AS title, TableItemEntity.`values` AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "TableItemEntity JOIN TableEntity ON TableEntity.id = TableItemEntity.tableId",
                     appInstanceColumn = null,
-                    textColumns = listOf("TableEntity.name", "TableItemEntity.`values`"),
+                    textColumns = listOf("TableEntity.name", "TableItemEntity.`values`", "TableItemEntity.columnsNames"),
                     timeColumn = "TableItemEntity.createdAt",
+                    facetExpressions = mapOf(TimelineFacet.TableName to "TableEntity.name"),
                 )
             )
         }
@@ -355,10 +477,32 @@ private fun buildUnion(
                         "link AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "DeeplinkEntity",
                     appInstanceColumn = null,
-                    textColumns = listOf("link", "label"),
+                    textColumns = listOf("link", "label", "description", "parametersAsJson"),
                     timeColumn = "executedAt",
                     // the other rows are the deeplinks declared by the app, not events
                     extraCondition = "isHistory = 1",
+                )
+            )
+        }
+        if (TimelineSource.Log in filter.sources) {
+            add(
+                branch(
+                    // the level is a facet column too (read back by the outer select), an ERROR log is flagged in SQL
+                    select = "'$KIND_LOG' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
+                        "value AS title, type AS subtitle, appInstance AS appInstance, " +
+                        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, " +
+                        "CASE WHEN level = 'ERROR' THEN 1 ELSE 0 END AS hasError, NULL AS responseByteSize, $NO_TRANSACTION_COLUMNS",
+                    from = "TimelineLogEntity",
+                    appInstanceColumn = "appInstance",
+                    textColumns = listOf("value", "type"),
+                    timeColumn = "timestamp",
+                    facetExpressions = mapOf(
+                        TimelineFacet.LogType to "type",
+                        TimelineFacet.LogLevel to "level",
+                        TimelineFacet.LogTaggedLevel to LOG_TAGGED_LEVEL,
+                    ),
+                    logRules = true,
+                    orderLimit = "ORDER BY timestamp DESC LIMIT $MAX_TIMELINE_LOGS",
                 )
             )
         }
@@ -398,9 +542,55 @@ private fun sessionsSql(deviceId: String, packageName: String, params: MutableLi
  */
 private fun latestSessionSql(deviceId: String, packageName: String, params: MutableList<Any>): String = "COALESCE((SELECT MAX(appInstance) FROM (${sessionsSql(deviceId, packageName, params)})), 0)"
 
+// the kind of the row of an event: a network call is pointed at by its request
+private fun TimelineSource.kind(): String = when (this) {
+    TimelineSource.Network -> KIND_NETWORK
+    TimelineSource.Database -> KIND_DATABASE
+    TimelineSource.Analytics -> KIND_ANALYTICS
+    TimelineSource.Accessibility -> KIND_ACCESSIBILITY
+    TimelineSource.WebView -> KIND_WEBVIEW
+    TimelineSource.Crash -> KIND_CRASH
+    TimelineSource.Table -> KIND_TABLE
+    TimelineSource.Deeplink -> KIND_DEEPLINK
+    TimelineSource.Adb -> KIND_ADB
+    TimelineSource.Log -> KIND_LOG
+    TimelineSource.AppStart -> KIND_APP_START
+}
+
+/**
+ * The time bounds and the events asked by the filter, applied to the rows of the union: " WHERE ..." (with a trailing space),
+ * or an empty string when the filter asks for neither.
+ */
+private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableList<Any>): String {
+    val conditions = ArrayList<String>()
+    filter.fromMs?.let {
+        conditions.add("u.ts >= ?")
+        params.add(it)
+    }
+    filter.toMs?.let {
+        conditions.add("u.ts <= ?")
+        params.add(it)
+    }
+    filter.events?.let { events ->
+        if (events.isEmpty()) {
+            conditions.add("0")
+        } else {
+            conditions.add(
+                events.joinToString(prefix = "(", separator = " OR ", postfix = ")") {
+                    params.add(it.source.kind())
+                    params.add(it.id)
+                    "(u.kind = ? AND u.id = ?)"
+                }
+            )
+        }
+    }
+    return if (conditions.isEmpty()) "" else conditions.joinToString(prefix = "WHERE ", separator = " AND ", postfix = " ")
+}
+
 private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
-        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS sessionStart WHERE 0"
+        "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, $NO_TRANSACTION_COLUMNS, " +
+        "NULL AS level, NULL AS sessionStart WHERE 0"
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -441,11 +631,15 @@ internal fun buildTimelineQuery(
         )
     }
 
+    val outerWhere = outerConditions(filter, params)
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, " +
+            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
+            "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath, u.${TimelineFacet.LogLevel.column()} AS level, " +
+            "$FACET_VALUES_JSON AS facetValues, " +
             "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
             "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
+            outerWhere +
             // an app start is below the events that happened at the same time
             // at the same time, the response is above its request
             "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC",

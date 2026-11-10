@@ -24,6 +24,7 @@ import io.github.openflocon.flocon.myapplication.multi.ui.SampleScreen
 import io.github.openflocon.flocon.myapplication.multi.ui.components.CategoryIcon
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Card
 import io.github.openflocon.flocon.myapplication.multi.ui.components.PlatformChips
+import io.github.openflocon.flocon.myapplication.multi.ui.components.PlatformSummary
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Pill
 import io.github.openflocon.flocon.myapplication.multi.ui.components.SectionLabel
 import io.github.openflocon.flocon.myapplication.multi.ui.theme.SampleIcons
@@ -126,7 +127,7 @@ private fun PluginTile(screen: SampleScreen, onClick: () -> Unit, modifier: Modi
                 )
                 Text(screen.subtitle, style = MaterialTheme.typography.bodySmall, color = colors.inkMuted)
             }
-            PlatformChips(screen.platforms, SampleFeatures.platform)
+            PlatformSummary(screen.platforms, SampleFeatures.platform)
         }
     }
 }

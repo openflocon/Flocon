@@ -22,13 +22,20 @@ import io.github.openflocon.mcp.files.FilesMcpToolProvider
 import io.github.openflocon.mcp.images.ImagesMcpToolProvider
 import io.github.openflocon.mcp.mocks.NetworkMocksMcpToolProvider
 import io.github.openflocon.mcp.network.NetworkMcpToolProvider
+import io.github.openflocon.mcp.screen.McpSelectionApplier
+import io.github.openflocon.mcp.screen.NavigateDesktopAppMcpToolProvider
+import io.github.openflocon.mcp.serverports.ServerPortsMcpToolProvider
 import io.github.openflocon.mcp.sharedpreferences.SharedPreferencesMcpToolProvider
 import io.github.openflocon.mcp.table.TableMcpToolProvider
+import io.github.openflocon.mcp.timeline.ShowInTimelineMcpToolProvider
+import io.github.openflocon.mcp.timeline.TimelineMcpToolProvider
+import io.github.openflocon.mcp.timeline.TimelineWindowFinder
 import io.github.openflocon.mcp.webview.WebViewMcpToolProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.time.ZoneId
 
 val mcpModule = module {
     single { FloconMcpServer(toolProviders = getAll(), logManager = get()) } bind McpServerRepository::class
@@ -51,9 +58,15 @@ val mcpModule = module {
     singleOf(::DesktopFolderOpener) bind FolderOpener::class
     singleOf(::FloconFolderMcpToolProvider) bind McpToolProvider::class
     singleOf(::SharedPreferencesMcpToolProvider) bind McpToolProvider::class
+    singleOf(::ServerPortsMcpToolProvider) bind McpToolProvider::class
     singleOf(::DashboardMcpToolProvider) bind McpToolProvider::class
     singleOf(::ImagesMcpToolProvider) bind McpToolProvider::class
     singleOf(::CrashReporterMcpToolProvider) bind McpToolProvider::class
     singleOf(::TableMcpToolProvider) bind McpToolProvider::class
     singleOf(::WebViewMcpToolProvider) bind McpToolProvider::class
+    singleOf(::NavigateDesktopAppMcpToolProvider) bind McpToolProvider::class
+    single { TimelineWindowFinder(get(), get(), ZoneId.systemDefault(), System::currentTimeMillis) }
+    single { TimelineMcpToolProvider(get(), get(), get(), ZoneId.systemDefault()) } bind McpToolProvider::class
+    singleOf(::McpSelectionApplier)
+    single { ShowInTimelineMcpToolProvider(get(), get(), get(), get(), get(), get(), get(), get(), ZoneId.systemDefault()) } bind McpToolProvider::class
 }

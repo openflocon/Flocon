@@ -17,6 +17,4 @@ interface RemoteDeviceDataSource {
     fun getConnectionType(message: FloconIncomingMessageDomainModel): DeviceConnectionType?
 
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
-
-    suspend fun restartApp(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }

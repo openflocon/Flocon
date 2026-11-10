@@ -6,5 +6,6 @@
   "homepage": "https://openflocon.github.io/Flocon/mcp",
   "repository": "https://github.com/openflocon/Flocon",
   "keywords": ["flocon", "mcp", "android", "ios", "kmp", "debug", "network"],
+  "logo": "./assets/flocon.png",
   "skills": "./skills/"
 }

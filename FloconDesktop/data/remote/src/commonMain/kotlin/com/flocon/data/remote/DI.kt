@@ -14,6 +14,7 @@ import com.flocon.data.remote.messages.messagesModule
 import com.flocon.data.remote.network.networkModule
 import com.flocon.data.remote.sharedpreference.sharedPreferencesModule
 import com.flocon.data.remote.table.tableModule
+import com.flocon.data.remote.timelinelog.timelineLogModule
 import com.flocon.data.remote.version.versionModule
 import com.flocon.data.remote.webview.webViewModule
 import kotlinx.serialization.json.Json
@@ -33,6 +34,7 @@ val dataRemoteModule = module {
         networkModule,
         sharedPreferencesModule,
         tableModule,
+        timelineLogModule,
         deviceModule,
         versionModule,
         crashReportModule,

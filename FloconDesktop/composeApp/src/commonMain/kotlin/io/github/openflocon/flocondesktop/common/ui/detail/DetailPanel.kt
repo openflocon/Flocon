@@ -84,13 +84,14 @@ internal fun DetailPanel(
 }
 
 /**
- * A small uppercase [label] (with optional [actions] on its right), a [title], then a row of [chips]
+ * A small uppercase [label] (with optional [actions] on its right), a [title] (after an optional [icon]), then a row of [chips]
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun DetailHeader(
     label: String,
     title: String,
+    icon: (@Composable () -> Unit)? = null,
     chips: (@Composable RowScope.() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
@@ -111,11 +112,18 @@ internal fun DetailHeader(
                 )
                 actions?.invoke(this)
             }
-            Text(
-                text = title,
-                style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = FloconTheme.colors.ink,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                icon?.invoke()
+                Text(
+                    text = title,
+                    style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = FloconTheme.colors.ink,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
             if (chips != null) {
                 FlowRow(
                     verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),

@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.model
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.timeline.models.TimelineFacet
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMethodUi
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -14,6 +15,8 @@ internal data class TimelineFacetValueUiModel(
     val selected: Boolean,
     val method: NetworkMethodUi? = null, // an http method, displayed like in the network screen
     val httpFamily: Int? = null, // the first digit of a status class, to color it like in the network screen
+    val logLevel: TimelineLogLevel? = null, // a level of log, to color it like in the list
+    val logType: String? = null, // a type of log: the reserved ones show their glyph like in the list
 )
 
 @Immutable
@@ -24,21 +27,110 @@ internal data class TimelineFacetGroupUiModel(
     val asTags: Boolean = false,
 )
 
-// one source of the filter panel: its switch and the facets to narrow it down
 @Immutable
-internal data class TimelineFilterSectionUiModel(
-    val source: TimelineSource,
-    val count: Int,
-    val enabled: Boolean,
-    val activeFacetCount: Int,
-    val groups: ImmutableList<TimelineFacetGroupUiModel>,
-)
+sealed interface TimelineFilterSectionUi {
+    val source: TimelineSource
+    val count: Int
+    val enabled: Boolean
+    val activeFacetCount: Int
+}
+
+// the sources without any facet: only the switch
+@Immutable
+internal data class TimelineBasicFilterUiModel(
+    override val source: TimelineSource,
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int = 0,
+) : TimelineFilterSectionUi
+
+// the databases and the kinds of statement, ex: only the SELECT of app.db
+@Immutable
+internal data class TimelineDatabaseFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val names: TimelineFacetGroupUiModel, // listed even before a database is seen: the selector explains it
+    val statements: TimelineFacetGroupUiModel?,
+    val rules: ImmutableList<TimelineRuleUiModel>, // words of the sql query to keep or hide
+    val hideTransactions: Boolean,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Database
+}
+
+// the tables the analytics events are sent to
+@Immutable
+internal data class TimelineAnalyticsFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val tables: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Analytics
+}
+
+// the tables the items were added to
+@Immutable
+internal data class TimelineTableFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val tables: TimelineFacetGroupUiModel, // listed even before a table is seen: the selector explains it
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Table
+}
+
+// the kinds of event of the WebViews: console, page, bridge
+@Immutable
+internal data class TimelineWebViewFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val kinds: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.WebView
+}
+
+// the classes of exception of the crashes
+@Immutable
+internal data class TimelineCrashFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val exceptions: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Crash
+}
+
+// the kinds of accessibility event
+@Immutable
+internal data class TimelineAccessibilityFilterUiModel(
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
+    val actions: TimelineFacetGroupUiModel?,
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Accessibility
+}
+
+// the facets a source can be narrowed down by, to know if it has something to unfold and what a search can match
+internal fun TimelineFilterSectionUi.facetGroups(): List<TimelineFacetGroupUiModel> = when (this) {
+    is TimelineDatabaseFilterUiModel -> listOfNotNull(names, statements)
+    is TimelineTableFilterUiModel -> listOf(tables)
+    is TimelineWebViewFilterUiModel -> listOfNotNull(kinds)
+    is TimelineAnalyticsFilterUiModel -> listOfNotNull(tables)
+    is TimelineCrashFilterUiModel -> listOfNotNull(exceptions)
+    is TimelineAccessibilityFilterUiModel -> listOfNotNull(actions)
+    is TimelineBasicFilterUiModel -> emptyList()
+    is TimelineNetworkFilterUiModel -> emptyList() // has its own card
+}
 
 // an include or exclude rule typed by the user, displayed as a chip
 @Immutable
 internal data class TimelineRuleUiModel(
     val value: String,
     val exclude: Boolean,
+    val active: Boolean = true, // an inactive rule stays in the list but is not applied
 )
 
 /**
@@ -47,7 +139,9 @@ internal data class TimelineRuleUiModel(
  */
 @Immutable
 internal data class TimelineNetworkFilterUiModel(
-    val enabled: Boolean,
+    override val count: Int,
+    override val enabled: Boolean,
+    override val activeFacetCount: Int,
     val isFiltered: Boolean, // a value is hidden or a rule is set: offers to reset
     val matchingCount: Int, // the network calls displayed
     val totalCount: Int, // the network calls received, with the text of the filter
@@ -62,33 +156,13 @@ internal data class TimelineNetworkFilterUiModel(
     val content: ImmutableList<TimelineFacetValueUiModel>,
     val hosts: ImmutableList<TimelineFacetValueUiModel>, // the hosts matching the rules
     val hostRules: ImmutableList<TimelineRuleUiModel>,
+    val pathRules: ImmutableList<TimelineRuleUiModel>, // words of the path of the calls to keep or hide
     val hiddenHostCount: Int,
     val hostCount: Int,
-) {
+) : TimelineFilterSectionUi {
+    override val source: TimelineSource = TimelineSource.Network
     val hasHiddenStatus: Boolean get() = statusClasses.any { !it.selected }
     val maxDurationPosition: Int get() = histogram.size
-
-    companion object {
-        val Empty = TimelineNetworkFilterUiModel(
-            enabled = true,
-            isFiltered = false,
-            matchingCount = 0,
-            totalCount = 0,
-            methods = persistentListOf(),
-            statusClasses = persistentListOf(),
-            statusRules = persistentListOf(),
-            histogram = persistentListOf(),
-            pendingCount = 0,
-            durationStart = 0,
-            durationEnd = 0,
-            durationLabel = null,
-            content = persistentListOf(),
-            hosts = persistentListOf(),
-            hostRules = persistentListOf(),
-            hiddenHostCount = 0,
-            hostCount = 0,
-        )
-    }
 }
 
 internal fun previewTimelineNetworkFilterUiModel() = TimelineNetworkFilterUiModel(
@@ -96,6 +170,8 @@ internal fun previewTimelineNetworkFilterUiModel() = TimelineNetworkFilterUiMode
     isFiltered = true,
     matchingCount = 8,
     totalCount = 22,
+    count = 22,
+    activeFacetCount = 0,
     methods = persistentListOf(
         TimelineFacetValueUiModel("GET", count = 5, selected = true, method = NetworkMethodUi.Http.GET),
         TimelineFacetValueUiModel("POST", count = 2, selected = true, method = NetworkMethodUi.Http.POST),
@@ -126,16 +202,84 @@ internal fun previewTimelineNetworkFilterUiModel() = TimelineNetworkFilterUiMode
         TimelineFacetValueUiModel("ws.postman-echo.com", count = 8, selected = true),
     ),
     hostRules = persistentListOf(TimelineRuleUiModel("postman", exclude = false), TimelineRuleUiModel("analytics", exclude = true)),
+    pathRules = persistentListOf(TimelineRuleUiModel("/raw", exclude = true)),
     hiddenHostCount = 0,
     hostCount = 2,
 )
 
+// one entry of the types menu of the logs card
+@Immutable
+internal data class TimelineLogTypeUiModel(
+    val type: String?, // a reserved type ("navigation"...), null: the tagged logs, every log whose type is not reserved
+    val count: Int,
+    val selected: Boolean,
+)
+
+/**
+ * The logs card of the filter panel: the types menu, the tag rules and the levels.
+ * The tag and the levels only apply to the tagged logs, never to the reserved types.
+ */
+@Immutable
+internal data class TimelineLogFilterUiModel(
+    val types: ImmutableList<TimelineLogTypeUiModel>, // the reserved types, then the tagged logs
+    val allTypesSelected: Boolean,
+    val totalCount: Int,
+    val taggedEnabled: Boolean,
+    val tagQuery: String,
+    val tagSuggestions: ImmutableList<TimelineFacetValueUiModel>, // the known tags matching the query
+    val tagIncludes: ImmutableList<TimelineRuleUiModel>,
+    val tagExcludes: ImmutableList<TimelineRuleUiModel>,
+    val levels: ImmutableList<TimelineFacetValueUiModel>,
+) {
+    companion object {
+        val Empty = TimelineLogFilterUiModel(
+            types = persistentListOf(),
+            allTypesSelected = true,
+            totalCount = 0,
+            taggedEnabled = true,
+            tagQuery = "",
+            tagSuggestions = persistentListOf(),
+            tagIncludes = persistentListOf(),
+            tagExcludes = persistentListOf(),
+            levels = persistentListOf(),
+        )
+    }
+}
+
+internal fun previewTimelineLogFilterUiModel(
+    allTypesSelected: Boolean = true,
+    taggedEnabled: Boolean = true,
+) = TimelineLogFilterUiModel(
+    types = persistentListOf(
+        TimelineLogTypeUiModel("navigation", count = 12, selected = true),
+        TimelineLogTypeUiModel("userAction", count = 30, selected = allTypesSelected),
+        TimelineLogTypeUiModel("lifecycle", count = 8, selected = allTypesSelected),
+        TimelineLogTypeUiModel(null, count = 41, selected = taggedEnabled),
+    ),
+    allTypesSelected = allTypesSelected && taggedEnabled,
+    totalCount = 91,
+    taggedEnabled = taggedEnabled,
+    tagQuery = "bi",
+    tagSuggestions = persistentListOf(
+        TimelineFacetValueUiModel("billing", count = 23, selected = true, logType = "billing"),
+        TimelineFacetValueUiModel("bin", count = 4, selected = true, logType = "bin"),
+    ),
+    tagIncludes = persistentListOf(TimelineRuleUiModel("payment", exclude = false), TimelineRuleUiModel("auth", exclude = false, active = false)),
+    tagExcludes = persistentListOf(TimelineRuleUiModel("debug", exclude = true)),
+    levels = persistentListOf(
+        TimelineFacetValueUiModel("DEBUG", count = 10, selected = true, logLevel = TimelineLogLevel.Debug),
+        TimelineFacetValueUiModel("INFO", count = 20, selected = false, logLevel = TimelineLogLevel.Info),
+        TimelineFacetValueUiModel("WARNING", count = 6, selected = true, logLevel = TimelineLogLevel.Warning),
+        TimelineFacetValueUiModel("ERROR", count = 5, selected = true, logLevel = TimelineLogLevel.Error),
+    ),
+)
+
 @Immutable
 internal data class TimelineFilterPanelUiModel(
-    val sections: ImmutableList<TimelineFilterSectionUiModel>,
-    val network: TimelineNetworkFilterUiModel,
+    // the network card is the section of the network
+    val sections: ImmutableList<TimelineFilterSectionUi>,
+    val logs: TimelineLogFilterUiModel,
     val currentSessionOnly: Boolean,
-    // something is filtered: used to offer to clear it
     val hasActiveFilters: Boolean,
     // facets selected, or sources hidden: the badge of the button opening the panel
     val activeFilterCount: Int,
@@ -143,7 +287,7 @@ internal data class TimelineFilterPanelUiModel(
     companion object {
         val Empty = TimelineFilterPanelUiModel(
             sections = persistentListOf(),
-            network = TimelineNetworkFilterUiModel.Empty,
+            logs = TimelineLogFilterUiModel.Empty,
             currentSessionOnly = false,
             hasActiveFilters = false,
             activeFilterCount = 0,

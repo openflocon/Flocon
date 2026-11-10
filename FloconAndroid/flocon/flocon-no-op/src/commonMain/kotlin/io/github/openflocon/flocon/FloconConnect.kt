@@ -8,6 +8,8 @@ class FloconConnectConfig internal constructor() {
     var bufferCapacity: Int = 5_000
     var address: String? = null
     var rememberLastAddress: Boolean = true
+    var websocketPort: Int = 9023
+    var httpPort: Int = 9024
 }
 
 /** Does nothing. */
@@ -25,3 +27,6 @@ val Flocon.Companion.connectionState: StateFlow<FloconConnectionState>
 /** Does nothing, always [FloconConnectResult.NotStarted]. */
 @Suppress("UNUSED_PARAMETER")
 suspend fun Flocon.Companion.connect(address: String): FloconConnectResult = FloconConnectResult.NotStarted
+
+/** Does nothing. */
+suspend fun Flocon.Companion.disconnect() = Unit

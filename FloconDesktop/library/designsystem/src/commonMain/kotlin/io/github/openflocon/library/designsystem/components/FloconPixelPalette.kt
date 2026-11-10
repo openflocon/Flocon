@@ -24,6 +24,7 @@ object FloconPixelPalette {
     val Shadow = Color(0x40000000)
     val Dust = Color(0x66FFFFFF)
     val White = Color(0xFFFFFFFF)
+    val BarkWave = Color(0xFFFF4D4D)
 
     // objects
     val Metal = Color(0xFFC9C9D6)

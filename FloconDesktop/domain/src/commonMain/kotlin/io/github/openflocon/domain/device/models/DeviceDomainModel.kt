@@ -16,3 +16,6 @@ fun DeviceDomainModel.isPlatformIos(): Boolean = platform == "ios"
 
 // adb needs the serial of the device, which is not available when it is connected over wifi
 fun DeviceDomainModel.supportsAdb(): Boolean = connectionType != DeviceConnectionType.Wifi
+
+// iOS uses the simulator, Android needs adb: not available when it is connected over wifi
+fun DeviceDomainModel.canTakeScreenshots(): Boolean = isPlatformIos() || supportsAdb()

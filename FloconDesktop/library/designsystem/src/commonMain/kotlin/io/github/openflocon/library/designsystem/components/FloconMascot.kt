@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /** Size of the sprite: a 34 x 26 pixel grid, 1.5 dp per pixel. */
 val FloconMascotWidth: Dp = 51.dp
@@ -37,6 +38,7 @@ private const val BackflipLanding = 0.9f
 
 /** Part of a jump spent with the legs stretched out: the rise and the apex, then it gathers to land. */
 private val JumpStretch = 0f..0.6f
+private const val BarkFadeStart = 0.6f
 private const val HeartLifeMs = 1_500L
 private const val HeartSpacingMs = 500L
 private const val HeartRiseMs = 170L
@@ -57,6 +59,7 @@ private val Tongue = FloconPixelPalette.Tongue
 private val Sleep = FloconPixelPalette.Sleep
 private val Shadow = FloconPixelPalette.Shadow
 private val Dust = FloconPixelPalette.Dust
+private val BarkWave = FloconPixelPalette.BarkWave
 
 /**
  * 8-bit golden retriever. Faces right, mirrored when [FloconMascotState.facingRight] is false.
@@ -110,7 +113,11 @@ fun FloconMascot(
 
                 FloconMascotMode.Petted -> drawSitting(unit, state, FloconMascotMode.Petted)
 
+                FloconMascotMode.Idle -> state.idleAnimation?.let { drawMascotIdle(unit, it, state.idleFrame) }
+
                 FloconMascotMode.Jump -> drawRunning(unit, stretched = state.jumpProgress in JumpStretch, dust = false)
+
+                FloconMascotMode.Bark -> drawBarking(unit, state)
 
                 FloconMascotMode.Backflip -> {
                     val progress = state.backflipProgress
@@ -125,7 +132,7 @@ fun FloconMascot(
     }
 }
 
-private fun DrawScope.pixels(
+internal fun DrawScope.pixels(
     unit: Float,
     x: Int,
     y: Int,
@@ -279,6 +286,48 @@ private fun DrawScope.drawLying(unit: Float, state: FloconMascotState) {
         pixels(unit, 32, 5, 1, 1, Sleep)
         pixels(unit, 31, 6, 1, 1, Sleep)
         pixels(unit, 30, 7, 4, 1, Sleep)
+    }
+}
+
+/** Sitting with the head up and the mouth open, red sound waves coming out of it. */
+private fun DrawScope.drawBarking(unit: Float, state: FloconMascotState) {
+    val progress = state.barkProgress
+    val headDy = -1
+    // the shadow stays on the ground and gets smaller as the mascot goes up
+    val ground = (state.lift / unit).roundToInt()
+    val shrink = if (ground > 0) 2 else 0
+    pixels(unit, 5 + shrink, 24 + ground, 20 - 2 * shrink, 1, Shadow)
+
+    // tail up, haunch, torso, paws
+    pixels(unit, 2, 17, 4, 2, GoldenDark)
+    pixels(unit, 1, 15, 2, 3, GoldenDark)
+    pixels(unit, 6, 15, 11, 9, GoldenDark)
+    pixels(unit, 15, 11, 9, 13, GoldenBody)
+    pixels(unit, 17, 17, 5, 7, GoldenLight)
+    pixels(unit, 5, 23, 8, 2, GoldenLight)
+    pixels(unit, 20, 23, 5, 2, GoldenLight)
+    // head, up
+    pixels(unit, 17, 2 + headDy, 12, 11, Golden)
+    pixels(unit, 25, 8 + headDy, 6, 5, GoldenLight)
+    pixels(unit, 29, 8 + headDy, 2, 2, Ink)
+    pixels(unit, 21, 10 + headDy, 2, 1, Blush)
+    pixels(unit, 22, 5 + headDy, 2, 3, Ink)
+    pixels(unit, 22, 5 + headDy, 1, 1, Color.White)
+    // open mouth: inside, tongue, lower jaw
+    pixels(unit, 26, 11 + headDy, 5, 3, Ink)
+    pixels(unit, 27, 13 + headDy, 3, 1, Tongue)
+    pixels(unit, 26, 14 + headDy, 5, 1, GoldenLight)
+    // near ear
+    pixels(unit, 15, 4 + headDy, 3, 7, Ear)
+    pixels(unit, 15, 9 + headDy, 3, 2, EarPink)
+
+    // two sound waves in front of the mouth, the second one a bit later, both fading out
+    val fade = if (progress > BarkFadeStart) (1f - progress) / (1f - BarkFadeStart) else 1f
+    if (progress >= 0.1f) {
+        pixels(unit, 33, 10 + headDy, 1, 4, BarkWave.copy(alpha = fade))
+    }
+    if (progress >= 0.25f) {
+        pixels(unit, 35, 8 + headDy, 1, 8, BarkWave.copy(alpha = fade))
     }
 }
 

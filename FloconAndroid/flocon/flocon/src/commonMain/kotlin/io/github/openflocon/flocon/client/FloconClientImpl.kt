@@ -24,8 +24,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.serialization.modules.EmptySerializersModule
 
+@OptIn(ExperimentalAtomicApi::class)
 class FloconClient internal constructor(
     private val context: FloconContext,
     private val scope: CoroutineScope,
@@ -55,17 +58,33 @@ class FloconClient internal constructor(
     private val items = Channel<OutboxItem>(Channel.UNLIMITED)
 
     /** The connection to the default address of the desktop app, always tried. */
-    internal val defaultLink: FloconLink = newLink(defaultServer())
+    internal val defaultLink: FloconLink by lazy { newLink(defaultServer()) }
+
+    private val websocketPortValue = AtomicInt(FLOCON_DEFAULT_WEBSOCKET_PORT)
+    private val httpPortValue = AtomicInt(FLOCON_DEFAULT_HTTP_PORT)
+
+    internal val websocketPort: Int
+        get() = websocketPortValue.load()
+
+    internal val httpPort: Int
+        get() = httpPortValue.load()
+
+    /** Sets the desktop ports, to call before the default link is first used. */
+    internal fun setupPorts(websocketPort: Int, httpPort: Int) {
+        websocketPortValue.store(websocketPort)
+        httpPortValue.store(httpPort)
+    }
 
     /** The connection to the address given with `Flocon.connect`, in addition to the default one. */
     @Volatile
     internal var extraLink: FloconLink? = null
         private set
 
-    private val address
-        get() = (extraLink?.takeIf { it.isConnected } ?: defaultLink.takeIf { it.isConnected } ?: defaultLink).server.host
+    /** The link the files go through: the connected extra one, else the default one. */
+    internal val uploadLink: FloconLink
+        get() = extraLink?.takeIf { it.isConnected } ?: defaultLink
 
-    private fun defaultServer() = FloconServer(getServerHost(context), FLOCON_WEBSOCKET_PORT)
+    private fun defaultServer() = FloconServer(getServerHost(context), websocketPort, httpPort)
 
     private fun newLink(server: FloconServer): FloconLink {
         val link = FloconLink(server)
@@ -184,10 +203,12 @@ class FloconClient internal constructor(
         file: FloconFile,
         infos: FloconFileInfo,
     ) {
+        // the link is chosen now, with its own http port
+        val server = uploadLink.server
         scope.launch {
             httpClient.send(
-                address = address,
-                port = FLOCON_HTTP_PORT,
+                address = server.host,
+                port = server.httpPort,
                 file = file,
                 infos = infos,
                 deviceId = appInfos.deviceId,
@@ -199,11 +220,6 @@ class FloconClient internal constructor(
 
     /** The messages kept while disconnected are sent by [onConnected], nothing to do here. */
     override fun sendPendingMessages() = Unit
-
-    companion object {
-        private const val FLOCON_WEBSOCKET_PORT = 9023
-        private const val FLOCON_HTTP_PORT = 9024
-    }
 }
 /**
  * The connection to one address of the desktop app, with its own websocket.

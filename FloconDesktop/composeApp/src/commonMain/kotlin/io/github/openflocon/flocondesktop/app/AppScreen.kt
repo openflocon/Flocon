@@ -15,7 +15,6 @@ import io.github.openflocon.flocondesktop.app.ui.releasenotes.releaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
-import io.github.openflocon.flocondesktop.app.version.VersionChecker
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
@@ -50,19 +49,19 @@ fun AppScreen(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<AppViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
-    val updateChip by versionCheckerViewModel.updateChip.collectAsStateWithLifecycle()
-    val uriHandler = LocalUriHandler.current
+    val desktopUpdate by versionCheckerViewModel.desktopUpdate.collectAsStateWithLifecycle()
+    val sdkUpdate by versionCheckerViewModel.sdkUpdate.collectAsStateWithLifecycle()
 
     Box(modifier = modifier.fillMaxSize()) {
         Content(
             uiState = uiState,
             navigationState = viewModel.navigationState,
             onAction = viewModel::onAction,
-            updateChip = updateChip,
-            onUpdateChipClicked = { uriHandler.openUri(it.link) },
+            desktopUpdate = desktopUpdate,
+            sdkUpdate = sdkUpdate,
+            onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
         )
         FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
-        VersionChecker()
     }
 }
 
@@ -71,8 +70,9 @@ private fun Content(
     uiState: AppUiState,
     navigationState: MainFloconNavigationState,
     onAction: (AppAction) -> Unit,
-    updateChip: VersionCheckerViewModel.UpdateChipUiModel?,
-    onUpdateChipClicked: (VersionCheckerViewModel.UpdateChipUiModel) -> Unit,
+    desktopUpdate: VersionCheckerViewModel.DesktopUpdateUiModel?,
+    sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel?,
+    onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit,
 ) {
     val sceneStrategies = remember {
         listOf(
@@ -101,6 +101,7 @@ private fun Content(
                             onClickItem = { menu -> onAction(AppAction.SelectMenu(menu.screen)) },
                             onTogglePin = { menu -> onAction(AppAction.TogglePin(menu.screen)) },
                             onToggleSection = { section -> onAction(AppAction.ToggleSection(section.id)) },
+                            desktopUpdate = desktopUpdate,
                         )
                     },
                     topBarContent = {
@@ -113,11 +114,10 @@ private fun Content(
                             onDeviceSelected = { onAction(AppAction.SelectDevice(it)) },
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
-                            onRestartClicked = { onAction(AppAction.Restart) },
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
-                            updateChip = updateChip,
-                            onUpdateChipClicked = onUpdateChipClicked,
+                            sdkUpdate = sdkUpdate,
+                            onSdkUpdateIgnored = onSdkUpdateIgnored,
                         )
                     }
                 )

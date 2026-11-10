@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -37,7 +36,8 @@ import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.general_delete
-import flocondesktop.composeapp.generated.resources.webview_empty
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
 import io.github.openflocon.flocondesktop.features.network.list.view.components.FilterBar
 import io.github.openflocon.flocondesktop.features.webview.model.WebViewAction
 import io.github.openflocon.flocondesktop.features.webview.model.WebViewEventKindUiModel
@@ -136,11 +136,9 @@ internal fun WebViewScreen(
                 .mascotPlatform(),
         ) {
             if (events.itemCount == 0) {
-                Text(
-                    text = stringResource(Res.string.webview_empty),
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-                    modifier = Modifier.align(Alignment.Center),
+                FeatureEmptyState(
+                    doc = FeatureDoc.WebView,
+                    modifier = Modifier.fillMaxSize(),
                 )
             } else {
                 LazyColumn(

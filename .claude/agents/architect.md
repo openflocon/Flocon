@@ -1,6 +1,6 @@
 ---
 name: architect
-description: MUST BE USED on a plan that adds a plugin, spans several modules or changes the protocol, before implementation starts. Checks it against Flocon's architecture.
+description: MUST BE USED on a plan that adds a plugin or changes the protocol (Protocol.kt, message payloads), or that changes the layering between modules, before implementation starts. Not needed for a change that only touches several modules the usual way. Checks it against Flocon's architecture.
 tools: Read, Grep, Glob
 model: opus
 ---

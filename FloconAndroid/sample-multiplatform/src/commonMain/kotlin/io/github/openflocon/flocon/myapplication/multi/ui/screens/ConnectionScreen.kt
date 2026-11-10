@@ -43,6 +43,7 @@ import io.github.openflocon.flocon.FloconConnectResult
 import io.github.openflocon.flocon.FloconConnectionState
 import io.github.openflocon.flocon.connect
 import io.github.openflocon.flocon.connectionState
+import io.github.openflocon.flocon.disconnect
 import io.github.openflocon.flocon.myapplication.multi.ui.SampleQrScanner
 import io.github.openflocon.flocon.myapplication.multi.ui.components.AccentButton
 import io.github.openflocon.flocon.myapplication.multi.ui.components.Card
@@ -56,7 +57,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Connects the app to Flocon Desktop at an IP address (a real device cannot reach the computer through
- * localhost), with `Flocon.connect`. The port is always 9023.
+ * localhost), with `Flocon.connect`, and closes that connection with `Flocon.disconnect`. The ports are 9023 / 9024
+ * by default, or `host:ws` / `host:ws:http`.
  */
 @Composable
 fun ConnectionScreen(onBack: () -> Unit) {
@@ -159,6 +161,17 @@ fun ConnectionScreen(onBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     )
                 }
+                AccentButton(
+                    text = "Disconnect",
+                    enabled = !connecting,
+                    onClick = {
+                        scope.launch {
+                            Flocon.disconnect()
+                            result = null
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                )
                 when (val current = result) {
                     is FloconConnectResult.Failed -> ResultLine("✕ ${current.reason}", colors.error)
                     is FloconConnectResult.InvalidAddress -> ResultLine("✕ ${current.reason}", colors.error)
@@ -171,7 +184,8 @@ fun ConnectionScreen(onBack: () -> Unit) {
 
         InfoCard(
             text = "Flocon keeps trying its default address (localhost on an emulator) and also connects to this " +
-                "one. The port is always 9023.",
+                "one. Without a port, 9023 / 9024 are used (or the ports set in connect {}), or type host:ws or " +
+                "host:ws:http, such as 192.168.1.20:10023:10024.",
             tint = colors.accent,
         )
     }

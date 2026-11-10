@@ -31,8 +31,20 @@ class TimelineSettingsUseCasesTest {
             state.value = state.value.copy(graph = graph)
         }
 
+        override suspend fun setMergePlugins(mergePlugins: Boolean) {
+            state.value = state.value.copy(mergePlugins = mergePlugins)
+        }
+
         override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
             state.value = state.value.copy(selectedSources = sources)
+        }
+
+        override suspend fun setScreenshots(screenshots: Boolean) {
+            state.value = state.value.copy(screenshots = screenshots)
+        }
+
+        override suspend fun setScreenshotIntervalSeconds(seconds: Int) {
+            state.value = state.value.copy(screenshotIntervalSeconds = seconds)
         }
     }
 
@@ -52,6 +64,18 @@ class TimelineSettingsUseCasesTest {
 
         assertEquals(
             TimelineSettingsDomainModel(autoScroll = true, invertList = false),
+            ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `the single graph is off by default and set without changing the graph`() = runBlocking {
+        assertEquals(false, ObserveTimelineSettingsUseCase(repository)().first().mergePlugins)
+
+        SetTimelineMergePluginsUseCase(repository)(true)
+
+        assertEquals(
+            TimelineSettingsDomainModel(graph = true, mergePlugins = true),
             ObserveTimelineSettingsUseCase(repository)().first(),
         )
     }
@@ -101,5 +125,41 @@ class TimelineSettingsUseCasesTest {
             TimelineSource.entries.toSet(),
             ObserveTimelineSettingsUseCase(repository)().first().selectedSources,
         )
+    }
+
+    @Test
+    fun `screenshots are off with a 5 s interval by default`() = runBlocking {
+        val settings = ObserveTimelineSettingsUseCase(repository)().first()
+
+        assertEquals(false, settings.screenshots)
+        assertEquals(5, settings.screenshotIntervalSeconds)
+    }
+
+    @Test
+    fun `the screenshots are set without changing the other options`() = runBlocking {
+        SetTimelineInvertListUseCase(repository)(true)
+        SetTimelineScreenshotsUseCase(repository)(true)
+
+        assertEquals(
+            TimelineSettingsDomainModel(invertList = true, screenshots = true),
+            ObserveTimelineSettingsUseCase(repository)().first(),
+        )
+    }
+
+    @Test
+    fun `the interval is set when it is one of 5, 10, 15, 30`() = runBlocking {
+        listOf(5, 10, 15, 30).forEach { seconds ->
+            SetTimelineScreenshotIntervalUseCase(repository)(seconds)
+
+            assertEquals(seconds, ObserveTimelineSettingsUseCase(repository)().first().screenshotIntervalSeconds)
+        }
+    }
+
+    @Test
+    fun `an interval that is not allowed is ignored`() = runBlocking {
+        SetTimelineScreenshotIntervalUseCase(repository)(7)
+        SetTimelineScreenshotIntervalUseCase(repository)(0)
+
+        assertEquals(5, ObserveTimelineSettingsUseCase(repository)().first().screenshotIntervalSeconds)
     }
 }

@@ -31,11 +31,23 @@ internal class TimelinePreferencesRepositoryImpl(
         localSettingsDataSource.updateTimelineSettings { it.copy(graph = graph) }
     }
 
+    override suspend fun setMergePlugins(mergePlugins: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(mergePlugins = mergePlugins) }
+    }
+
     override suspend fun setSelectedSources(sources: Set<TimelineSource>) {
         localSettingsDataSource.updateTimelineSettings { current ->
             current.copy(
                 disabledSources = TimelineSource.entries.filter { it !in sources }.map { it.name }.toSet(),
             )
         }
+    }
+
+    override suspend fun setScreenshots(screenshots: Boolean) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(screenshots = screenshots) }
+    }
+
+    override suspend fun setScreenshotIntervalSeconds(seconds: Int) {
+        localSettingsDataSource.updateTimelineSettings { it.copy(screenshotIntervalSeconds = seconds) }
     }
 }

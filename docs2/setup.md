@@ -130,7 +130,7 @@ Call `startFlocon` as early as possible in your application lifecycle and `insta
         override fun onCreate() {
             super.onCreate()
 
-            startFlocon(this) {
+            startFlocon(FloconContext(this)) {
                 install(FloconNetwork)
                 install(FloconAnalytics)
             }
@@ -170,7 +170,7 @@ The available plugins:
 | Plugin | Module | Page |
 | :--- | :--- | :--- |
 | `FloconNetwork` | `flocon-network-core` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
-| `FloconDatabase` | `flocon-database-core` + `flocon-database-room` or `-room3` | [Databases](database.md) |
+| `FloconDatabase` | `flocon-database-core` + `flocon-database-room`, `-room3` or `-sqldelight` | [Databases](database.md) |
 | `FloconPreferences` | `flocon-sharedprefs` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
 | `FloconFiles` | `flocon-files` | [Files](files.md) |
 | `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |
@@ -180,21 +180,111 @@ The available plugins:
 | `FloconFeatureFlags` | `flocon-feature-flags` | [Feature flags](featureflags.md) |
 | `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
 | `FloconWebView` | `flocon-webview` | [WebViews](webview.md) |
-| `FloconDevice` | `flocon-device` | Shows the app icon and lets the desktop restart the app (Android) |
+| `FloconTimeline` | `flocon-timeline` | [Timeline](timeline.md#logs-from-your-app) |
 
 !!! tip "Logs"
     Set `FloconLogger.enabled = true` to see what Flocon does (connection, plugins not installed, ...).
+
+### Connect options
+
+The `connect { }` block inside `startFlocon` configures how the SDK reaches the desktop:
+
+```kotlin
+startFlocon(this) {
+    connect {
+        address = "192.168.1.10"  // desktop host, optionally "host:ws" or "host:ws:http"
+        websocketPort = 9023      // default 9023
+        httpPort = 9024           // default 9024 (file upload)
+    }
+    install(FloconNetwork)
+}
+```
+
+| Option | Default | Description |
+| :--- | :--- | :--- |
+| `address` | `localhost` | Desktop host. `host`, `host:ws` or `host:ws:http` are accepted (for example `"192.168.1.10:3030:3031"`). |
+| `websocketPort` | `9023` | Port of the desktop websocket server. |
+| `httpPort` | `9024` | Port of the desktop HTTP server (file upload). |
+
+An address can carry both ports: `host`, `host:wsPort` or `host:wsPort:httpPort` (for example `192.168.1.10:10023:10024`). Each port is between `1` and `65535`; a missing port takes `websocketPort` / `httpPort`. The ports written in `address` win over `websocketPort` / `httpPort` for that address, and the file uploads use the HTTP port of the address they go through. The same format is accepted by `Flocon.connect(address)`.
+
+The QR code of Flocon Desktop's Connect dialog contains `ip:ws:http` (always both ports) as soon as one of the desktop ports is not the default (and just the IP when both are the defaults), so scanning it is enough to connect with the right ports. The last address is saved as `host:ws:http` when one of its ports differs from `websocketPort` / `httpPort`, as the plain host otherwise; addresses saved by older versions still load.
+
+### Custom ports
+
+By default Flocon Desktop listens on `9023` (websocket) and `9024` (HTTP). If those ports are already used on your machine, change them in Flocon Desktop under **Settings > Server ports**:
+
+- Ports must be between `1024` and `65535`.
+- The websocket and HTTP ports must be different.
+- `9042` is reserved for the [MCP](mcp.md) server and cannot be used.
+
+The SDK must use the same ports as the desktop:
+
+| Setup | Needs the SDK ports to be changed? |
+| :--- | :--- |
+| Android emulator or USB device | No. The desktop runs `adb reverse` so that the device defaults `9023` / `9024` still reach the desktop, whatever the desktop ports are. |
+| Android real device over Wi-Fi | Yes. There is no `adb reverse`. |
+| iOS (simulator or device), JVM, Wasm | Yes. They do not use `adb reverse`. |
+
+!!! warning "Silent failure"
+    If the SDK ports differ from the desktop settings where `adb reverse` is not used, the app simply never connects, with no error. Enable `FloconLogger.enabled = true` to see the connection attempts.
+
+```kotlin
+startFlocon(FloconContext()) {
+    connect {
+        address = "192.168.1.10"
+        websocketPort = 3030
+        httpPort = 3031
+    }
+}
+```
+
+On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:ws:http` is also accepted in connect addresses.
+
+#### Launch options
+
+Flocon Desktop can also override the ports for **the current session only**. The values are never saved in the settings, and the next launch without options uses the saved ports again.
+
+| Port | Argument | Environment variable |
+| :--- | :--- | :--- |
+| Websocket | `--websocket-port=<n>` (or `--websocket-port <n>`) | `FLOCON_WEBSOCKET_PORT` |
+| HTTP | `--http-port=<n>` (or `--http-port <n>`) | `FLOCON_HTTP_PORT` |
+
+For each port the priority is: argument, then environment variable, then the ports saved in **Settings > Server ports**, then the defaults `9023` / `9024`. Unknown arguments are ignored.
+
+The ports that will be used (the overrides merged with the saved ports) follow the same rules as the settings. If they are invalid, or if a value is not a number, Flocon Desktop prints the reason on stderr and exits with code `1` without opening the window. When a port is overridden, its field is disabled in **Settings > Server ports**, and the servers, `adb reverse` and the Connect dialog use the overridden port.
+
+```bash
+# from the sources
+./gradlew :composeApp:run --args="--websocket-port=9100 --http-port=9101"
+
+# macOS, installed app
+open -a Flocon --args --websocket-port=9100 --http-port=9101
+
+# environment variables
+FLOCON_WEBSOCKET_PORT=9100 FLOCON_HTTP_PORT=9101 ./gradlew :composeApp:run
+```
+
+With `open -a`, the environment variables of your shell are not forwarded to an already installed app: prefer the arguments, or run the app binary from the terminal.
 
 ---
 
 ## 3. Install the Desktop Companion
 
-Download the latest release for your operating system:
+On macOS, install it with [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask openflocon/tap/flocon
+```
+
+Update it later with `brew upgrade --cask flocon`.
+
+On Windows and Linux (or on macOS without Homebrew), download the latest release for your operating system:
 
 [:octicons-download-24: Download Flocon Desktop](https://github.com/openflocon/Flocon/releases){ .md-button .md-button--primary }
 
 !!! tip "macOS First Launch"
-    On macOS, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
+    The Homebrew install takes care of this for you. With the DMG, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
     ```bash
     xattr -cr /Applications/Flocon.app
     ```

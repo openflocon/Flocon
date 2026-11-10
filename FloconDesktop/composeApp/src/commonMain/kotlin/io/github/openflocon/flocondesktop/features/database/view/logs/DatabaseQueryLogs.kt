@@ -58,6 +58,7 @@ import flocondesktop.composeapp.generated.resources.remove
 import flocondesktop.composeapp.generated.resources.settings_filter_logs
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.DatabaseQueryLogsViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryLogEntryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseQueryUiModel
 import io.github.openflocon.flocondesktop.features.database.model.FilterChipUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -88,7 +89,7 @@ fun DatabaseQueryLogs(
         parameters = { parametersOf(dbId) }
     )
 
-    val logs: List<DatabaseQueryUiModel> by viewModel.logs.collectAsStateWithLifecycle()
+    val entries: ImmutableList<DatabaseQueryLogEntryUiModel> by viewModel.logs.collectAsStateWithLifecycle()
     val showTransactions by viewModel.showTransactions.collectAsStateWithLifecycle()
     val filterChips by viewModel.filterChips.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -133,43 +134,93 @@ fun DatabaseQueryLogs(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyListState,
             ) {
-                items(logs) { log ->
+                val queryRow: @Composable (DatabaseQueryUiModel, Modifier) -> Unit = { log, rowModifier ->
                     ContextualMenu(
                         modifier = Modifier
                             .fillMaxWidth(),
                         items = persistentListOf(
-                            FloconContextMenuItem.Item("Copy Query") {
-                                viewModel.copyQuery(log.sqlQuery)
-                            },
-                            FloconContextMenuItem.Item("Copy Args") {
-                                viewModel.copyArgs(log.bindArgs)
-                            },
-                            FloconContextMenuItem.Item("Copy as SQL") {
-                                viewModel.copyAsSql(log.sqlQuery, log.bindArgs)
-                            },
+                            FloconContextMenuItem.Item(
+                                label = "Copy Query",
+                                onClick = { viewModel.copyQuery(log.sqlQuery) }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Copy Args",
+                                onClick = {
+                                    viewModel.copyArgs(log.bindArgs)
+                                }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Copy as SQL",
+                                onClick = { viewModel.copyAsSql(log.sqlQuery, log.bindArgs) }
+                            ),
                             FloconContextMenuItem.Separator(),
-                            FloconContextMenuItem.Item("Filter In") {
-                                viewModel.addFilter(
-                                    log.sqlQuery,
-                                    FilterChipUiModel.FilterType.INCLUDE
-                                )
-                            },
-                            FloconContextMenuItem.Item("Filter Out") {
-                                viewModel.addFilter(
-                                    log.sqlQuery,
-                                    FilterChipUiModel.FilterType.EXCLUDE
-                                )
-                            }
+                            FloconContextMenuItem.Item(
+                                label = "Filter In",
+                                onClick = {
+                                    viewModel.addFilter(
+                                        log.sqlQuery,
+                                        FilterChipUiModel.FilterType.INCLUDE
+                                    )
+                                }
+                            ),
+                            FloconContextMenuItem.Item(
+                                label = "Filter Out",
+                                onClick = {
+                                    viewModel.addFilter(
+                                        log.sqlQuery,
+                                        FilterChipUiModel.FilterType.EXCLUDE
+                                    )
+                                }
+                            )
                         )
                     ) {
                         DatabaseQueryLogItem(
                             log = log,
-                            modifier = Modifier
+                            modifier = rowModifier
                                 .fillMaxWidth()
-                                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small)
+                                .padding(
+                                    horizontal = FloconTheme.spacing.small,
+                                    vertical = FloconTheme.spacing.small
+                                )
                         )
                     }
                     HorizontalDivider(color = FloconTheme.colors.bg200)
+                }
+
+                entries.fastForEach { entry ->
+                    when (entry) {
+                        is DatabaseQueryLogEntryUiModel.Query -> item(key = entry.key) {
+                            queryRow(entry.log, Modifier)
+                        }
+
+                        is DatabaseQueryLogEntryUiModel.Transaction -> {
+                            item(key = entry.key) {
+                                DatabaseTransactionLogItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                                    transaction = entry,
+                                    onClick = { viewModel.toggleTransaction(entry.id) },
+                                )
+                                HorizontalDivider(color = FloconTheme.colors.bg200)
+                            }
+                            if (entry.isExpanded) {
+                                items(entry.items, key = { "${entry.key}-${it.key}" }) { item ->
+                                    // what a transaction holds is indented under its header, one more level for each transaction nested in it
+                                    val indent = Modifier.padding(start = FloconTheme.spacing.large * (item.depth + 1))
+                                    when (item) {
+                                        is DatabaseQueryLogEntryUiModel.Transaction.Item.Query -> queryRow(item.log, indent)
+
+                                        is DatabaseQueryLogEntryUiModel.Transaction.Item.Nested -> DatabaseNestedTransactionLogItem(
+                                            nested = item,
+                                            onClick = { viewModel.toggleTransaction(item.id) },
+                                            modifier = indent.fillMaxWidth(),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             FloconVerticalScrollbar(
@@ -236,10 +287,16 @@ private fun DatabaseLogsHeader(
                     )
 
                     IconButton(onClick = addIncludeFilter) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.filter_include))
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(Res.string.filter_include)
+                        )
                     }
                     IconButton(onClick = addExcludeFilter) {
-                        Icon(imageVector = Icons.Default.Remove, contentDescription = stringResource(Res.string.filter_exclude))
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(Res.string.filter_exclude)
+                        )
                     }
                 }
 
@@ -249,7 +306,10 @@ private fun DatabaseLogsHeader(
                         toggleShowTransactions()
                     },
                     label = {
-                        Text(stringResource(Res.string.general_hide_transactions), style = FloconTheme.typography.bodySmall)
+                        Text(
+                            stringResource(Res.string.general_hide_transactions),
+                            style = FloconTheme.typography.bodySmall
+                        )
                     },
                     leadingIcon = {
                         if (!showTransactions) {

@@ -2,14 +2,17 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,8 +25,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -46,8 +51,10 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.isMetaPressed
 import androidx.compose.ui.input.pointer.isShiftPressed
@@ -75,7 +82,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
 import flocondesktop.composeapp.generated.resources.timeline_graph_empty
 import flocondesktop.composeapp.generated.resources.timeline_graph_fit
-import flocondesktop.composeapp.generated.resources.timeline_graph_following
 import flocondesktop.composeapp.generated.resources.timeline_graph_latest
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_app_start
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
@@ -83,7 +89,6 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
 import flocondesktop.composeapp.generated.resources.timeline_graph_next_session
-import flocondesktop.composeapp.generated.resources.timeline_graph_paused
 import flocondesktop.composeapp.generated.resources.timeline_graph_previous_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
@@ -94,12 +99,17 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.images.view.viewer.PinchZoomEffect
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphColor
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
+import io.github.openflocon.flocondesktop.features.timeline.view.drawLogGlyph
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
+import io.github.openflocon.library.designsystem.components.FloconHorizontalScrollbar
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
@@ -108,6 +118,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 private const val ZoomStep = 1.25
+
+// the thumb of the time scrollbar never gets shorter, however long the session is
+private const val ScrollbarMinThumbPx = 48f
 private const val WheelZoomPerTick = 1.15
 private const val ZoomBoxFillAlpha = 0.12f
 private const val ZoomFieldMaxDigits = 6
@@ -125,6 +138,14 @@ private const val InstantLabelPaddingPx = 4f
 private const val AppStartLineWidthPx = 2f
 private const val ClockFontPx = 10f
 private const val AxisTextBottomPx = 5f
+private const val ClockGapPx = 5f
+private const val ShortTickPx = 4f
+private const val LongTickPx = 8f
+private const val CursorPillPaddingXPx = 6f
+private const val CursorPillPaddingYPx = 2f
+private const val CursorLineWidthPx = 3f
+private const val CursorGuideAlpha = 0.8f
+private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
 internal data class GraphSessionUiModel(val position: Int, val total: Int) {
@@ -149,6 +170,16 @@ internal fun TimelineGraph(
     onEditingChange: (Boolean) -> Unit = {},
     // keeps the most recent event in view, until the user moves the graph. The option of the list, shared
     autoScroll: Boolean = false,
+    // the user moved back in time or selected an event (false), or reached the present moment again (true)
+    onAutoScrollChange: (Boolean) -> Unit = {},
+    // the screenshots strip above the axis: [screenshotsEnabled] is the setting, the captures are in [model]
+    screenshotsEnabled: Boolean = false,
+    // false for a device that cannot take them (an Android over wifi): no strip, nothing to turn on
+    screenshotsAvailable: Boolean = true,
+    onTurnOnScreenshots: () -> Unit = {},
+    // a zone asked from outside (the MCP): shown once, then the graph is free again
+    focus: GraphFocusUiModel? = null,
+    onFocusApplied: () -> Unit = {},
 ) {
     val colors = FloconTheme.colors
     val density = LocalDensity.current.density
@@ -162,15 +193,17 @@ internal fun TimelineGraph(
 
     // fitted: the whole session is shown and follows the new events, until the user zooms or moves. Opens at 100 %
     var fitted by remember { mutableStateOf(false) }
-    // the auto scroll waits while the user looks around: moved by hand, until latest or fit
-    var paused by remember { mutableStateOf(false) }
     var opened by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf(GraphViewport()) }
     var hovered by remember { mutableStateOf<GraphEventUiModel?>(null) }
+    // the screenshot of the strip under the pointer, shown larger
+    var hoveredScreenshot by remember { mutableStateOf<GraphScreenshotUiModel?>(null) }
     // the box drawn with the pointer to zoom on it, in px of the canvas: start and current point
     var zoomBox by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
     // the last x of the pointer in the track: the pinch zooms around it
     var pointerX by remember { mutableStateOf(0f) }
+    // the time under the pointer, shown on the axis with a line through the lanes
+    var cursorMs by remember { mutableStateOf<Long?>(null) }
     // shift + drag moves the graph instead of drawing a box
     var shiftHeld by remember { mutableStateOf(false) }
     // opens at 100 % once the canvas has its real width, read when it is known and not from an earlier layout
@@ -183,16 +216,77 @@ internal fun TimelineGraph(
     }
     // a more recent event than the ones in view: the graph follows, but not on an older session
     val followsLatest = session == null || !session.hasNext
-    LaunchedEffect(model.sessionDurationMs, autoScroll) {
-        if (autoScroll && !paused && !fitted && opened && followsLatest) {
-            viewport = viewport.followedLatest(model, trackWidth)
+    // the end of the events and screenshots, found once per graph: the auto scroll asks for it every frame
+    val latestMs = remember(model) { model.latestMs() }
+    // read by the pointer handlers, which are not restarted for a screenshot: they must see the latest graph
+    val currentModel by rememberUpdatedState(model)
+    val currentFollowsLatest by rememberUpdatedState(followsLatest)
+    // the auto scroll follows the present moment, frame by frame, and not only the events: the right of the graph is now.
+    // The user turns it off by moving back in time or by selecting an event, and on with its switch or by reaching the
+    // present moment again: it then jumps to now
+    val currentAutoScroll by rememberUpdatedState(autoScroll)
+    val currentOnAutoScrollChange by rememberUpdatedState(onAutoScrollChange)
+    // only the most recent session follows the present, and the fitted graph follows its own way: the switch is shared
+    // with the list, nothing else must touch it
+    val stopAutoScroll = { if (currentAutoScroll && currentFollowsLatest && !fitted) currentOnAutoScrollChange(false) }
+    val startAutoScroll = { if (!currentAutoScroll && currentFollowsLatest && !fitted) currentOnAutoScrollChange(true) }
+    val currentLatestMs by rememberUpdatedState(latestMs)
+    LaunchedEffect(autoScroll, fitted, opened, followsLatest, trackWidth) {
+        if (!autoScroll || fitted || !opened || !followsLatest) return@LaunchedEffect
+        while (true) {
+            withFrameMillis { }
+            val endMs = currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
+            // a pixel at least: no new layout for less
+            if (viewport.pxPastRight(endMs, trackWidth) >= 1.0) viewport = viewport.followedTo(endMs, trackWidth)
         }
     }
     LaunchedEffect(fitted, model.sessionDurationMs, trackWidth) {
         if (fitted) viewport = fitViewport(model.sessionDurationMs, trackWidth).copy(scrollY = viewport.scrollY)
     }
+    // the event of the zone: it may not be in the model yet when the session has just changed, it is waited for a moment
+    val focusedEvent = remember(model, focus) {
+        focus?.eventKey?.let { key -> model.lanes.firstNotNullOfOrNull { lane -> lane.rows.firstNotNullOfOrNull { row -> row.firstOrNull { it.key == key } } } }
+    }
+    LaunchedEffect(focus, opened, focusedEvent != null, trackWidth, trackHeight) {
+        if (focus == null || !opened || trackWidth <= 0f) return@LaunchedEffect
+        if (focus.eventKey != null && focusedEvent == null) delay(FocusEventWaitMs)
+        // not fitted nor following: the zone stays where it was put until the user turns the auto scroll on again
+        fitted = false
+        stopAutoScroll()
+        val rowTop = focusedEvent?.let { model.rowTopOf(it) }
+        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(contentHeight - trackHeight, 0f)) } ?: 0f
+        viewport = focusedViewport(focus.fromMs, focus.toMs, trackWidth).copy(scrollY = scrollY)
+        onFocusApplied()
+    }
     val maxScroll = max(contentHeight - trackHeight, 0f)
     val currentViewport = viewport.copy(scrollY = viewport.scrollY.coerceIn(0f, maxScroll))
+
+    // moves along the time: the viewport moved, going back leaves the present (no more auto scroll), reaching it goes back to it
+    fun pannedBy(deltaMs: Double): GraphViewport {
+        val limitMs = currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis())
+        val moved = viewport.panned(deltaMs, limitMs, trackWidth)
+        if (moved.startMs < viewport.startMs) stopAutoScroll()
+        if (viewport.reachedEnd(moved, limitMs, trackWidth)) startAutoScroll()
+        return moved
+    }
+
+    // the wheel / trackpad scroll, shared by the graph and the screenshot strip: [x] is in the track coordinates
+    fun onScroll(event: PointerEvent, change: PointerInputChange, x: Float) {
+        val delta = change.scrollDelta
+        val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
+        fitted = false
+        viewport = if (zoom) {
+            val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
+            viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
+        } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
+            // a real move along the time: the trackpad also sends a small horizontal drift
+            val ticks = if (delta.x != 0f) delta.x else delta.y
+            pannedBy(ticks * 40 / viewport.pxPerMs)
+        } else {
+            viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
+        }
+        change.consume()
+    }
 
     Column(
         modifier = modifier,
@@ -217,14 +311,11 @@ internal fun TimelineGraph(
                 fitted = false
                 viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
             },
-            following = if (autoScroll) !paused else null,
             onFit = {
                 fitted = true
-                paused = false
             },
             onLatest = {
                 fitted = false
-                paused = false
                 viewport = currentViewport.jumpedToLatest(model, trackWidth, trackHeight)
             },
         )
@@ -251,119 +342,161 @@ internal fun TimelineGraph(
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
+            logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
+            cursor = TimelineSource.Network.categoryColors().first,
         )
 
-        Canvas(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .semantics { contentDescription = description }
-                .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
-                .onSizeChanged { canvasSize = it }
-                .pointerInput(model, density, trackWidth, maxScroll) {
+        if (screenshotsAvailable) {
+            ScreenshotStrip(
+                screenshots = model.screenshots,
+                viewport = currentViewport,
+                trackWidthPx = trackWidth,
+                enabled = screenshotsEnabled,
+                hoveredTimeMs = hoveredScreenshot?.timeMs,
+                onHover = { hoveredScreenshot = it },
+                onTurnOn = onTurnOnScreenshots,
+                // the strip scrolls the graph too: the thumbnails do not consume the wheel
+                modifier = Modifier.pointerInput(density, trackWidth, maxScroll) {
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent()
                             val change = event.changes.firstOrNull() ?: continue
-                            shiftHeld = event.keyboardModifiers.isShiftPressed
-                            val x = change.position.x / density - LaneLabelWidthPx
-                            pointerX = x
-                            val y = change.position.y / density - AxisHeightPx
-                            when (event.type) {
-                                PointerEventType.Scroll -> {
-                                    val delta = change.scrollDelta
-                                    val zoom = event.keyboardModifiers.isCtrlPressed || event.keyboardModifiers.isMetaPressed
-                                    fitted = false
-                                    viewport = if (zoom) {
-                                        val factor = if (delta.y < 0) WheelZoomPerTick else 1 / WheelZoomPerTick
-                                        viewport.zoomed(factor, x.coerceIn(0f, trackWidth))
-                                    } else if (event.keyboardModifiers.isShiftPressed || abs(delta.x) > abs(delta.y)) {
-                                        // a real move along the time: the trackpad also sends a small horizontal drift
-                                        paused = true
-                                        val ticks = if (delta.x != 0f) delta.x else delta.y
-                                        viewport.panned(ticks * 40 / viewport.pxPerMs)
-                                    } else {
-                                        viewport.copy(scrollY = (viewport.scrollY + delta.y * 40).coerceIn(0f, maxScroll))
-                                    }
-                                    change.consume()
-                                }
-
-                                PointerEventType.Move -> {
-                                    hovered = if (x >= 0f && y >= 0f) {
-                                        model.hitTest(viewport, x, y + viewport.scrollY)
-                                    } else {
-                                        null
-                                    }
-                                }
-
-                                PointerEventType.Exit -> hovered = null
-                            }
-                        }
-                    }
-                }
-                .pointerInput(model, density, maxScroll) {
-                    detectTapGestures { offset ->
-                        val x = offset.x / density - LaneLabelWidthPx
-                        val y = offset.y / density - AxisHeightPx
-                        if (x >= 0f && y >= 0f) {
-                            model.hitTest(viewport, x, y + viewport.scrollY)?.let { onSelect(it.row) }
-                        }
-                    }
-                }
-                .pointerInput(model, density, trackWidth, maxScroll) {
-                    detectDragGestures(
-                        onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
-                        onDragEnd = {
-                            zoomBox?.let { (start, end) ->
-                                fitted = false
-                                paused = true
-                                viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
-                            }
-                            zoomBox = null
-                        },
-                        onDragCancel = { zoomBox = null },
-                    ) { change, drag ->
-                        change.consume()
-                        val box = zoomBox
-                        if (box != null) {
-                            zoomBox = box.first to change.position
-                        } else {
-                            fitted = false
-                            paused = true
-                            viewport = viewport
-                                .panned(-drag.x / density / viewport.pxPerMs)
-                                .copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                            if (event.type == PointerEventType.Scroll) onScroll(event, change, change.position.x / density - LaneLabelWidthPx)
                         }
                     }
                 },
-        ) {
-            scale(density, density, pivot = Offset.Zero) {
-                drawGraph(
-                    model = model,
-                    viewport = currentViewport,
-                    width = widthPx,
-                    height = heightPx,
-                    selectedKey = selectedKey,
-                    hoveredKey = hovered?.key,
-                    palette = palette,
-                    laneColors = laneColors,
-                    laneLabels = laneLabels,
-                    measurer = measurer,
-                    imagePainter = imagePainter,
-                )
-                zoomBox?.let { (start, end) ->
-                    // the box covers the lanes only, not the axis and the names of the lanes
-                    val left = max(min(start.x, end.x) / density, LaneLabelWidthPx)
-                    val right = max(max(start.x, end.x) / density, LaneLabelWidthPx)
-                    val top = min(start.y, end.y) / density
-                    val bottom = max(start.y, end.y) / density
-                    drawRect(palette.selection.copy(alpha = ZoomBoxFillAlpha), Offset(left, top), Size(right - left, bottom - top))
-                    drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
+            )
+        }
+
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .semantics { contentDescription = description }
+                    .pointerHoverIcon(if (hovered != null) PointerIcon.Hand else PointerIcon.Default)
+                    .onSizeChanged { canvasSize = it }
+                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull() ?: continue
+                                shiftHeld = event.keyboardModifiers.isShiftPressed
+                                val x = change.position.x / density - LaneLabelWidthPx
+                                pointerX = x
+                                val y = change.position.y / density - AxisHeightPx
+                                when (event.type) {
+                                    PointerEventType.Scroll -> onScroll(event, change, x)
+
+                                    PointerEventType.Move, PointerEventType.Enter -> {
+                                        cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
+                                        hovered = if (x >= 0f && y >= 0f) {
+                                            model.hitTest(viewport, x, y + viewport.scrollY)
+                                        } else {
+                                            null
+                                        }
+                                    }
+
+                                    PointerEventType.Exit -> {
+                                        hovered = null
+                                        cursorMs = null
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .pointerInput(model.lanes, density, maxScroll) {
+                        detectTapGestures { offset ->
+                            val x = offset.x / density - LaneLabelWidthPx
+                            val y = offset.y / density - AxisHeightPx
+                            if (x >= 0f && y >= 0f) {
+                                model.hitTest(viewport, x, y + viewport.scrollY)?.let {
+                                    stopAutoScroll()
+                                    onSelect(it.row)
+                                }
+                            }
+                        }
+                    }
+                    .pointerInput(model.lanes, density, trackWidth, maxScroll) {
+                        detectDragGestures(
+                            onDragStart = { offset -> if (!shiftHeld) zoomBox = offset to offset },
+                            onDragEnd = {
+                                zoomBox?.let { (start, end) ->
+                                    fitted = false
+                                    stopAutoScroll()
+                                    viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                                }
+                                zoomBox = null
+                            },
+                            onDragCancel = { zoomBox = null },
+                        ) { change, drag ->
+                            change.consume()
+                            val box = zoomBox
+                            if (box != null) {
+                                zoomBox = box.first to change.position
+                            } else {
+                                fitted = false
+                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                            }
+                        }
+                    },
+            ) {
+                scale(density, density, pivot = Offset.Zero) {
+                    drawGraph(
+                        model = model,
+                        viewport = currentViewport,
+                        width = widthPx,
+                        height = heightPx,
+                        selectedKey = selectedKey,
+                        hoveredKey = hovered?.key,
+                        cursorMs = cursorMs,
+                        palette = palette,
+                        laneColors = laneColors,
+                        laneLabels = laneLabels,
+                        measurer = measurer,
+                        imagePainter = imagePainter,
+                    )
+                    zoomBox?.let { (start, end) ->
+                        // the box covers the lanes only, not the axis and the names of the lanes
+                        val left = max(min(start.x, end.x) / density, LaneLabelWidthPx)
+                        val right = max(max(start.x, end.x) / density, LaneLabelWidthPx)
+                        val top = min(start.y, end.y) / density
+                        val bottom = max(start.y, end.y) / density
+                        drawRect(palette.selection.copy(alpha = ZoomBoxFillAlpha), Offset(left, top), Size(right - left, bottom - top))
+                        drawRect(palette.selection, Offset(left, top), Size(right - left, bottom - top), style = Stroke(1f))
+                    }
                 }
             }
+
+            // the hovered thumbnail, larger, under its place in the strip. A screenshot that left the strip (cap, new session) is not shown
+            hoveredScreenshot?.takeIf { it in model.screenshots }?.let { shot ->
+                val centerX = LaneLabelWidthPx + currentViewport.xOf(shot.timeMs)
+                ScreenshotPopover(
+                    screenshot = shot,
+                    modifier = Modifier.offset(
+                        x = (centerX - PopoverWidthPx / 2).coerceIn(0f, max(widthPx - PopoverWidthPx, 0f)).dp,
+                        y = 0.dp,
+                    ),
+                )
+            }
         }
+
+        // moves along the time with the mouse, under the track (not under the names of the lanes)
+        val scrollbarAdapter = rememberFloconScrollbarAdapter(
+            scrollOffset = { viewport.scrollbarOffsetPx() },
+            contentSize = { viewport.scrollbarContentPx(currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs), trackWidth) },
+            viewportSize = { trackWidth.toDouble() },
+            scrollTo = { offsetPx ->
+                fitted = false
+                viewport = pannedBy((offsetPx - viewport.scrollbarOffsetPx()) / viewport.pxPerMs)
+            },
+        )
+        FloconHorizontalScrollbar(
+            adapter = scrollbarAdapter,
+            modifier = Modifier.padding(start = LaneLabelWidthPx.dp).width(trackWidth.dp),
+            style = LocalScrollbarStyle.current.copy(minimalHeight = ScrollbarMinThumbPx.dp),
+        )
 
         if (model.eventCount == 0) {
             Text(
@@ -390,8 +523,11 @@ private class GraphPalette(
     val onBar: Color,
     val chip: Color,
     val error: Color,
+    // the color of a log marker
+    val logGlyphColors: Map<LogGlyphColor, Color>,
     val appStart: Color,
     val selection: Color,
+    val cursor: Color,
 )
 
 @Composable
@@ -407,8 +543,6 @@ private fun GraphToolbar(
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
     onLatest: () -> Unit,
-    // null: no auto scroll. Else true while the graph follows the new events, false once the user moved it
-    following: Boolean?,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
@@ -449,14 +583,6 @@ private fun GraphToolbar(
         FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
         GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
         FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
-        if (following != null) {
-            Text(
-                text = stringResource(if (following) Res.string.timeline_graph_following else Res.string.timeline_graph_paused),
-                style = FloconTheme.typography.labelMedium,
-                color = if (following) colors.statusSuccess else colors.inkFaint,
-                maxLines = 1,
-            )
-        }
         FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
         FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
     }
@@ -554,6 +680,7 @@ private fun DrawScope.drawGraph(
     height: Float,
     selectedKey: String?,
     hoveredKey: String?,
+    cursorMs: Long?,
     palette: GraphPalette,
     laneColors: Map<GraphLane, Color>,
     laneLabels: Map<GraphLane, String>,
@@ -570,7 +697,7 @@ private fun DrawScope.drawGraph(
 
     // the lanes
     clipRect(left = LaneLabelWidthPx, top = AxisHeightPx, right = width, bottom = height) {
-        val step = axisStepMs(viewport.pxPerMs)
+        val step = axisStepMs(viewport.pxPerMs, AXIS_TICK_PX) * LONG_TICK_EVERY
         // no tick before the start of the session
         var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
@@ -587,7 +714,6 @@ private fun DrawScope.drawGraph(
         model.lanes.forEachIndexed { laneIndex, lane ->
             val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
             if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
-            val color = laneColors.getValue(lane.lane)
             lane.rows.forEachIndexed { rowIndex, row ->
                 val rowTop = laneTop + rowIndex * RowHeightPx
                 if (rowTop + RowHeightPx < AxisHeightPx || rowTop > height) return@forEachIndexed
@@ -598,7 +724,7 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = if (event.isError) palette.error else color
+                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
@@ -633,56 +759,92 @@ private fun DrawScope.drawGraph(
     drawRect(palette.axis, Offset.Zero, Size(width, AxisHeightPx))
     drawLine(palette.line, Offset(0f, AxisHeightPx), Offset(width, AxisHeightPx), strokeWidth = 1f)
     clipRect(left = LaneLabelWidthPx, top = 0f, right = width, bottom = AxisHeightPx) {
-        val step = axisStepMs(viewport.pxPerMs)
+        val step = axisStepMs(viewport.pxPerMs, AXIS_TICK_PX)
+        val labelStep = step * LABEL_EVERY_TICKS
         // no tick before the start of the session
         var tick = max(ceil(viewport.startMs / step).toLong() * step, 0L)
         while (tick <= viewEndMs) {
+            val index = tick / step
             val x = LaneLabelWidthPx + viewport.xOf(tick)
-            val text = measurer.measure(
-                formatAxisLabel(tick, step),
-                TextStyle(fontSize = LabelFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkMuted),
-                density = unit,
-                maxLines = 1,
-            )
-            // the time of day above the duration, on some of the ticks: 5 s alone does not tell when it was
-            val showClock = (tick / step) % CLOCK_EVERY_TICKS == 0L
-            // the durations are all on the same line, at the bottom
-            val textTop = AxisHeightPx - text.size.height - AxisTextBottomPx
-            drawText(text, topLeft = Offset(x + 4f, textTop))
-            if (showClock) {
-                val clock = measurer.measure(
-                    formatClockLabel(formatTimestamp(model.sessionStartTimestamp + tick), step),
-                    TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkFaint),
+            val tickHeight = if (index % LONG_TICK_EVERY == 0L) LongTickPx else ShortTickPx
+            drawLine(palette.inkFaint, Offset(x, AxisHeightPx - tickHeight), Offset(x, AxisHeightPx), strokeWidth = 1f)
+            if (index % LABEL_EVERY_TICKS == 0L) {
+                val text = measurer.measure(
+                    formatAxisLabel(tick, labelStep),
+                    TextStyle(fontSize = LabelFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkMuted),
                     density = unit,
                     maxLines = 1,
                 )
-                drawText(clock, topLeft = Offset(x + 4f, textTop - clock.size.height))
+                // the durations are all on the same line, at the bottom
+                val textTop = AxisHeightPx - text.size.height - AxisTextBottomPx
+                drawText(text, topLeft = Offset(x + 4f, textTop))
+                // the time of day above the duration, on some of them: 5 s alone does not tell when it was
+                if (index % CLOCK_EVERY_TICKS == 0L) {
+                    val clock = measurer.measure(
+                        formatClockLabel(formatTimestamp(model.sessionStartTimestamp + tick), labelStep),
+                        TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = palette.inkFaint),
+                        density = unit,
+                        maxLines = 1,
+                    )
+                    drawText(clock, topLeft = Offset(x + 4f, textTop - clock.size.height - ClockGapPx))
+                }
             }
             tick += step
         }
+    }
+
+    // the time under the pointer: a line through the lanes, and the exact time of day on the axis
+    // the graph can move under a still pointer: the cursor is then out of the track, and not drawn
+    cursorMs?.let { ms ->
+        val x = LaneLabelWidthPx + viewport.xOf(ms)
+        if (x < LaneLabelWidthPx || x > width) return@let
+        drawLine(palette.cursor.copy(alpha = CursorGuideAlpha), Offset(x, AxisHeightPx), Offset(x, height), strokeWidth = CursorLineWidthPx)
+        val pill = measurer.measure(
+            formatTimestamp(model.sessionStartTimestamp + ms),
+            TextStyle(fontSize = ClockFontPx.sp, fontFamily = FontFamily.Monospace, color = readableInkOn(palette.cursor)),
+            density = unit,
+            maxLines = 1,
+        )
+        val pillWidth = pill.size.width + 2 * CursorPillPaddingXPx
+        val pillHeight = pill.size.height + 2 * CursorPillPaddingYPx
+        // on the left of the line when there is no room on its right
+        val pillLeft = (if (x + 4f + pillWidth <= width) x + 4f else x - 4f - pillWidth).coerceAtLeast(LaneLabelWidthPx)
+        val pillTop = (AxisHeightPx - pillHeight) / 2f
+        drawRoundRect(palette.cursor, Offset(pillLeft, pillTop), Size(pillWidth, pillHeight), CornerRadius(BarRadiusPx))
+        drawLine(palette.cursor, Offset(x, 0f), Offset(x, AxisHeightPx), strokeWidth = CursorLineWidthPx)
+        drawText(pill, topLeft = Offset(pillLeft + CursorPillPaddingXPx, pillTop + CursorPillPaddingYPx))
     }
 
     // the column of the lanes, over everything
     drawRect(palette.panel, Offset(0f, AxisHeightPx), Size(LaneLabelWidthPx, height - AxisHeightPx))
     drawLine(palette.line, Offset(LaneLabelWidthPx, 0f), Offset(LaneLabelWidthPx, height), strokeWidth = 1f)
     clipRect(left = 0f, top = AxisHeightPx, right = LaneLabelWidthPx, bottom = height) {
-        model.lanes.forEachIndexed { laneIndex, lane ->
-            val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
-            if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
+        // the name of a type with its color, in a row of [RowHeightPx] starting at [top]
+        fun drawTypeLabel(type: GraphLane, top: Float) {
             val text = measurer.measure(
-                laneLabels.getValue(lane.lane),
+                laneLabels.getValue(type),
                 labelStyle.copy(color = palette.ink),
                 density = unit,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 constraints = Constraints(maxWidth = (LaneLabelWidthPx - 40f).toInt()),
             )
-            val y = laneTop + (RowHeightPx - text.size.height) / 2f
-            drawCircle(laneColors.getValue(lane.lane), radius = 3f, center = Offset(22f, y + text.size.height / 2f))
+            val y = top + (RowHeightPx - text.size.height) / 2f
+            drawCircle(laneColors.getValue(type), radius = 3f, center = Offset(22f, y + text.size.height / 2f))
             drawText(text, topLeft = Offset(32f, y))
-            if (laneIndex < model.lanes.lastIndex) {
-                val line = laneTop + lane.heightPx()
-                drawLine(palette.line, Offset(0f, line), Offset(LaneLabelWidthPx, line), strokeWidth = LaneSeparatorPx)
+        }
+        // the single graph has no lane to name: the column is the legend of the colors, it does not scroll
+        if (model.lanes.singleOrNull()?.lane == null && model.lanes.isNotEmpty()) {
+            GraphLane.entries.forEachIndexed { index, type -> drawTypeLabel(type, AxisHeightPx + index * RowHeightPx) }
+        } else {
+            model.lanes.forEachIndexed { laneIndex, lane ->
+                val laneTop = AxisHeightPx + tops[laneIndex] - viewport.scrollY
+                if (laneTop + lane.heightPx() < AxisHeightPx || laneTop > height) return@forEachIndexed
+                lane.lane?.let { drawTypeLabel(it, laneTop) }
+                if (laneIndex < model.lanes.lastIndex) {
+                    val line = laneTop + lane.heightPx()
+                    drawLine(palette.line, Offset(0f, line), Offset(LaneLabelWidthPx, line), strokeWidth = LaneSeparatorPx)
+                }
             }
         }
     }
@@ -822,15 +984,21 @@ private fun DrawScope.drawInstant(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val half = DiamondSizePx / 2f + 1f
-    val diamond = Path().apply {
-        moveTo(x, centerY - half)
-        lineTo(x + half, centerY)
-        lineTo(x, centerY + half)
-        lineTo(x - half, centerY)
-        close()
+    val glyph = event.logGlyph
+    if (glyph != null) {
+        // a log: its own shape. The drawing fills 18/24 of its box as a diamond, so the box is bigger to keep the size of the diamonds
+        drawLogGlyph(glyph.shape, fill, Offset(x, centerY), boxPx = 2f * half * GlyphBoxRatio, outline = palette.selection.takeIf { selected })
+    } else {
+        val diamond = Path().apply {
+            moveTo(x, centerY - half)
+            lineTo(x + half, centerY)
+            lineTo(x, centerY + half)
+            lineTo(x - half, centerY)
+            close()
+        }
+        drawPath(diamond, fill)
+        if (selected) drawPath(diamond, palette.selection, style = Stroke(2f))
     }
-    drawPath(diamond, fill)
-    if (selected) drawPath(diamond, palette.selection, style = Stroke(2f))
     if (!withLabel) return
 
     // the label stops before the neighbour: cut with an ellipsis, or not written when there is no room
@@ -863,7 +1031,8 @@ private fun DrawScope.drawInstantFullLabel(
     val x = LaneLabelWidthPx + viewport.xOf(event.startMs)
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
-    val text = measurer.measure(event.name, labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    // the lanes (a yellow one, the log markers) have a wide range of colors: the text is picked by contrast against the fill
+    val text = measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through
@@ -875,6 +1044,9 @@ private fun DrawScope.drawInstantFullLabel(
     )
     drawText(text, topLeft = Offset(left, top))
 }
+
+// the diamond of the glyphs spans 18 of the 24 units of their box
+private const val GlyphBoxRatio = 24f / 18f
 
 private fun instantLabelStyle(labelStyle: TextStyle, palette: GraphPalette) = labelStyle.copy(color = palette.ink, fontWeight = FontWeight.Normal)
 
@@ -911,3 +1083,6 @@ private fun TimelineGraphDarkPreview() = TimelineGraphPreviewContent(isDarkTheme
 @Preview
 @Composable
 private fun TimelineGraphLightPreview() = TimelineGraphPreviewContent(isDarkTheme = false)
+
+// how long the event of a zone asked from outside is waited for, when the graph shows another session
+private const val FocusEventWaitMs = 1_500L

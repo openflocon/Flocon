@@ -49,6 +49,21 @@ internal fun fitViewport(sessionDurationMs: Long, trackWidthPx: Float): GraphVie
     return GraphViewport(startMs = 0.0, pxPerMs = (trackWidthPx / duration).toDouble().coerceAtLeast(MIN_PX_PER_MS))
 }
 
+/**
+ * The graph showing the zone [fromMs]..[toMs] centered, with a margin on each side. A zone shorter than [MIN_FOCUS_WIDTH_MS]
+ * is widened to it, and the zoom stays between its limits: the zone remains centered.
+ */
+internal fun focusedViewport(fromMs: Long, toMs: Long, trackWidthPx: Float): GraphViewport {
+    val width = max(toMs - fromMs, MIN_FOCUS_WIDTH_MS)
+    val visibleMs = width * (1 + 2 * FOCUS_MARGIN)
+    val centerMs = (fromMs + toMs) / 2.0
+    val pxPerMs = (trackWidthPx / visibleMs).coerceIn(MIN_PX_PER_MS, MAX_PX_PER_MS)
+    return GraphViewport(startMs = max(centerMs - trackWidthPx / pxPerMs / 2, MIN_START_MS), pxPerMs = pxPerMs)
+}
+
+private const val FOCUS_MARGIN = 0.2
+private const val MIN_FOCUS_WIDTH_MS = 2_000L
+
 // the most the graph shows before the start of the session, the app start is at 0
 internal const val MIN_START_MS = -1_000.0
 internal const val MIN_PX_PER_MS = 0.0005
@@ -92,8 +107,55 @@ internal fun GraphViewport.zoomedToRange(fromX: Float, toX: Float, trackWidthPx:
 
 private const val MinZoomBoxPx = 8f
 
-// moves along the time axis, never more than a second before the start of the session
-internal fun GraphViewport.panned(deltaMs: Double): GraphViewport = copy(startMs = (startMs + deltaMs).coerceAtLeast(MIN_START_MS))
+/**
+ * The furthest the graph can be moved to the right: its end, in ms since the start of the session.
+ * The most recent session ends now, even when nothing happened for a while (the phone and the computer are expected to
+ * agree on the time; a phone behind never ends before its last event). An older session ends at its last event or screenshot.
+ * Null: nothing to show. [latestMs] is the one of the model, given by whoever asks often so it is not searched again.
+ */
+internal fun GraphUiModel.panLimitMs(isMostRecentSession: Boolean, nowTimestamp: Long, latestMs: Long? = latestMs()): Long? {
+    if (!isMostRecentSession || sessionStartTimestamp <= 0L) return latestMs
+    val nowMs = nowTimestamp - sessionStartTimestamp
+    return if (latestMs == null) nowMs.coerceAtLeast(0L) else max(latestMs, nowMs)
+}
+
+/**
+ * Moves along the time axis, never more than a second before the start of the session, and never further to the right
+ * than [limitMs] (see panLimitMs) at the right of the track, with the margin of the auto scroll: no scrolling into the
+ * future. A viewport already further right (zoomed out, short session) does not move to the right, and is not pulled
+ * back. Without a limit, nothing moves to the right.
+ */
+internal fun GraphViewport.panned(deltaMs: Double, limitMs: Long?, trackWidthPx: Float): GraphViewport {
+    val moved = startMs + deltaMs
+    val maxStartMs = limitMs?.let { max(startMs, it - (trackWidthPx - JumpMarginPx) / pxPerMs) } ?: startMs
+    return copy(startMs = moved.coerceAtMost(maxStartMs).coerceAtLeast(MIN_START_MS))
+}
+
+/**
+ * The scrollbar of the time axis, in px of the track: its content goes from the start of the session (or the viewport when
+ * it is before) to the limit of the pan (see panned), the viewport is the track. Without a limit, or with a viewport already
+ * past it, the content is what the viewport shows: nothing to scroll.
+ */
+internal fun GraphViewport.scrollbarOffsetPx(): Double = (startMs - scrollbarStartMs()) * pxPerMs
+
+internal fun GraphViewport.scrollbarContentPx(limitMs: Long?, trackWidthPx: Float): Double {
+    val endMs = max(startMs + trackWidthPx / pxPerMs, limitMs?.let { it + JumpMarginPx / pxPerMs } ?: Double.NEGATIVE_INFINITY)
+    return (endMs - scrollbarStartMs()) * pxPerMs
+}
+
+private fun GraphViewport.scrollbarStartMs() = minOf(MIN_START_MS, startMs)
+
+/**
+ * A move to the right that arrives at the end of the graph (see panned): the viewport was short of it and [moved] is on it.
+ * Already there, or moving away from it, is not arriving. Without a limit there is no end.
+ */
+internal fun GraphViewport.reachedEnd(moved: GraphViewport, limitMs: Long?, trackWidthPx: Float): Boolean {
+    if (limitMs == null) return false
+    val endStartMs = limitMs - (trackWidthPx - JumpMarginPx) / pxPerMs - ReachedEndToleranceMs
+    return startMs < endStartMs && moved.startMs >= endStartMs
+}
+
+private const val ReachedEndToleranceMs = 0.5
 
 // the height of a lane: its rows
 internal fun GraphLaneUiModel.heightPx(): Float = rows.size * RowHeightPx
@@ -170,6 +232,9 @@ internal fun GraphUiModel.latestEvent(): GraphEventUiModel? = lanes
     .filterNotNull()
     .maxWithOrNull(compareBy({ it.endMs }, { it.startMs }))
 
+// the end of the graph: the most recent event or the most recent screenshot, whichever is later
+internal fun GraphUiModel.latestMs(): Long? = listOfNotNull(latestEvent()?.endMs, screenshots.lastOrNull()?.timeMs).maxOrNull()
+
 // the top of the row of an event in the lanes
 internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
     val tops = laneTops()
@@ -181,27 +246,30 @@ internal fun GraphUiModel.rowTopOf(event: GraphEventUiModel): Float? {
 }
 
 /**
- * The auto scroll: when the most recent event is past the right of the track, moves along the time axis to put it at the
- * right. The zoom and the lanes do not change. Nothing moves while it is in view.
+ * The auto scroll on the present moment: when [endMs] (see panLimitMs) is past the right of the track, moves along the
+ * time axis to put it at the right, with the margin of the jump. Never moves back, nothing moves while it is in view.
  */
-internal fun GraphViewport.followedLatest(model: GraphUiModel, trackWidthPx: Float): GraphViewport {
-    val latest = model.latestEvent() ?: return this
+internal fun GraphViewport.followedTo(endMs: Long, trackWidthPx: Float): GraphViewport {
     val rightMs = startMs + (trackWidthPx - JumpMarginPx) / pxPerMs
-    if (latest.endMs <= rightMs) return this
-    return copy(startMs = max(latest.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
+    if (endMs <= rightMs) return this
+    return copy(startMs = max(endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
 }
 
+// how far [endMs] is past the right of the track, in px: the auto scroll on the present waits for a pixel to move
+internal fun GraphViewport.pxPastRight(endMs: Long, trackWidthPx: Float): Double = (endMs - (startMs + (trackWidthPx - JumpMarginPx) / pxPerMs)) * pxPerMs
+
 /**
- * Moves to the most recent event, at the right of the track, in the row that holds it. The zoom does not change.
+ * Moves to the most recent event or screenshot, at the right of the track, in the row that holds the latest event.
+ * The zoom does not change.
  */
 internal fun GraphViewport.jumpedToLatest(model: GraphUiModel, trackWidthPx: Float, trackHeightPx: Float): GraphViewport {
-    val event = model.latestEvent() ?: return this
+    val latestMs = model.latestMs() ?: return this
+    val moved = copy(startMs = max(latestMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS))
+    // a graph with only screenshots has no row to show
+    val event = model.latestEvent() ?: return moved
     val rowTop = model.rowTopOf(event) ?: 0f
     val maxScroll = max(model.contentHeightPx() - trackHeightPx, 0f)
-    return copy(
-        startMs = max(event.endMs - (trackWidthPx - JumpMarginPx) / pxPerMs, MIN_START_MS),
-        scrollY = (rowTop - (trackHeightPx - RowHeightPx) / 2f).coerceIn(0f, maxScroll),
-    )
+    return moved.copy(scrollY = (rowTop - (trackHeightPx - RowHeightPx) / 2f).coerceIn(0f, maxScroll))
 }
 
 private const val JumpMarginPx = 80f

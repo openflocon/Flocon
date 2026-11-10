@@ -16,13 +16,16 @@ kotlin {
             implementation(projects.analytics.analytics)
             implementation(projects.accessibility.accessibility)
             implementation(projects.featureflags.featureflags)
+            implementation(projects.timeline.timeline)
             implementation(projects.tables.tables)
             implementation(projects.sharedprefs.sharedprefs)
             implementation(projects.files.files)
-            implementation(projects.device.device)
             implementation(projects.crashreporter.crashreporter)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
+            implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
             implementation(projects.database.room3.room3)
+            implementation(projects.database.sqldelight.sqldelight)
+            implementation(libs.sqldelight.sqlite.driver)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -35,6 +38,7 @@ kotlin {
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
+            implementation(libs.okhttp)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)

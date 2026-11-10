@@ -10,6 +10,7 @@ import io.github.openflocon.domain.device.usecase.HandleNewAppUseCase
 import io.github.openflocon.domain.device.usecase.HandleNewDeviceUseCase
 import io.github.openflocon.domain.device.usecase.IsCurrentDeviceIosUseCase
 import io.github.openflocon.domain.device.usecase.ObserveActiveDevicesUseCase
+import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAndAppUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceAppsUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkVersionNameUseCase
@@ -19,7 +20,6 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledP
 import io.github.openflocon.domain.device.usecase.ObserveDevicesUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentDeviceIAndAppIsActiveUseCase
 import io.github.openflocon.domain.device.usecase.ObserveIsCurrentIsActiveUseCase
-import io.github.openflocon.domain.device.usecase.RestartAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.device.usecase.StartRecordingVideoUseCase
@@ -35,6 +35,7 @@ internal val deviceModule = module {
     factoryOf(::HandleNewDeviceUseCase)
     factoryOf(::ObserveCurrentDeviceIdUseCase)
     factoryOf(::ObserveActiveDevicesUseCase)
+    factoryOf(::ObserveCurrentDeviceAndAppUseCase)
     factoryOf(::ObserveCurrentDeviceAppsUseCase)
     factoryOf(::ObserveCurrentDeviceIdAndPackageNameUseCase)
     factoryOf(::ObserveDevicesUseCase)
@@ -49,7 +50,6 @@ internal val deviceModule = module {
     factoryOf(::DeleteDeviceApplicationUseCase)
     factoryOf(::ObserveIsCurrentDeviceIAndAppIsActiveUseCase)
     factoryOf(::ObserveIsCurrentIsActiveUseCase)
-    factoryOf(::RestartAppUseCase)
     factoryOf(::ObserveCurrentDeviceFloconSdkVersionNameUseCase)
     factoryOf(::ObserveCurrentDeviceCapabilitiesUseCase)
     factoryOf(::ObserveCurrentDeviceInstalledPluginsUseCase)

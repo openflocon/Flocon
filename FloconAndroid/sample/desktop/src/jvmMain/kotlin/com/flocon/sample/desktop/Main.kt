@@ -3,6 +3,10 @@ package com.flocon.sample.desktop
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.room3.Room
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import io.github.openflocon.flocon.database.sqldelight.withFlocon
+import io.github.openflocon.flocon.myapplication.multi.database.insertSampleDog
+import io.github.openflocon.flocon.myapplication.multi.sqldelight.SqlDelightDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.openflocon.flocon.database.room3.floconLogs
 import coil3.ImageLoader
@@ -15,6 +19,7 @@ import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.accessibility.FloconAccessibility
 import io.github.openflocon.flocon.analytics.FloconAnalytics
 import io.github.openflocon.flocon.featureflags.FloconFeatureFlags
+import io.github.openflocon.flocon.timeline.FloconTimeline
 import io.github.openflocon.flocon.database.core.FloconDatabase
 import io.github.openflocon.flocon.database.core.databasePlugin
 import io.github.openflocon.flocon.database.room3.register
@@ -34,7 +39,6 @@ import io.github.openflocon.flocon.myapplication.multi.ui.SamplePlatform
 import io.github.openflocon.flocon.network.core.FloconNetwork
 import io.github.openflocon.flocon.crashreporter.FloconCrashReporter
 import io.github.openflocon.flocon.plugins.dashboard.FloconDashboard
-import io.github.openflocon.flocon.plugins.device.FloconDevice
 import io.github.openflocon.flocon.plugins.files.FloconFiles
 import io.github.openflocon.flocon.plugins.sharedprefs.FloconPreferences
 import io.github.openflocon.flocon.tables.FloconTable
@@ -56,9 +60,9 @@ fun main() {
         install(FloconAnalytics)
         install(FloconAccessibility)
         install(FloconFeatureFlags)
+        install(FloconTimeline)
         install(FloconPreferences)
         install(FloconFiles)
-        install(FloconDevice)
         install(FloconCrashReporter)
         install(FloconDeeplinks) {
             deeplink("flocon://home")
@@ -96,7 +100,7 @@ fun main() {
 
     initializeDatabases(dogDatabase = dogDatabase, foodDatabase = foodDatabase)
 
-    registerDesktopSampleFeatures(dogDatabase, foodDatabase)
+    registerDesktopSampleFeatures(dogDatabase, foodDatabase, sqlDelightDatabase())
 
     application {
         Window(onCloseRequest = ::exitApplication, title = "Flocon Sample - Desktop") {
@@ -114,6 +118,15 @@ private fun dogDatabase(): DogDatabase {
         .build()
 }
 
+private fun sqlDelightDatabase(): SqlDelightDatabase {
+    val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_sqldelight_dogs.db")
+    val driver = JdbcSqliteDriver("jdbc:sqlite:${dbFile.absolutePath}")
+        .withFlocon(id = "dogs_sqldelight_jvm", displayName = "dogs (SQLDelight)")
+    // the schema uses CREATE TABLE IF NOT EXISTS: safe to run at each start
+    SqlDelightDatabase.Schema.create(driver)
+    return SqlDelightDatabase(driver)
+}
+
 private fun foodDatabase(): FoodDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), "flocon_food_database.db")
     return Room.databaseBuilder<FoodDatabase>(name = dbFile.absolutePath)
@@ -123,7 +136,7 @@ private fun foodDatabase(): FoodDatabase {
         .build()
 }
 
-private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase) {
+private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase: FoodDatabase, sqlDelightDatabase: SqlDelightDatabase) {
     SampleFeatures.platform = SamplePlatform.Desktop
 
     SampleFeatures.on(SampleFeature.DatabaseRoom3) {
@@ -137,6 +150,9 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase
             )
         )
     }
+    SampleFeatures.on(SampleFeature.DatabaseSqlDelight) {
+        sqlDelightDatabase.insertSampleDog()
+    }
     SampleFeatures.on(SampleFeature.DatabaseFood) {
         foodDatabase.foodDao().insertFood(newFood())
     }
@@ -146,13 +162,16 @@ private fun registerDesktopSampleFeatures(dogDatabase: DogDatabase, foodDatabase
             .writeText("Written by the sample at ${System.currentTimeMillis()}")
     }
 
-    val okHttpReason = "The OkHttp interceptor supports the JVM, but this sample uses the Ktor CIO engine"
-    SampleFeatures.unavailable(SampleFeature.OkHttp, okHttpReason)
-    SampleFeatures.unavailable(SampleFeature.OkHttpGzip, okHttpReason)
-    SampleFeatures.unavailable(SampleFeature.WebSocket, okHttpReason)
+    SampleFeatures.on(SampleFeature.OkHttp) { DesktopOkHttpTester.call() }
+    SampleFeatures.on(SampleFeature.OkHttpGzip) { DesktopOkHttpTester.callGzip() }
+    SampleFeatures.unavailable(SampleFeature.WebSocket, "The WebSocket sample is only set up on Android")
     SampleFeatures.unavailable(SampleFeature.GraphQl, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.Grpc, "The gRPC interceptor is Android only")
     SampleFeatures.unavailable(SampleFeature.DatabaseRoom2, "Room 2 is only set up on Android in this sample (the Flocon Room 2 module also supports JVM and iOS)")
     SampleFeatures.unavailable(SampleFeature.DatabaseInMemory, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseTransactionRoom2, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom3, "Android only in this sample")
+    SampleFeatures.unavailable(SampleFeature.DatabaseNestedTransactionRoom2, "Android only in this sample")
     SampleFeatures.unavailable(SampleFeature.DataStore, "DataStore is not set up in the desktop sample")
 }

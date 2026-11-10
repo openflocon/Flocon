@@ -369,3 +369,55 @@ private fun FloconPixelScope.drawBone(x: Int, y: Int) {
     pixels(x + 5, y, 2, 1, Paper)
     pixels(x + 5, y + 2, 2, 1, Paper)
 }
+
+/** It watches a page load in a browser window, line after line. */
+internal val WebViewScene = FeatureSceneSpec(
+    frames = persistentListOf(0, 1, 2, 3, 3),
+    frameMs = 450L,
+) { frame ->
+    // browser window: title bar, then the lines of the page appear one by one
+    pixels(35, 9, 12, 15, DeviceDark)
+    pixels(35, 10, 12, 2, Blue)
+    pixels(36, 10, 1, 1, White)
+    pixels(35, 12, 12, 12, Screen)
+    repeat(frame) { line ->
+        pixels(37, 14 + line * 3, if (line == 1) 6 else 8, 1, if (line == 0) BlueLight else ScreenLine)
+    }
+    drawMascotSitting(
+        expression = if (frame == 3) FloconMascotExpression.Happy else FloconMascotExpression.Neutral,
+        headX = if (frame > 0) 1 else 0,
+        hold = { _, _ -> },
+    )
+    if (frame == 3) {
+        pixels(45, 7, 1, 1, Spark)
+        pixels(47, 9, 1, 1, Spark)
+    }
+}
+
+/** It follows the screen reader: the focus moves from one button of a phone to the next, and the phone speaks. */
+internal val AccessibilityScene = FeatureSceneSpec(
+    frames = persistentListOf(0, 1, 2, 3),
+    frameMs = 500L,
+) { frame ->
+    val focused = frame % 3
+    // phone and its three buttons
+    pixels(34, 8, 10, 16, DeviceDark)
+    pixels(35, 10, 8, 13, Screen)
+    repeat(3) { row -> pixels(36, 12 + row * 4, 5, 2, ScreenLine) }
+    // focus ring around the focused button
+    val ringY = 11 + focused * 4
+    pixels(35, ringY, 7, 1, Spark)
+    pixels(35, ringY + 3, 7, 1, Spark)
+    pixels(35, ringY + 1, 1, 2, Spark)
+    pixels(41, ringY + 1, 1, 2, Spark)
+    // what it says
+    if (frame % 2 == 1) {
+        pixels(45, 13, 1, 3, BlueLight)
+        pixels(47, 11, 1, 7, BlueLight)
+    }
+    drawMascotSitting(
+        tailUp = true,
+        headX = focused / 2,
+        hold = { _, _ -> },
+    )
+}

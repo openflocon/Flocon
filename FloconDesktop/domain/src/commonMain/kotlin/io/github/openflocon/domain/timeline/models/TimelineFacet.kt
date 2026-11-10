@@ -1,7 +1,29 @@
 package io.github.openflocon.domain.timeline.models
 
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_LIFECYCLE
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_NAVIGATION
+import io.github.openflocon.domain.timelinelog.models.TIMELINE_LOG_TYPE_USER_ACTION
+import io.github.openflocon.domain.webview.models.WebViewEventKind
+
+/**
+ * The value of [TimelineFacet.DatabaseStatement] of what Room runs for itself: its invalidation tracker reads and writes
+ * room_table_modification_log, in a transaction of its own after each write. A query of such a transaction is one of them.
+ */
+const val TIMELINE_DATABASE_STATEMENT_ROOM = "ROOM"
+
 // the kinds of SQL statement, TRANSACTION being BEGIN, COMMIT, END, ROLLBACK, SAVEPOINT and RELEASE, SCHEMA being CREATE, ALTER and DROP
-private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", "OTHER")
+private val DATABASE_STATEMENTS = listOf("SELECT", "INSERT", "UPDATE", "DELETE", "SCHEMA", "PRAGMA", "TRANSACTION", TIMELINE_DATABASE_STATEMENT_ROOM, "OTHER")
+
+/**
+ * The values hidden until the user shows them again: the noise nobody asked for, what Room runs for itself and the
+ * begin, commit and rollback of the databases (a transaction is told by its header anyway).
+ */
+// a getter, not a value: the facets use the values of this file when they are created, a value would be created with them
+val TIMELINE_DEFAULT_HIDDEN_FACETS: Map<TimelineFacet, Set<String>>
+    get() = mapOf(TimelineFacet.DatabaseStatement to setOf(TIMELINE_DATABASE_STATEMENT_ROOM, "TRANSACTION"))
+
+// the types of log with their own look, they are not tagged logs: the tag and level filters never apply to them
+val TIMELINE_RESERVED_LOG_TYPES = listOf(TIMELINE_LOG_TYPE_NAVIGATION, TIMELINE_LOG_TYPE_USER_ACTION, TIMELINE_LOG_TYPE_LIFECYCLE)
 
 /**
  * The start of each bucket of the duration histogram, in ms. A bucket ends where the next one starts, the last one is open.
@@ -49,6 +71,15 @@ enum class TimelineFacet(
     ),
     AnalyticsTable(TimelineSource.Analytics),
 
+    // the name of the table the item was added to
+    TableName(TimelineSource.Table),
+
+    // the kind of event of a WebView: console message, page event or call to a native bridge
+    WebViewKind(
+        source = TimelineSource.WebView,
+        knownValues = WebViewEventKind.entries.map { it.name },
+    ),
+
     // the class of the exception, ex: java.lang.IllegalStateException
     CrashException(TimelineSource.Crash),
     AccessibilityAction(
@@ -60,5 +91,23 @@ enum class TimelineFacet(
             "VIEW_ACCESSIBILITY_FOCUSED",
             "VIEW_ACCESSIBILITY_FOCUS_CLEARED",
         ),
+    ),
+
+    // the type of the log: the known ones are always offered, the custom tags come from the logs received
+    LogType(
+        source = TimelineSource.Log,
+        knownValues = TIMELINE_RESERVED_LOG_TYPES,
+    ),
+
+    // as stored: upper-case
+    LogLevel(
+        source = TimelineSource.Log,
+        knownValues = listOf("DEBUG", "INFO", "WARNING", "ERROR"),
+    ),
+
+    // the level of the tagged logs only: the reserved types are stored INFO but have no level, they are never hidden by it
+    LogTaggedLevel(
+        source = TimelineSource.Log,
+        knownValues = listOf("DEBUG", "INFO", "WARNING", "ERROR"),
     ),
 }

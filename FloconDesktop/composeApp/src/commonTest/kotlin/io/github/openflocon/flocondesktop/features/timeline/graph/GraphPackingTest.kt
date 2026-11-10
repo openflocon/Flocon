@@ -3,6 +3,10 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
+import io.github.openflocon.domain.timelinelog.models.TimelineLogLevel
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyph
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphColor
+import io.github.openflocon.flocondesktop.features.timeline.mapper.LogGlyphShape
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,16 +19,108 @@ class GraphPackingTest {
     private fun ids(model: GraphUiModel, lane: GraphLane) = model.lanes.first { it.lane == lane }.rows.map { row -> row.map { it.row.id } }
 
     @Test
-    fun `the reference session gives 6 rows`() {
+    fun `the reference session gives 7 rows`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(6, model.rowCount)
+        assertEquals(7, model.rowCount)
         assertEquals(
             listOf(listOf("1", "4", "10", "14"), listOf("3", "12"), listOf("6"), listOf("7")),
             ids(model, GraphLane.Network),
         )
         assertEquals(listOf(listOf("5", "11")), ids(model, GraphLane.Database))
         assertEquals(listOf(listOf("2", "9", "13", "15")), ids(model, GraphLane.Analytics))
+        assertEquals(listOf(listOf("16", "17", "18")), ids(model, GraphLane.Log))
+    }
+
+    @Test
+    fun `logLaneIsPresent`() {
+        val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
+
+        assertTrue(GraphLane.Log in model.lanes.map { it.lane })
+        assertEquals(TimelineSource.Log, GraphLane.Log.source)
+        assertEquals(GraphLane.Log, TimelineSource.Log.toGraphLane())
+    }
+
+    @Test
+    fun `logEventBecomesInstantMarker`() {
+        val model = buildGraph(listOf(domain("l1", TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log).copy(title = "Opened the feed", method = null, statusCode = null)), sessionStart = 1_000L)
+
+        val marker = model.lanes.single().rows.single().single()
+        assertEquals(GraphLane.Log, marker.lane)
+        assertTrue(marker.isInstant)
+        assertEquals(250L, marker.startMs)
+        assertEquals("Opened the feed", marker.name)
+        assertFalse(marker.isError)
+    }
+
+    @Test
+    fun `logMarkersCarryTheirLevelAndOnlyErrorFails`() {
+        val model = buildGraph(
+            TimelineLogLevel.entries.map { level ->
+                domain(level.name, TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log)
+                    .copy(method = null, statusCode = null, hasError = level == TimelineLogLevel.Error, level = level)
+            },
+            sessionStart = 1_000L,
+        )
+
+        val markers = model.lanes.single().rows.flatten().associateBy { it.row.id }
+        TimelineLogLevel.entries.forEach { level ->
+            assertEquals(level, markers.getValue(level.name).logLevel)
+            assertEquals(level == TimelineLogLevel.Error, markers.getValue(level.name).isError)
+        }
+        assertEquals(1, model.errorCount)
+    }
+
+    @Test
+    fun `logMarkersCarryTheirGlyphAndTypedLogsAreNeverErrors`() {
+        fun log(id: String, type: String?, level: TimelineLogLevel) = domain(id, TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log)
+            .copy(subtitle = type, method = null, statusCode = null, hasError = level == TimelineLogLevel.Error, level = level)
+        val model = buildGraph(
+            listOf(
+                log("nav", "navigation", TimelineLogLevel.Info),
+                log("act", "userAction", TimelineLogLevel.Info),
+                log("life", "Lifecycle", TimelineLogLevel.Info),
+                log("tag", "billing", TimelineLogLevel.Warning),
+                log("err", "billing", TimelineLogLevel.Error),
+            ),
+            sessionStart = 1_000L,
+        )
+
+        val markers = model.lanes.single().rows.flatten().associateBy { it.row.id }
+        assertEquals(LogGlyph(LogGlyphShape.Arrow, LogGlyphColor.Navigation), markers.getValue("nav").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Pointer, LogGlyphColor.UserAction), markers.getValue("act").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Heart, LogGlyphColor.Lifecycle), markers.getValue("life").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Diamond, LogGlyphColor.Warning), markers.getValue("tag").logGlyph)
+        assertEquals(LogGlyph(LogGlyphShape.Diamond, LogGlyphColor.Error), markers.getValue("err").logGlyph)
+        assertEquals(listOf("err"), markers.values.filter { it.isError }.map { it.row.id })
+        assertEquals(1, model.errorCount)
+    }
+
+    @Test
+    fun `networkEventHasNoLogGlyph`() {
+        val model = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_000L, duration = 100.0)), sessionStart = 1_000L)
+
+        assertNull(model.lanes.single().rows.single().single().logGlyph)
+        assertNull(model.lanes.single().rows.single().single().logType)
+    }
+
+    @Test
+    fun `networkEventHasNoLogLevel`() {
+        val model = buildGraph(listOf(domain("1", TimelinePhase.Request, ts = 1_000L, duration = 100.0)), sessionStart = 1_000L)
+
+        assertEquals(null, model.lanes.single().rows.single().single().logLevel)
+    }
+
+    @Test
+    fun `errorLevelLogMarkedAsError`() {
+        // hasError is computed in SQL (level = ERROR): the graph only carries it
+        val model = buildGraph(
+            listOf(domain("l1", TimelinePhase.Request, ts = 1_250L, duration = null, source = TimelineSource.Log).copy(method = null, statusCode = null, hasError = true, level = TimelineLogLevel.Error)),
+            sessionStart = 1_000L,
+        )
+
+        assertTrue(model.lanes.single().rows.single().single().isError)
+        assertEquals(1, model.errorCount)
     }
 
     @Test
@@ -35,11 +131,26 @@ class GraphPackingTest {
     }
 
     @Test
+    fun `the single graph packs every type in one lane, shorter than the lanes`() {
+        val events = previewGraphEvents()
+        val lanes = buildGraphUiModel(events, PreviewSessionDurationMs)
+        val single = buildGraphUiModel(events, PreviewSessionDurationMs, single = true)
+
+        assertEquals(listOf<GraphLane?>(null), single.lanes.map { it.lane })
+        assertEquals(events.size, single.lanes.single().rows.sumOf { it.size })
+        // the types keep their own color: it is the one of the event
+        assertEquals(GraphLane.entries.toSet(), single.lanes.single().rows.flatten().map { it.lane }.toSet())
+        assertTrue(single.rowCount < lanes.rowCount)
+        assertEquals(lanes.eventCount, single.eventCount)
+        assertTrue(buildGraphUiModel(emptyList(), 0L, single = true).lanes.isEmpty())
+    }
+
+    @Test
     fun `the summary of the reference session`() {
         val model = buildGraphUiModel(previewGraphEvents(), PreviewSessionDurationMs)
 
-        assertEquals(14, model.eventCount)
-        assertEquals(2, model.errorCount)
+        assertEquals(17, model.eventCount)
+        assertEquals(3, model.errorCount)
         assertEquals("/v1/recommendations", model.slowest?.name)
         val text = model.toSummaryText()
         assertEquals("3.00 s", text.sessionDuration)
@@ -135,7 +246,7 @@ class GraphPackingTest {
     }
 
     @Test
-    fun `a call without response goes up to the last event`() {
+    fun `a call without response is not drawn`() {
         val model = buildGraph(
             listOf(
                 domain("1", TimelinePhase.Request, ts = 1_100L, duration = null),
@@ -144,9 +255,7 @@ class GraphPackingTest {
             sessionStart = 1_000L,
         )
 
-        val pending = model.lanes.single().rows.flatten().first { it.row.id == "1" }
-        assertTrue(pending.inProgress)
-        assertEquals(800L, pending.durationMs)
+        assertEquals(listOf("a"), model.lanes.single().rows.flatten().map { it.row.id })
     }
 
     @Test
@@ -188,7 +297,6 @@ class GraphPackingTest {
 
         val message = model.lanes.single().rows.flatten().first { it.row.id == "ws1" }
         assertTrue(message.isInstant)
-        assertFalse(message.inProgress)
         assertEquals(100L, message.startMs)
     }
 

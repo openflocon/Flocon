@@ -4,6 +4,7 @@ import io.github.openflocon.flocon.client.FloconConnectionStates
 import io.github.openflocon.flocon.client.FloconConnections
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.decode
+import io.github.openflocon.flocon.device.FloconDeviceHandler
 import io.github.openflocon.flocon.model.FloconMessageFromServer
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,8 +26,15 @@ class Flocon internal constructor(
         onMessageReceived = ::onMessageReceived,
     )
 
+    private val deviceHandler = FloconDeviceHandler(
+        sender = config.client,
+        context = config.context,
+        encoder = encoder,
+    )
+
     init {
         connections.start()
+        deviceHandler.start()
     }
 
     private fun onMessageReceived(message: String) {
@@ -35,6 +43,8 @@ class Flocon internal constructor(
             try {
                 val serialized = encoder.decode<FloconMessageFromServer>(message)
                     ?: return@launch
+
+                if (deviceHandler.handle(plugin = serialized.plugin, method = serialized.method)) return@launch
 
                 plugins.find { it.key == serialized.plugin }
                     ?.onMessageReceived(
@@ -67,6 +77,11 @@ class Flocon internal constructor(
          */
         internal suspend fun connectToServer(address: String): FloconConnectResult =
             started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
+
+        /** Closes the connection added by [connectToServer], see `Flocon.disconnect`. */
+        internal suspend fun disconnectFromServer() {
+            started?.connections?.disconnect()
+        }
     }
 
 }

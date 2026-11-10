@@ -1,5 +1,7 @@
 package io.github.openflocon.flocon
 
+import io.github.openflocon.flocon.client.FLOCON_DEFAULT_HTTP_PORT
+import io.github.openflocon.flocon.client.FLOCON_DEFAULT_WEBSOCKET_PORT
 import io.github.openflocon.flocon.client.FloconClient
 import io.github.openflocon.flocon.core.FloconEncoder
 import kotlinx.coroutines.CoroutineScope
@@ -26,13 +28,28 @@ class FloconConfiguration internal constructor(
     internal var addressStore: FloconAddressStore? = null
         private set
 
+    internal var websocketPort: Int = FLOCON_DEFAULT_WEBSOCKET_PORT
+        private set
+
+    internal var httpPort: Int = FLOCON_DEFAULT_HTTP_PORT
+        private set
+
     internal val context: FloconContext get() = config.context
 
     /**
      * Also tries to connect to [initialAddress] when Flocon starts, and to the last address kept in
      * [store] if there is one (it wins).
      */
-    internal fun connectAtStart(initialAddress: String?, store: FloconAddressStore?) {
+    internal fun connectAtStart(
+        initialAddress: String?,
+        store: FloconAddressStore?,
+        websocketPort: Int = FLOCON_DEFAULT_WEBSOCKET_PORT,
+        httpPort: Int = FLOCON_DEFAULT_HTTP_PORT,
+    ) {
+        require(websocketPort in 1..65535) { "websocketPort must be between 1 and 65535, was $websocketPort" }
+        require(httpPort in 1..65535) { "httpPort must be between 1 and 65535, was $httpPort" }
+        this.websocketPort = websocketPort
+        this.httpPort = httpPort
         this.initialAddress = initialAddress
         this.addressStore = store
     }
@@ -104,6 +121,7 @@ fun startFlocon(
     val encoder = FloconEncoder(module = configuration.encoding())
 
     client.setupEncoder(encoder)
+    client.setupPorts(websocketPort = configuration.websocketPort, httpPort = configuration.httpPort)
     client.setupBuffer(capacity = configuration.bufferCapacity)
 
     Flocon.instance = Flocon(

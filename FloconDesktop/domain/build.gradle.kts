@@ -17,6 +17,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlin.semver)
             implementation(libs.androidx.paging.common)
 
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -27,6 +28,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

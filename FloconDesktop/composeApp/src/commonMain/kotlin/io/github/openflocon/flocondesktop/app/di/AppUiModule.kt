@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.app.di
 
 import io.github.openflocon.flocondesktop.app.AppViewModel
+import io.github.openflocon.flocondesktop.app.TimelineScreenshotsRunner
 import io.github.openflocon.flocondesktop.app.ui.delegates.DevicesDelegate
 import io.github.openflocon.flocondesktop.app.ui.delegates.RecordVideoDelegate
 import io.github.openflocon.flocondesktop.app.ui.mascot.MascotViewModel
@@ -10,6 +11,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appUiModule = module {
+    factoryOf(::TimelineScreenshotsRunner)
     viewModelOf(::AppViewModel)
     factoryOf(::DevicesDelegate)
     factoryOf(::RecordVideoDelegate)

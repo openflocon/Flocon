@@ -2,14 +2,14 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material.icons.sharp.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.auto_scroll
 import flocondesktop.composeapp.generated.resources.invert_list
 import flocondesktop.composeapp.generated.resources.network_pin_panel
+import flocondesktop.composeapp.generated.resources.timeline_transactions_expanded
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
@@ -23,12 +23,6 @@ internal fun TimelineOverflowMenu(
     modifier: Modifier = Modifier,
 ) {
     FloconOverflow(modifier = modifier) {
-        FloconDropdownMenuItem(
-            checked = settings.autoScroll,
-            text = stringResource(Res.string.auto_scroll),
-            leadingIcon = Icons.Outlined.PlayCircle,
-            onCheckedChange = { checked -> onAction(TimelineAction.ToggleAutoScroll(checked)) }
-        )
         // the direction of the list means nothing to the graph
         if (!settings.graph) {
             FloconDropdownMenuItem(
@@ -38,6 +32,12 @@ internal fun TimelineOverflowMenu(
                 onCheckedChange = { checked -> onAction(TimelineAction.InvertList(checked)) }
             )
         }
+        FloconDropdownMenuItem(
+            checked = settings.transactionsExpandedByDefault,
+            text = stringResource(Res.string.timeline_transactions_expanded),
+            leadingIcon = Icons.Outlined.UnfoldMore,
+            onCheckedChange = { checked -> onAction(TimelineAction.TransactionsExpandedByDefault(checked)) }
+        )
         FloconDropdownMenuItem(
             checked = settings.pinPanel,
             text = stringResource(Res.string.network_pin_panel),

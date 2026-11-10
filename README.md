@@ -66,7 +66,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [gRPC](https://openflocon.github.io/Flocon/grpc)
     - [WebSockets](https://openflocon.github.io/Flocon/websocket)
 - 💾 **[Local Storage](https://openflocon.github.io/Flocon/database)**
-    - [Database Explorer (Room & SQLite)](https://openflocon.github.io/Flocon/database)
+    - [Database Explorer (Room, SQLDelight & SQLite)](https://openflocon.github.io/Flocon/database)
     - [Shared Preferences (Android)](https://openflocon.github.io/Flocon/sharedpref)
 - 🛠️ **[Advanced Debugging](https://openflocon.github.io/Flocon/dashboard)**
     - [Custom Dashboards](https://openflocon.github.io/Flocon/dashboard)
@@ -75,7 +75,7 @@ Visit the full documentation site for setup guides, feature details, and advance
     - [File Explorer](https://openflocon.github.io/Flocon/files)
     - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
     - [Image Previewer](https://openflocon.github.io/Flocon/image)
-- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI or Antigravity inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
+- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
 - ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
 
 ---
@@ -85,7 +85,7 @@ Visit the full documentation site for setup guides, feature details, and advance
 | Feature | Android | KMP (JVM/iOS) |
 |---|:---:|:---:|
 | **Network (HTTP/Mocking)** | ✅ | ✅ |
-| **Database (Room/SQLite)** | ✅ | ✅ |
+| **Database (Room/SQLDelight/SQLite)** | ✅ | ✅ |
 | **Preferences** | ✅ | ❌ |
 | **Dashboards & Tables** | ✅ | ✅ |
 | **Analytics & Images** | ✅ | ✅ |
