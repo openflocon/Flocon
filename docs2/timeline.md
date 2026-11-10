@@ -137,7 +137,7 @@ The new type shows up by itself as a value of the Type filter: the desktop does 
 
 ### iOS
 
-The native Swift SDK lives in a separate repository, [FloconSwift](https://github.com/openflocon/FloconSwift). It will get the same API (a `.timeline` plugin and a `TimelineType`) in a separate release, it is not available yet. The wire format is the same, see the [protocol](https://github.com/openflocon/Flocon/blob/main/protocol/timeline.md). A reusable type will look the same in Swift: a constant `TimelineType("billing")` and an extension of the plugin calling `log`.
+The native Swift SDK lives in a separate repository, [FloconSwift](https://github.com/openflocon/FloconSwift). It will get the same API (a `.timeline` plugin and a `TimelineType`) in a separate release, it is not available yet. The wire format is the same, see the [protocol](https://github.com/openflocon/Flocon/blob/main/internal-docs/protocol/timeline.md). A reusable type will look the same in Swift: a constant `TimelineType("billing")` and an extension of the plugin calling `log`.
 
 ### On the desktop
 
