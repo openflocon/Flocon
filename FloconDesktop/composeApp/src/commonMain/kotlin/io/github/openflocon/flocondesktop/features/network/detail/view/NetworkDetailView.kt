@@ -313,8 +313,7 @@ private fun NetworkDetailContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(FloconTheme.spacing.medium),
+                .verticalScroll(scrollState),
         ) {
             NetworkDetailCard(
                 header = {
@@ -400,7 +399,8 @@ private fun NetworkDetailContent(
 }
 
 /**
- * The header and its tabs on a dark block, the selected tab melts into the panel holding the content
+ * The header and its tabs on a dark block, the selected tab melts into the panel holding the content.
+ * It has no border nor corners: the side panel / window already is the container
  */
 @Composable
 private fun NetworkDetailCard(
@@ -409,13 +409,10 @@ private fun NetworkDetailCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val shape = FloconTheme.shapes.large
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(FloconTheme.colors.bg000)
-            .border(width = 1.dp, color = FloconTheme.colors.line, shape = shape),
+            .background(FloconTheme.colors.bg000),
     ) {
         Box(
             modifier = Modifier.padding(
