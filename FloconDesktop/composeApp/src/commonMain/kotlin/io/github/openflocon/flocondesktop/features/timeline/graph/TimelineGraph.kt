@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -117,6 +118,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 private const val ZoomStep = 1.25
+
+// the thumb of the time scrollbar never gets shorter, however long the session is
+private const val ScrollbarMinThumbPx = 48f
 private const val WheelZoomPerTick = 1.15
 private const val ZoomBoxFillAlpha = 0.12f
 private const val ZoomFieldMaxDigits = 6
@@ -491,6 +495,7 @@ internal fun TimelineGraph(
         FloconHorizontalScrollbar(
             adapter = scrollbarAdapter,
             modifier = Modifier.padding(start = LaneLabelWidthPx.dp).width(trackWidth.dp),
+            style = LocalScrollbarStyle.current.copy(minimalHeight = ScrollbarMinThumbPx.dp),
         )
 
         if (model.eventCount == 0) {
