@@ -5,6 +5,7 @@ import io.github.openflocon.domain.timeline.models.TimelinePhase
 import io.github.openflocon.domain.timeline.models.TimelineSource
 import io.github.openflocon.flocondesktop.features.timeline.mapper.splitUrl
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toUi
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineNetworkUiModel
 import kotlin.math.roundToLong
 
 /**
@@ -37,7 +38,7 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
                     lane = lane,
                     startMs = (start - sessionStart).coerceAtLeast(0L),
                     durationMs = duration ?: (lastTimestamp - start).coerceAtLeast(0L),
-                    name = (ui.network?.path ?: splitUrl(event.title).second).substringBefore('?'),
+                    name = ui.network?.graphName() ?: splitUrl(event.title).second.substringBefore('?'),
                     method = event.method?.takeIf { it.isNotEmpty() },
                     statusCode = event.statusCode,
                     isImage = event.isImage,
@@ -64,3 +65,10 @@ internal fun buildGraph(events: List<TimelineEventDomainModel>, sessionStart: Lo
 }
 
 private const val WEB_SOCKET_METHOD = "WS"
+
+// a gRPC call is told by its method, the host and the service are the same for most calls
+private fun TimelineNetworkUiModel.graphName(): String = if (method == "GRPC") {
+    path.substringAfterLast('/')
+} else {
+    path.substringBefore('?')
+}
