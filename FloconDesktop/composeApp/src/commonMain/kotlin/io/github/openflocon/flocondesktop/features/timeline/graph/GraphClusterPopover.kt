@@ -44,6 +44,7 @@ import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconFilterChip
+import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
@@ -83,9 +84,8 @@ internal fun GraphClusterPopover(
         modifier = modifier
             .width(ClusterPopoverWidthPx.dp)
             .clip(FloconTheme.shapes.medium)
-            // the glass themes are translucent: an opaque base under them, a popover must not let the graph show through
-            .background(colors.bg000.copy(alpha = 1f))
-            .background(colors.bg100)
+            // the glass themes are translucent: the opaque floating surface, a popover must not let the graph show through
+            .background(colors.floating)
             .border(1.dp, colors.line, FloconTheme.shapes.medium)
             // the clicks on the popover are not for the graph under it
             .pointerInput(Unit) { detectTapGestures { } }
@@ -150,9 +150,9 @@ internal fun GraphClusterPopover(
                 modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
-            FloconButton(onClick = onZoom) { Text(stringResource(Res.string.timeline_cluster_zoom)) }
-            FloconButton(onClick = onExpand) { Text(stringResource(Res.string.timeline_cluster_expand)) }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
+            FloconButton(onClick = onZoom, containerColor = colors.ink, modifier = Modifier.weight(1f)) { Text(stringResource(Res.string.timeline_cluster_zoom)) }
+            FloconOutlinedButton(onClick = onExpand, modifier = Modifier.weight(1f)) { Text(stringResource(Res.string.timeline_cluster_expand)) }
         }
     }
 }
