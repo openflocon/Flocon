@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.features.network.detail.view
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -308,14 +312,13 @@ private fun NetworkDetailContent(
             }
         }
 
-        val scrollState = rememberScrollState()
-        val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState),
+        val listState = rememberLazyListState()
+        val scrollAdapter = rememberFloconScrollbarAdapter(listState)
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
         ) {
-            NetworkDetailCard(
+            networkDetailSections(
                 header = {
                     DetailHeader(
                         label = uiState.host.ifEmpty { stringResource(Res.string.network_details_title) },
@@ -400,36 +403,42 @@ private fun NetworkDetailContent(
 
 /**
  * The header and its tabs on a dark block, the selected tab melts into the panel holding the content.
+ * The tabs stay on top while the content scrolls.
  * It has no border nor corners: the side panel / window already is the container
  */
-@Composable
-private fun NetworkDetailCard(
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.networkDetailSections(
     header: @Composable () -> Unit,
     tabs: @Composable RowScope.() -> Unit,
-    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(FloconTheme.colors.bg000),
-    ) {
+    item(key = "header") {
         Box(
-            modifier = Modifier.padding(
-                start = FloconTheme.spacing.large,
-                end = FloconTheme.spacing.large,
-                top = FloconTheme.spacing.large,
-                bottom = FloconTheme.spacing.medium,
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colors.bg000)
+                .padding(
+                    start = FloconTheme.spacing.large,
+                    end = FloconTheme.spacing.large,
+                    top = FloconTheme.spacing.large,
+                    bottom = FloconTheme.spacing.medium,
+                ),
         ) {
             header()
         }
+    }
+    stickyHeader(key = "tabs") {
         Row(
-            modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(FloconTheme.colors.bg000)
+                .padding(horizontal = FloconTheme.spacing.small),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
             verticalAlignment = Alignment.Bottom,
             content = tabs,
         )
+    }
+    item(key = "content") {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
