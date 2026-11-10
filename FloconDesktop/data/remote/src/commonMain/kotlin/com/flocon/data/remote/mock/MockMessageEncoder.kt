@@ -3,6 +3,9 @@ package com.flocon.data.remote.mock
 import com.flocon.data.remote.analytics.model.AnalyticsItemDataModel
 import com.flocon.data.remote.analytics.model.AnalyticsPropertyDataModel
 import com.flocon.data.remote.crashreporter.model.CrashReportDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinkReceivedDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinkVariableReceivedDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagsDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
@@ -111,6 +114,38 @@ internal class MockMessageEncoder(private val json: Json) {
             ),
         )
 
+        is MockEvent.Deeplinks -> listOf(
+            Triple(
+                Protocol.FromDevice.Deeplink.Plugin,
+                Protocol.FromDevice.Deeplink.Method.GetDeeplinks,
+                json.encodeToString(
+                    DeeplinksReceivedDataModel(
+                        deeplinks = event.deeplinks.map { deeplink ->
+                            DeeplinkReceivedDataModel(
+                                label = deeplink.label,
+                                link = deeplink.link,
+                                description = deeplink.description,
+                                parameters = deeplink.parameters.map {
+                                    when (it) {
+                                        is MockEvent.Deeplinks.Parameter.AutoComplete -> DeeplinkReceivedDataModel.Parameter.AutoComplete(it.name, it.values)
+                                        is MockEvent.Deeplinks.Parameter.Variable -> DeeplinkReceivedDataModel.Parameter.Variable(it.name, it.variableName)
+                                    }
+                                },
+                            )
+                        },
+                        variables = event.variables.map {
+                            DeeplinkVariableReceivedDataModel(
+                                name = it.name,
+                                mode = it.suggestions?.let(DeeplinkVariableReceivedDataModel.Mode::AutoComplete)
+                                    ?: DeeplinkVariableReceivedDataModel.Mode.Input,
+                                description = it.description,
+                            )
+                        },
+                    ),
+                ),
+            ),
+        )
+
         is MockEvent.Raw -> listOf(Triple(event.plugin, event.method, event.body))
     }
 
@@ -138,6 +173,8 @@ internal class MockMessageEncoder(private val json: Json) {
         )
         if (call.pending) return listOf(request)
 
+        val responseContentType = call.contentType ?: call.responseHeaders.entries
+            .firstOrNull { it.key.equals("content-type", ignoreCase = true) }?.value
         val response = Triple(
             Protocol.FromDevice.Network.Plugin,
             Protocol.FromDevice.Network.Method.LogNetworkCallResponse,
@@ -148,8 +185,8 @@ internal class MockMessageEncoder(private val json: Json) {
                     durationMs = call.duration.inWholeMicroseconds / 1000.0,
                     responseHttpCode = call.status.takeIf { call.error == null && call.grpcStatus == null },
                     responseGrpcStatus = call.grpcStatus,
-                    responseContentType = call.contentType ?: call.responseHeaders.entries
-                        .firstOrNull { it.key.equals("content-type", ignoreCase = true) }?.value,
+                    responseContentType = responseContentType,
+                    isImage = responseContentType?.startsWith("image/", ignoreCase = true) == true,
                     responseBody = call.responseBody,
                     responseHeaders = call.responseHeaders,
                     responseSize = call.responseBody?.encodeToByteArray()?.size?.toLong() ?: 0L,
