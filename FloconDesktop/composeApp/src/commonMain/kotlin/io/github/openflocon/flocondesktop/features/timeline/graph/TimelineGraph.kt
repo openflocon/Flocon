@@ -155,7 +155,7 @@ private const val ClusterBadgeHeightPx = 16f
 private const val ClusterBadgeMinWidthPx = 18f
 private const val ClusterBadgePaddingPx = 4f
 private const val ClusterBadgeOverhangPx = 6f
-private const val ClusterBadgeBorderPx = 1.5f
+private const val ClusterBadgeBorderPx = 2f
 private val ClusterCountColor = Color.White
 private val ClusterCountShadow = Shadow(Color.Black.copy(alpha = 0.65f), Offset(0f, 1f), 3f)
 
@@ -382,6 +382,7 @@ internal fun TimelineGraph(
             onBar = colors.bg000,
             chip = colors.bg000,
             error = colors.statusError,
+            onError = colors.accentInk,
             logGlyphColors = LogGlyphColor.entries.associateWith { it.color(colors) },
             appStart = TimelineSource.AppStart.categoryColors().first,
             selection = colors.ink,
@@ -607,6 +608,8 @@ private class GraphPalette(
     val onBar: Color,
     val chip: Color,
     val error: Color,
+    // the text on the error color
+    val onError: Color,
     // the color of a log marker
     val logGlyphColors: Map<LogGlyphColor, Color>,
     val appStart: Color,
@@ -979,11 +982,11 @@ private fun DrawScope.drawCluster(
     drawText(count, topLeft = Offset(left + (widthPx - count.size.width) / 2f, top + (BarHeightPx - count.size.height) / 2f))
     // the number of failed events, in a small rounded badge on the top right corner
     if (cluster.errorCount > 0) {
-        val errors = measurer.measure(cluster.errorCount.toString(), chipStyle.copy(color = ClusterCountColor), density = unit, maxLines = 1)
+        val errors = measurer.measure(cluster.errorCount.toString(), chipStyle.copy(color = palette.onError), density = unit, maxLines = 1)
         val badgeWidth = max(ClusterBadgeMinWidthPx, errors.size.width + 2 * ClusterBadgePaddingPx)
         val badgeLeft = left + widthPx - badgeWidth + ClusterBadgeOverhangPx
         val badgeTop = top - ClusterBadgeHeightPx / 4f
-        drawRoundRect(palette.panel, Offset(badgeLeft - ClusterBadgeBorderPx, badgeTop - ClusterBadgeBorderPx), Size(badgeWidth + 2 * ClusterBadgeBorderPx, ClusterBadgeHeightPx + 2 * ClusterBadgeBorderPx), CornerRadius(BarRadiusPx))
+        drawRoundRect(palette.ink, Offset(badgeLeft - ClusterBadgeBorderPx, badgeTop - ClusterBadgeBorderPx), Size(badgeWidth + 2 * ClusterBadgeBorderPx, ClusterBadgeHeightPx + 2 * ClusterBadgeBorderPx), CornerRadius(BarRadiusPx))
         drawRoundRect(palette.error, Offset(badgeLeft, badgeTop), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx - ClusterBadgeBorderPx))
         drawText(errors, topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f))
     }
