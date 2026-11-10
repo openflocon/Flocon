@@ -156,7 +156,7 @@ private val ClusterCountColor = Color.White
 private val ClusterCountShadow = Shadow(Color.Black.copy(alpha = 0.65f), Offset(0f, 1f), 3f)
 
 // the popover of a group: its size is about, to keep it in the graph
-private const val ClusterPopoverHeightPx = 220f
+private const val ClusterPopoverHeightPx = 360f
 
 // the zone shown by the zoom of a group: at least this, so a group on one instant is not zoomed to the maximum
 private const val ClusterZoomMinWidthMs = 50L

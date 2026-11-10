@@ -212,4 +212,16 @@ class GraphClusteringTest {
         assertEquals(1, cluster.errorCount)
         assertEquals(TimelineSource.Database, cluster.counts.single().first.source)
     }
+
+    @Test
+    fun `the popover list keeps the events of the active sources in order`() {
+        val cluster = clusterEvents(
+            listOf(event("a", 0L), event("b", 1L, lane = GraphLane.Log), event("c", 2L)),
+            0.1,
+        ).clusters.single()
+
+        assertEquals(listOf("a", "c"), filterClusterEvents(cluster.events, setOf(GraphLane.Database)).map { it.name })
+        assertEquals(listOf("a", "b", "c"), filterClusterEvents(cluster.events, GraphLane.entries.toSet()).map { it.name })
+        assertTrue(filterClusterEvents(cluster.events, emptySet()).isEmpty())
+    }
 }
