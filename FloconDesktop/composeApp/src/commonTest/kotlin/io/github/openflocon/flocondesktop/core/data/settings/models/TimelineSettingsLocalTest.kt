@@ -69,4 +69,12 @@ class TimelineSettingsLocalTest {
 
         assertEquals(domain, domain.toLocal().toDomain())
     }
+
+    @Test
+    fun `the single graph is off when missing from the stored json and round trips`() {
+        assertEquals(false, TimelineSettingsLocal().toDomain().mergePlugins)
+
+        val domain = TimelineSettingsDomainModel(mergePlugins = true)
+        assertEquals(domain, domain.toLocal().toDomain())
+    }
 }

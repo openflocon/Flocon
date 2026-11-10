@@ -27,6 +27,7 @@ internal val timelineModule = module {
             setTimelineInvertListUseCase = get(),
             setTimelinePinPanelUseCase = get(),
             setTimelineGraphUseCase = get(),
+            setTimelineMergePluginsUseCase = get(),
             setTimelineScreenshotsUseCase = get(),
             setTimelineScreenshotIntervalUseCase = get(),
             setTimelineSelectedSourcesUseCase = get(),

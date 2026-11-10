@@ -67,10 +67,11 @@ internal data class GraphFocusUiModel(
     val token: Long,
 )
 
-// the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end
+// the events of one lane, in rows: the ones of a row never overlap, so they are sorted by start and by end.
+// A null [lane] is the single graph: every type shares the same rows
 @Immutable
 internal data class GraphLaneUiModel(
-    val lane: GraphLane,
+    val lane: GraphLane?,
     val rows: List<List<GraphEventUiModel>>,
 )
 
