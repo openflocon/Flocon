@@ -14,11 +14,7 @@ inline fun <reified T : RoomDatabase> RoomDatabase.Builder<T>.floconLogs(
 ): RoomDatabase.Builder<T> {
     return setQueryCallback(
         queryCallback = { sqlQuery, bindArgs ->
-            Flocon.databasePlugin.logQuery(
-                dbId = id,
-                sqlQuery = sqlQuery,
-                bindArgs = bindArgs
-            )
+            Flocon.databasePlugin.logQuery(dbId = id, sqlQuery = sqlQuery, bindArgs = bindArgs)
             queryCallback?.onQuery(sqlQuery, bindArgs)
         },
         executor = executor

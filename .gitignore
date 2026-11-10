@@ -28,3 +28,6 @@ FloconAndroid/.idea/
 site/
 .venv/
 venv/
+
+# graphify
+graphify-out/

@@ -92,7 +92,7 @@ internal fun screenshotSpanIndices(
         when (itemAt(index)) {
             is TimelineItemUiModel.Screenshot -> break
             is TimelineItemUiModel.Row -> end = index
-            is TimelineItemUiModel.DayHeader, null -> Unit
+            is TimelineItemUiModel.DayHeader, is TimelineItemUiModel.TransactionHeader, null -> Unit
         }
         index--
     }

@@ -137,6 +137,7 @@ internal class DatabaseMcpToolProvider(
             filters = filters,
             deviceIdAndPackageName = target,
             appInstance = appInstance,
+            transactionId = input.transactionId?.takeIf { it.isNotBlank() },
             limit = limit + 1,
         )
         val returned = logs.take(limit)
@@ -152,6 +153,9 @@ internal class DatabaseMcpToolProvider(
                     timestamp = Instant.fromEpochMilliseconds(it.timestamp).toString(),
                     timestampMs = it.timestamp,
                     isTransaction = it.isTransaction,
+                    transactionId = it.transactionId,
+                    nestedTransactionId = it.nestedTransactionId,
+                    parentTransactionId = it.parentTransactionId,
                     sessionId = it.appInstance,
                     isCurrentSession = it.appInstance == target.appInstance,
                 )
