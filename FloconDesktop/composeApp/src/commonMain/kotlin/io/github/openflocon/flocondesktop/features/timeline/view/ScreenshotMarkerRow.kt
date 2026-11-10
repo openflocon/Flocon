@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.features.timeline.view
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -45,6 +47,7 @@ import coil3.compose.AsyncImage
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_at
 import flocondesktop.composeapp.generated.resources.timeline_screenshot_label
+import io.github.openflocon.flocondesktop.common.ui.isInPreview
 import io.github.openflocon.flocondesktop.features.timeline.graph.ScreenshotPopover
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
@@ -111,19 +114,34 @@ internal fun ScreenshotMarkerRow(
             DashedLine(modifier = Modifier.weight(1f))
         }
         Row(
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             // the time column and the free space where the bar of the covered events goes, like in the other rows
             Spacer(Modifier.width(FloconTheme.sizes.timeColumn))
             Spacer(Modifier.width(railGutter()))
-            ScreenshotImage(item = item, modifier = Modifier.padding(start = spacing.medium))
-            if (screenName != null || context != null) {
-                ScreenshotContext(
-                    screenName = screenName,
-                    context = context,
-                    modifier = Modifier.padding(start = spacing.small, bottom = spacing.tiny),
+            val shape = FloconTheme.shapes.medium
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                modifier = Modifier
+                    .background(colors.bg100, shape = shape)
+                    .border(1.dp, FloconTheme.colors.line, shape)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                ScreenshotImage(
+                    item = item
                 )
+                if (screenName != null || context != null) {
+                    ScreenshotContext(
+                        screenName = screenName,
+                        context = context,
+                        modifier = Modifier.padding(
+                            start = spacing.small,
+                            bottom = spacing.tiny
+                        ),
+                    )
+                }
             }
         }
     }
@@ -137,7 +155,13 @@ internal fun ScreenshotMarkerRow(
                     FloconTheme.spacing.medium * 2 + ScreenshotWidthEstimate
                 ).roundToPx()
         }
-        Popup(popupPositionProvider = remember(thumbnailEnd) { SideOfRowPositionProvider(thumbnailEnd) }) {
+        Popup(
+            popupPositionProvider = remember(thumbnailEnd) {
+                SideOfRowPositionProvider(
+                    thumbnailEnd
+                )
+            }
+        ) {
             ScreenshotPopover(
                 filePath = item.filePath,
                 label = stringResource(Res.string.timeline_screenshot_at, item.time),
@@ -156,7 +180,9 @@ private fun ScreenshotContext(
     val colors = FloconTheme.colors
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        verticalArrangement = Arrangement.spacedBy(
+            FloconTheme.spacing.small
+        ),
     ) {
         if (screenName != null) {
             Text(
@@ -214,12 +240,18 @@ private fun AppIcon(
     val colors = FloconTheme.colors
     val bitmap = remember(iconEncoded) {
         iconEncoded?.let { encoded ->
-            runCatching { SkiaImage.makeFromEncoded(Base64.decode(encoded)).toComposeImageBitmap() }.getOrNull()
+            runCatching {
+                SkiaImage.makeFromEncoded(Base64.decode(encoded)).toComposeImageBitmap()
+            }.getOrNull()
         }
     }
     val shape = FloconTheme.shapes.small
     if (bitmap != null) {
-        Image(bitmap = bitmap, contentDescription = null, modifier = modifier.size(AppIconSize).clip(shape))
+        Image(
+            bitmap = bitmap,
+            contentDescription = null,
+            modifier = modifier.size(AppIconSize).clip(shape)
+        )
     } else {
         Box(
             contentAlignment = Alignment.Center,
@@ -241,14 +273,23 @@ private fun ScreenshotImage(
     item: TimelineItemUiModel.Screenshot,
     modifier: Modifier = Modifier,
 ) {
-    AsyncImage(
-        model = File(item.filePath),
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
-        modifier = modifier
-            .height(ScreenshotHeight)
-            .clip(FloconTheme.shapes.large),
-    )
+    val modifier = modifier
+        .height(ScreenshotHeight)
+        .clip(FloconTheme.shapes.medium)
+    if (isInPreview) {
+        Box(
+            modifier = modifier
+                .width(100.dp)
+                .background(Color.Red),
+        )
+    } else {
+        AsyncImage(
+            model = File(item.filePath),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
@@ -264,7 +305,12 @@ private fun DashedLine(modifier: Modifier = Modifier) {
                     start = Offset(0f, 0f),
                     end = Offset(size.width, 0f),
                     strokeWidth = 1.dp.toPx(),
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash.dp.toPx(), dash.dp.toPx())),
+                    pathEffect = PathEffect.dashPathEffect(
+                        floatArrayOf(
+                            dash.dp.toPx(),
+                            dash.dp.toPx()
+                        )
+                    ),
                 )
             },
     )
@@ -278,8 +324,14 @@ private class SideOfRowPositionProvider(private val startOffset: Int) : PopupPos
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val x = (anchorBounds.left + startOffset).coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0))
-        val y = (anchorBounds.center.y - popupContentSize.height / 2).coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0))
+        val x = (anchorBounds.left + startOffset).coerceIn(
+            0,
+            (windowSize.width - popupContentSize.width).coerceAtLeast(0)
+        )
+        val y = (anchorBounds.center.y - popupContentSize.height / 2).coerceIn(
+            0,
+            (windowSize.height - popupContentSize.height).coerceAtLeast(0)
+        )
         return IntOffset(x, y)
     }
 }
@@ -289,9 +341,20 @@ private class SideOfRowPositionProvider(private val startOffset: Int) : PopupPos
 private fun ScreenshotMarkerRowPreview() {
     FloconTheme {
         ScreenshotMarkerRow(
-            item = TimelineItemUiModel.Screenshot(timestamp = 0L, day = "20/10/2026", filePath = "/missing.jpg", key = "screenshot:0", time = "12:00:30"),
+            item = TimelineItemUiModel.Screenshot(
+                timestamp = 0L,
+                day = "20/10/2026",
+                filePath = "/missing.jpg",
+                key = "screenshot:0",
+                time = "12:00:30"
+            ),
             screenName = "FeedScreen",
-            context = TimelineScreenshotContextUiModel(appName = "Flocon Sample", appIconEncoded = null, deviceName = "Pixel 8", platform = "Android"),
+            context = TimelineScreenshotContextUiModel(
+                appName = "Flocon Sample",
+                appIconEncoded = null,
+                deviceName = "Pixel 8",
+                platform = "Android"
+            ),
             onHoverChange = {},
         )
     }
