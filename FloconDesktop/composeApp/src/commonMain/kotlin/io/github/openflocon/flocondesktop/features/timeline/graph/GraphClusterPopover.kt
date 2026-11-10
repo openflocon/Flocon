@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
@@ -47,12 +48,13 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import org.jetbrains.compose.resources.stringResource
 
-internal const val ClusterPopoverWidthPx = 340f
+internal const val ClusterPopoverWidthPx = 420f
 
 private val SourceDotSize = 8.dp
 private const val MaxVisibleRows = 6.5f
-private const val RelativeTimeWeight = 0.16f
-private const val StatusWeight = 0.1f
+private val RelativeTimeWidth = 72.dp
+private val DurationWidth = 64.dp
+private val StatusWidth = 40.dp
 
 /**
  * The events of a group that belong to one of the [activeLanes], in their order (by start).
@@ -81,6 +83,8 @@ internal fun GraphClusterPopover(
         modifier = modifier
             .width(ClusterPopoverWidthPx.dp)
             .clip(FloconTheme.shapes.medium)
+            // the glass themes are translucent: an opaque base under them, a popover must not let the graph show through
+            .background(colors.bg000.copy(alpha = 1f))
             .background(colors.bg100)
             .border(1.dp, colors.line, FloconTheme.shapes.medium)
             // the clicks on the popover are not for the graph under it
@@ -178,7 +182,8 @@ private fun ClusterEventRow(
             style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
             color = colors.inkMuted,
             maxLines = 1,
-            modifier = Modifier.weight(RelativeTimeWeight),
+            softWrap = false,
+            modifier = Modifier.width(RelativeTimeWidth),
         )
         Box(modifier = Modifier.size(SourceDotSize).background(laneColor))
         Text(
@@ -195,16 +200,25 @@ private fun ClusterEventRow(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        Box(modifier = Modifier.weight(StatusWeight), contentAlignment = Alignment.CenterEnd) {
-            event.statusCode?.let { status ->
-                Text(
-                    text = status.toString(),
-                    style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-                    color = if (event.isError) colors.statusError else colors.statusSuccess,
-                    maxLines = 1,
-                )
-            }
-        }
+        // how long the event took: an instant (log, query, analytics event) has none
+        Text(
+            text = if (event.durationMs > 0L) formatGraphDuration(event.durationMs) else "",
+            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+            color = colors.inkMuted,
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(DurationWidth),
+        )
+        Text(
+            text = event.statusCode?.toString().orEmpty(),
+            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+            color = if (event.isError) colors.statusError else colors.statusSuccess,
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(StatusWidth),
+        )
     }
 }
 
