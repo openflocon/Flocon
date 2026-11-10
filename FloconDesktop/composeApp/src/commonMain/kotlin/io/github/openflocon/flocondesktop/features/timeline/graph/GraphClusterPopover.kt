@@ -87,6 +87,8 @@ internal fun GraphClusterPopover(
             .clip(FloconTheme.shapes.medium)
             // the glass themes are translucent: the opaque floating surface, a popover must not let the graph show through
             .background(colors.floating)
+            // a lighter tint on it, the floating surface alone is too dark
+            .background(colors.bg200)
             .border(1.dp, colors.line, FloconTheme.shapes.medium)
             // the clicks on the popover are not for the graph under it
             .pointerInput(Unit) { detectTapGestures { } }
