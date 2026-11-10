@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Reorder
+import androidx.compose.material.icons.outlined.ScatterPlot
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +62,8 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
 import flocondesktop.composeapp.generated.resources.timeline_filters_toggle
+import flocondesktop.composeapp.generated.resources.timeline_graph_lanes
+import flocondesktop.composeapp.generated.resources.timeline_graph_single
 import flocondesktop.composeapp.generated.resources.timeline_view_graph
 import flocondesktop.composeapp.generated.resources.timeline_view_list
 import io.github.openflocon.domain.timeline.models.TimelinePhase
@@ -75,13 +79,17 @@ import io.github.openflocon.flocondesktop.features.timeline.graph.TimelineGraph
 import io.github.openflocon.flocondesktop.features.timeline.graph.buildGraphUiModel
 import io.github.openflocon.flocondesktop.features.timeline.graph.previewGraphEvents
 import io.github.openflocon.flocondesktop.features.timeline.mapper.adjacentCallIndex
+import io.github.openflocon.flocondesktop.features.timeline.mapper.branch
 import io.github.openflocon.flocondesktop.features.timeline.mapper.formatDelta
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkKey
 import io.github.openflocon.flocondesktop.features.timeline.mapper.linkedRowIndices
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotScreenName
+import io.github.openflocon.flocondesktop.features.timeline.mapper.screenshotSpanIndices
 import io.github.openflocon.flocondesktop.features.timeline.mapper.toDestination
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineAction
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineItemUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotContextUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreenshotsStatus
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
@@ -95,7 +103,9 @@ import io.github.openflocon.flocondesktop.features.timeline.view.TimelineHeader
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRow
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenu
 import io.github.openflocon.flocondesktop.features.timeline.view.TimelineRowMenuCallbacks
+import io.github.openflocon.flocondesktop.features.timeline.view.TimelineTransactionRow
 import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
+import io.github.openflocon.flocondesktop.features.timeline.view.transactionBranch
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
@@ -121,6 +131,7 @@ fun TimelineScreen(
     val isLive by viewModel.isLive.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val screenshotsStatus by viewModel.screenshotsStatus.collectAsStateWithLifecycle()
+    val screenshotContext by viewModel.screenshotContext.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
     val filterPanelOpen by viewModel.filterPanelOpen.collectAsStateWithLifecycle()
     val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
@@ -137,6 +148,7 @@ fun TimelineScreen(
         isLive = isLive,
         settings = settings,
         screenshotsStatus = screenshotsStatus,
+        screenshotContext = screenshotContext,
         showEmptyState = showEmptyState,
         filterPanelOpen = filterPanelOpen,
         activeFilterCount = activeFilterCount,
@@ -165,6 +177,8 @@ internal fun TimelineContent(
     modifier: Modifier = Modifier,
     // a zone of the graph asked from outside, shown once
     graphFocus: GraphFocusUiModel? = null,
+    // the app and the device shown beside the screenshots
+    screenshotContext: TimelineScreenshotContextUiModel? = null,
 ) {
     val colors = FloconTheme.colors
     val panelShape = FloconTheme.shapes.large
@@ -262,6 +276,21 @@ internal fun TimelineContent(
                 containerColor = colors.bg200,
                 onTextChange = { onAction(TimelineAction.FilterTextChanged(it)) },
             )
+            // how the graph groups the events, it means nothing to the list
+            if (settings.graph) {
+                val lanesTooltip = stringResource(Res.string.timeline_graph_lanes)
+                val singleTooltip = stringResource(Res.string.timeline_graph_single)
+                FloconSegmentedIconToggle(
+                    options = remember(lanesTooltip, singleTooltip) {
+                        persistentListOf(
+                            FloconSegmentedIconOption(icon = Icons.Outlined.Reorder, tooltip = lanesTooltip),
+                            FloconSegmentedIconOption(icon = Icons.Outlined.ScatterPlot, tooltip = singleTooltip),
+                        )
+                    },
+                    selectedIndex = if (settings.mergePlugins) 1 else 0,
+                    onSelect = { onAction(TimelineAction.SetMergePlugins(it == 1)) },
+                )
+            }
             // the same switch as the files: the list or the graph of the session
             val listTooltip = stringResource(Res.string.timeline_view_list)
             val graphTooltip = stringResource(Res.string.timeline_view_graph)
@@ -296,7 +325,14 @@ internal fun TimelineContent(
         // the links only show while the pointer is over the list: a row can miss its exit, ex: when the detail panel opens
         val listInteraction = remember { MutableInteractionSource() }
         val listHovered by listInteraction.collectIsHoveredAsState()
-        LaunchedEffect(listHovered) { if (!listHovered) hoveredRows.clear() }
+        // the screenshot hovered, by key: the bar shows the events it covers
+        var hoveredScreenshotKey by remember { mutableStateOf<String?>(null) }
+        LaunchedEffect(listHovered) {
+            if (!listHovered) {
+                hoveredRows.clear()
+                hoveredScreenshotKey = null
+            }
+        }
         val hoveredNow = if (listHovered) hoveredRows.values.toList() else emptyList()
         val hoveredCallKeys = hoveredNow.mapTo(mutableSetOf()) { it.callKey }
         val hoveredLinkKeys = hoveredNow.mapNotNullTo(mutableSetOf()) { it.linkKey() }
@@ -317,7 +353,14 @@ internal fun TimelineContent(
         val railLinkKey = railRow?.linkKey()
         val railCallKey = railRow?.callKey.takeIf { railRow?.source == TimelineSource.Network }
         val itemCount = rows.itemCount
-        val linkedIndices = remember(railLinkKey, railCallKey, itemCount) {
+        val screenshotIndices = remember(hoveredScreenshotKey, itemCount) {
+            hoveredScreenshotKey?.let { key ->
+                (0 until itemCount).firstOrNull { rows.peek(it)?.key == key }?.let { shotIndex ->
+                    screenshotSpanIndices(shotIndex) { rows.peek(it) }
+                }
+            }
+        }
+        val linkedIndices = screenshotIndices ?: remember(railLinkKey, railCallKey, itemCount) {
             linkedRowIndices(itemCount, railCallKey, railLinkKey) { (rows.peek(it) as? TimelineItemUiModel.Row)?.row }
         }
 
@@ -384,12 +427,44 @@ internal fun TimelineContent(
                                         },
                                         onClick = { onAction(TimelineAction.Open(it)) },
                                         highlight = filterText.value,
-                                        modifier = Modifier.fillMaxWidth(),
+                                        // the queries of a transaction hang from its header
+                                        modifier = Modifier.fillMaxWidth().then(
+                                            item.branch()?.let { (transactionId, level) ->
+                                                Modifier.transactionBranch(
+                                                    isLast = isLastOfTransaction(rows, index, settings.invertList, transactionId, level),
+                                                    level = level,
+                                                )
+                                            } ?: Modifier,
+                                        ),
                                     )
                                 }
                             }
 
-                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(item = item, modifier = Modifier.fillMaxWidth())
+                            is TimelineItemUiModel.TransactionHeader -> TimelineTransactionRow(
+                                item = item,
+                                onClick = { onAction(TimelineAction.ToggleTransaction(item.foldingId)) },
+                                // the header of a nested transaction hangs from the transaction that holds it
+                                modifier = item.branch()?.let { (transactionId, level) ->
+                                    Modifier.transactionBranch(
+                                        isLast = isLastOfTransaction(rows, index, settings.invertList, transactionId, level),
+                                        level = level,
+                                    )
+                                } ?: Modifier,
+                            )
+
+                            is TimelineItemUiModel.Screenshot -> ScreenshotMarkerRow(
+                                item = item,
+                                screenName = remember(index, rows.itemCount) { screenshotScreenName(index, rows.itemCount) { rows.peek(it) } },
+                                context = screenshotContext,
+                                onHoverChange = { hovered ->
+                                    if (hovered) {
+                                        hoveredScreenshotKey = item.key
+                                    } else if (hoveredScreenshotKey == item.key) {
+                                        hoveredScreenshotKey = null
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
 
                             is TimelineItemUiModel.DayHeader -> Text(
                                 text = item.day.uppercase(),
@@ -410,13 +485,31 @@ internal fun TimelineContent(
                     listState = listState,
                     linkedIndices = linkedIndices,
                     // the request of a call can be older than the events loaded
-                    leavesAfterLoaded = railCallKey != null && linkedIndices.size < 2,
-                    color = railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
+                    leavesAfterLoaded = screenshotIndices == null && railCallKey != null && linkedIndices.size < 2,
+                    color = if (screenshotIndices != null) colors.accent else railRow?.source?.categoryColors()?.first ?: colors.catNetwork,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
         }
     }
+}
+
+/**
+ * The query is the last one of its transaction when the item displayed below it is not another query of it: the next one in the list,
+ * the previous one when the list is [inverted]. Only the items already loaded are looked at.
+ */
+private fun isLastOfTransaction(
+    rows: LazyPagingItems<TimelineItemUiModel>,
+    index: Int,
+    inverted: Boolean,
+    transactionId: String,
+    level: Int,
+): Boolean {
+    val below = if (inverted) index - 1 else index + 1
+    if (below !in 0 until rows.itemCount) return true
+    // the line goes on while what comes next hangs from the same transaction, at this level or deeper
+    val next = rows.peek(below).branch()
+    return next == null || next.first != transactionId || next.second < level
 }
 
 /**

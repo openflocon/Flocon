@@ -57,7 +57,10 @@ class NetworkDetailViewModel(
             .filterNotNull(),
         observeNetworkSettingsUseCase(),
     ) { call, settings ->
-        call.toDetailUi(settings.defaultSelectedTab)
+        call.toDetailUi(
+            defaultSelectedTab = settings.defaultSelectedTab,
+            decodeJwtPayload = decodeJwtTokenUseCase::invoke,
+        )
     }
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(

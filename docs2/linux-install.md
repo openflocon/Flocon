@@ -20,7 +20,7 @@ A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar
 sudo apt install ./Flocon-linux-x64.deb      # or Flocon-linux-arm64.deb
 ```
 
-## Fedora / RHEL / openSUSE
+## Fedora / RHEL
 
 ```bash
 sudo dnf install ./Flocon-linux-x64.rpm      # or Flocon-linux-arm64.rpm
@@ -50,6 +50,12 @@ The package is updated automatically on each published release by `.github/workf
 4. Create the package once: `git clone ssh://aur@aur.archlinux.org/flocon-bin.git`, copy `packaging/aur/flocon-bin/PKGBUILD` and `.SRCINFO` in it, set `pkgver` to a published release, run `updpkgsums && makepkg --printsrcinfo > .SRCINFO`, commit and push. The workflow can then take over.
 5. Without the secret the workflow only logs a warning and skips. It can also be run by hand (Actions, "Publish to AUR", with a version).
 
+## openSUSE
+
+```bash
+sudo zypper install ./Flocon-linux-x64.rpm   # or Flocon-linux-arm64.rpm
+```
+
 ## adb
 
 Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Install it separately:
@@ -57,6 +63,7 @@ Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Inst
 ```bash
 sudo apt install android-tools-adb   # Debian / Ubuntu
 sudo dnf install android-tools       # Fedora
+sudo zypper install android-tools    # openSUSE
 ```
 
 Flocon starts from the app menu (Development) or with `/opt/flocon/bin/Flocon`.

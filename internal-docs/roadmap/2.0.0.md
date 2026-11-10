@@ -1,0 +1,46 @@
+# Flocon 2.0.0 roadmap
+
+Everything that has to happen before and around the 2.0.0 release of Flocon Desktop and the Flocon clients, so nothing gets forgotten.
+Tick an item once it is done, and link the PR next to it.
+
+## 1. Preparation
+
+- [ ] Create a `2.0.0` milestone and triage the open issues and PRs (in 2.0.0 or later)
+- [ ] Check protocol compatibility in every direction: SDK 1.x with Desktop 2.0.0, SDK 2.0.0 with Desktop 1.x, and the SDK version warning ([#775](https://github.com/openflocon/Flocon/pull/775))
+- [ ] Update `docs2/migration.md` for 1.x → 2.0.0 (e.g. the `device` module and the restart action removed in [#778](https://github.com/openflocon/Flocon/pull/778))
+
+## 2. Swift clients
+
+- [ ] Open source `flocon-swift`
+- [ ] Publish `flocon-swift` 2.0.0
+- [ ] Open source `flocon-swift-grpc`
+- [ ] Publish `flocon-swift-grpc` 2.0.0
+- [ ] For each Swift repo: README, license, CI, SPM tag (CocoaPods?), linked from the docs
+- [ ] Update the iOS / KMP sample to use the published Swift clients
+
+## 3. Docs & content
+
+- [ ] Create `docs/` from `docs2/`, with a full pass over the app and every feature: miss nothing, be precise
+- [ ] Point `mkdocs.yml` at the new docs, add redirects for the old URLs, check for broken links, `mkdocs build --strict`
+- [ ] Keep the `macos-install.md` page in the new docs (how to get past Gatekeeper) and link it from the install page and the README
+- [ ] Take the screenshots using the mocked version of the app
+- [ ] Record a short demo GIF / video for the README, and a social preview image for GitHub
+- [ ] Rewrite `README.md`
+- [ ] Check that the MCP is fully documented (`docs2/mcp.md`, `plugins/flocon/skills/flocon-mcp/SKILL.md`)
+- [ ] Bump the versions in `plugins/flocon` (`plugin.json`, `gemini-extension.json`, MCP skill) and test the MCP end to end from Claude Code and Gemini
+- [ ] Write the CHANGELOG and the 2.0.0 release notes
+
+## 4. Build & distribution
+
+- [ ] Publish Flocon Desktop 2.0.0 and the Flocon clients 2.0.0
+- [ ] Check the artifacts resolve from Maven Central (BOM included) and the versions in the docs snippets are up to date
+- [ ] Smoke test the release binaries on the 4 targets: macOS Intel, macOS ARM, Windows, Linux
+- [ ] Test the Homebrew install
+- [ ] Check the Homebrew install is shown in the docs, and put the Homebrew section back in the README (removed in [#791](https://github.com/openflocon/Flocon/pull/791))
+- [ ] Look into a Linux install via apt (an `.rpm` is already built; AppImage / Flatpak? winget / Scoop for Windows?)
+- [ ] Show a "new version available" notice in the desktop app
+
+## 5. Launch
+
+- [ ] Repo hygiene: GitHub description and topics, issue templates, CONTRIBUTING, SECURITY
+- [ ] Communication: article, LinkedIn / X, Reddit r/androiddev, Kotlin Slack, Android Weekly and Kotlin Weekly

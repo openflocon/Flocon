@@ -59,6 +59,12 @@ internal data class DatabaseQueryLogMcpModel(
     val timestamp: String,
     val timestampMs: Long,
     val isTransaction: Boolean,
+    /** The queries of a transaction share this id. Absent outside of a transaction. */
+    val transactionId: String? = null,
+    /** The transaction nested in [transactionId] (a savepoint) the query ran in. Absent in the outermost transaction. */
+    val nestedTransactionId: String? = null,
+    /** The transaction that holds the nested one: another nested transaction, or [transactionId]. */
+    val parentTransactionId: String? = null,
     val sessionId: Long,
     val isCurrentSession: Boolean,
 )

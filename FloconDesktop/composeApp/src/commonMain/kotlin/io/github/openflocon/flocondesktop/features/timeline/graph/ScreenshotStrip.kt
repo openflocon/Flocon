@@ -199,6 +199,20 @@ internal fun ScreenshotPopover(
     screenshot: GraphScreenshotUiModel,
     modifier: Modifier = Modifier,
 ) {
+    ScreenshotPopover(
+        filePath = screenshot.filePath,
+        label = stringResource(Res.string.timeline_screenshot_at, formatScreenshotTime(screenshot.timeMs)),
+        modifier = modifier,
+    )
+}
+
+/** The larger screenshot with its [label], shared by the graph and the list. */
+@Composable
+internal fun ScreenshotPopover(
+    filePath: String,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
     val colors = FloconTheme.colors
     Column(
         modifier = modifier
@@ -209,7 +223,7 @@ internal fun ScreenshotPopover(
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         AsyncImage(
-            model = File(screenshot.filePath),
+            model = File(filePath),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
@@ -218,7 +232,7 @@ internal fun ScreenshotPopover(
                 .background(colors.bg200),
         )
         Text(
-            text = stringResource(Res.string.timeline_screenshot_at, formatScreenshotTime(screenshot.timeMs)),
+            text = label,
             style = FloconTheme.typography.labelLarge,
             color = colors.ink,
         )

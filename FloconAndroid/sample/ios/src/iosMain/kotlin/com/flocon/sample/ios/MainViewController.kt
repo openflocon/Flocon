@@ -81,7 +81,7 @@ fun MainViewController() = ComposeUIViewController(
             foodDatabase = foodDatabase,
         )
 
-        registerIosSampleFeatures(dogDatabase, foodDatabase)
+        registerIosSampleFeatures(dogDatabase, foodDatabase, Databases.sqlDelightDatabase)
     }
 ) {
     App()

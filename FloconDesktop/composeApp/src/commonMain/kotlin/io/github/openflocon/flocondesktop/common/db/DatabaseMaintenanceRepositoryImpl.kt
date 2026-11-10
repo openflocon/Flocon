@@ -16,10 +16,11 @@ internal class DatabaseMaintenanceRepositoryImpl(
     private val dao: DatabaseMaintenanceDao,
     private val dispatcherProvider: DispatcherProvider,
     private val settingsDataSource: SettingsDataSource,
+    private val databaseFile: DatabaseFile,
 ) : DatabaseMaintenanceRepository {
 
     override suspend fun getDatabaseSizeBytes(): Long = withContext(dispatcherProvider.data) {
-        val db = getDatabaseFile()
+        val db = databaseFile.file
         // in WAL mode, part of the data lives in the -wal file until the next checkpoint
         listOf(db, File(db.path + "-wal"), File(db.path + "-shm"))
             .filter { it.exists() }

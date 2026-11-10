@@ -50,6 +50,7 @@ dependencies {
     implementation(projects.deeplinks.deeplinks)
     implementation(projects.database.room3.room3)
     implementation(projects.database.room.room)
+    implementation(projects.database.sqldelight.sqldelight)
     implementation(projects.network.ktorInterceptor.ktorInterceptor)
     implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
     implementation(projects.sharedprefs.sharedprefs)
@@ -149,6 +150,7 @@ val floconNoOpModules = mapOf(
     ":database:core:core" to ":database:core:core-no-op",
     ":database:room:room" to ":database:room:room-no-op",
     ":database:room3:room3" to ":database:room3:room3-no-op",
+    ":database:sqldelight:sqldelight" to ":database:sqldelight:sqldelight-no-op",
     ":datastores:datastores" to ":datastores:datastores-no-op",
     ":deeplinks:deeplinks" to ":deeplinks:deeplinks-no-op",
     ":files:files" to ":files:files-no-op",
