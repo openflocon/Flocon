@@ -504,7 +504,6 @@
     <string name="network_copy_curl_command">Copy cURL command</string>
     <string name="network_copy_url">Copy URL</string>
     <string name="network_create_mock">Create Mock</string>
-    <string name="network_decode_jwt">Decode\nJWT</string>
     <string name="network_deep_search">Deep Search</string>
     <string name="network_details_title">Network Details</string>
     <string name="network_display_anyway">Display anyway</string>

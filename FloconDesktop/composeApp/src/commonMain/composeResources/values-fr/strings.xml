@@ -342,7 +342,6 @@
     <string name="network_copy_curl_command">Copier la commande cURL</string>
     <string name="network_copy_url">Copier l’URL</string>
     <string name="network_create_mock">Créer un mock</string>
-    <string name="network_decode_jwt">Décoder\nle JWT</string>
     <string name="network_deep_search">Recherche approfondie</string>
     <string name="network_details_title">Détails de la requête</string>
     <string name="network_display_anyway">Afficher quand même</string>

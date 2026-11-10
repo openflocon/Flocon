@@ -904,7 +904,6 @@ private fun HeadersCard(
         DetailHeaders(
             headers = headers,
             labelWidth = HeadersLabelWidth,
-            onAuthorizationClicked = { token -> onAction(NetworkDetailAction.DisplayBearerJwt(token)) },
             onCopyValue = { value -> onAction(NetworkDetailAction.CopyText(value)) },
             framed = false,
             modifier = Modifier
@@ -1258,7 +1257,6 @@ private fun FullLogExport(
                 DetailHeaders(
                     headers = headers,
                     labelWidth = headersLabelWidth,
-                    onAuthorizationClicked = {},
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -1335,7 +1333,6 @@ private fun FullLogExport(
                         DetailHeaders(
                             headers = headers,
                             labelWidth = headersLabelWidth,
-                            onAuthorizationClicked = {},
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
