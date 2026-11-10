@@ -136,7 +136,7 @@ private const val LongTickPx = 8f
 private const val CursorPillPaddingXPx = 6f
 private const val CursorPillPaddingYPx = 2f
 private const val CursorGuideAlpha = 0.6f
-private const val CursorLineWidthPx = 2f
+private const val CursorLineWidthPx = 4f
 private const val PopoverWidthPx = 214f
 
 /** The previous and next session of the graph: [position] starts at 1. */
