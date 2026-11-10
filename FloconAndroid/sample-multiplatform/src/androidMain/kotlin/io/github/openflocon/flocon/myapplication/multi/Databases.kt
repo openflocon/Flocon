@@ -1,6 +1,7 @@
 package io.github.openflocon.flocon.myapplication.multi
 
 import android.content.Context
+import java.util.concurrent.atomic.AtomicReference
 import androidx.room3.Room
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import io.github.openflocon.flocon.database.room3.floconLogs
@@ -79,14 +80,16 @@ object Databases {
         }
     }
 
-    @Volatile
-    private var sqlDelightDatabase: SqlDelightDatabase? = null
+    private val sqlDelightDatabase = AtomicReference<SqlDelightDatabase?>(null)
 
     fun getSqlDelightDatabase(context: Context): SqlDelightDatabase {
-        return sqlDelightDatabase ?: synchronized(this) {
-            val driver = AndroidSqliteDriver(SqlDelightDatabase.Schema, context.applicationContext, "sqldelight_dogs.db")
-                .withFlocon(id = "dogs_sqldelight", displayName = "dogs (SQLDelight)")
-            SqlDelightDatabase(driver).also { sqlDelightDatabase = it }
+        return sqlDelightDatabase.get() ?: synchronized(this) {
+            // checked again: another thread can have created it while this one was waiting
+            sqlDelightDatabase.get() ?: run {
+                val driver = AndroidSqliteDriver(SqlDelightDatabase.Schema, context.applicationContext, "sqldelight_dogs.db")
+                    .withFlocon(id = "dogs_sqldelight", displayName = "dogs (SQLDelight)")
+                SqlDelightDatabase(driver).also { sqlDelightDatabase.set(it) }
+            }
         }
     }
 }
