@@ -57,7 +57,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.timeline_empty
@@ -394,7 +393,7 @@ internal fun TimelineContent(
                 ) {
                     items(
                         count = rows.itemCount,
-                        key = rows.itemKey { it.key },
+                        key = { index -> uniqueItemKey(rows, index) },
                     ) { index ->
                         when (val item = rows[index]) {
                             is TimelineItemUiModel.Row -> if (item.row.source == TimelineSource.AppStart) {
@@ -493,6 +492,15 @@ internal fun TimelineContent(
             }
         }
     }
+}
+
+/**
+ * The key of the item, unique in the list. Two pages loaded from different snapshots of the table (a response arrives between
+ * them) can both hold the same event, and a duplicated key crashes the LazyColumn: the second one gets its index appended.
+ */
+private fun uniqueItemKey(rows: LazyPagingItems<TimelineItemUiModel>, index: Int): Any {
+    val key = rows.peek(index)?.key ?: return "placeholder:$index"
+    return if (index > 0 && rows.peek(index - 1)?.key == key) "$key#$index" else key
 }
 
 /**
