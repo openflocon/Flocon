@@ -18,6 +18,8 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Share
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.asString
 import io.github.openflocon.flocondesktop.features.sharedpreferences.view.PreferenceAutoUpdate
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.toImmutableList
@@ -43,6 +45,7 @@ class SharedPreferencesViewModel(
     private val removeSharedPrefFieldUseCase: RemoveSharedPrefFieldUseCase,
     private val getCurrentDeviceSharedPrefValuesUseCase: GetCurrentDeviceSharedPreferenceValuesUseCase,
     private val navigationState: MainFloconNavigationState,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     val sharedPrefs: StateFlow<SharedPrefsStateUiModel> =
@@ -137,6 +140,8 @@ class SharedPreferencesViewModel(
     }
 
     fun onValueChanged(item: SharedPreferencesRowUiModel, valueAsString: String) {
+        // only the fact that a value was edited, never the key or the value
+        telemetryManager.featureUsed(TelemetryFeature.SharedPreferenceEdited)
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (item.value) {
                 is SharedPreferencesRowUiModel.Value.StringValue -> {

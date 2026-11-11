@@ -61,4 +61,10 @@ class DeviceRemoteDataSourceImplTest {
     fun `an unreadable bonjour message has no connection type`() {
         assertNull(dataSource.getConnectionType(bonjour("bonjour")))
     }
+
+    @Test
+    fun `the sdk is read from the bonjour message, null for an older sdk`() {
+        assertEquals("swift", dataSource.getSdk(bonjour("""{"plugins":["network"],"connectionType":"default","sdk":"swift"}""")))
+        assertNull(dataSource.getSdk(bonjour("""{"plugins":["network"],"connectionType":"default"}""")))
+    }
 }

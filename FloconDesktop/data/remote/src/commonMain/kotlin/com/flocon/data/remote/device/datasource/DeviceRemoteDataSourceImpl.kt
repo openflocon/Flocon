@@ -44,6 +44,9 @@ class DeviceRemoteDataSourceImpl(
         ?.connectionType
         ?.let { if (it == "wifi") DeviceConnectionType.Wifi else DeviceConnectionType.Default }
 
+    override fun getSdk(message: FloconIncomingMessageDomainModel): String? = json.safeDecodeFromString<BonjourDataModel>(message.body)
+        ?.sdk
+
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         server.sendMessageToClient(
             deviceIdAndPackageName = deviceIdAndPackageName.toRemote(),

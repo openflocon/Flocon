@@ -20,6 +20,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +41,7 @@ class DeepLinkViewModel(
     observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
     private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     private val variableValues = MutableStateFlow<PersistentMap<String, String>>(persistentMapOf())
@@ -131,6 +134,7 @@ class DeepLinkViewModel(
                 }
             }
 
+            telemetryManager.featureUsed(TelemetryFeature.DeeplinkLaunched)
             executeDeeplinkUseCase(
                 deeplink = deeplink,
                 deeplinkId = viewState.deeplinkId,

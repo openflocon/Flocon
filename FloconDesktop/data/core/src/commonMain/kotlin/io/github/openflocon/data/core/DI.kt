@@ -15,6 +15,7 @@ import io.github.openflocon.data.core.network.networkModule
 import io.github.openflocon.data.core.screen.screenModule
 import io.github.openflocon.data.core.sharedpreference.sharedPreferenceModule
 import io.github.openflocon.data.core.table.tableModule
+import io.github.openflocon.data.core.telemetry.telemetryModule
 import io.github.openflocon.data.core.timeline.timelineModule
 import io.github.openflocon.data.core.timelinelog.timelineLogModule
 import io.github.openflocon.data.core.versions.versionModule
@@ -41,6 +42,7 @@ val dataCoreModule = module {
         crashReporterModule,
         timelineModule,
         timelineLogModule,
+        telemetryModule,
         webViewModule,
     )
 }

@@ -50,6 +50,8 @@ import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,6 +83,7 @@ internal class AppViewModel(
     private val logManager: LogManager,
     private val settingsRepository: SettingsRepository,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
+    private val telemetryManager: TelemetryManager,
     observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
@@ -241,6 +244,9 @@ internal class AppViewModel(
     }
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {
+        // Only the menu name, never anything coming from the inspected app.
+        telemetryManager.screenViewed(action.menu.id)
+
         if (action.menu != SubScreen.Settings) {
             contentState.update { it.copy(current = action.menu) }
         }
@@ -308,6 +314,7 @@ internal class AppViewModel(
                     feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
                 },
                 doOnSuccess = {
+                    telemetryManager.featureUsed(TelemetryFeature.ScreenshotTaken)
                     feedbackDisplayer.displayMessage(getString(Res.string.screenshot_saved_at, it))
                 },
             )

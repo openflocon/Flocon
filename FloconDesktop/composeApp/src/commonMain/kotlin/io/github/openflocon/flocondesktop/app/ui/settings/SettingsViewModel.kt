@@ -53,6 +53,8 @@ import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetrySetting
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,6 +95,7 @@ class SettingsViewModel(
     private val cleanMediaFilesUseCase: CleanMediaFilesUseCase,
     observeAutoMediaCleanupIntervalUseCase: ObserveAutoMediaCleanupIntervalUseCase,
     private val setAutoMediaCleanupIntervalUseCase: SetAutoMediaCleanupIntervalUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     private val _dataState = MutableStateFlow(DataUiState())
@@ -240,6 +243,7 @@ class SettingsViewModel(
     }
 
     private fun onMascotEnabledChange(action: SettingsAction.MascotEnabledChange) {
+        telemetryManager.settingChanged(TelemetrySetting.MascotEnabled, action.enabled)
         viewModelScope.launch {
             setMascotEnabledUseCase(action.enabled)
         }

@@ -20,6 +20,9 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkMet
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOption
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetryScreen
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.library.designsystem.common.readFromClipboard
 import io.github.openflocon.library.designsystem.common.saveImageToFile
@@ -43,6 +46,7 @@ class NetworkDetailViewModel(
     private val navigationState: MainFloconNavigationState,
     private val observeNetworkRequestsByIdUseCase: ObserveNetworkRequestsByIdUseCase,
     private val dispatcherProvider: DispatcherProvider,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel(),
     KoinComponent {
 
@@ -89,7 +93,28 @@ class NetworkDetailViewModel(
             )
         )
 
+    init {
+        // the panel opens for every clicked request (screenViewed is once per launch)
+        telemetryManager.screenViewed(TelemetryScreen.NetworkDetail)
+    }
+
     fun onAction(action: NetworkDetailAction) {
+        // exhaustive: a new action does not compile without a decision. Only the kind of action, never its content.
+        telemetryManager.featureUsed(
+            when (action) {
+                is NetworkDetailAction.CopyText -> TelemetryFeature.DetailCopyText
+                is NetworkDetailAction.CopyImage -> TelemetryFeature.DetailCopyImage
+                is NetworkDetailAction.SaveImage -> TelemetryFeature.DetailSaveImage
+                is NetworkDetailAction.DisplayBearerJwt -> TelemetryFeature.DetailBearerJwt
+                is NetworkDetailAction.JsonDetail -> TelemetryFeature.DetailJsonDetail
+                is NetworkDetailAction.DiffWithClipboard -> TelemetryFeature.DetailDiffWithClipboard
+                is NetworkDetailAction.OpenBodyExternally.Request -> TelemetryFeature.DetailOpenExternallyRequest
+                is NetworkDetailAction.OpenBodyExternally.Response -> TelemetryFeature.DetailOpenExternallyResponse
+                is NetworkDetailAction.ShareAsMarkdown -> TelemetryFeature.DetailShareMarkdown
+                is NetworkDetailAction.CopyCurl -> TelemetryFeature.DetailCopyCurl
+                is NetworkDetailAction.SaveAsHtml -> TelemetryFeature.DetailSaveHtml
+            },
+        )
         when (action) {
             is NetworkDetailAction.CopyText -> onCopyText(action)
             is NetworkDetailAction.CopyImage -> onCopyImage(action)

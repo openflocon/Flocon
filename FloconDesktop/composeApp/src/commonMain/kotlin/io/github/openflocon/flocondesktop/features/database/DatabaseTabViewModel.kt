@@ -19,6 +19,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -48,6 +50,7 @@ class DatabaseTabViewModel(
     private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
     private val importSqlQueryProcessor: ImportSqlQueryProcessor,
     private val exportDatabaseResultToCsv: ExportDatabaseResultToCsvProcessor,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     @Immutable
@@ -149,6 +152,7 @@ class DatabaseTabViewModel(
                 is DatabaseTabAction.ClearQuery -> clearQuery()
 
                 is DatabaseTabAction.ExecuteQuery -> {
+                    trackQueryExecutedByUser()
                     updateQuery(action.query)
                     executeQuery(
                         query = action.query,
@@ -165,6 +169,7 @@ class DatabaseTabViewModel(
 
                 DatabaseTabAction.Import -> {
                     importSqlQueryProcessor()?.let { q ->
+                        trackQueryExecutedByUser()
                         updateQuery(q)
                         executeQuery(
                             query = q,
@@ -200,6 +205,14 @@ class DatabaseTabViewModel(
                 }
             }
         }
+    }
+
+    /**
+     * Only a query the user ran (button, import), never the automatic ones (table opened, favorite loaded,
+     * auto-update). Only the fact that a query ran, never the query.
+     */
+    private fun trackQueryExecutedByUser() {
+        telemetryManager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
     }
 
     fun updateQuery(queryValue: String) {

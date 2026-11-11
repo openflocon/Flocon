@@ -17,11 +17,15 @@ import io.github.openflocon.flocondesktop.features.network.mock.processor.Export
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ExportResult
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportMocksProcessor
 import io.github.openflocon.flocondesktop.features.network.mock.processor.ImportResult
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetryScreen
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -38,7 +42,12 @@ class NetworkMocksViewModel(
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val navigationState: MainFloconNavigationState,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
+
+    init {
+        telemetryManager.screenViewed(TelemetryScreen.NetworkMocks)
+    }
 
     val items = observeNetworkMocksUseCase()
         .distinctUntilChanged()
@@ -95,8 +104,13 @@ class NetworkMocksViewModel(
         viewModelScope.launch(dispatcherProvider.viewModel) {
             when (val result = exportMocksProcessor()) {
                 is ExportResult.Cancelled -> { /* no op */ }
+
                 is ExportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
-                is ExportResult.Success -> feedbackDisplayer.displayMessage("Export successful")
+
+                is ExportResult.Success -> {
+                    telemetryManager.featureUsed(TelemetryFeature.MockExported)
+                    feedbackDisplayer.displayMessage("Export successful")
+                }
             }
         }
     }
@@ -109,6 +123,7 @@ class NetworkMocksViewModel(
                 is ImportResult.Failure -> feedbackDisplayer.displayMessage(result.error.message ?: "error")
 
                 is ImportResult.Success -> {
+                    telemetryManager.featureUsed(TelemetryFeature.MockImported)
                     result.mocks.forEach {
                         addNetworkMocksUseCase(it)
                     }
@@ -121,6 +136,11 @@ class NetworkMocksViewModel(
     private fun changeIsEnabled(id: String, enabled: Boolean) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
             updateNetworkMockIsEnabledUseCase(id = id, isEnabled = enabled)
+            telemetryManager.featureUsed(
+                feature = TelemetryFeature.MockToggled,
+                value = enabled,
+                enabledMocksCount = observeNetworkMocksUseCase().first().count { it.isEnabled },
+            )
         }
     }
 
@@ -141,6 +161,7 @@ class NetworkMocksViewModel(
     }
 
     private fun createNewMock() {
+        telemetryManager.featureUsed(TelemetryFeature.MockCreateClicked)
         navigationState.navigate(NetworkRoutes.MockEdition())
     }
 }

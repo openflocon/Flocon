@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,11 +60,11 @@ fun FeatureDocButton(
     doc: FeatureDoc,
     modifier: Modifier = Modifier,
 ) {
-    val uriHandler = LocalUriHandler.current
+    val opener = rememberFeatureDocOpener()
     FloconIconButton(
         imageVector = Icons.Outlined.Info,
         tooltip = stringResource(Res.string.feature_doc_open_documentation),
-        onClick = { runCatching { uriHandler.openUri(doc.url) } },
+        onClick = { opener.open(doc, doc.url, HelpSource.TopBar) },
         modifier = modifier.pointerHoverIcon(PointerIcon.Hand),
     )
 }
@@ -84,8 +84,10 @@ fun FeatureEmptyState(
     description: String? = null,
     showSetupButton: Boolean = true,
 ) {
-    val uriHandler = LocalUriHandler.current
+    val opener = rememberFeatureDocOpener()
     val hasDevice = LocalHasDevice.current
+    val emptyStateObserver = LocalFeatureEmptyStateObserver.current
+    LaunchedEffect(doc) { emptyStateObserver.shown(doc) }
     FloconEmptyState(
         title = title ?: doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
         description = description ?: doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
@@ -111,7 +113,7 @@ fun FeatureEmptyState(
             ) {
                 if (showSetupButton) {
                     FloconButton(
-                        onClick = { runCatching { uriHandler.openUri(doc.setupUrl) } },
+                        onClick = { opener.open(doc, doc.setupUrl, HelpSource.EmptyState) },
                         containerColor = FloconTheme.colors.accent,
                         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
                     ) {
@@ -130,7 +132,7 @@ fun FeatureEmptyState(
                 }
                 if (!hasDevice) {
                     NoDeviceNotice(
-                        onGettingStartedClicked = { runCatching { uriHandler.openUri(FeatureDoc.SETUP_URL) } },
+                        onGettingStartedClicked = { opener.open(null, FeatureDoc.SETUP_URL, HelpSource.EmptyStateNoDevice) },
                     )
                 }
             }

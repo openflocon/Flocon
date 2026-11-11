@@ -58,6 +58,8 @@ import io.github.openflocon.flocondesktop.features.timeline.model.TimelineScreen
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSettingsUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineSummaryUiModel
 import io.github.openflocon.flocondesktop.features.timeline.model.previewTimelineSettingsUiModel
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetrySetting
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.PanelRoute
 import kotlinx.coroutines.FlowPreview
@@ -106,6 +108,7 @@ internal class TimelineViewModel(
     private val consumeTimelineFocusUseCase: ConsumeTimelineFocusUseCase,
     observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     observeCurrentDeviceAndAppUseCase: ObserveCurrentDeviceAndAppUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     val filterText: StateFlow<String> = filterStore.text
@@ -305,7 +308,10 @@ internal class TimelineViewModel(
                 navigationState.navigate(TimelineRoutes.Filters)
             }
 
-            is TimelineAction.ToggleAutoScroll -> viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }
+            is TimelineAction.ToggleAutoScroll -> {
+                telemetryManager.settingChanged(TelemetrySetting.TimelineAutoScroll, action.value)
+                viewModelScope.launch { setTimelineAutoScrollUseCase(action.value) }
+            }
 
             is TimelineAction.InvertList -> viewModelScope.launch { setTimelineInvertListUseCase(action.value) }
 
@@ -313,13 +319,22 @@ internal class TimelineViewModel(
 
             is TimelineAction.PinPanel -> viewModelScope.launch { setTimelinePinPanelUseCase(action.value) }
 
-            is TimelineAction.SetGraph -> viewModelScope.launch { setTimelineGraphUseCase(action.value) }
+            is TimelineAction.SetGraph -> {
+                telemetryManager.settingChanged(TelemetrySetting.TimelineView, if (action.value) "graph" else "list")
+                viewModelScope.launch { setTimelineGraphUseCase(action.value) }
+            }
 
-            is TimelineAction.SetMergePlugins -> viewModelScope.launch { setTimelineMergePluginsUseCase(action.value) }
+            is TimelineAction.SetMergePlugins -> {
+                telemetryManager.settingChanged(TelemetrySetting.TimelineMergePlugins, action.value)
+                viewModelScope.launch { setTimelineMergePluginsUseCase(action.value) }
+            }
 
             is TimelineAction.SetClusterEvents -> viewModelScope.launch { setTimelineClusterEventsUseCase(action.value) }
 
-            is TimelineAction.SetScreenshots -> viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
+            is TimelineAction.SetScreenshots -> {
+                telemetryManager.settingChanged(TelemetrySetting.TimelineScreenshots, action.value)
+                viewModelScope.launch { setTimelineScreenshotsUseCase(action.value) }
+            }
 
             is TimelineAction.SetScreenshotInterval -> viewModelScope.launch { setTimelineScreenshotIntervalUseCase(action.seconds) }
 

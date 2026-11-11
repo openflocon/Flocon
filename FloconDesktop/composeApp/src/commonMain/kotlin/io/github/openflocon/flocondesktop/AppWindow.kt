@@ -33,6 +33,7 @@ import io.github.openflocon.flocondesktop.features.featuresModule
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.iossimulator.IosSimulatorRepositoryImpl
 import io.github.openflocon.flocondesktop.mock.mockModule
+import io.github.openflocon.flocondesktop.telemetry.telemetryModule
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.mcp.mcpModule
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -63,6 +64,7 @@ fun App(
                 dataLocalModule,
                 dataRemoteModule,
                 mcpModule,
+                telemetryModule,
                 // the ports given as launch options, for this session only
                 module { single { serverPortsOverrides } },
                 // Temporary
