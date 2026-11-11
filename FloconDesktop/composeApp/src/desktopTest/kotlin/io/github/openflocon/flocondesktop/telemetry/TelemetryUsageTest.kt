@@ -54,7 +54,7 @@ class TelemetryUsageTest {
         assertEquals(2, toggled["enabled_mocks_count"])
         // a String value is never sent for a feature
         assertEquals("NetworkDetail", client.events[1].second["screen"])
-        assertEquals(true, "value" in client.events[1].second)
+        assertEquals(false, "value" in client.events[1].second)
         val help = client.events[2].second
         assertEquals("Network", help["screen"])
         assertEquals("empty_state", help["source"])

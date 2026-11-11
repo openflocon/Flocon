@@ -27,6 +27,8 @@ internal class DeviceConnectionTelemetry(
         message: FloconIncomingMessageDomainModel,
     ) {
         if (message.method != Protocol.FromDevice.Bonjour.Method.Bonjour) return
+        // nothing is consumed while nothing can be sent (before the user opted in)
+        if (!telemetryManager.canSend) return
         if (!trackedApps.add(deviceIdAndPackageName.deviceId to deviceIdAndPackageName.packageName)) return
 
         telemetryManager.track(

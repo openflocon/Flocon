@@ -1,6 +1,7 @@
 package io.github.openflocon.mcp
 
 import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.request.contentLength
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readRemaining
 import kotlinx.io.readByteArray
@@ -76,13 +77,19 @@ internal fun initializeClientName(body: String): String? {
     }
 }
 
+private const val MAX_INITIALIZE_BODY_BYTES = 16 * 1024L
+
 /** Reads the body of the POST requests to remember the client of the `initialize` handshake, then hands it over untouched. */
 internal fun mcpClientNamePlugin(holder: McpClientNameHolder) = createApplicationPlugin("McpClientName") {
-    onCallReceive { _ ->
+    onCallReceive { call ->
+        // an initialize request is tiny: never buffer a body of unknown or large size
+        val length = call.request.contentLength()
+        val mayBeInitialize = length != null && length <= MAX_INITIALIZE_BODY_BYTES
         transformBody { data ->
-            if (data is ByteReadChannel) {
+            if (mayBeInitialize && data is ByteReadChannel) {
                 val bytes = data.readRemaining().readByteArray()
-                runCatching { holder.onRequestBody(bytes.decodeToString()) }
+                val body = bytes.decodeToString()
+                if ("initialize" in body) runCatching { holder.onRequestBody(body) }
                 ByteReadChannel(bytes)
             } else {
                 data

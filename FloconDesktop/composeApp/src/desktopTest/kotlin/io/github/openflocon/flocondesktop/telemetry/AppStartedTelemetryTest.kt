@@ -1,7 +1,11 @@
 package io.github.openflocon.flocondesktop.telemetry
 
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -61,12 +65,18 @@ class AppStartedTelemetryTest {
     }
 
     @Test
-    fun `nothing is sent when not opted in`() = runBlocking {
+    fun `waits for the opt-in instead of being lost`() = runBlocking {
         val client = FakeTelemetryRepository(level = null)
+        val manager = telemetryManager(client)
 
-        telemetry(telemetryManager(client)).send()
-
+        val job = launch(Dispatchers.Default) { telemetry(manager).send() }
+        delay(200.milliseconds)
         assertTrue(client.events.isEmpty())
+
+        manager.setLevel(TelemetryLevelDomainModel.Anonymous)
+        job.join()
+
+        assertEquals(TelemetryEvents.APP_STARTED, client.events.single().first)
     }
 
     @Test

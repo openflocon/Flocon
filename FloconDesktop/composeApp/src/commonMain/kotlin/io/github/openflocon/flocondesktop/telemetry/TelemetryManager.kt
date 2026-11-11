@@ -72,7 +72,10 @@ class TelemetryManager(
             "feature" to feature.wireName,
             "screen" to (screen ?: feature.screen.wireName),
         )
-        value.boundedOrNull()?.let { properties["value"] = it }
+        when (value) {
+            is Boolean, is Int -> properties["value"] = value
+            else -> Unit // never a String: free text could carry user data
+        }
         source?.let { properties["source"] = it }
         enabledMocksCount?.let { properties["enabled_mocks_count"] = it }
         track(TelemetryEvents.FEATURE_USED, properties)
@@ -84,20 +87,19 @@ class TelemetryManager(
             "setting" to setting.wireName,
             "screen" to setting.screen.wireName,
         )
-        value.boundedOrNull()?.let { properties["value"] = it }
+        when (value) {
+            is Boolean, is Int, is String -> properties["value"] = value
+            else -> Unit
+        }
         track(TelemetryEvents.SETTING_CHANGED, properties)
-    }
-
-    private fun Any?.boundedOrNull(): Any? = when (this) {
-        is Boolean, is Int, is String -> this
-        else -> null
     }
 
     /** True the first time [key] is seen. Nothing is consumed while nothing can be sent (before the user opted in). */
     private fun firstTimeThisLaunch(key: String): Boolean {
-        if (!canSend()) return false
+        if (!canSend) return false
         return sentThisLaunch.add(key)
     }
 
-    private fun canSend(): Boolean = state.value.canSend
+    /** False until the user opted in (and always on builds without key / with DO_NOT_TRACK). */
+    val canSend: Boolean get() = state.value.canSend
 }

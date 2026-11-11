@@ -7,6 +7,8 @@ import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
 import io.github.openflocon.domain.timeline.usecase.ObserveTimelineSettingsUseCase
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
@@ -34,18 +36,28 @@ internal class AppStartedTelemetry(
 
     /** Once per launch, whichever [TelemetryViewModel] instance asks (the Settings screen creates its own). */
     suspend fun send() {
+        // wait for the user's answer: nothing is consumed while nothing can be sent
+        telemetryManager.state.first { it.canSend }
         if (!sent.compareAndSet(false, true)) return
         val properties = mutableMapOf<String, Any>()
 
-        read(timelineSettings)?.let { timeline ->
-            properties["timeline_view"] = if (timeline.graph) "graph" else "list"
-            properties["timeline_auto_scroll"] = timeline.autoScroll
-            properties["timeline_screenshots"] = timeline.screenshots
-            properties["timeline_merge_plugins"] = timeline.mergePlugins
+        // independent reads: the ones waiting for a device must not delay the others
+        coroutineScope {
+            val timeline = async { read(timelineSettings) }
+            val mascot = async { read(mascotEnabled) }
+            val mocks = async { read(enabledMocksCount) }
+            val badNetwork = async { read(badNetworkEnabled) }
+
+            timeline.await()?.let {
+                properties["timeline_view"] = if (it.graph) "graph" else "list"
+                properties["timeline_auto_scroll"] = it.autoScroll
+                properties["timeline_screenshots"] = it.screenshots
+                properties["timeline_merge_plugins"] = it.mergePlugins
+            }
+            mascot.await()?.let { properties["mascot_enabled"] = it }
+            mocks.await()?.let { properties["enabled_mocks_count"] = it }
+            badNetwork.await()?.let { properties["bad_network_enabled"] = it }
         }
-        read(mascotEnabled)?.let { properties["mascot_enabled"] = it }
-        read(enabledMocksCount)?.let { properties["enabled_mocks_count"] = it }
-        read(badNetworkEnabled)?.let { properties["bad_network_enabled"] = it }
 
         telemetryManager.track(TelemetryEvents.APP_STARTED, properties)
     }
