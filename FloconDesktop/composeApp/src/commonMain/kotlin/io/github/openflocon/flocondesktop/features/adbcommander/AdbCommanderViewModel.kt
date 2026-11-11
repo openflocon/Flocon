@@ -26,6 +26,8 @@ import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommand
 import io.github.openflocon.flocondesktop.features.adbcommander.model.ConsoleOutputEntry
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorState
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowEditorStepState
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
@@ -57,6 +59,7 @@ class AdbCommanderViewModel(
     private val deleteFlowUseCase: DeleteFlowUseCase,
     private val updateFlowUseCase: UpdateFlowUseCase,
     private val executeFlowUseCase: ExecuteFlowUseCase,
+    private val telemetryManager: TelemetryManager,
     observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
 ) : ViewModel() {
 
@@ -130,6 +133,8 @@ class AdbCommanderViewModel(
         if (command.isEmpty()) return
 
         localState.update { it.copy(isExecuting = true) }
+        // only the fact that a command was sent, never the command
+        telemetryManager.featureUsed(TelemetryFeature.AdbCommandSent)
         viewModelScope.launch(dispatcherProvider.viewModel) {
             val result = executeAdbCommanderCommandUseCase(command)
             result.fold(

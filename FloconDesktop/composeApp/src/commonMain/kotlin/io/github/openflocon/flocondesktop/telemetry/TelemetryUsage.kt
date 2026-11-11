@@ -11,13 +11,29 @@ enum class TelemetryScreen(val wireName: String) {
     NetworkDetail("NetworkDetail"),
     Timeline("Timeline"),
     Settings("Settings"),
+
+    // menu screens (same names as their menu id) that host a core action
+    Database("Database"),
+    Deeplinks("Deeplinks"),
+    SharedPreferences("SharedPreferences"),
+    FeatureFlags("FeatureFlags"),
+    Files("Files"),
+    AdbCommander("AdbCommander"),
+
+    /** Actions of the top bar: screenshot and video of the device. */
+    TopBar("TopBar"),
 }
 
 /**
  * Actions sent with `feature_used` (property `feature`). Bounded list: never a name, a URL, a body or a token.
  * The screen is part of the entry so it can't drift or be forgotten at the call site.
  */
-enum class TelemetryFeature(val wireName: String, val screen: TelemetryScreen) {
+enum class TelemetryFeature(
+    val wireName: String,
+    val screen: TelemetryScreen,
+    /** Core action of a screen: sent at most once per launch, to know if it is used at all. */
+    val oncePerLaunch: Boolean = false,
+) {
     MockCreateClicked("mock_create_clicked", TelemetryScreen.NetworkMocks),
     MockToggled("mock_toggled", TelemetryScreen.NetworkMocks),
     MockImported("mock_imported", TelemetryScreen.NetworkMocks),
@@ -35,6 +51,14 @@ enum class TelemetryFeature(val wireName: String, val screen: TelemetryScreen) {
     DetailDiffWithClipboard("detail_diff_with_clipboard", TelemetryScreen.NetworkDetail),
     DetailJsonDetail("detail_json_detail", TelemetryScreen.NetworkDetail),
     DetailBearerJwt("detail_bearer_jwt", TelemetryScreen.NetworkDetail),
+
+    DatabaseQueryExecuted("database_query_executed", TelemetryScreen.Database, oncePerLaunch = true),
+    DeeplinkLaunched("deeplink_launched", TelemetryScreen.Deeplinks, oncePerLaunch = true),
+    SharedPreferenceEdited("shared_preference_edited", TelemetryScreen.SharedPreferences, oncePerLaunch = true),
+    FileOpened("file_opened", TelemetryScreen.Files, oncePerLaunch = true),
+    AdbCommandSent("adb_command_sent", TelemetryScreen.AdbCommander, oncePerLaunch = true),
+    ScreenshotTaken("screenshot_taken", TelemetryScreen.TopBar, oncePerLaunch = true),
+    VideoRecorded("video_recorded", TelemetryScreen.TopBar, oncePerLaunch = true),
 
     /** Its `screen` is the documentation page, set by the caller (see `featureUsed(screen = ...)`). */
     HelpOpened("help_opened", TelemetryScreen.Settings),

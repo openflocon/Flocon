@@ -20,7 +20,8 @@ class TelemetryManager(
     private val trackTelemetryEventUseCase: TrackTelemetryEventUseCase,
 ) {
 
-    private val screensSentThisLaunch: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    // the one place owning the "at most once per launch" rule, whatever the event
+    private val sentThisLaunch: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     val state: StateFlow<TelemetryStateDomainModel> = observeTelemetryStateUseCase()
 
@@ -32,22 +33,32 @@ class TelemetryManager(
         trackTelemetryEventUseCase(event, properties)
     }
 
-    /** A sub-screen was opened. */
-    fun screenViewed(screen: TelemetryScreen) {
-        track(TelemetryEvents.SCREEN_VIEWED, mapOf("screen" to screen.wireName))
+    /** A screen was opened: at most once per screen per launch (they open very often). */
+    fun screenViewed(screen: TelemetryScreen) = screenViewed(screen.wireName)
+
+    /** Same for a menu entry, by its menu id (`Network`, `Database`...). */
+    fun screenViewed(screen: String) {
+        if (!firstTimeThisLaunch("screen_viewed:$screen")) return
+        track(TelemetryEvents.SCREEN_VIEWED, mapOf("screen" to screen))
     }
 
-    /** Like [screenViewed], but for a screen that opens very often (ex: a panel): at most once per launch. */
-    fun trackScreenOncePerLaunch(screen: TelemetryScreen) {
-        if (!canSend()) return // don't burn the "once" while nothing can be sent
-        if (!screensSentThisLaunch.add(screen.wireName)) return
-        screenViewed(screen)
+    /** The empty state of a documentation page was displayed: at most once per page per launch. */
+    fun emptyStateShown(screen: String) {
+        if (!firstTimeThisLaunch("screen_empty_shown:$screen")) return
+        track(TelemetryEvents.SCREEN_EMPTY_SHOWN, mapOf("screen" to screen))
+    }
+
+    /** An MCP tool was called: at most once per tool per launch. [tool] is a fixed name, [client] a bounded category. */
+    fun mcpUsed(tool: String, client: String) {
+        if (!firstTimeThisLaunch("mcp_used:$tool")) return
+        track(TelemetryEvents.MCP_USED, mapOf("tool" to tool, "client" to client))
     }
 
     /**
      * An action was used. [value] is only sent when it is a [Boolean] or an [Int].
      * [screen] overrides the screen of the [feature] (documentation pages for [TelemetryFeature.HelpOpened]).
      * [source] is a bounded value (see `HelpSource`).
+     * A feature flagged [TelemetryFeature.oncePerLaunch] is sent at most once per launch.
      */
     fun featureUsed(
         feature: TelemetryFeature,
@@ -56,6 +67,7 @@ class TelemetryManager(
         source: String? = null,
         enabledMocksCount: Int? = null,
     ) {
+        if (feature.oncePerLaunch && !firstTimeThisLaunch("feature_used:${feature.wireName}")) return
         val properties = mutableMapOf<String, Any>(
             "feature" to feature.wireName,
             "screen" to (screen ?: feature.screen.wireName),
@@ -79,6 +91,12 @@ class TelemetryManager(
     private fun Any?.boundedOrNull(): Any? = when (this) {
         is Boolean, is Int, is String -> this
         else -> null
+    }
+
+    /** True the first time [key] is seen. Nothing is consumed while nothing can be sent (before the user opted in). */
+    private fun firstTimeThisLaunch(key: String): Boolean {
+        if (!canSend()) return false
+        return sentThisLaunch.add(key)
     }
 
     private fun canSend(): Boolean = state.value.canSend

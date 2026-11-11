@@ -9,7 +9,8 @@ import io.github.openflocon.domain.messages.repository.MessagesReceiverRepositor
 
 /**
  * Sends [TelemetryEvents.DEVICE_CONNECTED] when an app says "bonjour".
- * The SDK says it again on every reconnection: only the first one of each app launch is sent.
+ * The SDK says it again on every reconnection and the app relaunches on every build: only the first
+ * one of each (device, package) is sent per Flocon launch, whatever the app instance.
  */
 internal class DeviceConnectionTelemetry(
     private val remoteDeviceDataSource: RemoteDeviceDataSource,
@@ -17,7 +18,7 @@ internal class DeviceConnectionTelemetry(
 ) : MessagesReceiverRepository {
 
     // messages are handled one after the other (HandleIncomingMessagesUseCase), no concurrent access
-    private val trackedLaunches = mutableSetOf<DeviceIdAndPackageNameDomainModel>()
+    private val trackedApps = mutableSetOf<Pair<String, String>>()
 
     override val pluginName = listOf(Protocol.FromDevice.Bonjour.Plugin)
 
@@ -26,7 +27,7 @@ internal class DeviceConnectionTelemetry(
         message: FloconIncomingMessageDomainModel,
     ) {
         if (message.method != Protocol.FromDevice.Bonjour.Method.Bonjour) return
-        if (!trackedLaunches.add(deviceIdAndPackageName)) return
+        if (!trackedApps.add(deviceIdAndPackageName.deviceId to deviceIdAndPackageName.packageName)) return
 
         telemetryManager.track(
             event = TelemetryEvents.DEVICE_CONNECTED,

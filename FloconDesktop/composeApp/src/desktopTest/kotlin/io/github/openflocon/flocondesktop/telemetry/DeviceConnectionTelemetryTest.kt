@@ -48,7 +48,7 @@ class DeviceConnectionTelemetryTest {
     )
 
     @Test
-    fun `one event per app launch, even when the sdk reconnects`() = runBlocking {
+    fun `one event per device and app per Flocon launch, whatever the app instance`() = runBlocking {
         val client = FakeTelemetryRepository()
         val telemetry = telemetry(client)
         val firstLaunch = bonjour(appInstance = 1)
@@ -58,7 +58,8 @@ class DeviceConnectionTelemetryTest {
         telemetry.onMessageReceived(firstLaunch.id(), firstLaunch) // reconnection
         telemetry.onMessageReceived(secondLaunch.id(), secondLaunch)
 
-        assertEquals(2, client.events.size)
+        // the second app launch (rebuild) does not send again
+        assertEquals(1, client.events.size)
         val (event, properties) = client.events.first()
         assertEquals(TelemetryEvents.DEVICE_CONNECTED, event)
         assertEquals("android", properties["platform"])
@@ -70,6 +71,19 @@ class DeviceConnectionTelemetryTest {
         listOf("pixel", "Pixel 9 of someone", "Secret app", "com.secret.app").forEach {
             assertEquals(false, it in values, "$it must not be sent")
         }
+    }
+
+    @Test
+    fun `another app or another device is sent`() = runBlocking {
+        val client = FakeTelemetryRepository()
+        val telemetry = telemetry(client)
+        val first = bonjour(appInstance = 1)
+        val otherApp = first.copy(appPackageName = "com.other.app")
+        val otherDevice = first.copy(deviceId = "iphone")
+
+        listOf(first, otherApp, otherDevice, first).forEach { telemetry.onMessageReceived(it.id(), it) }
+
+        assertEquals(3, client.events.size)
     }
 
     @Test

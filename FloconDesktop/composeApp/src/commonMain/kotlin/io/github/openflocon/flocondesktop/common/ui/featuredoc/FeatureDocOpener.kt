@@ -44,3 +44,19 @@ fun rememberFeatureDocOpener(): FeatureDocOpener {
         FeatureDocOpener { _, url, _ -> runCatching { uriHandler.openUri(url) } }
     }
 }
+
+/**
+ * Told when the empty state of a documentation page is displayed (usage analytics), same idea as [FeatureDocOpener]:
+ * the shared composables never know the telemetry.
+ */
+fun interface FeatureEmptyStateObserver {
+    fun shown(doc: FeatureDoc)
+
+    companion object {
+        /** Previews and tests. */
+        val None = FeatureEmptyStateObserver { }
+    }
+}
+
+/** Provided by the app shell, no-op by default. */
+val LocalFeatureEmptyStateObserver = staticCompositionLocalOf { FeatureEmptyStateObserver.None }

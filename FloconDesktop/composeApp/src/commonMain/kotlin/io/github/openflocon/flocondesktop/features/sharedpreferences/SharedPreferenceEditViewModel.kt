@@ -17,6 +17,8 @@ import io.github.openflocon.domain.sharedpreference.usecase.ObserveCurrentDevice
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceEditStatus
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceEditTab
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceEditUiModel
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -33,6 +35,7 @@ class SharedPreferenceEditViewModel(
     private val editSharedPrefFieldUseCase: EditSharedPrefFieldUseCase,
     private val feedbackDisplayer: FeedbackDisplayer,
     private val dispatcherProvider: DispatcherProvider,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     // the value known from the app
@@ -127,6 +130,7 @@ class SharedPreferenceEditViewModel(
         val value = if (state.isJson) formatJson(state.text, pretty = false) else state.text
         sent = value
         edited = null
+        telemetryManager.featureUsed(TelemetryFeature.SharedPreferenceEdited)
         viewModelScope.launch(dispatcherProvider.viewModel) {
             editSharedPrefFieldUseCase(key, SharedPreferenceRowDomainModel.Value.StringValue(value))
         }

@@ -94,8 +94,8 @@ class NetworkDetailViewModel(
         )
 
     init {
-        // the panel opens for every clicked request: once per launch
-        telemetryManager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail)
+        // the panel opens for every clicked request (screenViewed is once per launch)
+        telemetryManager.screenViewed(TelemetryScreen.NetworkDetail)
     }
 
     fun onAction(action: NetworkDetailAction) {

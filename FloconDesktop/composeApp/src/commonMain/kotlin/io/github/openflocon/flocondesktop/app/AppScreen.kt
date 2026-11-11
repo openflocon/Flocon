@@ -19,7 +19,9 @@ import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocOpener
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyStateObserver
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalFeatureDocOpener
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalFeatureEmptyStateObserver
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.helpScreenName
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
@@ -75,7 +77,14 @@ fun AppScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    CompositionLocalProvider(LocalFeatureDocOpener provides featureDocOpener) {
+    val emptyStateObserver = remember(telemetryManager) {
+        FeatureEmptyStateObserver { doc -> telemetryManager.emptyStateShown(doc.name) }
+    }
+
+    CompositionLocalProvider(
+        LocalFeatureDocOpener provides featureDocOpener,
+        LocalFeatureEmptyStateObserver provides emptyStateObserver,
+    ) {
         Box(modifier = modifier.fillMaxSize()) {
             Content(
                 uiState = uiState,

@@ -50,7 +50,7 @@ import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.flocondesktop.messages.ui.McpServerDelegate
 import io.github.openflocon.flocondesktop.messages.ui.MessagesServerDelegate
-import io.github.openflocon.flocondesktop.telemetry.TelemetryEvents
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
 import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.delay
@@ -245,7 +245,7 @@ internal class AppViewModel(
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {
         // Only the menu name, never anything coming from the inspected app.
-        telemetryManager.track(TelemetryEvents.SCREEN_VIEWED, mapOf("screen" to action.menu.id))
+        telemetryManager.screenViewed(action.menu.id)
 
         if (action.menu != SubScreen.Settings) {
             contentState.update { it.copy(current = action.menu) }
@@ -314,6 +314,7 @@ internal class AppViewModel(
                     feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
                 },
                 doOnSuccess = {
+                    telemetryManager.featureUsed(TelemetryFeature.ScreenshotTaken)
                     feedbackDisplayer.displayMessage(getString(Res.string.screenshot_saved_at, it))
                 },
             )

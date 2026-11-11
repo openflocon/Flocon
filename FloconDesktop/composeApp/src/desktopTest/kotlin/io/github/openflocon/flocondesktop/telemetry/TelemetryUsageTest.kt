@@ -73,27 +73,97 @@ class TelemetryUsageTest {
     }
 
     @Test
-    fun `screen once per launch is sent once`() {
+    fun `a screen is sent once per launch, menu screens included`() {
         val client = FakeTelemetryRepository()
         val manager = telemetryManager(client)
 
-        repeat(3) { manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail) }
+        repeat(3) { manager.screenViewed(TelemetryScreen.NetworkDetail) }
+        repeat(3) { manager.screenViewed("Database") }
+        manager.screenViewed("Network")
 
-        assertEquals(1, client.events.size)
-        assertEquals("NetworkDetail", client.events.single().second["screen"])
+        assertEquals(listOf("NetworkDetail", "Database", "Network"), client.events.map { it.second["screen"] })
+        assertTrue(client.events.all { it.first == TelemetryEvents.SCREEN_VIEWED })
     }
 
     @Test
-    fun `screen once per launch is not consumed before the user opted in`() {
+    fun `once per launch is not consumed before the user opted in`() {
         val client = FakeTelemetryRepository(level = null)
         val manager = telemetryManager(client)
 
-        manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail)
+        manager.screenViewed(TelemetryScreen.NetworkDetail)
+        manager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
+        manager.emptyStateShown("Network")
+        manager.mcpUsed("list_devices", "claude")
         assertTrue(client.events.isEmpty())
 
         manager.setLevel(TelemetryLevelDomainModel.Anonymous)
-        manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail)
-        assertEquals(1, client.events.size)
+        manager.screenViewed(TelemetryScreen.NetworkDetail)
+        manager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
+        manager.emptyStateShown("Network")
+        manager.mcpUsed("list_devices", "claude")
+        assertEquals(4, client.events.size)
+    }
+
+    @Test
+    fun `a core action is sent once per launch, with its screen and nothing else`() {
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
+
+        repeat(3) { manager.featureUsed(TelemetryFeature.DatabaseQueryExecuted) }
+        repeat(2) { manager.featureUsed(TelemetryFeature.DeeplinkLaunched) }
+        // a regular feature is not deduplicated
+        repeat(2) { manager.featureUsed(TelemetryFeature.MockToggled, value = true) }
+
+        assertEquals(4, client.events.size)
+        val (event, properties) = client.events.first()
+        assertEquals(TelemetryEvents.FEATURE_USED, event)
+        assertEquals("database_query_executed", properties["feature"])
+        assertEquals(mapOf<String, Any>("feature" to "database_query_executed", "screen" to "Database"), properties)
+    }
+
+    @Test
+    fun `core action wire names`() {
+        val once = TelemetryFeature.entries.filter { it.oncePerLaunch }.associate { it.wireName to it.screen.wireName }
+        assertEquals(
+            mapOf(
+                "database_query_executed" to "Database",
+                "deeplink_launched" to "Deeplinks",
+                "shared_preference_edited" to "SharedPreferences",
+                "file_opened" to "Files",
+                "adb_command_sent" to "AdbCommander",
+                "screenshot_taken" to "TopBar",
+                "video_recorded" to "TopBar",
+            ),
+            once,
+        )
+    }
+
+    @Test
+    fun `empty state is sent once per page with the page name only`() {
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
+
+        repeat(3) { manager.emptyStateShown(FeatureDoc.Network.name) }
+        manager.emptyStateShown(FeatureDoc.entries.first { it != FeatureDoc.Network }.name)
+
+        assertEquals(2, client.events.size)
+        val (event, properties) = client.events.first()
+        assertEquals(TelemetryEvents.SCREEN_EMPTY_SHOWN, event)
+        assertEquals(mapOf<String, Any>("screen" to "Network"), properties)
+    }
+
+    @Test
+    fun `mcp usage is sent once per tool with the tool and the client only`() {
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
+
+        repeat(3) { manager.mcpUsed("list_devices", "claude") }
+        manager.mcpUsed("get_network_call", "claude")
+
+        assertEquals(2, client.events.size)
+        val (event, properties) = client.events.first()
+        assertEquals(TelemetryEvents.MCP_USED, event)
+        assertEquals(mapOf<String, Any>("tool" to "list_devices", "client" to "claude"), properties)
     }
 
     @Test

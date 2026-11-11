@@ -11,6 +11,8 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableDelegate
 import io.github.openflocon.flocondesktop.common.coroutines.closeable.CloseableScoped
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,7 @@ class RecordVideoDelegate(
     private val startRecordingVideoUseCase: StartRecordingVideoUseCase,
     private val stopRecordingVideoUseCase: StopRecordingVideoUseCase,
     private val closeableDelegate: CloseableDelegate,
+    private val telemetryManager: TelemetryManager,
 ) : CloseableScoped by closeableDelegate {
 
     private val recording = MutableStateFlow<RecordingDomainModel?>(null)
@@ -63,6 +66,7 @@ class RecordVideoDelegate(
                 feedbackDisplayer.displayMessage(it.message ?: "Unknown error")
             },
             doOnSuccess = { recordInstance ->
+                telemetryManager.featureUsed(TelemetryFeature.VideoRecorded)
                 recording.update { recordInstance }
             }
         )

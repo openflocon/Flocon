@@ -40,6 +40,8 @@ import io.github.openflocon.flocondesktop.features.files.model.FilesHeaderStateU
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesViewModeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.SortedByUiModel
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -74,6 +76,7 @@ class FilesViewModel(
     private val refreshFileRootsUseCase: RefreshFileRootsUseCase,
     private val observeIsCurrentDeviceAndAppIsActiveUseCase: ObserveIsCurrentDeviceIAndAppIsActiveUseCase,
     observeFileRootsUseCase: ObserveFileRootsUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     private val _filterText = mutableStateOf("")
@@ -352,6 +355,8 @@ class FilesViewModel(
             FileTypeUiModel.Other,
             -> {
                 (fileUiModel.path.toDomain() as? FilePathDomainModel.Real)?.let {
+                    // only the fact that a file was opened, never its path
+                    telemetryManager.featureUsed(TelemetryFeature.FileOpened)
                     viewModelScope.launch(dispatcherProvider.viewModel) {
                         downloadFileUseCase(it).alsoSuccess {
                             OpenFile.openFileOnDesktop(it.localPath).alsoFailure {

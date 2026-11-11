@@ -19,6 +19,8 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAct
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -48,6 +50,7 @@ class DatabaseTabViewModel(
     private val observeLastSuccessQueriesUseCase: ObserveLastSuccessQueriesUseCase,
     private val importSqlQueryProcessor: ImportSqlQueryProcessor,
     private val exportDatabaseResultToCsv: ExportDatabaseResultToCsvProcessor,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     @Immutable
@@ -221,6 +224,8 @@ class DatabaseTabViewModel(
 
     private suspend fun executeQuery(query: String, editAutoUpdate: Boolean) {
         println("executeQuery: $query")
+        // only the fact that a query ran, never the query
+        telemetryManager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
         executeDatabaseQueryUseCase(
             query = query,
             databaseId = params.databaseId,

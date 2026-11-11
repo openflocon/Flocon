@@ -38,7 +38,7 @@ import org.koin.dsl.module
 import java.time.ZoneId
 
 val mcpModule = module {
-    single { FloconMcpServer(toolProviders = getAll(), logManager = get()) } bind McpServerRepository::class
+    single { FloconMcpServer(toolProviders = getAll(), logManager = get(), usageTracker = get()) } bind McpServerRepository::class
     factoryOf(::McpTargetResolver)
 
     // tools, one provider per feature

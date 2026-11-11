@@ -31,10 +31,12 @@ Telemetry is also fully disabled when:
 | Event | When | Extra properties |
 | --- | --- | --- |
 | `app_started` | Once per launch, if you opted in before | A snapshot of a few settings, see below |
-| `screen_viewed` | A menu entry or a sub-screen is opened | `screen`: a menu entry (e.g. `Network`, `Database`) or `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail` (the last one at most once per launch) |
-| `feature_used` | A bounded list of actions is used (see below) | `feature`, `screen`, and when relevant `value` (`true`/`false`), `source`, `enabled_mocks_count` |
+| `screen_viewed` | A menu entry or a sub-screen is opened, **at most once per screen per launch** | `screen`: a menu entry (e.g. `Network`, `Database`) or `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail` |
+| `screen_empty_shown` | The empty state of a page is displayed (nothing to show yet), **at most once per page per launch** | `screen`: the documentation page (`Network`, `Database`, `Timeline`...) |
+| `mcp_used` | An MCP tool is called, **at most once per tool per launch** | `tool`: the fixed tool name (e.g. `list_network_calls`), `client`: `claude`, `cursor`, `codex`, `windsurf`, `vscode`, `zed`, `other` or `unknown`. Never the arguments or the results of the call |
+| `feature_used` | A bounded list of actions is used (see below). The core action of each screen is sent **at most once per launch** | `feature`, `screen`, and when relevant `value` (`true`/`false`), `source`, `enabled_mocks_count` |
 | `setting_changed` | One of a few settings is changed | `setting`, `value` (`true`/`false`, or `graph`/`list`), `screen` |
-| `device_connected` | An app with the Flocon SDK connects, once per app launch | `platform` (`android`, `ios`, `desktop`), `sdk` (`kotlin`, `swift`, `flutter`), `sdk_version`, `connection_type` (`default`, `wifi`). Never the device name, the app name or its package |
+| `device_connected` | An app with the Flocon SDK connects, **at most once per device and app per launch** (the app relaunches on every build) | `platform` (`android`, `ios`, `desktop`), `sdk` (`kotlin`, `swift`, `flutter`), `sdk_version`, `connection_type` (`default`, `wifi`). Never the device name, the app name or its package |
 
 ### `app_started` properties
 
@@ -50,7 +52,7 @@ Only booleans, counts and fixed values, never a name or a configuration value. A
 
 ### `feature_used` and `setting_changed`
 
-`screen` takes the same values as `screen_viewed`: `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail`, `Timeline`, `Settings`.
+`screen` takes the same values as `screen_viewed`: `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail`, `Timeline`, `Settings`, `Database`, `Deeplinks`, `SharedPreferences`, `FeatureFlags`, `Files`, `AdbCommander`, `TopBar`.
 
 | `feature` | Screen | Notes |
 | --- | --- | --- |
@@ -59,6 +61,12 @@ Only booleans, counts and fixed values, never a name or a configuration value. A
 | `bad_network_create_clicked` | `NetworkBadQuality` | |
 | `bad_network_toggled` | `NetworkBadQuality` | `value` = a configuration is now enabled |
 | `detail_open_externally_request`, `detail_open_externally_response`, `detail_share_markdown`, `detail_save_html`, `detail_copy_curl`, `detail_copy_text`, `detail_copy_image`, `detail_save_image`, `detail_diff_with_clipboard`, `detail_json_detail`, `detail_bearer_jwt` | `NetworkDetail` | Only which action, never the content |
+| `database_query_executed` | `Database` | Once per launch. Never the query |
+| `deeplink_launched` | `Deeplinks` | Once per launch. Never the deeplink |
+| `shared_preference_edited` | `SharedPreferences` | Once per launch. Never the key or the value |
+| `file_opened` | `Files` | Once per launch. Never the path |
+| `adb_command_sent` | `AdbCommander` | Once per launch. Never the command |
+| `screenshot_taken`, `video_recorded` | `TopBar` | Once per launch |
 | `help_opened` | the documentation page (`Network`, `Database`, `Timeline`... or `Setup`) | `source`: `top_bar`, `empty_state`, `empty_state_no_device` |
 
 | `setting` | Screen | `value` |

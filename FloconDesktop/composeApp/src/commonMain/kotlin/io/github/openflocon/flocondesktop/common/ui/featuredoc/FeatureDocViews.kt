@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -85,6 +86,8 @@ fun FeatureEmptyState(
 ) {
     val opener = rememberFeatureDocOpener()
     val hasDevice = LocalHasDevice.current
+    val emptyStateObserver = LocalFeatureEmptyStateObserver.current
+    LaunchedEffect(doc) { emptyStateObserver.shown(doc) }
     FloconEmptyState(
         title = title ?: doc.emptyTitle?.let { stringResource(it) }.orEmpty(),
         description = description ?: doc.emptyDescription?.let { stringResource(it) }.orEmpty(),
