@@ -2,7 +2,7 @@
 
 Only when the user wants to connect a physical device without hard-coding the Mac IP. Prerequisite: [swift.md](swift.md).
 
-## API semantics (FloconSwift `2e822e1`)
+## API semantics (FloconSwift `2.0.0`, checked at `2e822e1`)
 
 | API | Behavior |
 | :--- | :--- |
