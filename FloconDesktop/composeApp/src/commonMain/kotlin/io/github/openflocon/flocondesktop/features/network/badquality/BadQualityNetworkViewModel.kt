@@ -18,6 +18,9 @@ import io.github.openflocon.flocondesktop.features.network.badquality.edition.ma
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.BadQualityConfigUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.SelectedBadQualityUiModel
 import io.github.openflocon.flocondesktop.features.network.badquality.list.mapper.toLineUi
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetryScreen
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +41,12 @@ class BadQualityNetworkViewModel(
     private val setNetworkBadQualityEnabledConfigUseCase: SetNetworkBadQualityEnabledConfigUseCase,
     private val dispatcherProvider: DispatcherProvider,
     private val feedbackDisplayer: FeedbackDisplayer,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
+
+    init {
+        telemetryManager.screenViewed(TelemetryScreen.NetworkBadQuality)
+    }
 
     val items = observeAllNetworkBadQualitiesUseCase()
         .distinctUntilChanged()
@@ -53,6 +61,7 @@ class BadQualityNetworkViewModel(
     val selectedItem = MutableStateFlow<SelectedBadQualityUiModel?>(null)
 
     fun setEnabledElement(configId: BadQualityConfigId?) {
+        telemetryManager.featureUsed(TelemetryFeature.BadNetworkToggled, value = configId != null)
         viewModelScope.launch(dispatcherProvider.viewModel) {
             setNetworkBadQualityEnabledConfigUseCase(configId = configId)
         }
@@ -77,6 +86,7 @@ class BadQualityNetworkViewModel(
     }
 
     fun create() {
+        telemetryManager.featureUsed(TelemetryFeature.BadNetworkCreateClicked)
         selectedItem.value = SelectedBadQualityUiModel.Creation
     }
 

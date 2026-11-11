@@ -52,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -76,6 +75,8 @@ import flocondesktop.composeapp.generated.resources.files_view_grid
 import flocondesktop.composeapp.generated.resources.files_view_list
 import flocondesktop.composeapp.generated.resources.general_delete_content
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.HelpSource
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.rememberFeatureDocOpener
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
@@ -457,9 +458,9 @@ private fun FilesOverflowMenu(
 
 @Composable
 private fun DocumentationButton(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
+    val opener = rememberFeatureDocOpener()
     WithTooltip(stringResource(Res.string.feature_doc_open_documentation), modifier = modifier) {
-        BarIconBox(onClick = { runCatching { uriHandler.openUri(FeatureDoc.Files.url) } }) {
+        BarIconBox(onClick = { opener.open(FeatureDoc.Files, FeatureDoc.Files.url, HelpSource.TopBar) }) {
             FloconIcon(
                 imageVector = Icons.Outlined.Info,
                 tint = FloconTheme.colors.ink,

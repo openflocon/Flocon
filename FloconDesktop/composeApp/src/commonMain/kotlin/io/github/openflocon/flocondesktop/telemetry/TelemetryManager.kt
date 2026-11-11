@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 data class TelemetryState(
     /** `false` on builds without an API key, or when DO_NOT_TRACK is set: nothing is ever sent. */
@@ -36,6 +37,8 @@ class TelemetryManager(
 
     /** Regenerated on every launch and never written to disk. */
     private val sessionId: String = UUID.randomUUID().toString()
+
+    private val screensSentThisLaunch: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private val _state = MutableStateFlow(computeState())
     val state: StateFlow<TelemetryState> = _state.asStateFlow()
@@ -80,6 +83,60 @@ class TelemetryManager(
         applicationScope.launch {
             client.capture(event = event, distinctId = distinctId, properties = allProperties)
         }
+    }
+
+    /** A sub-screen was opened. */
+    fun screenViewed(screen: TelemetryScreen) {
+        track(TelemetryEvents.SCREEN_VIEWED, mapOf("screen" to screen.wireName))
+    }
+
+    /** Like [screenViewed], but for a screen that opens very often (ex: a panel): at most once per launch. */
+    fun trackScreenOncePerLaunch(screen: TelemetryScreen) {
+        if (!canSend()) return // don't burn the "once" while nothing can be sent
+        if (!screensSentThisLaunch.add(screen.wireName)) return
+        screenViewed(screen)
+    }
+
+    /**
+     * An action was used. [value] is only sent when it is a [Boolean] or an [Int].
+     * [screen] overrides the screen of the [feature] (documentation pages for [TelemetryFeature.HelpOpened]).
+     * [source] is a bounded value (see `HelpSource`).
+     */
+    fun featureUsed(
+        feature: TelemetryFeature,
+        value: Any? = null,
+        screen: String? = null,
+        source: String? = null,
+        enabledMocksCount: Int? = null,
+    ) {
+        val properties = mutableMapOf<String, Any>(
+            "feature" to feature.wireName,
+            "screen" to (screen ?: feature.screen.wireName),
+        )
+        value.boundedOrNull()?.let { properties["value"] = it }
+        source?.let { properties["source"] = it }
+        enabledMocksCount?.let { properties["enabled_mocks_count"] = it }
+        track(TelemetryEvents.FEATURE_USED, properties)
+    }
+
+    /** A setting was changed. [value] is only sent when it is a [Boolean], an [Int] or an enum wire name ([String]). */
+    fun settingChanged(setting: TelemetrySetting, value: Any) {
+        val properties = mutableMapOf<String, Any>(
+            "setting" to setting.wireName,
+            "screen" to setting.screen.wireName,
+        )
+        value.boundedOrNull()?.let { properties["value"] = it }
+        track(TelemetryEvents.SETTING_CHANGED, properties)
+    }
+
+    private fun Any?.boundedOrNull(): Any? = when (this) {
+        is Boolean, is Int, is String -> this
+        else -> null
+    }
+
+    private fun canSend(): Boolean {
+        val current = _state.value
+        return current.isAvailable && current.hasChosen && current.level != TelemetryLevel.Disabled
     }
 
     private fun computeState(): TelemetryState {

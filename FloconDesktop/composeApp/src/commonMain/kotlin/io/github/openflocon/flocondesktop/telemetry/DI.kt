@@ -20,6 +20,17 @@ val telemetryModule = module {
             config = get(),
         )
     }
+    // single: the "once per launch" guard lives in it
+    single {
+        appStartedTelemetry(
+            telemetryManager = get(),
+            observeTimelineSettingsUseCase = get(),
+            observeMascotEnabledUseCase = get(),
+            observeCurrentDeviceIdAndPackageNameUseCase = get(),
+            observeNetworkMocksUseCase = get(),
+            observeAllNetworkBadQualitiesUseCase = get(),
+        )
+    }
     viewModelOf(::TelemetryViewModel)
     single {
         DeviceConnectionTelemetry(remoteDeviceDataSource = get(), telemetryManager = get())

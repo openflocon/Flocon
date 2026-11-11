@@ -144,7 +144,6 @@ internal class AppViewModel(
         )
 
     init {
-        telemetryManager.track(TelemetryEvents.APP_STARTED)
         viewModelScope.launch(dispatcherProvider.data) {
             timelineScreenshotsRunner.run()
         }

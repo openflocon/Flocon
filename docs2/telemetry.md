@@ -30,9 +30,42 @@ Telemetry is also fully disabled when:
 
 | Event | When | Extra properties |
 | --- | --- | --- |
-| `app_started` | Once per launch, if you opted in before | — |
-| `screen_viewed` | A menu entry is opened | `screen` (e.g. `Network`, `Database`) |
+| `app_started` | Once per launch, if you opted in before | A snapshot of a few settings, see below |
+| `screen_viewed` | A menu entry or a sub-screen is opened | `screen`: a menu entry (e.g. `Network`, `Database`) or `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail` (the last one at most once per launch) |
+| `feature_used` | A bounded list of actions is used (see below) | `feature`, `screen`, and when relevant `value` (`true`/`false`), `source`, `enabled_mocks_count` |
+| `setting_changed` | One of a few settings is changed | `setting`, `value` (`true`/`false`, or `graph`/`list`), `screen` |
 | `device_connected` | An app with the Flocon SDK connects, once per app launch | `platform` (`android`, `ios`, `desktop`), `sdk` (`kotlin`, `swift`, `flutter`), `sdk_version`, `connection_type` (`default`, `wifi`). Never the device name, the app name or its package |
+
+### `app_started` properties
+
+Only booleans, counts and fixed values, never a name or a configuration value. A value that can't be read quickly is left out.
+
+| Property | Values |
+| --- | --- |
+| `timeline_view` | `graph`, `list` |
+| `timeline_auto_scroll`, `timeline_screenshots`, `timeline_merge_plugins` | `true`, `false` |
+| `mascot_enabled` | `true`, `false` |
+| `enabled_mocks_count` | number of enabled network mocks of the selected app (left out when no app is selected yet) |
+| `bad_network_enabled` | `true` if a bad network configuration is enabled for the selected app (left out when no app is selected yet) |
+
+### `feature_used` and `setting_changed`
+
+`screen` takes the same values as `screen_viewed`: `NetworkMocks`, `NetworkBadQuality`, `NetworkDetail`, `Timeline`, `Settings`.
+
+| `feature` | Screen | Notes |
+| --- | --- | --- |
+| `mock_create_clicked`, `mock_imported`, `mock_exported` | `NetworkMocks` | |
+| `mock_toggled` | `NetworkMocks` | `value` = enabled, `enabled_mocks_count` after the change |
+| `bad_network_create_clicked` | `NetworkBadQuality` | |
+| `bad_network_toggled` | `NetworkBadQuality` | `value` = a configuration is now enabled |
+| `detail_open_externally_request`, `detail_open_externally_response`, `detail_share_markdown`, `detail_save_html`, `detail_copy_curl`, `detail_copy_text`, `detail_copy_image`, `detail_save_image`, `detail_diff_with_clipboard`, `detail_json_detail`, `detail_bearer_jwt` | `NetworkDetail` | Only which action, never the content |
+| `help_opened` | the documentation page (`Network`, `Database`, `Timeline`... or `Setup`) | `source`: `top_bar`, `empty_state`, `empty_state_no_device` |
+
+| `setting` | Screen | `value` |
+| --- | --- | --- |
+| `timeline_view` | `Timeline` | `graph`, `list` |
+| `timeline_auto_scroll`, `timeline_screenshots`, `timeline_merge_plugins` | `Timeline` | `true`, `false` |
+| `mascot_enabled` | `Settings` | `true`, `false` |
 
 Every event also carries: Flocon version, OS name and architecture, the telemetry level, and the per-launch session id.
 

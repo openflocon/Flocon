@@ -42,6 +42,7 @@ internal val timelineModule = module {
             consumeTimelineFocusUseCase = get(),
             observeCurrentDeviceIdAndPackageNameUseCase = get(),
             observeCurrentDeviceAndAppUseCase = get(),
+            telemetryManager = get(),
         )
     }
     viewModelOf(::TimelineFilterPanelViewModel)
