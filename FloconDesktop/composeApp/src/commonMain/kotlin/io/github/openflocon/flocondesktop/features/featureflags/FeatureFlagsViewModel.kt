@@ -14,7 +14,7 @@ import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.featureflags.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
-import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagVariantFilterUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
 import io.github.openflocon.library.designsystem.common.asState
 import io.github.openflocon.navigation.MainFloconNavigationState
@@ -67,33 +67,47 @@ class FeatureFlagsViewModel(
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(FeatureFlagProvidersUiModel.Loading)
 
-    private val _selectedStates = MutableStateFlow(FeatureFlagStateUiModel.entries.toSet())
-    val selectedStates: StateFlow<Set<FeatureFlagStateUiModel>> = _selectedStates.asStateFlow()
+    // variants the user unchecked: new variants show up checked
+    private val _hiddenVariants = MutableStateFlow(emptySet<String>())
+    val hiddenVariants: StateFlow<Set<String>> = _hiddenVariants.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val rows: StateFlow<ImmutableList<FeatureFlagRowUiModel>> = combine(
-        snapshotFlow { _filterText.value }
-            .debounce(150)
-            .flatMapLatest { filter ->
-                observeCurrentDeviceFeatureFlagsUseCase(
-                    filter = filter.takeIf { it.isNotBlank() },
-                )
-            },
-        _selectedStates,
-    ) { list, states ->
-        list.map { it.mapToUi() }
-            .filter { it.state in states }
-            .toImmutableList()
+    private val allRows: StateFlow<List<FeatureFlagRowUiModel>> = snapshotFlow { _filterText.value }
+        .debounce(150)
+        .flatMapLatest { filter ->
+            observeCurrentDeviceFeatureFlagsUseCase(
+                filter = filter.takeIf { it.isNotBlank() },
+            )
+        }
+        .map { list -> list.map { it.mapToUi() } }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateInWhileSubscribed(emptyList())
+
+    // on, off, then the custom variants by name
+    val variants: StateFlow<ImmutableList<FeatureFlagVariantFilterUiModel>> = allRows
+        .map { list ->
+            list.groupBy { it.variant }
+                .map { (variant, flags) -> FeatureFlagVariantFilterUiModel(variant, flags.first().state, flags.size) }
+                .sortedWith(compareBy({ it.state }, { it.variant.lowercase() }))
+                .toImmutableList()
+        }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateInWhileSubscribed(persistentListOf())
+
+    val rows: StateFlow<ImmutableList<FeatureFlagRowUiModel>> = combine(allRows, _hiddenVariants) { list, hidden ->
+        list.filter { it.variant !in hidden }.toImmutableList()
     }
         .flowOn(dispatcherProvider.viewModel)
         .stateInWhileSubscribed(persistentListOf())
 
     val numberOfFlags: StateFlow<Int?> = rows.map { it.size }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
     )
 
-    fun onStateToggled(state: FeatureFlagStateUiModel) {
-        _selectedStates.update { if (state in it) it - state else it + state }
+    fun onVariantToggled(variant: String) {
+        _hiddenVariants.update { if (variant in it) it - variant else it + variant }
     }
 
     fun onFilterTextChanged(value: String) {

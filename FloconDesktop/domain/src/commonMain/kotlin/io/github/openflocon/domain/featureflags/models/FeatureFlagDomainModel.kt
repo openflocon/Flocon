@@ -8,10 +8,10 @@ data class FeatureFlagDomainModel(
     val payload: String?,
 )
 
-enum class FeatureFlagStateDomainModel {
-    On,
-    Off,
-    Custom, // an experiment arm, a value...
+enum class FeatureFlagStateDomainModel(val names: Set<String>) {
+    On(setOf("on", "treatment")),
+    Off(setOf("off", "control")),
+    Custom(emptySet()), // an experiment arm, a value...
 }
 
 data class FeatureFlagsProviderDomainModel(
