@@ -156,6 +156,8 @@ private fun ConsentButton(
     ) {
         Text(
             text = text,
+            // composeunstyled's Text doesn't read Material's LocalContentColor set by the button
+            color = FloconTheme.colors.ink,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(vertical = FloconTheme.spacing.extraSmall),
