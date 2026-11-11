@@ -48,6 +48,7 @@ androidx-lifecycle-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "3.4.0-alpha04" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
