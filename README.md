@@ -48,18 +48,6 @@ flocon = "LASTEST_VERSION"
 flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
 ```
 
-### iOS (Swift)
-
-Swift Package Manager, from [FloconSwift](https://github.com/openflocon/FloconSwift) (gRPC: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc)):
-```swift
-.package(url: "https://github.com/openflocon/FloconSwift.git", from: "2.0.0")
-```
-```swift
-import Flocon
-Flocon.initialize()
-```
-See the [iOS guide](https://openflocon.github.io/Flocon/ios).
-
 ## 📖 Documentation
 
 Visit the full documentation site for setup guides, feature details, and advanced usage:  
