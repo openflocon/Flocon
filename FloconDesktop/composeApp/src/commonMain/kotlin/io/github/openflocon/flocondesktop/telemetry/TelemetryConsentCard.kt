@@ -113,7 +113,7 @@ internal fun TelemetryConsentCard(
                 },
                 color = colors.inkMuted,
                 style = FloconTheme.typography.bodySmall,
-                modifier = Modifier.clickable { uriHandler.openUri(TELEMETRY_DOC_URL) },
+                modifier = Modifier.clickable { runCatching { uriHandler.openUri(TELEMETRY_DOC_URL) } },
             )
             // Same style and width for every choice: refusing must be as easy as accepting.
             Row(

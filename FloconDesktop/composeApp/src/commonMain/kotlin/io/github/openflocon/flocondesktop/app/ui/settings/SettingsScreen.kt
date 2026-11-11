@@ -1378,7 +1378,7 @@ private fun PrivacyPane(
             headerActions = {
                 SettingsButton(
                     text = stringResource(Res.string.telemetry_learn_more),
-                    onClick = { uriHandler.openUri(TELEMETRY_DOC_URL) },
+                    onClick = { runCatching { uriHandler.openUri(TELEMETRY_DOC_URL) } },
                 )
             },
         ) {

@@ -152,6 +152,7 @@ class DatabaseTabViewModel(
                 is DatabaseTabAction.ClearQuery -> clearQuery()
 
                 is DatabaseTabAction.ExecuteQuery -> {
+                    trackQueryExecutedByUser()
                     updateQuery(action.query)
                     executeQuery(
                         query = action.query,
@@ -168,6 +169,7 @@ class DatabaseTabViewModel(
 
                 DatabaseTabAction.Import -> {
                     importSqlQueryProcessor()?.let { q ->
+                        trackQueryExecutedByUser()
                         updateQuery(q)
                         executeQuery(
                             query = q,
@@ -205,6 +207,14 @@ class DatabaseTabViewModel(
         }
     }
 
+    /**
+     * Only a query the user ran (button, import), never the automatic ones (table opened, favorite loaded,
+     * auto-update). Only the fact that a query ran, never the query.
+     */
+    private fun trackQueryExecutedByUser() {
+        telemetryManager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
+    }
+
     fun updateQuery(queryValue: String) {
         this.query.value = queryValue
     }
@@ -224,8 +234,6 @@ class DatabaseTabViewModel(
 
     private suspend fun executeQuery(query: String, editAutoUpdate: Boolean) {
         println("executeQuery: $query")
-        // only the fact that a query ran, never the query
-        telemetryManager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
         executeDatabaseQueryUseCase(
             query = query,
             databaseId = params.databaseId,
