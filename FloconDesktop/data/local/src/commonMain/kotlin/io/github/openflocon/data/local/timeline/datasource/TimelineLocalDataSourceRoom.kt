@@ -42,7 +42,8 @@ internal class TimelineLocalDataSourceRoom(
             config = PagingConfig(pageSize = 50),
             pagingSourceFactory = { timelineDao.observeTimeline(query.toRoomRawQuery()) },
         ).flow.map { pagingData ->
-            pagingData.map { it.toDomain() }
+            // an event added between two page loads shifts the offsets: the next page can return an event already loaded
+            pagingData.map { it.toDomain() }.distinctBy { Triple(it.source, it.id, it.phase) }
         }
     }
 

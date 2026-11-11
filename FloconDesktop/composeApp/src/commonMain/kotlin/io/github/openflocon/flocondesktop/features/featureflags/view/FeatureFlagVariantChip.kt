@@ -19,15 +19,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.theme.FloconColors
 
-private data class FeatureFlagStateColors(
+internal data class FeatureFlagStateColors(
     val container: Color,
     val content: Color,
     val indicator: Color,
 )
 
+/**
+ * on (accent), off (muted), a custom variant gets a stable color of its own, picked from its name,
+ * so the same variant has the same color in the filters, the list and the detail
+ */
 @Composable
-private fun FeatureFlagStateUiModel.colors(): FeatureFlagStateColors {
+internal fun FeatureFlagStateUiModel.colors(variant: String): FeatureFlagStateColors {
     val colors = FloconTheme.colors
     return when (this) {
         FeatureFlagStateUiModel.On -> FeatureFlagStateColors(
@@ -42,16 +47,27 @@ private fun FeatureFlagStateUiModel.colors(): FeatureFlagStateColors {
             indicator = colors.inkMuted,
         )
 
-        FeatureFlagStateUiModel.Custom -> FeatureFlagStateColors(
-            container = colors.catNetworkSoft,
-            content = colors.catNetwork,
-            indicator = colors.catNetwork,
-        )
+        FeatureFlagStateUiModel.Custom -> {
+            val (color, soft) = customVariantPalette(colors)[variant.lowercase().hashCode().mod(CustomVariantColorCount)]
+            FeatureFlagStateColors(container = soft, content = color, indicator = color)
+        }
     }
 }
 
+private const val CustomVariantColorCount = 7
+
+private fun customVariantPalette(colors: FloconColors) = listOf(
+    colors.catNetwork to colors.catNetworkSoft,
+    colors.catDatabase to colors.catDatabaseSoft,
+    colors.catAnalyticsEvent to colors.catAnalyticsEventSoft,
+    colors.catTable to colors.catTableSoft,
+    colors.catDeeplink to colors.catDeeplinkSoft,
+    colors.catAdb to colors.catAdbSoft,
+    colors.catWebView to colors.catWebViewSoft,
+)
+
 /**
- * The variant of a flag, colored by its state: on (accent), off (outlined), custom (blue)
+ * The variant of a flag, colored by its state: on (accent), off (outlined), custom (one color per variant)
  */
 @Composable
 internal fun FeatureFlagVariantChip(
@@ -59,7 +75,7 @@ internal fun FeatureFlagVariantChip(
     variant: String,
     modifier: Modifier = Modifier,
 ) {
-    val colors = state.colors()
+    val colors = state.colors(variant)
     Text(
         text = variant,
         maxLines = 1,
@@ -85,10 +101,11 @@ internal fun FeatureFlagVariantChip(
 @Composable
 internal fun FeatureFlagStateDot(
     state: FeatureFlagStateUiModel,
+    variant: String,
     modifier: Modifier = Modifier,
     size: Dp = 8.dp,
 ) {
-    val color = state.colors().indicator
+    val color = state.colors(variant).indicator
     Box(
         modifier = modifier
             .size(size)
@@ -107,9 +124,15 @@ internal fun FeatureFlagStateDot(
 private fun FeatureFlagVariantChipPreview() {
     FloconTheme {
         Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
-            FeatureFlagStateUiModel.entries.forEach {
-                FeatureFlagStateDot(state = it)
-                FeatureFlagVariantChip(state = it, variant = it.name)
+            listOf(
+                FeatureFlagStateUiModel.On to "on",
+                FeatureFlagStateUiModel.Off to "off",
+                FeatureFlagStateUiModel.Custom to "control",
+                FeatureFlagStateUiModel.Custom to "treatment_a",
+                FeatureFlagStateUiModel.Custom to "treatment_b",
+            ).forEach { (state, variant) ->
+                FeatureFlagStateDot(state = state, variant = variant)
+                FeatureFlagVariantChip(state = state, variant = variant)
             }
         }
     }

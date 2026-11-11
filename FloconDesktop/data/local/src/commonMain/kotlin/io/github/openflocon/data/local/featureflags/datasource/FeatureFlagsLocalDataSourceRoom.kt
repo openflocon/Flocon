@@ -102,7 +102,6 @@ private fun FeatureFlagDomainModel.toEntity(
     packageName = deviceIdAndPackageName.packageName,
     provider = provider,
     name = name,
-    state = state.name,
     variant = variant,
     payload = payload,
     appInstance = deviceIdAndPackageName.appInstance,
@@ -111,7 +110,9 @@ private fun FeatureFlagDomainModel.toEntity(
 private fun FeatureFlagEntity.toDomain() = FeatureFlagDomainModel(
     provider = provider,
     name = name,
-    state = FeatureFlagStateDomainModel.entries.firstOrNull { it.name == state } ?: FeatureFlagStateDomainModel.Custom,
+    state = FeatureFlagStateDomainModel.entries.firstOrNull {
+        variant.lowercase() in it.names
+    } ?: FeatureFlagStateDomainModel.Custom,
     variant = variant,
     payload = payload,
 )

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -48,6 +49,7 @@ fun FeatureFlagRow(
     ) {
         FeatureFlagStateDot(
             state = model.state,
+            variant = model.variant,
             modifier = Modifier.padding(end = 12.dp),
         )
         Text(
@@ -84,7 +86,27 @@ fun FeatureFlagRow(
 }
 
 @Composable
-fun FeatureFlagsHeader(modifier: Modifier = Modifier) {
+private fun flagsLabel(numberOfFlags: Int?): String {
+    val label = stringResource(Res.string.feature_flags_column_name)
+    return remember(numberOfFlags) {
+        numberOfFlags?.let {
+            "$label ($it)"
+        } ?: label
+    }
+}
+
+@Composable
+fun FeatureFlagsHeader(
+    numberOfFlags: Int?,
+    modifier: Modifier = Modifier,
+) {
+    val nbFlagsText = remember(numberOfFlags) {
+        if (numberOfFlags != null) {
+            "($numberOfFlags)"
+        } else {
+            null
+        }
+    }
     Row(
         modifier = modifier
             .floconTableHeader()
@@ -93,7 +115,7 @@ fun FeatureFlagsHeader(modifier: Modifier = Modifier) {
     ) {
         Spacer(Modifier.width(StateColumnWidth))
         FloconTableHeaderLabel(
-            text = stringResource(Res.string.feature_flags_column_name),
+            text = flagsLabel(numberOfFlags),
             modifier = Modifier.width(NameWidth).padding(end = FloconTheme.spacing.medium),
         )
         FloconTableHeaderLabel(

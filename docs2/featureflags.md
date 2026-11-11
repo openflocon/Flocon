@@ -14,11 +14,11 @@ No dependency on a feature flag SDK: your app forwards the flags it already eval
 
 - **Provider**: where the flag comes from (ex: `firebase`, `statsig`)
 - **Name**: the flag key
-- **State**: `On`, `Off` or `Custom` (an experiment arm, a value...): the variant is colored with it
+- **State**: `On`, `Off` or `Custom` (an experiment arm, a value...): the variant is colored with it (each custom variant gets its own color)
 - **Variant**: the evaluated variant, a free string (ex: `control`, `treatment`, `on`)
 - **Payload**: optional, often JSON, displayed formatted in the right panel when clicking a flag
 
-A selector at the top switches between the providers, and the list can be filtered by name, variant or payload content. The desktop is read only.
+A selector at the top switches between the providers, and the list can be filtered by name, variant or payload content. The variants present in the list are shown at the top as colored toggles with their number of flags, to show or hide a variant quickly (on, off, control, treatment...). The desktop is read only.
 
 ---
 
