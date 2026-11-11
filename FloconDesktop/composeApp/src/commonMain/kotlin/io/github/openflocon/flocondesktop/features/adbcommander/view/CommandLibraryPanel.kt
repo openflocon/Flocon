@@ -32,7 +32,6 @@ import flocondesktop.composeapp.generated.resources.adb_commander_saved_commands
 import flocondesktop.composeapp.generated.resources.adb_commander_steps_count
 import io.github.openflocon.flocondesktop.features.adbcommander.model.AdbCommanderAction
 import io.github.openflocon.flocondesktop.features.adbcommander.model.FlowUiModel
-import io.github.openflocon.flocondesktop.features.adbcommander.model.QuickCommand
 import io.github.openflocon.flocondesktop.features.adbcommander.model.SavedCommandUiModel
 import io.github.openflocon.flocondesktop.features.adbcommander.model.defaultQuickCommands
 import io.github.openflocon.library.designsystem.FloconTheme

@@ -22,7 +22,6 @@ import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.Se
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.TelemetryLocalDataSourcePrefs
 import io.github.openflocon.flocondesktop.core.data.timeline.TimelineScreenshotRepositoryImpl
 import org.koin.core.module.dsl.bind
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

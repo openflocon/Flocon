@@ -45,7 +45,6 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkIte
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSettingsUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkUiState
 import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionsDelegate
-import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

@@ -2,7 +2,6 @@
 
 package io.github.openflocon.navigation.scene
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.ExperimentalComposeUiApi

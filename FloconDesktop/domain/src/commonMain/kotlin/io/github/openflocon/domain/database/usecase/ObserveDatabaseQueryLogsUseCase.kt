@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.database.usecase
 
-import androidx.paging.PagingData
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.database.models.DatabaseQueryLogDomainModel
 import io.github.openflocon.domain.database.models.FilterQueryLogDomainModel

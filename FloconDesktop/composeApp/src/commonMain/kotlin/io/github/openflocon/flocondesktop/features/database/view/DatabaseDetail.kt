@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.database.view
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun DatabaseDetails(

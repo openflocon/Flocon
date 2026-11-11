@@ -1,8 +1,5 @@
 package io.github.openflocon.data.local.database.datasource
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.RoomRawQuery
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource

@@ -11,12 +11,10 @@ import flocondesktop.composeapp.generated.resources.menu_storage
 import io.github.openflocon.domain.device.models.DevicePlugin
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.id
-import io.github.openflocon.flocondesktop.app.ui.view.displayName
 import io.github.openflocon.flocondesktop.app.ui.view.icon
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import org.jetbrains.compose.resources.getString
 
 @Immutable
 data class MenuState(

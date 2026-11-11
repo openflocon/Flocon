@@ -33,7 +33,6 @@ import flocondesktop.composeapp.generated.resources.images_delete
 import flocondesktop.composeapp.generated.resources.images_display_grid
 import flocondesktop.composeapp.generated.resources.images_display_list
 import flocondesktop.composeapp.generated.resources.images_filter
-import flocondesktop.composeapp.generated.resources.menu_item_images
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState
