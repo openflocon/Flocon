@@ -2,10 +2,12 @@ package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.zIndex
@@ -33,7 +35,8 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPrefe
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
-import io.github.openflocon.flocondesktop.telemetry.TelemetryConsentView
+import io.github.openflocon.flocondesktop.telemetry.TelemetryConsentCard
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
@@ -62,7 +65,11 @@ fun AppScreen(modifier: Modifier = Modifier) {
             sdkUpdate = sdkUpdate,
             onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
         )
-        TelemetryConsentView()
+        TelemetryConsentCard(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(FloconTheme.spacing.extraLarge),
+        )
         FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
     }
 }
