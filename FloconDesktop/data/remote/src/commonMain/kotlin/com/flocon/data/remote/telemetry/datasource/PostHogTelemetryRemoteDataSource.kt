@@ -1,6 +1,8 @@
-package io.github.openflocon.flocondesktop.telemetry
+package com.flocon.data.remote.telemetry.datasource
 
 import co.touchlab.kermit.Logger
+import io.github.openflocon.data.core.telemetry.datasource.TelemetryRemoteDataSource
+import io.github.openflocon.domain.telemetry.models.TelemetryConfigDomainModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -13,24 +15,8 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-/** Sends a single event. Implementations must never throw: telemetry can't break the app. */
-interface TelemetryClient {
-    suspend fun capture(
-        event: String,
-        distinctId: String,
-        properties: Map<String, Any>,
-    )
-}
-
-/** Used when the build has no API key (local builds, forks). */
-internal object NoOpTelemetryClient : TelemetryClient {
-    override suspend fun capture(event: String, distinctId: String, properties: Map<String, Any>) = Unit
-}
-
 /** Minimal client for PostHog's capture API, no SDK needed. */
-internal class PostHogTelemetryClient(
-    private val config: TelemetryConfig,
-) : TelemetryClient {
+class PostHogTelemetryRemoteDataSource : TelemetryRemoteDataSource {
 
     private val client by lazy {
         HttpClient(CIO) {
@@ -40,7 +26,12 @@ internal class PostHogTelemetryClient(
         }
     }
 
-    override suspend fun capture(event: String, distinctId: String, properties: Map<String, Any>) {
+    override suspend fun capture(
+        config: TelemetryConfigDomainModel,
+        event: String,
+        distinctId: String,
+        properties: Map<String, Any>,
+    ) {
         val body = buildJsonObject {
             put("api_key", config.apiKey)
             put("event", event)

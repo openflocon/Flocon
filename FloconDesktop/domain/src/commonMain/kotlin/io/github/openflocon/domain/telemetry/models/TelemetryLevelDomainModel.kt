@@ -1,11 +1,11 @@
-package io.github.openflocon.flocondesktop.telemetry
+package io.github.openflocon.domain.telemetry.models
 
 /**
  * How much usage data Flocon Desktop is allowed to send.
  *
- * See docs/telemetry.md for the exact list of collected events.
+ * See docs2/telemetry.md for the exact list of collected events.
  */
-enum class TelemetryLevel {
+enum class TelemetryLevelDomainModel {
     /**
      * A random identifier is stored on this machine so returning users can be counted.
      * Only used after an explicit opt-in.

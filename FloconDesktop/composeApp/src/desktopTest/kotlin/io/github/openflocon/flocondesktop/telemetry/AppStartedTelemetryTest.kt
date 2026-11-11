@@ -1,8 +1,6 @@
 package io.github.openflocon.flocondesktop.telemetry
 
 import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -12,26 +10,6 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class AppStartedTelemetryTest {
-
-    private class FakeClient : TelemetryClient {
-        val events = mutableListOf<Pair<String, Map<String, Any>>>()
-        override suspend fun capture(event: String, distinctId: String, properties: Map<String, Any>) {
-            events += event to properties
-        }
-    }
-
-    private class FakePreferences(override var level: TelemetryLevel? = TelemetryLevel.Anonymous) : TelemetryPreferences {
-        override var installationId: String? = null
-    }
-
-    private fun manager(client: TelemetryClient, level: TelemetryLevel? = TelemetryLevel.Anonymous) = TelemetryManager(
-        preferences = FakePreferences(level),
-        client = client,
-        applicationScope = CoroutineScope(Dispatchers.Unconfined),
-        config = TelemetryConfig(apiKey = "phc_test", host = "https://eu.i.posthog.com", appVersion = "1.0.0", doNotTrack = false),
-        osName = "TestOS",
-        osArch = "test64",
-    )
 
     private fun telemetry(
         manager: TelemetryManager,
@@ -50,9 +28,9 @@ class AppStartedTelemetryTest {
 
     @Test
     fun `sends the snapshot of the settings`() = runBlocking {
-        val client = FakeClient()
+        val client = FakeTelemetryRepository()
 
-        telemetry(manager(client)).send()
+        telemetry(telemetryManager(client)).send()
 
         val (event, properties) = client.events.single()
         assertEquals(TelemetryEvents.APP_STARTED, event)
@@ -67,10 +45,10 @@ class AppStartedTelemetryTest {
 
     @Test
     fun `a failing or slow source is left out`() = runBlocking {
-        val client = FakeClient()
+        val client = FakeTelemetryRepository()
 
         telemetry(
-            manager(client),
+            telemetryManager(client),
             timeline = { error("boom") },
             mocks = { awaitCancellation() },
         ).send()
@@ -84,17 +62,17 @@ class AppStartedTelemetryTest {
 
     @Test
     fun `nothing is sent when not opted in`() = runBlocking {
-        val client = FakeClient()
+        val client = FakeTelemetryRepository(level = null)
 
-        telemetry(manager(client, level = null)).send()
+        telemetry(telemetryManager(client)).send()
 
         assertTrue(client.events.isEmpty())
     }
 
     @Test
     fun `is sent once per launch`() = runBlocking {
-        val client = FakeClient()
-        val telemetry = telemetry(manager(client))
+        val client = FakeTelemetryRepository()
+        val telemetry = telemetry(telemetryManager(client))
 
         telemetry.send()
         telemetry.send()

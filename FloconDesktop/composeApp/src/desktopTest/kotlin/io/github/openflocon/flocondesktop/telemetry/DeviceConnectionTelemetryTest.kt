@@ -4,8 +4,6 @@ import io.github.openflocon.data.core.device.datasource.remote.RemoteDeviceDataS
 import io.github.openflocon.domain.device.models.DeviceConnectionType
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
@@ -13,13 +11,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DeviceConnectionTelemetryTest {
-
-    private class FakeClient : TelemetryClient {
-        val events = mutableListOf<Pair<String, Map<String, Any>>>()
-        override suspend fun capture(event: String, distinctId: String, properties: Map<String, Any>) {
-            events += event to properties
-        }
-    }
 
     private class FakeRemoteDeviceDataSource(
         private val sdk: String?,
@@ -32,19 +23,9 @@ class DeviceConnectionTelemetryTest {
         override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = Unit
     }
 
-    private class FakePreferences : TelemetryPreferences {
-        override var level: TelemetryLevel? = TelemetryLevel.Anonymous
-        override var installationId: String? = null
-    }
-
-    private fun telemetry(client: TelemetryClient, sdk: String? = "kotlin") = DeviceConnectionTelemetry(
+    private fun telemetry(client: FakeTelemetryRepository, sdk: String? = "kotlin") = DeviceConnectionTelemetry(
         remoteDeviceDataSource = FakeRemoteDeviceDataSource(sdk),
-        telemetryManager = TelemetryManager(
-            preferences = FakePreferences(),
-            client = client,
-            applicationScope = CoroutineScope(Dispatchers.Unconfined),
-            config = TelemetryConfig(apiKey = "phc_test", host = "https://eu.i.posthog.com", appVersion = "1.0.0", doNotTrack = false),
-        ),
+        telemetryManager = telemetryManager(client),
     )
 
     private fun bonjour(appInstance: Long) = FloconIncomingMessageDomainModel(
@@ -68,7 +49,7 @@ class DeviceConnectionTelemetryTest {
 
     @Test
     fun `one event per app launch, even when the sdk reconnects`() = runBlocking {
-        val client = FakeClient()
+        val client = FakeTelemetryRepository()
         val telemetry = telemetry(client)
         val firstLaunch = bonjour(appInstance = 1)
         val secondLaunch = bonjour(appInstance = 2)

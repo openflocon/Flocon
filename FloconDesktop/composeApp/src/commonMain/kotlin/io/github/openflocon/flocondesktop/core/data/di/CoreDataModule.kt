@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.core.data.di
 
+import io.github.openflocon.data.core.telemetry.datasource.TelemetryLocalDataSource
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
@@ -16,6 +17,7 @@ import io.github.openflocon.flocondesktop.core.data.settings.TimelinePreferences
 import io.github.openflocon.flocondesktop.core.data.settings.TransactionPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSourcePrefs
+import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.TelemetryLocalDataSourcePrefs
 import io.github.openflocon.flocondesktop.core.data.timeline.TimelineScreenshotRepositoryImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
@@ -43,6 +45,9 @@ val coreDataModule =
         single<TimelineScreenshotRepository> { TimelineScreenshotRepositoryImpl() }
         singleOf(::SettingsDataSourcePrefs) {
             bind<SettingsDataSource>()
+        }
+        singleOf(::TelemetryLocalDataSourcePrefs) {
+            bind<TelemetryLocalDataSource>()
         }
         singleOf(::DevicesRepositoryImpl) {
             bind<DevicesRepository>()

@@ -164,13 +164,13 @@ import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
+import io.github.openflocon.domain.telemetry.models.TelemetryStateDomainModel
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
 import io.github.openflocon.flocondesktop.telemetry.TELEMETRY_DOC_URL
-import io.github.openflocon.flocondesktop.telemetry.TelemetryLevel
-import io.github.openflocon.flocondesktop.telemetry.TelemetryState
 import io.github.openflocon.flocondesktop.telemetry.TelemetryViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -1361,8 +1361,8 @@ private fun PrivacyPane(modifier: Modifier = Modifier) {
 
 @Composable
 private fun PrivacyPane(
-    state: TelemetryState,
-    onLevelSelected: (TelemetryLevel) -> Unit,
+    state: TelemetryStateDomainModel,
+    onLevelSelected: (TelemetryLevelDomainModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
@@ -1395,7 +1395,7 @@ private fun PrivacyPane(
                     color = FloconTheme.colors.inkMuted,
                 )
             } else {
-                TelemetryLevel.entries.forEach { level ->
+                TelemetryLevelDomainModel.entries.forEach { level ->
                     TelemetryLevelOption(
                         level = level,
                         selected = state.level == level,
@@ -1409,15 +1409,15 @@ private fun PrivacyPane(
 
 @Composable
 private fun TelemetryLevelOption(
-    level: TelemetryLevel,
+    level: TelemetryLevelDomainModel,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (title, description) = when (level) {
-        TelemetryLevel.Full -> Res.string.telemetry_level_full to Res.string.telemetry_level_full_description
-        TelemetryLevel.Anonymous -> Res.string.telemetry_level_anonymous to Res.string.telemetry_level_anonymous_description
-        TelemetryLevel.Disabled -> Res.string.telemetry_level_disabled to Res.string.telemetry_level_disabled_description
+        TelemetryLevelDomainModel.Full -> Res.string.telemetry_level_full to Res.string.telemetry_level_full_description
+        TelemetryLevelDomainModel.Anonymous -> Res.string.telemetry_level_anonymous to Res.string.telemetry_level_anonymous_description
+        TelemetryLevelDomainModel.Disabled -> Res.string.telemetry_level_disabled to Res.string.telemetry_level_disabled_description
     }
 
     val bgColor = if (selected) FloconTheme.colors.accent else FloconTheme.colors.bg300

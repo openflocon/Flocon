@@ -1,11 +1,10 @@
 package io.github.openflocon.flocondesktop.telemetry
 
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocOpener
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.HelpSource
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.helpScreenName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -13,26 +12,6 @@ import kotlin.test.assertTrue
 class TelemetryUsageTest {
 
     private val snakeCase = Regex("[a-z]+(_[a-z]+)*")
-
-    private class FakeClient : TelemetryClient {
-        val events = mutableListOf<Pair<String, Map<String, Any>>>()
-        override suspend fun capture(event: String, distinctId: String, properties: Map<String, Any>) {
-            events += event to properties
-        }
-    }
-
-    private class FakePreferences(override var level: TelemetryLevel? = TelemetryLevel.Anonymous) : TelemetryPreferences {
-        override var installationId: String? = null
-    }
-
-    private fun manager(client: TelemetryClient, preferences: TelemetryPreferences = FakePreferences()) = TelemetryManager(
-        preferences = preferences,
-        client = client,
-        applicationScope = CoroutineScope(Dispatchers.Unconfined),
-        config = TelemetryConfig(apiKey = "phc_test", host = "https://eu.i.posthog.com", appVersion = "1.0.0", doNotTrack = false),
-        osName = "TestOS",
-        osArch = "test64",
-    )
 
     @Test
     fun `wire names are unique and snake case`() {
@@ -47,8 +26,8 @@ class TelemetryUsageTest {
 
     @Test
     fun `every feature and setting has a screen, sent with the event`() {
-        val client = FakeClient()
-        val manager = manager(client)
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
 
         TelemetryFeature.entries.forEach { manager.featureUsed(it) }
         TelemetrySetting.entries.forEach { manager.settingChanged(it, true) }
@@ -60,8 +39,8 @@ class TelemetryUsageTest {
 
     @Test
     fun `feature used carries the feature, screen, bounded value and source`() {
-        val client = FakeClient()
-        val manager = manager(client)
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
 
         manager.featureUsed(TelemetryFeature.MockToggled, value = true, enabledMocksCount = 2)
         manager.featureUsed(TelemetryFeature.DetailCopyCurl, value = "https://secret")
@@ -83,8 +62,8 @@ class TelemetryUsageTest {
 
     @Test
     fun `setting changed sends the setting and value`() {
-        val client = FakeClient()
-        manager(client).settingChanged(TelemetrySetting.TimelineView, "graph")
+        val client = FakeTelemetryRepository()
+        telemetryManager(client).settingChanged(TelemetrySetting.TimelineView, "graph")
 
         val (event, properties) = client.events.single()
         assertEquals(TelemetryEvents.SETTING_CHANGED, event)
@@ -95,8 +74,8 @@ class TelemetryUsageTest {
 
     @Test
     fun `screen once per launch is sent once`() {
-        val client = FakeClient()
-        val manager = manager(client)
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
 
         repeat(3) { manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail) }
 
@@ -106,14 +85,13 @@ class TelemetryUsageTest {
 
     @Test
     fun `screen once per launch is not consumed before the user opted in`() {
-        val client = FakeClient()
-        val preferences = FakePreferences(level = null)
-        val manager = manager(client, preferences)
+        val client = FakeTelemetryRepository(level = null)
+        val manager = telemetryManager(client)
 
         manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail)
         assertTrue(client.events.isEmpty())
 
-        manager.setLevel(TelemetryLevel.Anonymous)
+        manager.setLevel(TelemetryLevelDomainModel.Anonymous)
         manager.trackScreenOncePerLaunch(TelemetryScreen.NetworkDetail)
         assertEquals(1, client.events.size)
     }

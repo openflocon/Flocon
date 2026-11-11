@@ -2,6 +2,8 @@ package io.github.openflocon.flocondesktop.telemetry
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
+import io.github.openflocon.domain.telemetry.models.TelemetryStateDomainModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -15,9 +17,9 @@ class TelemetryViewModel internal constructor(
         viewModelScope.launch { appStartedTelemetry.send() }
     }
 
-    val state: StateFlow<TelemetryState> = telemetryManager.state
+    val state: StateFlow<TelemetryStateDomainModel> = telemetryManager.state
 
-    fun setLevel(level: TelemetryLevel) {
+    fun setLevel(level: TelemetryLevelDomainModel) {
         telemetryManager.setLevel(level)
     }
 }

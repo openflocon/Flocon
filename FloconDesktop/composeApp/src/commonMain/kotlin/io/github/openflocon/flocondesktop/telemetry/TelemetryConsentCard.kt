@@ -34,6 +34,7 @@ import flocondesktop.composeapp.generated.resources.telemetry_disable
 import flocondesktop.composeapp.generated.resources.telemetry_learn_more
 import flocondesktop.composeapp.generated.resources.telemetry_share_anonymous
 import flocondesktop.composeapp.generated.resources.telemetry_title
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
@@ -62,7 +63,7 @@ internal fun TelemetryConsentCard(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun TelemetryConsentCard(
-    onLevelSelected: (TelemetryLevel) -> Unit,
+    onLevelSelected: (TelemetryLevelDomainModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
@@ -121,17 +122,17 @@ internal fun TelemetryConsentCard(
             ) {
                 ConsentButton(
                     text = stringResource(Res.string.telemetry_disable),
-                    onClick = { onLevelSelected(TelemetryLevel.Disabled) },
+                    onClick = { onLevelSelected(TelemetryLevelDomainModel.Disabled) },
                     modifier = Modifier.weight(1f),
                 )
                 ConsentButton(
                     text = stringResource(Res.string.telemetry_share_anonymous),
-                    onClick = { onLevelSelected(TelemetryLevel.Anonymous) },
+                    onClick = { onLevelSelected(TelemetryLevelDomainModel.Anonymous) },
                     modifier = Modifier.weight(1f),
                 )
                 ConsentButton(
                     text = stringResource(Res.string.telemetry_allow_full),
-                    onClick = { onLevelSelected(TelemetryLevel.Full) },
+                    onClick = { onLevelSelected(TelemetryLevelDomainModel.Full) },
                     modifier = Modifier.weight(1f),
                 )
             }
