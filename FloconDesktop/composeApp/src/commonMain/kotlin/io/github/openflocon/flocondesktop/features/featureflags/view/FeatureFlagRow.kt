@@ -49,6 +49,7 @@ fun FeatureFlagRow(
     ) {
         FeatureFlagStateDot(
             state = model.state,
+            variant = model.variant,
             modifier = Modifier.padding(end = 12.dp),
         )
         Text(
@@ -85,7 +86,7 @@ fun FeatureFlagRow(
 }
 
 @Composable
-private fun flagsLabel(numberOfFlags: Int?) : String {
+private fun flagsLabel(numberOfFlags: Int?): String {
     val label = stringResource(Res.string.feature_flags_column_name)
     return remember(numberOfFlags) {
         numberOfFlags?.let {
@@ -100,9 +101,11 @@ fun FeatureFlagsHeader(
     modifier: Modifier = Modifier,
 ) {
     val nbFlagsText = remember(numberOfFlags) {
-        if(numberOfFlags != null) {
+        if (numberOfFlags != null) {
             "($numberOfFlags)"
-        } else null
+        } else {
+            null
+        }
     }
     Row(
         modifier = modifier

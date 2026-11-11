@@ -32,6 +32,7 @@ import io.github.openflocon.flocondesktop.features.featureflags.FeatureFlagsView
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagRowUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagStateUiModel
+import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagVariantFilterUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagsAction
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagProvidersUiModel
 import io.github.openflocon.flocondesktop.features.featureflags.model.previewFeatureFlagRowUiModel
@@ -52,12 +53,14 @@ fun FeatureFlagsScreen(modifier: Modifier = Modifier) {
     val viewModel: FeatureFlagsViewModel = koinViewModel()
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val providersState by viewModel.providersState.collectAsStateWithLifecycle()
-    val selectedStates by viewModel.selectedStates.collectAsStateWithLifecycle()
+    val variants by viewModel.variants.collectAsStateWithLifecycle()
+    val hiddenVariants by viewModel.hiddenVariants.collectAsStateWithLifecycle()
     val numberOfFlags by viewModel.numberOfFlags.collectAsStateWithLifecycle()
 
     FeatureFlagsScreen(
-        selectedStates = selectedStates,
-        onStateToggled = viewModel::onStateToggled,
+        variants = variants,
+        hiddenVariants = hiddenVariants,
+        onVariantToggled = viewModel::onVariantToggled,
         providersState = providersState,
         onProviderSelected = viewModel::onProviderSelected,
         rows = rows,
@@ -74,8 +77,9 @@ fun FeatureFlagsScreen(
     providersState: FeatureFlagProvidersUiModel,
     onProviderSelected: (String) -> Unit,
     rows: ImmutableList<FeatureFlagRowUiModel>,
-    selectedStates: Set<FeatureFlagStateUiModel>,
-    onStateToggled: (FeatureFlagStateUiModel) -> Unit,
+    variants: ImmutableList<FeatureFlagVariantFilterUiModel>,
+    hiddenVariants: Set<String>,
+    onVariantToggled: (String) -> Unit,
     filterText: State<String>,
     numberOfFlags: Int?,
     onFilterTextChanged: (String) -> Unit,
@@ -113,9 +117,10 @@ fun FeatureFlagsScreen(
                 )
             },
             chips = {
-                FeatureFlagStateFilters(
-                    selectedStates = selectedStates,
-                    onStateToggled = onStateToggled,
+                FeatureFlagVariantFilters(
+                    variants = variants,
+                    hiddenVariants = hiddenVariants,
+                    onVariantToggled = onVariantToggled,
                 )
             },
         )
@@ -182,8 +187,14 @@ private fun FeatureFlagsScreenPreview() {
                 previewFeatureFlagRowUiModel("new_checkout"),
                 previewFeatureFlagRowUiModel("dark_mode"),
             ),
-            selectedStates = FeatureFlagStateUiModel.entries.toSet(),
-            onStateToggled = {},
+            variants = persistentListOf(
+                FeatureFlagVariantFilterUiModel("on", FeatureFlagStateUiModel.On, 3),
+                FeatureFlagVariantFilterUiModel("off", FeatureFlagStateUiModel.Off, 2),
+                FeatureFlagVariantFilterUiModel("control", FeatureFlagStateUiModel.Custom, 1),
+                FeatureFlagVariantFilterUiModel("treatment", FeatureFlagStateUiModel.Custom, 4),
+            ),
+            hiddenVariants = setOf("off"),
+            onVariantToggled = {},
             filterText = remember { mutableStateOf("") },
             onFilterTextChanged = {},
             onAction = {},

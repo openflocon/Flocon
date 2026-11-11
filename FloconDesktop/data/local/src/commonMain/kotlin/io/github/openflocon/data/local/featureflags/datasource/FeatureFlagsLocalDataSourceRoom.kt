@@ -102,7 +102,6 @@ private fun FeatureFlagDomainModel.toEntity(
     packageName = deviceIdAndPackageName.packageName,
     provider = provider,
     name = name,
-    state = state.name,
     variant = variant,
     payload = payload,
     appInstance = deviceIdAndPackageName.appInstance,

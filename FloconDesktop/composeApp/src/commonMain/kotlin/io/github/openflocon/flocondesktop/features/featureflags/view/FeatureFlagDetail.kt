@@ -59,7 +59,7 @@ private fun Content(
                 label = uiState.provider,
                 title = uiState.name,
                 chips = {
-                    StateChip(state = uiState.state)
+                    StateChip(state = uiState.state, variant = uiState.variant)
                     FeatureFlagVariantChip(
                         state = uiState.state,
                         variant = uiState.variant,
@@ -76,9 +76,9 @@ private fun Content(
 }
 
 @Composable
-private fun StateChip(state: FeatureFlagStateUiModel) {
+private fun StateChip(state: FeatureFlagStateUiModel, variant: String) {
     DetailChip {
-        FeatureFlagStateDot(state = state)
+        FeatureFlagStateDot(state = state, variant = variant)
         DetailChipText(
             text = stringResource(
                 when (state) {

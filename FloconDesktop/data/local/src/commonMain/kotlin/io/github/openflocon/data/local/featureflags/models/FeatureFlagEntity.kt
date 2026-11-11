@@ -20,7 +20,6 @@ data class FeatureFlagEntity(
     val packageName: String,
     val provider: String,
     val name: String,
-    val state: String, // FeatureFlagStateDomainModel.name
     val variant: String,
     val payload: String?,
     val appInstance: Long, // the start time of the mobile app
