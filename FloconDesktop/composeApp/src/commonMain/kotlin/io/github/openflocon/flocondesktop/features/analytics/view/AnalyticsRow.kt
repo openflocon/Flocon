@@ -28,6 +28,7 @@ import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.analytics_column_event
 import flocondesktop.composeapp.generated.resources.analytics_column_properties
+import flocondesktop.composeapp.generated.resources.analytics_exclude_event
 import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.date
 import flocondesktop.composeapp.generated.resources.remove
@@ -144,7 +145,8 @@ private fun contextualActions(
     val removeString = stringResource(Res.string.remove)
     val removeLinesAboveString = stringResource(Res.string.remove_lines_above)
     val clearOldSessionsString = stringResource(Res.string.clear_old_sessions)
-    return remember(state) {
+    val excludeEventString = stringResource(Res.string.analytics_exclude_event, state.eventName)
+    return remember(state, excludeEventString) {
         persistentListOf(
             FloconContextMenuItem.Item(
                 label = removeString,
@@ -156,6 +158,12 @@ private fun contextualActions(
                 label = removeLinesAboveString,
                 onClick = {
                     onActionCallback(AnalyticsAction.RemoveLinesAbove(state))
+                }
+            ),
+            FloconContextMenuItem.Item(
+                label = excludeEventString,
+                onClick = {
+                    onActionCallback(AnalyticsAction.ExcludeEvent(state))
                 }
             ),
             FloconContextMenuItem.Item(

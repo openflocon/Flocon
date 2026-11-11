@@ -2,6 +2,7 @@ package io.github.openflocon.domain.analytics.usecase
 
 import androidx.paging.PagingData
 import io.github.openflocon.domain.analytics.models.AnalyticsItemDomainModel
+import io.github.openflocon.domain.analytics.repository.AnalyticsPreferencesRepository
 import io.github.openflocon.domain.analytics.repository.AnalyticsRepository
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 class ObserveCurrentDeviceAnalyticsContentUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val analyticsRepository: AnalyticsRepository,
+    private val analyticsPreferencesRepository: AnalyticsPreferencesRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
@@ -27,11 +29,16 @@ class ObserveCurrentDeviceAnalyticsContentUseCase(
                         if (selectedAnalytics == null) {
                             flowOf(PagingData.empty())
                         } else {
-                            analyticsRepository.observeAnalytics(
-                                deviceIdAndPackageName = deviceIdAndPackageName,
-                                analyticsTableId = selectedAnalytics.id,
-                                filter = filter,
-                            )
+                            analyticsPreferencesRepository
+                                .observeExcludedEventNames(deviceIdAndPackageName.packageName)
+                                .flatMapLatest { excludedEventNames ->
+                                    analyticsRepository.observeAnalytics(
+                                        deviceIdAndPackageName = deviceIdAndPackageName,
+                                        analyticsTableId = selectedAnalytics.id,
+                                        filter = filter,
+                                        excludedEventNames = excludedEventNames,
+                                    )
+                                }
                         }
                     }
             }

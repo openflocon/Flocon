@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.core.data.di
 
 import io.github.openflocon.data.core.telemetry.datasource.TelemetryLocalDataSource
+import io.github.openflocon.domain.analytics.repository.AnalyticsPreferencesRepository
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.menu.repository.MenuPreferencesRepository
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
@@ -10,6 +11,7 @@ import io.github.openflocon.domain.settings.repository.TransactionPreferencesRep
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.screenshot.TimelineScreenshotRepository
 import io.github.openflocon.flocondesktop.core.data.device.DevicesRepositoryImpl
+import io.github.openflocon.flocondesktop.core.data.settings.AnalyticsPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MascotPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.MenuPreferencesRepositoryImpl
 import io.github.openflocon.flocondesktop.core.data.settings.SettingsRepositoryImpl
@@ -28,6 +30,9 @@ val coreDataModule =
     module {
         singleOf(::SettingsRepositoryImpl) {
             bind<SettingsRepository>()
+        }
+        singleOf(::AnalyticsPreferencesRepositoryImpl) {
+            bind<AnalyticsPreferencesRepository>()
         }
         singleOf(::MenuPreferencesRepositoryImpl) {
             bind<MenuPreferencesRepository>()

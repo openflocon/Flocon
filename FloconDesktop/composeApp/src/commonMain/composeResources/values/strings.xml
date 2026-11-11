@@ -679,6 +679,10 @@
     <string name="accessibility_column_class">Class</string>
     <string name="analytics_column_event">Event</string>
     <string name="analytics_column_properties">Properties</string>
+    <string name="analytics_exclude_event">Exclude "%1$s"</string>
+    <string name="analytics_excluded_count">%1$d excluded</string>
+    <string name="analytics_restore_all">Restore all</string>
+    <string name="analytics_restore_event">Restore this event</string>
     <string name="images_column_format">Format</string>
     <string name="settings_server_ports_title">Server ports</string>
     <string name="settings_server_ports_description">Ports used by the desktop to receive the SDK connections. The defaults are 9023 (websocket) and 9024 (HTTP).</string>

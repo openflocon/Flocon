@@ -22,6 +22,15 @@ Every recorded event details:
 
 ---
 
+## Excluding noisy events
+
+Right-click an event row and choose **Exclude** (followed by the event name in quotes) to hide every event with that name. An **N excluded** button then appears next to the filter field: open it to restore one event name, or **Restore all**.
+
+- Exclusions are saved per app (package name) and kept when you restart Flocon.
+- Events are only hidden from the list. They are not deleted, and **Export CSV** still includes them.
+
+---
+
 ## Setup
 
 ```kotlin

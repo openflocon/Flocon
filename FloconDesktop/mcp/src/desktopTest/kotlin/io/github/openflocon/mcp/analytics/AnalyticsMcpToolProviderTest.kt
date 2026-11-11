@@ -203,6 +203,7 @@ private class FakeAnalyticsRepository(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
+        excludedEventNames: Set<String>,
     ): Flow<PagingData<AnalyticsItemDomainModel>> = error("not used")
 
     override suspend fun getAnalytics(
