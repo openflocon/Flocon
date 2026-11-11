@@ -116,7 +116,7 @@ Diagnose step by step; do not wipe the app data to test, change the URL or clear
 
 ## 7. gRPC (grpc-swift 1.x)
 
-Package `https://github.com/openflocon/FloconSwiftGrpc.git` (branch `main`), product `FloconGrpc`. It depends on FloconSwift and re-exports `Flocon`. Requires grpc-swift 1.26+ 1.x; grpc-swift 2 is not supported.
+Package `https://github.com/openflocon/FloconSwiftGrpc.git` (`from: "2.0.0"`), product `FloconGrpc`. It depends on FloconSwift and re-exports `Flocon`. Requires grpc-swift 1.26+ 1.x; grpc-swift 2 is not supported.
 
 - Install `.network` in `startFlocon` (gRPC calls are logged through the network plugin). `Flocon.initialize()` installs everything.
 - Add `FloconGrpcClientInterceptor(authority:)` to the interceptor factories the clients already use, keeping the existing interceptors. If the project has a shared helper returning the common interceptors, add it there once.

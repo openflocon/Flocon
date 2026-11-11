@@ -32,7 +32,7 @@ Do not infer the version from the name of the start function: the Swift SDK has 
 | :--- | :--- |
 | Platforms | iOS 15+, macOS 12+ (`Package.swift`) |
 | Toolchain | Manifest is `swift-tools-version: 6.0` with the upcoming feature `ApproachableConcurrency`; the README says Swift 6.4+ / Xcode 26+. Builds were checked with Xcode 27 / Swift 6.4. Treat the README requirement as the safe one until both are aligned upstream |
-| Distribution | Swift Package Manager only, no tagged release for the current API: depend on `branch: "main"` (or pin a `revision`) |
+| Distribution | Swift Package Manager only, tagged releases (latest `2.0.0`): depend on `from: "2.0.0"` |
 | Transport | `wss://host:9023` (WebSocket) and `https://host:9024` (file uploads/downloads), self-signed certificate of the desktop accepted without verification |
 | Flocon Desktop | Must accept the encrypted connection: openflocon/Flocon#700 (merged 2026-10-29). Desktop 1.10.0 and older only speak `ws`/`http` and will not connect. Use a Desktop built from `main` after #700, or the first release that includes it |
 | MCP | Flocon Desktop serves MCP on `http://localhost:9042/mcp` (loopback). Not used by the app; independent of 9023/9024 |
@@ -58,13 +58,13 @@ Rules:
 
 ### Xcode project
 
-File › Add Package Dependencies… › `https://github.com/openflocon/FloconSwift.git` › Dependency Rule **Branch** `main` › add the `Flocon` library to the app target only (or to the package that owns the debug tooling, see below).
+File › Add Package Dependencies… › `https://github.com/openflocon/FloconSwift.git` › Dependency Rule **Up to Next Major Version** from `2.0.0` › add the `Flocon` library to the app target only (or to the package that owns the debug tooling, see below).
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/openflocon/FloconSwift.git", branch: "main"),
+    .package(url: "https://github.com/openflocon/FloconSwift.git", from: "2.0.0"),
 ],
 targets: [
     .target(
