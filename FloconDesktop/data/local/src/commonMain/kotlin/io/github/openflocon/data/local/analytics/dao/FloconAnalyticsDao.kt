@@ -76,6 +76,7 @@ interface FloconAnalyticsDao {
             OR propertiesColumnsNames LIKE '%' || :filter || '%' 
             OR propertiesValues LIKE '%' || :filter || '%'
         )
+        AND eventName NOT IN (:excludedEventNames)
         ORDER BY createdAt ASC
     """,
     )
@@ -84,6 +85,7 @@ interface FloconAnalyticsDao {
         packageName: String,
         analyticsTableId: String,
         filter: String?,
+        excludedEventNames: List<String>,
     ): PagingSource<Int, AnalyticsItemEntity>
 
     @Query(
