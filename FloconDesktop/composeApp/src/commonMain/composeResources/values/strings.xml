@@ -416,7 +416,7 @@
     <string name="deeplink_variables">Variables</string>
     <string name="deeplink_filter_placeholder">Filter deeplinks</string>
     <string name="deeplink_tab_freeform">Free link</string>
-    <string name="deeplink_freeform_description">Send any URL, even one your app did not declare.</string>
+    <string name="deeplink_freeform_description">Send any URL, even one your app did not declare. Variables written {like this} are replaced when sending.</string>
     <string name="deeplink_section_declared">Declared</string>
     <string name="deeplink_section_recent">Recent</string>
     <string name="deeplink_missing_variables">%1$d required</string>
@@ -425,6 +425,15 @@
     <string name="deeplink_send">Send</string>
     <string name="deeplink_reuse">Reuse</string>
     <string name="deeplink_recent_links">Recent links</string>
+    <string name="deeplink_copy">Copy</string>
+    <string name="deeplink_url">URL</string>
+    <string name="deeplink_resolved_preview">Resolved preview</string>
+    <string name="deeplink_detected_variables">Detected variables</string>
+    <string name="deeplink_fields_title">Fields of this link</string>
+    <string name="deeplink_no_fields">No field to fill.</string>
+    <string name="deeplink_no_variables">No variable used.</string>
+    <string name="deeplink_variable_missing">missing</string>
+    <string name="deeplink_variable_resolved">resolved</string>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>
     <string name="diff_original">Original:</string>

@@ -11,6 +11,8 @@ sealed interface DeeplinkScreenAction {
 
     data object SubmitFreeform : DeeplinkScreenAction
 
+    data class CopyLink(val link: String) : DeeplinkScreenAction
+
     data class SetFreeformLink(val value: String) : DeeplinkScreenAction
 
     data class RemoveFromHistory(val item: DeeplinkViewState) : DeeplinkScreenAction

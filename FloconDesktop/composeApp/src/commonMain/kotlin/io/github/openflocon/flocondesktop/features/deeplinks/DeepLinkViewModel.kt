@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import flocondesktop.composeapp.generated.resources.deeplink_removed
 import flocondesktop.composeapp.generated.resources.deeplink_send_error
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
@@ -19,13 +20,16 @@ import io.github.openflocon.domain.deeplink.usecase.RemoveFromDeeplinkHistoryUse
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabilitiesUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.buildLink
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.parseFreeformLink
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenAction
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkTabUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,6 +127,7 @@ class DeepLinkViewModel(
         when (action) {
             is DeeplinkScreenAction.Submit -> submit(action.item, action.values)
             DeeplinkScreenAction.SubmitFreeform -> submitFreeform()
+            is DeeplinkScreenAction.CopyLink -> copyLink(action.link)
             is DeeplinkScreenAction.SetFreeformLink -> freeformLink = action.value
             is DeeplinkScreenAction.RemoveFromHistory -> removeFromHistory(action.item)
             is DeeplinkScreenAction.SetVariable -> setVariable(action.name, action.value)
@@ -173,9 +178,17 @@ class DeepLinkViewModel(
     }
 
     private fun submitFreeform() {
-        val link = freeformLink.trim()
-        if (link.isEmpty()) return
-        execute(deeplink = link, deeplinkId = FREEFORM_DEEPLINK_ID, saveIntoHistory = true)
+        val parts = parseFreeformLink(freeformLink.trim(), state.value.variables)
+        // a variable without value would be sent as "{name}"
+        if (parts.isEmpty() || parts.any { it is DeeplinkPart.Variable && !it.isResolved }) return
+        execute(deeplink = parts.buildLink(), deeplinkId = FREEFORM_DEEPLINK_ID, saveIntoHistory = true)
+    }
+
+    private fun copyLink(link: String) {
+        viewModelScope.launch {
+            copyToClipboard(link)
+            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+        }
     }
 
     private fun submit(viewState: DeeplinkViewState, values: Map<DeeplinkPart.TextField, String>) {

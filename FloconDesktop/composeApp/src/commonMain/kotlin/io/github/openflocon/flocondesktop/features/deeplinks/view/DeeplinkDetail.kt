@@ -2,21 +2,26 @@ package io.github.openflocon.flocondesktop.features.deeplinks.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -24,14 +29,27 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_copy
+import flocondesktop.composeapp.generated.resources.deeplink_detected_variables
+import flocondesktop.composeapp.generated.resources.deeplink_fields_title
 import flocondesktop.composeapp.generated.resources.deeplink_freeform_description
+import flocondesktop.composeapp.generated.resources.deeplink_no_fields
+import flocondesktop.composeapp.generated.resources.deeplink_no_variables
 import flocondesktop.composeapp.generated.resources.deeplink_recent_links
+import flocondesktop.composeapp.generated.resources.deeplink_resolved_preview
 import flocondesktop.composeapp.generated.resources.deeplink_reuse
+import flocondesktop.composeapp.generated.resources.deeplink_send
 import flocondesktop.composeapp.generated.resources.deeplink_shared_variables
 import flocondesktop.composeapp.generated.resources.deeplink_tab_freeform
+import flocondesktop.composeapp.generated.resources.deeplink_url
 import flocondesktop.composeapp.generated.resources.deeplink_used_by
+import flocondesktop.composeapp.generated.resources.deeplink_variable_missing
+import flocondesktop.composeapp.generated.resources.deeplink_variable_resolved
 import flocondesktop.composeapp.generated.resources.freeform_link
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.buildLink
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.parseFreeformLink
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenAction
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
@@ -40,12 +58,15 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVaria
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconTonalButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
 import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import org.jetbrains.compose.resources.stringResource
+
+private val VariableChipWidth = 240.dp
 
 /** The content of the selected tab. */
 @Composable
@@ -60,6 +81,7 @@ internal fun DeeplinkDetail(
             val recent = remember(state.deepLinks) { state.deepLinks.filter { it.isHistory } }
             DeeplinkFreeformDetail(
                 freeformLink = freeformLink,
+                variables = state.variables,
                 recent = recent,
                 canSend = state.canSend,
                 onAction = onAction,
@@ -101,8 +123,12 @@ private fun DeeplinkLinkDetail(
     onAction: (DeeplinkScreenAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // the title and the description are shown above: the row only keeps the link
-    val row = remember(item) { item.copy(label = null, description = null) }
+    val fields = remember(item) { item.parts.filterIsInstance<DeeplinkPart.TextField>() }
+    val values = remember(item.deeplinkId, item.isHistory) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
+    val link = item.parts.buildLink(values)
+    val sendEnabled = canSend &&
+        item.missingVariablesCount == 0 &&
+        fields.all { !values[it].isNullOrBlank() }
 
     Column(
         modifier = modifier
@@ -113,17 +139,57 @@ private fun DeeplinkLinkDetail(
         if (!item.isHistory) {
             DeeplinkDetailHeader(title = item.displayName, description = item.description)
         }
-        DeeplinkRow(
-            item = row,
-            submit = { link, values -> onAction(DeeplinkScreenAction.Submit(link, values)) },
-            removeFromHistory = { onAction(DeeplinkScreenAction.RemoveFromHistory(it)) },
-            enabled = canSend && item.missingVariablesCount == 0,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        if (variables.isNotEmpty()) {
-            SectionTitle(stringResource(Res.string.deeplink_shared_variables))
-            variables.forEach { variable ->
-                DeeplinkVariableEditor(variable = variable, onAction = onAction)
+        DeeplinkUrlCard(
+            onCopy = { onAction(DeeplinkScreenAction.CopyLink(link)) },
+            onSend = { onAction(DeeplinkScreenAction.Submit(item, values.toMap())) },
+            sendEnabled = sendEnabled,
+            onDelete = if (item.isHistory) {
+                { onAction(DeeplinkScreenAction.RemoveFromHistory(item)) }
+            } else {
+                null
+            },
+        ) {
+            DeeplinkLinkText(parts = item.parts, fieldValues = values)
+        }
+        if (!item.isHistory) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                DeeplinkDetailColumn(
+                    title = stringResource(Res.string.deeplink_shared_variables),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    if (variables.isEmpty()) {
+                        EmptyHint(stringResource(Res.string.deeplink_no_variables))
+                    }
+                    variables.forEach { variable ->
+                        DeeplinkVariableEditor(variable = variable, onAction = onAction)
+                    }
+                }
+                DeeplinkDetailColumn(
+                    title = stringResource(Res.string.deeplink_fields_title),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    if (fields.isEmpty()) {
+                        EmptyHint(stringResource(Res.string.deeplink_no_fields))
+                    }
+                    fields.forEach { field ->
+                        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
+                            Text(
+                                text = field.label,
+                                style = FloconTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = FloconTheme.colors.ink,
+                            )
+                            DeeplinkFieldInput(
+                                part = field,
+                                value = values[field].orEmpty(),
+                                onValueChange = { values[field] = it },
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -132,12 +198,21 @@ private fun DeeplinkLinkDetail(
 @Composable
 private fun DeeplinkFreeformDetail(
     freeformLink: String,
+    variables: List<DeeplinkVariableViewState>,
     recent: List<DeeplinkViewState>,
     canSend: Boolean,
     onAction: (DeeplinkScreenAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val canSubmit = canSend && freeformLink.isNotBlank()
+    val parts = remember(freeformLink, variables) { parseFreeformLink(freeformLink.trim(), variables) }
+    val link = parts.buildLink()
+    val detected = remember(parts, variables) {
+        val names = parts.filterIsInstance<DeeplinkPart.Variable>().map { it.name }.toSet()
+        variables.filter { it.name in names }
+    }
+    val canSubmit = canSend &&
+        link.isNotBlank() &&
+        parts.none { it is DeeplinkPart.Variable && !it.isResolved }
 
     Column(
         modifier = modifier
@@ -149,56 +224,89 @@ private fun DeeplinkFreeformDetail(
             title = stringResource(Res.string.deeplink_tab_freeform),
             description = stringResource(Res.string.deeplink_freeform_description),
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        ) {
-            FloconTextFieldWithoutM3(
-                value = freeformLink,
-                onValueChange = { onAction(DeeplinkScreenAction.SetFreeformLink(it)) },
-                placeholder = defaultPlaceHolder(
-                    stringResource(Res.string.freeform_link),
-                    color = FloconTheme.colors.inkMuted,
-                ),
-                textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                containerColor = FloconTheme.colors.bg200,
-                modifier = Modifier
-                    .weight(1f)
-                    .onPreviewKeyEvent {
-                        val isEnter = it.key == Key.Enter && it.type == KeyEventType.KeyDown
-                        if (isEnter && canSubmit) {
-                            onAction(DeeplinkScreenAction.SubmitFreeform)
-                        }
-                        isEnter
-                    },
-            )
-            FloconIconTonalButton(
-                onClick = { onAction(DeeplinkScreenAction.SubmitFreeform) },
-                enabled = canSubmit,
-                containerColor = FloconTheme.colors.ink,
+        DeeplinkDetailColumn(title = stringResource(Res.string.deeplink_url)) {
+            DeeplinkUrlCard(
+                onCopy = { onAction(DeeplinkScreenAction.CopyLink(link)) },
+                onSend = { onAction(DeeplinkScreenAction.SubmitFreeform) },
+                sendEnabled = canSubmit,
             ) {
-                FloconIcon(imageVector = Icons.AutoMirrored.Filled.Send)
+                FloconTextFieldWithoutM3(
+                    value = freeformLink,
+                    onValueChange = { onAction(DeeplinkScreenAction.SetFreeformLink(it)) },
+                    placeholder = defaultPlaceHolder(
+                        stringResource(Res.string.freeform_link),
+                        color = FloconTheme.colors.inkMuted,
+                    ),
+                    textStyle = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    containerColor = FloconTheme.colors.bg200,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onPreviewKeyEvent {
+                            val isEnter = it.key == Key.Enter && it.type == KeyEventType.KeyDown
+                            if (isEnter && canSubmit) {
+                                onAction(DeeplinkScreenAction.SubmitFreeform)
+                            }
+                            isEnter
+                        },
+                )
+            }
+        }
+        if (detected.isNotEmpty()) {
+            DeeplinkDetailColumn(title = stringResource(Res.string.deeplink_resolved_preview)) {
+                DeeplinkLinkText(
+                    parts = parts,
+                    fieldValues = emptyMap(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg100)
+                        .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+                        .padding(FloconTheme.spacing.medium),
+                )
+            }
+            DeeplinkDetailColumn(title = stringResource(Res.string.deeplink_detected_variables)) {
+                detected.forEach { variable ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+                    ) {
+                        DeeplinkVariableEditor(variable = variable, onAction = onAction)
+                        val isResolved = variable.value.isNotEmpty()
+                        Text(
+                            text = stringResource(
+                                if (isResolved) {
+                                    Res.string.deeplink_variable_resolved
+                                } else {
+                                    Res.string.deeplink_variable_missing
+                                }
+                            ),
+                            style = FloconTheme.typography.bodySmall,
+                            color = if (isResolved) FloconTheme.colors.statusSuccess else FloconTheme.colors.statusWarning,
+                        )
+                    }
+                }
             }
         }
         if (recent.isNotEmpty()) {
-            SectionTitle(stringResource(Res.string.deeplink_recent_links))
-            recent.forEach { item ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                ) {
-                    Text(
-                        text = item.displayName,
-                        style = FloconTheme.typography.bodySmall,
-                        color = FloconTheme.colors.ink,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
-                    FloconOutlinedButton(
-                        onClick = { onAction(DeeplinkScreenAction.SetFreeformLink(item.displayName)) },
+            DeeplinkDetailColumn(title = stringResource(Res.string.deeplink_recent_links)) {
+                recent.forEach { item ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
                     ) {
-                        Text(stringResource(Res.string.deeplink_reuse))
+                        Text(
+                            text = item.displayName,
+                            style = FloconTheme.typography.bodySmall,
+                            color = FloconTheme.colors.ink,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        FloconOutlinedButton(
+                            onClick = { onAction(DeeplinkScreenAction.SetFreeformLink(item.displayName)) },
+                        ) {
+                            Text(stringResource(Res.string.deeplink_reuse))
+                        }
                     }
                 }
             }
@@ -228,6 +336,58 @@ private fun DeeplinkVariablesDetail(
     }
 }
 
+/** The link on a card, with its actions: copy, send and, for a link of the history, delete. */
+@Composable
+private fun DeeplinkUrlCard(
+    onCopy: () -> Unit,
+    onSend: () -> Unit,
+    sendEnabled: Boolean,
+    modifier: Modifier = Modifier,
+    onDelete: (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(FloconTheme.shapes.medium)
+            .background(FloconTheme.colors.bg100)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(FloconTheme.spacing.small),
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = FloconTheme.spacing.small),
+        ) {
+            content()
+        }
+        FloconOutlinedButton(onClick = onCopy) {
+            Text(stringResource(Res.string.deeplink_copy))
+        }
+        onDelete?.let {
+            FloconIconTonalButton(
+                onClick = it,
+                containerColor = FloconTheme.colors.ink,
+            ) {
+                FloconIcon(imageVector = Icons.Default.Delete)
+            }
+        }
+        FloconButton(
+            onClick = { if (sendEnabled) onSend() },
+            containerColor = FloconTheme.colors.accent,
+            modifier = Modifier.alpha(if (sendEnabled) 1f else 0.45f),
+        ) {
+            Text(
+                text = stringResource(Res.string.deeplink_send),
+                color = FloconTheme.colors.accentInk,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
 @Composable
 private fun DeeplinkVariableEditor(
     variable: DeeplinkVariableViewState,
@@ -245,11 +405,14 @@ private fun DeeplinkVariableEditor(
             DeeplinkVariableChip(
                 variable = variable,
                 onValueChange = { onAction(DeeplinkScreenAction.SetVariable(variable.name, it)) },
+                modifier = Modifier.width(VariableChipWidth),
             )
             Text(
                 text = stringResource(Res.string.deeplink_used_by, variable.usedByCount),
                 style = FloconTheme.typography.bodySmall,
                 color = FloconTheme.colors.inkMuted,
+                maxLines = 1,
+                softWrap = false,
             )
         }
         variable.description?.let {
@@ -284,12 +447,31 @@ private fun DeeplinkDetailHeader(
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+private fun DeeplinkDetailColumn(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        Text(
+            text = title,
+            style = FloconTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.inkMuted,
+        )
+        content()
+    }
+}
+
+@Composable
+private fun EmptyHint(text: String) {
     Text(
         text = text,
         style = FloconTheme.typography.bodySmall,
-        fontWeight = FontWeight.Bold,
-        color = FloconTheme.colors.inkMuted,
+        color = FloconTheme.colors.inkFaint,
     )
 }
 
@@ -304,6 +486,8 @@ private fun DeeplinkLinkDetailPreview() {
                         parts = listOf(
                             DeeplinkPart.Text("myapp://profile/"),
                             DeeplinkPart.Variable(value = "{userId}", name = "userId", isResolved = false),
+                            DeeplinkPart.Text("?tab="),
+                            DeeplinkPart.TextField("tab", autoComplete = listOf("posts", "friends")),
                         ),
                     ),
                 ),
@@ -320,7 +504,7 @@ private fun DeeplinkLinkDetailPreview() {
             freeformLink = "",
             onAction = {},
             modifier = Modifier
-                .background(FloconTheme.colors.bg100)
+                .background(FloconTheme.colors.bg000)
                 .fillMaxSize(),
         )
     }
@@ -333,12 +517,15 @@ private fun DeeplinkFreeformDetailPreview() {
         DeeplinkDetail(
             state = DeeplinkScreenState(
                 deepLinks = listOf(previewDeeplinkViewState().copy(isHistory = true, label = "myapp://settings")),
-                variables = emptyList(),
+                variables = listOf(
+                    DeeplinkVariableViewState(name = "userId", description = null, value = ""),
+                    DeeplinkVariableViewState(name = "env", description = null, value = "staging"),
+                ),
             ),
-            freeformLink = "myapp://home",
+            freeformLink = "myapp://profile/{userId}?env={env}",
             onAction = {},
             modifier = Modifier
-                .background(FloconTheme.colors.bg100)
+                .background(FloconTheme.colors.bg000)
                 .fillMaxSize(),
         )
     }
