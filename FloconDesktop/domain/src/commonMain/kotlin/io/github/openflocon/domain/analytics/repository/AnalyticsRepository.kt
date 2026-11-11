@@ -14,6 +14,7 @@ interface AnalyticsRepository {
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
+        excludedEventNames: Set<String>,
     ): Flow<PagingData<AnalyticsItemDomainModel>>
 
     suspend fun getAnalytics(

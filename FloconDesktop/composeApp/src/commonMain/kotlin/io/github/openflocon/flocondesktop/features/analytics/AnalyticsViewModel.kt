@@ -10,13 +10,17 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.error_exporting_csv
+import io.github.openflocon.domain.analytics.usecase.ExcludeAnalyticsEventNameUseCase
 import io.github.openflocon.domain.analytics.usecase.ExportAnalyticsToCsvUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveAnalyticsByIdUseCase
 import io.github.openflocon.domain.analytics.usecase.ObserveCurrentDeviceAnalyticsContentUseCase
+import io.github.openflocon.domain.analytics.usecase.ObserveExcludedAnalyticsEventNamesUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveAnalyticsItemsBeforeUseCase
 import io.github.openflocon.domain.analytics.usecase.RemoveOldSessionsAnalyticsUseCase
 import io.github.openflocon.domain.analytics.usecase.ResetCurrentDeviceSelectedAnalyticsUseCase
+import io.github.openflocon.domain.analytics.usecase.RestoreAllAnalyticsEventNamesUseCase
+import io.github.openflocon.domain.analytics.usecase.RestoreAnalyticsEventNameUseCase
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
@@ -32,6 +36,9 @@ import io.github.openflocon.flocondesktop.features.analytics.model.AnalyticsStat
 import io.github.openflocon.flocondesktop.features.analytics.model.DeviceAnalyticsUiModel
 import io.github.openflocon.library.designsystem.common.asState
 import io.github.openflocon.navigation.MainFloconNavigationState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,6 +66,10 @@ class AnalyticsViewModel(
     private val removeOldSessionsAnalyticsUseCase: RemoveOldSessionsAnalyticsUseCase,
     private val exportAnalyticsToCsv: ExportAnalyticsToCsvUseCase,
     private val observeAnalyticsByIdUseCase: ObserveAnalyticsByIdUseCase,
+    observeExcludedAnalyticsEventNamesUseCase: ObserveExcludedAnalyticsEventNamesUseCase,
+    private val excludeAnalyticsEventNameUseCase: ExcludeAnalyticsEventNameUseCase,
+    private val restoreAnalyticsEventNameUseCase: RestoreAnalyticsEventNameUseCase,
+    private val restoreAllAnalyticsEventNamesUseCase: RestoreAllAnalyticsEventNamesUseCase,
     private val navigationState: MainFloconNavigationState
 ) : ViewModel() {
 
@@ -79,6 +90,11 @@ class AnalyticsViewModel(
         .map { it is AnalyticsStateUiModel.Empty }
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val excludedEventNames: StateFlow<ImmutableList<String>> = observeExcludedAnalyticsEventNamesUseCase()
+        .map { names -> names.sorted().toImmutableList() }
+        .flowOn(dispatcherProvider.viewModel)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), persistentListOf())
 
     private val selectedItemId = MutableStateFlow<String?>(null)
     val selectedItem: StateFlow<AnalyticsDetailUiModel?> = combines(
@@ -165,6 +181,12 @@ class AnalyticsViewModel(
                 is AnalyticsAction.ClearOldSession -> removeOldSessionsAnalyticsUseCase()
 
                 is AnalyticsAction.ExportCsv -> onExportCsv()
+
+                is AnalyticsAction.ExcludeEvent -> excludeAnalyticsEventNameUseCase(action.item.eventName)
+
+                is AnalyticsAction.RestoreEvent -> restoreAnalyticsEventNameUseCase(action.eventName)
+
+                is AnalyticsAction.RestoreAllEvents -> restoreAllAnalyticsEventNamesUseCase()
             }
         }
     }

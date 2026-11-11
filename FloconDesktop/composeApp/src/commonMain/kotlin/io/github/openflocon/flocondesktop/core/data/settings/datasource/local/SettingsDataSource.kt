@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.flocondesktop.core.data.settings.models.AnalyticsSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
 import kotlinx.coroutines.flow.Flow
@@ -55,6 +56,11 @@ internal interface SettingsDataSource {
 
     // the settings are one stored object: the changes are applied one after the other
     suspend fun updateTimelineSettings(transform: (TimelineSettingsLocal) -> TimelineSettingsLocal)
+
+    val analyticsSettings: Flow<AnalyticsSettingsLocal>
+
+    // the settings are one stored object: the changes are applied one after the other
+    suspend fun updateAnalyticsSettings(transform: (AnalyticsSettingsLocal) -> AnalyticsSettingsLocal)
 
     val serverPorts: Flow<ServerPortsDomainModel>
     suspend fun setServerPorts(ports: ServerPortsDomainModel)

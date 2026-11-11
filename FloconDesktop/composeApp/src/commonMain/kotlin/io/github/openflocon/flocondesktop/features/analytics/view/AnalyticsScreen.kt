@@ -70,6 +70,8 @@ import io.github.openflocon.library.designsystem.components.FloconVerticalScroll
 import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -84,6 +86,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
     val filterText = viewModel.filterText
     val selectedItem by viewModel.selectedItem.collectAsStateWithLifecycle()
     val showEmptyState by viewModel.showEmptyState.collectAsStateWithLifecycle()
+    val excludedEventNames by viewModel.excludedEventNames.collectAsStateWithLifecycle()
 
     DisposableEffect(viewModel) {
         viewModel.onVisible()
@@ -103,6 +106,7 @@ fun AnalyticsScreen(modifier: Modifier = Modifier) {
         filterText = filterText,
         onFilterTextChanged = viewModel::onFilterTextChanged,
         showEmptyState = showEmptyState,
+        excludedEventNames = excludedEventNames,
     )
 }
 
@@ -112,6 +116,7 @@ fun AnalyticsScreen(
     screenState: AnalyticsScreenUiState,
     itemsState: AnalyticsStateUiModel,
     showEmptyState: Boolean,
+    excludedEventNames: ImmutableList<String>,
     onAnalyticsSelected: (DeviceAnalyticsUiModel) -> Unit,
     onFilterTextChanged: (String) -> Unit,
     onResetClicked: () -> Unit,
@@ -160,6 +165,11 @@ fun AnalyticsScreen(
                     placeholderText = stringResource(Res.string.filter),
                     onTextChange = onFilterTextChanged,
                     modifier = Modifier.weight(1f),
+                )
+                AnalyticsExcludedEvents(
+                    eventNames = excludedEventNames,
+                    onRestore = { onAction(AnalyticsAction.RestoreEvent(it)) },
+                    onRestoreAll = { onAction(AnalyticsAction.RestoreAllEvents) },
                 )
             },
             actions = {
@@ -281,6 +291,7 @@ private fun AnalyticsScreenPreview() {
         AnalyticsScreen(
             itemsState = previewAnalyticsStateUiModel(),
             showEmptyState = false,
+            excludedEventNames = persistentListOf("heartbeat", "scroll"),
             onAnalyticsSelected = {},
             selectedItem = null,
             rows = rows,
