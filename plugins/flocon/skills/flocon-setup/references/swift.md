@@ -2,7 +2,7 @@
 
 The Swift SDK lives in its own repository: `https://github.com/openflocon/FloconSwift` (Swift package `FloconSwift`, product and module `Flocon`). gRPC support is a separate package: `https://github.com/openflocon/FloconSwiftGrpc` (product and module `FloconGrpc`). Their READMEs and DocC comments are the source of truth for the API; if this page disagrees with them, they win: tell the user.
 
-Verified against FloconSwift `2e822e1` (main, after tag `0.4.0`; `Flocon.sdkVersion` still reports `"0.3.0"`) and FloconSwiftGrpc `c44cb3a` (main). The snippets of these pages were compiled for the iOS Simulator (Debug and Release, Xcode 27) against those revisions, grpc-swift 1.27, Kingfisher 8.15 and SDWebImage 5.21. Check what changed since before applying a recipe (`git log` of the package checkout in `DerivedData/SourcePackages/checkouts/` or of a fresh clone).
+Written against FloconSwift `2e822e1` and FloconSwiftGrpc `c44cb3a`, the code released as `2.0.0` (`Flocon.sdkVersion` reports `"2.0.0"`). The snippets of these pages were compiled for the iOS Simulator (Debug and Release, Xcode 27) against those revisions, grpc-swift 1.27, Kingfisher 8.15 and SDWebImage 5.21. Check what changed in later releases before applying a recipe (`git log` of the package checkout in `DerivedData/SourcePackages/checkouts/` or of a fresh clone).
 
 Topic pages, read only the one you need:
 
@@ -165,7 +165,6 @@ startFlocon { flocon in
 
 Do not wrap Flocon calls in a `Task` "to keep them off the main thread": the logging calls only queue their values; encoding and sending happen in the background. Measure the cost of the app's own mapping instead, if any.
 
-Note: the FloconSwift README shows `floconRegisterDeeplinks(...)`, which does not exist in this revision. Use `install(.deeplinks) { $0.register(...) }` or `Flocon.deeplinksPlugin.register(deeplinks:variables:)`.
 
 ### Physical device
 
