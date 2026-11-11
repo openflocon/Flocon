@@ -47,7 +47,6 @@ import io.github.openflocon.flocondesktop.features.network.badquality.edition.mo
 import io.github.openflocon.flocondesktop.features.network.badquality.edition.model.possibleExceptions
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList

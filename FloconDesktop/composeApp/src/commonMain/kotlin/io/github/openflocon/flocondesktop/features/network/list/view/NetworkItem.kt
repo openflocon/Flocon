@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,7 +53,6 @@ import flocondesktop.composeapp.generated.resources.filter_exclude
 import flocondesktop.composeapp.generated.resources.filter_include
 import flocondesktop.composeapp.generated.resources.network_header_host
 import flocondesktop.composeapp.generated.resources.network_header_request
-import flocondesktop.composeapp.generated.resources.network_image_response
 import flocondesktop.composeapp.generated.resources.network_mock_tag
 import flocondesktop.composeapp.generated.resources.network_select_item
 import flocondesktop.composeapp.generated.resources.remove

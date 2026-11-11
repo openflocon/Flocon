@@ -1,6 +1,5 @@
 package io.github.openflocon.data.core.database.repository
 
-import androidx.paging.PagingData
 import io.github.openflocon.data.core.database.datasource.DeviceDatabasesRemoteDataSource
 import io.github.openflocon.data.core.database.datasource.LocalDatabaseDataSource
 import io.github.openflocon.data.core.database.datasource.QueryDatabaseRemoteDataSource

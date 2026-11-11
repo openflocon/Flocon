@@ -44,8 +44,6 @@ import flocondesktop.composeapp.generated.resources.clear_old_sessions
 import flocondesktop.composeapp.generated.resources.export_csv
 import flocondesktop.composeapp.generated.resources.filter
 import flocondesktop.composeapp.generated.resources.invert_list
-import flocondesktop.composeapp.generated.resources.menu_item_analytics
-import flocondesktop.composeapp.generated.resources.timeline_counter_events
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyState

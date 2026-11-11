@@ -1,11 +1,7 @@
 package io.github.openflocon.flocondesktop.features.network.list.mapper
 
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_exception
-import flocondesktop.composeapp.generated.resources.general_loading
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkStatusUi
-import org.jetbrains.compose.resources.stringResource
 
 fun loadingStatus() = NetworkStatusUi(
     text = "Loading",

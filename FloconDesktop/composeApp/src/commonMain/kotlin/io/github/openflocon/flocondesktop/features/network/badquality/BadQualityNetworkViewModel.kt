@@ -3,7 +3,6 @@ package io.github.openflocon.flocondesktop.features.network.badquality
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.record_saved_at
 import flocondesktop.composeapp.generated.resources.saved
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.feedback.FeedbackDisplayer

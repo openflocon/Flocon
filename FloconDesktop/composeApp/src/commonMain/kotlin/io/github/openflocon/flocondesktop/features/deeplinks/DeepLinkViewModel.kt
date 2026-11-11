@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.deeplink_removed
-import flocondesktop.composeapp.generated.resources.deeplink_send_error
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 
 class DeepLinkViewModel(
     private val dispatcherProvider: DispatcherProvider,

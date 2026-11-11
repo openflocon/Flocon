@@ -56,7 +56,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.preference_cancel
 import flocondesktop.composeapp.generated.resources.preference_copy
@@ -74,7 +73,6 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Prefe
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.PreferenceEditUiModel
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.previewPreferenceEditUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

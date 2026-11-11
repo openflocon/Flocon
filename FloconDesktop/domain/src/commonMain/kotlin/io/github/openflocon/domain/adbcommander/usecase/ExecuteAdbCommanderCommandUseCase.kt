@@ -4,7 +4,6 @@ import io.github.openflocon.domain.adb.ExecuteAdbCommandUseCase
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adbcommander.repository.AdbCommanderRepository
 import io.github.openflocon.domain.common.Either
-import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdUseCase
 
 class ExecuteAdbCommanderCommandUseCase(

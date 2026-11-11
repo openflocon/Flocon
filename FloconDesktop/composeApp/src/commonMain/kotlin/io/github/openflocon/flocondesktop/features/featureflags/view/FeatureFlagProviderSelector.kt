@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastForEach
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.feature_flags_selector_caption
-import flocondesktop.composeapp.generated.resources.no_feature_flags
 import io.github.openflocon.flocondesktop.features.featureflags.model.FeatureFlagProvidersUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.DropdownFilterField

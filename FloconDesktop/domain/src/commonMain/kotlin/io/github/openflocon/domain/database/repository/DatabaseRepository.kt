@@ -1,6 +1,5 @@
 package io.github.openflocon.domain.database.repository
 
-import androidx.paging.PagingData
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.database.models.DatabaseExecuteSqlResponseDomainModel
 import io.github.openflocon.domain.database.models.DatabaseFavoriteQueryDomainModel

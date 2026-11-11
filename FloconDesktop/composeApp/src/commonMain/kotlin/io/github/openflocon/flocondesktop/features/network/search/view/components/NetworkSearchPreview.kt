@@ -36,10 +36,6 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.images_close_preview
-import flocondesktop.composeapp.generated.resources.search_next_match
-import flocondesktop.composeapp.generated.resources.search_previous_match
 import io.github.openflocon.domain.network.models.FloconNetworkCallDomainModel
 import io.github.openflocon.domain.network.models.responseBody
 import io.github.openflocon.flocondesktop.features.network.search.Match
@@ -49,7 +45,6 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NetworkSearchPreview(

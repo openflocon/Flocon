@@ -7,7 +7,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_data_media_clean_failed
 import flocondesktop.composeapp.generated.resources.settings_data_purge_failed
-import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_server_ports_applied
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -65,7 +64,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 class SettingsViewModel(

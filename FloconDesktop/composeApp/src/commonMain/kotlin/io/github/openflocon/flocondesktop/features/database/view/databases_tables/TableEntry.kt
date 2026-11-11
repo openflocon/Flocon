@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.general_insert_new_values
 import flocondesktop.composeapp.generated.resources.ic_db_chevron
 import flocondesktop.composeapp.generated.resources.ic_db_table
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
@@ -39,7 +38,6 @@ import io.github.openflocon.flocondesktop.features.database.model.TableUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.common.buildMenu
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TableEntry(
