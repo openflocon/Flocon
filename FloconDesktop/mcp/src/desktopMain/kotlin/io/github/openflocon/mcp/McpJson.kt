@@ -7,6 +7,8 @@ import io.modelcontextprotocol.kotlin.sdk.types.ToolAnnotations
 import io.modelcontextprotocol.kotlin.sdk.types.error
 import io.modelcontextprotocol.kotlin.sdk.types.success
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.Json
 import kotlin.time.TimeSource
 
@@ -38,7 +40,9 @@ internal fun writeToolAnnotations(
 internal inline fun <reified T> jsonResult(value: T): CallToolResult = CallToolResult.success(mcpOutputJson.encodeToString(value))
 
 /**
- * Executes a tool, [McpToolException] are returned to the agent as an error result
+ * Executes a tool: every failure is returned to the agent as an error result.
+ * [McpToolException] messages are kept as is, any other failure (including JVM errors, which the MCP SDK
+ * would otherwise send as a bare JSON-RPC error such as a class name) becomes an "internal error" message.
  */
 internal suspend fun safeToolCall(
     logManager: LogManager,
@@ -56,16 +60,25 @@ internal suspend fun safeToolCall(
                 logManager.i(TAG, "$toolName ok in $duration ms${argumentNames.argumentsSuffix()}", domain = LogDomain.Mcp)
             }
         }
-    } catch (e: CancellationException) {
-        throw e
     } catch (e: McpToolException) {
         logManager.e(TAG, "$toolName failed: ${e.message}", null, domain = LogDomain.Mcp)
         CallToolResult.error(e.message.orEmpty())
     } catch (t: Throwable) {
+        // the call itself was cancelled: nothing to answer. A cancellation leaking from the tool (ex: an inner timeout) is a failure
+        if (t is CancellationException) currentCoroutineContext().ensureActive()
         logManager.e(TAG, "$toolName crashed", t, domain = LogDomain.Mcp)
-        throw t
+        CallToolResult.error(internalErrorMessage(toolName, t))
     }
 }
+
+private fun internalErrorMessage(toolName: String, t: Throwable): String {
+    val message = t.message?.lineSequence()?.firstOrNull { it.isNotBlank() }?.trim()?.take(MAX_REASON_LENGTH)
+    val reason = listOfNotNull(t::class.simpleName ?: t::class.java.name, message).joinToString(": ")
+    val hint = if (t is LinkageError) " Flocon Desktop could not load part of its code. Restart Flocon Desktop, then retry." else ""
+    return "Internal Flocon Desktop error in $toolName: $reason.$hint"
+}
+
+private const val MAX_REASON_LENGTH = 200
 
 private const val TAG = "McpTool"
 

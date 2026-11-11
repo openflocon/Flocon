@@ -94,6 +94,8 @@ internal class FakeDevicesRepository(
     var currentDeviceIdValue: DeviceId? = null,
     var selectedApps: Map<DeviceId, String> = emptyMap(),
     activeDevicesValue: Set<DeviceIdAndPackageNameDomainModel> = emptySet(),
+    /** Thrown by [getDeviceSelectedApp] when set */
+    private val selectedAppError: Throwable? = null,
 ) : DevicesRepository {
     override val devices: Flow<List<DeviceDomainModel>> = flowOf(devicesWithApps.keys.toList())
     override val currentDeviceId: Flow<DeviceId?> = MutableStateFlow(currentDeviceIdValue)
@@ -106,7 +108,7 @@ internal class FakeDevicesRepository(
     override fun observeDeviceApps(deviceId: DeviceId): Flow<List<DeviceAppDomainModel>> = flowOf(appsOf(deviceId))
     override fun observeDeviceSelectedApp(deviceId: DeviceId): Flow<DeviceAppDomainModel?> = flowOf(Unit).map { getDeviceSelectedApp(deviceId) }
 
-    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? = selectedApps[deviceId]?.let { getDeviceAppByPackage(deviceId, it) }
+    override suspend fun getDeviceSelectedApp(deviceId: DeviceId): DeviceAppDomainModel? = selectedAppError?.let { throw it } ?: selectedApps[deviceId]?.let { getDeviceAppByPackage(deviceId, it) }
 
     override suspend fun getDeviceAppByPackage(deviceId: DeviceId, appPackageName: String): DeviceAppDomainModel? = appsOf(deviceId).firstOrNull { it.packageName == appPackageName }
 
