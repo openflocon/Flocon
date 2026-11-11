@@ -46,3 +46,15 @@ internal fun parseFreeformLink(
     }
     return result
 }
+
+/**
+ * Where the declared variables are written in a free link as typed, with whether each one has a value:
+ * used to color them in the text field.
+ */
+internal fun freeformVariableRanges(
+    link: String,
+    variables: List<DeeplinkVariableViewState>,
+): List<Pair<IntRange, Boolean>> = FreeformVariableRegex.findAll(link).mapNotNull { match ->
+    val variable = variables.firstOrNull { it.name == match.groupValues[1] } ?: return@mapNotNull null
+    match.range to variable.value.isNotEmpty()
+}.toList()

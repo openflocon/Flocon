@@ -26,6 +26,10 @@ data class DeeplinkViewState(
     /** Variables of the link that have no value yet: the link can't be sent. */
     val missingVariablesCount: Int
         get() = parts.count { it is DeeplinkPart.Variable && !it.isResolved }
+
+    /** Fields of the link, filled by hand before each send. */
+    val fieldsCount: Int
+        get() = parts.count { it is DeeplinkPart.TextField }
 }
 
 fun previewDeeplinkViewState() = DeeplinkViewState(

@@ -288,6 +288,11 @@
     <string name="deeplink_no_variables">Aucune variable utilisée.</string>
     <string name="deeplink_variable_missing">manquante</string>
     <string name="deeplink_variable_resolved">résolue</string>
+    <string name="deeplink_value_required">Valeur requise</string>
+    <plurals name="deeplink_fields_count">
+        <item quantity="one">%1$d champ</item>
+        <item quantity="other">%1$d champs</item>
+    </plurals>
     <string name="diff_clipboard">Presse-papiers :</string>
     <string name="diff_compare_clipboard">Comparer avec le presse-papiers</string>
     <string name="diff_original">Original :</string>

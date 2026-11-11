@@ -17,9 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -47,13 +47,13 @@ internal fun DeeplinkFieldInput(
             modifier = Modifier
                 .menuAnchor(PrimaryEditable)
                 .fillMaxWidth()
-                .background(FloconTheme.colors.bg200, FloconTheme.shapes.medium)
-                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+                .deeplinkInputBox(missing = value.isEmpty()),
+            contentAlignment = Alignment.CenterStart,
         ) {
             if (value.isEmpty()) {
                 Text(
                     text = part.label,
-                    style = FloconTheme.typography.bodySmall,
+                    style = FloconTheme.typography.listItem,
                     color = FloconTheme.colors.inkFaint,
                 )
             }
@@ -64,10 +64,7 @@ internal fun DeeplinkFieldInput(
                     isExpanded = true
                 },
                 singleLine = true,
-                textStyle = FloconTheme.typography.bodySmall.copy(
-                    color = FloconTheme.colors.ink,
-                    fontWeight = FontWeight.Bold,
-                ),
+                textStyle = FloconTheme.typography.listItem.copy(color = FloconTheme.colors.ink),
                 cursorBrush = SolidColor(FloconTheme.colors.ink),
                 modifier = Modifier.fillMaxWidth(),
             )

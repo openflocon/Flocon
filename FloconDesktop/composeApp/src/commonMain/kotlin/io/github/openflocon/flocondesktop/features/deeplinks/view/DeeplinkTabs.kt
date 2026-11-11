@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -80,17 +81,18 @@ private fun DeeplinkTabItem(
 
     Row(
         modifier = modifier
+            .height(FloconTheme.sizes.controlHeight)
             .clip(FloconTheme.shapes.medium)
-            .background(if (isSelected) FloconTheme.colors.bg100 else Color.Transparent)
+            .background(if (isSelected) FloconTheme.colors.bg300 else Color.Transparent)
             .clickable { onAction(DeeplinkScreenAction.SelectTab(tab.id)) }
-            .padding(vertical = FloconTheme.spacing.compact, horizontal = FloconTheme.spacing.medium),
+            .padding(start = FloconTheme.spacing.medium, end = FloconTheme.spacing.small),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
-            style = FloconTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
+            style = FloconTheme.typography.listItem,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = contentColor,
             maxLines = 1,
         )

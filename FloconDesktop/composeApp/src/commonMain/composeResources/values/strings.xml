@@ -434,6 +434,11 @@
     <string name="deeplink_no_variables">No variable used.</string>
     <string name="deeplink_variable_missing">missing</string>
     <string name="deeplink_variable_resolved">resolved</string>
+    <string name="deeplink_value_required">Required value</string>
+    <plurals name="deeplink_fields_count">
+        <item quantity="one">%1$d field</item>
+        <item quantity="other">%1$d fields</item>
+    </plurals>
     <string name="diff_clipboard">Clipboard:</string>
     <string name="diff_compare_clipboard">Compare with clipboard</string>
     <string name="diff_original">Original:</string>

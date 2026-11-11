@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,7 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.deeplink_fields_count
 import flocondesktop.composeapp.generated.resources.deeplink_missing_variables
 import flocondesktop.composeapp.generated.resources.deeplink_section_declared
 import flocondesktop.composeapp.generated.resources.deeplink_section_recent
@@ -39,9 +45,18 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewS
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.toTab
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconSolidPill
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+
+private val EntryIconSize = 14.dp
+
+// the background of the selected entry, as the tables of the database screen
+private const val SelectedAlpha = 0.08f
 
 @Composable
 internal fun DeeplinkSidebar(
@@ -66,15 +81,25 @@ internal fun DeeplinkSidebar(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(FloconTheme.spacing.small),
+                contentPadding = PaddingValues(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
             ) {
                 item(key = DeeplinkTabUiModel.Freeform.id) {
+                    val isSelected = selectedTabId == DeeplinkTabUiModel.Freeform.id
                     SidebarEntry(
-                        selected = selectedTabId == DeeplinkTabUiModel.Freeform.id,
+                        selected = isSelected,
                         onClick = { onAction(DeeplinkScreenAction.OpenTab(DeeplinkTabUiModel.Freeform)) },
                     ) {
-                        SidebarTitle(stringResource(Res.string.deeplink_tab_freeform), selected = selectedTabId == DeeplinkTabUiModel.Freeform.id)
+                        FloconIcon(
+                            imageVector = Icons.Outlined.Edit,
+                            tint = if (isSelected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
+                            modifier = Modifier.size(EntryIconSize),
+                        )
+                        SidebarTitle(
+                            text = stringResource(Res.string.deeplink_tab_freeform),
+                            selected = isSelected,
+                            modifier = Modifier.weight(1f),
+                        )
                     }
                 }
                 if (declared.isNotEmpty()) {
@@ -101,17 +126,29 @@ internal fun DeeplinkSidebar(
         }
         if (variablesCount > 0) {
             val isSelected = selectedTabId == DeeplinkTabUiModel.Variables.id
-            HorizontalDivider(color = FloconTheme.colors.line)
+            FloconHorizontalDivider()
             SidebarEntry(
                 selected = isSelected,
                 onClick = { onAction(DeeplinkScreenAction.OpenTab(DeeplinkTabUiModel.Variables)) },
                 modifier = Modifier.padding(FloconTheme.spacing.small),
             ) {
-                SidebarTitle(stringResource(Res.string.deeplink_variables), selected = isSelected, modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(Res.string.deeplink_variables),
+                    style = FloconTheme.typography.listItem,
+                    fontWeight = FontWeight.SemiBold,
+                    color = FloconTheme.colors.ink,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f),
+                )
                 Text(
                     text = variablesCount.toString(),
-                    style = FloconTheme.typography.bodySmall,
+                    style = FloconTheme.typography.listItem,
                     color = FloconTheme.colors.inkMuted,
+                )
+                FloconIcon(
+                    imageVector = Icons.Outlined.ChevronRight,
+                    tint = FloconTheme.colors.inkMuted,
+                    modifier = Modifier.size(EntryIconSize),
                 )
             }
         }
@@ -130,12 +167,29 @@ private fun DeeplinkSidebarLink(
         selected = isSelected,
         onClick = { onAction(DeeplinkScreenAction.OpenTab(tab)) },
     ) {
-        SidebarTitle(item.displayName, selected = isSelected, modifier = Modifier.weight(1f))
-        if (item.missingVariablesCount > 0) {
+        if (item.isHistory) {
             Text(
+                text = item.displayName,
+                style = FloconTheme.typography.listItemMono,
+                color = if (isSelected) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            return@SidebarEntry
+        }
+        SidebarTitle(item.displayName, selected = isSelected, modifier = Modifier.weight(1f))
+        when {
+            item.missingVariablesCount > 0 -> FloconSolidPill(
                 text = stringResource(Res.string.deeplink_missing_variables, item.missingVariablesCount),
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colors.statusWarning,
+                background = FloconTheme.colors.accent,
+                contentColor = FloconTheme.colors.accentInk,
+            )
+
+            item.fieldsCount > 0 -> Text(
+                text = pluralStringResource(Res.plurals.deeplink_fields_count, item.fieldsCount, item.fieldsCount),
+                style = FloconTheme.typography.labelSmall,
+                color = FloconTheme.colors.inkMuted,
                 maxLines = 1,
             )
         }
@@ -152,10 +206,11 @@ private fun SidebarEntry(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = FloconTheme.sizes.rowHeight)
             .clip(FloconTheme.shapes.medium)
-            .background(if (selected) FloconTheme.colors.accentSoft else Color.Transparent)
+            .background(if (selected) FloconTheme.colors.ink.copy(alpha = SelectedAlpha) else Color.Transparent)
             .clickable(onClick = onClick)
-            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.small),
+            .padding(horizontal = FloconTheme.spacing.small),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -171,8 +226,8 @@ private fun SidebarTitle(
 ) {
     Text(
         text = text,
-        style = FloconTheme.typography.bodySmall,
-        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+        style = FloconTheme.typography.listItem,
+        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
         color = FloconTheme.colors.ink,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -185,11 +240,9 @@ private fun SidebarSectionHeader(
     title: String,
     count: Int,
 ) {
-    Text(
-        text = "$title · $count",
-        style = FloconTheme.typography.bodySmall,
-        fontWeight = FontWeight.Bold,
-        color = FloconTheme.colors.inkMuted,
+    DeeplinkSectionLabel(
+        text = title,
+        count = count,
         modifier = Modifier.padding(
             start = FloconTheme.spacing.small,
             top = FloconTheme.spacing.medium,
