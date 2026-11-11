@@ -1,6 +1,8 @@
 package io.github.openflocon.flocondesktop.telemetry
 
+import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val telemetryModule = module {
@@ -19,4 +21,7 @@ val telemetryModule = module {
         )
     }
     viewModelOf(::TelemetryViewModel)
+    single {
+        DeviceConnectionTelemetry(remoteDeviceDataSource = get(), telemetryManager = get())
+    } bind MessagesReceiverRepository::class
 }

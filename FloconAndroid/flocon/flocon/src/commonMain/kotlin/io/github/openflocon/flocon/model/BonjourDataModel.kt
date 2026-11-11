@@ -22,12 +22,17 @@ internal enum class FloconConnectionType {
  * Body of the "bonjour" message sent when the SDK connects to the desktop app.
  * [plugins] are the names of the installed plugins (lowercase, same names as the desktop plugins).
  * [connectionType] tells how this connection was made.
+ * [sdk] names the SDK family (this one is the Kotlin SDK; Swift and Flutter SDKs send their own name).
  */
 @Serializable
 internal class BonjourDataModel(
     val plugins: List<String>,
     val connectionType: FloconConnectionType,
+    // no default value: encodeDefaults is false, a default would never be sent
+    val sdk: String,
 )
+
+internal const val FLOCON_SDK_NAME = "kotlin"
 
 internal fun List<FloconPlugin>.toBonjourBody(
     encoder: FloconEncoder,
@@ -36,6 +41,7 @@ internal fun List<FloconPlugin>.toBonjourBody(
     encoder.encode(
         BonjourDataModel(
             connectionType = connectionType,
+            sdk = FLOCON_SDK_NAME,
             plugins = map { it.key.lowercase() }
                 .filter { it.isNotEmpty() }
                 .distinct(),

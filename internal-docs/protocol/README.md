@@ -77,9 +77,10 @@ Right after a connection is opened, before any other message, the SDK sends `plu
 |------------------|------------|------------------------------------------------------------------------------------------------------|
 | `plugins`        | `String[]` | Lowercase names of the plugins installed in the SDK (the desktop hides the other ones)               |
 | `connectionType` | `String`   | `default` for the default address (localhost: adb reverse, simulator), `wifi` for the address given to the connect module |
+| `sdk`            | `String?`  | SDK family: `kotlin` (this repository), `swift`, `flutter`. Optional: absent for an SDK older than this field. Other SDKs should send their own name |
 
 ```json
-{ "plugins": ["network", "database"], "connectionType": "wifi" }
+{ "plugins": ["network", "database"], "connectionType": "wifi", "sdk": "kotlin" }
 ```
 
 The desktop shows a wifi icon next to a device connected with `wifi`.

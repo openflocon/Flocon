@@ -32,6 +32,7 @@ Telemetry is also fully disabled when:
 | --- | --- | --- |
 | `app_started` | Once per launch, if you opted in before | — |
 | `screen_viewed` | A menu entry is opened | `screen` (e.g. `Network`, `Database`) |
+| `device_connected` | An app with the Flocon SDK connects, once per app launch | `platform` (`android`, `ios`, `desktop`), `sdk` (`kotlin`, `swift`, `flutter`), `sdk_version`, `connection_type` (`default`, `wifi`). Never the device name, the app name or its package |
 
 Every event also carries: Flocon version, OS name and architecture, the telemetry level, and the per-launch session id.
 

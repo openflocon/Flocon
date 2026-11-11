@@ -16,5 +16,8 @@ interface RemoteDeviceDataSource {
     // null when the message cannot be read
     fun getConnectionType(message: FloconIncomingMessageDomainModel): DeviceConnectionType?
 
+    // the SDK family (kotlin, swift, flutter...) sent in the bonjour message, null for an older SDK
+    fun getSdk(message: FloconIncomingMessageDomainModel): String?
+
     suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }
