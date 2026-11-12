@@ -43,7 +43,7 @@ Applies to every client. Responses with `Content-Type: image/*` are always image
 Not intercepted automatically: log the events of the connections to inspect.
 
 ```dart
-floconLogWebSocketEvent(FloconWebSocketEvent(
+Flocon.network.logWebSocketEvent(FloconWebSocketEvent(
   websocketUrl: url,
   event: FloconWebSocketEventType.sendMessage, // open, closing, closed, error, sendMessage, receiveMessage
   message: text,

@@ -2,7 +2,7 @@ package io.github.openflocon.flocondesktop.telemetry
 
 /**
  * Exhaustive list of events sent by Flocon Desktop.
- * Keep docs2/telemetry.md in sync when adding one.
+ * Keep docs/telemetry.md in sync when adding one.
  */
 object TelemetryEvents {
     /**
