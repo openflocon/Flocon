@@ -25,8 +25,8 @@ http://localhost:9042/mcp
 
 !!! info "Local only"
     The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
-    Agents can't modify, delete or replay the captured data (network calls, files, databases, preferences, analytics events, feature flags, crashes...).
-    The tools that change something are: the **network mocks** and **bad network** ones (they change the app behavior), `open_deeplink`, `move_accessibility_focus`, `take_screenshot` and the screen recording (they act on the device), and `set_server_ports`, `show_in_timeline`, `flocon_navigate_into_desktop_app`, `clear_accessibility_events` and `open_flocon_folder` (they act on Flocon Desktop or your computer).
+    Agents can't modify, delete or replay the captured data (network calls, files, databases, analytics events, feature flags, crashes...), except the value of an existing preference key with `set_shared_preference_value`.
+    The tools that change something are: the **network mocks** and **bad network** ones, `set_shared_preference_value` and `send_websocket_message` (they change the app behavior or data), `open_deeplink`, `move_accessibility_focus`, `take_screenshot` and the screen recording (they act on the device), and `set_server_ports`, `show_in_timeline`, `flocon_navigate_into_desktop_app`, `clear_accessibility_events` and `open_flocon_folder` (they act on Flocon Desktop or your computer).
     Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
@@ -406,6 +406,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `create_network_mock` | Creates a mock returning a body or throwing an exception, from scratch or from a captured call (`fromCallId`). |
 | `update_network_mock` | Updates some fields of a mock, or enables / disables it. |
 | `delete_network_mock` | Deletes a mock. |
+| `list_websocket_clients` | Ids of the websockets of the app that accept injected messages (Android OkHttp `FloconWebSocket` only for now). |
+| `send_websocket_message` | Injects a text message into a websocket of the app, as if received from the server (`websocketId`, `message`). |
 | `list_bad_network_configs` | Bad network configs of the app (latency, random errors) and the active one. |
 | `create_bad_network_config` | Creates a config: random latency, and errors (HTTP response or exception) triggered with a probability. Optionally active right away. |
 | `update_bad_network_config` | Updates some fields of a config. |
@@ -443,6 +445,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `take_flocon_desktop_screenshot` | Image of what the Flocon Desktop window currently displays (not the device screen). Only the visible content is captured, scaled down if it is too big, and nothing is saved on your computer. |
 | `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId` and storage `type` (SharedPreferences, DataStore, UserDefaults, Keychain...). |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
+| `set_shared_preference_value` | Edits the value of an existing key (`sharedPreferenceId`, `key`, `value`, optional `type`: the type of the current value by default). Keys can't be created or removed. Returns the previous value, and whether the app confirmed the edit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). Each query has a `transactionId` when it ran in a transaction, and a `nestedTransactionId` with its `parentTransactionId` when it ran in a transaction nested in it (a savepoint); pass `transactionId` to only get the queries of one transaction. |
