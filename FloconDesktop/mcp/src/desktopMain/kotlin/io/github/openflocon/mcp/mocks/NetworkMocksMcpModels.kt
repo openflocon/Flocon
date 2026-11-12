@@ -38,3 +38,20 @@ internal data class NetworkMockChangeMcpResult(
     val message: String,
     val mock: NetworkMockMcpModel?,
 )
+
+@Serializable
+internal data class WebsocketClientsMcpResult(
+    val deviceId: String,
+    val packageName: String,
+    val websocketIds: List<String>,
+    /** explains an empty list */
+    val note: String?,
+)
+
+@Serializable
+internal data class SendWebsocketMessageMcpResult(
+    val deviceId: String,
+    val packageName: String,
+    val websocketId: String,
+    val sent: Boolean,
+)

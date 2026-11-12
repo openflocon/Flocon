@@ -10,7 +10,7 @@
     {
       "name": "flocon",
       "source": "./plugins/flocon",
-      "description": "Let your AI agent inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop",
+      "description": "Let your AI agent debug your mobile app through Flocon Desktop (timeline, crashes, network calls, mocks and bad network, files, analytics, databases, preferences, feature flags, deeplinks, dashboards, tables, images, accessibility, WebView, screenshots and recordings), and set Flocon up or migrate it in Android, KMP, iOS and Flutter projects",
       "category": "Developer Tools"
     }
   ]

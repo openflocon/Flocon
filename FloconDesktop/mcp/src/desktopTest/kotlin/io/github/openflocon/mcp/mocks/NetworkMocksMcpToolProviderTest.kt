@@ -15,6 +15,7 @@ import io.github.openflocon.mcp.targetResolver
 import io.github.openflocon.mcp.text
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
@@ -71,7 +72,77 @@ class NetworkMocksMcpToolProviderTest {
     fun `only the read tools are flagged read only`() = runBlocking {
         val readOnlyTools = server.listTools().filter { it.annotations?.readOnlyHint == true }.map { it.name }
 
-        assertEquals(listOf("list_network_mocks", "get_network_mock"), readOnlyTools)
+        assertEquals(listOf("list_network_mocks", "get_network_mock", "list_websocket_clients"), readOnlyTools)
+    }
+
+    @Test
+    fun `send_websocket_message is a non destructive write`() = runBlocking {
+        val tool = server.listTools().single { it.name == "send_websocket_message" }
+
+        assertEquals(false, tool.annotations?.readOnlyHint)
+        assertEquals(false, tool.annotations?.destructiveHint)
+    }
+
+    @Test
+    fun `list_websocket_clients returns the registered ids`() = runBlocking {
+        mocksRepository.websocketIds = listOf("chat", "notifications")
+
+        val result = server.callTool("list_websocket_clients").json()
+
+        assertEquals(listOf("chat", "notifications"), result["websocketIds"]!!.jsonArray.map { it.jsonPrimitive.content })
+        assertEquals(null, result["note"])
+    }
+
+    @Test
+    fun `list_websocket_clients explains an empty list`() = runBlocking {
+        val result = server.callTool("list_websocket_clients").json()
+
+        assertTrue(result["websocketIds"]!!.jsonArray.isEmpty())
+        assertTrue(result["note"]!!.jsonPrimitive.content.contains("Android"))
+    }
+
+    @Test
+    fun `send_websocket_message sends to the app`() = runBlocking {
+        mocksRepository.websocketIds = listOf("chat")
+
+        val result = server.callTool("send_websocket_message", mapOf("websocketId" to "chat", "message" to "{\"type\":\"ping\"}")).json()
+
+        assertEquals(listOf("chat" to "{\"type\":\"ping\"}"), mocksRepository.sentMessages)
+        assertEquals(true, result["sent"]!!.jsonPrimitive.content.toBoolean())
+    }
+
+    @Test
+    fun `send_websocket_message refuses an unknown id`() = runBlocking {
+        mocksRepository.websocketIds = listOf("chat")
+
+        val result = server.callTool("send_websocket_message", mapOf("websocketId" to "chats", "message" to "hello"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("chat") && result.text().contains("list_websocket_clients"), result.text())
+        assertTrue(mocksRepository.sentMessages.isEmpty())
+    }
+
+    @Test
+    fun `send_websocket_message to a disconnected app`() = runBlocking {
+        mocksRepository.websocketIds = listOf("chat")
+
+        val result = server.callTool(
+            "send_websocket_message",
+            mapOf("websocketId" to "chat", "message" to "hello", "deviceId" to "pixel", "packageName" to "io.flocon.other"),
+        )
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("not connected"), result.text())
+        assertTrue(mocksRepository.sentMessages.isEmpty())
+    }
+
+    @Test
+    fun `send_websocket_message without websocket`() = runBlocking {
+        val result = server.callTool("send_websocket_message", mapOf("websocketId" to "chat", "message" to "hello"))
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("Android"), result.text())
+        assertTrue(mocksRepository.sentMessages.isEmpty())
     }
 
     @Test
@@ -256,6 +327,8 @@ class NetworkMocksMcpToolProviderTest {
 private class FakeNetworkMocksRepository : NetworkMocksRepository {
 
     private val mocks = MutableStateFlow<Map<String, Pair<Pair<String, String>?, MockNetworkDomainModel>>>(emptyMap())
+    var websocketIds: List<String> = emptyList()
+    val sentMessages = mutableListOf<Pair<String, String>>()
     val sentToDevice = mutableMapOf<DeviceIdAndPackageNameDomainModel, List<MockNetworkDomainModel>>()
 
     private fun List<Pair<Pair<String, String>?, MockNetworkDomainModel>>.of(target: DeviceIdAndPackageNameDomainModel) = filter { (app, _) -> app == null || app == (target.deviceId to target.packageName) }.map { it.second }
@@ -283,7 +356,9 @@ private class FakeNetworkMocksRepository : NetworkMocksRepository {
 
     override suspend fun updateMockIsEnabled(id: String, isEnabled: Boolean) = error("not used")
     override suspend fun updateMockDevice(mockId: String, deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel?) = error("not used")
-    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> = error("not used")
+    override suspend fun observeWebsocketClientsIds(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<NetworkWebsocketId>> = flowOf(websocketIds)
 
-    override suspend fun sendWebsocketMock(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, websocketId: NetworkWebsocketId, message: String) = error("not used")
+    override suspend fun sendWebsocketMock(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel, websocketId: NetworkWebsocketId, message: String) {
+        sentMessages += websocketId to message
+    }
 }

@@ -77,6 +77,58 @@ internal class NetworkMocksMcpToolProvider(
             annotations = writeToolAnnotations(destructive = true, idempotent = true),
             handler = ::deleteMock,
         )
+
+        server.addTypedTool(
+            name = "list_websocket_clients",
+            title = "List websocket clients",
+            description = "Lists the ids of the websockets of the mobile app that accept injected messages " +
+                "(see send_websocket_message). Only the Android SDK (OkHttp FloconWebSocket) registers them for now.",
+            annotations = readOnlyToolAnnotations,
+            handler = ::listWebsocketClients,
+        )
+
+        server.addTypedTool(
+            name = "send_websocket_message",
+            title = "Send websocket message",
+            description = "Injects a text message into a websocket of the mobile app, as if it was received from the server. " +
+                "Use the ids of list_websocket_clients. Only the Android SDK (OkHttp FloconWebSocket) supports it for now.",
+            annotations = writeToolAnnotations(destructive = false, idempotent = false),
+            handler = ::sendWebsocketMessage,
+        )
+    }
+
+    private suspend fun listWebsocketClients(input: ListWebsocketClientsInput): WebsocketClientsMcpResult {
+        val target = targetResolver.resolve(input)
+        val ids = networkMocksRepository.observeWebsocketClientsIds(target).first()
+        return WebsocketClientsMcpResult(
+            deviceId = target.deviceId,
+            packageName = target.packageName,
+            websocketIds = ids,
+            note = NO_WEBSOCKET_MESSAGE.takeIf { ids.isEmpty() },
+        )
+    }
+
+    private suspend fun sendWebsocketMessage(input: SendWebsocketMessageInput): SendWebsocketMessageMcpResult {
+        val target = targetResolver.resolve(input)
+        val ids = networkMocksRepository.observeWebsocketClientsIds(target).first()
+        when {
+            ids.isEmpty() -> throw McpToolException(NO_WEBSOCKET_MESSAGE)
+            input.websocketId !in ids -> throw McpToolException(
+                "Unknown websocketId '${input.websocketId}': the app registered ${ids.joinToString { "'$it'" }} (see list_websocket_clients).",
+            )
+        }
+        if (devicesRepository.activeDevices.first().none { it.isSameApp(target) }) {
+            throw McpToolException(
+                "The app ${target.packageName} is not connected to Flocon: start it, then retry (the message would be lost).",
+            )
+        }
+        networkMocksRepository.sendWebsocketMock(target, input.websocketId, input.message)
+        return SendWebsocketMessageMcpResult(
+            deviceId = target.deviceId,
+            packageName = target.packageName,
+            websocketId = input.websocketId,
+            sent = true,
+        )
     }
 
     private suspend fun listMocks(input: ListNetworkMocksInput): NetworkMocksMcpResult {
@@ -267,3 +319,6 @@ internal class NetworkMocksMcpToolProvider(
 
     private fun validMethod(method: String?): String? = method?.trim()?.uppercase()?.takeIf { it.isNotEmpty() }
 }
+
+private const val NO_WEBSOCKET_MESSAGE = "The app registered no websocket accepting injected messages. " +
+    "Only the Android SDK supports it for now, for the OkHttp websockets wrapped with FloconWebSocket."

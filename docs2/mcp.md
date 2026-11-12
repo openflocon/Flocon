@@ -25,7 +25,8 @@ http://localhost:9042/mcp
 
 !!! info "Local only"
     The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
-    Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+    Agents can't modify, delete or replay the captured data (network calls, files, databases, analytics events, feature flags, crashes...), except the value of an existing preference key with `set_shared_preference_value`.
+    The tools that change something are: the **network mocks** and **bad network** ones, `set_shared_preference_value` and `send_websocket_message` (they change the app behavior or data), `open_deeplink`, `move_accessibility_focus`, `take_screenshot` and the screen recording (they act on the device), and `set_server_ports`, `show_in_timeline`, `flocon_navigate_into_desktop_app`, `clear_accessibility_events` and `open_flocon_folder` (they act on Flocon Desktop or your computer).
     Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
@@ -394,7 +395,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 
 | Tool | Description |
 |---|---|
-| `list_devices` | Devices and apps known by Flocon, the selected one, and whether they are connected. |
+| `list_devices` | Devices (with their `connectionType`: `default` or `wifi`) and apps known by Flocon, the selected one, and whether they are connected. |
 | `get_timeline` | What the app did in a window of time, above the network: every source (network, database, analytics, crashes, deeplinks, logs sent with `Flocon.timelinePlugin`...) in one narrative, one line per event with an id for the detail tools, repetitions folded (`12× GET /feed in 3.1 s`) and anomalies first (crash, HTTP errors, ERROR logs, calls in a loop, responses over 1 MB). Give `mode` (`recent`, `session`, `before_crash`, `at`, `range`) with `at` / `from` / `to` (epoch ms, ISO-8601 with an offset, or `HH:mm`), or an `eventId` of a previous answer, or nothing: the tool anchors on the latest crash, otherwise on the last 2 minutes of the latest session, and the answer says which window was chosen and why. `search` tells whether an event (name, url, query) was sent in the window (`found`), and its matches are never cut by `maxLines`. `sources` / `excludeSources` choose the sources read (for example `excludeSources: ["database"]` drops the transactions of a database library); when the answer is capped, database lines are the first to go. The times are those of the phone. |
 | `show_in_timeline` | Shows a zone of the timeline in the Flocon Desktop window for you: opens the timeline in graph mode (saved in your preferences), selects the device and app of the call, selects an event and centers the graph on its zone. Give an `eventId` of `get_timeline` (`source:id`), a time (`mode`, `at`, `from`, `to`), or nothing: the latest crash, otherwise the main anomaly (error, loop, large response) of the last minutes. `view: list` selects the row without scrolling to it. Flocon is not brought to the front and the request is only registered: the answer asks you to go to the Flocon app. Nothing is changed when the event or the window is not found. Your filters are never changed: if one hides the event, the answer says which. The graph draws network, database and analytics events only: a crash is shown with its zone, see its row in the list. |
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
@@ -405,12 +406,15 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `create_network_mock` | Creates a mock returning a body or throwing an exception, from scratch or from a captured call (`fromCallId`). |
 | `update_network_mock` | Updates some fields of a mock, or enables / disables it. |
 | `delete_network_mock` | Deletes a mock. |
+| `list_websocket_clients` | Ids of the websockets of the app that accept injected messages (Android OkHttp `FloconWebSocket` only for now). |
+| `send_websocket_message` | Injects a text message into a websocket of the app, as if received from the server (`websocketId`, `message`). |
 | `list_bad_network_configs` | Bad network configs of the app (latency, random errors) and the active one. |
 | `create_bad_network_config` | Creates a config: random latency, and errors (HTTP response or exception) triggered with a probability. Optionally active right away. |
 | `update_bad_network_config` | Updates some fields of a config. |
 | `set_active_bad_network_config` | Activates a config (only one at a time), or turns the simulation off when no `configId` is given. |
 | `delete_bad_network_config` | Deletes a config. |
-| `list_files` | Content of a directory of the app: `files`, `caches`, or the absolute path of a sub directory. |
+| `list_file_roots` | Root folders announced by the app (`id`, name, absolute path): the platform defaults (ex: files and caches on Android, documents, caches and tmp on iOS) and the folders registered by the app. |
+| `list_files` | Content of a directory of the app: the `id` of a root folder (see `list_file_roots`, the first one by default), or the absolute path of a sub directory. |
 | `read_file` | Downloads a file of the app: text files returned as text (truncated if too long), images as images, metadata only for the other binary files. A copy is saved on your computer (`localPath`). |
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
@@ -441,6 +445,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `take_flocon_desktop_screenshot` | Image of what the Flocon Desktop window currently displays (not the device screen). Only the visible content is captured, scaled down if it is too big, and nothing is saved on your computer. |
 | `list_shared_preferences` | SharedPreferences files (Android) / UserDefaults suites (iOS) of the app, with their `sharedPreferenceId` and storage `type` (SharedPreferences, DataStore, UserDefaults, Keychain...). |
 | `get_shared_preference_values` | Keys and typed values of a SharedPreferences file, as stored. Optional text filter (key or value) and limit. |
+| `set_shared_preference_value` | Edits the value of an existing key (`sharedPreferenceId`, `key`, `value` as text, ex: `"12"` or `"[\"a\"]"` for a string_set, optional `type`: the type of the current value by default). Keys can't be created or removed. Returns the previous value, and whether the app confirmed the edit. |
 | `list_tables` | Custom tables sent by the app (Table plugin), with their `tableId`. |
 | `list_table_items` | Rows of a table as column -> value maps, newest first. Filters: text, order, limit. |
 | `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). Each query has a `transactionId` when it ran in a transaction, and a `nestedTransactionId` with its `parentTransactionId` when it ran in a transaction nested in it (a savepoint); pass `transactionId` to only get the queries of one transaction. |

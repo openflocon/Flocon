@@ -1,9 +1,9 @@
 {
   "name": "flocon",
   "version": "1.0.0",
-  "description": "Connects Claude Code to the Flocon Desktop MCP server: network calls, mocks, files, analytics events and databases of your mobile app",
+  "description": "Connects Claude Code to the Flocon Desktop MCP server to debug your mobile app (timeline, crashes, network calls, mocks and bad network, files, analytics, databases, preferences, feature flags, deeplinks, dashboards, tables, images, accessibility, WebView, screenshots and recordings), and sets Flocon up or migrates it in Android, KMP, iOS and Flutter projects",
   "author": { "name": "openflocon", "url": "https://github.com/openflocon" },
   "homepage": "https://openflocon.github.io/Flocon/mcp",
   "repository": "https://github.com/openflocon/Flocon",
-  "keywords": ["flocon", "mcp", "android", "ios", "kmp", "debug", "network"]
+  "keywords": ["flocon", "mcp", "android", "ios", "flutter", "kmp", "debug", "network", "setup", "migration"]
 }

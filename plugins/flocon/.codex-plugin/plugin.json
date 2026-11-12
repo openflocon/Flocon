@@ -1,16 +1,16 @@
 {
   "name": "flocon",
   "version": "1.0.0",
-  "description": "Connects your AI agent to the Flocon Desktop MCP server: network calls, mocks, files, analytics events and databases of your mobile app",
+  "description": "Connects your AI agent to the Flocon Desktop MCP server to debug your mobile app (timeline, crashes, network calls, mocks and bad network, files, analytics, databases, preferences, feature flags, deeplinks, dashboards, tables, images, accessibility, WebView, screenshots and recordings), and sets Flocon up or migrates it in Android, KMP, iOS and Flutter projects",
   "author": { "name": "openflocon", "url": "https://github.com/openflocon" },
   "homepage": "https://openflocon.github.io/Flocon/mcp",
   "repository": "https://github.com/openflocon/Flocon",
-  "keywords": ["flocon", "mcp", "android", "ios", "kmp", "debug", "network"],
+  "keywords": ["flocon", "mcp", "android", "ios", "flutter", "kmp", "debug", "network", "setup", "migration"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Flocon",
     "shortDescription": "Debug your mobile app with Flocon",
-    "longDescription": "Inspect and mock the network calls of your mobile app, and read its files, analytics events and databases through Flocon Desktop. Flocon Desktop must be running.",
+    "longDescription": "Debug your mobile app through Flocon Desktop: read the timeline of what the app did and its crashes, inspect, mock and slow down its network calls, read its files, analytics events, databases, preferences, feature flags, dashboards and tables, check its images, accessibility and WebView events, open deeplinks, take screenshots and screen recordings. Also sets Flocon up or migrates it in Android, KMP, iOS and Flutter projects. Flocon Desktop must be running.",
     "developerName": "openflocon",
     "composerIcon": "./assets/flocon.png",
     "logo": "./assets/flocon.png",
@@ -18,7 +18,7 @@
     "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://openflocon.github.io/Flocon/",
     "defaultPrompt": [
-      "List the failed network calls of my app and explain why they fail",
+      "What happened in my app right before the last crash?",
       "Make the login call return a 500 so I can check the error screen",
       "Check in the database that the user I just created is saved correctly"
     ]
