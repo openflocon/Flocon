@@ -20,7 +20,9 @@ For each GraphQL request, Flocon inspects:
 
 ## Setup with Apollo Client
 
-Apollo Client delegates network calls to OkHttp on Android. By attaching the `FloconOkhttpInterceptor` to the underlying HTTP client, GraphQL requests are automatically intercepted:
+Apollo Client delegates network calls to OkHttp on Android.
+
+The network plugin must be installed (`install(FloconNetwork)`, see [Network](network.md#setup-integration)). By attaching the `FloconOkhttpInterceptor` to the underlying HTTP client, GraphQL requests are automatically intercepted:
 
 ```kotlin
 val okHttpClient = OkHttpClient.Builder()

@@ -7,43 +7,24 @@ description: Common issues and solutions when connecting Flocon Desktop to your 
 
 ## Flocon Desktop Cannot See Device Calls
 
-To allow Flocon to intercept and inspect network traffic, database queries, and custom events from your Android app, the app must be allowed to communicate with `localhost` (`127.0.0.1`), where the desktop companion communicates.
+The SDK talks to the desktop over TLS (`wss://localhost:9023`, `https://localhost:9024` by default, see [Custom ports](setup.md#custom-ports)) through `adb reverse`, so no cleartext configuration is needed in your app (no `networkSecurityConfig` entry for `localhost`).
 
-### 1. Allow Cleartext Traffic to Localhost
+### 1. Check the connection
+- Flocon Desktop must be running: it serves a self-signed certificate that the SDK accepts without verifying it.
+- The SDK and Flocon Desktop must be on the same version: an older SDK still tries the removed `ws://` connection and cannot connect (see [Migration](migration.md)).
+- Web (wasmJs) only: the browser rejects self-signed certificates, open `https://localhost:<websocket port>` (`9023` by default) once in the browser and accept the certificate.
 
-If your app uses a custom `networkSecurityConfig`, ensure you explicitly permit cleartext traffic to `localhost` and `127.0.0.1`.
+---
 
-=== "`AndroidManifest.xml`"
+## Connection fails after changing ports
 
-    ```xml
-    <application
-        android:name=".MyApp"
-        android:networkSecurityConfig="@xml/network_security_config"
-        ... >
-    </application>
-    ```
+If you changed the ports in Flocon Desktop (**Settings > Server ports**), the SDK must use the same ones, except on Android emulator / USB where `adb reverse` maps the default `9023` / `9024` to the desktop ports.
 
-=== "`res/xml/network_security_config.xml`"
+- Real device over Wi-Fi, iOS (simulator or device), JVM and Wasm: set `connect { websocketPort = ...; httpPort = ... }` (or `address = "host:ws:http"`) to the desktop values. On iOS with the Swift SDK use `flocon.config(host:webSocketPort:httpPort:)`. Otherwise the app silently fails to connect.
+- Desktop ports must be in `1024-65535`, different from each other, and not `9042` (MCP).
+- Wasm: open `https://localhost:<websocket port>` once in the browser to accept the certificate.
 
-    ```xml
-    <?xml version="1.0" encoding="utf-8"?>
-    <network-security-config>
-        <domain-config cleartextTrafficPermitted="true">
-            <domain includeSubdomains="true">localhost</domain>
-            <domain includeSubdomains="true">127.0.0.1</domain>
-        </domain-config>
-    </network-security-config>
-    ```
-
-!!! tip "Connecting to the IP of your computer (real device)"
-    `Flocon.connect("192.168.1.20")` opens a cleartext `ws://` connection to that IP, which the configuration above does not allow (`cleartext communication ... not permitted`). Android cannot allow an IP range, so the optional `flocon-connect` module (which provides `connect` and `connectLater`) allows cleartext traffic to any address. Add it to your **debug** builds only:
-
-    ```kotlin
-    debugImplementation("io.github.openflocon:flocon-connect:<version>")
-    releaseImplementation("io.github.openflocon:flocon-connect-no-op:<version>")
-    ```
-
-    If your app declares its own `networkSecurityConfig`, it takes precedence over the module's: add the IPs of your computers to it instead (`<domain>192.168.1.20</domain>`, exact addresses only).
+See [Custom ports](setup.md#custom-ports).
 
 ---
 

@@ -6,12 +6,17 @@ description: Step-by-step installation and initialization guide for Flocon SDK a
 # 🚀 Getting Started with Flocon
 
 Flocon consists of two parts:
-1. **Flocon SDK** (~140KB): Integrated into your Android or Kotlin Multiplatform (KMP) app.
+1. **Flocon SDK**: Integrated into your Android or Kotlin Multiplatform (KMP) app. Since 2.0 it is split into one module per feature, so you only ship what you use.
 2. **Flocon Desktop App**: The desktop companion used to observe, inspect, and interact with the running app.
+
+!!! info "Coming from 1.x?"
+    See the [migration guide](migration.md) for the list of changes.
 
 ---
 
 ## 1. Add Dependencies
+
+Add the core, then one module per feature you want (the full list is in the [migration guide](migration.md#1-dependencies)):
 
 === "libs.versions.toml (Recommended)"
 
@@ -22,14 +27,61 @@ Flocon consists of two parts:
     [libraries]
     flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
     flocon-no-op = { module = "io.github.openflocon:flocon-no-op", version.ref = "flocon" }
+
+    flocon-network = { module = "io.github.openflocon:flocon-network-core", version.ref = "flocon" }
+    flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op", version.ref = "flocon" }
+    flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
+    flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op", version.ref = "flocon" }
+    flocon-analytics = { module = "io.github.openflocon:flocon-analytics", version.ref = "flocon" }
+    flocon-analytics-no-op = { module = "io.github.openflocon:flocon-analytics-no-op", version.ref = "flocon" }
+    # ...
     ```
 
-    Then in your module `build.gradle.kts`:
+    Then in your app module `build.gradle.kts`:
 
     ```kotlin
     dependencies {
         debugImplementation(libs.flocon)
         releaseImplementation(libs.flocon.no.op)
+
+        debugImplementation(libs.flocon.network)
+        releaseImplementation(libs.flocon.network.no.op)
+        debugImplementation(libs.flocon.okhttp)
+        releaseImplementation(libs.flocon.okhttp.no.op)
+        debugImplementation(libs.flocon.analytics)
+        releaseImplementation(libs.flocon.analytics.no.op)
+    }
+    ```
+
+=== "BOM (align all modules)"
+
+    The `flocon-bom` pins every Flocon module (and its `-no-op`) to the same version: you declare the version once and never mix versions between modules.
+
+    ```toml
+    [libraries]
+    flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "LAST_VERSION" }
+    flocon = { module = "io.github.openflocon:flocon" }
+    flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
+    flocon-network = { module = "io.github.openflocon:flocon-network-core" }
+    flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op" }
+    flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor" }
+    flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op" }
+    ```
+
+    Import the BOM in both debug and release, then declare the modules without a version:
+
+    ```kotlin
+    dependencies {
+        debugImplementation(platform(libs.flocon.bom))
+        releaseImplementation(platform(libs.flocon.bom))
+
+        debugImplementation(libs.flocon)
+        releaseImplementation(libs.flocon.no.op)
+
+        debugImplementation(libs.flocon.network)
+        releaseImplementation(libs.flocon.network.no.op)
+        debugImplementation(libs.flocon.okhttp)
+        releaseImplementation(libs.flocon.okhttp.no.op)
     }
     ```
 
@@ -39,9 +91,13 @@ Flocon consists of two parts:
     dependencies {
         // Active in debug builds
         debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
-        
-        // No-op placeholder in release builds
+        debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+        debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+
+        // No-op placeholders in release builds
         releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }
     ```
 
@@ -52,16 +108,20 @@ Flocon consists of two parts:
         sourceSets {
             commonMain.dependencies {
                 implementation("io.github.openflocon:flocon:LAST_VERSION")
+                implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+                implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
             }
         }
     }
     ```
 
+    See [Release builds](#4-release-builds-no-op) to use the no-op versions in your release app.
+
 ---
 
 ## 2. Initialize the SDK
 
-Initialize Flocon as early as possible in your application lifecycle:
+Call `startFlocon` as early as possible in your application lifecycle and `install` the plugins you added:
 
 === "Android (`Application.kt`)"
 
@@ -69,9 +129,11 @@ Initialize Flocon as early as possible in your application lifecycle:
     class MyApp : Application() {
         override fun onCreate() {
             super.onCreate()
-            
-            // Initializes Flocon with Android Context
-            Flocon.initialize(this)
+
+            startFlocon(FloconContext(this)) {
+                install(FloconNetwork)
+                install(FloconAnalytics)
+            }
         }
     }
     ```
@@ -80,119 +142,207 @@ Initialize Flocon as early as possible in your application lifecycle:
 
     ```kotlin
     fun main() {
-        // Initialize Flocon for Desktop
-        Flocon.initialize()
-        
+        startFlocon(FloconContext(appName = "My App", packageName = "com.example.myapp")) {
+            install(FloconNetwork)
+            install(FloconAnalytics)
+        }
+
         // Launch your Compose Desktop application
     }
     ```
 
-=== "iOS (Kotlin Multiplatform)"
+=== "iOS / Wasm (Kotlin Multiplatform)"
 
     ```kotlin
     fun initFlocon() {
-        // Initialize Flocon for iOS Simulator
-        Flocon.initialize()
+        startFlocon(FloconContext()) {
+            install(FloconNetwork)
+            install(FloconAnalytics)
+        }
     }
     ```
 
----
+Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analyticsPlugin.log(...)`).
+A plugin that is not installed does nothing instead of crashing.
 
-### Connecting to another address
+The available plugins:
 
-By default Flocon tries the address it can guess (`localhost` on an emulator or a simulator) and keeps retrying every 3 seconds. On a real device, that address does not reach your computer: let the user type its address (in a debug menu, for example) and add it with `Flocon.connect`. Flocon keeps trying the default address and also connects to the one you give. This lives in the optional `flocon-connect` module:
+| Plugin | Module | Page |
+| :--- | :--- | :--- |
+| `FloconNetwork` | `flocon-network-core` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
+| `FloconDatabase` | `flocon-database-core` + `flocon-database-room`, `-room3` or `-sqldelight` | [Databases](database.md) |
+| `FloconPreferences` | `flocon-sharedprefs` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
+| `FloconFiles` | `flocon-files` | [Files](files.md) |
+| `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |
+| `FloconTable` | `flocon-tables` | [Tables](table.md) |
+| `FloconDeeplinks` | `flocon-deeplinks` | [Deeplinks](deeplink.md) |
+| `FloconAnalytics` | `flocon-analytics` | [Analytics](analytics.md) |
+| `FloconFeatureFlags` | `flocon-feature-flags` | [Feature flags](featureflags.md) |
+| `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
+| `FloconWebView` | `flocon-webview` | [WebViews](webview.md) |
+| `FloconTimeline` | `flocon-timeline` | [Timeline](timeline.md#logs-from-your-app) |
 
-```kotlin
-debugImplementation("io.github.openflocon:flocon-connect:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-connect-no-op:LAST_VERSION")
-```
+!!! tip "Logs"
+    Set `FloconLogger.enabled = true` to see what Flocon does (connection, plugins not installed, ...).
 
-It also allows the cleartext `ws://` connection to any IP address (Android cannot allow an IP range), for debug builds only. If your app declares its own `networkSecurityConfig`, it takes precedence: see [Troubleshooting](troubleshooting.md).
+### Connect options
 
-```kotlin
-import io.github.openflocon.flocon.connect
-import io.github.openflocon.flocon.connectionState
-
-startFlocon(FloconContext(this)) {
-    connect { } // optional, see below
-    install(FloconNetwork)
-    install(FloconAnalytics)
-}
-
-// later, once the address is known
-Flocon.connect("192.168.1.20")
-```
-
-Until a desktop is reachable, everything the plugins log is kept in memory. `Flocon.connect` is a `suspend` function: it opens the connection, introduces the app to the desktop, sends what was kept in the order it was logged, then sends the next messages right away. It returns a `FloconConnectResult` (`Connected`, `NotStarted`, `InvalidAddress` or `Failed`) instead of throwing; the messages are kept in every case, so you can call it again. Calling it with a new address replaces the previous one. The desktop shows a wifi icon next to a device connected this way. These devices have no adb link, so the features that rely on adb (screenshot, screen recording, deeplinks on Android, ADB Commander and their MCP tools) are disabled for them. Give only the IP address (or host) of the computer, without scheme nor port: the port is always `9023`, anything else returns `InvalidAddress`.
-
-`Flocon.disconnect()` (a `suspend` function too) closes the connection added with `Flocon.connect`, and forgets its address so it is not tried again at the next launch. The default address stays, and what the plugins log is kept in memory again until a desktop is reachable. It does nothing when there is no such connection.
-
-### Connecting with a QR code
-
-The desktop app has a **Connect** button in the top bar (QR code icon). It opens a dialog listing the IP addresses of the computer on the local network (one per network interface) and, for each one, a button that shows the address as a QR code. The QR code contains only the IP address, the same value as `Flocon.connect("192.168.1.20")`.
-
-To scan it from the app, add the optional `flocon-qr-scanner` module (and `flocon-qr-scanner-no-op` for release builds). `Flocon.scanQrCodeAndConnect(context)` opens the Google code scanner (a Google Play Services screen, no camera permission needed), then connects. It returns the `FloconConnectResult`, or `null` if the user closes the scanner. Without Google Play Services (an AOSP emulator, a Huawei device) it returns `Failed`: use `Flocon.connect("192.168.1.20")` instead. To use your own camera screen, pass the text it reads to `Flocon.connect(address)`.
-
-Up to 5000 messages are kept: above that, the oldest are dropped. `connect { bufferCapacity = ... }` changes this size.
-
-`connect { ... }` has two more options, all set here with a computer that has a fixed IP:
+The `connect { }` block inside `startFlocon` configures how the SDK reaches the desktop:
 
 ```kotlin
-startFlocon(FloconContext(this)) {
+startFlocon(this) {
     connect {
-        bufferCapacity = 10_000       // messages kept while no desktop is reachable
-        address = "192.168.1.20"      // also tried at start, next to the default address
-        rememberLastAddress = true    // the last connected address is tried again at the next launch
+        address = "192.168.1.10"  // desktop host, optionally "host:ws" or "host:ws:http"
+        websocketPort = 9023      // default 9023
+        httpPort = 9024           // default 9024 (file upload)
     }
     install(FloconNetwork)
 }
 ```
 
-- `address`: the IP of a computer to also try when Flocon starts, for example one with a fixed IP (`connect { address = "192.168.1.20" }`). Same rules as `Flocon.connect`: no port nor scheme.
-- `rememberLastAddress` (`true` by default): the last address Flocon connected to (given here or typed with `Flocon.connect`) is kept in the app preferences (SharedPreferences on Android, UserDefaults on iOS, `java.util.prefs` on desktop, `localStorage` on web) and tried again at the next launch, next to the default address. It wins over `address`. Pass `false` to disable it.
+| Option | Default | Description |
+| :--- | :--- | :--- |
+| `address` | `localhost` | Desktop host. `host`, `host:ws` or `host:ws:http` are accepted (for example `"192.168.1.10:3030:3031"`). |
+| `websocketPort` | `9023` | Port of the desktop websocket server. |
+| `httpPort` | `9024` | Port of the desktop HTTP server (file upload). |
 
-The saving and the retry at launch work when `connect { }` is called in the `startFlocon` block.
+An address can carry both ports: `host`, `host:wsPort` or `host:wsPort:httpPort` (for example `192.168.1.10:10023:10024`). Each port is between `1` and `65535`; a missing port takes `websocketPort` / `httpPort`. The ports written in `address` win over `websocketPort` / `httpPort` for that address, and the file uploads use the HTTP port of the address they go through. The same format is accepted by `Flocon.connect(address)`.
 
-The same buffer is used when a connection to the desktop is lost: the messages are kept, Flocon reconnects every 3 seconds, and sends them once it is back.
+The QR code of Flocon Desktop's Connect dialog contains `ip:ws:http` (always both ports) as soon as one of the desktop ports is not the default (and just the IP when both are the defaults), so scanning it is enough to connect with the right ports. The last address is saved as `host:ws:http` when one of its ports differs from `websocketPort` / `httpPort`, as the plain host otherwise; addresses saved by older versions still load.
 
-Follow the connection with `Flocon.connectionState`, a `StateFlow<FloconConnectionState>` (`Connected` as soon as one address is connected):
+### Custom ports
+
+By default Flocon Desktop listens on `9023` (websocket) and `9024` (HTTP). If those ports are already used on your machine, change them in Flocon Desktop under **Settings > Server ports**:
+
+- Ports must be between `1024` and `65535`.
+- The websocket and HTTP ports must be different.
+- `9042` is reserved for the [MCP](mcp.md) server and cannot be used.
+
+The SDK must use the same ports as the desktop:
+
+| Setup | Needs the SDK ports to be changed? |
+| :--- | :--- |
+| Android emulator or USB device | No. The desktop runs `adb reverse` so that the device defaults `9023` / `9024` still reach the desktop, whatever the desktop ports are. |
+| Android real device over Wi-Fi | Yes. There is no `adb reverse`. |
+| iOS (simulator or device), JVM, Wasm | Yes. They do not use `adb reverse`. |
+
+!!! warning "Silent failure"
+    If the SDK ports differ from the desktop settings where `adb reverse` is not used, the app simply never connects, with no error. Enable `FloconLogger.enabled = true` to see the connection attempts.
 
 ```kotlin
-Flocon.connectionState.collect { state ->
-    when (state) {
-        FloconConnectionState.Idle -> Unit       // Flocon is not started
-        FloconConnectionState.Buffering -> Unit  // not connected, the messages are kept
-        FloconConnectionState.Connecting -> Unit
-        FloconConnectionState.Connected -> Unit  // the messages are sent right away
-        is FloconConnectionState.Failed -> Unit  // state.reason, the messages are still kept
+startFlocon(FloconContext()) {
+    connect {
+        address = "192.168.1.10"
+        websocketPort = 3030
+        httpPort = 3031
     }
 }
 ```
+
+On iOS with the Swift SDK (FloconSwift repository), use `flocon.config(host:webSocketPort:httpPort:)`; `host:ws:http` is also accepted in connect addresses.
+
+#### Launch options
+
+Flocon Desktop can also override the ports for **the current session only**. The values are never saved in the settings, and the next launch without options uses the saved ports again.
+
+| Port | Argument | Environment variable |
+| :--- | :--- | :--- |
+| Websocket | `--websocket-port=<n>` (or `--websocket-port <n>`) | `FLOCON_WEBSOCKET_PORT` |
+| HTTP | `--http-port=<n>` (or `--http-port <n>`) | `FLOCON_HTTP_PORT` |
+
+For each port the priority is: argument, then environment variable, then the ports saved in **Settings > Server ports**, then the defaults `9023` / `9024`. Unknown arguments are ignored.
+
+The ports that will be used (the overrides merged with the saved ports) follow the same rules as the settings. If they are invalid, or if a value is not a number, Flocon Desktop prints the reason on stderr and exits with code `1` without opening the window. When a port is overridden, its field is disabled in **Settings > Server ports**, and the servers, `adb reverse` and the Connect dialog use the overridden port.
+
+```bash
+# from the sources
+./gradlew :composeApp:run --args="--websocket-port=9100 --http-port=9101"
+
+# macOS, installed app
+open -a Flocon --args --websocket-port=9100 --http-port=9101
+
+# environment variables
+FLOCON_WEBSOCKET_PORT=9100 FLOCON_HTTP_PORT=9101 ./gradlew :composeApp:run
+```
+
+With `open -a`, the environment variables of your shell are not forwarded to an already installed app: prefer the arguments, or run the app binary from the terminal.
 
 ---
 
 ## 3. Install the Desktop Companion
 
-Download the latest release for your operating system:
+On macOS, install it with [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask openflocon/tap/flocon
+```
+
+Update it later with `brew upgrade --cask flocon`.
+
+On Linux with [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), use the formula (no `--cask`), then install `adb` with your distribution (see the [Linux Setup Guide](linux-install.md)):
+
+```bash
+brew install openflocon/tap/flocon
+```
+
+On Windows and Linux (or on macOS without Homebrew), download the latest release for your operating system:
 
 [:octicons-download-24: Download Flocon Desktop](https://github.com/openflocon/Flocon/releases){ .md-button .md-button--primary }
 
 !!! tip "macOS First Launch"
-    On macOS, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
+    The Homebrew install takes care of this for you. With the DMG, Gatekeeper might require you to allow the app on first launch. See the [macOS Setup Guide](macos-install.md) for quick instructions or run:
     ```bash
     xattr -cr /Applications/Flocon.app
     ```
 
 ---
 
-## 4. Requirements & Prerequisites
+## 4. Release builds (no-op)
+
+Every module has a `-no-op` twin with **the same API**: in release builds nothing is started and no
+connection is made to the desktop app. Use `flocon-no-op` **and** the no-op of every plugin you use.
+
+=== "Android app module"
+
+    Use `debugImplementation` / `releaseImplementation` as shown in [step 1](#1-add-dependencies).
+
+=== "Shared KMP module"
+
+    A Kotlin Multiplatform module has a single variant, so it depends on the real modules. Swap them
+    for the no-ops in the **release configurations of the app**:
+
+    ```kotlin
+    // app/build.gradle.kts
+    val floconNoOps = mapOf(
+        "io.github.openflocon:flocon" to "io.github.openflocon:flocon-no-op:LAST_VERSION",
+        "io.github.openflocon:flocon-network-core" to "io.github.openflocon:flocon-network-core-no-op:LAST_VERSION",
+        "io.github.openflocon:flocon-ktor-interceptor" to "io.github.openflocon:flocon-ktor-interceptor-no-op:LAST_VERSION",
+        // ... one line per Flocon module you use
+    )
+
+    configurations.configureEach {
+        if (name.startsWith("release")) {
+            resolutionStrategy.dependencySubstitution {
+                floconNoOps.forEach { (module, noOp) ->
+                    substitute(module(module)).using(module(noOp))
+                }
+            }
+        }
+    }
+    ```
+
+    The no-ops are binary compatible: code compiled against the real modules runs on the no-ops.
+
+---
+
+## 5. Requirements & Prerequisites
 
 === "Android Requirements"
-    - An Android device or emulator with **USB Debugging** enabled.
+    - An Android device or emulator (API 23+) with **USB Debugging** enabled.
     - Android SDK Tools with `adb` (Android Debug Bridge) installed and accessible in your system `PATH`.
-    - Allowed cleartext connection to `localhost` / `127.0.0.1` (see [Troubleshooting](troubleshooting.md)).
+    - Nothing to configure for the connection: it is encrypted (TLS), so your app does not need to allow cleartext traffic.
 
 === "Multiplatform Requirements"
-    - Kotlin **2.0.0** or newer.
+    - A recent Kotlin version (the SDK is built with Kotlin 2.4).
     - JVM 17+ for running the desktop application.
     - Aligned version between the mobile library and the desktop application.

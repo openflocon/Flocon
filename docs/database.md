@@ -24,48 +24,127 @@ Key capabilities:
 
 ---
 
+## Setup
+
+Add the database core and the module matching your Room version:
+
+=== "Room 2 (androidx.room)"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
+        debugImplementation("io.github.openflocon:flocon-database-room:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-room-no-op:LAST_VERSION")
+    }
+    ```
+
+=== "Room 3 (androidx.room3)"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
+        debugImplementation("io.github.openflocon:flocon-database-room3:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-room3-no-op:LAST_VERSION")
+    }
+    ```
+
+=== "SQLDelight 2"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-database-sqldelight:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-database-sqldelight-no-op:LAST_VERSION")
+    }
+    ```
+
+    `flocon-database-core` (and `-no-op` for release) comes with it.
+
+For Room, install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
+
+```kotlin
+startFlocon(FloconContext(context)) {
+    install(FloconDatabase) {
+        room()
+    }
+}
+```
+
+---
+
 ## Database Registration
 
 ### Automatic (Android)
-On Android, Flocon automatically scans your app's internal sandbox for SQLite database files without requiring additional setup.
+With `room()`, Flocon automatically scans your app's databases folder for SQLite database files on Android.
 
-### In-Memory / Custom Databases (Android)
-To register an **in-memory Room database** or specify a custom display name:
+### Room Databases (all platforms)
+To register a Room database (in-memory databases included) with a display name:
 
 ```kotlin
 val dogDatabase = Room.inMemoryDatabaseBuilder(context, DogDatabase::class.java).build()
 
-floconRegisterDatabase(
+Flocon.databasePlugin.register(
+    id = "inmemory_dogs",
     displayName = "In-Memory Dogs",
-    openHelper = dogDatabase.openHelper
+    database = dogDatabase,
 )
 ```
 
-### Kotlin Multiplatform (Desktop & iOS)
+The `id` is required, stable and **unique**: registering two different databases with the same id throws an
+`IllegalArgumentException`. It is the id the desktop app uses for everything on this database (browsing, queries,
+query logs), so the query logs of a database must be sent with the same id (see below).
 
-For KMP projects, register the database with its absolute filesystem path:
+`register(id, displayName, database)` comes from `io.github.openflocon.flocon.database.room` (Room 2) or `io.github.openflocon.flocon.database.room3` (Room 3).
 
-=== "Desktop (JVM)"
+### SQLDelight Databases
 
-    ```kotlin
-    val dbFile = File(System.getProperty("java.io.tmpdir"), "app_database.db")
+SQLDelight drivers are plain objects, so the database is registered through its driver. `withFlocon` registers it
+and shows its queries in the desktop app (see "Real-Time Query Logging" below):
 
-    floconRegisterDatabase(
+```kotlin
+val driver = AndroidSqliteDriver(AppDatabase.Schema, context, "app.db")
+    .withFlocon(id = "app", displayName = "App database") // io.github.openflocon.flocon.database.sqldelight.withFlocon
+val database = AppDatabase(driver)
+```
+
+It works with every driver (`AndroidSqliteDriver`, `JdbcSqliteDriver`, `NativeSqliteDriver`) and needs
+`install(FloconDatabase)`, with no provider: `FloconDatabase` itself is enough.
+Same rules on `id` as for Room. To only browse the database, without the query logs, use
+`withFlocon(id, displayName, logQueries = false)`, or `Flocon.databasePlugin.register(id, displayName, driver)`.
+
+The SQL you run from the desktop app does not refresh the SQLDelight `Flow`s of your app, and the column names
+of `PRAGMA` and `EXPLAIN` results are `column_0`, `column_1`... The web worker driver is not supported yet.
+
+### Room 3 on the web (Wasm)
+
+Room 3 runs on Wasm with `WebWorkerSQLiteDriver` (`androidx.sqlite:sqlite-web`), which talks to a SQLite
+Web Worker. There is no file system, so the databases are not discovered: register each Room database
+with `register(id, displayName, database)` (the plugin still has to be installed with `install(FloconDatabase) { room() }`):
+
+```kotlin
+val dogDatabase = Room.databaseBuilder<DogDatabase>(name = "dogs.db")
+    .setDriver(WebWorkerSQLiteDriver(createWorker()))
+    .build()
+
+Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = dogDatabase)
+```
+
+See `FloconAndroid/sample/wasm` for a complete setup (worker, npm package and KSP for wasmJs).
+
+### SQLite Files (Kotlin Multiplatform)
+
+Any SQLite file can be registered with its absolute path:
+
+```kotlin
+Flocon.databasePlugin.register(
+    FloconFileDatabaseModel(
+        id = "app_db",
         displayName = "App DB",
         absolutePath = dbFile.absolutePath,
     )
-    ```
-
-=== "iOS (Kotlin Multiplatform)"
-
-    ```kotlin
-    val dbPath = "${documentDirectory()}/app_database.db"
-
-    floconRegisterDatabase(
-        displayName = "App DB",
-        absolutePath = dbPath
-    )
-    ```
+)
+```
 
 ---
 
@@ -75,30 +154,70 @@ Flocon can display all SQL queries executed by your app in real-time — great f
 
 <img width="1440" height="968" alt="Database Query Logging" src="https://github.com/user-attachments/assets/f7c06191-17c1-41f6-9184-86b50d6f9945" style="border-radius: 8px;" />
 
-=== "Room Callback Integration"
+The queries run in the same transaction are grouped in one row, with the number of queries, the duration and whether
+the transaction was committed or rolled back. Click the row to show or hide its queries. Room 2 and Room 3 logging group
+them automatically, and the transactions nested in a transaction (savepoints) get a row of their own inside it, which you can
+fold too. A transaction of a single query is shown as a plain row. With manual logging, `logQuery` finds the transaction of a
+query from the `BEGIN`, `SAVEPOINT`, `COMMIT`... statements you log before it.
+
+=== "Room 2 (Android)"
 
     ```kotlin
-    val dbName = "dogs_database"
     val database = Room.databaseBuilder(
         context.applicationContext,
         DogDatabase::class.java,
-        dbName
-    ).setQueryCallback({ sqlQuery, bindArgs -> 
-        floconLogDatabaseQuery(
-            dbName = dbName, 
-            sqlQuery = sqlQuery, 
-            bindArgs = bindArgs
-        ) 
-    }, Executors.newSingleThreadExecutor())
-    .build()
+        "dogs_database"
+    )
+        .floconLogs(id = "dogs") // io.github.openflocon.flocon.database.room.extensions.floconLogs
+        .build()
+        .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
     ```
+
+    The `id` given to `floconLogs` must be the one the database is registered with, otherwise the desktop app
+    cannot show the queries with the database.
+
+=== "Room 3"
+
+    Room 3 has no query callback: wrap its SQLite driver instead.
+
+    ```kotlin
+    Room.databaseBuilder<DogDatabase>(context, "dogs_database")
+        .setDriver(AndroidSQLiteDriver().floconLogs(id = "dogs")) // io.github.openflocon.flocon.database.room3.floconLogs
+        .build()
+        .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
+    ```
+
+    Wraps any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
+    is logged when it runs, with its arguments. Same rule as Room 2: the `id` is the one the database is registered with.
+
+=== "SQLDelight"
+
+    ```kotlin
+    val driver = AndroidSqliteDriver(AppDatabase.Schema, context, "app.db")
+        .floconLogs(id = "app") // io.github.openflocon.flocon.database.sqldelight.floconLogs
+    ```
+
+    `withFlocon` does this and registers the database. Each query is logged once, when it is done, with its arguments
+    (blobs are shown as their size). Failing queries are logged too. Unlike Room, the transactions are not grouped yet.
 
 === "Manual Query Logging"
 
     ```kotlin
-    floconLogDatabaseQuery(
-        dbName = "my_custom_db",
+    Flocon.databasePlugin.logQuery(
+        dbId = "my_custom_db", // the id the database was registered with
         sqlQuery = "SELECT * FROM users WHERE id = ?",
-        bindArgs = listOf(42)
+        bindArgs = listOf(42),
     )
+    ```
+
+    Room only accepts one query callback per database. If your app already sets its own
+    `setQueryCallback`, call `logQuery` from it to forward the queries to Flocon:
+
+    ```kotlin
+    Room.databaseBuilder(context, DogDatabase::class.java, "dogs_database")
+        .setQueryCallback({ sqlQuery, bindArgs ->
+            Flocon.databasePlugin.logQuery("dogs", sqlQuery, bindArgs)
+            myOwnLogger.log(sqlQuery)
+        }, Executors.newSingleThreadExecutor())
+        .build()
     ```
