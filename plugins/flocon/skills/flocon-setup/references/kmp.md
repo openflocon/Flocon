@@ -1,6 +1,6 @@
 # Install Flocon in a Kotlin Multiplatform project
 
-Source of truth: `docs/setup.md`.
+Source of truth: `docs2/setup.md`.
 
 ## 1. Dependencies (shared module)
 
@@ -16,11 +16,11 @@ kotlin {
 }
 ```
 
-Check the platform column of each module in `docs/migration.md` section 1 (for example OkHttp is Android/JVM only, Ktor also covers iOS/Wasm). Wasm has no filesystem or SQLite, so no files/databases.
+Check the platform column of each module in `docs2/migration.md` section 1 (for example OkHttp is Android/JVM only, Ktor also covers iOS/Wasm). Wasm has no filesystem or SQLite, so no files/databases.
 
 ## 2. Release builds
 
-A KMP module has one variant, so it depends on the real modules. Swap them for the `-no-op` in the release configurations of the app with dependency substitution: the exact snippet is in `docs/setup.md`, "Release builds". Add one line per Flocon module used.
+A KMP module has one variant, so it depends on the real modules. Swap them for the `-no-op` in the release configurations of the app with dependency substitution: the exact snippet is in `docs2/setup.md`, "Release builds". Add one line per Flocon module used.
 
 ## 3. Initialization per platform
 

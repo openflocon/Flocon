@@ -1,11 +1,11 @@
 package io.github.openflocon.mcp.sharedpreferences
 
-import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
-import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
-import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel
 import io.github.openflocon.domain.sharedpreference.models.SharedPreferenceRowDomainModel.Value
 import io.github.openflocon.domain.sharedpreference.repository.SharedPreferencesRepository
+import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceDomainModel
+import io.github.openflocon.domain.sharedpreference.models.DeviceSharedPreferenceId
 import io.github.openflocon.mcp.McpTargetResolver
 import io.github.openflocon.mcp.McpToolException
 import io.github.openflocon.mcp.McpToolProvider
@@ -156,20 +156,14 @@ internal class SharedPreferencesMcpToolProvider(
     private fun String.toValue(type: String): Value {
         val value: Value? = when (type) {
             TYPE_STRING -> Value.StringValue(this)
-
             TYPE_INT -> toIntOrNull()?.let { Value.IntValue(it) }
-
             TYPE_LONG -> toLongOrNull()?.let { Value.LongValue(it) }
-
             TYPE_FLOAT -> toFloatOrNull()?.let { Value.FloatValue(it) }
-
             TYPE_BOOLEAN -> lowercase().toBooleanStrictOrNull()?.let { Value.BooleanValue(it) }
-
             TYPE_STRING_SET -> (runCatching { Json.parseToJsonElement(this) }.getOrNull() as? JsonArray)
                 ?.map { (it as? JsonPrimitive)?.takeIf { p -> p.isString }?.content }
                 ?.takeIf { items -> items.none { it == null } }
                 ?.let { items -> Value.StringSetValue(items.filterNotNull().toSet()) }
-
             else -> throw McpToolException("Unknown type '$type': use one of ${TYPES.joinToString()}.")
         }
         return value ?: throw McpToolException("The value '$this' is not a valid $type.")

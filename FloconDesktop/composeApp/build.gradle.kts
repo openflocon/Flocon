@@ -17,7 +17,7 @@ buildConfig {
 
     buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0")
 
-    // Telemetry (see docs/telemetry.md). Only official builds get a key, from the POSTHOG_API_KEY GitHub secret.
+    // Telemetry (see docs2/telemetry.md). Only official builds get a key, from the POSTHOG_API_KEY GitHub secret.
     // Without it (local builds, forks) the app still compiles and telemetry is a no-op.
     buildConfigField(
         "POSTHOG_API_KEY",
