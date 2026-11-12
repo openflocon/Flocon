@@ -5,12 +5,13 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import com.flocon.data.remote.server.Server
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
-import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -20,13 +21,19 @@ import kotlin.time.Instant
  * and their messages go through the same handlers as a real device. No port is opened.
  */
 class MockServer(
-    scenario: MockScenario,
-    json: Json,
-    defaultSdkVersion: String,
-    launchTime: Instant = Clock.System.now(),
+    private val scenario: MockScenario,
+    private val json: Json,
+    private val defaultSdkVersion: String,
+    private val launchTime: Instant = Clock.System.now(),
 ) : Server {
 
-    private val messages = MockMessageEncoder(json).encode(scenario, launchTime, defaultSdkVersion)
+    private val encoder = MockMessageEncoder(json)
+    private val messages = encoder.encode(scenario, launchTime, defaultSdkVersion)
+
+    // the answers of the mocked devices to the requests of the desktop (SQL queries, file listing, preferences...)
+    private val replies = Channel<FloconIncomingMessageDataModel>(Channel.UNLIMITED)
+    private val uploadedFiles = Channel<FloconReceivedFileDomainModel>(Channel.UNLIMITED)
+    private val responders = scenario.devices.associate { it.id to it }.mapValues { (_, device) -> MockDeviceResponder(device, launchTime, json) }
 
     // the server is restarted regularly (MessagesServerDelegate): the scenario must be replayed once only
     private val alreadyEmitted = MutableStateFlow(false)
@@ -35,7 +42,7 @@ class MockServer(
         if (alreadyEmitted.compareAndSet(expect = false, update = true)) {
             messages.forEach { emit(it) }
         }
-        awaitCancellation()
+        emitAll(replies.receiveAsFlow())
     }
 
     override val activeDevices: StateFlow<Set<FloconDeviceIdAndPackageNameDataModel>> = MutableStateFlow(
@@ -44,7 +51,7 @@ class MockServer(
         }.toSet(),
     )
 
-    override val receivedFiles: Flow<FloconReceivedFileDomainModel> = emptyFlow()
+    override val receivedFiles: Flow<FloconReceivedFileDomainModel> = uploadedFiles.receiveAsFlow()
 
     override fun startWebsocket(port: Int) = Unit
 
@@ -55,5 +62,30 @@ class MockServer(
     override suspend fun sendMessageToClient(
         deviceIdAndPackageName: FloconDeviceIdAndPackageNameDataModel,
         message: FloconOutgoingMessageDataModel,
-    ) = Unit // the mocked devices ignore the commands of the desktop
+    ) {
+        // the mocked devices answer the requests they have data for (databases, files, preferences), and ignore the other commands
+        val device = scenario.devices.firstOrNull { it.id == deviceIdAndPackageName.deviceId && it.packageName == deviceIdAndPackageName.packageName } ?: return
+        val responder = responders[device.id] ?: return
+        val appInstance = device.appInstance(launchTime)
+        responder.respond(message).forEach { reply ->
+            when (reply) {
+                is MockReply.Message -> replies.trySend(
+                    with(encoder) {
+                        device.message(plugin = reply.plugin, method = reply.method, body = reply.body, appInstance = appInstance, defaultSdkVersion = defaultSdkVersion)
+                    },
+                )
+
+                is MockReply.UploadedFile -> uploadedFiles.trySend(
+                    FloconReceivedFileDomainModel(
+                        deviceId = device.id,
+                        remotePath = reply.remotePath,
+                        localPath = reply.localPath,
+                        requestId = reply.requestId,
+                        appPackageName = device.packageName,
+                        appInstance = appInstance,
+                    ),
+                )
+            }
+        }
+    }
 }

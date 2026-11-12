@@ -1,12 +1,20 @@
 package com.flocon.data.remote.mock
 
 import com.flocon.data.remote.mock.scenarios.defaultScenario
+import com.flocon.data.remote.mock.scenarios.docAccessibilityScenario
 import com.flocon.data.remote.mock.scenarios.docAnalyticsScenario
 import com.flocon.data.remote.mock.scenarios.docCrashReporterScenario
+import com.flocon.data.remote.mock.scenarios.docDashboardScenario
+import com.flocon.data.remote.mock.scenarios.docDatabaseScenario
 import com.flocon.data.remote.mock.scenarios.docDeeplinksScenario
 import com.flocon.data.remote.mock.scenarios.docFeatureFlagsScenario
+import com.flocon.data.remote.mock.scenarios.docFilesScenario
+import com.flocon.data.remote.mock.scenarios.docImagesScenario
 import com.flocon.data.remote.mock.scenarios.docNetworkScenario
+import com.flocon.data.remote.mock.scenarios.docSharedPrefsScenario
+import com.flocon.data.remote.mock.scenarios.docTablesScenario
 import com.flocon.data.remote.mock.scenarios.docTimelineScenario
+import com.flocon.data.remote.mock.scenarios.docWebViewScenario
 import com.flocon.data.remote.mock.scenarios.emptyScenario
 import com.flocon.data.remote.mock.scenarios.multiDeviceScenario
 import com.flocon.data.remote.mock.scenarios.stressTimelineScenario
@@ -23,6 +31,14 @@ object MockScenarios {
             docAnalyticsScenario,
             docFeatureFlagsScenario,
             docDeeplinksScenario,
+            docDatabaseScenario,
+            docFilesScenario,
+            docSharedPrefsScenario,
+            docImagesScenario,
+            docDashboardScenario,
+            docTablesScenario,
+            docAccessibilityScenario,
+            docWebViewScenario,
             emptyScenario,
             multiDeviceScenario,
             weirdScenario,

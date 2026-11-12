@@ -1,17 +1,41 @@
 package com.flocon.data.remote.mock
 
+import com.flocon.data.remote.accessibility.model.AccessibilityItemDataModel
+import com.flocon.data.remote.accessibility.model.AccessibilityStateDataModel
 import com.flocon.data.remote.analytics.model.AnalyticsItemDataModel
 import com.flocon.data.remote.analytics.model.AnalyticsPropertyDataModel
 import com.flocon.data.remote.crashreporter.model.CrashReportDataModel
+import com.flocon.data.remote.dashboard.models.ButtonConfigDataModel
+import com.flocon.data.remote.dashboard.models.CheckBoxConfigDataModel
+import com.flocon.data.remote.dashboard.models.DashboardConfigDataModel
+import com.flocon.data.remote.dashboard.models.DashboardContainerDataModel
+import com.flocon.data.remote.dashboard.models.DashboardElementDataModel
+import com.flocon.data.remote.dashboard.models.FormContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.HtmlConfigDataModel
+import com.flocon.data.remote.dashboard.models.LabelConfigDataModel
+import com.flocon.data.remote.dashboard.models.MarkdownConfigDataModel
+import com.flocon.data.remote.dashboard.models.PlainTextConfigDataModel
+import com.flocon.data.remote.dashboard.models.SectionContainerConfigDataModel
+import com.flocon.data.remote.dashboard.models.TextConfigDataModel
+import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
+import com.flocon.data.remote.database.models.DatabaseQueryLogModel
+import com.flocon.data.remote.database.models.DeviceDataBaseDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinkReceivedDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinkVariableReceivedDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagsDataModel
+import com.flocon.data.remote.files.models.FromDeviceFilesRootsDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkResponseDataModel
+import com.flocon.data.remote.sharedpreference.models.DeviceSharedPreferenceDataModel
+import com.flocon.data.remote.table.model.TableColumnDataModel
+import com.flocon.data.remote.table.model.TableItemDataModel
 import com.flocon.data.remote.timelinelog.model.TimelineLogDataModel
+import com.flocon.data.remote.webview.model.WebViewBridgeCallDataModel
+import com.flocon.data.remote.webview.model.WebViewConsoleLogDataModel
+import com.flocon.data.remote.webview.model.WebViewPageEventDataModel
 import io.github.openflocon.domain.Protocol
 import kotlinx.serialization.json.Json
 import kotlin.time.Instant
@@ -146,6 +170,178 @@ internal class MockMessageEncoder(private val json: Json) {
             ),
         )
 
+        is MockEvent.Databases -> listOf(
+            Triple(
+                Protocol.FromDevice.Database.Plugin,
+                Protocol.FromDevice.Database.Method.GetDatabases,
+                json.encodeToString(event.databases.map { DeviceDataBaseDataModel(id = it.id, name = it.name) }),
+            ),
+        )
+
+        is MockEvent.DatabaseQueryLog -> listOf(
+            Triple(
+                Protocol.FromDevice.Database.Plugin,
+                Protocol.FromDevice.Database.Method.LogQuery,
+                json.encodeToString(
+                    DatabaseQueryLogModel(
+                        dbId = event.databaseId,
+                        sqlQuery = event.sql,
+                        bindArgs = event.bindArgs,
+                        timestamp = timestamp,
+                        transactionId = event.transactionId,
+                    ),
+                ),
+            ),
+        )
+
+        // the SDK only announces its roots when asked (MockDeviceResponder answers); this unrequested answer ignored by the desktop
+        // is there so that a device with only files still registers (a device exists from its first message)
+        is MockEvent.Files -> listOf(
+            Triple(
+                Protocol.FromDevice.Files.Plugin,
+                Protocol.FromDevice.Files.Method.GetRoots,
+                json.encodeToString(
+                    FromDeviceFilesRootsDataModel(
+                        requestId = "mock-roots-$index",
+                        roots = event.roots.map { FromDeviceFilesRootsDataModel.Root(id = it.id, name = it.name, path = it.path) },
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.SharedPreferences -> listOf(
+            Triple(
+                Protocol.FromDevice.SharedPreferences.Plugin,
+                Protocol.FromDevice.SharedPreferences.Method.GetSharedPreferences,
+                json.encodeToString(event.preferences.sortedBy { it.name }.map { DeviceSharedPreferenceDataModel(name = it.name, type = it.type) }),
+            ),
+        )
+
+        is MockEvent.Dashboard -> listOf(
+            Triple(
+                Protocol.FromDevice.Dashboard.Plugin,
+                Protocol.FromDevice.Dashboard.Method.Update,
+                json.encodeToString(event.toDataModel()),
+            ),
+        )
+
+        is MockEvent.TableRow -> listOf(
+            Triple(
+                Protocol.FromDevice.Table.Plugin,
+                Protocol.FromDevice.Table.Method.AddItems,
+                json.encodeToString(
+                    listOf(
+                        TableItemDataModel(
+                            id = "mock-table-${device.id}-$index",
+                            name = event.tableName,
+                            createdAt = timestamp,
+                            columns = event.cells.map { (column, value) -> TableColumnDataModel(column = column, value = value) },
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.AccessibilityState -> listOf(
+            Triple(
+                Protocol.FromDevice.Accessibility.Plugin,
+                Protocol.FromDevice.Accessibility.Method.State,
+                json.encodeToString(
+                    AccessibilityStateDataModel(
+                        supported = event.supported,
+                        enabled = event.enabled,
+                        touchExploration = event.touchExploration,
+                        services = event.services,
+                        canToggleTalkBack = event.canToggleTalkBack,
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.AccessibilityEvent -> listOf(
+            Triple(
+                Protocol.FromDevice.Accessibility.Plugin,
+                Protocol.FromDevice.Accessibility.Method.AddEvents,
+                json.encodeToString(
+                    listOf(
+                        AccessibilityItemDataModel(
+                            id = "mock-a11y-${device.id}-$index",
+                            type = event.type,
+                            text = event.text,
+                            contentDescription = event.contentDescription,
+                            className = event.className,
+                            screen = event.screen,
+                            bounds = event.bounds,
+                            extras = event.extras,
+                            createdAt = timestamp,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.WebViewConsole -> listOf(
+            Triple(
+                Protocol.FromDevice.WebView.Plugin,
+                Protocol.FromDevice.WebView.Method.AddConsoleLogs,
+                json.encodeToString(
+                    listOf(
+                        WebViewConsoleLogDataModel(
+                            id = "mock-webview-console-${device.id}-$index",
+                            webViewId = event.webViewId,
+                            url = event.url,
+                            level = event.level,
+                            message = event.message,
+                            sourceId = event.sourceId,
+                            lineNumber = event.lineNumber,
+                            createdAt = timestamp,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.WebViewPage -> listOf(
+            Triple(
+                Protocol.FromDevice.WebView.Plugin,
+                Protocol.FromDevice.WebView.Method.AddPageEvents,
+                json.encodeToString(
+                    listOf(
+                        WebViewPageEventDataModel(
+                            id = "mock-webview-page-${device.id}-$index",
+                            webViewId = event.webViewId,
+                            url = event.url,
+                            type = event.type,
+                            message = event.message,
+                            statusCode = event.statusCode,
+                            createdAt = timestamp,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.WebViewBridge -> listOf(
+            Triple(
+                Protocol.FromDevice.WebView.Plugin,
+                Protocol.FromDevice.WebView.Method.AddBridgeCalls,
+                json.encodeToString(
+                    listOf(
+                        WebViewBridgeCallDataModel(
+                            id = "mock-webview-bridge-${device.id}-$index",
+                            webViewId = event.webViewId,
+                            url = event.url,
+                            interfaceName = event.interfaceName,
+                            method = event.method,
+                            arguments = event.arguments,
+                            result = event.result,
+                            createdAt = timestamp,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
         is MockEvent.Raw -> listOf(Triple(event.plugin, event.method, event.body))
     }
 
@@ -189,7 +385,7 @@ internal class MockMessageEncoder(private val json: Json) {
                     isImage = responseContentType?.startsWith("image/", ignoreCase = true) == true,
                     responseBody = call.responseBody,
                     responseHeaders = call.responseHeaders,
-                    responseSize = call.responseBody?.encodeToByteArray()?.size?.toLong() ?: 0L,
+                    responseSize = call.responseSize ?: call.responseBody?.encodeToByteArray()?.size?.toLong() ?: 0L,
                     responseError = call.error,
                 ),
             ),
@@ -197,7 +393,7 @@ internal class MockMessageEncoder(private val json: Json) {
         return listOf(request, response)
     }
 
-    private fun MockDevice.message(
+    internal fun MockDevice.message(
         plugin: String,
         method: String,
         body: String,
@@ -215,4 +411,30 @@ internal class MockMessageEncoder(private val json: Json) {
         platform = platform,
         versionName = sdkVersion ?: defaultSdkVersion,
     )
+}
+
+private fun MockEvent.Dashboard.toDataModel() = DashboardConfigDataModel(
+    dashboardId = dashboardId,
+    containers = containers.map { container ->
+        DashboardContainerDataModel(
+            name = container.name,
+            elements = container.elements.map { it.toDataModel() },
+            containerConfig = if (container.formId != null) {
+                FormContainerConfigDataModel(formId = container.formId, submitText = container.submitText ?: "Submit")
+            } else {
+                SectionContainerConfigDataModel
+            },
+        )
+    },
+)
+
+private fun MockEvent.Dashboard.Element.toDataModel() = when (this) {
+    is MockEvent.Dashboard.Element.Button -> DashboardElementDataModel(button = ButtonConfigDataModel(text = text, id = id))
+    is MockEvent.Dashboard.Element.Label -> DashboardElementDataModel(label = LabelConfigDataModel(label = label, color = color))
+    is MockEvent.Dashboard.Element.Text -> DashboardElementDataModel(text = TextConfigDataModel(label = label, value = value, color = color))
+    is MockEvent.Dashboard.Element.TextField -> DashboardElementDataModel(textField = TextFieldConfigDataModel(label = label, placeHolder = placeHolder, value = value, id = id))
+    is MockEvent.Dashboard.Element.CheckBox -> DashboardElementDataModel(checkBox = CheckBoxConfigDataModel(label = label, value = value, id = id))
+    is MockEvent.Dashboard.Element.PlainText -> DashboardElementDataModel(plainText = PlainTextConfigDataModel(label = label, value = value, type = if (json) "json" else "text"))
+    is MockEvent.Dashboard.Element.Markdown -> DashboardElementDataModel(markdown = MarkdownConfigDataModel(label = label, value = value))
+    is MockEvent.Dashboard.Element.Html -> DashboardElementDataModel(html = HtmlConfigDataModel(label = label, value = value))
 }

@@ -7,7 +7,7 @@ description: Use when you need Flocon Desktop running with data and no phone con
 
 `--mock=<scenario>` starts Flocon Desktop with fake connected devices and pre-filled data. The data goes through the real handlers, Room and UI, exactly like a real SDK would send it. Timestamps are relative to the launch time, so the screens always look recent.
 
-Covered plugins: **network, timeline, crash reporter, analytics, feature flags, deeplinks** (+ devices/apps). Not covered: database, files, shared preferences, images, dashboards… use the sample app for those.
+Covered plugins: **network, images (network calls with an `image/*` content type), timeline, crash reporter, analytics, feature flags, deeplinks, database, files, shared preferences, dashboards, tables, accessibility, webview** (+ devices/apps).
 
 ## Launch
 
@@ -28,24 +28,34 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 
 - The MCP server listens on the usual port **9042**: close the real Flocon Desktop first, or the mock one can't start its MCP server and your MCP calls reach the real app.
 - Settings (theme, app scale, hidden menus, columns…) are the user's real settings, shared with the normal app.
-- Commands sent by the desktop to the device (network mocks, bad network, toggling a flag…) are accepted and ignored.
+- Commands sent by the desktop to the device (network mocks, bad network, toggling a flag, dashboard clicks, TalkBack, focus next/previous…) are accepted and ignored.
+- Requests the desktop expects an answer to are answered from the scenario data by `MockDeviceResponder`: the database (list of databases, `sqlite_master`, `PRAGMA table_info`, `SELECT cols|*|COUNT(*) FROM t [WHERE c = v] [LIMIT n OFFSET m]`; any other SQL is an error), the files (roots, listing, delete, download of the `content`) and the preferences (read, set, remove; kept in memory). Edits last until the app closes.
+- Images load from their url: use hosts that are reachable (`images.unsplash.com`), `picsum.photos` is flaky.
 
 ## Scenarios
 
 | Name | Content |
 |---|---|
-| `default` | A Pixel 8 with a bit of every plugin |
+| `default` | A Pixel 8 with a bit of every plugin (all of the above) |
 | `doc-network` | Network only: JSON bodies, headers, 4xx/5xx, timeout, GraphQL, a pending call |
 | `doc-timeline` | Timeline logs only: navigation, user actions, lifecycle, every level |
 | `doc-crashreporter` | Crashes with stack traces |
 | `doc-analytics` | Analytics events in two tables |
 | `doc-featureflags` | Feature flags from two providers |
 | `doc-deeplinks` | Deeplinks only: a link with a variable, a link with fields, plain links, three shared variables |
+| `doc-database` | `app_database` (users, products, orders, order_items), `cache.db`, query logs with a transaction |
+| `doc-files` | `files`, `caches`, `databases`, `shared_prefs` roots with folders and files |
+| `doc-sharedprefs` | SharedPreferences and DataStore files, every value type |
+| `doc-images` | 12 product photos (jpg, webp, png) with sizes and headers |
+| `doc-dashboard` | `user` and `debug` dashboards: sections, form, button, text field, check box, json, markdown, html |
+| `doc-tables` | Tables `orders` and `search_history` |
+| `doc-accessibility` | TalkBack on, focus, clicks, announcements, an unlabeled button |
+| `doc-webview` | Two WebViews: console logs, page events, bridge calls |
 | `empty` | A connected device with no data (empty states) |
 | `multi-device` | Android with two apps + an iPhone |
 | `weird` | 5 MB body, invalid JSON, unicode, 50×500, 2 000-char URL, old SDK version, odd timestamps |
 
-Code: `FloconDesktop/data/remote/src/commonMain/kotlin/com/flocon/data/remote/mock/` (`scenarios/Scenarios.kt` and the shared `scenarios/SampleData.kt`).
+Code: `FloconDesktop/data/remote/src/commonMain/kotlin/com/flocon/data/remote/mock/` (`scenarios/Scenarios.kt`, the shared `scenarios/SampleData.kt` and `scenarios/DocSampleData.kt`, the request answers in `MockDeviceResponder.kt`).
 
 ## Take screenshots / check the data
 
@@ -100,5 +110,7 @@ DSL notes:
 - `at` is the time **before launch** (`5.minutes.ago`).
 - `appStartedAt` is when the app started (default: 1 s before its first event); the timeline session starts there.
 - `sdkVersion` is the Flocon SDK version on the device (default: the desktop version, so no "SDK out of date" banner).
+- `databases { database("name") { table("t") { column(..); row(..) } } }`, `databaseQuery(..)` (query log), `files { root(id, name, path) { file(..); folder(..) { } } }`, `sharedPreferences { preferences("name", type) { string/int/long/float/boolean/stringSet } }`, `dashboard(id) { section/form { text, label, button, textField, checkBox, json, plainText, markdown, html } }`, `tableRow(at, table, "col" to "v")`, `accessibilityState(..)`, `accessibility(..)`, `webViewConsole/Page/Bridge(..)`.
+- `responseSize(bytes)` in a `network` block sets the size of a body that is not kept (images).
 - `raw(plugin, method, body)` sends any message as is, to test what a real SDK would not send.
 - Timeline types `navigation`, `userAction`, `lifecycle` have their own icon; use `level = null` for them.

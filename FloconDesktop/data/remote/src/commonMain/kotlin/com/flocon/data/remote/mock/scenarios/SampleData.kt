@@ -11,7 +11,7 @@ import kotlin.time.Duration.Companion.seconds
 internal const val SAMPLE_APP = "Flocon Sample"
 internal const val SAMPLE_PACKAGE = "io.github.openflocon.sample"
 private const val API = "https://api.flocon-shop.com/v1"
-private const val IMAGES = "https://picsum.photos"
+private const val IMAGES = "https://images.unsplash.com"
 private const val JSON = "application/json"
 
 /** An unsigned-looking RS256 JWT expiring in 5 minutes, so the detail shows its claims and expiration. */
@@ -84,16 +84,19 @@ internal fun MockDeviceBuilder.sampleNetworkCalls() {
         responseBody("""{"orderId":"o-5521","status":"confirmed","total":129.9}""")
     }
     // images: the response is previewed from the url
-    network(7.minutes.ago + 20.seconds, "GET", "$IMAGES/id/1025/600/400.jpg", duration = 142.milliseconds) {
+    network(7.minutes.ago + 20.seconds, "GET", "$IMAGES/photo-1542291026-7eec264c27ff?w=600&h=400&fit=crop&fm=jpg", duration = 142.milliseconds) {
         responseHeader("content-type", "image/jpeg")
         responseHeader("cache-control", "public, max-age=31536000, immutable")
+        responseSize(184_320)
     }
-    network(7.minutes.ago + 10.seconds, "GET", "$IMAGES/id/237/400/400.jpg", duration = 98.milliseconds) {
+    network(7.minutes.ago + 10.seconds, "GET", "$IMAGES/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&fm=jpg", duration = 98.milliseconds) {
         requestHeader("authorization", "Bearer ${sampleJwt()}")
         responseHeader("content-type", "image/jpeg")
+        responseSize(52_224)
     }
-    network(6.minutes.ago + 30.seconds, "GET", "$IMAGES/id/1011/800/500.webp", duration = 176.milliseconds) {
+    network(6.minutes.ago + 30.seconds, "GET", "$IMAGES/photo-1491553895911-0055eca6402d?w=800&h=500&fit=crop&fm=webp", duration = 176.milliseconds) {
         responseHeader("content-type", "image/webp")
+        responseSize(96_256)
     }
     // an image url answering with a json error: the body must stay visible
     network(6.minutes.ago + 20.seconds, "GET", "$API/avatars/missing.png", status = 404, duration = 55.milliseconds) {
@@ -198,23 +201,6 @@ internal fun MockDeviceBuilder.sampleAnalytics() {
     analytics(60.seconds.ago, "app_background")
     analytics(10.minutes.ago, "experiment_exposure", "experiment" to "checkout_v2", "variant" to "treatment", tableId = "experiments")
     analytics(9.minutes.ago, "experiment_exposure", "experiment" to "reviews_layout", "variant" to "control", tableId = "experiments")
-}
-
-/** Databases only (no tables: the mock ignores the queries sent by the desktop). Long names test the truncation. */
-internal fun MockDeviceBuilder.sampleDatabases() {
-    val names = listOf(
-        "app_database",
-        "cache.db",
-        "Application Support/BeReal.sqlite",
-        "Application Support/Google/FirebaseCore/Measurement/google-app-measurement.sqlite",
-        "Documents/very/long/path/to/a/database/shake.sqlite3",
-    )
-    raw(
-        at = 1.minutes.ago,
-        plugin = "database",
-        method = "get_databases",
-        body = names.joinToString(prefix = "[", postfix = "]") { """{"id":"$it","name":"$it"}""" },
-    )
 }
 
 internal fun MockDeviceBuilder.sampleDeeplinks() {
