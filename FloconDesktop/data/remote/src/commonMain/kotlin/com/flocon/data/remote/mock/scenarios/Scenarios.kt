@@ -32,8 +32,20 @@ internal val docNetworkScenario = scenario("doc-network", description = "Network
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleNetworkCalls() }
 }
 
-internal val docTimelineScenario = scenario("doc-timeline", description = "Timeline logs only: navigation, user actions, lifecycle and tagged logs of every level") {
-    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleTimeline() }
+internal val docGraphQlScenario = scenario("doc-graphql", description = "Network with GraphQL calls only: queries and mutations on one /graphql endpoint, two with an errors array and one HTTP error") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleGraphQlCalls() }
+}
+
+internal val docWebSocketScenario = scenario("doc-websocket", description = "Network with a few HTTP calls and many WebSocket events on two sockets: open, sent, received, error, closed") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleWebSocketSession() }
+}
+
+internal val docGrpcScenario = scenario("doc-grpc", description = "Network with mostly gRPC calls: unary calls on several services, an UNAVAILABLE, a DEADLINE_EXCEEDED, metadata and JSON messages") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleGrpcCalls() }
+}
+
+internal val docTimelineScenario = scenario("doc-timeline", description = "A 2.5 minutes session for the timeline list and graph: network calls with durations, database queries, analytics, logs and a crash") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE, appStartedAt = 170.seconds.ago) { sampleRichTimelineSession() }
 }
 
 internal val docCrashReporterScenario = scenario("doc-crashreporter", description = "Crashes only, with stack traces") {
