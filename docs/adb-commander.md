@@ -7,7 +7,7 @@ description: Run ADB commands, save your favorites and chain them into automatio
 
 The **ADB Commander** is a desktop-only tool to run `adb` commands on your Android devices without leaving Flocon: no terminal, no `-s <serial>` to type.
 
-![Quick commands library](assets/screenshots/adb-commander-output.png)
+![Quick commands library](assets/screenshots/adb-commander-output.jpg)
 
 There is nothing to add to your app, and no Kotlin, Swift or Flutter SDK is involved: it works with any Android device visible by `adb devices`. Commands also appear in the [timeline](timeline.md) as ADB commands.
 

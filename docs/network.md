@@ -7,10 +7,9 @@ description: Inspect the HTTP calls of your app in real time, with OkHttp, Ktor,
 
 Flocon captures the HTTP calls your app makes and lists them live in the desktop app: method, URL, status, duration, size, headers and bodies. You see what your app really sends and receives, without a proxy or a certificate to install.
 
-![Network list with several calls (get 200](assets/screenshots/network-list.png)
+![Network list with several calls (get 200](assets/screenshots/network-list.jpg)
 
-<!-- screenshot: network-detail | scenario=doc-network | screen=network | Detail of a JSON call: request and response headers, formatted JSON response body -->
-<img width="1292" height="833" alt="Network Request Detail View" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" style="border-radius: 8px; margin-top: 1rem;" />
+![Detail of a json call: request and response headers](assets/screenshots/network-detail.jpg)
 
 For every call, Flocon shows:
 
@@ -274,7 +273,7 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
 Open the **Network** screen. Calls appear as they are made, with their state (waiting, success, error).
 
-<!-- screenshot: network-filters | scenario=doc-network | screen=network | Toolbar with a filter typed and an include/exclude filter on the host column -->
+![Toolbar with a filter typed and an include/exclude filter on the host column](assets/screenshots/network-filters.jpg)
 
 - **List**: columns for time, method, host, request and status, plus the duration. Use the filter box to search, and include or exclude a value from the context menu of a cell (host, method, request, status). **Auto scroll** follows new calls and **Invert list** puts the newest first.
 - **Sessions**: only the current app session is shown. Turn on **Display old sessions** to see earlier launches, and clear old sessions when the list gets long.

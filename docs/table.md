@@ -14,7 +14,7 @@ Common use cases:
 - Monitor cache keys and eviction events.
 - Track queued background jobs or workers.
 
-![A table with its columns and several rows](assets/screenshots/tables-rows.png)
+![A table with its columns and several rows](assets/screenshots/tables-rows.jpg)
 
 ## Platform support
 
@@ -171,7 +171,7 @@ Open **Tables** in the sidebar.
 - Right-click a row to **Remove** it or **Remove lines above**.
 - The trash icon clears the rows of the table, and the overflow menu has **Export CSV**.
 
-<!-- screenshot: tables-detail | scenario=doc-tables | screen=table | a selected row with the Columns detail panel open -->
+![A selected row with the columns detail panel open](assets/screenshots/tables-detail.jpg)
 
 ## With AI agents (MCP)
 

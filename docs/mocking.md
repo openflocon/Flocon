@@ -7,7 +7,7 @@ description: Replace the response of an HTTP call, or make it fail, from the Flo
 
 Flocon lets you **intercept a live HTTP call and answer it with a response you wrote**, from the desktop app. Test a 401, a 404 or a 500, feed your screen a JSON from an unreleased backend, or add a delay to see your loaders, all without editing your code or redeploying.
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
+![The Network screen of Flocon Desktop](assets/screenshots/mocking-list.jpg)
 
 You can:
 
@@ -101,8 +101,7 @@ Follow the [Setup](#setup) above, then run your app.
 2. Open **Flocon Desktop**.
 3. Check that your device and package name appear in the top-left device selector.
 
-<!-- screenshot: mocking-connected | scenario=doc-network | screen=network | Device selector showing the connected app -->
-<img width="1290" alt="Flocon Desktop Connected" src="../assets/screenshots/mocking_step2_connected.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+![Device selector showing the connected app](assets/screenshots/network-list.jpg)
 
 ### Step 3: Trigger a baseline call
 
@@ -110,8 +109,7 @@ Follow the [Setup](#setup) above, then run your app.
 2. In Flocon Desktop, open the **Network** tab.
 3. The call appears in the list with its method, URL, status code and duration.
 
-<!-- screenshot: mocking-captured-request | scenario=doc-network | screen=network | A captured GET call selected in the list -->
-<img width="1290" alt="Captured Network Request" src="../assets/screenshots/mocking_step3_request.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+![A captured get call selected in the list](assets/screenshots/network-detail.jpg)
 
 ### Step 4: Open the Mocks manager
 
@@ -120,8 +118,7 @@ Two ways in:
 - **From the toolbar**: click the **Mocks** icon in the toolbar of the Network tab. The manager lists your mocks and lets you add one.
 - **From a captured call (recommended)**: select the call, then click **Create Mock** in the detail panel. The editor opens with the URL, the method, the headers and the original response body already filled in.
 
-<!-- screenshot: mocking-create-button | scenario=doc-network | screen=network | Detail panel of a call with the Create Mock button visible -->
-<img width="1290" alt="Open Mocks Manager Dialog / Create Mock Button" src="../assets/screenshots/mocking_step4_create_button.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+![Detail panel of a call with the create mock button visible](assets/screenshots/mocking-list.jpg)
 
 ### Step 5: Write the mock
 
@@ -137,8 +134,7 @@ In the editor:
 4. **Display name**, and **Shared across apps & devices** if the mock must apply to every app, not only this one.
 5. Save.
 
-<!-- screenshot: mocking-editor | scenario=doc-network | screen=network | Mock editor with a regex URL pattern, method, 500 status code and a JSON body -->
-<img width="1290" alt="Mock Editor Configuration" src="../assets/screenshots/mocking_step5_editor.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
+![Mock editor with a regex url pattern](assets/screenshots/mocking-editor.jpg)
 
 ### Step 6: Trigger the call again
 
@@ -146,8 +142,6 @@ In the editor:
 2. **In the app**: it receives the mocked response without reaching the server.
 3. **In Flocon Desktop**: the call is in the Network list with a **MOCK** tag.
 
-<!-- screenshot: mocking-mocked-result | scenario=doc-network | screen=network | Network list with a call tagged MOCK and its mocked body in the detail -->
-<img width="1290" alt="Intercepted Mock in Event Log" src="../assets/screenshots/mocking_step6_mocked_result.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
 ### Step 7: Manage your mocks
 

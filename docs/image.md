@@ -7,7 +7,7 @@ description: Browse the images your app downloads, with their URL, size and weig
 
 Flocon collects the **images your app downloads** (avatars, feed thumbnails, banners, media) in a gallery. It helps you debug a missing placeholder, a CDN that resolves wrong, an image that is too heavy, or a cache that does not cache.
 
-![Grid of downloaded images with the filter box and the list/grid toggle](assets/screenshots/images-grid.png)
+![Grid of downloaded images with the filter box and the list/grid toggle](assets/screenshots/images-grid.jpg)
 
 There is no separate plugin for images. An image is **a network call whose response is flagged as an image**: Flocon does not send the image bytes, it sends the call, and the desktop app downloads the image from its URL to display it.
 
@@ -119,7 +119,7 @@ Open the **Images** screen.
 - **Actions**: **Copy URL**, **Open in browser** and **Download image** save the file to your computer.
 - **Clear images**: empties the gallery.
 
-<!-- screenshot: images-viewer | scenario=doc-images | screen=images | Image viewer open with zoom controls, the filmstrip and the URL, size and weight of the image -->
+![Image viewer open with zoom controls](assets/screenshots/images-viewer.jpg)
 
 The call of an image is also in the **Network** screen, flagged as an image response, with its headers and timings.
 

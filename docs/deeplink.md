@@ -7,7 +7,7 @@ description: Interactive deeplink runner with parameter autocompletion and execu
 
 Your app declares its deeplinks, with the parts to fill in (`[userId]`) and values shared between links (`[host]`). Flocon Desktop lists them, lets you fill the parameters with autocomplete, and opens the link on the device in one click. No more hand-written `adb shell am start` or `xcrun simctl openurl` commands.
 
-![The filter and tabs in the top bar](assets/screenshots/deeplinks-sidebar.png)
+![The filter and tabs in the top bar](assets/screenshots/deeplinks-sidebar.jpg)
 
 ## Platform support
 
@@ -189,9 +189,9 @@ Open **Deeplinks** in the sidebar. The screen has a filter and tabs at the top, 
 - **Recent** keeps the links you opened with fields filled, and the free links. Open one to send it again, or delete it from the history.
 - **Variables** edits the shared variables once, for every link that uses them.
 
-<!-- screenshot: deeplinks-freelink | scenario=doc-deeplinks | screen=deeplink | the Free link tab with a URL, the resolved preview, the detected variables and the recent links -->
+![The free link tab with a url](assets/screenshots/deeplinks-freelink.jpg)
 
-<!-- screenshot: deeplinks-variables | scenario=doc-deeplinks | screen=deeplink | the Variables tab listing the shared variables with their values -->
+![The variables tab listing the shared variables with their values](assets/screenshots/deeplinks-variables.jpg)
 
 ## With AI agents (MCP)
 

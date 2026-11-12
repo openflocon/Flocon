@@ -7,8 +7,8 @@ description: See your GraphQL queries and mutations as such in Flocon, with the 
 
 Flocon recognises GraphQL calls among your HTTP traffic and shows them with their operation type and query, next to the usual headers, bodies and timings. There is nothing GraphQL-specific to install: if your GraphQL client goes through a [network](network.md) interceptor, its calls are captured.
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
-<!-- screenshot: graphql-detail | scenario=doc-network | screen=network | Detail of a GraphQL call: GraphQl section with query name and type, JSON request body and response -->
+![The Network screen of Flocon Desktop](assets/screenshots/graphql-list.jpg)
+![Detail of a graphql call: graphql section with query name and type](assets/screenshots/graphql-detail.jpg)
 
 ## How Flocon detects GraphQL
 
@@ -84,7 +84,6 @@ GraphQL calls are listed in the **Network** screen, tagged with their operation 
 - the HTTP headers, status code, duration and size;
 - the **Export GraphQl as image** action, to share the section.
 
-<!-- screenshot: graphql-section | scenario=doc-network | screen=network | GraphQl section of the detail panel -->
 
 !!! note "Status of a GraphQL call"
     The GraphQL status follows the **HTTP status code** (success for 2xx). A GraphQL response that returns an `errors` array with a `200` is shown as a success: read the response body to see the errors.

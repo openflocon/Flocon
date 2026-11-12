@@ -7,7 +7,7 @@ description: Follow the events and messages of your WebSocket connections in Flo
 
 Flocon shows the WebSocket traffic of your app next to its HTTP calls: when a connection opens, every message sent and received, errors and closings. It helps with live feeds, chats and multiplayer events, where the bug is often in a frame you cannot see.
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
+![The Network screen of Flocon Desktop](assets/screenshots/websocket-list.jpg)
 
 For every connection, Flocon records:
 
@@ -176,7 +176,7 @@ WebSocket events appear in the **Network** list, with the other calls:
 - open, closing, closed and error events have their own line;
 - click an event to see its message and size in the detail panel, with the JSON viewer for JSON payloads.
 
-<!-- screenshot: websocket-detail | scenario=doc-network | screen=network | Detail of a received WebSocket message with a formatted JSON payload -->
+![Detail of a received websocket message with a formatted json payload](assets/screenshots/websocket-detail.jpg)
 
 ## With AI agents (MCP)
 

@@ -7,8 +7,8 @@ description: Simulate slow connections and random HTTP or connection errors from
 
 Testing on a fast Wi-Fi hides bugs. Flocon can **slow down and randomly break the calls of your app** from the desktop, without touching the network settings of your device. Use it to check your loaders, timeouts, retries and error screens.
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
-<!-- screenshot: badquality-editor | scenario=doc-network | screen=network | Profile editor: trigger probability, latency range, error probability, a 503 HTTP error and a timeout exception -->
+![The Network screen of Flocon Desktop](assets/screenshots/badquality-list.jpg)
+![Profile editor: trigger probability](assets/screenshots/badquality-editor.jpg)
 
 A **profile** describes how the network misbehaves. Only one profile is active at a time, and it applies to every call the interceptors handle.
 

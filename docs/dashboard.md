@@ -14,9 +14,8 @@ Use cases:
 - Change a state value on the fly without rebuilding.
 - Trigger in-app test actions (clear a cache, seed test data, fire a notification).
 
-![Several dashboard tabs at the top](assets/screenshots/dashboard-sections.png)
+![Several dashboard tabs at the top](assets/screenshots/dashboard-sections.jpg)
 
-<!-- screenshot: dashboard-mobile | scenario=doc-dashboard | screen=dashboard | the same dashboard, as it is declared in the app -->
 
 <img width="373" height="312" alt="Mobile Dashboard View" src="https://github.com/user-attachments/assets/03b7ed4a-4de0-472d-87aa-850b33a3843f" style="border-radius: 8px; margin-top: 1rem;" />
 
@@ -291,7 +290,7 @@ Open **Dashboards** in the sidebar.
 - A **plain text** or **JSON** element has an **Open in external editor** button to read long content comfortably.
 - The **Auto / 1 / 2 / 3** switch at the top right sets how many cards are shown per row.
 
-<!-- screenshot: dashboard-arrangement | scenario=doc-dashboard | screen=dashboard | the Auto/1/2/3 switch and the dashboard tabs with their close icon -->
+![The auto/1/2/3 switch and the dashboard tabs with their close icon](assets/screenshots/dashboard-arrangement.jpg)
 
 A dashboard stays until you remove it. Sending a dashboard with an existing `id` replaces it.
 

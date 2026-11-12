@@ -7,7 +7,7 @@ description: Inspect and edit SharedPreferences, DataStore, UserDefaults and the
 
 Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack DataStore, `UserDefaults`, the Keychain, Flutter `shared_preferences`, or a store of your own) and lets you **edit values live** from the desktop. It saves you from re-installing the app or writing debug screens to put it in a given state.
 
-![The preference selector open](assets/screenshots/preferences-list.png)
+![The preference selector open](assets/screenshots/preferences-list.jpg)
 
 ## Platform support
 
@@ -260,7 +260,6 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 - **Delete**: delete a key, after confirmation. The key is removed from the app and this cannot be undone. Values the desktop cannot edit are marked **read only**.
 - **Copy** a key or a value.
 
-<!-- screenshot: preferences-edit-json | scenario=doc-sharedprefs | screen=shared_preferences | the edit panel with a JSON value in Formatted mode and the "valid JSON" status -->
 
 !!! warning
     Editing a value changes your app's real data and can lose data. The app does not always observe the change (a cached `SharedPreferences` value, a `UserDefaults` value already read): restart the screen or the app to see its effect.

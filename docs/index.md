@@ -27,8 +27,7 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
 ---
 
-<!-- screenshot: home-timeline-graph | scenario=doc-timeline | screen=timeline | the timeline graph view of one session, network bars, database, analytics and log lanes -->
-![The desktop app with a connected device and the network list](assets/screenshots/home-overview.png)
+![One app session in the Timeline graph: network calls, database queries, analytics events and logs](assets/screenshots/home-timeline-graph.jpg)
 
 ---
 

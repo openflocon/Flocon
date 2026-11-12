@@ -7,7 +7,7 @@ description: Follow everything your app did, in order, on a single screen: netwo
 
 The timeline merges the events received by Flocon Desktop into **one chronological list**, grouped by day and by app session, so you can see what happened right before a crash or an HTTP error. Your app can also push its own events into it (screens, user actions, lifecycle, milestones).
 
-![List view with network](assets/screenshots/timeline-list.png)
+![The list view: network calls, database queries, analytics, logs and a crash in one session](assets/screenshots/timeline-list.jpg)
 
 ## Platform support
 
@@ -234,6 +234,8 @@ From the desktop UI, you can:
 ---
 
 ### Graph
+
+![A whole session in the graph view, after Fit](assets/screenshots/timeline-graph.jpg)
 
 The **Graph** view shows one session at a time on a time axis, with the app start at 0. The filters and the selected event are shared with the list.
 

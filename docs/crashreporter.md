@@ -7,7 +7,7 @@ description: Capture the crashes of your app and inspect them in Flocon Desktop.
 
 Flocon records the **uncaught crashes** of your app (type, message, stack trace and time) and displays them in the desktop app, even when the crash happened while the desktop was not connected. On Android and JVM the previous crash handlers keep working, so Crashlytics, Sentry and friends still see the crash.
 
-![Crash list on the left](assets/screenshots/crashreporter-detail.png)
+![Crash list on the left](assets/screenshots/crashreporter-detail.jpg)
 
 ## Platform support
 
@@ -106,7 +106,7 @@ Nothing to call: once installed, crashes are captured automatically.
 - **Actions**: copy the stack trace, delete the selected crash, or delete all the crashes of the app.
 - Crashes also appear in the [timeline](timeline.md), so you can read what happened right before.
 
-<!-- screenshot: crashreporter-filtered | scenario=doc-crashreporter | screen=crash_reporter | search field filled, "My code" frames only -->
+![Search field filled](assets/screenshots/crashreporter-filtered.jpg)
 
 ## With AI agents (MCP)
 

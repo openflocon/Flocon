@@ -7,11 +7,10 @@ description: Inspect and validate real-time analytics events and custom telemetr
 
 Flocon streams and displays the **analytics events** emitted by your app in real time, so developers, QA engineers and product teams can verify tracking payloads without opening a dashboard on the analytics provider's side. Each provider (Firebase, Segment, a custom tracker...) is its own table.
 
-![The event list with the table selector](assets/screenshots/analytics-stream.png)
+![The event list with the table selector](assets/screenshots/analytics-stream.jpg)
 
-<!-- screenshot: analytics-detail | scenario=doc-analytics | screen=analytics | an event selected with its payload detail panel open -->
+![An event selected with its payload detail panel open](assets/screenshots/analytics-detail.jpg)
 
-<img width="1294" height="838" alt="Event Payload Details" src="https://github.com/user-attachments/assets/b7be4f8d-afcb-4bbc-8da4-c09e1cd240a6" style="border-radius: 8px; margin-top: 1rem;" />
 
 Every recorded event shows:
 
@@ -236,7 +235,7 @@ Open **Analytics** in the sidebar.
 - Right-click an event to **Remove** it, **Remove lines above**, **Exclude** its name, or **Clear old sessions** (the events of previous app launches).
 - The trash icon clears the events of the selected table. The overflow menu has **Export CSV**, **Auto scroll**, **Invert list** and **Clear old sessions**.
 
-<!-- screenshot: analytics-context-menu | scenario=doc-analytics | screen=analytics | the right-click menu on an event row with the Exclude entry -->
+![The right-click menu on an event row with the exclude entry](assets/screenshots/analytics-context-menu.jpg)
 
 ### Excluding noisy events
 
@@ -245,7 +244,7 @@ Right-click an event row and choose **Exclude** (followed by the event name in q
 - Exclusions are saved per app (package name) and kept when you restart Flocon.
 - Events are only hidden from the list. They are not deleted, and **Export CSV** still includes them.
 
-<!-- screenshot: analytics-excluded | scenario=doc-analytics | screen=analytics | the "N excluded" button next to the filter field with its popup listing the excluded events -->
+![The "n excluded" button next to the filter field with its popup listing the excluded events](assets/screenshots/analytics-excluded.jpg)
 
 ## With AI agents (MCP)
 

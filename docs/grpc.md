@@ -7,8 +7,8 @@ description: Inspect gRPC calls and their Protocol Buffers messages in Flocon, o
 
 Flocon logs your **gRPC calls** in the Network screen: the server, the method, the request and response messages as JSON, the metadata, the duration and the gRPC status. It saves you from decoding Protocol Buffers by hand.
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
-<!-- screenshot: grpc-detail | scenario=doc-network | screen=network | Detail of a gRPC call: authority, full method name, JSON request and response messages, metadata -->
+![The Network screen of Flocon Desktop](assets/screenshots/grpc-list.jpg)
+![Detail of a grpc call: authority](assets/screenshots/grpc-detail.jpg)
 
 For each call you see:
 
@@ -153,7 +153,7 @@ For each call you see:
 
 gRPC calls are listed with the other calls in the **Network** screen. Their URL is the server, their method is the full method name, and their status is the gRPC status (`OK`, `NOT_FOUND`...). Click a call to see its metadata and its request and response messages as formatted JSON.
 
-<!-- screenshot: grpc-error | scenario=doc-network | screen=network | A gRPC call that failed, with its error and status in the detail panel -->
+![A grpc call that failed](assets/screenshots/grpc-error.jpg)
 
 The [bad network simulation](bad-quality.md) applies to gRPC calls on Android. Mocks do not.
 

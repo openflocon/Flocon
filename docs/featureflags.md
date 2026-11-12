@@ -7,7 +7,7 @@ description: List and search the feature flags evaluated by your app, with their
 
 Flocon displays the **feature flags** evaluated by your app: for each flag, its provider, its variant and its optional payload. There is no dependency on a feature flag SDK: your app forwards the flags it already evaluated, from Firebase Remote Config, Statsig, LaunchDarkly, an in-house system...
 
-![The provider selector](assets/screenshots/featureflags-list.png)
+![The provider selector](assets/screenshots/featureflags-list.jpg)
 
 For each flag the desktop shows:
 
@@ -195,7 +195,7 @@ Open **Feature flags** in the sidebar.
 - The variants present in the list are shown at the top as **colored toggles with their number of flags**: click one to show or hide that variant quickly (`on`, `off`, `control`, `treatment`...).
 - Click a flag to see its state, variant and **payload** (formatted when it is JSON) in the right panel, where the payload can be copied.
 
-<!-- screenshot: featureflags-detail | scenario=doc-featureflags | screen=featureflags | a flag selected with its payload shown formatted in the right panel, one variant toggle turned off -->
+![A flag selected with its payload shown formatted in the right panel](assets/screenshots/featureflags-detail.jpg)
 
 ## With AI agents (MCP)
 
