@@ -61,8 +61,16 @@ class MainActivity : ComponentActivity() {
             // keep what is logged until a desktop is reachable (here, also by typing its IP in the app)
             connect { }
             install(FloconDeeplinks) {
+                variable("test") {
+                    autoComplete(
+                        listOf("test1", "test2")
+                    )
+                }
                 deeplink("flocon://home")
-                deeplink("flocon://test")
+                deeplink("flocon://[test]") {
+                    label = "Test"
+                    "test" withVariable "test"
+                }
                 deeplink("flocon://user/[userId]") {
                     label = "User"
                     "userId" withAutoComplete listOf("Florent", "David", "Guillaume")

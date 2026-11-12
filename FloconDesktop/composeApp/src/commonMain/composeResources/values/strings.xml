@@ -438,7 +438,6 @@
     <string name="deeplink_section_recent">Recent</string>
     <string name="deeplink_missing_variables">%1$d required</string>
     <string name="deeplink_shared_variables">Shared variables</string>
-    <string name="deeplink_used_by">Used by %1$d</string>
     <string name="deeplink_send">Send</string>
     <string name="deeplink_reuse">Reuse</string>
     <string name="deeplink_recent_links">Recent links</string>

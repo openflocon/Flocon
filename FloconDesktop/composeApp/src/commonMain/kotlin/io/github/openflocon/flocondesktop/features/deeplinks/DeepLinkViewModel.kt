@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import flocondesktop.composeapp.generated.resources.deeplink_removed
+import flocondesktop.composeapp.generated.resources.deeplink_send_error
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
-import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.deeplink.usecase.ExecuteDeeplinkUseCase
 import io.github.openflocon.domain.deeplink.usecase.ObserveCurrentDeviceDeeplinkHistoryUseCase
@@ -106,11 +106,6 @@ class DeepLinkViewModel(
 
                         is DeeplinkVariableDomainModel.Mode.AutoComplete ->
                             DeeplinkVariableViewState.Mode.AutoComplete(mode.suggestions)
-                    },
-                    usedByCount = deepLinks.deeplinks.count { deeplink ->
-                        deeplink.parameters.any {
-                            it is DeeplinkDomainModel.Parameter.Variable && it.variableName == variable.name
-                        }
                     },
                 )
             },

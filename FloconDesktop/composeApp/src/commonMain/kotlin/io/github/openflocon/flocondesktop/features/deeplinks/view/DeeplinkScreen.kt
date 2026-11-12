@@ -188,7 +188,6 @@ private fun DeeplinkScreenPreview() {
                         name = "userId",
                         description = null,
                         value = "",
-                        usedByCount = 1,
                     ),
                     DeeplinkVariableViewState(
                         name = "env",

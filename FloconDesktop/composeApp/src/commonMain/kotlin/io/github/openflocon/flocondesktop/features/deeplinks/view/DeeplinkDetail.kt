@@ -53,7 +53,6 @@ import flocondesktop.composeapp.generated.resources.deeplink_send
 import flocondesktop.composeapp.generated.resources.deeplink_shared_variables
 import flocondesktop.composeapp.generated.resources.deeplink_tab_freeform
 import flocondesktop.composeapp.generated.resources.deeplink_url
-import flocondesktop.composeapp.generated.resources.deeplink_used_by
 import flocondesktop.composeapp.generated.resources.deeplink_variable_missing
 import flocondesktop.composeapp.generated.resources.deeplink_variable_resolved
 import flocondesktop.composeapp.generated.resources.freeform_link
@@ -450,23 +449,11 @@ private fun DeeplinkVariableEditor(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
-        ) {
-            DeeplinkVariableChip(
-                variable = variable,
-                onValueChange = { onAction(DeeplinkScreenAction.SetVariable(variable.name, it)) },
-                modifier = Modifier.weight(1f),
-            )
-            Text(
-                text = stringResource(Res.string.deeplink_used_by, variable.usedByCount),
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colors.inkMuted,
-                maxLines = 1,
-                softWrap = false,
-            )
-        }
+        DeeplinkVariableChip(
+            variable = variable,
+            onValueChange = { onAction(DeeplinkScreenAction.SetVariable(variable.name, it)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
         variable.description?.let {
             Text(
                 text = it,
@@ -549,7 +536,6 @@ private fun DeeplinkLinkDetailPreview() {
                         name = "userId",
                         description = "The user id",
                         value = "",
-                        usedByCount = 3,
                     ),
                 ),
                 selectedTab = DeeplinkTabUiModel.Link(deeplinkId = 0L, isHistory = false, title = "label"),
