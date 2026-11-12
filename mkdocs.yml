@@ -86,8 +86,8 @@ nav:
     - Install on Linux: linux-install.md
     - Migrating from 1.x: migration.md
     - Troubleshooting: troubleshooting.md
-  - Timeline: timeline.md
   - Features:
+    - Timeline: timeline.md
     - Network:
       - HTTP & REST: network.md
       - Mocking: mocking.md
