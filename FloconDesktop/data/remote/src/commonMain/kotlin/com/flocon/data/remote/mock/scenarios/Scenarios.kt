@@ -9,15 +9,22 @@ import kotlin.time.Duration.Companion.seconds
 
 // The bundled scenarios, registered in MockScenarios. One device per scenario unless stated.
 
-internal val defaultScenario = scenario("default", description = "A Pixel 8 with a bit of every plugin: network, timeline, crashes, analytics, feature flags, deeplinks") {
+internal val defaultScenario = scenario("default", description = "A Pixel 8 with a bit of every plugin: network, timeline, crashes, analytics, feature flags, deeplinks, database, files, preferences, images, dashboard, tables, accessibility, webview") {
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) {
         sampleNetworkCalls()
         sampleTimeline()
         sampleCrashes()
         sampleAnalytics()
         sampleFeatureFlags()
-        sampleDatabases()
         sampleDeeplinks()
+        sampleDatabases()
+        sampleFiles()
+        sampleSharedPreferences()
+        sampleImages()
+        sampleDashboard()
+        sampleTables()
+        sampleAccessibility()
+        sampleWebView()
     }
 }
 
@@ -43,6 +50,38 @@ internal val docFeatureFlagsScenario = scenario("doc-featureflags", description 
 
 internal val docDeeplinksScenario = scenario("doc-deeplinks", description = "Deeplinks only: a variable-based link, a link with fields, a plain link, and three shared variables") {
     android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleDeeplinks() }
+}
+
+internal val docDatabaseScenario = scenario("doc-database", description = "Databases only: a Room database (users, products, orders), a cache database and the queries the app ran") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleDatabases() }
+}
+
+internal val docFilesScenario = scenario("doc-files", description = "Files only: files, caches and shared_prefs roots with folders and files") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleFiles() }
+}
+
+internal val docSharedPrefsScenario = scenario("doc-sharedprefs", description = "Preferences only: SharedPreferences and DataStore files with every value type") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleSharedPreferences() }
+}
+
+internal val docImagesScenario = scenario("doc-images", description = "Images only: image downloads (jpeg, webp, png) with their headers") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleImages() }
+}
+
+internal val docDashboardScenario = scenario("doc-dashboard", description = "Dashboards only: user and debug dashboards with sections, forms, buttons, text fields, check boxes, json, markdown and html") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleDashboard() }
+}
+
+internal val docTablesScenario = scenario("doc-tables", description = "Tables only: two tables (orders, search_history) filled by the app") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleTables() }
+}
+
+internal val docAccessibilityScenario = scenario("doc-accessibility", description = "Accessibility only: TalkBack on, focus, clicks, announcements and an unlabeled button") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleAccessibility() }
+}
+
+internal val docWebViewScenario = scenario("doc-webview", description = "WebView only: console logs, page events and bridge calls of a checkout page") {
+    android("Pixel 8", app = SAMPLE_APP, packageName = SAMPLE_PACKAGE) { sampleWebView() }
 }
 
 internal val emptyScenario = scenario("empty", description = "A connected Pixel 8 with no data, to see the empty states") {
@@ -103,6 +142,15 @@ internal val weirdScenario = scenario("weird", description = "Edge cases: huge a
         timeline(1.minutes.ago, "Ünïcödé 🍰 مرحبا", type = "🔥 emoji type", params = mapOf("ключ" to "значение"))
         crash(1.minutes.ago, exceptionType = "java.lang.OutOfMemoryError", message = "", stackTrace = "")
         analytics(1.minutes.ago, "event_with_many_properties", *(1..40).map { "prop_$it" to "value_$it" }.toTypedArray())
+        databases {
+            // long names test the truncation
+            listOf(
+                "app_database",
+                "Application Support/BeReal.sqlite",
+                "Application Support/Google/FirebaseCore/Measurement/google-app-measurement.sqlite",
+                "Documents/very/long/path/to/a/database/shake.sqlite3",
+            ).forEach { database(it) }
+        }
         featureFlags("firebase") {
             flag("weird_payload", state = "custom", variant = "v", payload = "not json at all")
             flag("unknown_state", state = "maybe", variant = "?")

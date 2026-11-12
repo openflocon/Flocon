@@ -49,6 +49,7 @@ sealed interface MockEvent {
         val requestBody: String? = null,
         val responseHeaders: Map<String, String> = emptyMap(),
         val responseBody: String? = null,
+        val responseSize: Long? = null, // bytes, when the body is not kept (an image): null = the size of the body
         val contentType: String? = null,
         val error: String? = null, // the call failed without an http response (timeout, no network…)
         val pending: Boolean = false, // no response yet
@@ -117,6 +118,157 @@ sealed interface MockEvent {
             val suggestions: List<String>? = null, // null = free input
         )
     }
+
+    /** The databases of the app, with their tables: the mock answers the SQL queries sent by the desktop from these rows. */
+    data class Databases(
+        override val at: Duration,
+        val databases: List<Database>,
+    ) : MockEvent {
+        data class Database(val id: String, val name: String, val tables: List<Table>)
+
+        data class Table(val name: String, val columns: List<Column>, val rows: List<List<String?>>)
+
+        data class Column(val name: String, val type: String, val primaryKey: Boolean = false, val nullable: Boolean = true)
+    }
+
+    /** A query executed by the app, as the SDK logs it. */
+    data class DatabaseQueryLog(
+        override val at: Duration,
+        val databaseId: String,
+        val sql: String,
+        val bindArgs: List<String> = emptyList(),
+        val transactionId: String? = null,
+    ) : MockEvent
+
+    /** The root folders of the app and their content: the mock answers the file requests of the desktop from this tree. */
+    data class Files(
+        override val at: Duration,
+        val roots: List<Root>,
+    ) : MockEvent {
+        data class Root(val id: String, val name: String, val path: String, val children: List<Entry>)
+
+        sealed interface Entry {
+            val name: String
+            val modifiedAgo: Duration
+
+            data class Folder(override val name: String, override val modifiedAgo: Duration, val children: List<Entry>) : Entry
+
+            data class File(override val name: String, override val modifiedAgo: Duration, val size: Long, val content: String? = null) : Entry
+        }
+    }
+
+    /** The preference files of the app (SharedPreferences, DataStore...): the mock answers the read / edit requests of the desktop. */
+    data class SharedPreferences(
+        override val at: Duration,
+        val preferences: List<Preference>,
+    ) : MockEvent {
+        data class Preference(val name: String, val type: String?, val rows: List<Row>)
+
+        data class Row(val key: String, val value: Value)
+
+        sealed interface Value {
+            data class Str(val value: String) : Value
+
+            data class Integer(val value: Int) : Value
+
+            data class Long(val value: kotlin.Long) : Value
+
+            data class Float(val value: kotlin.Float) : Value
+
+            data class Bool(val value: Boolean) : Value
+
+            data class StringSet(val value: List<String>) : Value
+        }
+    }
+
+    /** A dashboard the app displays. */
+    data class Dashboard(
+        override val at: Duration,
+        val dashboardId: String,
+        val containers: List<Container>,
+    ) : MockEvent {
+        data class Container(
+            val name: String,
+            val elements: List<Element>,
+            val formId: String? = null, // null = a section
+            val submitText: String? = null,
+        )
+
+        sealed interface Element {
+            data class Button(val id: String, val text: String) : Element
+
+            data class Label(val label: String, val color: Int? = null) : Element
+
+            data class Text(val label: String, val value: String, val color: Int? = null) : Element
+
+            data class TextField(val id: String, val label: String, val value: String, val placeHolder: String? = null) : Element
+
+            data class CheckBox(val id: String, val label: String, val value: Boolean) : Element
+
+            data class PlainText(val label: String, val value: String, val json: Boolean = false) : Element
+
+            data class Markdown(val label: String, val value: String) : Element
+
+            data class Html(val label: String, val value: String) : Element
+        }
+    }
+
+    /** One row of a table of the Tables plugin. */
+    data class TableRow(
+        override val at: Duration,
+        val tableName: String,
+        val cells: List<Pair<String, String>>,
+    ) : MockEvent
+
+    /** What the screen reader of the device is doing: on, off, with which services. */
+    data class AccessibilityState(
+        override val at: Duration,
+        val supported: Boolean,
+        val enabled: Boolean,
+        val touchExploration: Boolean,
+        val services: List<String>,
+        val canToggleTalkBack: Boolean,
+    ) : MockEvent
+
+    data class AccessibilityEvent(
+        override val at: Duration,
+        val type: String,
+        val text: String?,
+        val contentDescription: String?,
+        val className: String?,
+        val screen: String?,
+        val bounds: String?,
+        val extras: Map<String, String>,
+    ) : MockEvent
+
+    data class WebViewConsole(
+        override val at: Duration,
+        val webViewId: String,
+        val level: String,
+        val message: String,
+        val url: String?,
+        val sourceId: String?,
+        val lineNumber: Int?,
+    ) : MockEvent
+
+    data class WebViewPage(
+        override val at: Duration,
+        val webViewId: String,
+        val type: String,
+        val url: String?,
+        val message: String?,
+        val statusCode: Int?,
+    ) : MockEvent
+
+    data class WebViewBridge(
+        override val at: Duration,
+        val webViewId: String,
+        val url: String?,
+        val interfaceName: String,
+        val method: String,
+        val arguments: String?,
+        val result: String?,
+    ) : MockEvent
 
     /** A message sent as is, to test what a real SDK should not send (invalid body…). */
     data class Raw(
