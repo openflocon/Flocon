@@ -122,17 +122,42 @@ internal fun MockDeviceBuilder.sampleFiles() {
             file("session.token", 1_208, 20.minutes.ago, content = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.sample.signature")
             file("last_sync.txt", 24, 5.minutes.ago, content = "2025-10-30T10:42:00Z\n")
             folder("logs", 3.minutes.ago) {
+                file("app-2025-10-26.log", 96_256, 4.days.ago)
+                file("app-2025-10-27.log", 143_360, 3.days.ago)
                 file("app-2025-10-28.log", 184_320, 2.days.ago)
                 file("app-2025-10-29.log", 262_144, 1.days.ago)
                 file("app-2025-10-30.log", 48_912, 1.minutes.ago, content = "10:41:57 I/Checkout: confirmed o-5521\n10:42:00 D/Sync: done\n")
+                file("crash-2025-10-29.txt", 6_144, 1.days.ago, content = "java.lang.IllegalStateException: Fragment ProductFragment not attached to a context.\n")
+                file("network.har", 1_480_704, 2.hours.ago)
+            }
+            folder("images", 40.minutes.ago) {
+                file("banner_summer.jpg", 412_672, 3.days.ago)
+                file("banner_winter.webp", 188_416, 12.days.ago)
+                file("logo.png", 14_336, 30.days.ago)
+                file("logo@2x.png", 38_912, 30.days.ago)
+                file("placeholder.png", 2_048, 30.days.ago)
+                file("product_1007.jpg", 218_112, 2.hours.ago)
+                file("product_1011.jpg", 176_128, 2.hours.ago)
+                file("product_1020.jpg", 245_760, 5.hours.ago)
+                file("promo.gif", 524_288, 8.days.ago)
+                file("size_guide.svg", 4_608, 20.days.ago)
             }
             folder("exports", 1.days.ago) {
+                file("orders-2025-09.csv", 21_504, 31.days.ago, content = "id,user_id,status,total\no-5300,42,delivered,59.9\n")
                 file("orders-2025-10.csv", 18_432, 1.days.ago, content = "id,user_id,status,total\no-5521,42,confirmed,129.9\n")
                 file("catalog.json", 802_816, 3.days.ago)
+                file("invoice-o-5410.pdf", 96_768, 6.days.ago)
+                file("notes.txt", 312, 4.hours.ago, content = "Remember to purge the staging cache before the release.\n")
+            }
+            folder("databases-backup", 2.days.ago) {
+                file("app_database-2025-10-28.db", 98_304, 2.days.ago)
+                file("app_database-2025-10-29.db", 102_400, 1.days.ago)
+                file("cache-2025-10-29.db", 24_576, 1.days.ago)
             }
             folder("avatars", 6.days.ago) {
                 file("user_42.jpg", 86_016, 6.days.ago)
                 file("user_43.jpg", 71_680, 6.days.ago)
+                file("user_44.png", 120_832, 5.days.ago)
             }
         }
         root(id = "caches", name = "Caches", path = "$APP_FOLDER/cache") {

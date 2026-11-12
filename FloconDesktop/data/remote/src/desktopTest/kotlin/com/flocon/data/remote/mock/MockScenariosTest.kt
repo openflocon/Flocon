@@ -18,6 +18,9 @@ class MockScenariosTest {
             listOf(
                 "default",
                 "doc-network",
+                "doc-graphql",
+                "doc-websocket",
+                "doc-grpc",
                 "doc-timeline",
                 "doc-crashreporter",
                 "doc-analytics",
@@ -82,5 +85,14 @@ class MockScenariosTest {
         assertEquals("get_deeplinks", message.method)
         assertTrue(message.body.contains("flocon-shop://product/[productId]"))
         assertTrue(message.body.contains("auto_complete"))
+    }
+
+    @Test
+    fun `websocket scenario sends websocket events`() {
+        val messages = encoder.encode(MockScenarios.byName("doc-websocket")!!, Clock.System.now(), "9.9.9")
+        val events = messages.filter { it.method == "log_websocket_event" }
+        assertTrue(events.size > 40)
+        assertTrue(events.any { it.body.contains("\"event\":\"error\"") })
+        assertTrue(events.any { it.body.contains("\"event\":\"closed\"") })
     }
 }

@@ -98,7 +98,10 @@ class MockDeviceBuilder internal constructor() {
         )
     }
 
-    /** A gRPC call: like the SDK sends it, the url is the server authority and the method the full method name. */
+    /**
+     * A gRPC call: like the SDK sends it, the url is the server authority and the method the full method name.
+     * The headers are the metadata, the bodies the messages (json).
+     */
     fun grpc(
         at: Duration,
         authority: String,
@@ -106,7 +109,9 @@ class MockDeviceBuilder internal constructor() {
         grpcStatus: String = "OK",
         duration: Duration = 100.milliseconds,
         pending: Boolean = false,
+        block: MockNetworkCallBuilder.() -> Unit = {},
     ) {
+        val details = MockNetworkCallBuilder().apply(block)
         events += MockEvent.NetworkCall(
             at = at,
             method = method,
@@ -114,7 +119,22 @@ class MockDeviceBuilder internal constructor() {
             duration = duration,
             pending = pending,
             grpcStatus = grpcStatus,
+            requestHeaders = details.requestHeaders.toMap(),
+            requestBody = details.requestBody,
+            responseHeaders = details.responseHeaders.toMap(),
+            responseBody = details.responseBody,
         )
+    }
+
+    /** One WebSocket event, like the SDK sends it: [event] is `open`, `sent`, `received`, `closing`, `closed` or `error`. */
+    fun webSocket(
+        at: Duration,
+        url: String,
+        event: String,
+        message: String? = null,
+        error: String? = null,
+    ) {
+        events += MockEvent.WebSocket(at = at, url = url, event = event, message = message, error = error)
     }
 
     fun timeline(
