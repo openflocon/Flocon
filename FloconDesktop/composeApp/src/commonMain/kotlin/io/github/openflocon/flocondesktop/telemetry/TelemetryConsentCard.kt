@@ -42,7 +42,7 @@ import io.github.openflocon.library.designsystem.components.FloconSurface
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-const val TELEMETRY_DOC_URL = "https://github.com/openflocon/Flocon/blob/main/docs2/telemetry.md"
+const val TELEMETRY_DOC_URL = "https://openflocon.github.io/Flocon/telemetry/"
 
 private val CardWidth = 460.dp
 private val CardShape = RoundedCornerShape(12.dp)
