@@ -12,6 +12,7 @@ import io.github.openflocon.mcp.McpTestServer
 import io.github.openflocon.mcp.app
 import io.github.openflocon.mcp.json
 import io.github.openflocon.mcp.targetResolver
+import io.github.openflocon.mcp.text
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -65,12 +66,99 @@ class SharedPreferencesMcpToolProviderTest {
     fun tearDown() = runBlocking { server.stop() }
 
     @Test
-    fun `all the tools are read only`() = runBlocking {
-        val tools = server.listTools()
+    fun `tools and annotations`() = runBlocking {
+        val tools = server.listTools().associateBy { it.name }
 
-        assertEquals(setOf("list_shared_preferences", "get_shared_preference_values"), tools.map { it.name }.toSet())
-        assertTrue(tools.all { it.annotations?.readOnlyHint == true })
+        assertEquals(setOf("list_shared_preferences", "get_shared_preference_values", "set_shared_preference_value"), tools.keys)
+        assertEquals(true, tools.getValue("list_shared_preferences").annotations?.readOnlyHint)
+        assertEquals(true, tools.getValue("get_shared_preference_values").annotations?.readOnlyHint)
+        assertEquals(false, tools.getValue("set_shared_preference_value").annotations?.readOnlyHint)
+        assertEquals(true, tools.getValue("set_shared_preference_value").annotations?.destructiveHint)
     }
+
+    @Test
+    fun `set_shared_preference_value infers the type and returns the previous value`() = runBlocking {
+        val result = setValue("launch_count", 13).json()
+
+        assertEquals(listOf(Triple("settings", "launch_count", Value.IntValue(13) as Value)), repository.edits)
+        assertEquals("int", result["type"]!!.jsonPrimitive.content)
+        assertEquals(12, result["previousValue"]!!.jsonPrimitive.int)
+        assertEquals(13, result["newValue"]!!.jsonPrimitive.int)
+        assertEquals(true, result["confirmed"]!!.jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `set_shared_preference_value accepts a stringified value of the type`() = runBlocking {
+        setValue("onboarded", "false").json()
+        setValue("launch_count", "14").json()
+
+        assertEquals(
+            listOf(Value.BooleanValue(false), Value.IntValue(14)),
+            repository.edits.map { it.third },
+        )
+    }
+
+    @Test
+    fun `set_shared_preference_value with an explicit type`() = runBlocking {
+        setValue("launch_count", 3_000_000_000L, type = "long").json()
+
+        assertEquals(listOf<Value>(Value.LongValue(3_000_000_000L)), repository.edits.map { it.third })
+    }
+
+    @Test
+    fun `set_shared_preference_value refuses an unknown key`() = runBlocking {
+        val result = setValue("them", "light")
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("them"), result.text())
+        assertTrue(result.text().contains("get_shared_preference_values"), result.text())
+        assertTrue(repository.edits.isEmpty())
+    }
+
+    @Test
+    fun `set_shared_preference_value refuses a value of the wrong type`() = runBlocking {
+        val calls = listOf(
+            setValue("launch_count", 3_000_000_000L),
+            setValue("launch_count", 1.5),
+            setValue("onboarded", "yes"),
+            setValue("tags", "a"),
+            setValue("theme", 12, type = "unknown"),
+        )
+
+        calls.forEach { assertEquals(true, it.isError, it.text()) }
+        assertTrue(repository.edits.isEmpty())
+    }
+
+    @Test
+    fun `set_shared_preference_value of an unknown store`() = runBlocking {
+        val result = setValue("theme", "light", sharedPreferenceId = "nope")
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("list_shared_preferences"), result.text())
+        assertTrue(repository.edits.isEmpty())
+    }
+
+    @Test
+    fun `set_shared_preference_value when the app does not answer`() = runBlocking {
+        repository.appAnswersEdits = false
+
+        val result = setValue("launch_count", 13).json()
+
+        assertEquals(false, result["confirmed"]!!.jsonPrimitive.boolean)
+        assertEquals(12, result["previousValue"]!!.jsonPrimitive.int)
+        assertEquals(null, result["newValue"])
+        assertEquals(1, repository.edits.size)
+    }
+
+    private suspend fun setValue(key: String, value: Any, type: String? = null, sharedPreferenceId: String = "settings") = server.callTool(
+        "set_shared_preference_value",
+        buildMap {
+            put("sharedPreferenceId", sharedPreferenceId)
+            put("key", key)
+            put("value", value)
+            type?.let { put("type", it) }
+        },
+    )
 
     @Test
     fun `list_shared_preferences asks the app`() = runBlocking {
@@ -132,6 +220,8 @@ private class FakeSharedPreferencesRepository(
 ) : SharedPreferencesRepository {
 
     var askedForFiles = 0
+    var appAnswersEdits = true
+    val edits = mutableListOf<Triple<DeviceSharedPreferenceId, String, Value>>()
     private val knownFiles = MutableStateFlow<List<DeviceSharedPreferenceDomainModel>>(emptyList())
     private val knownValues = MutableStateFlow<Map<DeviceSharedPreferenceId, List<SharedPreferenceRowDomainModel>>>(emptyMap())
 
@@ -168,7 +258,14 @@ private class FakeSharedPreferencesRepository(
         sharedPreference: DeviceSharedPreferenceDomainModel,
         key: String,
         value: Value,
-    ) = error("not used")
+    ) {
+        edits += Triple(sharedPreference.id, key, value)
+        // like the app: it answers a set with the full content
+        if (appAnswersEdits) {
+            val rows = knownValues.value[sharedPreference.id].orEmpty().map { if (it.key == key) it.copy(value = value) else it }
+            knownValues.value = knownValues.value + (sharedPreference.id to rows)
+        }
+    }
 
     override suspend fun removeSharedPrefField(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
