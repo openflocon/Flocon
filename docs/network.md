@@ -102,9 +102,11 @@ The network plugin is the one that talks to the desktop. The interceptors only r
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network)
     }
+    #endif
     ```
 
     `install(.network)` also intercepts `URLSession.shared`. Sessions created with their own configuration need `withFlocon()` (see Usage).
@@ -199,12 +201,14 @@ The network plugin is the one that talks to the desktop. The interceptors only r
     Choose which requests are sent and which responses are images with the options of the feature (`FloconNetworkOptions(shouldLog:isImage:)`):
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network) { options in
             options.shouldLog = { request in request.url?.host != "analytics.example.com" }
             options.isImage = { request, _ in request.url?.path.hasPrefix("/images/") == true }
         }
     }
+    #endif
     ```
 
     A request excluded by `shouldLog` is neither logged nor mocked.

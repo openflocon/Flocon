@@ -43,9 +43,11 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.crashReporter)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin, the crash reporter included. To install no handler at all with `Flocon.initialize`, pass `FloconConfig(isCrashReporterEnabled: false)`.

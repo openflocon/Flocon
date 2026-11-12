@@ -58,9 +58,11 @@ To send your own logs, install the timeline plugin:
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.timeline)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin, the timeline included. Until Flocon is started, or if `.timeline` is not installed, the calls do nothing.

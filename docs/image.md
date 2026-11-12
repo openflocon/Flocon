@@ -83,11 +83,13 @@ Follow the [network setup](network.md#setup). Then make your image loader use th
     To flag more images than `Content-Type: image/*`:
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network) { options in
             options.isImage = { request, _ in request.url?.path.hasPrefix("/images/") == true }
         }
     }
+    #endif
     ```
 
 === "Flutter"

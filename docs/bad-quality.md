@@ -72,9 +72,11 @@ There is nothing specific to add: the simulation uses the [network setup](networ
 === "Swift"
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network)
     }
+    #endif
 
     let session = URLSession(configuration: .default.withFlocon())
     ```

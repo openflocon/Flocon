@@ -68,9 +68,11 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.preferences)
     }
+    #endif
     ```
 
 === "Flutter"
@@ -169,6 +171,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
     ```swift
     let suiteName = "group.com.example.app"
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.preferences) { options in
             if let shared = UserDefaults(suiteName: suiteName) {
@@ -176,6 +179,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
             }
         }
     }
+    #endif
     ```
 
     or later: `Flocon.preferencesPlugin.registerUserDefaults(shared, suiteName: suiteName)`.
@@ -187,13 +191,13 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
     The Keychain is opt-in: its values are sent **unencrypted** to the Mac running Flocon, so only enable it in debug builds.
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.preferences) { options in
-            #if DEBUG
             options.keychain(isEditable: false)
-            #endif
         }
     }
+    #endif
     ```
 
     Generic and internet passwords appear as two stores, with one key per item (`service / account` and `server / account`). Values are shown as text when they are UTF-8, and as their size otherwise. Items protected by Face ID, Touch ID or the passcode are shown as `<protected>`: Flocon never shows an authentication prompt.
@@ -223,9 +227,11 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
         func removeValue(forKey key: String) {}
     }
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.preferences) { $0.preference(FeatureFlagsPreference()) }
     }
+    #endif
     ```
 
     The methods are called from a background thread. `type` defaults to `FloconPreferenceType.custom`, the other values are `.userDefaults` and `.keychain`, and any string is accepted.

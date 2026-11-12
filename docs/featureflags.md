@@ -54,9 +54,11 @@ The viewer is **read only** on every platform: the desktop never sends a value b
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.featureFlags)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin.

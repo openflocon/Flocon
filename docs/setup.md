@@ -401,10 +401,12 @@ Start Flocon Desktop, then run your app. The SDK connects in the background and 
     Flocon.initialize(config: FloconConfig(host: "192.168.1.20"))
 
     // or with the builder
+    #if DEBUG
     startFlocon { flocon in
         flocon.config(host: "192.168.1.20")
         flocon.install(.network)
     }
+    #endif
 
     // or later, once the address is known
     let result = await Flocon.connect(address: "192.168.1.20") // FloconConnectResult
@@ -484,10 +486,12 @@ If `9023` or `9024` are taken on your machine, change them in the desktop under 
 === "Swift"
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.config(host: "192.168.1.20", webSocketPort: 3030, httpPort: 3031)
         flocon.install(.network)
     }
+    #endif
     ```
 
 === "Flutter"

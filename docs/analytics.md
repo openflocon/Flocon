@@ -55,9 +55,11 @@ Property values are always strings.
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.analytics)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin.

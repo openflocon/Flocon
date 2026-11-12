@@ -52,9 +52,11 @@ Values are always strings: format numbers and dates yourself before logging them
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.tables)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin.

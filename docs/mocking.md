@@ -62,9 +62,11 @@ Mocking needs nothing more than the [network setup](network.md#setup): install t
 === "Swift"
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network)
     }
+    #endif
 
     let session = URLSession(configuration: .default.withFlocon())
     ```

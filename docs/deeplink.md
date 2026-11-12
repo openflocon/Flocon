@@ -75,6 +75,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.deeplinks) { options in
             options.register(
@@ -92,6 +93,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
             )
         }
     }
+    #endif
     ```
 
 === "Flutter"

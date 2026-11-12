@@ -53,7 +53,9 @@ WebSocket events go through the network plugin: follow the [network setup](netwo
 === "Swift"
 
     ```swift
+    #if DEBUG
     startFlocon { $0.install(.network) }
+    #endif
     ```
 
 === "Flutter"

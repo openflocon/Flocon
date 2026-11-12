@@ -56,9 +56,11 @@ and a root folder itself is never deleted.
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.files)
     }
+    #endif
     ```
 
     The files are sent to the desktop over HTTPS, on the HTTP port of the desktop (`9024` by default), with the same self-signed trust as the WebSocket. On a physical device, the app only needs the local network permission (`NSLocalNetworkUsageDescription` in `Info.plist`): **no App Transport Security exception is needed**.
@@ -116,12 +118,14 @@ and a root folder itself is never deleted.
     At install time:
 
     ```swift
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.files) { options in
             options.folder(displayName: "Exports", url: URL.documentsDirectory.appending(path: "exports"))
             options.appGroup("group.com.example.app")
         }
     }
+    #endif
     ```
 
     or later:

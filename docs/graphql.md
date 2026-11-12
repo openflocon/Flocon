@@ -53,7 +53,9 @@ Use the [network setup](network.md#setup) of the HTTP client your GraphQL librar
     Any GraphQL client that sends its requests with `URLSession` is captured once its session uses a Flocon configuration:
 
     ```swift
+    #if DEBUG
     startFlocon { $0.install(.network) }
+    #endif
 
     let session = URLSession(configuration: .default.withFlocon())
     ```

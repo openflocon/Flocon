@@ -92,9 +92,11 @@ For each call you see:
     ```swift
     import FloconGrpc
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.network)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin and needs nothing more. The interceptor does nothing until the SDK is started.

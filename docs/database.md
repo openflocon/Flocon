@@ -83,9 +83,11 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.database)
     }
+    #endif
     ```
 
     The SQLite files of `Documents` and `Library/Application Support` are listed without any registration, so Core Data stores, GRDB and SQLite.swift databases usually show up right away.
@@ -181,11 +183,13 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
     ```swift
     let url = URL.documentsDirectory.appending(path: "app.sqlite")
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.database) {
             $0.register(displayName: "App", url: url)
         }
     }
+    #endif
     ```
 
     or later, once the SDK is started:

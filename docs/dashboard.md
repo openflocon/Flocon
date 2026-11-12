@@ -70,9 +70,11 @@ A dashboard is sent once every reactive section has emitted a first value, and s
     ```swift
     import Flocon
 
+    #if DEBUG
     startFlocon { flocon in
         flocon.install(.dashboard)
     }
+    #endif
     ```
 
     `Flocon.initialize()` installs every plugin.
