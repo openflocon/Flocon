@@ -15,14 +15,10 @@ import io.github.openflocon.mcp.readOnlyToolAnnotations
 import io.github.openflocon.mcp.writeToolAnnotations
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.floatOrNull
-import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.longOrNull
 
 internal const val SHARED_PREFERENCES_TIMEOUT_MS = 3_000L
 
@@ -111,12 +107,12 @@ internal class SharedPreferencesMcpToolProvider(
         val type = input.type ?: current.typeName()
         val value = input.value.toValue(type)
 
-        // the app answers an edit with the full content of the file
+        // the app answers an edit with the full content of the file: wait for the requested value
+        // (an unchanged value is never emitted again, the values flow only emits changes)
         sharedPreferencesRepository.editSharedPrefField(target, sharedPreference, input.key, value)
-        val answer = withTimeoutOrNull(answerTimeoutMs) {
-            sharedPreferencesRepository.observe(target, id).first { it != rows }
-        }
-        val newValue = answer?.firstOrNull { it.key == input.key }?.value
+        val confirmed = value == current || withTimeoutOrNull(answerTimeoutMs) {
+            sharedPreferencesRepository.observe(target, id).first { rows -> rows.any { it.key == input.key && it.value == value } }
+        } != null
 
         return SetSharedPreferenceValueMcpResult(
             deviceId = target.deviceId,
@@ -125,8 +121,8 @@ internal class SharedPreferencesMcpToolProvider(
             key = input.key,
             type = type,
             previousValue = current.toJson(),
-            newValue = newValue?.toJson(),
-            confirmed = newValue != null,
+            newValue = value.toJson().takeIf { confirmed },
+            confirmed = confirmed,
         )
     }
 
@@ -157,21 +153,20 @@ internal class SharedPreferencesMcpToolProvider(
     /**
      * Exact conversion only: a value that doesn't fit the type is refused, never truncated
      */
-    private fun JsonElement.toValue(type: String): Value {
-        val primitive = this as? JsonPrimitive
+    private fun String.toValue(type: String): Value {
         val value: Value? = when (type) {
-            TYPE_STRING -> primitive?.contentOrNull?.let { Value.StringValue(it) }
-            TYPE_INT -> primitive?.intOrNull?.let { Value.IntValue(it) }
-            TYPE_LONG -> primitive?.longOrNull?.let { Value.LongValue(it) }
-            TYPE_FLOAT -> primitive?.floatOrNull?.let { Value.FloatValue(it) }
-            TYPE_BOOLEAN -> primitive?.booleanOrNull?.let { Value.BooleanValue(it) }
-            TYPE_STRING_SET -> (this as? JsonArray)
+            TYPE_STRING -> Value.StringValue(this)
+            TYPE_INT -> toIntOrNull()?.let { Value.IntValue(it) }
+            TYPE_LONG -> toLongOrNull()?.let { Value.LongValue(it) }
+            TYPE_FLOAT -> toFloatOrNull()?.let { Value.FloatValue(it) }
+            TYPE_BOOLEAN -> lowercase().toBooleanStrictOrNull()?.let { Value.BooleanValue(it) }
+            TYPE_STRING_SET -> (runCatching { Json.parseToJsonElement(this) }.getOrNull() as? JsonArray)
                 ?.map { (it as? JsonPrimitive)?.takeIf { p -> p.isString }?.content }
                 ?.takeIf { items -> items.none { it == null } }
                 ?.let { items -> Value.StringSetValue(items.filterNotNull().toSet()) }
             else -> throw McpToolException("Unknown type '$type': use one of ${TYPES.joinToString()}.")
         }
-        return value ?: throw McpToolException("The value $this is not a valid $type.")
+        return value ?: throw McpToolException("The value '$this' is not a valid $type.")
     }
 
     private fun Value.typeName(): String = when (this) {

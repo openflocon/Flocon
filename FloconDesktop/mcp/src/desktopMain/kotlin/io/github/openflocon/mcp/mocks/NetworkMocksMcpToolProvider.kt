@@ -117,6 +117,11 @@ internal class NetworkMocksMcpToolProvider(
                 "Unknown websocketId '${input.websocketId}': the app registered ${ids.joinToString { "'$it'" }} (see list_websocket_clients).",
             )
         }
+        if (devicesRepository.activeDevices.first().none { it.isSameApp(target) }) {
+            throw McpToolException(
+                "The app ${target.packageName} is not connected to Flocon: start it, then retry (the message would be lost).",
+            )
+        }
         networkMocksRepository.sendWebsocketMock(target, input.websocketId, input.message)
         return SendWebsocketMessageMcpResult(
             deviceId = target.deviceId,

@@ -123,6 +123,20 @@ class NetworkMocksMcpToolProviderTest {
     }
 
     @Test
+    fun `send_websocket_message to a disconnected app`() = runBlocking {
+        mocksRepository.websocketIds = listOf("chat")
+
+        val result = server.callTool(
+            "send_websocket_message",
+            mapOf("websocketId" to "chat", "message" to "hello", "deviceId" to "pixel", "packageName" to "io.flocon.other"),
+        )
+
+        assertEquals(true, result.isError)
+        assertTrue(result.text().contains("not connected"), result.text())
+        assertTrue(mocksRepository.sentMessages.isEmpty())
+    }
+
+    @Test
     fun `send_websocket_message without websocket`() = runBlocking {
         val result = server.callTool("send_websocket_message", mapOf("websocketId" to "chat", "message" to "hello"))
 

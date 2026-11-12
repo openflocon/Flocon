@@ -5,7 +5,6 @@ import io.github.openflocon.mcp.McpDescription
 import io.github.openflocon.mcp.McpTargetArguments
 import io.github.openflocon.mcp.PACKAGE_NAME_DESCRIPTION
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 internal const val DEFAULT_LIMIT = 100
 internal const val MAX_LIMIT = 1000
@@ -39,10 +38,10 @@ internal data class SetSharedPreferenceValueInput(
     @McpDescription("The key to edit: it must already exist (see get_shared_preference_values).")
     val key: String,
     @McpDescription(
-        "The new value: a JSON string, number or boolean, or an array of strings for a string_set. " +
-            "It must be exactly of the type, ex: 12 or \"12\" for an int, true or \"true\" for a boolean.",
+        "The new value, as text. It must be exactly of the type, ex: \"12\" for an int, \"true\" for a boolean, " +
+            "a JSON array of strings for a string_set, ex: \"[\\\"a\\\", \\\"b\\\"]\".",
     )
-    val value: JsonElement,
+    val value: String,
     @McpDescription(
         "Type of the value: string, int, long, float, boolean or string_set. Default: the type of the current value.",
     )

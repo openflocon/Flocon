@@ -74,6 +74,35 @@ class SharedPreferencesMcpToolProviderTest {
         assertEquals(true, tools.getValue("get_shared_preference_values").annotations?.readOnlyHint)
         assertEquals(false, tools.getValue("set_shared_preference_value").annotations?.readOnlyHint)
         assertEquals(true, tools.getValue("set_shared_preference_value").annotations?.destructiveHint)
+        // a typed schema: some clients (ex: Gemini) reject a property without type
+        val valueSchema = tools.getValue("set_shared_preference_value").inputSchema.properties!!["value"]!!.jsonObject
+        assertEquals("string", valueSchema["type"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `set_shared_preference_value of a string_set`() = runBlocking {
+        setValue("tags", "[\"x\",\"y\"]").json()
+
+        assertEquals(listOf<Value>(Value.StringSetValue(setOf("x", "y"))), repository.edits.map { it.third })
+    }
+
+    @Test
+    fun `set_shared_preference_value to the current value is confirmed`() = runBlocking {
+        val result = setValue("launch_count", 12).json()
+
+        assertEquals(true, result["confirmed"]!!.jsonPrimitive.boolean)
+        assertEquals(12, result["newValue"]!!.jsonPrimitive.int)
+    }
+
+    @Test
+    fun `set_shared_preference_value is not confirmed by an unrelated change`() = runBlocking {
+        repository.appAnswersEdits = false
+        repository.changeOtherKeyOnEdit = true
+
+        val result = setValue("launch_count", 13).json()
+
+        assertEquals(false, result["confirmed"]!!.jsonPrimitive.boolean)
+        assertEquals(null, result["newValue"])
     }
 
     @Test
@@ -221,6 +250,7 @@ private class FakeSharedPreferencesRepository(
 
     var askedForFiles = 0
     var appAnswersEdits = true
+    var changeOtherKeyOnEdit = false
     val edits = mutableListOf<Triple<DeviceSharedPreferenceId, String, Value>>()
     private val knownFiles = MutableStateFlow<List<DeviceSharedPreferenceDomainModel>>(emptyList())
     private val knownValues = MutableStateFlow<Map<DeviceSharedPreferenceId, List<SharedPreferenceRowDomainModel>>>(emptyMap())
@@ -260,6 +290,10 @@ private class FakeSharedPreferencesRepository(
         value: Value,
     ) {
         edits += Triple(sharedPreference.id, key, value)
+        if (changeOtherKeyOnEdit) {
+            val rows = knownValues.value[sharedPreference.id].orEmpty().map { if (it.key == "theme") it.copy(value = Value.StringValue("light")) else it }
+            knownValues.value = knownValues.value + (sharedPreference.id to rows)
+        }
         // like the app: it answers a set with the full content
         if (appAnswersEdits) {
             val rows = knownValues.value[sharedPreference.id].orEmpty().map { if (it.key == key) it.copy(value = value) else it }
