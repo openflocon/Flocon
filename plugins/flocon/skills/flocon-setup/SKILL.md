@@ -1,13 +1,13 @@
 ---
 name: flocon-setup
-description: Use when installing Flocon in an Android, Kotlin Multiplatform or Swift (iOS) project, or when migrating an existing Flocon integration to a newer SDK version (for example 1.x to 2.0) - adding dependencies, debug-only builds, initialization, plugin installation, and checking that each feature is really captured.
+description: Use when installing Flocon in an Android, Kotlin Multiplatform, Swift (iOS) or Flutter project, or when migrating an existing Flocon integration to a newer SDK version (for example 1.x to 2.0) - adding dependencies, debug-only builds, initialization, plugin installation, and checking that each feature is really captured.
 ---
 
 # Setting up or migrating Flocon in a project
 
 Flocon is a debugging SDK: the app talks to Flocon Desktop. This skill puts the SDK in a project, or moves an existing integration to a newer version. It does not debug a running app (that is `flocon-mcp`).
 
-Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs2/setup.md` (install), `docs2/migration.md` (1.x to 2.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments. If this skill and those docs disagree, the docs win; tell the user.
+Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs2/setup.md` (install), `docs2/migration.md` (1.x to 2.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments; for Flutter, the README of `openflocon/FloconFlutter` and the Dart doc comments of the packages. If this skill and those docs disagree, the docs win; tell the user.
 
 ## 1. Detect the platform first
 
@@ -18,6 +18,7 @@ Answer from the project files; ask the user only what the files cannot tell.
 | `com.android.application` / `com.android.library`, no `kotlin("multiplatform")` | Android |
 | `kotlin("multiplatform")` with `commonMain` / `iosMain` | Kotlin Multiplatform (an iOS app consuming the KMP framework is still KMP for Flocon) |
 | `*.xcodeproj` / `*.xcworkspace` / `Package.swift`, no Kotlin framework providing Flocon | Swift (iOS / macOS) |
+| `pubspec.yaml` with `sdk: flutter` | Flutter (its `android/` and `ios/` folders are generated host apps: use the Flutter rules, not the Android or Swift ones) |
 
 A repository can hold several apps: handle each app with its platform rules.
 
@@ -33,9 +34,11 @@ A repository can hold several apps: handle each app with its platform rules.
 
 **Swift** (`openflocon/FloconSwift`): read the version from `Package.resolved` / `project.pbxproj` (revision or version of `FloconSwift`, and `FloconSwiftGrpc`). Do not use the start function as a version marker: the Swift SDK has both `startFlocon { }` and `Flocon.initialize()`. Details in [references/swift.md](references/swift.md).
 
+**Flutter** (`flocon*` packages on pub.dev): read the version of `flocon` in `pubspec.lock`. Do not infer it from the start function. `0.0.x` is the current API, not a legacy one: the future `2.0.0` will have its own migration page in `references/migrations/`. Details in [references/flutter.md](references/flutter.md).
+
 Then pick one path, and read only the file you need:
 
-- No Flocon → install: [references/android.md](references/android.md), [references/kmp.md](references/kmp.md) or [references/swift.md](references/swift.md).
+- No Flocon → install: [references/android.md](references/android.md), [references/kmp.md](references/kmp.md), [references/swift.md](references/swift.md) or [references/flutter.md](references/flutter.md).
 - Kotlin Flocon 1.x → migrate: [references/migrations/v1-to-v2.md](references/migrations/v1-to-v2.md).
 - Already on the target version → only add the missing plugins from the install page.
 
@@ -64,3 +67,10 @@ A future migration is a new file in `references/migrations/`.
 - `.network` only covers `URLSession.shared`; every other session needs `withFlocon()` on its configuration before the session is created. Background sessions are not instrumented.
 - Analytics, feature flags, gRPC, App Group storage and dashboards need explicit wiring: see the topic pages listed in [references/swift.md](references/swift.md).
 - Build the touched schemes and configurations with `xcodebuild` (list them with `xcodebuild -list`).
+
+**Flutter**
+- There is no no-op package. "Inactive in release" is `if (kDebugMode)` around the start; the packages and their native code stay in the release binary. Removing the Flocon Dart code from it needs a debug-only entry point: ask once if the user's wording does not settle it. See [references/flutter.md](references/flutter.md).
+- Network is only captured for clients wrapped with `withFlocon()`; top-level `http.get(...)` and clients created elsewhere are not. Inventory them.
+- Use the API of the installed version (`pubspec.lock`): the facade (`Flocon.analytics`, `Flocon.featureFlags`...) and the top-level functions (`floconAnalytics(...)`) are two generations, see [references/flutter-data.md](references/flutter-data.md).
+- The host differs per target (`10.0.2.2` Android emulator, `localhost` iOS Simulator / macOS, the computer's IP on a device), and each target needs its permission (`INTERNET`, `NSLocalNetworkUsageDescription`, macOS network entitlement).
+- Run `flutter analyze` and build the targets the project ships, debug and release.
