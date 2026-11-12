@@ -121,29 +121,109 @@ sequenceDiagram
 
 ## 📱 Platform support
 
-What each SDK sends to the desktop. Click a feature for its details.
+Pick your platform to see which plugins are available. Click a feature for its details.
 
-| Feature | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
-| :--- | :---: | :---: | :---: | :---: |
-| [HTTP & REST](network.md) | ✅ OkHttp, Ktor | ✅ Ktor (OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `http` |
-| [Mocking](mocking.md) | ✅ | ✅ | ✅ | ✅ |
-| [Bad network simulation](bad-quality.md) | ✅ | ✅ | ✅ | ✅ |
-| [GraphQL](graphql.md) | ✅ | ✅ | ✅ | ✅ |
-| [WebSockets](websocket.md) | ✅ automatic (OkHttp) | ✅ manual logging | ✅ manual logging | ✅ manual logging |
-| [gRPC](grpc.md) | ✅ | ❌ | ✅ add-on `FloconSwiftGrpc` | ❌ |
-| [Images](image.md) | ✅ | ✅ | ✅ | ✅ |
-| [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room, SQLDelight (Wasm: Room 3 only) | ✅ SQLite (Core Data, GRDB...) | ✅ SQLite (sqflite, Drift...) |
-| [Preferences](sharedpref.md) | ✅ SharedPreferences, DataStore | ✅ (DataStore: no Wasm) | ✅ UserDefaults, keychain | ✅ SharedPreferences |
-| [Files](files.md) | ✅ | ✅ (Wasm: no browsing) | ✅ | ✅ |
-| [Dashboards](dashboard.md) | ✅ | ✅ | ✅ | ✅ |
-| [Tables](table.md) | ✅ | ✅ | ✅ | ✅ |
-| [Deeplinks](deeplink.md) | ✅ | ✅ | ✅ | ✅ |
-| [Analytics](analytics.md) | ✅ | ✅ | ✅ | ✅ |
-| [Feature flags](featureflags.md) | ✅ | ✅ | ✅ | ✅ |
-| [Timeline](timeline.md) | ✅ | ✅ | ✅ | ✅ |
-| [Crash reporter](crashreporter.md) | ✅ | ✅ | ✅ | ✅ Dart errors only |
-| [Accessibility](accessibility.md) | ✅ automatic | ⚠️ iOS partial, JVM / Wasm manual | ❌ | ❌ |
-| [WebView](webview.md) | ✅ automatic `attach` | ⚠️ manual API only | ❌ | ❌ |
+=== "Android"
+
+    | Plugin | Support |
+    | :--- | :--- |
+    | [HTTP & REST](network.md) | ✅ OkHttp, Ktor |
+    | [Mocking](mocking.md) | ✅ |
+    | [Bad network simulation](bad-quality.md) | ✅ |
+    | [GraphQL](graphql.md) | ✅ |
+    | [WebSockets](websocket.md) | ✅ automatic (OkHttp) |
+    | [gRPC](grpc.md) | ✅ |
+    | [Images](image.md) | ✅ |
+    | [Databases](database.md) | ✅ Room, SQLDelight |
+    | [Preferences](sharedpref.md) | ✅ SharedPreferences, DataStore |
+    | [Files](files.md) | ✅ |
+    | [Dashboards](dashboard.md) | ✅ |
+    | [Tables](table.md) | ✅ |
+    | [Deeplinks](deeplink.md) | ✅ |
+    | [Analytics](analytics.md) | ✅ |
+    | [Feature flags](featureflags.md) | ✅ |
+    | [Timeline](timeline.md) | ✅ |
+    | [Crash reporter](crashreporter.md) | ✅ |
+    | [Accessibility](accessibility.md) | ✅ automatic |
+    | [WebView](webview.md) | ✅ automatic `attach` |
+
+=== "iOS"
+
+    Two ways to use Flocon on iOS: the **Swift** SDK (iOS and macOS), or the **Kotlin Multiplatform** SDK in a shared KMP module.
+
+    | Plugin | Swift | Kotlin Multiplatform |
+    | :--- | :--- | :--- |
+    | [HTTP & REST](network.md) | ✅ `URLSession` | ✅ Ktor |
+    | [Mocking](mocking.md) | ✅ | ✅ |
+    | [Bad network simulation](bad-quality.md) | ✅ | ✅ |
+    | [GraphQL](graphql.md) | ✅ | ✅ |
+    | [WebSockets](websocket.md) | ✅ manual logging | ✅ manual logging |
+    | [gRPC](grpc.md) | ✅ add-on `FloconSwiftGrpc` | ❌ |
+    | [Images](image.md) | ✅ | ✅ |
+    | [Databases](database.md) | ✅ SQLite (Core Data, GRDB...) | ✅ Room, SQLDelight |
+    | [Preferences](sharedpref.md) | ✅ UserDefaults, keychain | ✅ DataStore |
+    | [Files](files.md) | ✅ | ✅ |
+    | [Dashboards](dashboard.md) | ✅ | ✅ |
+    | [Tables](table.md) | ✅ | ✅ |
+    | [Deeplinks](deeplink.md) | ✅ | ✅ |
+    | [Analytics](analytics.md) | ✅ | ✅ |
+    | [Feature flags](featureflags.md) | ✅ | ✅ |
+    | [Timeline](timeline.md) | ✅ | ✅ |
+    | [Crash reporter](crashreporter.md) | ✅ | ✅ |
+    | [Accessibility](accessibility.md) | ❌ | ⚠️ partial |
+    | [WebView](webview.md) | ❌ | ⚠️ manual API only |
+
+=== "JVM / Wasm"
+
+    Kotlin Multiplatform desktop (JVM) and web (Wasm) targets.
+
+    | Plugin | JVM | Wasm |
+    | :--- | :--- | :--- |
+    | [HTTP & REST](network.md) | ✅ OkHttp, Ktor | ✅ Ktor |
+    | [Mocking](mocking.md) | ✅ | ✅ |
+    | [Bad network simulation](bad-quality.md) | ✅ | ✅ |
+    | [GraphQL](graphql.md) | ✅ | ✅ |
+    | [WebSockets](websocket.md) | ✅ manual logging | ✅ manual logging |
+    | [gRPC](grpc.md) | ❌ | ❌ |
+    | [Images](image.md) | ✅ | ✅ |
+    | [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room 3 only |
+    | [Preferences](sharedpref.md) | ✅ DataStore | ✅ (no DataStore) |
+    | [Files](files.md) | ✅ | ✅ (no browsing) |
+    | [Dashboards](dashboard.md) | ✅ | ✅ |
+    | [Tables](table.md) | ✅ | ✅ |
+    | [Deeplinks](deeplink.md) | ✅ | ✅ |
+    | [Analytics](analytics.md) | ✅ | ✅ |
+    | [Feature flags](featureflags.md) | ✅ | ✅ |
+    | [Timeline](timeline.md) | ✅ | ✅ |
+    | [Crash reporter](crashreporter.md) | ✅ | ✅ |
+    | [Accessibility](accessibility.md) | ⚠️ manual | ⚠️ manual |
+    | [WebView](webview.md) | ⚠️ manual API only | ⚠️ manual API only |
+
+=== "Flutter"
+
+    Android, iOS and macOS.
+
+    | Plugin | Support |
+    | :--- | :--- |
+    | [HTTP & REST](network.md) | ✅ Dio, `http` |
+    | [Mocking](mocking.md) | ✅ |
+    | [Bad network simulation](bad-quality.md) | ✅ |
+    | [GraphQL](graphql.md) | ✅ |
+    | [WebSockets](websocket.md) | ✅ manual logging |
+    | [gRPC](grpc.md) | ❌ |
+    | [Images](image.md) | ✅ |
+    | [Databases](database.md) | ✅ SQLite (sqflite, Drift...) |
+    | [Preferences](sharedpref.md) | ✅ SharedPreferences |
+    | [Files](files.md) | ✅ |
+    | [Dashboards](dashboard.md) | ✅ |
+    | [Tables](table.md) | ✅ |
+    | [Deeplinks](deeplink.md) | ✅ |
+    | [Analytics](analytics.md) | ✅ |
+    | [Feature flags](featureflags.md) | ✅ |
+    | [Timeline](timeline.md) | ✅ |
+    | [Crash reporter](crashreporter.md) | ✅ Dart errors only |
+    | [Accessibility](accessibility.md) | ❌ |
+    | [WebView](webview.md) | ❌ |
 
 See each page for the exact limits per platform, and [Connect your app](setup.md) for the modules and packages to add.
 
