@@ -25,7 +25,8 @@ http://localhost:9042/mcp
 
 !!! info "Local only"
     The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
-    Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+    Agents can't modify, delete or replay the captured data (network calls, files, databases, preferences, analytics events, feature flags, crashes...).
+    The tools that change something are: the **network mocks** and **bad network** ones (they change the app behavior), `open_deeplink`, `move_accessibility_focus`, `take_screenshot` and the screen recording (they act on the device), and `set_server_ports`, `show_in_timeline`, `flocon_navigate_into_desktop_app`, `clear_accessibility_events` and `open_flocon_folder` (they act on Flocon Desktop or your computer).
     Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
 
 ---
@@ -394,7 +395,7 @@ By default, every tool targets the **device and app currently selected in Flocon
 
 | Tool | Description |
 |---|---|
-| `list_devices` | Devices and apps known by Flocon, the selected one, and whether they are connected. |
+| `list_devices` | Devices (with their `connectionType`: `default` or `wifi`) and apps known by Flocon, the selected one, and whether they are connected. |
 | `get_timeline` | What the app did in a window of time, above the network: every source (network, database, analytics, crashes, deeplinks, logs sent with `Flocon.timelinePlugin`...) in one narrative, one line per event with an id for the detail tools, repetitions folded (`12× GET /feed in 3.1 s`) and anomalies first (crash, HTTP errors, ERROR logs, calls in a loop, responses over 1 MB). Give `mode` (`recent`, `session`, `before_crash`, `at`, `range`) with `at` / `from` / `to` (epoch ms, ISO-8601 with an offset, or `HH:mm`), or an `eventId` of a previous answer, or nothing: the tool anchors on the latest crash, otherwise on the last 2 minutes of the latest session, and the answer says which window was chosen and why. `search` tells whether an event (name, url, query) was sent in the window (`found`), and its matches are never cut by `maxLines`. `sources` / `excludeSources` choose the sources read (for example `excludeSources: ["database"]` drops the transactions of a database library); when the answer is capped, database lines are the first to go. The times are those of the phone. |
 | `show_in_timeline` | Shows a zone of the timeline in the Flocon Desktop window for you: opens the timeline in graph mode (saved in your preferences), selects the device and app of the call, selects an event and centers the graph on its zone. Give an `eventId` of `get_timeline` (`source:id`), a time (`mode`, `at`, `from`, `to`), or nothing: the latest crash, otherwise the main anomaly (error, loop, large response) of the last minutes. `view: list` selects the row without scrolling to it. Flocon is not brought to the front and the request is only registered: the answer asks you to go to the Flocon app. Nothing is changed when the event or the window is not found. Your filters are never changed: if one hides the event, the answer says which. The graph draws network, database and analytics events only: a crash is shown with its zone, see its row in the list. |
 | `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
@@ -410,7 +411,8 @@ By default, every tool targets the **device and app currently selected in Flocon
 | `update_bad_network_config` | Updates some fields of a config. |
 | `set_active_bad_network_config` | Activates a config (only one at a time), or turns the simulation off when no `configId` is given. |
 | `delete_bad_network_config` | Deletes a config. |
-| `list_files` | Content of a directory of the app: `files`, `caches`, or the absolute path of a sub directory. |
+| `list_file_roots` | Root folders announced by the app (`id`, name, absolute path): the platform defaults (ex: files and caches on Android, documents, caches and tmp on iOS) and the folders registered by the app. |
+| `list_files` | Content of a directory of the app: the `id` of a root folder (see `list_file_roots`, the first one by default), or the absolute path of a sub directory. |
 | `read_file` | Downloads a file of the app: text files returned as text (truncated if too long), images as images, metadata only for the other binary files. A copy is saved on your computer (`localPath`). |
 | `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
 | `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |

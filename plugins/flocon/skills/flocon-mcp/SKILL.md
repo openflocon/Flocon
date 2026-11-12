@@ -1,6 +1,6 @@
 ---
 name: flocon-mcp
-description: Use when debugging a mobile app (Android, iOS, KMP, Flutter) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
+description: Use when debugging a mobile app (Android, iOS, KMP, Flutter) connected to Flocon Desktop - reading the timeline of what the app did, investigating crashes, inspecting network calls, mocking a response or error, simulating a slow or flaky network, reading app files, analytics events, preferences, feature flags, accessibility events, WebView logs or SQLite databases.
 ---
 
 # Debugging a mobile app with Flocon
@@ -47,7 +47,8 @@ The tools are shared by every SDK, but each SDK sends what it supports. With the
 | Show the user a zone of the timeline (a crash, an error, a loop, a large call) in Flocon | `show_in_timeline` (`eventId` of `get_timeline`, or a time, or nothing: the latest crash then the main anomaly; `view` graph or list). It selects the device and app, opens the timeline and centers the graph. Flocon is not brought to the front: tell the user to go to the Flocon app. Read `hiddenBy` and the message: if a filter of the user hides the event, say it, the filters are never changed |
 | Find a failing or slow call | `list_network_calls`, `search_network_calls` (summaries), then `get_network_call` with a `callId` for headers, bodies and the cURL command |
 | Make the app receive a fake response or exception | `create_network_mock` (`fromCallId` starts from a captured call), `update_network_mock`, `list_network_mocks`, `get_network_mock`, `delete_network_mock` |
-| Check a file written by the app | `list_files` ("files" / "caches" directories), `read_file` |
+| Simulate a slow or flaky network (latency, random errors or exceptions on a part of the requests) | `list_bad_network_configs` (the configs of the app and the active one), `create_bad_network_config` (`latencyTriggerProbability` with `minLatencyMs` / `maxLatencyMs`; `errorProbability` with `errors`, each an `httpCode` or an `exceptionClassPath` such as `java.net.SocketTimeoutException`, picked by `weight`; `enabled: true` activates it right away, otherwise it is created inactive), `update_bad_network_config` (only the given fields, `errors` replaces all of them), `set_active_bad_network_config` (one active config per app; without `configId` it turns the simulation off), `delete_bad_network_config` |
+| Check a file written by the app | `list_file_roots` first (the root folders announced by the app: the platform defaults, such as files and caches on Android or documents, caches and tmp on iOS, plus the folders registered by the app), then `list_files` (a root `id`, then the absolute path of a sub directory), `read_file` |
 | Read a custom dashboard of the app | `list_dashboards`, `get_dashboard` for its elements and values |
 | Investigate a crash | `list_crash_reports` for the exception type and message, `get_crash_report` for the full stack trace |
 | Debug a WebView (JS console errors, failed page loads, calls from the page to native code) | `list_webview_events` (filters: `kind` console / page / bridge, text, start timestamp); the requests made by the page are not captured yet |
@@ -70,7 +71,12 @@ The tools are shared by every SDK, but each SDK sends what it supports. With the
 
 - Mocks change the app behavior: prefer disabling a mock (`update_network_mock`) over deleting it, and tell the user which mocks you left enabled.
 - `query_database` is read only (`SELECT`, `PRAGMA` without value, `EXPLAIN`): always add a `LIMIT`.
-- Files, calls and databases cannot be modified, only mocks can.
+- The captured data stays read only: network calls, files, databases, preferences, analytics events, feature flags, crashes, the timeline, tables, dashboards, images and WebView events cannot be modified, deleted or replayed through the tools (`get_dashboard` cannot trigger a button or a field). `read_file` only saves a copy of the file on the computer.
+- These tools change the state of the app, the device or Flocon Desktop: use them when the user asks or when the task needs it, and always tell the user what you changed.
+  - App behavior: `create_network_mock`, `update_network_mock`, `delete_network_mock`, `create_bad_network_config`, `update_bad_network_config`, `set_active_bad_network_config`, `delete_bad_network_config`.
+  - Device: `open_deeplink`, `move_accessibility_focus`, `take_screenshot`, `start_screen_recording`, `stop_screen_recording` (the screenshots and videos are saved in the Flocon documents folder).
+  - Flocon Desktop and the computer: `set_server_ports`, `show_in_timeline`, `flocon_navigate_into_desktop_app`, `clear_accessibility_events` (deletes the accessibility events received from the app), `open_flocon_folder`.
+- Bad network configs change the app behavior as soon as one is active, and an update of the active config is applied right away: tell the user which config you left active, if any. To stop the simulation, prefer `set_active_bad_network_config` without `configId` (the configs are kept) over deleting a config.
 - `get_timeline` only reads. The times are those of the phone, not the computer. Read `window.reason`, `truncated` and `notes` before concluding: an empty answer can mean the window was wrong, not that nothing happened.
 - `show_in_timeline` changes what the user sees and selected in Flocon (device, app, the timeline view saved in their preferences) but never their filters. The graph draws network, database and analytics events only: for a crash or another source, say that its row is in the list (`view: list`). The request is only registered: it does not tell that the user saw it.
 - `flocon_navigate_into_desktop_app` changes what the user selected in Flocon (device, app) and saves the timeline view in their preferences: use it when asked to show something, say what you changed, and ask them to go to the Flocon app.
