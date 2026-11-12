@@ -1,4 +1,4 @@
-<img width="100" height="100" alt="flocon_small" src="https://github.com/user-attachments/assets/27143843-fce2-4c74-96d8-a0b35a8fccde" />
+<img height="450" alt="flocon_small" src="https://github.com/openflocon/Flocon/blob/main/ressources/flocon_banner_small.jpeg" />
 
 # Flocon
 
