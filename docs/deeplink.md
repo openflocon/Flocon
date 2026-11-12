@@ -32,8 +32,8 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-deeplinks:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-deeplinks-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-deeplinks:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-deeplinks-no-op:LAST_VERSION")
     }
     ```
 

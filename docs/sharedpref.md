@@ -30,8 +30,8 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-sharedprefs:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
     }
     ```
 
@@ -57,8 +57,8 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-datastores:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-datastores-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-datastores-no-op:LAST_VERSION")
         }
         ```
 
@@ -233,7 +233,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
 === "Flutter"
 
-    `FloconSharedPreferences(prefs, name:)` shows one `SharedPreferences` instance, under the name given (default `SharedPreferences`). Install it several times with different names, or register other instances later:
+    `FloconSharedPreferences(prefs, name:)` shows one `SharedPreferences` instance, under the name given (default `SharedPreferences`). Install it once, and register the other instances with `floconRegisterSharedPreferences` (installing a second `FloconSharedPreferences` would replace the first):
 
     ```dart
     final prefs = await SharedPreferences.getInstance();

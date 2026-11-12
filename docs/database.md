@@ -30,16 +30,16 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
 === "Kotlin"
 
-    Add the database core and the module matching your library (debug real module, release `-no-op`). Versions are `2.0.0` here, or use the BOM described in [Setup](setup.md):
+    Add the database core and the module matching your library (debug real module, release `-no-op`). Replace `LAST_VERSION` with the [latest release](setup.md#2-add-the-sdk), or use the BOM described in [Setup](setup.md):
 
     === "Room 2 (androidx.room)"
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-database-core:2.0.0")
-            debugImplementation("io.github.openflocon:flocon-database-room:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-database-core-no-op:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-database-room-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
+            debugImplementation("io.github.openflocon:flocon-database-room:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-database-room-no-op:LAST_VERSION")
         }
         ```
 
@@ -47,10 +47,10 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-database-core:2.0.0")
-            debugImplementation("io.github.openflocon:flocon-database-room3:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-database-core-no-op:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-database-room3-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-database-core:LAST_VERSION")
+            debugImplementation("io.github.openflocon:flocon-database-room3:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-database-core-no-op:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-database-room3-no-op:LAST_VERSION")
         }
         ```
 
@@ -58,8 +58,8 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-database-sqldelight:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-database-sqldelight-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-database-sqldelight:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-database-sqldelight-no-op:LAST_VERSION")
         }
         ```
 

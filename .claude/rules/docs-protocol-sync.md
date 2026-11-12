@@ -12,7 +12,8 @@ Code, protocol and docs ship together in the same PR. When a change touches one 
 ## User docs (`docs/`)
 The user docs live in `docs/` and are published with MkDocs (`mkdocs.yml`). Each feature page has Kotlin / Swift / Flutter tabs: when a change affects one SDK, update its tab only.
 - New feature → new `docs/<feature>.md`.
-- Changed setup / public SDK API → update `docs/setup.md`, the feature page, and the snippet in the root `README.md`. Breaking changes also go in `docs/migration.md`.
+- Versions in snippets are always the `LAST_VERSION` placeholder (`:LAST_VERSION`, `from: "LAST_VERSION"`, `^LAST_VERSION`), never a number: the badges on `docs/setup.md` and the READMEs show the current one.
+- Changed setup / public SDK API → update `docs/setup.md`, the feature page, and the README. Breaking changes also go in `docs/migration.md`.
 
 ## MCP
 - New or changed MCP tool → update `docs/mcp.md` and `plugins/flocon/skills/flocon-mcp/SKILL.md`.

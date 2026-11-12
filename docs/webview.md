@@ -27,8 +27,8 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-webview:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-webview-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-webview:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-webview-no-op:LAST_VERSION")
     }
     ```
 

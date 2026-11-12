@@ -46,6 +46,10 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
 
 ## 2. Add the SDK
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.openflocon/flocon) [![FloconSwift release](https://img.shields.io/github/v/release/openflocon/FloconSwift?label=FloconSwift)](https://github.com/openflocon/FloconSwift/releases) [![pub package](https://img.shields.io/pub/v/flocon.svg)](https://pub.dev/packages/flocon)
+
+In the snippets of this site, replace `LAST_VERSION` with the version shown on the badge of your SDK.
+
 === "Kotlin"
 
     Since 2.0 the SDK is split into **one module per feature**: add the core, then only the modules you use. Every module has a `-no-op` twin with the same API, so release builds ship nothing.
@@ -56,7 +60,7 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
 
         ```toml
         [versions]
-        flocon = "2.0.0"
+        flocon = "LAST_VERSION"
 
         [libraries]
         flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
@@ -92,7 +96,7 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
 
         ```toml
         [libraries]
-        flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "2.0.0" }
+        flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "LAST_VERSION" }
         flocon = { module = "io.github.openflocon:flocon" }
         flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
         flocon-network = { module = "io.github.openflocon:flocon-network-core" }
@@ -116,13 +120,13 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon:2.0.0")
-            debugImplementation("io.github.openflocon:flocon-network-core:2.0.0")
-            debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:2.0.0")
+            debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
+            debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+            debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
 
-            releaseImplementation("io.github.openflocon:flocon-no-op:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-network-core-no-op:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:2.0.0")
+            releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
         }
         ```
 
@@ -132,9 +136,9 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
         kotlin {
             sourceSets {
                 commonMain.dependencies {
-                    implementation("io.github.openflocon:flocon:2.0.0")
-                    implementation("io.github.openflocon:flocon-network-core:2.0.0")
-                    implementation("io.github.openflocon:flocon-ktor-interceptor:2.0.0")
+                    implementation("io.github.openflocon:flocon:LAST_VERSION")
+                    implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+                    implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
                 }
             }
         }
@@ -168,15 +172,15 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
 
 === "Swift"
 
-    Requirements: iOS 15+ or macOS 12+, Xcode 26+ (Swift 6.4+).
+    Requirements: iOS 15+ or macOS 12+, Xcode 16+ (Swift 6).
 
-    In Xcode, choose **File > Add Package Dependencies...**, paste `https://github.com/openflocon/FloconSwift.git`, keep **Up to Next Major Version** from `2.0.0`, and add the `Flocon` library to your app target.
+    In Xcode, choose **File > Add Package Dependencies...**, paste `https://github.com/openflocon/FloconSwift.git`, keep **Up to Next Major Version** from the latest release, and add the `Flocon` library to your app target.
 
     With a `Package.swift`:
 
     ```swift
     dependencies: [
-        .package(url: "https://github.com/openflocon/FloconSwift.git", from: "2.0.0"),
+        .package(url: "https://github.com/openflocon/FloconSwift.git", from: "LAST_VERSION"),
     ],
     targets: [
         .target(name: "MyApp", dependencies: [
@@ -185,7 +189,7 @@ For Android you also need `adb` in your `PATH` (it comes with the Android SDK pl
     ]
     ```
 
-    **gRPC (optional)**: the [`FloconSwiftGrpc`](https://github.com/openflocon/FloconSwiftGrpc) package adds the interceptor for grpc-swift 1.26+ (1.x). Add `https://github.com/openflocon/FloconSwiftGrpc.git` (from `2.0.0`) and the `FloconGrpc` library; it already includes `Flocon`. See [gRPC](grpc.md).
+    **gRPC (optional)**: the [`FloconSwiftGrpc`](https://github.com/openflocon/FloconSwiftGrpc) package adds the interceptor for grpc-swift 1.26+ (1.x). Add `https://github.com/openflocon/FloconSwiftGrpc.git` (from the latest release) and the `FloconGrpc` library; it already includes `Flocon`. See [gRPC](grpc.md).
 
     **Info.plist**: add `NSLocalNetworkUsageDescription` so iOS lets the app reach your computer on the local network (a physical device shows a permission prompt the first time).
 
@@ -530,9 +534,9 @@ Flocon is a debugging tool: once connected, the desktop can read your network ca
     ```kotlin
     // app/build.gradle.kts
     val floconNoOps = mapOf(
-        "io.github.openflocon:flocon" to "io.github.openflocon:flocon-no-op:2.0.0",
-        "io.github.openflocon:flocon-network-core" to "io.github.openflocon:flocon-network-core-no-op:2.0.0",
-        "io.github.openflocon:flocon-ktor-interceptor" to "io.github.openflocon:flocon-ktor-interceptor-no-op:2.0.0",
+        "io.github.openflocon:flocon" to "io.github.openflocon:flocon-no-op:LAST_VERSION",
+        "io.github.openflocon:flocon-network-core" to "io.github.openflocon:flocon-network-core-no-op:LAST_VERSION",
+        "io.github.openflocon:flocon-ktor-interceptor" to "io.github.openflocon:flocon-ktor-interceptor-no-op:LAST_VERSION",
         // ... one line per Flocon module you use
     )
 

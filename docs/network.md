@@ -48,10 +48,10 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-network-core:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-network-core-no-op:2.0.0")
-            debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
+            debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
         }
         ```
 
@@ -71,8 +71,8 @@ The network plugin is the one that talks to the desktop. The interceptors only r
         kotlin {
             sourceSets {
                 commonMain.dependencies {
-                    implementation("io.github.openflocon:flocon-network-core:2.0.0")
-                    implementation("io.github.openflocon:flocon-ktor-interceptor:2.0.0")
+                    implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+                    implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
                 }
             }
         }
@@ -98,7 +98,7 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
 === "Swift"
 
-    Add the package `https://github.com/openflocon/FloconSwift.git` (`from: "2.0.0"`, product `Flocon`), then install the network feature:
+    Add the package `https://github.com/openflocon/FloconSwift.git` (`from: "LAST_VERSION"`, product `Flocon`), then install the network feature:
 
     ```swift
     import Flocon

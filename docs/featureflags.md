@@ -34,8 +34,8 @@ The viewer is **read only** on every platform: the desktop never sends a value b
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-feature-flags:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-feature-flags-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-feature-flags:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-feature-flags-no-op:LAST_VERSION")
     }
     ```
 

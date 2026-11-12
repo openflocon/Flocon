@@ -32,8 +32,8 @@ The Accessibility plugin is available in the **Kotlin / KMP SDK only**. The Swif
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-accessibility:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-accessibility-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-accessibility:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-accessibility-no-op:LAST_VERSION")
     }
     ```
 

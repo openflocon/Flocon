@@ -37,8 +37,8 @@ Property values are always strings.
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-analytics:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-analytics-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-analytics-no-op:LAST_VERSION")
     }
     ```
 

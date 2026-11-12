@@ -27,8 +27,8 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-crashreporter:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-crashreporter-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-crashreporter:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-crashreporter-no-op:LAST_VERSION")
     }
     ```
 
@@ -92,7 +92,7 @@ Nothing to call: once installed, crashes are captured automatically.
 
 === "Flutter"
 
-    The hooks are installed by `startFlocon`. Errors are saved on disk and sent on the next connection, even after a restart.
+    The hooks are installed by `install(FloconCrashReporter())`. Errors are saved on disk and sent on the next connection, even after a restart.
 
 ## In Flocon Desktop
 

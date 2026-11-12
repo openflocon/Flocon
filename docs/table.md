@@ -34,8 +34,8 @@ Values are always strings: format numbers and dates yourself before logging them
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-tables:2.0.0")
-        releaseImplementation("io.github.openflocon:flocon-tables-no-op:2.0.0")
+        debugImplementation("io.github.openflocon:flocon-tables:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-tables-no-op:LAST_VERSION")
     }
     ```
 

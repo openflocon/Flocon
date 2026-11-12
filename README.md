@@ -2,8 +2,6 @@
 
 # Flocon
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
-
 **Flocon lets you see what your Android, Kotlin Multiplatform, iOS and Flutter apps do: network, databases, preferences, analytics, crashes... from your desktop, and lets AI agents see it too.**
 
 Inspired by [Flipper](https://github.com/facebook/flipper) by Meta, Flocon is a desktop debugger plus lightweight SDKs. Your app connects to the desktop app, and you observe, inspect and drive it in real time.
@@ -23,53 +21,25 @@ brew install --cask openflocon/tap/flocon
 
 **Linux**: `brew install openflocon/tap/flocon` (Linuxbrew), or the `.deb` / `.rpm` (x64 and arm64) from the [releases](https://github.com/openflocon/Flocon/releases).
 
-More in the [macOS](https://openflocon.github.io/Flocon/macos-install) and [Linux](https://openflocon.github.io/Flocon/linux-install) guides (manual DMG install, `adb`).
+**Windows**: the `.msi` installer from the [releases](https://github.com/openflocon/Flocon/releases).
 
-## 2. Add the SDK
+More in the [macOS](https://openflocon.github.io/Flocon/macos-install) and [Linux](https://openflocon.github.io/Flocon/linux-install) guides (manual install, `adb`).
 
-| Platform | Install | Guide |
-|---|---|---|
-| **Kotlin** (Android & KMP) | `debugImplementation("io.github.openflocon:flocon:LAST_VERSION")` | [Setup](https://openflocon.github.io/Flocon/setup) |
-| **Swift** (iOS) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift), gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
-| **Flutter** | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter), [pub.dev](https://pub.dev/packages/flocon) |
+## 2. Add the SDK to your app
 
-### Kotlin quick start
+Pick the SDK of your app. Each one connects to the same desktop app.
 
-One module per feature, each with a `-no-op` twin for release builds. The BOM keeps every version aligned:
+| SDK | Version | Install | Repository |
+|---|---|---|---|
+| **Android & Kotlin Multiplatform** | [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=)](https://central.sonatype.com/artifact/io.github.openflocon/flocon) | `debugImplementation("io.github.openflocon:flocon:LAST_VERSION")` + one module per feature | this repository ([`FloconAndroid/`](FloconAndroid)) |
+| **iOS / macOS (Swift)** | [![FloconSwift](https://img.shields.io/github/v/release/openflocon/FloconSwift?label=)](https://github.com/openflocon/FloconSwift/releases) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
+| **Flutter** | [![pub](https://img.shields.io/pub/v/flocon?label=)](https://pub.dev/packages/flocon) | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter) |
 
-```kotlin
-dependencies {
-    debugImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
-    releaseImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+Then start Flocon in your app (`startFlocon { ... }` in all three SDKs) and run it: **[Connect your app](https://openflocon.github.io/Flocon/setup)** walks you through it step by step, emulators and physical devices included. Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
 
-    debugImplementation("io.github.openflocon:flocon")
-    releaseImplementation("io.github.openflocon:flocon-no-op")
+## What you can inspect
 
-    debugImplementation("io.github.openflocon:flocon-network-core")
-    releaseImplementation("io.github.openflocon:flocon-network-core-no-op")
-    debugImplementation("io.github.openflocon:flocon-okhttp-interceptor")
-    releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op")
-}
-```
-
-Start Flocon in `Application.onCreate()` and install the plugins you use:
-
-```kotlin
-startFlocon(FloconContext(this)) {
-    install(FloconNetwork)
-    install(FloconAnalytics)
-}
-
-val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(FloconOkhttpInterceptor())
-    .build()
-```
-
-Run the app, open Flocon, and your requests show up. Coming from 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
-
-## Features at a glance
-
-Support per SDK, built from the modules of each SDK. Click a feature for its page.
+Support per SDK (details and limits in the [platform support matrix](https://openflocon.github.io/Flocon/#platform-support)). Click a feature for its page.
 
 | Feature | Android | KMP | Swift | Flutter |
 |---|:---:|:---:|:---:|:---:|

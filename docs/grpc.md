@@ -54,8 +54,8 @@ For each call you see:
         dependencies {
             implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
 
-            debugImplementation("io.github.openflocon:flocon-grpc-interceptor-lite:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-lite-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-lite-no-op:LAST_VERSION")
         }
         ```
 
@@ -65,8 +65,8 @@ For each call you see:
         dependencies {
             implementation("com.google.protobuf:protobuf-kotlin:$PROTOBUF_VERSION")
 
-            debugImplementation("io.github.openflocon:flocon-grpc-interceptor:2.0.0")
-            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-no-op:2.0.0")
+            debugImplementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-no-op:LAST_VERSION")
         }
         ```
 
@@ -78,7 +78,7 @@ For each call you see:
 
     ```swift
     dependencies: [
-        .package(url: "https://github.com/openflocon/FloconSwiftGrpc.git", from: "2.0.0"),
+        .package(url: "https://github.com/openflocon/FloconSwiftGrpc.git", from: "LAST_VERSION"),
     ],
     targets: [
         .target(name: "MyApp", dependencies: [
