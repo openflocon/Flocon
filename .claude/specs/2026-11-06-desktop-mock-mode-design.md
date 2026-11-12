@@ -9,7 +9,7 @@ Launch Flocon Desktop with no phone connected and get a **reproducible, pre-fill
 
 Uses, all driven by Claude as well as by humans:
 
-1. **Doc screenshots**: one scenario per `docs/` page; relaunching gives the same screen.
+1. **Doc screenshots**: one scenario per `docs2/` page; relaunching gives the same screen.
 2. **UI checks on specific configurations**: lots of data, empty lists, several devices, Android + iOS mixed.
 3. **MCP tool testing** against known data with predictable results.
 4. **Weird scenarios**: huge bodies, invalid JSON, unicode, 500 storms, out-of-order timestamps.
@@ -127,7 +127,7 @@ val docNetwork = scenario("doc-network", description = "A Pixel with successful 
 - `weird`: large bodies, invalid JSON, unicode, 500 storms, very long URLs, out-of-order timestamps.
 
 ### Claude skill
-`.claude/skills/flocon-mock-mode/SKILL.md` (project skill for working on this repo): when to use it, the launch command, `--mock=list`, the bundled scenarios, a DSL example, how to add a new scenario (file + registry line, committed with the change it tests), and how to screenshot/drive the desktop app. Developer docs only: no `docs/` end-user page.
+`.claude/skills/flocon-mock-mode/SKILL.md` (project skill for working on this repo): when to use it, the launch command, `--mock=list`, the bundled scenarios, a DSL example, how to add a new scenario (file + registry line, committed with the change it tests), and how to screenshot/drive the desktop app. Developer docs only: no `docs2/` end-user page.
 
 ### Tests
 - Each mapper produces a payload the real remote data source accepts: run `MockServer` output through the existing remote mappers and assert the domain models.

@@ -1,65 +1,42 @@
 ---
 title: AI Agents (MCP)
-description: Let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode see what Flocon sees (network, databases, preferences, crashes, timeline...) and act on your app, through the Model Context Protocol.
+description: Let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode inspect the network calls captured by Flocon, mock them, and read the files, analytics events and databases of the app, through the Model Context Protocol.
 ---
 
 # 🤖 AI Agents (MCP)
 
-Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)). Once your AI coding agent is connected to it, the agent sees what you see in Flocon, without any copy / paste, and can act on your running app.
+Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelcontextprotocol.io)), so AI coding agents like **Claude Code**, **Cursor**, **Codex**, **Gemini CLI**, **Antigravity**, **GitHub Copilot**, **Android Studio**, **Windsurf**, **Zed** or **OpenCode** can inspect the network calls made by your mobile app, mock them, and read its files, analytics events and databases, without any copy / paste.
 
 > *"List the failed calls of the last launch and explain why the login fails"*
 
 > *"Make the login call return a 500 so I can check the error screen"*
 
-> *"What happened in the app just before it crashed?"*
+> *"Read the json cached by the app for the feed and check if it's up to date"*
 
-## What your agent gets
+> *"Check that the `post_liked` event is sent with the right properties when I like a post"*
 
-**It can see** everything Flocon captured from the connected app: the [network calls](network.md) (HTTP, GraphQL, gRPC, WebSocket) with bodies and a ready cURL, the [databases](database.md), the [preferences](sharedpref.md), the app [files](files.md), the [analytics events](analytics.md), the [feature flags](featureflags.md), the [crashes](crashreporter.md), the [images](image.md), the [accessibility](accessibility.md) and [WebView](webview.md) events, the [dashboards](dashboard.md) and [tables](table.md), and a single [timeline](timeline.md) of what the app did around a moment.
+> *"Check in the database if the user I just created is saved with the right email"*
 
-**It can act**:
-
-- **On app behavior**: create and edit [network mocks](mocking.md), simulate a [bad network](bad-quality.md), inject a WebSocket message, edit the value of an existing preference key.
-- **On the device**: open a [deeplink](deeplink.md), take a screenshot, record the screen, move the accessibility focus.
-- **On Flocon Desktop**: show a zone of the timeline or a screen in the window, change the server ports.
-
-All the tools are listed in the [Tools Reference](mcp-tools.md), and real workflows are in the [Cookbook](mcp-cookbook.md).
-
-!!! info "Local only"
-    The MCP server listens on `127.0.0.1` only: it is not reachable from your local network. It has no authentication, so any program running on your computer can call it while Flocon Desktop is open.
-
-    Captured data is read-only: an agent cannot modify, delete or replay network calls, files, databases, analytics events, feature flags or crashes. The one exception is the value of an **existing** preference key, with `set_shared_preference_value`. Only read-only SQL (`SELECT`, `PRAGMA` without value, `EXPLAIN`) runs on databases.
-
-    Every tool is flagged read-only or not in the [Tools Reference](mcp-tools.md#legend), and agents are told to name what they changed (mocks left enabled, active bad network config...). Flocon only counts, anonymously, which tool is called and the kind of client: see [Telemetry](telemetry.md).
-
-## Which apps feed which data
-
-The tools are the same for every SDK, but each tool returns what **your app's SDK sends**. An empty answer for a feature your app does not use is normal, not a bug.
-
-| Data | Kotlin (Android / KMP) | Swift | Flutter |
-|---|:---:|:---:|:---:|
-| Network, mocks, bad network | ✅ | ✅ (instrumented `URLSession`s) | ✅ (Dio, `package:http`) |
-| Databases, preferences, files | ✅ | ✅ | ✅ |
-| Analytics, feature flags, tables, dashboards, deeplinks, images | ✅ | ✅ | ✅ |
-| Timeline logs, crashes | ✅ | ✅ | ✅ (Dart and Flutter errors) |
-| WebView events, accessibility events | ✅ | ❌ | ❌ |
-| WebSocket message injection | ✅ (OkHttp) | ❌ | ❌ |
-
-See the [platform support matrix](index.md#platform-support) for the details per feature. Screenshots, recordings and deeplinks need `adb` on Android, or a booted Simulator on iOS.
-
-## Setup
-
-Flocon Desktop must be running. The server starts with it and listens on:
+The server starts automatically with Flocon Desktop and listens on:
 
 ```
 http://localhost:9042/mcp
 ```
 
-It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
+!!! info "Local only"
+    The MCP server only listens on `127.0.0.1`: it is not reachable from your local network.
+    Agents can't modify, delete or replay the captured calls, nor modify or delete the files of the app: the only tools modifying Flocon are the **network mocks** ones.
+    Only read only SQL queries (`SELECT`, `PRAGMA` without value, `EXPLAIN`) can be executed on the databases.
+
+---
+
+## Setup
+
+Declare the Flocon server in your agent configuration. Flocon Desktop must be running.
 
 === "Claude Code"
 
-    With the Flocon plugin (recommended), it declares the server and adds two skills ([see below](#the-two-skills)):
+    With the Flocon plugin (recommended), it declares the server and adds a skill explaining the tools to Claude:
 
     ```
     /plugin marketplace add openflocon/Flocon
@@ -120,7 +97,7 @@ It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
 
 === "Gemini CLI"
 
-    With the Flocon extension (it declares the server only, not the skills), from a clone of this repository:
+    With the Flocon extension, from a clone of this repository:
 
     ```bash
     gemini extensions install ./plugins/flocon
@@ -155,7 +132,9 @@ It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
     agy plugin install https://github.com/openflocon/Flocon/tree/main/plugins/flocon
     ```
 
-    Or manually: in the Agent panel, open **⋯ → MCP Servers → Manage MCP Servers → View raw config**, and add:
+    Or manually:
+
+    In the Agent panel, open **⋯ → MCP Servers → Manage MCP Servers → View raw config**, and add:
 
     ```json
     {
@@ -259,26 +238,150 @@ It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
     }
     ```
 
-## The two skills
+---
 
-The Flocon plugin (Claude Code, Codex, Cursor) also installs two skills: short instructions your agent loads when relevant.
+## Examples
 
-| Skill | What it does |
+Just ask your agent in plain text. Here is what you can ask and how the agent responds:
+
+> Responses are illustrative: endpoints, ids and values depend on your app.
+
+---
+
+**Prompt**
+
+> My article page doesn't display, is it caused by a network call?
+
+**Response**
+
+Yes. When the article page opened, `GET /articles/42` failed with a **500 Internal Server Error** (`{"error":"article_service_unavailable"}`). The app received no article data, which explains the empty page. Retrying the call would not help until the backend is fixed. I can mock a valid response if you want to check the UI in the meantime.
+
+---
+
+**Prompt**
+
+> Among the posts displayed on screen, is there one created by "florent"?
+
+**Response**
+
+Yes. The last `GET /posts` response contains 12 posts, and one of them was written by `florent`: "Why I switched to Compose" (`id: post_7`). It is also stored locally: the `posts` table has a matching row with `author = "florent"`.
+
+---
+
+**Prompt**
+
+> Add latency to all calls.
+
+**Response**
+
+Done. Every network call from the app now has an extra **2 s** of latency. Navigate in the app to check your loading states. Ask me to remove it whenever you're done.
+
+---
+
+**Prompt**
+
+> Transform the response of `user/me` so the username is "jean.jacques.nom.a.rallonge".
+
+**Response**
+
+Done. I created a mock on `GET /user/me`. It returns the last real response with only `username` replaced by `jean.jacques.nom.a.rallonge`. Reopen the profile screen to check how the long name is displayed.
+
+---
+
+**Prompt**
+
+> Does the article with id "ID1" exist in the database? If so, what is its price?
+
+**Response**
+
+Yes, the `articles` table contains `ID1`: "Wireless Headphones", with a price of **59.90 €**.
+
+---
+
+**Prompt**
+
+> Was the `postViewed` analytics event triggered?
+
+**Response**
+
+Yes, `postViewed` was sent 3 times since the app started:
+
+- `postViewed` → `{ postId: "post_7" }`
+- `postViewed` → `{ postId: "post_3" }`
+- `postViewed` → `{ postId: "post_12" }`
+
+---
+
+**Prompt**
+
+> Show me the slow calls in the app.
+
+**Response**
+
+3 calls took more than 1 second:
+
+| Method | URL | Duration |
+|--------|-----|----------|
+| GET | `/posts/search?q=compose` | 3.4 s |
+| GET | `/articles/ID1/reviews` | 2.1 s |
+| POST | `/orders` | 1.3 s |
+
+The search call is the slowest. It may be worth adding a loading state or debouncing the input.
+
+---
+
+**Prompt**
+
+> Make the articles endpoint fail with a 500 so I can check my error screen.
+
+**Response**
+
+Mock created for `GET /articles/*`: status **500**, body `{"error":"internal_error"}`. Open an article in the app to see the error screen. I can disable the mock when you're done.
+
+---
+
+**Prompt**
+
+> What happened in the app just before it crashed?
+
+**Response**
+
+The app crashed at 14:32:05 with an `IllegalStateException` (the window read is the minute before it and the 5 seconds after, anchored on that crash). In that minute: 12 calls to `GET /v1/feed` in 3 seconds (a loop), then `POST /v1/checkout` failed with a **401**, and the `checkout_failed` analytics event was sent 2 seconds before the crash.
+
+## Available tools
+
+By default, every tool targets the **device and app currently selected in Flocon Desktop**. Use `list_devices` then pass `deviceId` / `packageName` to target another one.
+
+| Tool | Description |
 |---|---|
-| `flocon-mcp` | Teaches the agent how to debug with Flocon: which tool to use for what (start with `get_timeline`, then the detail tools), how targeting works, what to say when a call fails (Desktop not running, no device connected, unknown app), what each SDK sends, and the rules: prefer disabling a mock over deleting it, always turn bad network off, ask before editing a preference, tell you everything it changed. |
-| `flocon-setup` | Installs Flocon in an existing project, or migrates it from 1.x to 2.0. It detects the platform (Android, Kotlin Multiplatform, Swift, Flutter), adds the dependencies, keeps Flocon out of release builds, installs only the plugins the project really uses, and checks that each feature is captured. See the [Cookbook](mcp-cookbook.md#setup-flocon). |
+| `list_devices` | Devices (with their `connectionType`: `default` or `wifi`) and apps known by Flocon, the selected one, and whether they are connected. |
+| `get_timeline` | What the app did in a window of time, above the network: every source (network, database, analytics, crashes, deeplinks...) in one narrative, one line per event with an id for the detail tools, repetitions folded (`12× GET /feed in 3.1 s`) and anomalies first (crash, HTTP errors, calls in a loop, responses over 1 MB). Give `mode` (`recent`, `session`, `before_crash`, `at`, `range`) with `at` / `from` / `to` (epoch ms, ISO-8601 with an offset, or `HH:mm`), or an `eventId` of a previous answer, or nothing: the tool anchors on the latest crash, otherwise on the last 2 minutes of the latest session, and the answer says which window was chosen and why. `search` tells whether an event (name, url, query) was sent in the window (`found`), and its matches are never cut by `maxLines`. `sources` / `excludeSources` choose the sources read (for example `excludeSources: ["database"]` drops the transactions of a database library); when the answer is capped, database lines are the first to go. The times are those of the phone. |
+| `list_network_calls` | Network calls (HTTP, GraphQL, gRPC, WebSocket), newest first, without bodies. Filters: full text, url, methods, HTTP status codes, errors only, type, start timestamp, previous sessions. |
+| `get_network_call` | Full details of a call: request & response headers and bodies (truncated if too long), GraphQL query, gRPC status, error, and the equivalent cURL command. |
+| `search_network_calls` | Searches a text in headers, bodies, url, method or status. |
+| `list_network_mocks` | Network mocks of the app (and the ones shared with all apps), without bodies. |
+| `get_network_mock` | Full details of a mock, including the mocked body and headers. |
+| `create_network_mock` | Creates a mock returning a body or throwing an exception, from scratch or from a captured call (`fromCallId`). |
+| `update_network_mock` | Updates some fields of a mock, or enables / disables it. |
+| `delete_network_mock` | Deletes a mock. |
+| `list_bad_network_configs` | Bad network configs of the app (latency, random errors) and the active one. |
+| `create_bad_network_config` | Creates a config: random latency, and errors (HTTP response or exception) triggered with a probability. Optionally active right away. |
+| `update_bad_network_config` | Updates some fields of a config. |
+| `set_active_bad_network_config` | Activates a config (only one at a time), or turns the simulation off when no `configId` is given. |
+| `delete_bad_network_config` | Deletes a config. |
+| `list_files` | Content of a directory of the app: `files`, `caches`, or the absolute path of a sub directory. |
+| `read_file` | Downloads a file of the app: text files returned as text (truncated if too long), images as images, metadata only for the other binary files. A copy is saved on your computer (`localPath`). |
+| `list_analytics_tables` | Analytics tables of the app: one per analytics SDK / tracker (ex: `amplitude`). |
+| `list_analytics_events` | Analytics events with their properties, newest first. Filters: table, exact event names, text, start timestamp, previous sessions. |
+| `count_analytics_events` | Number of events per event name, the most frequent first (same filters). |
+| `list_databases` | SQLite databases of the app (Room, SQLDelight...), with their `databaseId`. |
+| `list_database_tables` | Schema of a database: tables, columns, types, primary keys. |
+| `query_database` | Executes a read only SQL query and returns the rows (100 by default, long values truncated). |
+| `list_database_query_logs` | SQL queries executed by the app, newest first, with their arguments ([query logging](database.md#real-time-query-logging) must be set up in the app). |
+| `take_flocon_desktop_screenshot` | Image of what the Flocon Desktop window currently displays (not the device screen). Only the visible content is captured, scaled down if it is too big, and nothing is saved on your computer. |
+| `flocon_navigate_into_desktop_app` | Moves the Flocon Desktop window for you: displays a screen (`screen`, e.g. `network`, `timeline`, `feature_flags`), selects a device and app (`deviceId`, `packageName`: this changes what you selected in the app) and sets the timeline view (`timelineView`: `graph` or `list`, saved in your preferences). Flocon is not brought to the front: the answer asks you to go to the Flocon app to see it. At least one parameter is required, and nothing is changed if one of them is invalid. |
 
-Without the plugin, the MCP server alone works too: the server sends its own usage instructions to the agent.
-
-## A few examples
-
-Just ask your agent in plain text.
-
-**"My article page doesn't display, is it caused by a network call?"** The agent lists the failed calls, opens the one for the article, and tells you that `GET /articles/42` returned a **500**. See [Why does this request fail](mcp-cookbook.md#why-request-fails).
-
-**"Make the articles endpoint fail with a 500 so I can check my error screen."** The agent creates a mock from a real call, changes only the status code, and offers to disable it afterwards. See [Mock an endpoint](mcp-cookbook.md#mock-error-state).
-
-**"What happened in the app just before it crashed?"** The agent reads the timeline around the latest crash: a loop of calls, a 401, an analytics event two seconds before. See [Crash triage](mcp-cookbook.md#crash-triage).
+---
 
 ## Testing the server
 
@@ -288,13 +391,7 @@ You can browse the tools with the [MCP Inspector](https://github.com/modelcontex
 npx @modelcontextprotocol/inspector
 ```
 
-Then connect to `http://localhost:9042/mcp` with the **Streamable HTTP** transport. The **Tools** tab lists the 57 tools and lets you call them by hand.
-
-## Port 9042
-
-The MCP server always uses port **9042**: it cannot be changed from Flocon. This is not the port your apps use: they connect to Flocon Desktop on the websocket port (default 9023) and HTTP port (default 9024). Those two can be changed in the Flocon settings, or by an agent with `set_server_ports`. Port 9042 is reserved, so you cannot use it for them.
+Then connect to `http://localhost:9042/mcp` with the **Streamable HTTP** transport.
 
 !!! warning "Port already used"
-    If port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds. Close the other program: the server starts by itself once the port is free.
-
-If your agent says it cannot connect, check that Flocon Desktop is running, then see [Troubleshooting](troubleshooting.md).
+    If the port `9042` is already used by another program, Flocon Desktop displays an error and retries every 10 seconds.

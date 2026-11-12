@@ -1,10 +1,10 @@
 # Install Flocon in an Android project
 
-Source of truth: `docs/setup.md`. Latest version: the newest release on https://github.com/openflocon/Flocon/releases.
+Source of truth: `docs2/setup.md`. Latest version: the newest release on https://github.com/openflocon/Flocon/releases.
 
 ## 1. Dependencies
 
-Core, then one module per feature actually used (full list: `docs/migration.md` section 1). Real module in debug, `-no-op` in release:
+Core, then one module per feature actually used (full list: `docs2/migration.md` section 1). Real module in debug, `-no-op` in release:
 
 ```kotlin
 dependencies {
@@ -49,7 +49,7 @@ With debug-only dependencies, put this in a `debug` source set (and a no-op or e
 | Deeplinks | `install(FloconDeeplinks) { deeplink("myapp://home") }`, more later with `Flocon.deeplinksPlugin.register { }` |
 | Dashboards | `install(FloconDashboard)`, then `Flocon.dashboardPlugin.dashboard(id, scope) { ... }` |
 
-Details and options per feature: the matching `docs/<feature>.md` page.
+Details and options per feature: the matching `docs2/<feature>.md` page.
 
 ## 4. Check
 

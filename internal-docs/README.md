@@ -1,7 +1,7 @@
 # Internal docs
 
 Documentation for Flocon maintainers and contributors: how Flocon works inside and how the project is run.
-It is not published. The public user docs live in `docs/`, built with MkDocs and published at https://openflocon.github.io/Flocon/.
+It is not published. The public user docs live in `docs2/` and are built with MkDocs.
 
 | Folder | Content |
 |---|---|

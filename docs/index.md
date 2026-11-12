@@ -1,6 +1,6 @@
 ---
-title: Flocon - Debugger for Android, iOS and Flutter
-description: A desktop debugger for Android, Kotlin Multiplatform, iOS (Swift) and Flutter apps, with an MCP server for AI agents.
+title: Flocon - Modern Debugging for Kotlin & Android
+description: Advanced, lightweight debugging and inspection tool built for Android and Kotlin Multiplatform.
 ---
 
 <div class="hero" markdown>
@@ -10,12 +10,13 @@ description: A desktop debugger for Android, Kotlin Multiplatform, iOS (Swift) a
 # Flocon
 
 <p class="lead">
-Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multiplatform</strong>, <strong>iOS (Swift)</strong> and <strong>Flutter</strong> apps from a desktop app: network, databases, preferences, files, dashboards, crashes and more. AI agents can drive it too, through <strong>MCP</strong>.
+An advanced, lightweight debugging & inspection tool built with <strong>Kotlin Multiplatform (KMP)</strong> and <strong>Compose Multiplatform</strong>, designed to seamlessly inspect and debug Android, JVM, and iOS applications in real time.
 </p>
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg?style=flat-square&color=4f46e5)](https://search.maven.org/artifact/io.github.openflocon/flocon)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/openflocon/Flocon/blob/main/LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20KMP%20%7C%20iOS%20%7C%20Flutter-brightgreen.svg?style=flat-square)](setup.md)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0+-7f52ff.svg?style=flat-square&logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Desktop%20%7C%20iOS-brightgreen.svg?style=flat-square)](setup.md)
 
 <div class="buttons" markdown>
 [Get Started :octicons-arrow-right-24:](setup.md){ .md-button .md-button--primary }
@@ -27,61 +28,61 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
 ---
 
-![The desktop app with a connected device and the network list](assets/screenshots/home-overview.png)
+<img width="1294" height="837" alt="Flocon Desktop Interface" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
 
 ---
 
-## ⚡ Highlights
+## ⚡ Highlights & Key Features
 
 <div class="grid cards" markdown>
 
--   :material-swap-horizontal: __Network__
+-   :material-swap-horizontal: __Network & API Inspector__
 
     ---
 
-    HTTP (OkHttp, Ktor, URLSession, Dio, `http`), GraphQL, WebSockets and gRPC, with live mocks, bad network simulation and an image preview.
+    Capture and inspect all HTTP/REST (OkHttp, Ktor), GraphQL (Apollo), WebSockets, and gRPC requests with payload formatting and status codes.
+    
+    [:octicons-arrow-right-16: Learn more](network.md)
 
-    [:octicons-arrow-right-16: HTTP & REST](network.md) · [Mocking](mocking.md) · [gRPC](grpc.md)
-
--   :material-database: __Storage__
-
-    ---
-
-    Browse and query your SQLite databases, edit preferences and key-value stores, explore and download the files of your app.
-
-    [:octicons-arrow-right-16: Databases](database.md) · [Preferences](sharedpref.md) · [Files](files.md)
-
--   :material-view-dashboard: __Custom debugging__
+-   :material-theater: __Live Request Mocking__
 
     ---
 
-    Dashboards with buttons and forms, tables, parameterized deeplinks, analytics events and feature flags, all rendered on your desktop.
+    Intercept network calls on the fly and provide custom responses or simulate error status codes without writing boilerplate test mocks.
 
-    [:octicons-arrow-right-16: Dashboards](dashboard.md) · [Deeplinks](deeplink.md) · [Analytics](analytics.md)
+    [:octicons-arrow-right-16: Learn more](network.md#http-request-mocking)
 
--   :material-bug: __Observability__
-
-    ---
-
-    A timeline of navigation, user actions and network calls, crash reports with stack traces, accessibility events and WebView traffic.
-
-    [:octicons-arrow-right-16: Timeline](timeline.md) · [Crash reporter](crashreporter.md)
-
--   :material-robot: __AI agents (MCP)__
+-   :material-database: __Database Explorer & SQL Editor__
 
     ---
 
-    Flocon Desktop is an MCP server: let Claude Code, Cursor or Gemini read your network calls, query a database or set a mock.
+    Explore schemas, browse tables, run custom SQL queries with syntax highlighting, and log live database queries for Room & SQLite.
 
-    [:octicons-arrow-right-16: MCP overview](mcp.md) · [Cookbook](mcp-cookbook.md)
+    [:octicons-arrow-right-16: Learn more](database.md)
 
--   :material-cellphone-link: __Four SDKs, one desktop__
+-   :material-view-dashboard: __Reactive Custom Dashboards__
 
     ---
 
-    Kotlin (Android, KMP), Swift (iOS, macOS) and Flutter SDKs share the same protocol and the same desktop app. Pick yours and connect in minutes.
+    Build custom mobile debug dashboards with buttons, forms, inputs, and Kotlin `Flow` bindings that render interactively on your desktop.
 
-    [:octicons-arrow-right-16: Connect your app](setup.md)
+    [:octicons-arrow-right-16: Learn more](dashboard.md)
+
+-   :material-key: __Preferences & DataStore__
+
+    ---
+
+    Inspect and edit `SharedPreferences`, `Jetpack DataStore`, and custom key-value stores in real-time from the desktop companion.
+
+    [:octicons-arrow-right-16: Learn more](sharedpref.md)
+
+-   :material-link-variant: __Deeplink Runner & Tools__
+
+    ---
+
+    Auto-discover and trigger parameterized deeplinks with autocomplete, inspect app sandboxed files, and preview downloaded images.
+
+    [:octicons-arrow-right-16: Learn more](deeplink.md)
 
 </div>
 
@@ -89,55 +90,45 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
 ## 🏗️ Architecture Overview
 
-Your app, with the Flocon SDK in its debug build, connects to Flocon Desktop over a secure WebSocket (through `adb reverse` on Android emulators and USB devices, directly on iOS simulators and over Wi-Fi):
+Flocon connects your running mobile/desktop app to the Flocon Desktop companion over a lightweight local socket connection (via ADB on Android or direct sockets on Desktop/iOS):
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Dev as Developer
-    participant App as App + Flocon SDK
-    participant Desktop as Flocon Desktop
-    participant AI as AI agent (MCP)
+    participant App as Mobile / KMP App
+    participant SDK as Flocon SDK (~140KB)
+    participant Bridge as ADB / Localhost Bridge
+    participant Desktop as Flocon Desktop UI
 
-    Dev->>App: Uses the app
-    App->>Desktop: Network call, DB query, event, crash...
-    Desktop-->>Dev: Live view
-    Dev->>Desktop: Edits a preference, sets a mock, runs a deeplink
-    Desktop->>App: Command
-    App-->>Dev: State changed, mocked response
-    AI->>Desktop: MCP tool call
-    Desktop-->>AI: Data from the app
+    Dev->>App: Interacts with App
+    App->>SDK: Network Request / DB Query / Event
+    SDK->>Bridge: Stream telemetry over Socket
+    Bridge->>Desktop: Live visual update
+    Dev->>Desktop: Edits Prefs / Mocks Network / Triggers Deeplink
+    Desktop->>Bridge: Send Command
+    Bridge->>SDK: Execute in App runtime
+    SDK-->>App: Mutates state / Injects response
 ```
 
 ---
 
-## 📱 Platform support
+## 📱 Platform Support Matrix
 
-What each SDK sends to the desktop. Click a feature for its details.
-
-| Feature | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| Feature | Android | Desktop (JVM) | iOS (Simulator) | iOS (Device) |
 | :--- | :---: | :---: | :---: | :---: |
-| [HTTP & REST](network.md) | ✅ OkHttp, Ktor | ✅ Ktor (OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `http` |
-| [Mocking](mocking.md) | ✅ | ✅ | ✅ | ✅ |
-| [Bad network simulation](bad-quality.md) | ✅ | ✅ | ✅ | ✅ |
-| [GraphQL](graphql.md) | ✅ | ✅ | ✅ | ✅ |
-| [WebSockets](websocket.md) | ✅ automatic (OkHttp) | ✅ manual logging | ✅ manual logging | ✅ manual logging |
-| [gRPC](grpc.md) | ✅ | ❌ | ✅ add-on `FloconSwiftGrpc` | ❌ |
-| [Images](image.md) | ✅ | ✅ | ✅ | ✅ |
-| [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room, SQLDelight (Wasm: Room 3 only) | ✅ SQLite (Core Data, GRDB...) | ✅ SQLite (sqflite, Drift...) |
-| [Preferences](sharedpref.md) | ✅ SharedPreferences, DataStore | ✅ (DataStore: no Wasm) | ✅ UserDefaults, keychain | ✅ SharedPreferences |
-| [Files](files.md) | ✅ | ✅ (Wasm: no browsing) | ✅ | ✅ |
-| [Dashboards](dashboard.md) | ✅ | ✅ | ✅ | ✅ |
-| [Tables](table.md) | ✅ | ✅ | ✅ | ✅ |
-| [Deeplinks](deeplink.md) | ✅ | ✅ | ✅ | ✅ |
-| [Analytics](analytics.md) | ✅ | ✅ | ✅ | ✅ |
-| [Feature flags](featureflags.md) | ✅ | ✅ | ✅ | ✅ |
-| [Timeline](timeline.md) | ✅ | ✅ | ✅ | ✅ |
-| [Crash reporter](crashreporter.md) | ✅ | ✅ | ✅ | ✅ Dart errors only |
-| [Accessibility](accessibility.md) | ✅ automatic | ⚠️ iOS partial, JVM / Wasm manual | ❌ | ❌ |
-| [WebView](webview.md) | ✅ automatic `attach` | ⚠️ manual API only | ❌ | ❌ |
-
-See each page for the exact limits per platform, and [Connect your app](setup.md) for the modules and packages to add.
+| **Network (HTTP / Ktor / OkHttp)** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
+| **Network Mocking** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
+| **GraphQL & gRPC** | :white_check_mark: | :white_check_mark: | Coming soon | Coming soon |
+| **WebSockets** | :white_check_mark: | :white_check_mark: | Coming soon | Coming soon |
+| **Database (Room / SQLite)** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
+| **Preferences & DataStore** | :white_check_mark: | Coming soon | Coming soon | Coming soon |
+| **Reactive Dashboards** | :white_check_mark: | Coming soon | Coming soon | Coming soon |
+| **Data Tables** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
+| **Analytics Viewer** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
+| **Deeplink Launcher** | :white_check_mark: | Coming soon | Coming soon | Coming soon |
+| **Sandbox File Explorer** | :white_check_mark: | Coming soon | Coming soon | Coming soon |
+| **Image Previewer** | :white_check_mark: | :white_check_mark: | :white_check_mark: | Coming soon |
 
 ---
 
@@ -145,6 +136,6 @@ See each page for the exact limits per platform, and [Connect your app](setup.md
 
 Ready to inspect your app in real-time?
 
-[Connect your app :octicons-arrow-right-24:](setup.md){ .md-button .md-button--primary .md-button--large }
+[Start Setup Guide :octicons-arrow-right-24:](setup.md){ .md-button .md-button--primary .md-button--large }
 
 </div>

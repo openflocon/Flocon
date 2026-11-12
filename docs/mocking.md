@@ -1,194 +1,158 @@
 ---
-title: Mocking
-description: Replace the response of an HTTP call, or make it fail, from the Flocon desktop app, without touching your code.
+title: "Tutorial: Network Mocking Step-by-Step"
+description: Complete step-by-step tutorial on intercepting and mocking HTTP/REST network requests using Flocon.
 ---
 
-# 🎭 Mocking
+# 🎭 Step-by-Step Tutorial: Network Mocking with Flocon
 
-Flocon lets you **intercept a live HTTP call and answer it with a response you wrote**, from the desktop app. Test a 401, a 404 or a 500, feed your screen a JSON from an unreleased backend, or add a delay to see your loaders, all without editing your code or redeploying.
+With Flocon, you can **intercept live HTTP requests and replace them with custom mock responses** directly from your desktop interface. 
 
-![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
+You can test error handling (401 Unauthorized, 404 Not Found, 500 Internal Server Error), inject mock JSON data for unreleased backend features, or simulate slow network latency without writing test boilerplate or modifying your codebase.
 
-You can:
+---
 
-- **Simulate errors**: return `401`, `404`, `429` or `500` and check your error handling.
-- **Inject a payload**: answer with any JSON body, headers and status code.
-- **Throw an exception**: simulate a dropped connection (`IOException`, timeout) instead of a response.
-- **Add a delay**: slow the mocked response down.
-- **Clone a real call**: turn a captured call into a mock in one click.
+## Prerequisites
 
-Mocks are applied by the [network](network.md) interceptors. To degrade the real network instead of replacing responses, see [Bad Network Simulation](bad-quality.md).
+Before starting, ensure you have:
+1. Integrated the **Flocon SDK** into your Android or Kotlin Multiplatform project.
+2. Downloaded and launched the **[Flocon Desktop App](https://github.com/openflocon/Flocon/releases)**.
+3. Connected your test device or emulator (via USB debugging / ADB).
 
-## Platform support
+---
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
-|---|:---:|:---:|:---:|:---:|
-| HTTP mocks | ✅ OkHttp, Ktor | ✅ Ktor (and OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `package:http` |
-| gRPC mocks | ❌ | ❌ | ❌ | ❌ |
-| WebSocket message injection | ✅ | ❌ | ❌ | ❌ |
+## Step 1: Install Network Interceptor
 
-- The mocks are saved on the device and apply from the next launch too, before the app reconnects to the desktop (on every SDK).
-- gRPC calls cannot be mocked, on any platform. See [gRPC](grpc.md).
-- A WebSocket cannot be mocked, but on Android you can inject a message into a connection. See [WebSockets](websocket.md).
+Add the appropriate network interceptor to your project depending on your networking library:
 
-## Setup
+=== "With OkHttp (Android)"
 
-Mocking needs nothing more than the [network setup](network.md#setup): install the network plugin and attach the interceptor of your HTTP client. Mocks are then applied automatically.
-
-=== "Kotlin"
-
+    Add dependencies:
     ```kotlin
-    startFlocon(FloconContext(context)) {
-        install(FloconNetwork)
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
     }
     ```
 
-    === "OkHttp"
+    Attach `FloconOkhttpInterceptor` to your `OkHttpClient`:
+    ```kotlin
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(FloconOkhttpInterceptor())
+        .build()
+    ```
 
-        ```kotlin
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(FloconOkhttpInterceptor())
-            .build()
-        ```
+=== "With Ktor (Kotlin Multiplatform)"
 
-    === "Ktor"
-
-        ```kotlin
-        val httpClient = HttpClient {
-            install(FloconKtorPlugin)
+    Add dependencies in `commonMain`:
+    ```kotlin
+    kotlin {
+        sourceSets {
+            commonMain.dependencies {
+                implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
+            }
         }
-        ```
-
-=== "Swift"
-
-    ```swift
-    startFlocon { flocon in
-        flocon.install(.network)
     }
-
-    let session = URLSession(configuration: .default.withFlocon())
     ```
 
-    The mocks apply to `URLSession.shared` and to the sessions created with `withFlocon()`. A request excluded by `shouldLog` is neither logged nor mocked.
-
-=== "Flutter"
-
-    ```dart
-    await startFlocon((flocon) => flocon..install(FloconNetwork()));
-
-    final dio = Dio().withFlocon();             // flocon_dio
-    final client = http.Client().withFlocon();  // flocon_http
+    Install `FloconKtorPlugin` in your `HttpClient`:
+    ```kotlin
+    val httpClient = HttpClient {
+        install(FloconKtorPlugin)
+    }
     ```
 
-## Usage
+---
 
-The mocks are managed from the desktop: follow the steps below.
+## Step 2: Connect App to Flocon Desktop
 
-!!! info "How a request is matched"
-    A mock has a **URL pattern**, which is a **regular expression** that must match the **whole URL**, and an **HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, or `*` for all). The first matching mock answers the call.
+1. Launch your mobile application on an emulator or physical device.
+2. Open **Flocon Desktop** on your computer.
+3. Verify that your device and application package name appear in the top-left device selector.
 
-    Example: `https://api.example.com/users/.*` matches every user URL.
-
-### Step 1: Install the network interceptor
-
-Follow the [Setup](#setup) above, then run your app.
-
-### Step 2: Connect the app to Flocon Desktop
-
-1. Launch your app on an emulator, a simulator or a physical device.
-2. Open **Flocon Desktop**.
-3. Check that your device and package name appear in the top-left device selector.
-
-<!-- screenshot: mocking-connected | scenario=doc-network | screen=network | Device selector showing the connected app -->
 <img width="1290" alt="Flocon Desktop Connected" src="../assets/screenshots/mocking_step2_connected.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
-### Step 3: Trigger a baseline call
+---
 
-1. In your app, do something that makes a network call (load a profile, fetch items).
+## Step 3: Trigger a Baseline Network Call
+
+1. In your mobile application, perform an action that triggers a network request (e.g., loading a profile screen, fetching items).
 2. In Flocon Desktop, open the **Network** tab.
-3. The call appears in the list with its method, URL, status code and duration.
+3. You will see the live request appear in the list with its method, URL, status code, and response time.
 
-<!-- screenshot: mocking-captured-request | scenario=doc-network | screen=network | A captured GET call selected in the list -->
 <img width="1290" alt="Captured Network Request" src="../assets/screenshots/mocking_step3_request.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
-### Step 4: Open the Mocks manager
+---
 
-Two ways in:
+## Step 4: Open the Mocks Manager Dialog
 
-- **From the toolbar**: click the **Mocks** icon in the toolbar of the Network tab. The manager lists your mocks and lets you add one.
-- **From a captured call (recommended)**: select the call, then click **Create Mock** in the detail panel. The editor opens with the URL, the method, the headers and the original response body already filled in.
+You can access the **Mocks Manager Dialog** in one of two ways:
 
-<!-- screenshot: mocking-create-button | scenario=doc-network | screen=network | Detail panel of a call with the Create Mock button visible -->
+### Method A: From the Network Toolbar (Mocks Icon)
+Click the **Mocks** icon (WiFi Tethering icon) in the top-right action toolbar of the Network tab. This opens the Mocks Manager dialog displaying all existing mock rules and an **Add Mock** button.
+
+### Method B: Directly from a Captured Request (Recommended)
+1. In the Network Inspector table, select the request you wish to mock.
+2. In the right-hand details panel, click the **Create Mock** (or **Mock this Call**) button.
+3. The Mocks Manager dialog will open immediately with the endpoint URL, HTTP method, request headers, and original JSON response body already pre-filled.
+
 <img width="1290" alt="Open Mocks Manager Dialog / Create Mock Button" src="../assets/screenshots/mocking_step4_create_button.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
-### Step 5: Write the mock
+---
 
-In the editor:
+## Step 5: Configure Mock Rules & Response
 
-1. **Expectation**
-    - **URL Pattern (Regex)**: the pattern to match. The **Test URL Pattern** field tells you whether a URL matches.
-    - **Method**: `GET`, `POST`, `PUT`, `DELETE`, `PATCH` or `*`.
-2. **Response**, choose a type:
-    - **HttpCode + Body**: the **HTTP Code** (`200`, `401`, `404`, `500`...), the **Media Type**, the **Headers** and the **Body**, with JSON highlighting.
-    - **Exception**: throw an exception instead of answering, to simulate a failed connection (see below).
-3. **Additional Delay (ms)**: wait before answering (for example `1500`) to see loading states.
-4. **Display name**, and **Shared across apps & devices** if the mock must apply to every app, not only this one.
-5. Save.
+Inside the Mock Editor modal:
 
-<!-- screenshot: mocking-editor | scenario=doc-network | screen=network | Mock editor with a regex URL pattern, method, 500 status code and a JSON body -->
+1. **Set URL & Method Expectations**:
+    - **URL Matching Pattern**: Enter the endpoint URL or URL pattern (supports wildcards/exact match, e.g. `https://api.example.com/users/*`).
+    - **HTTP Method**: Choose `GET`, `POST`, `PUT`, `DELETE`, etc.
+2. **Configure the Simulated Response**:
+    - **HTTP Status Code**: Set the desired code (e.g., `200 OK`, `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error`).
+    - **Response Body**: Edit the JSON payload directly with syntax highlighting.
+    - **Response Delay (ms)**: Set an artificial delay (e.g., `1500 ms`) to test loading skeletons, shimmer effects, and progress spinners.
+    - **Headers**: Add custom response headers (e.g., `Content-Type: application/json`).
+3. Click **Save & Enable Mock**.
+
 <img width="1290" alt="Mock Editor Configuration" src="../assets/screenshots/mocking_step5_editor.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
-### Step 6: Trigger the call again
+---
 
-1. Go back to your app and repeat the action (pull to refresh, reopen the screen).
-2. **In the app**: it receives the mocked response without reaching the server.
-3. **In Flocon Desktop**: the call is in the Network list with a **MOCK** tag.
+## Step 6: Trigger the Call & Verify
 
-<!-- screenshot: mocking-mocked-result | scenario=doc-network | screen=network | Network list with a call tagged MOCK and its mocked body in the detail -->
+1. Return to your mobile application.
+2. Re-trigger the same action (e.g., pull to refresh or re-open the screen).
+3. **In the mobile app**: The app receives the mock response immediately without contacting the backend server!
+4. **In Flocon Desktop**: The request is logged in the Network Inspector with a visible **`[MOCKED]`** tag and purple badge.
+
 <img width="1290" alt="Intercepted Mock in Event Log" src="../assets/screenshots/mocking_step6_mocked_result.png" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 1.5rem 0;" />
 
-### Step 7: Manage your mocks
+---
 
-In the Mocks manager:
+## Step 7: Advanced Mock Management
 
-- **Enable and disable**: each mock has a switch, so you can turn it off without losing it.
-- **Simulate a hard failure**: choose the **Exception** type and select a class (`SocketTimeoutException`, `UnknownHostException`, `ConnectException`, `SSLHandshakeException`, `IOException`) to test your retry and offline states.
-- **Export and import**: save your mocks to a file and import them back. Share a suite with your team, attach edge cases to a bug report, or switch between profiles (happy path, outage...).
+Inside the **Mocks Manager Dialog**:
 
-On Swift and Flutter, the exception class of the desktop is turned into the closest native error (`URLError` on Swift, a `DioException` on Dio): a timeout class gives a timeout, a connection class a connection error.
+### 1. Live Enable / Disable Toggling
+Each mock has an **Enabled / Disabled** toggle switch. Switch mocks on and off instantly without deleting your configuration rules.
 
-## In Flocon Desktop
+### 2. Simulating Hard Network Failures
+Instead of returning a JSON body with an HTTP 500 status code, select **Error / Exception** mode in the editor to simulate physical connection drops (`IOException`, timeouts) and test retry/offline UI states.
 
-Everything above happens in the **Network** screen:
+### 3. Export & Import Mock Profiles
+Use the **Export** and **Import** buttons in the dialog to save your mocks to `.json` files. You can:
+- Share mock suites with your team.
+- Attach edge-case scenarios to bug reports for QA.
+- Switch between different test profiles (e.g. Happy Path, Edge Cases, Outage Simulation).
 
-- the **Mocks** toolbar button opens the manager (list, switches, export, import);
-- **Create Mock** in the call detail starts from a real call;
-- mocked calls are tagged **MOCK** in the list.
+---
 
-## With AI agents (MCP)
+## Summary Checklist
 
-- `list_network_mocks`, `get_network_mock`: read the mocks.
-- `create_network_mock`: creates a mock, optionally from a captured call (`fromCallId`) with only the fields to override (for example the status code).
-- `update_network_mock`: edits a mock, and enables or disables it.
-- `delete_network_mock`: removes a mock.
-
-> "Mock the `/profile` call with a 500 error, then reload the screen and tell me what the app displays."
-
-See the [MCP cookbook](mcp-cookbook.md) for full workflows.
-
-## Summary
-
-| Step | Where |
+| Action | Where |
 | :--- | :--- |
-| 1. Install | `install(FloconNetwork)` plus the interceptor, `install(.network)` plus `withFlocon()`, or `withFlocon()` on Dio / http |
-| 2. Connect | The device appears in the top bar of Flocon Desktop |
-| 3. Capture | Trigger a call from the app |
-| 4. Open | **Mocks** toolbar button, or **Create Mock** on a call |
-| 5. Write | URL regex, method, status, body, delay |
-| 6. Verify | Repeat the call and look for the **MOCK** tag |
-
-## Limitations
-
-- gRPC calls cannot be mocked.
-- WebSocket frames cannot be mocked. Only Android can inject a message into a connection.
-- Requests excluded by your `shouldLog` option are never mocked.
+| **1. Install Interceptor** | Add `FloconOkhttpInterceptor` (OkHttp) or `FloconKtorPlugin` (Ktor) |
+| **2. Connect App** | Ensure device appears in Flocon Desktop top bar |
+| **3. Capture Request** | Trigger baseline request from mobile app |
+| **4. Open Mock Manager** | Click the **Mocks** toolbar icon or **Create Mock** on a captured request |
+| **5. Customize Rules** | Modify status code, response body, latency delay |
+| **6. Verify** | Re-run in mobile app and look for the `[MOCKED]` indicator |

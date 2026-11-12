@@ -3,7 +3,7 @@ package io.github.openflocon.domain.telemetry.models
 /**
  * How much usage data Flocon Desktop is allowed to send.
  *
- * See docs/telemetry.md for the exact list of collected events.
+ * See docs2/telemetry.md for the exact list of collected events.
  */
 enum class TelemetryLevelDomainModel {
     /**
