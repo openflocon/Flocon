@@ -238,13 +238,13 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
 === "Flutter"
 
-    `FloconSharedPreferences(prefs, name:)` shows one `SharedPreferences` instance, under the name given (default `SharedPreferences`). Install it once, and register the other instances with `floconRegisterSharedPreferences` (installing a second `FloconSharedPreferences` would replace the first):
+    `FloconSharedPreferences(prefs, name:)` shows one `SharedPreferences` instance, under the name given (default `SharedPreferences`). Install it once, and register the other instances with `Flocon.preferences.register` (installing a second `FloconSharedPreferences` would replace the first):
 
     ```dart
     final prefs = await SharedPreferences.getInstance();
     await startFlocon((flocon) => flocon..install(FloconSharedPreferences(prefs, name: 'App')));
 
-    floconRegisterSharedPreferences(otherPrefs, name: 'Other');
+    Flocon.preferences.register(otherPrefs, name: 'Other');
     ```
 
     `String`, `bool`, `int`, `double` and `List<String>` values can be edited, and any key can be deleted. The store is shown with the type `SharedPreferences`.

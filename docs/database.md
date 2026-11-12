@@ -207,7 +207,10 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
     Register a database stored elsewhere, or give one a clearer name:
 
     ```dart
-    floconRegisterDatabase('Shared', '/path/to/shared.sqlite');
+    import 'package:flocon/flocon.dart';
+    import 'package:flocon_database/flocon_database.dart';
+
+    Flocon.database.register('Shared', '/path/to/shared.sqlite');
     ```
 
     The plugin must be installed first (the call does nothing before). A database already listed is renamed.
@@ -311,7 +314,10 @@ Flocon can display all SQL queries executed by your app in real time. It is grea
     `flocon_database` browses and queries databases with `sqflite`, which has no query hook: log the queries from the hook of your database library. A query is linked to its database by the path of its file.
 
     ```dart
-    floconLogDatabaseQuery(db.path, 'SELECT * FROM users WHERE id = ?', [42]);
+    import 'package:flocon/flocon.dart';
+    import 'package:flocon_database/flocon_database.dart';
+
+    Flocon.database.logQuery(db.path, 'SELECT * FROM users WHERE id = ?', [42]);
     ```
 
     For example with Drift, from a `QueryInterceptor`:
@@ -323,7 +329,7 @@ Flocon can display all SQL queries executed by your app in real time. It is grea
 
       @override
       Future<List<Map<String, Object?>>> runSelect(QueryExecutor e, String statement, List<Object?> args) {
-        floconLogDatabaseQuery(path, statement, args);
+        Flocon.database.logQuery(path, statement, args);
         return super.runSelect(e, statement, args);
       }
       // same for runInsert, runUpdate, runDelete, runCustom

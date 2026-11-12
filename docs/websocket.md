@@ -20,7 +20,7 @@ For every connection, Flocon records:
 | | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Automatic capture | ✅ OkHttp listener | ✅ OkHttp listener (JVM only), otherwise manual | ❌ manual | ❌ manual |
-| Manual logging | ✅ | ✅ | ✅ `logWebSocketEvent` | ✅ `floconLogWebSocketEvent` |
+| Manual logging | ✅ | ✅ | ✅ `logWebSocketEvent` | ✅ `Flocon.network.logWebSocketEvent` |
 | Inject a message (mock) | ✅ | ✅ JVM (OkHttp) | ❌ | ❌ |
 
 - On Android with OkHttp, wrap your listener to log the incoming frames, and send with a Flocon helper to log the outgoing ones. Other WebSocket clients (Ktor, `URLSessionWebSocketTask`, `web_socket_channel`) are not intercepted: log their events yourself.
@@ -139,18 +139,18 @@ WebSocket events go through the network plugin: follow the [network setup](netwo
 
 === "Flutter"
 
-    WebSocket traffic is not intercepted automatically. Call `floconLogWebSocketEvent` for each event you want to see:
+    WebSocket traffic is not intercepted automatically. Call `Flocon.network.logWebSocketEvent` for each event you want to see:
 
     ```dart
     import 'package:flocon/flocon.dart';
 
-    floconLogWebSocketEvent(FloconWebSocketEvent(
+    Flocon.network.logWebSocketEvent(FloconWebSocketEvent(
       websocketUrl: url,
       event: FloconWebSocketEventType.open,
     ));
 
     channel.sink.add(text);
-    floconLogWebSocketEvent(FloconWebSocketEvent(
+    Flocon.network.logWebSocketEvent(FloconWebSocketEvent(
       websocketUrl: url,
       event: FloconWebSocketEventType.sendMessage,
       message: text,

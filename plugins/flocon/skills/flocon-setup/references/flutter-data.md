@@ -14,8 +14,14 @@ The facade API below (`Flocon.analytics`, `Flocon.featureFlags`, ...) is on `mai
 | Deeplinks | `Flocon.deeplinks.register([...], variables: [...])` | `floconRegisterDeeplinks([...], variables: [...])` |
 | Dashboard | `Flocon.dashboard.dashboard('id', [...])` | `floconDashboard('id', [...])` |
 | Tables | `Flocon.table.table('users').log([...])` | `floconTable('users').log([...])` |
+| Databases | `Flocon.database.register(name, path)`, `Flocon.database.logQuery(path, sql, args)` | `floconRegisterDatabase(name, path)`, `floconLogDatabaseQuery(path, sql, args)` |
+| Preferences | `Flocon.preferences.register(prefs, name:)` | `floconRegisterSharedPreferences(prefs, name:)` |
+| Files | `Flocon.files.register(name, directory)` | `floconRegisterFilesFolder(name, directory)` |
+| WebSocket | `Flocon.network.logWebSocketEvent(event)` | `floconLogWebSocketEvent(event)` |
 
-The rest (`startFlocon`, `install`, `withFlocon`, `FloconNetwork`, `floconRegister*`, `floconLog*`) is the same. Everything is a no-op before `startFlocon`.
+On `main`, `Flocon.database`, `Flocon.preferences` and `Flocon.files` are extensions declared by the plugin packages: import both `package:flocon/flocon.dart` and the plugin package.
+
+The rest (`startFlocon`, `install`, `withFlocon`, `FloconNetwork`) is the same. Everything is a no-op before `startFlocon`.
 
 ## Bridge, do not duplicate
 
@@ -34,9 +40,9 @@ Analytics, feature flags and the timeline are fed from the app's existing abstra
 
 | Plugin | Package | Notes |
 | :--- | :--- | :--- |
-| `FloconSharedPreferences(prefs)` | `flocon_shared_preferences` | edit `String`, `bool`, `int`, `double`, `List<String>`; more instances with `floconRegisterSharedPreferences(prefs, name:)` |
-| `FloconFiles()` | `flocon_files` | `Documents`, `Application Support`, `Caches`, `tmp` and the app data folder shown by default; `floconRegisterFilesFolder(name, Directory)` for others. The Desktop can delete files: say so |
-| `FloconDatabase()` | `flocon_database` | SQLite files of the databases / documents / support folders are listed without setup, whatever the library (sqflite, Drift, plain). `floconRegisterDatabase(name, path)` for others. Query logs only appear if the app calls `floconLogDatabaseQuery(path, statement, args)` from its library hook (for Drift, a `QueryInterceptor`) |
+| `FloconSharedPreferences(prefs)` | `flocon_shared_preferences` | edit `String`, `bool`, `int`, `double`, `List<String>`; more instances with `Flocon.preferences.register(prefs, name:)` |
+| `FloconFiles()` | `flocon_files` | `Documents`, `Application Support`, `Caches`, `tmp` and the app data folder shown by default; `Flocon.files.register(name, Directory)` for others. The Desktop can delete files: say so |
+| `FloconDatabase()` | `flocon_database` | SQLite files of the databases / documents / support folders are listed without setup, whatever the library (sqflite, Drift, plain). `Flocon.database.register(name, path)` for others. Query logs only appear if the app calls `Flocon.database.logQuery(path, statement, args)` from its library hook (for Drift, a `QueryInterceptor`) |
 | `FloconCrashReporter()` | `flocon_crash_reporter` | hooks `FlutterError.onError` and `PlatformDispatcher.instance.onError`; existing handlers (Crashlytics, Sentry) keep working. Native crashes are not reported. Install it after the other crash tools if the project replaces the handlers itself |
 
 Because the Desktop can edit preferences, run SQL and delete files, these plugins are the reason Flocon must not start in release builds ([flutter.md](flutter.md) section 6).

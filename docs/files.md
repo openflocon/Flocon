@@ -141,7 +141,10 @@ and a root folder itself is never deleted.
 === "Flutter"
 
     ```dart
-    floconRegisterFilesFolder('Exports', Directory('${docs.path}/exports'));
+    import 'package:flocon/flocon.dart';
+    import 'package:flocon_files/flocon_files.dart';
+
+    Flocon.files.register('Exports', Directory('${docs.path}/exports'));
     ```
 
     The plugin must be installed first (the call does nothing before). Registering the same folder again renames it. Pass `defaultRoots:` to `FloconFiles` to replace the default folders.
