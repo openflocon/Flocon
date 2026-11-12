@@ -16,8 +16,13 @@ sealed interface DeeplinkPart {
         val autoComplete: List<String>? = null,
     ) : DeeplinkPart
 
+    /**
+     * [value] is the resolved value, or "{name}" while the variable has none ([isResolved] is false).
+     */
     @Immutable
     data class Variable(
-        val value: String
+        val value: String,
+        val name: String = value,
+        val isResolved: Boolean = true,
     ) : DeeplinkPart
 }

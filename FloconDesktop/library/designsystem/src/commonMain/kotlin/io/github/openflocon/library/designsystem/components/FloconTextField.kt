@@ -186,7 +186,8 @@ fun FloconTextFieldWithoutM3(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     textStyle: TextStyle = FloconTheme.typography.bodySmall,
     containerColor: Color = FloconTheme.colors.bg200,
-    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor)
+    contentColor: Color = FloconTheme.colors.contentColorFor(containerColor),
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val shape = FloconTheme.shapes.medium
 
@@ -194,6 +195,7 @@ fun FloconTextFieldWithoutM3(
         value = value,
         onValueChange = onValueChange,
         textStyle = textStyle.copy(color = contentColor),
+        visualTransformation = visualTransformation,
         maxLines = maxLines,
         minLines = minLines,
         readOnly = readOnly,

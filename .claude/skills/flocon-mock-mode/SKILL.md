@@ -40,7 +40,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 | `doc-crashreporter` | Crashes with stack traces |
 | `doc-analytics` | Analytics events in two tables |
 | `doc-featureflags` | Feature flags from two providers |
-| `doc-deeplinks` | Deeplinks: plain, variables, autocomplete parameters, universal link |
+| `doc-deeplinks` | Deeplinks only: a link with a variable, a link with fields, plain links, three shared variables |
 | `empty` | A connected device with no data (empty states) |
 | `multi-device` | Android with two apps + an iPhone |
 | `weird` | 5 MB body, invalid JSON, unicode, 50×500, 2 000-char URL, old SDK version, odd timestamps |
