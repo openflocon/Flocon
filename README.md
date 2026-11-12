@@ -6,8 +6,7 @@
 
 Inspired by [Flipper](https://github.com/facebook/flipper) by Meta, Flocon is a desktop debugger plus lightweight SDKs. Your app connects to the desktop app, and you observe, inspect and drive it in real time.
 
-<!-- screenshot: hero -->
-<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
+![Flocon Desktop showing the Timeline of an app](docs/assets/screenshots/home-timeline-graph.jpg)
 
 Full documentation: **[openflocon.github.io/Flocon](https://openflocon.github.io/Flocon/)**
 
