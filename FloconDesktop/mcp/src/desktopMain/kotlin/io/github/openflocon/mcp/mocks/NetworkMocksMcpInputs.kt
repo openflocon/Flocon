@@ -125,3 +125,23 @@ internal data class DeleteNetworkMockInput(
     @McpDescription(MOCK_ID_DESCRIPTION)
     val mockId: String,
 )
+
+@Serializable
+internal data class ListWebsocketClientsInput(
+    @McpDescription(DEVICE_ID_DESCRIPTION)
+    override val deviceId: String? = null,
+    @McpDescription(PACKAGE_NAME_DESCRIPTION)
+    override val packageName: String? = null,
+) : McpTargetArguments
+
+@Serializable
+internal data class SendWebsocketMessageInput(
+    @McpDescription("Id of the websocket, from list_websocket_clients.")
+    val websocketId: String,
+    @McpDescription("Text message received by the app, as if sent by the server. Ex: a JSON payload.")
+    val message: String,
+    @McpDescription(DEVICE_ID_DESCRIPTION)
+    override val deviceId: String? = null,
+    @McpDescription(PACKAGE_NAME_DESCRIPTION)
+    override val packageName: String? = null,
+) : McpTargetArguments
