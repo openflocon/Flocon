@@ -14,9 +14,7 @@ Common use cases:
 - Monitor cache keys and eviction events.
 - Track queued background jobs or workers.
 
-<!-- screenshot: tables-rows | scenario=doc-tables | screen=table | a table with its columns and several rows, the table selector and the filter field visible -->
-
-<img width="1196" height="768" alt="Tables View" src="https://github.com/user-attachments/assets/ff3090fa-8f37-4138-a492-20b9159314af" style="border-radius: 8px;" />
+![A table with its columns and several rows](assets/screenshots/tables-rows.png)
 
 ## Platform support
 

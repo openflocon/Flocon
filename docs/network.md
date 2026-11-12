@@ -7,8 +7,7 @@ description: Inspect the HTTP calls of your app in real time, with OkHttp, Ktor,
 
 Flocon captures the HTTP calls your app makes and lists them live in the desktop app: method, URL, status, duration, size, headers and bodies. You see what your app really sends and receives, without a proxy or a certificate to install.
 
-<!-- screenshot: network-list | scenario=doc-network | screen=network | Network list with several calls (GET 200, POST 201, a 404 and a 500), one selected, detail panel open -->
-<img width="1291" height="834" alt="Network Inspector UI" src="https://github.com/user-attachments/assets/48f86fdf-f552-4f68-abe2-8d61229ccb27" style="border-radius: 8px;" />
+![Network list with several calls (get 200](assets/screenshots/network-list.png)
 
 <!-- screenshot: network-detail | scenario=doc-network | screen=network | Detail of a JSON call: request and response headers, formatted JSON response body -->
 <img width="1292" height="833" alt="Network Request Detail View" src="https://github.com/user-attachments/assets/c0f74bb4-85f3-4ced-b156-78dfae0189f3" style="border-radius: 8px; margin-top: 1rem;" />

@@ -14,9 +14,7 @@ Use cases:
 - Change a state value on the fly without rebuilding.
 - Trigger in-app test actions (clear a cache, seed test data, fire a notification).
 
-<!-- screenshot: dashboard-sections | scenario=doc-dashboard | screen=dashboard | several dashboard tabs at the top, a section with text/check box/text field/button and a form container -->
-
-<img width="1027" height="561" alt="Desktop Dashboard View" src="https://github.com/user-attachments/assets/056feafc-fda9-46ff-aaf0-4b8a0801b72e" style="border-radius: 8px;" />
+![Several dashboard tabs at the top](assets/screenshots/dashboard-sections.png)
 
 <!-- screenshot: dashboard-mobile | scenario=doc-dashboard | screen=dashboard | the same dashboard, as it is declared in the app -->
 

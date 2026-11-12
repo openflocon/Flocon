@@ -7,8 +7,7 @@ description: Browse, open, download and delete the files of your app's sandbox f
 
 Flocon lets you explore the **sandboxed storage** of your app (files, caches, exports, logs, database files) from the desktop, without ADB shell commands or Xcode container downloads. You can open a file, copy its path, download it and delete files or the content of a folder.
 
-<!-- screenshot: files-browser | scenario=doc-files | screen=files | the folder list of the app and a folder opened with sizes and modification dates -->
-<img width="1295" height="838" alt="File Explorer" src="https://github.com/user-attachments/assets/1c22c813-20c4-4e34-bcf8-6cc511deab21" style="border-radius: 8px;" />
+![The folder list of the app and a folder opened with sizes and modification dates](assets/screenshots/files-browser.png)
 
 ## Platform support
 

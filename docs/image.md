@@ -7,8 +7,7 @@ description: Browse the images your app downloads, with their URL, size and weig
 
 Flocon collects the **images your app downloads** (avatars, feed thumbnails, banners, media) in a gallery. It helps you debug a missing placeholder, a CDN that resolves wrong, an image that is too heavy, or a cache that does not cache.
 
-<!-- screenshot: images-grid | scenario=doc-images | screen=images | Grid of downloaded images with the filter box and the list/grid toggle -->
-<img width="1297" height="838" alt="Image Previewer" src="https://github.com/user-attachments/assets/5f83ce95-0b03-4bfd-9d67-099c7b5ca5cc" style="border-radius: 8px;" />
+![Grid of downloaded images with the filter box and the list/grid toggle](assets/screenshots/images-grid.png)
 
 There is no separate plugin for images. An image is **a network call whose response is flagged as an image**: Flocon does not send the image bytes, it sends the call, and the desktop app downloads the image from its URL to display it.
 

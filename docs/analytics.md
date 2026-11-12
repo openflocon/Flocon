@@ -7,9 +7,7 @@ description: Inspect and validate real-time analytics events and custom telemetr
 
 Flocon streams and displays the **analytics events** emitted by your app in real time, so developers, QA engineers and product teams can verify tracking payloads without opening a dashboard on the analytics provider's side. Each provider (Firebase, Segment, a custom tracker...) is its own table.
 
-<!-- screenshot: analytics-stream | scenario=doc-analytics | screen=analytics | the event list with the table selector, the filter field and several events with their properties -->
-
-<img width="1296" height="837" alt="Analytics Events Stream" src="https://github.com/user-attachments/assets/e3f2a6ab-bf25-48ac-b9fe-8ea3f81206a1" style="border-radius: 8px;" />
+![The event list with the table selector](assets/screenshots/analytics-stream.png)
 
 <!-- screenshot: analytics-detail | scenario=doc-analytics | screen=analytics | an event selected with its payload detail panel open -->
 

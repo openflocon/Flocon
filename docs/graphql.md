@@ -7,7 +7,7 @@ description: See your GraphQL queries and mutations as such in Flocon, with the 
 
 Flocon recognises GraphQL calls among your HTTP traffic and shows them with their operation type and query, next to the usual headers, bodies and timings. There is nothing GraphQL-specific to install: if your GraphQL client goes through a [network](network.md) interceptor, its calls are captured.
 
-<!-- screenshot: graphql-list | scenario=doc-network | screen=network | Network list with a query and a mutation tagged as GraphQL operations -->
+![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
 <!-- screenshot: graphql-detail | scenario=doc-network | screen=network | Detail of a GraphQL call: GraphQl section with query name and type, JSON request body and response -->
 
 ## How Flocon detects GraphQL

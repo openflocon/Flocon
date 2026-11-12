@@ -7,7 +7,7 @@ description: See what TalkBack and VoiceOver get from your app: focus order, con
 
 Flocon streams the **accessibility events** of your application to the desktop, so you can check the focus order, the content descriptions, the announcements and the live-region updates without listening to a screen reader.
 
-<!-- screenshot: accessibility-events | scenario=doc-accessibility | screen=accessibility | event list with CLICK and focus events, TalkBack remote visible -->
+![Event list with click and focus events](assets/screenshots/accessibility-events.png)
 
 ## Platform support
 

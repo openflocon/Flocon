@@ -7,7 +7,7 @@ description: Inspect gRPC calls and their Protocol Buffers messages in Flocon, o
 
 Flocon logs your **gRPC calls** in the Network screen: the server, the method, the request and response messages as JSON, the metadata, the duration and the gRPC status. It saves you from decoding Protocol Buffers by hand.
 
-<!-- screenshot: grpc-list | scenario=doc-network | screen=network | Network list with a gRPC call (helloworld.Greeter/SayHello, status OK) -->
+![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
 <!-- screenshot: grpc-detail | scenario=doc-network | screen=network | Detail of a gRPC call: authority, full method name, JSON request and response messages, metadata -->
 
 For each call you see:

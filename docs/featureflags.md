@@ -7,7 +7,7 @@ description: List and search the feature flags evaluated by your app, with their
 
 Flocon displays the **feature flags** evaluated by your app: for each flag, its provider, its variant and its optional payload. There is no dependency on a feature flag SDK: your app forwards the flags it already evaluated, from Firebase Remote Config, Statsig, LaunchDarkly, an in-house system...
 
-<!-- screenshot: featureflags-list | scenario=doc-featureflags | screen=featureflags | the provider selector, the colored variant toggles with their counts, and the list of flags with state and variant -->
+![The provider selector](assets/screenshots/featureflags-list.png)
 
 For each flag the desktop shows:
 

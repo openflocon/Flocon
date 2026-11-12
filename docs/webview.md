@@ -8,7 +8,7 @@ description: See the JS console, the page events and the bridge calls of the Web
 Flocon displays what happens inside the **WebViews** of your application: the JS console, the page loads and errors, and the calls from the page to your native code.
 No more `chrome://inspect` and USB debugging to read a `console.error`.
 
-<!-- screenshot: webview-events | scenario=doc-webview | screen=web_view | Console, Pages and Bridge events of one WebView, filter chips visible -->
+![Console](assets/screenshots/webview-events.png)
 
 ## Platform support
 

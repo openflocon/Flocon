@@ -7,8 +7,7 @@ description: Inspect and edit SharedPreferences, DataStore, UserDefaults and the
 
 Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack DataStore, `UserDefaults`, the Keychain, Flutter `shared_preferences`, or a store of your own) and lets you **edit values live** from the desktop. It saves you from re-installing the app or writing debug screens to put it in a given state.
 
-<!-- screenshot: preferences-list | scenario=doc-sharedprefs | screen=shared_preferences | the preference selector open, and the keys list with typed values -->
-<img width="1295" height="836" alt="Preferences UI" src="https://github.com/user-attachments/assets/03c3278b-dc2f-4943-ba17-b18030e204ea" style="border-radius: 8px;" />
+![The preference selector open](assets/screenshots/preferences-list.png)
 
 ## Platform support
 

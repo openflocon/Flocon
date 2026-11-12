@@ -7,8 +7,7 @@ description: Replace the response of an HTTP call, or make it fail, from the Flo
 
 Flocon lets you **intercept a live HTTP call and answer it with a response you wrote**, from the desktop app. Test a 401, a 404 or a 500, feed your screen a JSON from an unreleased backend, or add a delay to see your loaders, all without editing your code or redeploying.
 
-<!-- screenshot: mocking-list | scenario=doc-network | screen=network | Mocks manager open, listing two mocks (one enabled, one disabled) -->
-<img width="1293" height="836" alt="Network Mocking in Flocon" src="https://github.com/user-attachments/assets/3a529e3f-488e-4dba-aee1-fc6f70efcb08" style="border-radius: 8px;" />
+![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
 
 You can:
 

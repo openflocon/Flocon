@@ -7,9 +7,7 @@ description: Interactive deeplink runner with parameter autocompletion and execu
 
 Your app declares its deeplinks, with the parts to fill in (`[userId]`) and values shared between links (`[host]`). Flocon Desktop lists them, lets you fill the parameters with autocomplete, and opens the link on the device in one click. No more hand-written `adb shell am start` or `xcrun simctl openurl` commands.
 
-<!-- screenshot: deeplinks-sidebar | scenario=doc-deeplinks | screen=deeplink | the filter and tabs in the top bar, the sidebar with Free link, Declared and Recent entries, and a link tab open with its fields -->
-
-<img width="1293" height="836" alt="Deeplink Runner" src="https://github.com/user-attachments/assets/eeaa30fb-6567-437a-96a4-dff44c6c6a54" style="border-radius: 8px;" />
+![The filter and tabs in the top bar](assets/screenshots/deeplinks-sidebar.png)
 
 ## Platform support
 

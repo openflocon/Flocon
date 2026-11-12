@@ -7,8 +7,7 @@ description: Browse SQLite databases from your app, run SQL queries on them and 
 
 Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data stores, sqflite, plain SQLite files) and lets you browse their schema, run SQL queries on them from the desktop and see the queries your app runs, in real time. It helps you check what is really stored, test a query before writing it in code, and spot slow or unexpected queries.
 
-<!-- screenshot: database-schema | scenario=doc-database | screen=database | the databases sidebar with tables and columns, and a table opened with its rows -->
-<img width="1726" height="1080" alt="Database Explorer Schema" src="https://github.com/user-attachments/assets/47360e06-43af-4713-b0ed-a6728a6b49ad" style="border-radius: 8px;" />
+![The databases sidebar with tables and columns](assets/screenshots/database-schema.png)
 
 <!-- screenshot: database-sql-editor | scenario=doc-database | screen=database | the SQL editor with a query and its tabular result -->
 <img width="1728" height="1077" alt="SQL Editor" src="https://github.com/user-attachments/assets/f351970f-0511-4b54-af5e-55dcd209f2e2" style="border-radius: 8px; margin-top: 1rem;" />

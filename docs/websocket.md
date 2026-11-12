@@ -7,8 +7,7 @@ description: Follow the events and messages of your WebSocket connections in Flo
 
 Flocon shows the WebSocket traffic of your app next to its HTTP calls: when a connection opens, every message sent and received, errors and closings. It helps with live feeds, chats and multiplayer events, where the bug is often in a frame you cannot see.
 
-<!-- screenshot: websocket-list | scenario=doc-network | screen=network | Network list with WebSocket events: open, a sent message (up arrow), a received message (down arrow), closed -->
-<img width="1442" height="572" alt="WebSocket Inspection in Flocon" src="https://github.com/user-attachments/assets/49cef28f-87c9-4af7-a929-63d428d99f9e" style="border-radius: 8px;" />
+![The Network screen of Flocon Desktop](assets/screenshots/network-list.png)
 
 For every connection, Flocon records:
 

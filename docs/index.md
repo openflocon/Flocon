@@ -27,8 +27,7 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
 ---
 
-<!-- screenshot: home-overview | scenario=default | screen=network | the desktop app with a connected device and the network list -->
-<img width="1294" height="837" alt="Flocon Desktop Interface" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
+![The desktop app with a connected device and the network list](assets/screenshots/home-overview.png)
 
 ---
 
