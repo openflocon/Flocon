@@ -270,6 +270,15 @@ sealed interface MockEvent {
         val result: String?,
     ) : MockEvent
 
+    /** One event of a WebSocket: [event] is `open`, `sent`, `received`, `closing`, `closed` or `error`. */
+    data class WebSocket(
+        override val at: Duration,
+        val url: String,
+        val event: String,
+        val message: String? = null,
+        val error: String? = null,
+    ) : MockEvent
+
     /** A message sent as is, to test what a real SDK should not send (invalid body…). */
     data class Raw(
         override val at: Duration,

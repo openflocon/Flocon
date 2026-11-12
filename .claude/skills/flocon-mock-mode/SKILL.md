@@ -38,13 +38,16 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 |---|---|
 | `default` | A Pixel 8 with a bit of every plugin (all of the above) |
 | `doc-network` | Network only: JSON bodies, headers, 4xx/5xx, timeout, GraphQL, a pending call |
-| `doc-timeline` | Timeline logs only: navigation, user actions, lifecycle, every level |
+| `doc-graphql` | Network with GraphQL calls only: queries and mutations on one `/graphql` endpoint, two with an `errors` array, one HTTP error |
+| `doc-websocket` | Network with a few HTTP calls and many WebSocket events on two sockets (open, sent, received, error, closed) |
+| `doc-grpc` | Network with mostly gRPC calls: OK, UNAVAILABLE, DEADLINE_EXCEEDED, metadata, JSON messages, plus plain GET calls |
+| `doc-timeline` | A 2.5 minutes session for the timeline list and graph: network calls with durations, database queries, analytics, logs, a crash |
 | `doc-crashreporter` | Crashes with stack traces |
 | `doc-analytics` | Analytics events in two tables |
 | `doc-featureflags` | Feature flags from two providers |
 | `doc-deeplinks` | Deeplinks only: a link with a variable, a link with fields, plain links, three shared variables |
 | `doc-database` | `app_database` (users, products, orders, order_items), `cache.db`, query logs with a transaction |
-| `doc-files` | `files`, `caches`, `databases`, `shared_prefs` roots with folders and files |
+| `doc-files` | `files`, `caches`, `databases`, `shared_prefs` roots; `files` has logs, images, exports, backups and avatars folders (json, db, txt, log, jpg, png, webp, pdf) |
 | `doc-sharedprefs` | SharedPreferences and DataStore files, every value type |
 | `doc-images` | 12 product photos (jpg, webp, png) with sizes and headers |
 | `doc-dashboard` | `user` and `debug` dashboards: sections, form, button, text field, check box, json, markdown, html |
@@ -112,5 +115,6 @@ DSL notes:
 - `sdkVersion` is the Flocon SDK version on the device (default: the desktop version, so no "SDK out of date" banner).
 - `databases { database("name") { table("t") { column(..); row(..) } } }`, `databaseQuery(..)` (query log), `files { root(id, name, path) { file(..); folder(..) { } } }`, `sharedPreferences { preferences("name", type) { string/int/long/float/boolean/stringSet } }`, `dashboard(id) { section/form { text, label, button, textField, checkBox, json, plainText, markdown, html } }`, `tableRow(at, table, "col" to "v")`, `accessibilityState(..)`, `accessibility(..)`, `webViewConsole/Page/Bridge(..)`.
 - `responseSize(bytes)` in a `network` block sets the size of a body that is not kept (images).
+- `grpc(at, authority, method, grpcStatus, duration) { requestHeader(..) (metadata); requestBody(..); responseBody(..) }`, `webSocket(at, url, event, message, error)` (`event`: `open`, `sent`, `received`, `closing`, `closed`, `error`; one call per event).
 - `raw(plugin, method, body)` sends any message as is, to test what a real SDK would not send.
 - Timeline types `navigation`, `userAction`, `lifecycle` have their own icon; use `level = null` for them.

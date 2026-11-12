@@ -113,6 +113,7 @@ internal class NetworkMocksMcpToolProvider(
         val ids = networkMocksRepository.observeWebsocketClientsIds(target).first()
         when {
             ids.isEmpty() -> throw McpToolException(NO_WEBSOCKET_MESSAGE)
+
             input.websocketId !in ids -> throw McpToolException(
                 "Unknown websocketId '${input.websocketId}': the app registered ${ids.joinToString { "'$it'" }} (see list_websocket_clients).",
             )

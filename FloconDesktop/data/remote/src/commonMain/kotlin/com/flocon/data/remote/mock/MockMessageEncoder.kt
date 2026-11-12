@@ -29,6 +29,7 @@ import com.flocon.data.remote.files.models.FromDeviceFilesRootsDataModel
 import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.network.models.FloconNetworkRequestDataModel
 import com.flocon.data.remote.network.models.FloconNetworkResponseDataModel
+import com.flocon.data.remote.network.models.FloconNetworkWebSocketEvent
 import com.flocon.data.remote.sharedpreference.models.DeviceSharedPreferenceDataModel
 import com.flocon.data.remote.table.model.TableColumnDataModel
 import com.flocon.data.remote.table.model.TableItemDataModel
@@ -337,6 +338,24 @@ internal class MockMessageEncoder(private val json: Json) {
                             result = event.result,
                             createdAt = timestamp,
                         ),
+                    ),
+                ),
+            ),
+        )
+
+        is MockEvent.WebSocket -> listOf(
+            Triple(
+                Protocol.FromDevice.Network.Plugin,
+                Protocol.FromDevice.Network.Method.LogWebSocketEvent,
+                json.encodeToString(
+                    FloconNetworkWebSocketEvent(
+                        id = "mock-ws-${device.id}-$index",
+                        event = event.event,
+                        url = event.url,
+                        size = (event.message ?: event.error)?.encodeToByteArray()?.size?.toLong() ?: 0L,
+                        timestamp = timestamp,
+                        message = event.message,
+                        error = event.error,
                     ),
                 ),
             ),
