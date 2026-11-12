@@ -1,5 +1,5 @@
 site_name: Flocon
-site_description: A desktop debugger for Android, Kotlin Multiplatform, iOS (Swift) and Flutter apps, with an MCP server for AI agents.
+site_description: An advanced, lightweight debugging & inspection tool for Android and Kotlin Multiplatform.
 site_url: https://openflocon.github.io/Flocon/
 repo_name: openflocon/Flocon
 repo_url: https://github.com/openflocon/Flocon
@@ -81,42 +81,29 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-    - Connect your app: setup.md
-    - Install on macOS: macos-install.md
-    - Install on Linux: linux-install.md
-    - Migrating from 1.x: migration.md
+    - Installation & Setup: setup.md
+    - macOS Setup: macos-install.md
+    - Linux Setup: linux-install.md
     - Troubleshooting: troubleshooting.md
   - Features:
-    - Network:
+    - Networking:
       - HTTP & REST: network.md
       - Mocking: mocking.md
       - Bad Network Simulation: bad-quality.md
       - GraphQL: graphql.md
       - WebSockets: websocket.md
       - gRPC: grpc.md
-      - Images: image.md
-    - Storage:
-      - Databases: database.md
-      - Preferences: sharedpref.md
-      - Files: files.md
+      - Image Viewer: image.md
+    - Storage & State:
+      - Databases (Room & SQLite): database.md
+      - Preferences & DataStore: sharedpref.md
+      - File Explorer: files.md
     - Custom Debugging:
-      - Dashboards: dashboard.md
-      - Tables: table.md
-      - Deeplinks: deeplink.md
-      - Analytics: analytics.md
-      - Feature Flags: featureflags.md
-    - Observability:
-      - Timeline: timeline.md
-      - Crash Reporter: crashreporter.md
-      - Accessibility: accessibility.md
-      - WebView: webview.md
-  - AI Agents (MCP):
-    - Overview & Setup: mcp.md
-    - Tools Reference: mcp-tools.md
-    - Cookbook: mcp-cookbook.md
-  - Desktop:
-    - ADB Commander: adb-commander.md
-    - Telemetry & Privacy: telemetry.md
+      - Reactive Dashboards: dashboard.md
+      - Data Tables: table.md
+      - Deeplink Launcher: deeplink.md
+      - Analytics Viewer: analytics.md
+    - AI Agents (MCP): mcp.md
   - About:
     - The Story: about.md
     - Contributors: contributors.md
