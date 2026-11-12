@@ -1,6 +1,6 @@
 ---
 name: flocon-mcp
-description: Use when debugging a mobile app (Android, iOS, KMP) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
+description: Use when debugging a mobile app (Android, iOS, KMP, Flutter) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
 ---
 
 # Debugging a mobile app with Flocon
@@ -37,7 +37,7 @@ Do not restart Desktop, clear data or change ports to work around an error unles
 
 ## Platform coverage
 
-The tools are shared by every SDK, but each SDK sends what it supports. With the Swift SDK (FloconSwift): network (only the instrumented `URLSession`s, plus gRPC with FloconSwiftGrpc), images (from network responses, no new entry on a cache hit), analytics, feature flags, tables, preferences (incl. keychain if registered), files, databases (inspection; query logs only when the app logs them), dashboards, deeplinks, timeline logs and crashes. Not sent by the Swift SDK at the time of writing: WebView events and accessibility events. Screenshots and screen recordings are taken by Desktop on the booted iOS Simulator only. An empty result for a feature the app did not wire is not an app bug: say which wiring is missing (see the `flocon-setup` skill).
+The tools are shared by every SDK, but each SDK sends what it supports. With the Swift SDK (FloconSwift): network (only the instrumented `URLSession`s, plus gRPC with FloconSwiftGrpc), images (from network responses, no new entry on a cache hit), analytics, feature flags, tables, preferences (incl. keychain if registered), files, databases (inspection; query logs only when the app logs them), dashboards, deeplinks, timeline logs and crashes. Not sent by the Swift SDK at the time of writing: WebView events and accessibility events. Screenshots and screen recordings are taken by Desktop on the booted iOS Simulator only. With the Flutter SDK (FloconFlutter): network (only clients wrapped with `withFlocon()`, WebSockets only when logged by hand, mocks and bad network on Dio / `package:http`), images, analytics, feature flags, tables, preferences, files, databases (inspection; query logs only when the app logs them), dashboards, deeplinks, timeline logs and crashes (Dart and Flutter errors only). Not sent by the Flutter SDK: WebView events and accessibility events. An empty result for a feature the app did not wire is not an app bug: say which wiring is missing (see the `flocon-setup` skill).
 
 ## What to use for what
 
