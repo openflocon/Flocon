@@ -10,6 +10,10 @@ Flocon Desktop can send a small amount of **usage statistics**, **only if you op
 !!! info "Nothing from your apps is ever sent"
     Flocon is a debugging tool: it sees network calls, databases, preferences and files of the apps you inspect. **None of it leaves your computer.** No URLs, payloads, headers, package names, device names or database content are ever part of an event.
 
+The SDKs in your app (Kotlin, Swift, Flutter) collect and send nothing: telemetry is a Flocon Desktop setting only. The only SDK information that is reported is its kind and version, when an app connects (`device_connected`).
+
+<!-- screenshot: telemetry-settings-privacy | scenario=default | screen=settings | Settings > Privacy with the telemetry level choice -->
+
 ## Levels
 
 On first launch, a card asks you to pick a level. **Nothing is sent until you answer**: as long as you haven't chosen, telemetry stays disabled. You can change your choice at any time in **Settings → Privacy**.
@@ -36,7 +40,7 @@ Telemetry is also fully disabled when:
 | `mcp_used` | An MCP tool is called, **at most once per tool per launch** | `tool`: the fixed tool name (e.g. `list_network_calls`), `client`: `claude`, `cursor`, `codex`, `windsurf`, `vscode`, `zed`, `other` or `unknown`. Never the arguments or the results of the call |
 | `feature_used` | A bounded list of actions is used (see below). The core action of each screen is sent **at most once per launch** | `feature`, `screen`, and when relevant `value` (`true`/`false`), `source`, `enabled_mocks_count` |
 | `setting_changed` | One of a few settings is changed | `setting`, `value` (`true`/`false`, or `graph`/`list`), `screen` |
-| `device_connected` | An app with the Flocon SDK connects, **at most once per device and app per launch** (the app relaunches on every build) | `platform` (`android`, `ios`, `desktop`), `sdk` (`kotlin`, `swift`, `flutter`), `sdk_version`, `connection_type` (`default`, `wifi`). Never the device name, the app name or its package |
+| `device_connected` | An app with the Flocon SDK connects, **at most once per device and app per launch** (the app relaunches on every build) | `platform` (`android`, `ios`, `desktop`, `other`), `sdk` (`kotlin`, `swift`, `flutter`, `other`, `unknown`), `sdk_version` (`unknown` when it is not a version), `connection_type` (`default`, `wifi`, `unknown`). Only known values are sent. Never the device name, the app name or its package |
 
 ### `app_started` properties
 

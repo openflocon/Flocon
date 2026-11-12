@@ -7,6 +7,10 @@ description: Run ADB commands, save your favorites and chain them into automatio
 
 The **ADB Commander** is a desktop-only tool to run `adb` commands on your Android devices without leaving Flocon: no terminal, no `-s <serial>` to type.
 
+<!-- screenshot: adb-commander-output | scenario=default | screen=adb_commander | quick commands library, a command typed and its output in the console -->
+
+There is nothing to add to your app, and no Kotlin, Swift or Flutter SDK is involved: it works with any Android device visible by `adb devices`. Commands also appear in the [timeline](timeline.md) as ADB commands.
+
 ---
 
 ## Overview
@@ -17,7 +21,8 @@ From the desktop UI, you can:
 - **Quick commands**: pick a ready-made command (device info, app management, input events…) and fill its `[placeholders]`.
 - **Saved commands**: star a command to keep it in your library and run it again in one click.
 - **History**: re-run any of your recent commands.
-- **Automation flows**: chain several commands into a named flow, with an optional label and delay for each step, then run it and follow the result of every step.
+- **Automation flows**: chain several commands into a named flow, with an optional label and delay for each step, then run it, follow the result of every step, and cancel it while it runs.
+- **Copy**: copy the command or its output with one click.
 
 ---
 
@@ -33,3 +38,8 @@ The ADB Commander only needs a working `adb`:
     The ADB Commander does not need the Flocon SDK in your app: it works with any Android device visible by `adb devices`.
 
 See [Troubleshooting › ADB Connection Issues](troubleshooting.md#2-adb-connection-issues) if your device is not detected.
+
+## Limitations
+
+- Android only: it runs `adb`, so iOS devices and simulators are not supported.
+- Not available for devices connected over Wi-Fi: the desktop shows "ADB is not available for devices connected over wifi".

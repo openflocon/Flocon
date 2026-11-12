@@ -5,11 +5,220 @@ description: Follow everything your app did, in order, on a single screen: netwo
 
 # 🕒 Timeline
 
-The timeline merges the events received by Flocon Desktop into **one chronological list**, grouped by day and by app session, so you can see what happened right before a crash or an HTTP error.
+The timeline merges the events received by Flocon Desktop into **one chronological list**, grouped by day and by app session, so you can see what happened right before a crash or an HTTP error. Your app can also push its own events into it (screens, user actions, lifecycle, milestones).
+
+<!-- screenshot: timeline-list | scenario=doc-timeline | screen=timeline | list view with network, analytics, logs and a crash in one session, counters visible -->
+
+## Platform support
+
+| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+|---|:---:|:---:|:---:|:---:|
+| Merged view of the other plugins (desktop only, nothing to install) | ✅ | ✅ | ✅ | ✅ |
+| Logs from your app (`navigation`, `userAction`, `lifecycle`, custom) | ✅ | ✅ | ✅ | ✅ |
+| Automatic navigation / lifecycle logging | ❌ | ❌ | ❌ | ✅ (`FloconNavigatorObserver`, `FloconLifecycleObserver`) |
+
+Each source of the timeline only shows up once its plugin is installed in your app. On Kotlin, Swift and Flutter the logs are sent by your own calls: Flocon does not detect screens or taps by itself, except with the two Flutter observers below.
 
 ---
 
-## Overview
+## Setup
+
+The timeline itself needs nothing: it is built on the desktop from the events of the other plugins. Each source appears once its plugin is installed, see:
+
+- [Network](network.md#setup-integration)
+- [Analytics](analytics.md#setup)
+- [Databases](database.md#setup)
+- [Data Tables](table.md#setup)
+- [Crash Reporter](crashreporter.md#setup)
+- [Deeplinks](deeplink.md)
+- [WebViews](webview.md#setup)
+- [Logs from your app](#logs-from-your-app)
+
+To send your own logs, install the timeline plugin:
+
+=== "Kotlin"
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-timeline:2.0.0")
+        releaseImplementation("io.github.openflocon:flocon-timeline-no-op:2.0.0")
+    }
+    ```
+
+    ```kotlin
+    startFlocon(FloconContext(applicationContext)) {
+        install(FloconTimeline)
+    }
+    ```
+
+    A plugin that is not installed does nothing instead of crashing.
+
+=== "Swift"
+
+    ```swift
+    import Flocon
+
+    startFlocon { flocon in
+        flocon.install(.timeline)
+    }
+    ```
+
+    `Flocon.initialize()` installs every plugin, the timeline included. Until Flocon is started, or if `.timeline` is not installed, the calls do nothing.
+
+=== "Flutter"
+
+    ```bash
+    flutter pub add flocon
+    ```
+
+    The timeline is part of the `flocon` package and is registered by `startFlocon`: there is nothing to `install`.
+
+    ```dart
+    import 'package:flocon/flocon.dart';
+
+    await startFlocon((flocon) => flocon..connect(host: 'localhost')); // 10.0.2.2 from the Android emulator
+    ```
+
+!!! tip
+    Start with [Getting Started](setup.md) to connect your app to Flocon Desktop.
+
+---
+
+## Logs from your app
+
+Besides the events of the other plugins, your app can push its own events into the timeline, to read what happened around a bug: which screen was open, what the user did, what the app lifecycle was, and any milestone of your own.
+
+There are two kinds of calls, never mixed:
+
+- **Typed, without level**: `log` with a type, and the shortcuts `logNavigation`, `logUserAction` and `logLifecycle`.
+- **Tagged, with a level**: the tag is the type of the event, and the level is `Debug`, `Info`, `Warning` or `Error`.
+
+`value` is the main text of the row (a screen name for example), `params` is a string-to-string map shown in the detail panel (text only, optional).
+
+=== "Kotlin"
+
+    ```kotlin
+    import io.github.openflocon.flocon.Flocon
+    import io.github.openflocon.flocon.timeline.*
+    import io.github.openflocon.flocon.timeline.model.*
+
+    Flocon.timelinePlugin.logNavigation("CheckoutScreen", params = mapOf("from" to "CartScreen"))
+    Flocon.timelinePlugin.logUserAction("Tap on Pay")
+    Flocon.timelinePlugin.logLifecycle("App moved to background")
+
+    // a custom tag, with a level
+    Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), FloconTimelineLevel.Warning)
+    ```
+
+    **Navigation listener (Compose)**
+
+    ```kotlin
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.DisposableEffect
+    import androidx.navigation.NavController
+    import io.github.openflocon.flocon.Flocon
+    import io.github.openflocon.flocon.timeline.*
+
+    @Composable
+    fun NavigationLogger(navController: NavController) {
+        DisposableEffect(navController) {
+            val listener = NavController.OnDestinationChangedListener { _, destination, arguments ->
+                Flocon.timelinePlugin.logNavigation(
+                    value = destination.route ?: "unknown",
+                    // string arguments only
+                    params = arguments?.let { b -> b.keySet().associateWith { b.getString(it).orEmpty() } }.orEmpty(),
+                )
+            }
+            navController.addOnDestinationChangedListener(listener)
+            onDispose { navController.removeOnDestinationChangedListener(listener) }
+        }
+    }
+    ```
+
+    **Define your own type.** Declare it once and reuse it, optionally with an extension:
+
+    ```kotlin
+    import io.github.openflocon.flocon.Flocon
+    import io.github.openflocon.flocon.timeline.*
+    import io.github.openflocon.flocon.timeline.model.*
+
+    val Billing = FloconTimelineType("billing")
+
+    fun FloconTimelinePlugin.logBilling(value: String, params: Map<String, String> = emptyMap()) =
+        log(Billing, value, params)
+
+    Flocon.timelinePlugin.logBilling("Subscription started", mapOf("sku" to "premium_yearly"))
+    ```
+
+=== "Swift"
+
+    ```swift
+    import Flocon
+
+    // typed events, without a level
+    Flocon.timelinePlugin.logNavigation("CheckoutScreen", params: ["from": "CartScreen"])
+    Flocon.timelinePlugin.logUserAction("tap_buy", params: ["sku": "premium_yearly"])
+    Flocon.timelinePlugin.logLifecycle("didBecomeActive")
+
+    // tagged event, with a level: .debug, .info (default), .warning or .error
+    Flocon.timelinePlugin.log(tag: "billing", value: "Purchase failed", params: ["sku": "premium_yearly"], level: .error)
+    ```
+
+    **Define your own type.** Declare it once and reuse it:
+
+    ```swift
+    extension TimelineType {
+        static let billing = TimelineType("billing")
+    }
+
+    Flocon.timelinePlugin.log(type: .billing, value: "Purchase started")
+    ```
+
+    See also the [FloconSwift README](https://github.com/openflocon/FloconSwift#timeline-logs).
+
+=== "Flutter"
+
+    ```dart
+    import 'package:flocon/flocon.dart';
+
+    // typed events, without a level
+    Flocon.timeline.logNavigation('CheckoutScreen', params: {'from': 'CartScreen'});
+    Flocon.timeline.logUserAction('tap_buy');
+    Flocon.timeline.logLifecycle('App moved to background');
+
+    // tagged event, with a level: TimelineLevel.debug, info (default), warning or error
+    Flocon.timeline.logTagged('payment', 'Card declined', params: {'code': '402'}, level: TimelineLevel.warning);
+
+    // a custom type, without a level
+    Flocon.timeline.log(const TimelineType('billing'), 'Subscription started');
+    ```
+
+    **Automatic navigation and lifecycle logs.** Add the observer to your navigator (`MaterialApp`, `GoRouter`...) and start the lifecycle observer:
+
+    ```dart
+    MaterialApp(
+      navigatorObservers: [FloconNavigatorObserver()],
+      // ...
+    );
+
+    FloconLifecycleObserver.start(); // logs each AppLifecycleState (resumed, paused...)
+    ```
+
+    `FloconNavigatorObserver` logs push, pop and replace, with `from` and `action` in the params.
+
+!!! note
+    The reserved types are `navigation`, `userAction` and `lifecycle` (matched without case sensitivity). A tag equal to one of them is shown as that type.
+
+!!! note
+    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop stores them as **Info** (a custom type shows as an Info diamond) and hides the level in their detail. The Level filter only applies to tagged logs: unticking **Info** does not hide navigation, user action or lifecycle logs.
+
+A new type shows up by itself as a value of the Type filter: the desktop does not need an update. The wire format is described in the [protocol](https://github.com/openflocon/Flocon/blob/main/internal-docs/protocol/timeline.md).
+
+---
+
+## In Flocon Desktop
+
+### Overview
 
 From the desktop UI, you can:
 
@@ -22,7 +231,7 @@ From the desktop UI, you can:
 
 ---
 
-## Graph
+### Graph
 
 The **Graph** view shows one session at a time on a time axis, with the app start at 0. The filters and the selected event are shared with the list.
 
@@ -41,7 +250,7 @@ The **Graph** view shows one session at a time on a time axis, with the app star
 | **Fit** | Shows the whole session again and follows the new events |
 | `‹` / `›` | Previous / next session |
 
-### Grouped events
+#### Grouped events
 
 Events closer than about 14 px on the graph are merged into one rounded marker, so a burst of 100 events takes one slot of a row instead of 100 rows.
 
@@ -52,106 +261,9 @@ Events closer than about 14 px on the graph are merged into one rounded marker, 
 
 ---
 
-## Logs from your app
+### Logs sent by your app
 
-Besides the events of the other plugins, your app can push its own events into the timeline, to read what happened around a bug: which screen was open, what the user did, what the app lifecycle was, and any milestone of your own. Flocon does not detect anything by itself: your app calls the SDK, usually from a navigation listener.
-
-### Setup
-
-```kotlin
-dependencies {
-    debugImplementation("io.github.openflocon:flocon-timeline:LAST_VERSION")
-    releaseImplementation("io.github.openflocon:flocon-timeline-no-op:LAST_VERSION")
-}
-```
-
-```kotlin
-startFlocon(FloconContext(applicationContext)) {
-    install(FloconTimeline)
-}
-```
-
-A plugin that is not installed does nothing instead of crashing.
-
-### Usage
-
-There are two kinds of calls, never mixed:
-
-- **Typed, without level**: `log(type, value, params)` and the shortcuts `logNavigation`, `logUserAction` and `logLifecycle`.
-- **Tagged, with a level**: `log(tag, value, params, level = Info)`. The tag is the type of the event, and `level` is `Debug`, `Info`, `Warning` or `Error`.
-
-`value` is the main text of the row (a screen name for example), `params` is a `Map<String, String>` shown in the detail panel (text only, optional).
-
-```kotlin
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.timeline.*
-import io.github.openflocon.flocon.timeline.model.*
-
-Flocon.timelinePlugin.logNavigation("CheckoutScreen", params = mapOf("from" to "CartScreen"))
-Flocon.timelinePlugin.logUserAction("Tap on Pay")
-Flocon.timelinePlugin.logLifecycle("App moved to background")
-
-// a custom tag, with a level
-Flocon.timelinePlugin.log("payment", "Card declined", mapOf("code" to "402"), FloconTimelineLevel.Warning)
-```
-
-!!! note
-    The reserved types are `navigation`, `userAction` and `lifecycle` (matched without case sensitivity). A tag equal to one of them is shown as that type.
-
-!!! note
-    Typed logs (navigation, user action, lifecycle and your own types) have no level on the wire: the desktop stores them as **Info** (a custom type shows as an Info diamond) and hides the level in their detail. The Level filter only applies to tagged logs: unticking **Info** does not hide navigation, user action or lifecycle logs.
-
-### Navigation listener (Compose)
-
-```kotlin
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.navigation.NavController
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.timeline.*
-
-@Composable
-fun NavigationLogger(navController: NavController) {
-    DisposableEffect(navController) {
-        val listener = NavController.OnDestinationChangedListener { _, destination, arguments ->
-            Flocon.timelinePlugin.logNavigation(
-                value = destination.route ?: "unknown",
-                // string arguments only
-                params = arguments?.let { b -> b.keySet().associateWith { b.getString(it).orEmpty() } }.orEmpty(),
-            )
-        }
-        navController.addOnDestinationChangedListener(listener)
-        onDispose { navController.removeOnDestinationChangedListener(listener) }
-    }
-}
-```
-
-### Define your own type
-
-Declare a type once and reuse it, optionally with an extension:
-
-```kotlin
-import io.github.openflocon.flocon.Flocon
-import io.github.openflocon.flocon.timeline.*
-import io.github.openflocon.flocon.timeline.model.*
-
-val Billing = FloconTimelineType("billing")
-
-fun FloconTimelinePlugin.logBilling(value: String, params: Map<String, String> = emptyMap()) =
-    log(Billing, value, params)
-
-Flocon.timelinePlugin.logBilling("Subscription started", mapOf("sku" to "premium_yearly"))
-```
-
-The new type shows up by itself as a value of the Type filter: the desktop does not need an update.
-
-### iOS
-
-The native Swift SDK ([FloconSwift](https://github.com/openflocon/FloconSwift) 2.0.0) has the same API: install `.timeline` (or `Flocon.initialize()`), then call `Flocon.timelinePlugin.logNavigation`, `logUserAction`, `logLifecycle`, or `log(type:value:)` and `log(tag:value:level:)`. A reusable type is a constant `TimelineType("billing")` and an extension of `TimelineType`. The wire format is the same, see the [protocol](https://github.com/openflocon/Flocon/blob/main/internal-docs/protocol/timeline.md). Details in the [FloconSwift README](https://github.com/openflocon/FloconSwift#timeline-logs).
-
-### On the desktop
-
-- Logs are a new **Log** source, in the list and in the graph (one marker per log, in its own lane).
+- Logs are a **Log** source, in the list and in the graph (one marker per log, in its own lane).
 - Filter them in the **Logs** card of the filter panel, see [Logs filters](#logs-filters).
 - The same shape and color are used in the list, the graph, the detail and the filters (shapes and lightness differ, so they do not rely on color alone):
 
@@ -178,27 +290,22 @@ The **Logs** card of the filter panel (shown while the Log source is selected) h
 
 The **Tag** and **Level** filters only apply to tagged logs: navigation, user action and lifecycle logs are never hidden by them. Unticking **Tagged logs** hides every tagged log and locks (dims) the Tag and Level filters.
 
-### Limits
+---
+
+## With AI agents (MCP)
+
+- `get_timeline`: reads a window of the timeline (the latest crash, the last minutes, a session, around a time or an event id), with a text search over the events.
+- `show_in_timeline`: moves the desktop window to the timeline (graph view) and centers it on an event, a time, or the latest crash.
+
+> "Show me what happened in the minute before the last crash, and tell me which network call failed."
+
+See the [MCP cookbook](mcp-cookbook.md) for full workflows.
+
+---
+
+## Limitations
 
 - No custom icon or color per tag: custom tags use a default style.
 - `params` are text only, not nested.
 - No clear button for the logs: they are removed with the device or app data.
 - It is not a replacement for [analytics events](analytics.md), which keep their own plugin.
-
----
-
-## Setup
-
-There is nothing to add for the timeline itself: it is built on the desktop from the events of the other plugins. Each source only shows up once its plugin is installed in your app, see:
-
-- [Network](network.md#setup-integration)
-- [Analytics](analytics.md#setup)
-- [Databases](database.md#setup)
-- [Data Tables](table.md#setup)
-- [Crash Reporter](crashreporter.md#setup)
-- [Deeplinks](deeplink.md)
-- [WebViews](webview.md#setup)
-- [Logs from your app](#logs-from-your-app)
-
-!!! tip
-    Start with [Getting Started](setup.md) to connect your app to Flocon Desktop.

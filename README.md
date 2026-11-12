@@ -1,116 +1,128 @@
-<img width="100" height="100" alt="flocon_small" src="https://github.com/user-attachments/assets/27143843-fce2-4c74-96d8-a0b35a8fccde" />     
+<img width="100" height="100" alt="flocon_small" src="https://github.com/user-attachments/assets/27143843-fce2-4c74-96d8-a0b35a8fccde" />
 
-**Flocon** is an advanced debugging and inspection tool built with **Kotlin Multiplatform (KMP)**, designed to work seamlessly across Android and desktop environments.  
-
-Inspired from [Flipper](https://github.com/facebook/flipper) by Meta, while leveraging **modern Kotlin multiplatform architecture** for networking, databases, analytics, and UI data visualization.
-
-It allows developers to connect a Kotlin Multiplatform or Android app to their computer and launch a **desktop interface** that can **observe, inspect, and interact with the running app** in real time — across shared Kotlin code and platform-specific implementations.
-
----
-
-<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
-
-## Getting Started
-
-`This library is lightweight, contributing just 140KB to the overall app size`
-
-in your module .kts
+# Flocon
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon.svg)](https://search.maven.org/artifact/io.github.openflocon/flocon)
-```
-debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
-releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
+
+**Flocon lets you see what your Android, Kotlin Multiplatform, iOS and Flutter apps do: network, databases, preferences, analytics, crashes... from your desktop, and lets AI agents see it too.**
+
+Inspired by [Flipper](https://github.com/facebook/flipper) by Meta, Flocon is a desktop debugger plus lightweight SDKs. Your app connects to the desktop app, and you observe, inspect and drive it in real time.
+
+<!-- screenshot: hero -->
+<img width="1294" height="837" alt="Screenshot 2025-09-12 at 15 39 45" src="https://github.com/user-attachments/assets/3d585adb-6441-4cdb-ad25-69d771ad4ff6" />
+
+Full documentation: **[openflocon.github.io/Flocon](https://openflocon.github.io/Flocon/)**
+
+## 1. Install the desktop app
+
+**macOS** (Homebrew, no Gatekeeper prompt):
+
+```bash
+brew install --cask openflocon/tap/flocon
 ```
 
-To use several Flocon modules with a single version, import the BOM:
+**Linux**: `brew install openflocon/tap/flocon` (Linuxbrew), or the `.deb` / `.rpm` (x64 and arm64) from the [releases](https://github.com/openflocon/Flocon/releases).
+
+More in the [macOS](https://openflocon.github.io/Flocon/macos-install) and [Linux](https://openflocon.github.io/Flocon/linux-install) guides (manual DMG install, `adb`).
+
+## 2. Add the SDK
+
+| Platform | Install | Guide |
+|---|---|---|
+| **Kotlin** (Android & KMP) | `debugImplementation("io.github.openflocon:flocon:LAST_VERSION")` | [Setup](https://openflocon.github.io/Flocon/setup) |
+| **Swift** (iOS) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift), gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
+| **Flutter** | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter), [pub.dev](https://pub.dev/packages/flocon) |
+
+### Kotlin quick start
+
+One module per feature, each with a `-no-op` twin for release builds. The BOM keeps every version aligned:
+
 ```kotlin
-debugImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
-releaseImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
-// then declare any module without a version
-debugImplementation("io.github.openflocon:flocon-okhttp-interceptor")
-releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op")
+dependencies {
+    debugImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+    releaseImplementation(platform("io.github.openflocon:flocon-bom:LAST_VERSION"))
+
+    debugImplementation("io.github.openflocon:flocon")
+    releaseImplementation("io.github.openflocon:flocon-no-op")
+
+    debugImplementation("io.github.openflocon:flocon-network-core")
+    releaseImplementation("io.github.openflocon:flocon-network-core-no-op")
+    debugImplementation("io.github.openflocon:flocon-okhttp-interceptor")
+    releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op")
+}
 ```
 
-in your `Application.kt`
+Start Flocon in `Application.onCreate()` and install the plugins you use:
+
 ```kotlin
-// android initialization
-Flocon.initialize(this)
+startFlocon(FloconContext(this)) {
+    install(FloconNetwork)
+    install(FloconAnalytics)
+}
 
-// desktop / ios
-Flocon.initialize()
+val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(FloconOkhttpInterceptor())
+    .build()
 ```
 
-```toml
-[versions]
-flocon = "LASTEST_VERSION"
+Run the app, open Flocon, and your requests show up. Coming from 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
 
-[libraries]
-flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
+## Features at a glance
+
+Support per SDK, built from the modules of each SDK. Click a feature for its page.
+
+| Feature | Android | KMP | Swift | Flutter |
+|---|:---:|:---:|:---:|:---:|
+| [HTTP inspector](https://openflocon.github.io/Flocon/network) (OkHttp, Ktor, URLSession, Dio, `http`) | ✅ | ✅ | ✅ | ✅ |
+| [Request mocking](https://openflocon.github.io/Flocon/mocking) and [bad network](https://openflocon.github.io/Flocon/bad-quality) | ✅ | ✅ | ✅ | ✅ |
+| [GraphQL](https://openflocon.github.io/Flocon/graphql) | ✅ | ✅ | ✅ | ✅ |
+| [WebSocket](https://openflocon.github.io/Flocon/websocket) | ✅ automatic (OkHttp) | ✅ manual | ✅ manual | ✅ manual |
+| [gRPC](https://openflocon.github.io/Flocon/grpc) | ✅ | ❌ | ✅ (add-on) | ❌ |
+| [Images](https://openflocon.github.io/Flocon/image) | ✅ | ✅ | ✅ | ✅ |
+| [Databases](https://openflocon.github.io/Flocon/database) (Room, SQLDelight, SQLite) | ✅ | ✅ | ✅ | ✅ |
+| [Preferences](https://openflocon.github.io/Flocon/sharedpref) (SharedPreferences, DataStore, UserDefaults) | ✅ | ✅ | ✅ | ✅ |
+| [Files](https://openflocon.github.io/Flocon/files) | ✅ | ✅ | ✅ | ✅ |
+| [Dashboards](https://openflocon.github.io/Flocon/dashboard) and [tables](https://openflocon.github.io/Flocon/table) | ✅ | ✅ | ✅ | ✅ |
+| [Deeplinks](https://openflocon.github.io/Flocon/deeplink) | ✅ | ✅ | ✅ | ✅ |
+| [Analytics](https://openflocon.github.io/Flocon/analytics) | ✅ | ✅ | ✅ | ✅ |
+| [Feature flags](https://openflocon.github.io/Flocon/featureflags) | ✅ | ✅ | ✅ | ✅ |
+| [Timeline](https://openflocon.github.io/Flocon/timeline) | ✅ | ✅ | ✅ | ✅ |
+| [Crash reporter](https://openflocon.github.io/Flocon/crashreporter) | ✅ | ✅ | ✅ | ✅ |
+| [Accessibility](https://openflocon.github.io/Flocon/accessibility) | ✅ | ⚠️ partial | ❌ | ❌ |
+| [WebView](https://openflocon.github.io/Flocon/webview) | ✅ | ⚠️ manual API | ❌ | ❌ |
+| [QR code connection](https://openflocon.github.io/Flocon/setup/#4-connect) | ✅ | ❌ | ✅ | ✅ |
+| [AI agents (MCP)](https://openflocon.github.io/Flocon/mcp) | ✅ | ✅ | ✅ | ✅ |
+
+## AI agents (MCP)
+
+Flocon Desktop runs an MCP server (`http://localhost:9042/mcp`), so AI agents can work with your running app:
+
+- inspect network calls, mock them, simulate a bad network
+- read your app files, databases, preferences and analytics events
+- works with Claude Code, Codex, Cursor, Gemini CLI, Antigravity, Copilot, Android Studio and more
+
+Install the plugin in Claude Code (it also ships for Codex, Cursor and Gemini):
+
+```
+/plugin marketplace add openflocon/Flocon
+/plugin install flocon@flocon
 ```
 
-## 📖 Documentation
+See [MCP setup](https://openflocon.github.io/Flocon/mcp), the [tool reference](https://openflocon.github.io/Flocon/mcp-tools) and the [cookbook](https://openflocon.github.io/Flocon/mcp-cookbook).
 
-Visit the full documentation site for setup guides, feature details, and advanced usage:  
-👉 **[openflocon.github.io/Flocon/](https://openflocon.github.io/Flocon/)**
+## Requirements
 
-### Table of Contents
+- **Desktop**: macOS, Linux or Windows. The portable jar needs JDK 21.
+- **Android**: emulator or device, with `adb` for screenshots, recordings and deeplinks.
+- **Kotlin**: KMP targets Android, JVM, iOS and Wasm.
+- **Swift**: iOS 15 / macOS 12, Xcode 16+, Swift Package Manager.
+- **Flutter**: Flutter 3.38.1+ (Dart 3.10+).
 
-- 🚀 **[Getting Started](https://openflocon.github.io/Flocon/setup)**
-    - [Installation Guide](https://openflocon.github.io/Flocon/setup#installation)
-    - [Basic Usage](https://openflocon.github.io/Flocon/setup#usage)
-    - [macOS Specifics](https://openflocon.github.io/Flocon/macos-install)
-- 📡 **[Networking](https://openflocon.github.io/Flocon/network)**
-    - [HTTP Inspector](https://openflocon.github.io/Flocon/network#📡-network-request-inspector)
-    - [Request Mocking](https://openflocon.github.io/Flocon/network#🎭-http-request-mocking)
-    - [GraphQL](https://openflocon.github.io/Flocon/graphql)
-    - [gRPC](https://openflocon.github.io/Flocon/grpc)
-    - [WebSockets](https://openflocon.github.io/Flocon/websocket)
-- 💾 **[Local Storage](https://openflocon.github.io/Flocon/database)**
-    - [Database Explorer (Room, SQLDelight & SQLite)](https://openflocon.github.io/Flocon/database)
-    - [Shared Preferences (Android)](https://openflocon.github.io/Flocon/sharedpref)
-- 🛠️ **[Advanced Debugging](https://openflocon.github.io/Flocon/dashboard)**
-    - [Custom Dashboards](https://openflocon.github.io/Flocon/dashboard)
-    - [Dynamic Data Tables](https://openflocon.github.io/Flocon/table)
-    - [Deeplink Launcher](https://openflocon.github.io/Flocon/deeplink)
-    - [File Explorer](https://openflocon.github.io/Flocon/files)
-    - [Analytics Viewer](https://openflocon.github.io/Flocon/analytics)
-    - [Image Previewer](https://openflocon.github.io/Flocon/image)
-- 🤖 **[AI Agents (MCP)](https://openflocon.github.io/Flocon/mcp)** — let Claude Code, Cursor, Codex, Gemini CLI, Antigravity, GitHub Copilot, Android Studio, Windsurf, Zed or OpenCode inspect your network calls, mock them, simulate a bad network, read your app files, analytics events and databases
-- ❓ **[Troubleshooting](https://openflocon.github.io/Flocon/troubleshooting)**
+Stuck? See [troubleshooting](https://openflocon.github.io/Flocon/troubleshooting).
 
----
+## Contributing
 
-## ✨ Features at a Glance
-
-| Feature | Android | KMP (JVM/iOS) |
-|---|:---:|:---:|
-| **Network (HTTP/Mocking)** | ✅ | ✅ |
-| **Database (Room/SQLDelight/SQLite)** | ✅ | ✅ |
-| **Preferences** | ✅ | ❌ |
-| **Dashboards & Tables** | ✅ | ✅ |
-| **Analytics & Images** | ✅ | ✅ |
-| **Deeplink & Files** | ✅ | ❌ |
-| **AI Agents (MCP)** | ✅ | ✅ |
-
----
-
-## 🧰 Requirements
-
-- **Android**: Device/Emulator with USB debugging + ADB.
-- **KMP**: Kotlin 2.0.0+ in your app.
-- **Desktop**: Flocon Desktop app (JVM-based).
-
-For detailed platform-specific requirements, see the [Setup Guide](https://openflocon.github.io/Flocon/setup).
-
----
-
-## 🤝 Contributors
-
-Thanks to these amazing people for making Flocon better every day!
-
-[See all contributors](https://openflocon.github.io/Flocon/contributors)
-
----
+Issues and pull requests are welcome on [GitHub](https://github.com/openflocon/Flocon/issues). Thanks to everyone who makes Flocon better: [see all contributors](https://openflocon.github.io/Flocon/contributors).
 
 ## License
 
