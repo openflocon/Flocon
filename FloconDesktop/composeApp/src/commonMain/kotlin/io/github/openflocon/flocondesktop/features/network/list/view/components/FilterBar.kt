@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
-import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 
 @Composable
 fun FilterBar(

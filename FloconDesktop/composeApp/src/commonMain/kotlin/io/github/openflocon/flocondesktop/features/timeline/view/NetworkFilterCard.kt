@@ -70,7 +70,6 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconFilterChip
-import io.github.openflocon.library.designsystem.components.FloconHistogram
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIncludeExcludeInput
 import io.github.openflocon.library.designsystem.components.FloconRangeSlider

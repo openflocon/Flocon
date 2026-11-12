@@ -53,7 +53,6 @@ import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashFilte
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportBody
 import io.github.openflocon.flocondesktop.features.crashreporter.view.CrashReportItem
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconDot
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar

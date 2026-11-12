@@ -22,4 +22,14 @@ sealed interface AnalyticsAction {
     data class InvertList(val value: Boolean) : AnalyticsAction
 
     data object ExportCsv : AnalyticsAction
+
+    data class ExcludeEvent(
+        val item: AnalyticsRowUiModel
+    ) : AnalyticsAction
+
+    data class RestoreEvent(
+        val eventName: String
+    ) : AnalyticsAction
+
+    data object RestoreAllEvents : AnalyticsAction
 }

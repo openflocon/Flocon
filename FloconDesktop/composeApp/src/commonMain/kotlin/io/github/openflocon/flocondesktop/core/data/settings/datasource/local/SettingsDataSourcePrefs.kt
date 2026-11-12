@@ -9,6 +9,7 @@ import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.flocondesktop.core.data.settings.models.AnalyticsSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
 import kotlinx.coroutines.CoroutineScope
@@ -118,6 +119,23 @@ internal class SettingsDataSourcePrefs(
     private fun String?.toTimelineSettings(): TimelineSettingsLocal = this
         ?.let { runCatching { json.decodeFromString(TimelineSettingsLocal.serializer(), it) }.getOrNull() }
         ?: TimelineSettingsLocal()
+
+    private val analyticsSettingsMutex = Mutex()
+
+    override val analyticsSettings: Flow<AnalyticsSettingsLocal> = flowSettings.getStringOrNullFlow(ANALYTICS_SETTINGS)
+        .mapLatest { it.toAnalyticsSettings() }
+
+    override suspend fun updateAnalyticsSettings(transform: (AnalyticsSettingsLocal) -> AnalyticsSettingsLocal) {
+        analyticsSettingsMutex.withLock {
+            val updated = transform(settings.getStringOrNull(ANALYTICS_SETTINGS).toAnalyticsSettings())
+            settings.putString(ANALYTICS_SETTINGS, json.encodeToString(AnalyticsSettingsLocal.serializer(), updated))
+        }
+    }
+
+    // the defaults when nothing is stored, or when what is stored cannot be read
+    private fun String?.toAnalyticsSettings(): AnalyticsSettingsLocal = this
+        ?.let { runCatching { json.decodeFromString(AnalyticsSettingsLocal.serializer(), it) }.getOrNull() }
+        ?: AnalyticsSettingsLocal()
 
     override val pinnedMenuItems: Flow<List<String>> = flowSettings.getStringOrNullFlow(PINNED_MENU_ITEMS)
         .mapLatest { it.toIdList() }
@@ -254,6 +272,7 @@ internal class SettingsDataSourcePrefs(
         private const val AUTO_PURGE_DAYS = "auto_purge_days"
         private const val AUTO_MEDIA_CLEANUP_DAYS = "auto_media_cleanup_days"
         private const val TIMELINE_SETTINGS = "timeline_settings"
+        private const val ANALYTICS_SETTINGS = "analytics_settings"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"

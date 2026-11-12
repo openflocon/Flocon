@@ -342,6 +342,23 @@
     <string name="tables_empty">No Tables</string>
     <string name="time">Time</string>
     <string name="with_folders_size">With folders size</string>
+    <string name="telemetry_title">Help improve Flocon</string>
+    <string name="telemetry_consent_message">Share anonymous usage stats (features used, version, OS)? Nothing is sent until you choose.</string>
+    <string name="telemetry_consent_privacy">Nothing from your apps ever leaves your computer.</string>
+    <string name="telemetry_consent_hint">“With an ID” lets us count returning users. Change it anytime in Settings → Privacy.</string>
+    <string name="telemetry_allow_full">With an ID</string>
+    <string name="telemetry_share_anonymous">Anonymous</string>
+    <string name="telemetry_disable">Don't share</string>
+    <string name="telemetry_learn_more">What is collected?</string>
+    <string name="telemetry_settings_description">Choose how much usage data Flocon may send. You can change this at any time.</string>
+    <string name="telemetry_level_full">With an ID</string>
+    <string name="telemetry_level_full_description">A random identifier is stored on this computer so returning users can be counted.</string>
+    <string name="telemetry_level_anonymous">Anonymous</string>
+    <string name="telemetry_level_anonymous_description">A new random identifier is generated at each launch and never saved.</string>
+    <string name="telemetry_level_disabled">Disabled</string>
+    <string name="telemetry_level_disabled_description">Nothing is sent.</string>
+    <string name="telemetry_unavailable_do_not_track">Telemetry is disabled because the DO_NOT_TRACK environment variable is set.</string>
+    <string name="telemetry_unavailable_build">Telemetry is disabled in this build (local or unofficial builds never send anything).</string>
     <!-- Feature documentation & empty states -->
     <string name="feature_doc_how_to_setup">How to set up</string>
     <string name="feature_doc_open_documentation">Open the documentation</string>
@@ -687,6 +704,10 @@
     <string name="accessibility_column_class">Class</string>
     <string name="analytics_column_event">Event</string>
     <string name="analytics_column_properties">Properties</string>
+    <string name="analytics_exclude_event">Exclude "%1$s"</string>
+    <string name="analytics_excluded_count">%1$d excluded</string>
+    <string name="analytics_restore_all">Restore all</string>
+    <string name="analytics_restore_event">Restore this event</string>
     <string name="images_column_format">Format</string>
     <string name="settings_server_ports_title">Server ports</string>
     <string name="settings_server_ports_description">Ports used by the desktop to receive the SDK connections. The defaults are 9023 (websocket) and 9024 (HTTP).</string>

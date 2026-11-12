@@ -1,6 +1,6 @@
 ---
 name: flocon-mcp
-description: Use when debugging a mobile app (Android, iOS, KMP) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
+description: Use when debugging a mobile app (Android, iOS, KMP, Flutter) connected to Flocon Desktop - inspecting network calls, mocking a response or error, reading app files, analytics events, feature flags, accessibility events, crashes, WebView logs or SQLite databases.
 ---
 
 # Debugging a mobile app with Flocon
@@ -9,12 +9,35 @@ Flocon Desktop receives what happens in the mobile app connected to it and expos
 
 ## Prerequisites
 
-- Flocon Desktop must be running (the MCP server listens on `http://localhost:9042/mcp`, loopback only).
+- Flocon Desktop must be running (the MCP server listens on `http://localhost:9042/mcp`, loopback only). Port 9042 is only for MCP; the apps connect to Desktop on 9023 (WebSocket) and 9024 (HTTP).
 - The app must be connected to Flocon. If a tool fails to connect or returns no device, ask the user to start Flocon Desktop and the app.
+
+## Discover the tools, do not assume them
+
+The table below lists the tools of the current Flocon Desktop, but the session may expose fewer: an older Desktop has fewer tools, and some clients only expose part of a server's tools (for example `list_images` present in the server `tools/list` but missing from the session). Work from the tools actually available in the session. If a tool you need is missing, say so and name it; do not call another tool as a substitute and present its result as the same thing. A tool available in the session can still return nothing for a platform whose SDK does not send that data (see below).
 
 ## Targeting
 
-By default every tool targets the device and app selected in Flocon Desktop. Call `list_devices` to see the others (each has a `connectionType`: `default` for localhost, `wifi` when connected through the connect module), then pass `deviceId` and `packageName`.
+By default every tool targets the device and app selected in Flocon Desktop. Call `list_devices` to see the others (each has a `connectionType`: `default` for localhost, `wifi` when connected through the connect module), then pass `deviceId` and `packageName`. When nothing is selected in Desktop, or a call fails on the selection, retry with an explicit `deviceId` and `packageName` (the iOS bundle id) taken from `list_devices`.
+
+## When a call fails
+
+Tell the user which case it is, with the evidence, before concluding anything about the app:
+
+| Symptom | Case | Next step |
+|---|---|---|
+| Connection refused on `localhost:9042` / the MCP server is not connected | Flocon Desktop not running (or MCP disabled) | Ask the user to start Flocon Desktop |
+| "No device has been connected to Flocon yet" | No device ever connected | Check the app runs a build where Flocon is started, and the Desktop version is compatible with the SDK (the Swift SDK needs a Desktop with the encrypted `wss` connection) |
+| "No device / app is currently selected" | Nothing selected in Desktop | `list_devices`, then pass `deviceId` and `packageName` |
+| "App '…' not found", "Device '…' not found or has no app", "several apps" | Unknown or ambiguous target | Use the exact ids from `list_devices` |
+| Unknown tool, missing argument, unexpected schema | Desktop version and skill out of sync | Say which tool and which Desktop version the user runs |
+| A Kotlin class name in the message (for example `…RepositoryImpl$getDeviceSelectedApp$2`) or a stack-trace-like text | Internal Desktop error | Report it as a Flocon Desktop error with the tool, arguments and message; retry once with an explicit target. Do not present it as a bug of the mobile integration without other evidence |
+
+Do not restart Desktop, clear data or change ports to work around an error unless the user asks.
+
+## Platform coverage
+
+The tools are shared by every SDK, but each SDK sends what it supports. With the Swift SDK (FloconSwift): network (only the instrumented `URLSession`s, plus gRPC with FloconSwiftGrpc), images (from network responses, no new entry on a cache hit), analytics, feature flags, tables, preferences (incl. keychain if registered), files, databases (inspection; query logs only when the app logs them), dashboards, deeplinks, timeline logs and crashes. Not sent by the Swift SDK at the time of writing: WebView events and accessibility events. Screenshots and screen recordings are taken by Desktop on the booted iOS Simulator only. With the Flutter SDK (FloconFlutter): network (only clients wrapped with `withFlocon()`, WebSockets only when logged by hand, mocks and bad network on Dio / `package:http`), images, analytics, feature flags, tables, preferences, files, databases (inspection; query logs only when the app logs them), dashboards, deeplinks, timeline logs and crashes (Dart and Flutter errors only). Not sent by the Flutter SDK: WebView events and accessibility events. An empty result for a feature the app did not wire is not an app bug: say which wiring is missing (see the `flocon-setup` skill).
 
 ## What to use for what
 
@@ -39,7 +62,7 @@ By default every tool targets the device and app selected in Flocon Desktop. Cal
 | Check SharedPreferences | `list_shared_preferences` (gives the `sharedPreferenceId` and the storage `type`), `get_shared_preference_values` (typed values, optional text filter) |
 | Check feature flags | `list_feature_flags` (provider, name, state, variant, filters), `get_feature_flag` for the full payload |
 | Check what a screen reader gets (focus order, announcements, content descriptions) | `get_accessibility_state` first (is TalkBack / VoiceOver on, is capture supported), then `list_accessibility_events` (type and text filters), `clear_accessibility_events`; walk the focus order with `move_accessibility_focus` (`next` / `previous`, needs TalkBack on) and read where it is with `get_accessibility_focused_node` |
-| Check which images the app loaded | `list_images` (urls and load times) |
+| Check which images the app loaded | `list_images` (urls and load times). If one is missing, check in order: did a real download happen (cache hits are not captured), is it in `list_network_calls`, is its `Content-Type` an `image/*`, then whether only the Desktop thumbnail fails (Desktop downloads the image from its URL) |
 | Check persisted data | `list_databases` (gives the `databaseId`), `list_database_tables` (schema), `query_database`, `list_database_query_logs` (queries run by the app, each with a `transactionId` when it ran in a transaction, plus `nestedTransactionId` / `parentTransactionId` for a savepoint inside it; pass `transactionId` to get only that transaction) |
 | Check custom tables | `list_tables` (gives the `tableId`), `list_table_items` (rows, optional text filter) |
 

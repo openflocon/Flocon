@@ -3,10 +3,6 @@
 package io.github.openflocon.flocondesktop.features.files.view
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -16,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -52,7 +47,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -76,6 +70,8 @@ import flocondesktop.composeapp.generated.resources.files_view_grid
 import flocondesktop.composeapp.generated.resources.files_view_list
 import flocondesktop.composeapp.generated.resources.general_delete_content
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDoc
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.HelpSource
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.rememberFeatureDocOpener
 import io.github.openflocon.flocondesktop.features.files.model.FileUiModel
 import io.github.openflocon.flocondesktop.features.files.model.FilesAction
 import io.github.openflocon.flocondesktop.features.files.model.FilesStateUiModel
@@ -457,9 +453,9 @@ private fun FilesOverflowMenu(
 
 @Composable
 private fun DocumentationButton(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
+    val opener = rememberFeatureDocOpener()
     WithTooltip(stringResource(Res.string.feature_doc_open_documentation), modifier = modifier) {
-        BarIconBox(onClick = { runCatching { uriHandler.openUri(FeatureDoc.Files.url) } }) {
+        BarIconBox(onClick = { opener.open(FeatureDoc.Files, FeatureDoc.Files.url, HelpSource.TopBar) }) {
             FloconIcon(
                 imageVector = Icons.Outlined.Info,
                 tint = FloconTheme.colors.ink,

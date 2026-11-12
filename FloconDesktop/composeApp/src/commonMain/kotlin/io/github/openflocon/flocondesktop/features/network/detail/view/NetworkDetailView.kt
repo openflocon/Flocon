@@ -3,9 +3,7 @@ package io.github.openflocon.flocondesktop.features.network.detail.view
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,10 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -123,7 +119,6 @@ import flocondesktop.composeapp.generated.resources.network_save_full_log_image
 import flocondesktop.composeapp.generated.resources.network_save_html
 import flocondesktop.composeapp.generated.resources.network_share_export
 import flocondesktop.composeapp.generated.resources.network_tab_error
-import flocondesktop.composeapp.generated.resources.network_view_body_in_app
 import flocondesktop.composeapp.generated.resources.network_view_in_app
 import flocondesktop.composeapp.generated.resources.network_waiting_response
 import flocondesktop.composeapp.generated.resources.open_external
@@ -133,7 +128,6 @@ import io.github.openflocon.flocondesktop.common.ui.detail.DetailChip
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailEmptyText
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailHeader
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailKeyValueList
-import io.github.openflocon.flocondesktop.common.ui.detail.DetailPanel
 import io.github.openflocon.flocondesktop.common.ui.detail.DetailSectionCard
 import io.github.openflocon.flocondesktop.common.ui.detail.toCopyableText
 import io.github.openflocon.flocondesktop.features.network.detail.NetworkDetailAction
@@ -155,12 +149,7 @@ import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconJsonTree
 import io.github.openflocon.library.designsystem.components.FloconLineDescription
-import io.github.openflocon.library.designsystem.components.FloconSection
-import io.github.openflocon.library.designsystem.components.FloconSegmentedRow
-import io.github.openflocon.library.designsystem.components.FloconSmallIconButton
-import io.github.openflocon.library.designsystem.components.FloconTab
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
-import io.github.openflocon.library.designsystem.components.TabType
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

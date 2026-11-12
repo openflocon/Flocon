@@ -37,7 +37,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
@@ -92,8 +91,6 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
-import flocondesktop.composeapp.generated.resources.timeline_graph_next_session
-import flocondesktop.composeapp.generated.resources.timeline_graph_previous_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary

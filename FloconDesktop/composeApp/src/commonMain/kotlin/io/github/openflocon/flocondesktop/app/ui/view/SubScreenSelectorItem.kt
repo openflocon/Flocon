@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TableView
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Timeline
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.menu_item_accessibility
@@ -38,8 +37,6 @@ import flocondesktop.composeapp.generated.resources.menu_item_timeline
 import flocondesktop.composeapp.generated.resources.menu_item_webview
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 
 // Extension function to get the display name for each SubScreen
 fun SubScreen.displayName(): StringResource = when (this) {

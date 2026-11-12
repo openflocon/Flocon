@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
-import flocondesktop.composeapp.generated.resources.preferences
 import flocondesktop.composeapp.generated.resources.preferences_clear_filter
 import flocondesktop.composeapp.generated.resources.preferences_file_empty_subtitle
 import flocondesktop.composeapp.generated.resources.preferences_file_empty_title

@@ -7,7 +7,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.general_success
 import flocondesktop.composeapp.generated.resources.settings_data_media_clean_failed
 import flocondesktop.composeapp.generated.resources.settings_data_purge_failed
-import flocondesktop.composeapp.generated.resources.settings_select_documents_folder
 import flocondesktop.composeapp.generated.resources.settings_server_ports_applied
 import flocondesktop.composeapp.generated.resources.settings_test_failure
 import io.github.openflocon.domain.common.DispatcherProvider
@@ -53,6 +52,8 @@ import io.github.openflocon.flocondesktop.common.log.LogManagerEditable
 import io.github.openflocon.flocondesktop.common.log.toUiModel
 import io.github.openflocon.flocondesktop.common.utils.FolderPicker
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.flocondesktop.telemetry.TelemetrySetting
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +64,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 class SettingsViewModel(
@@ -93,6 +93,7 @@ class SettingsViewModel(
     private val cleanMediaFilesUseCase: CleanMediaFilesUseCase,
     observeAutoMediaCleanupIntervalUseCase: ObserveAutoMediaCleanupIntervalUseCase,
     private val setAutoMediaCleanupIntervalUseCase: SetAutoMediaCleanupIntervalUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     private val _dataState = MutableStateFlow(DataUiState())
@@ -240,6 +241,7 @@ class SettingsViewModel(
     }
 
     private fun onMascotEnabledChange(action: SettingsAction.MascotEnabledChange) {
+        telemetryManager.settingChanged(TelemetrySetting.MascotEnabled, action.enabled)
         viewModelScope.launch {
             setMascotEnabledUseCase(action.enabled)
         }

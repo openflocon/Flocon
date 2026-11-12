@@ -47,6 +47,7 @@ import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.ModeNight
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Pets
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TextFields
@@ -67,6 +68,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -87,10 +89,8 @@ import flocondesktop.composeapp.generated.resources.settings_adb_executable_path
 import flocondesktop.composeapp.generated.resources.settings_adb_reverse_forwarding
 import flocondesktop.composeapp.generated.resources.settings_adb_setup_title
 import flocondesktop.composeapp.generated.resources.settings_adb_valid
-import flocondesktop.composeapp.generated.resources.settings_data_auto_description
 import flocondesktop.composeapp.generated.resources.settings_data_auto_title
 import flocondesktop.composeapp.generated.resources.settings_data_description
-import flocondesktop.composeapp.generated.resources.settings_data_kept
 import flocondesktop.composeapp.generated.resources.settings_data_manual_title
 import flocondesktop.composeapp.generated.resources.settings_data_media_auto_description
 import flocondesktop.composeapp.generated.resources.settings_data_media_clean
@@ -144,6 +144,17 @@ import flocondesktop.composeapp.generated.resources.settings_theme_dark
 import flocondesktop.composeapp.generated.resources.settings_theme_description
 import flocondesktop.composeapp.generated.resources.settings_theme_light
 import flocondesktop.composeapp.generated.resources.settings_theme_system
+import flocondesktop.composeapp.generated.resources.telemetry_learn_more
+import flocondesktop.composeapp.generated.resources.telemetry_level_anonymous
+import flocondesktop.composeapp.generated.resources.telemetry_level_anonymous_description
+import flocondesktop.composeapp.generated.resources.telemetry_level_disabled
+import flocondesktop.composeapp.generated.resources.telemetry_level_disabled_description
+import flocondesktop.composeapp.generated.resources.telemetry_level_full
+import flocondesktop.composeapp.generated.resources.telemetry_level_full_description
+import flocondesktop.composeapp.generated.resources.telemetry_settings_description
+import flocondesktop.composeapp.generated.resources.telemetry_title
+import flocondesktop.composeapp.generated.resources.telemetry_unavailable_build
+import flocondesktop.composeapp.generated.resources.telemetry_unavailable_do_not_track
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
@@ -151,10 +162,14 @@ import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.domain.telemetry.models.TelemetryLevelDomainModel
+import io.github.openflocon.domain.telemetry.models.TelemetryStateDomainModel
 import io.github.openflocon.flocondesktop.BuildConfig
 import io.github.openflocon.flocondesktop.app.ui.releasenotes.AllReleaseNotesPane
 import io.github.openflocon.flocondesktop.common.log.LogEntryUiModel
 import io.github.openflocon.flocondesktop.common.log.LogLevel
+import io.github.openflocon.flocondesktop.telemetry.TELEMETRY_DOC_URL
+import io.github.openflocon.flocondesktop.telemetry.TelemetryViewModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCheckbox
@@ -186,6 +201,7 @@ private enum class SettingsTab(val label: String, val icon: ImageVector) {
     Plugins("Plugins", Icons.Outlined.Extension),
     Data("Data", Icons.Outlined.Storage),
     Logs("Logs", Icons.AutoMirrored.Outlined.List),
+    Privacy("Privacy", Icons.Outlined.PrivacyTip),
     ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
     About("About", Icons.Outlined.Info),
 }
@@ -371,6 +387,8 @@ private fun SettingsScreen(
                     onToggleLevel = onToggleLogLevel,
                     onClearLogs = onClearLogs,
                 )
+
+                SettingsTab.Privacy -> PrivacyPane()
 
                 SettingsTab.ReleaseNotes -> AllReleaseNotesPane()
 
@@ -1323,6 +1341,118 @@ private fun ScaleDropdown(
                     onSelect(scale)
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun PrivacyPane(modifier: Modifier = Modifier) {
+    val viewModel: TelemetryViewModel = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    PrivacyPane(
+        state = state,
+        onLevelSelected = viewModel::setLevel,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun PrivacyPane(
+    state: TelemetryStateDomainModel,
+    onLevelSelected: (TelemetryLevelDomainModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        SettingsCard(
+            title = stringResource(Res.string.telemetry_title),
+            icon = Icons.Outlined.PrivacyTip,
+            description = stringResource(Res.string.telemetry_settings_description),
+            headerActions = {
+                SettingsButton(
+                    text = stringResource(Res.string.telemetry_learn_more),
+                    onClick = { runCatching { uriHandler.openUri(TELEMETRY_DOC_URL) } },
+                )
+            },
+        ) {
+            if (!state.isAvailable) {
+                Text(
+                    text = stringResource(
+                        if (state.doNotTrack) {
+                            Res.string.telemetry_unavailable_do_not_track
+                        } else {
+                            Res.string.telemetry_unavailable_build
+                        }
+                    ),
+                    style = FloconTheme.typography.bodySmall,
+                    color = FloconTheme.colors.inkMuted,
+                )
+            } else {
+                TelemetryLevelDomainModel.entries.forEach { level ->
+                    TelemetryLevelOption(
+                        level = level,
+                        selected = state.level == level,
+                        onClick = { onLevelSelected(level) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TelemetryLevelOption(
+    level: TelemetryLevelDomainModel,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val (title, description) = when (level) {
+        TelemetryLevelDomainModel.Full -> Res.string.telemetry_level_full to Res.string.telemetry_level_full_description
+        TelemetryLevelDomainModel.Anonymous -> Res.string.telemetry_level_anonymous to Res.string.telemetry_level_anonymous_description
+        TelemetryLevelDomainModel.Disabled -> Res.string.telemetry_level_disabled to Res.string.telemetry_level_disabled_description
+    }
+
+    val bgColor = if (selected) FloconTheme.colors.accent else FloconTheme.colors.bg300
+    val contentColor = if (selected) FloconTheme.colors.accentInk else FloconTheme.colors.ink
+
+    FloconSurface(
+        onClick = onClick,
+        color = bgColor,
+        contentColor = contentColor,
+        shape = FloconTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(title),
+                    style = FloconTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = contentColor,
+                )
+                Text(
+                    text = stringResource(description),
+                    style = FloconTheme.typography.bodySmall,
+                    color = contentColor.copy(alpha = 0.8f),
+                )
+            }
+            if (selected) {
+                FloconIcon(
+                    imageVector = Icons.Outlined.Check,
+                    tint = contentColor,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

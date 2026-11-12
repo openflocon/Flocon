@@ -33,6 +33,7 @@ internal val settingsModule = module {
             cleanMediaFilesUseCase = get(),
             observeAutoMediaCleanupIntervalUseCase = get(),
             setAutoMediaCleanupIntervalUseCase = get(),
+            telemetryManager = get(),
         )
     }
 }

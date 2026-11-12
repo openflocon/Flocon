@@ -11,9 +11,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.filter
-import flocondesktop.composeapp.generated.resources.menu_item_network
 import flocondesktop.composeapp.generated.resources.network_bad_network
-import flocondesktop.composeapp.generated.resources.network_counter_requests
 import flocondesktop.composeapp.generated.resources.network_deep_search
 import flocondesktop.composeapp.generated.resources.network_display_old_sessions
 import flocondesktop.composeapp.generated.resources.network_mocks_title
@@ -22,7 +20,6 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocButton
 import io.github.openflocon.flocondesktop.features.network.list.model.FilterUiState
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAction
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkSettingsUiModel
-import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconIconToggleButton

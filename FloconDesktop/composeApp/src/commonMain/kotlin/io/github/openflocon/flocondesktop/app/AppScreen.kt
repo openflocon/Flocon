@@ -2,10 +2,12 @@ package io.github.openflocon.flocondesktop.app
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.zIndex
@@ -16,7 +18,12 @@ import io.github.openflocon.flocondesktop.app.ui.settings.settingsRoutes
 import io.github.openflocon.flocondesktop.app.ui.view.leftpannel.LeftPanel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.MainScreenTopBar
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureDocOpener
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.FeatureEmptyStateObserver
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalFeatureDocOpener
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalFeatureEmptyStateObserver
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
+import io.github.openflocon.flocondesktop.common.ui.featuredoc.helpScreenName
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
 import io.github.openflocon.flocondesktop.features.accessibility.accessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
@@ -33,12 +40,17 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPrefe
 import io.github.openflocon.flocondesktop.features.table.tableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.timelineRoutes
 import io.github.openflocon.flocondesktop.features.webview.webViewRoutes
+import io.github.openflocon.flocondesktop.telemetry.TelemetryConsentCard
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
+import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.navigation.FloconNavigation
 import io.github.openflocon.navigation.MainFloconNavigationState
 import io.github.openflocon.navigation.scene.BigDialogSceneStrategy
 import io.github.openflocon.navigation.scene.DialogSceneStrategy
 import io.github.openflocon.navigation.scene.PanelSceneStrategy
 import io.github.openflocon.navigation.scene.WindowSceneStrategy
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /** Above the big dialogs of the navigation (drawn at the depth of their entry in the stack): messages stay readable. */
@@ -51,17 +63,44 @@ fun AppScreen(modifier: Modifier = Modifier) {
     val versionCheckerViewModel = koinViewModel<VersionCheckerViewModel>()
     val desktopUpdate by versionCheckerViewModel.desktopUpdate.collectAsStateWithLifecycle()
     val sdkUpdate by versionCheckerViewModel.sdkUpdate.collectAsStateWithLifecycle()
+    // entry point: the shared design composables only know the opener, never the telemetry
+    val telemetryManager = koinInject<TelemetryManager>()
+    val uriHandler = LocalUriHandler.current
+    val featureDocOpener = remember(telemetryManager, uriHandler) {
+        FeatureDocOpener { doc, url, source ->
+            runCatching { uriHandler.openUri(url) }
+            telemetryManager.featureUsed(
+                feature = TelemetryFeature.HelpOpened,
+                screen = doc.helpScreenName,
+                source = source.wireName,
+            )
+        }
+    }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Content(
-            uiState = uiState,
-            navigationState = viewModel.navigationState,
-            onAction = viewModel::onAction,
-            desktopUpdate = desktopUpdate,
-            sdkUpdate = sdkUpdate,
-            onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
-        )
-        FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
+    val emptyStateObserver = remember(telemetryManager) {
+        FeatureEmptyStateObserver { doc -> telemetryManager.emptyStateShown(doc.name) }
+    }
+
+    CompositionLocalProvider(
+        LocalFeatureDocOpener provides featureDocOpener,
+        LocalFeatureEmptyStateObserver provides emptyStateObserver,
+    ) {
+        Box(modifier = modifier.fillMaxSize()) {
+            Content(
+                uiState = uiState,
+                navigationState = viewModel.navigationState,
+                onAction = viewModel::onAction,
+                desktopUpdate = desktopUpdate,
+                sdkUpdate = sdkUpdate,
+                onSdkUpdateIgnored = versionCheckerViewModel::dismissSdkUpdate,
+            )
+            TelemetryConsentCard(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(FloconTheme.spacing.extraLarge),
+            )
+            FeedbackHost(modifier = Modifier.zIndex(AboveDialogsZIndex))
+        }
     }
 }
 

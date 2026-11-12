@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import flocondesktop.composeapp.generated.resources.deeplink_removed
-import flocondesktop.composeapp.generated.resources.deeplink_send_error
 import flocondesktop.composeapp.generated.resources.fill_deeplink_parts
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
@@ -29,6 +28,8 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScree
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkTabUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
+import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -48,6 +49,7 @@ class DeepLinkViewModel(
     observeCurrentDeviceCapabilitiesUseCase: ObserveCurrentDeviceCapabilitiesUseCase,
     private val executeDeeplinkUseCase: ExecuteDeeplinkUseCase,
     private val removeFromDeeplinkHistoryUseCase: RemoveFromDeeplinkHistoryUseCase,
+    private val telemetryManager: TelemetryManager,
 ) : ViewModel() {
 
     private val variableValues = MutableStateFlow<PersistentMap<String, String>>(persistentMapOf())
@@ -213,6 +215,7 @@ class DeepLinkViewModel(
                 }
             }
 
+            telemetryManager.featureUsed(TelemetryFeature.DeeplinkLaunched)
             execute(
                 deeplink = deeplink,
                 deeplinkId = viewState.deeplinkId,

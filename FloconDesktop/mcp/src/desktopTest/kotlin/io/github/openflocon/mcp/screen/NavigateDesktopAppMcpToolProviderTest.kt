@@ -6,9 +6,6 @@ import io.github.openflocon.domain.device.usecase.SelectDeviceAppUseCase
 import io.github.openflocon.domain.device.usecase.SelectDeviceUseCase
 import io.github.openflocon.domain.screen.models.FloconScreen
 import io.github.openflocon.domain.screen.usecase.RequestDesktopScreenUseCase
-import io.github.openflocon.domain.timeline.models.TimelineSettingsDomainModel
-import io.github.openflocon.domain.timeline.models.TimelineSource
-import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.usecase.SetTimelineGraphUseCase
 import io.github.openflocon.mcp.FakeDesktopNavigationRepository
 import io.github.openflocon.mcp.FakeDevicesRepository
@@ -18,8 +15,6 @@ import io.github.openflocon.mcp.app
 import io.github.openflocon.mcp.json
 import io.github.openflocon.mcp.targetResolver
 import io.github.openflocon.mcp.text
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -27,7 +22,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class NavigateDesktopAppMcpToolProviderTest {

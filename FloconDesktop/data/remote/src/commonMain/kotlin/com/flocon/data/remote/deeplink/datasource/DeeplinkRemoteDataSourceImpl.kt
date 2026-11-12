@@ -4,7 +4,6 @@ import com.flocon.data.remote.common.safeDecodeFromString
 import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.deeplink.models.toDomain
 import io.github.openflocon.data.core.deeplink.datasource.DeeplinkRemoteDataSource
-import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
 import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import kotlinx.serialization.json.Json

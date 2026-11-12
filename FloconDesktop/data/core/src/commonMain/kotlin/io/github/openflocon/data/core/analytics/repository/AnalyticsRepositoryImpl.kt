@@ -58,10 +58,12 @@ class AnalyticsRepositoryImpl(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
+        excludedEventNames: Set<String>,
     ): Flow<PagingData<AnalyticsItemDomainModel>> = analyticsLocalDataSource.observe(
         deviceIdAndPackageName = deviceIdAndPackageName,
         analyticsTableId = analyticsTableId,
         filter = filter,
+        excludedEventNames = excludedEventNames,
     ).flowOn(dispatcherProvider.data)
 
     override suspend fun getAnalytics(

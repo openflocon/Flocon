@@ -39,6 +39,7 @@ class AnalyticsLocalDataSourceRoom(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         analyticsTableId: AnalyticsTableId,
         filter: String?,
+        excludedEventNames: Set<String>,
     ): Flow<PagingData<AnalyticsItemDomainModel>> = Pager(
         config = PagingConfig(
             pageSize = 20,
@@ -49,6 +50,7 @@ class AnalyticsLocalDataSourceRoom(
                 packageName = deviceIdAndPackageName.packageName,
                 analyticsTableId = analyticsTableId,
                 filter = filter,
+                excludedEventNames = excludedEventNames.toList(),
             )
         }
     ).flow

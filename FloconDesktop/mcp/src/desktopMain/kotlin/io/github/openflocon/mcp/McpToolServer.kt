@@ -13,6 +13,8 @@ import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
 class McpToolServer internal constructor(
     private val server: Server,
     internal val logManager: LogManager,
+    private val usageTracker: McpUsageTracker = McpUsageTracker.None,
+    private val clientCategory: () -> String = { McpClients.UNKNOWN },
 ) {
 
     internal fun addLoggedTool(
@@ -30,6 +32,8 @@ class McpToolServer internal constructor(
             inputSchema = inputSchema,
             toolAnnotations = annotations,
         ) { request ->
+            // only the fixed name of the tool and the category of the client
+            runCatching { usageTracker.toolCalled(tool = name, client = clientCategory()) }
             safeToolCall(
                 logManager = logManager,
                 toolName = name,
