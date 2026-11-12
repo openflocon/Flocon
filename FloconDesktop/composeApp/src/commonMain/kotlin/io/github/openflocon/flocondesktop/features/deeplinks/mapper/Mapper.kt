@@ -90,11 +90,15 @@ internal fun parseDeeplinkString(
                         autoComplete = parameter.autoComplete
                     )
 
-                    is DeeplinkDomainModel.Parameter.Variable -> DeeplinkPart.Variable(
-                        value = variableValues[parameter.variableName]
+                    is DeeplinkDomainModel.Parameter.Variable -> {
+                        val resolved = variableValues[parameter.variableName]
                             ?: variables.firstSuggestionOf(parameter.variableName)
-                            ?: "{${parameter.variableName}}"
-                    )
+                        DeeplinkPart.Variable(
+                            value = resolved ?: "{${parameter.variableName}}",
+                            name = parameter.variableName,
+                            isResolved = resolved != null,
+                        )
+                    }
                 }
             )
         } else {

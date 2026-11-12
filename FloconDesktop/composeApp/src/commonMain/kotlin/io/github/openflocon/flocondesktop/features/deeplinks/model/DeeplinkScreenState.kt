@@ -10,4 +10,6 @@ data class DeeplinkScreenState(
     val showEmptyState: Boolean = false,
     // false when deeplinks can't be opened on the current device (adb is unavailable over wifi)
     val canSend: Boolean = true,
+    val tabs: List<DeeplinkTabUiModel> = listOf(DeeplinkTabUiModel.Freeform),
+    val selectedTab: DeeplinkTabUiModel = DeeplinkTabUiModel.Freeform,
 )
