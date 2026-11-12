@@ -26,7 +26,7 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 | OkHttp interceptor + WebSockets | `flocon-okhttp-interceptor` | Android, JVM |
 | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
 | gRPC interceptor | `flocon-grpc-interceptor` / `flocon-grpc-interceptor-lite` (+ `flocon-grpc-interceptor-base`) | Android |
-| Databases | `flocon-database-core` + `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3 and SQLDelight) |
+| Databases | `flocon-database-core` + `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
 | SharedPreferences / custom stores | `flocon-sharedprefs` | Android, JVM, iOS, Wasm |
 | DataStore | `flocon-datastores` | Android, JVM, iOS |
 | Analytics | `flocon-analytics` | Android, JVM, iOS, Wasm |

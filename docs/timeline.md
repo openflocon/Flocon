@@ -25,7 +25,7 @@ Each source of the timeline only shows up once its plugin is installed in your a
 
 The timeline itself needs nothing: it is built on the desktop from the events of the other plugins. Each source appears once its plugin is installed, see:
 
-- [Network](network.md#setup-integration)
+- [Network](network.md#setup)
 - [Analytics](analytics.md#setup)
 - [Databases](database.md#setup)
 - [Data Tables](table.md#setup)

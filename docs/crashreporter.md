@@ -5,7 +5,7 @@ description: Capture the crashes of your app and inspect them in Flocon Desktop.
 
 # 💥 Crash Reporter
 
-Flocon records the **uncaught crashes** of your app (type, message, stack trace and time) and displays them in the desktop app, even when the crash happened while the desktop was not connected. The previous crash handlers keep working, so Crashlytics, Sentry and friends still see the crash.
+Flocon records the **uncaught crashes** of your app (type, message, stack trace and time) and displays them in the desktop app, even when the crash happened while the desktop was not connected. On Android and JVM the previous crash handlers keep working, so Crashlytics, Sentry and friends still see the crash.
 
 <!-- screenshot: crashreporter-detail | scenario=doc-crashreporter | screen=crash_reporter | crash list on the left, stack trace with "Crashed in your code" block on the right -->
 
@@ -67,7 +67,7 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
 
 Nothing to call: once installed, crashes are captured automatically.
 
-1. The plugin registers its handlers. The previous ones are kept and still called, so the app crashes as usual.
+1. The plugin registers its handlers. On Android and JVM the previous ones are kept and still called, so the app crashes as usual. On iOS (KMP) it replaces the Kotlin/Native unhandled-exception hook, then terminates the app.
 2. The crash is saved on the device.
 3. On the next connection to Flocon Desktop, the saved crashes are sent and deleted from the device.
 

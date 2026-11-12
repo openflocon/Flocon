@@ -155,7 +155,7 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
     | OkHttp interceptor (+ WebSockets) | `flocon-okhttp-interceptor` | Android, JVM |
     | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
     | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
-    | [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3 and SQLDelight) |
+    | [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
     | [Preferences](sharedpref.md) | `flocon-sharedprefs` | Android, JVM, iOS, Wasm |
     | DataStore | `flocon-datastores` | Android, JVM, iOS |
     | [Files](files.md) | `flocon-files` | Android, JVM, iOS, Wasm (no file browsing on Wasm) |

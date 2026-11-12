@@ -22,7 +22,7 @@ For every connection, Flocon records:
 |---|:---:|:---:|:---:|:---:|
 | Automatic capture | ✅ OkHttp listener | ✅ OkHttp listener (JVM only), otherwise manual | ❌ manual | ❌ manual |
 | Manual logging | ✅ | ✅ | ✅ `logWebSocketEvent` | ✅ `floconLogWebSocketEvent` |
-| Inject a message (mock) | ✅ | ❌ | ❌ | ❌ |
+| Inject a message (mock) | ✅ | ✅ JVM (OkHttp) | ❌ | ❌ |
 
 - On Android with OkHttp, wrap your listener to log the incoming frames, and send with a Flocon helper to log the outgoing ones. Other WebSocket clients (Ktor, `URLSessionWebSocketTask`, `web_socket_channel`) are not intercepted: log their events yourself.
 - Binary messages are logged as text (`ByteString.toString()` on OkHttp).
@@ -160,9 +160,9 @@ WebSocket events go through the network plugin: follow the [network setup](netwo
 
 ## Inject a message (Android)
 
-On Android, a connection created with `listenWithFlocon(id = ...)` registers itself with the desktop. You can then inject a text message into it, **as if the server had sent it**, to see how your app reacts to a payload you choose. The message goes through your own listener (`onMessage`).
+On Android and JVM (OkHttp), a connection created with `listenWithFlocon(id = ...)` registers itself with the desktop. You can then inject a text message into it, **as if the server had sent it**, to see how your app reacts to a payload you choose. The message goes through your own listener (`onMessage`).
 
-This is done from an AI agent with the MCP tools below. Other SDKs do not support it.
+This is done from an AI agent with the MCP tools below (their description says Android, the JVM works the same way). The Swift and Flutter SDKs do not support it.
 
 ## In Flocon Desktop
 

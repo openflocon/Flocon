@@ -17,7 +17,7 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
 | | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
-| Automatic detection of SQLite files | ✅ (with `room()`) | ❌ (register each database) | ✅ (Documents, Application Support) | ✅ (databases, documents, support folders) |
+| Automatic detection of SQLite files | ✅ (with `room()`) | ✅ iOS (Documents, Library), JVM with `room { path(...) }`, ❌ Wasm | ✅ (Documents, Application Support) | ✅ (databases, documents, support folders) |
 | Browse schema and run SQL | ✅ | ✅ (Wasm: Room 3 only) | ✅ | ✅ |
 | Query logging | ✅ (Room, SQLDelight, manual) | ✅ (Room 3, SQLDelight, manual) | ✅ (manual) | ✅ (manual) |
 | Transactions grouped in the logs | ✅ (Room) | ✅ (Room 3) | ❌ | ❌ |
@@ -112,7 +112,7 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
 === "Kotlin"
 
-    **Automatic (Android).** With `room()`, Flocon automatically scans your app's databases folder for SQLite database files on Android.
+    **Automatic detection.** With `room()`, Flocon scans for SQLite database files: the app's databases folder on Android, Documents and Library on iOS. On JVM, give the folders to scan with `room { path("/path/to/folder") }`. Nothing is detected on Wasm.
 
     **Room databases (all platforms).** To register a Room database (in-memory databases included) with a display name:
 
@@ -252,7 +252,7 @@ Flocon can display all SQL queries executed by your app in real time. It is grea
             .also { Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = it) }
         ```
 
-        Wraps any driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `WebWorkerSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
+        Wraps a synchronous driver (`BundledSQLiteDriver`, `NativeSQLiteDriver`, `AndroidSQLiteDriver`...), checked on Android with `AndroidSQLiteDriver`. Each statement
         is logged when it runs, with its arguments. Same rule as Room 2: the `id` is the one the database is registered with.
 
     === "SQLDelight"

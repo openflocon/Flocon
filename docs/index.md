@@ -125,7 +125,7 @@ What each SDK sends to the desktop. Click a feature for its details.
 | [WebSockets](websocket.md) | ✅ automatic (OkHttp) | ✅ manual logging | ✅ manual logging | ✅ manual logging |
 | [gRPC](grpc.md) | ✅ | ❌ | ✅ add-on `FloconSwiftGrpc` | ❌ |
 | [Images](image.md) | ✅ | ✅ | ✅ | ✅ |
-| [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room, SQLDelight (Wasm: Room 3, SQLDelight) | ✅ SQLite (Core Data, GRDB...) | ✅ SQLite (sqflite, Drift...) |
+| [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room, SQLDelight (Wasm: Room 3 only) | ✅ SQLite (Core Data, GRDB...) | ✅ SQLite (sqflite, Drift...) |
 | [Preferences](sharedpref.md) | ✅ SharedPreferences, DataStore | ✅ (DataStore: no Wasm) | ✅ UserDefaults, keychain | ✅ SharedPreferences |
 | [Files](files.md) | ✅ | ✅ (Wasm: no browsing) | ✅ | ✅ |
 | [Dashboards](dashboard.md) | ✅ | ✅ | ✅ | ✅ |
