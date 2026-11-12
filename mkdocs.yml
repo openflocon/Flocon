@@ -86,6 +86,7 @@ nav:
     - Install on Linux: linux-install.md
     - Migrating from 1.x: migration.md
     - Troubleshooting: troubleshooting.md
+  - Timeline: timeline.md
   - Features:
     - Network:
       - HTTP & REST: network.md
@@ -106,7 +107,6 @@ nav:
       - Analytics: analytics.md
       - Feature Flags: featureflags.md
     - Observability:
-      - Timeline: timeline.md
       - Crash Reporter: crashreporter.md
       - Accessibility: accessibility.md
       - WebView: webview.md

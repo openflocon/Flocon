@@ -167,6 +167,9 @@ This is done from an AI agent with the MCP tools below (their description says A
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    WebSocket events also show up in the [Timeline](timeline.md), next to the other network calls.
+
 WebSocket events appear in the **Network** list, with the other calls:
 
 - the type column shows a **WebSocket** tag, with an up arrow for a message sent and a down arrow for a message received;

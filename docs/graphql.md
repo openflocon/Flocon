@@ -74,6 +74,9 @@ Use the [network setup](network.md#setup) of the HTTP client your GraphQL librar
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    GraphQL calls also show up in the [Timeline](timeline.md), like any network call.
+
 GraphQL calls are listed in the **Network** screen, tagged with their operation (query, mutation, ...), and open in the usual detail panel with an extra **GraphQl** section:
 
 - the **query**, its **type** and its **status**;

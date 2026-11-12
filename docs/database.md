@@ -334,6 +334,9 @@ Flocon can display all SQL queries executed by your app in real time. It is grea
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Logged queries also show up in the [Timeline](timeline.md), in the Database lane of the graph.
+
 - **Sidebar**: the databases of the app with their tables and columns (type, primary key, not null). Use the filter field to find a database, table or column, and double-click a table to open it.
 - **SQL editor**: write a query and run it, the result is shown as a table. Open several tabs, turn on auto-update to re-run a query regularly, copy the result or export it to CSV.
 - **Row detail**: select a row to see its values in full.

@@ -98,6 +98,9 @@ Nothing to call: once installed, crashes are captured automatically.
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Crashes also show up in the [Timeline](timeline.md): open it to see what the app did right before.
+
 - **Crash list** of the selected app, newest first, with the exception type, message and time. Use the search field to filter on type, message or frame.
 - **Detail**: type, date and message, then two tabs: **Stack trace** (with a **Crashed in your code** block on top, and a **My code** / **All frames** switch that hides the framework frames) and **Raw**. A **Suppressed** tab shows the suppressed exceptions when there are some.
 - **Actions**: copy the stack trace, delete the selected crash, or delete all the crashes of the app.

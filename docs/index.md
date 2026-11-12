@@ -27,6 +27,7 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
 ---
 
+<!-- screenshot: home-timeline-graph | scenario=doc-timeline | screen=timeline | the timeline graph view of one session, network bars, database, analytics and log lanes -->
 ![The desktop app with a connected device and the network list](assets/screenshots/home-overview.png)
 
 ---
@@ -34,6 +35,14 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 ## ⚡ Highlights
 
 <div class="grid cards" markdown>
+
+-   :material-chart-timeline-variant: __Timeline: start here__
+
+    ---
+
+    Everything your app did, in order, on one screen: network calls, database queries, analytics, logs, crashes. Switch to the graph to see a whole session at a glance.
+
+    [:octicons-arrow-right-16: Timeline](timeline.md)
 
 -   :material-swap-horizontal: __Network__
 
@@ -63,9 +72,9 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
     ---
 
-    A timeline of navigation, user actions and network calls, crash reports with stack traces, accessibility events and WebView traffic.
+    Crash reports with stack traces, accessibility events and WebView traffic.
 
-    [:octicons-arrow-right-16: Timeline](timeline.md) · [Crash reporter](crashreporter.md)
+    [:octicons-arrow-right-16: Crash reporter](crashreporter.md) · [Accessibility](accessibility.md) · [WebView](webview.md)
 
 -   :material-robot: __AI agents (MCP)__
 

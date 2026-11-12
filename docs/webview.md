@@ -107,6 +107,9 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Console messages, page loads and bridge calls also show up in the [Timeline](timeline.md).
+
 The WebViews screen lists three kinds of events, newest first:
 
 - **Console**: `console.log`, `info`, `warn` and `error` of the page, with the source file and line when the browser gives them

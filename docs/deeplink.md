@@ -177,6 +177,9 @@ Some values are only known after Flocon starts (a user id after login, a feature
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Opened deeplinks also show up in the [Timeline](timeline.md).
+
 Open **Deeplinks** in the sidebar. The screen has a filter and tabs at the top, a list on the left and the content of the selected tab on the right.
 
 - **The list** starts with **Free link**, then your **Declared** deeplinks (with a `N required` pill when a variable is missing, or the number of fields to fill), then **Recent**. The filter field above it filters both sections. A **Variables** entry at the bottom of the list shows how many shared variables exist.

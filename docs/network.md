@@ -269,6 +269,9 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Each call also shows up in the [Timeline](timeline.md): a request line and a response line in the list, a bar in the graph.
+
 Open the **Network** screen. Calls appear as they are made, with their state (waiting, success, error).
 
 <!-- screenshot: network-filters | scenario=doc-network | screen=network | Toolbar with a filter typed and an include/exclude filter on the host column -->

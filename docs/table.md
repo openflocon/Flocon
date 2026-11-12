@@ -160,6 +160,9 @@ Log a row each time something happens to follow it live:
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Each row also shows up in the [Timeline](timeline.md).
+
 Open **Tables** in the sidebar.
 
 - The **Table** selector at the top switches between the tables your app logged.

@@ -148,6 +148,9 @@ For each call you see:
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    gRPC calls also show up in the [Timeline](timeline.md), like any network call.
+
 gRPC calls are listed with the other calls in the **Network** screen. Their URL is the server, their method is the full method name, and their status is the gRPC status (`OK`, `NOT_FOUND`...). Click a call to see its metadata and its request and response messages as formatted JSON.
 
 <!-- screenshot: grpc-error | scenario=doc-network | screen=network | A gRPC call that failed, with its error and status in the detail panel -->

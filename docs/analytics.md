@@ -226,6 +226,9 @@ Forward all your app's tracking calls to Flocon alongside your existing provider
 
 ## In Flocon Desktop
 
+!!! tip "In the Timeline"
+    Each event also shows up in the [Timeline](timeline.md), in the Analytics lane of the graph.
+
 Open **Analytics** in the sidebar.
 
 - The **table selector** switches between streams, the **filter** field matches event names and properties.

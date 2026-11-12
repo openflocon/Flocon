@@ -15,6 +15,9 @@ There is nothing to add to your app, and no Kotlin, Swift or Flutter SDK is invo
 
 ## Overview
 
+!!! tip "In the Timeline"
+    Executed commands also show up in the [Timeline](timeline.md).
+
 From the desktop UI, you can:
 
 - **Run any command**: type it with or without the `adb` prefix (`shell pm list packages -3`), the output is displayed in the console.
