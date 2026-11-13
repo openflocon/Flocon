@@ -30,7 +30,7 @@ Property values are always strings.
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](install-kotlin.md#release-builds)):
 
     ```kotlin
     dependencies {
@@ -69,7 +69,7 @@ Property values are always strings.
     flutter pub add flocon
     ```
 
-    The analytics plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Setup](setup.md)). Logging does nothing before Flocon is started, so you can leave the calls in your code.
+    The analytics plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Flutter SDK](install-flutter.md)). Logging does nothing before Flocon is started, so you can leave the calls in your code.
 
     ```dart
     import 'package:flocon/flocon.dart';

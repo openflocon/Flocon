@@ -28,7 +28,7 @@ Values are always strings: format numbers and dates yourself before logging them
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](install-kotlin.md#release-builds)):
 
     ```kotlin
     dependencies {
@@ -67,7 +67,7 @@ Values are always strings: format numbers and dates yourself before logging them
     flutter pub add flocon
     ```
 
-    The tables plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Setup](setup.md)). Logging does nothing before Flocon is started, so you can leave the calls in your code.
+    The tables plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Flutter SDK](install-flutter.md)). Logging does nothing before Flocon is started, so you can leave the calls in your code.
 
     ```dart
     import 'package:flocon/flocon.dart';
