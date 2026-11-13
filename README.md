@@ -73,15 +73,70 @@ More in the [macOS](https://openflocon.github.io/Flocon/macos-install), [Linux](
 
 ## 2. Add the SDK to your app
 
-Pick the SDK of your app. Each one connects to the same desktop app.
+Pick the SDK for your platform. They all connect to the same desktop app.
 
-| SDK | Version | Install | Repository |
-|---|---|---|---|
-| **Android & Kotlin Multiplatform** | [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=)](https://central.sonatype.com/artifact/io.github.openflocon/flocon) | `debugImplementation("io.github.openflocon:flocon:LAST_VERSION")` + one module per feature | this repository ([`FloconAndroid/`](FloconAndroid)) |
-| **iOS / macOS (Swift)** | [![FloconSwift](https://img.shields.io/github/v/release/openflocon/FloconSwift?label=)](https://github.com/openflocon/FloconSwift/releases) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
-| **Flutter** | [![pub](https://img.shields.io/pub/v/flocon?label=)](https://pub.dev/packages/flocon) | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter) |
+<table>
+<tr><th align="left">Android &amp; Kotlin Multiplatform &nbsp; <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=maven%20central"></a></th></tr>
+<tr><td>
 
-Then start Flocon in your app (`startFlocon { ... }` in all three SDKs) and run it: **[Getting started](https://openflocon.github.io/Flocon/setup)** walks you through it step by step, emulators and physical devices included. Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
+**Install**
+
+```kotlin
+// build.gradle.kts
+debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
+// + one module per feature you need
+```
+
+<a href="https://openflocon.github.io/Flocon/install-kotlin"><img alt="Android integration guide" src="https://img.shields.io/badge/Android_integration_guide_%E2%86%92-3DDC84?style=for-the-badge&logo=android&logoColor=black"></a> &nbsp; Source: [`FloconAndroid/`](FloconAndroid)
+
+</td></tr>
+</table>
+
+<table>
+<tr><th align="left">iOS / macOS (Swift) &nbsp; <a href="https://github.com/openflocon/FloconSwift/releases"><img alt="FloconSwift release" src="https://img.shields.io/github/v/release/openflocon/FloconSwift?label=SwiftPM"></a></th></tr>
+<tr><td>
+
+**Install**
+
+```text
+// Xcode › File › Add Package Dependencies…
+https://github.com/openflocon/FloconSwift.git
+```
+
+<a href="https://openflocon.github.io/Flocon/install-swift"><img alt="iOS integration guide" src="https://img.shields.io/badge/iOS_integration_guide_%E2%86%92-F05138?style=for-the-badge&logo=swift&logoColor=white"></a> &nbsp; Source: [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc)
+
+</td></tr>
+</table>
+
+<table>
+<tr><th align="left">Flutter &nbsp; <a href="https://pub.dev/packages/flocon"><img alt="pub.dev" src="https://img.shields.io/pub/v/flocon?label=pub"></a></th></tr>
+<tr><td>
+
+**Install**
+
+```bash
+flutter pub add flocon
+```
+
+<a href="https://openflocon.github.io/Flocon/install-flutter"><img alt="Flutter integration guide" src="https://img.shields.io/badge/Flutter_integration_guide_%E2%86%92-0175C2?style=for-the-badge&logo=flutter&logoColor=white"></a> &nbsp; Source: [FloconFlutter](https://github.com/openflocon/FloconFlutter)
+
+</td></tr>
+</table>
+
+---
+
+<table>
+<tr><th align="left">Start Flocon &nbsp; <sub>same API on every platform</sub></th></tr>
+<tr><td>
+
+```kotlin
+startFlocon { ... }
+```
+
+Then run your app. **[Full documentation](https://openflocon.github.io/Flocon/setup)**, emulators and physical devices included · Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
+
+</td></tr>
+</table>
 
 ## Requirements
 
