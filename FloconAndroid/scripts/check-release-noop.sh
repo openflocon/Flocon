@@ -27,6 +27,15 @@ if [[ -n "$kept" ]]; then
   failed=1
 fi
 
+# The switch itself must be folded away by the -assumevalues rule: if R8 keeps FloconRuntime.isEnabled(),
+# some call was not folded and the code behind it may still be in the app
+switch=$(awk '/^io\.github\.openflocon\.flocon\.FloconRuntime -> /{p=1; next} p && /^[^ ]/{p=0} p && /isEnabled/' "$mapping")
+if [[ -n "$switch" ]]; then
+  echo "R8 kept FloconRuntime.isEnabled(): the -assumevalues rule of flocon-no-op did not fold every call:"
+  echo "$switch"
+  failed=1
+fi
+
 # Manifest entries of the debug modules
 leaked=$(grep -E 'FloconBroadcastReceiver|WRITE_SECURE_SETTINGS|com\.google\.mlkit\.vision\.DEPENDENCIES' "$manifest" || true)
 if [[ -n "$leaked" ]]; then

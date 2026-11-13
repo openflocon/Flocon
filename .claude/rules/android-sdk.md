@@ -20,7 +20,7 @@ paths:
   - an interceptor, listener or receiver passes the call through when `!FloconRuntime.isEnabled()`.
 - `FloconRuntime`, `floconPlugin` and `@InternalFloconApi` are internal to the SDK; the opt-in is enabled for the Flocon modules in `build-logic`.
 - Don't add new `-no-op` modules. The only ones left are `accessibility-no-op` and `qrscanner-no-op`, because their Android manifest entries (a permission, ML Kit) can't be removed by `flocon-no-op`; they keep **exactly the same public API** as their real module, mirrored in the same change. A new module that needs Android manifest entries should avoid them, or ask before adding a no-op.
-- `scripts/check-release-noop.sh` (run in CI after the sample release build) fails if R8 kept a plugin implementation or the connection, or if the release manifest has entries of the debug modules.
+- `scripts/check-release-noop.sh` (run in CI after the sample release build) fails if R8 kept a plugin implementation, the connection or `FloconRuntime.isEnabled()` (a call was not folded), or if the release manifest has entries of the debug modules.
 
 ## Code style
 - Package root: `io.github.openflocon.flocon.<feature>`.
