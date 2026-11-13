@@ -38,7 +38,7 @@ Flocon Desktop runs an MCP server (`http://localhost:9042/mcp`). Claude Code, Co
 flowchart LR
     App["Your app<br/>Android · iOS · KMP · Flutter"] <--> Desktop["Flocon Desktop"]
     Desktop <--> MCP["MCP server<br/>localhost:9042/mcp"]
-    MCP <--> Agent["Your AI agent<br/>Claude Code · Codex · Cursor · Gemini"]
+    MCP <--> Agent["Your AI agent<br/>Claude Code, Codex,<br/>Cursor, Gemini..."]
 ```
 
 Try asking:
