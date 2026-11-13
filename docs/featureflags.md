@@ -30,12 +30,11 @@ The viewer is **read only** on every platform: the desktop never sends a value b
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-feature-flags:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-feature-flags-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-feature-flags:LAST_VERSION")
     }
     ```
 

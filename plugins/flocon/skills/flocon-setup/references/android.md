@@ -4,23 +4,23 @@ Source of truth: `docs/setup.md`. Latest version: the newest release on https://
 
 ## 1. Dependencies
 
-Core, then one module per feature actually used (full list: `docs/migration.md` section 1). Real module in debug, `-no-op` in release:
+Core, then one module per feature actually used (full list: `docs/migration.md` section 1). Real modules in `implementation`, plus `flocon-no-op` in release:
 
 ```kotlin
 dependencies {
-    debugImplementation(libs.flocon)
-    releaseImplementation(libs.flocon.noOp)
+    implementation(libs.flocon)
+    implementation(libs.flocon.network)                // flocon-network-core
+    implementation(libs.flocon.okhttp)                 // flocon-okhttp-interceptor
 
-    debugImplementation(libs.flocon.network)           // flocon-network-core
-    releaseImplementation(libs.flocon.network.noOp)    // flocon-network-core-no-op
-    debugImplementation(libs.flocon.okhttp)            // flocon-okhttp-interceptor
-    releaseImplementation(libs.flocon.okhttp.noOp)
+    releaseImplementation(libs.flocon.noOp)            // flocon-no-op: turns Flocon off
 }
 ```
 
-Optionally import `flocon-bom` in both debug and release to pin every module to one version.
+Optionally import `flocon-bom` with `implementation(platform(...))` to pin every module to one version.
 
-If a module that is compiled in every variant calls a plugin, give it the real module in debug and the no-op in release (and in every other non-debug variant).
+Add `flocon-no-op` to every build type that ships (e.g. an internal distribution build), not only `release`. The per-module `-no-op` artifacts no longer exist, except `flocon-accessibility-no-op` and `flocon-qr-scanner-no-op`: for these two, real module in `debugImplementation` and the no-op in release (their manifest entries can't be removed by `flocon-no-op`).
+
+`flocon-no-op` makes Flocon inactive in any build; its R8 rule removes the Flocon code only when the release is minified. Report which one the project gets (inactive vs absent from the binary).
 
 ## 2. Initialization
 
@@ -35,7 +35,7 @@ startFlocon(FloconContext(this)) {
 
 Always pass a `FloconContext`: `startFlocon(FloconContext(this))`, even though an overload taking the `Context` directly exists.
 
-With debug-only dependencies, put this in a `debug` source set (and a no-op or empty counterpart in `release`), or in a `FloconInitializer` provided per variant.
+The modules are in every variant, so this call can stay in `main`: with `flocon-no-op`, `startFlocon` starts nothing.
 
 ## 3. Hook up each feature
 

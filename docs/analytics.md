@@ -30,12 +30,11 @@ Property values are always strings.
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-analytics-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
     }
     ```
 

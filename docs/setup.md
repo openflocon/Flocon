@@ -52,7 +52,7 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
 
 === "Kotlin"
 
-    Since 2.0 the SDK is split into **one module per feature**: add the core, then only the modules you use. Every module has a `-no-op` twin with the same API, so release builds ship nothing.
+    Since 2.0 the SDK is split into **one module per feature**: add the core, then only the modules you use. Add them in every variant, plus `flocon-no-op` in release: it turns Flocon off, see [Release builds](#release-builds).
 
     Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, iOS, Wasm).
 
@@ -67,32 +67,27 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
         flocon-no-op = { module = "io.github.openflocon:flocon-no-op", version.ref = "flocon" }
 
         flocon-network = { module = "io.github.openflocon:flocon-network-core", version.ref = "flocon" }
-        flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op", version.ref = "flocon" }
         flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
-        flocon-okhttp-no-op = { module = "io.github.openflocon:flocon-okhttp-interceptor-no-op", version.ref = "flocon" }
         flocon-analytics = { module = "io.github.openflocon:flocon-analytics", version.ref = "flocon" }
-        flocon-analytics-no-op = { module = "io.github.openflocon:flocon-analytics-no-op", version.ref = "flocon" }
-        # ... one pair per module you use, see the table below
+        # ... one entry per module you use, see the table below
         ```
 
         ```kotlin
         // app/build.gradle.kts
         dependencies {
-            debugImplementation(libs.flocon)
-            releaseImplementation(libs.flocon.no.op)
+            implementation(libs.flocon)
+            implementation(libs.flocon.network)
+            implementation(libs.flocon.okhttp)
+            implementation(libs.flocon.analytics)
 
-            debugImplementation(libs.flocon.network)
-            releaseImplementation(libs.flocon.network.no.op)
-            debugImplementation(libs.flocon.okhttp)
-            releaseImplementation(libs.flocon.okhttp.no.op)
-            debugImplementation(libs.flocon.analytics)
-            releaseImplementation(libs.flocon.analytics.no.op)
+            // turns Flocon off in release builds
+            releaseImplementation(libs.flocon.no.op)
         }
         ```
 
     === "BOM"
 
-        The `flocon-bom` pins every Flocon module (and its `-no-op`) to the same version: declare the version once, then leave the modules without a version.
+        The `flocon-bom` pins every Flocon module (and `flocon-no-op`) to the same version: declare the version once, then leave the modules without a version.
 
         ```toml
         [libraries]
@@ -100,19 +95,16 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
         flocon = { module = "io.github.openflocon:flocon" }
         flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
         flocon-network = { module = "io.github.openflocon:flocon-network-core" }
-        flocon-network-no-op = { module = "io.github.openflocon:flocon-network-core-no-op" }
         ```
 
         ```kotlin
         dependencies {
-            debugImplementation(platform(libs.flocon.bom))
-            releaseImplementation(platform(libs.flocon.bom))
+            implementation(platform(libs.flocon.bom))
 
-            debugImplementation(libs.flocon)
+            implementation(libs.flocon)
+            implementation(libs.flocon.network)
+
             releaseImplementation(libs.flocon.no.op)
-
-            debugImplementation(libs.flocon.network)
-            releaseImplementation(libs.flocon.network.no.op)
         }
         ```
 
@@ -120,13 +112,11 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
-            debugImplementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
-            debugImplementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
+            implementation("io.github.openflocon:flocon:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
 
             releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-network-core-no-op:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-okhttp-interceptor-no-op:LAST_VERSION")
         }
         ```
 
@@ -144,9 +134,9 @@ In the snippets of this site, replace `LAST_VERSION` with the version shown on t
         }
         ```
 
-        A multiplatform module has a single variant: swap the real modules for the no-ops in the release configurations of the app, see [Release builds](#release-builds).
+        A multiplatform module has a single variant: add `flocon-no-op` to the release build of the app, see [Release builds](#release-builds).
 
-    **All modules** (Maven group `io.github.openflocon`; add `-no-op` to the artifact name for the release twin):
+    **All modules** (Maven group `io.github.openflocon`; only `flocon-accessibility` and `flocon-qr-scanner` keep a `-no-op` artifact, see [Release builds](#release-builds)):
 
     | Feature | Artifact | Platforms |
     | :--- | :--- | :--- |
@@ -381,7 +371,7 @@ Start Flocon Desktop, then run your app. The SDK connects in the background and 
 
     `connect { }` also has `bufferCapacity` (messages kept while not connected) and `rememberLastAddress` (the last connected address is tried again at the next launch and wins over `address`, `true` by default).
 
-    **Scan the QR code** (Android): add `flocon-qr-scanner` (and its `-no-op` in release) and call:
+    **Scan the QR code** (Android): add `flocon-qr-scanner` in debug and `flocon-qr-scanner-no-op` in release (see [Release builds](#release-builds)) and call:
 
     ```kotlin
     import io.github.openflocon.flocon.qrscanner.scanQrCodeAndConnect
@@ -533,29 +523,52 @@ Flocon is a debugging tool: once connected, the desktop can read your network ca
 
 === "Kotlin"
 
-    Use `debugImplementation` with the `-no-op` twin in `releaseImplementation`, as in [step 2](#2-add-the-sdk). The no-op has the same API: nothing is started and no connection is made. Use `flocon-no-op` **and** the no-op of every module you use. In a shared Kotlin Multiplatform module, which has a single variant, swap the modules in the release configurations of the app:
+    Keep the Flocon modules in `implementation` and add `flocon-no-op` to the release build only, as in [step 2](#2-add-the-sdk):
 
     ```kotlin
     // app/build.gradle.kts
-    val floconNoOps = mapOf(
-        "io.github.openflocon:flocon" to "io.github.openflocon:flocon-no-op:LAST_VERSION",
-        "io.github.openflocon:flocon-network-core" to "io.github.openflocon:flocon-network-core-no-op:LAST_VERSION",
-        "io.github.openflocon:flocon-ktor-interceptor" to "io.github.openflocon:flocon-ktor-interceptor-no-op:LAST_VERSION",
-        // ... one line per Flocon module you use
-    )
+    dependencies {
+        implementation("io.github.openflocon:flocon:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
 
+        releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
+    }
+    ```
+
+    `flocon-no-op` turns Flocon off in the build it is added to: `startFlocon` starts nothing, no connection is made, every `Flocon.xxxPlugin` is a no-op and the interceptors pass the calls through. Your code stays the same in every variant. Add it to every build type that ships (e.g. `internalImplementation(...)` for an internal distribution build type).
+
+    - **Minified release (R8 on)**: `flocon-no-op` brings an R8 rule that removes the Flocon code (connection, plugins, interceptors) from the app. Only small API classes stay, so your calls still compile and run.
+    - **Not minified**: Flocon is still off at runtime, but its code and its dependencies stay in the binary.
+
+    **Accessibility and QR code scanner**: these two modules add Android manifest entries (the `WRITE_SECURE_SETTINGS` permission, the ML Kit code scanner) that `flocon-no-op` can't remove, so they keep their `-no-op` artifact:
+
+    ```kotlin
+    dependencies {
+        debugImplementation("io.github.openflocon:flocon-accessibility:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-accessibility-no-op:LAST_VERSION")
+
+        debugImplementation("io.github.openflocon:flocon-qr-scanner:LAST_VERSION")
+        releaseImplementation("io.github.openflocon:flocon-qr-scanner-no-op:LAST_VERSION")
+    }
+    ```
+
+    **Kotlin Multiplatform**: a shared module has a single variant, so it depends on the real modules with `implementation`. In the Android app, add `releaseImplementation` of `flocon-no-op` as above. If the shared module uses accessibility or the QR code scanner, swap only these two in the release configurations of the app:
+
+    ```kotlin
+    // app/build.gradle.kts
     configurations.configureEach {
         if (name.startsWith("release")) {
             resolutionStrategy.dependencySubstitution {
-                floconNoOps.forEach { (module, noOp) ->
-                    substitute(module(module)).using(module(noOp))
-                }
+                substitute(module("io.github.openflocon:flocon-accessibility"))
+                    .using(module("io.github.openflocon:flocon-accessibility-no-op:LAST_VERSION"))
+                substitute(module("io.github.openflocon:flocon-qr-scanner"))
+                    .using(module("io.github.openflocon:flocon-qr-scanner-no-op:LAST_VERSION"))
             }
         }
     }
     ```
 
-    The no-ops are binary compatible: code compiled against the real modules runs on them.
+    The iOS framework, desktop (JVM) and Wasm targets have no release configuration: add `flocon-no-op` to the build that ships (e.g. a release-only Gradle module or flavor), or call `startFlocon` only behind your app's own debug check.
 
 === "Swift"
 

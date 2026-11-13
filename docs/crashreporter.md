@@ -27,8 +27,7 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-crashreporter:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-crashreporter-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-crashreporter:LAST_VERSION")
     }
     ```
 

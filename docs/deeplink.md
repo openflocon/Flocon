@@ -26,12 +26,11 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-deeplinks:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-deeplinks-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-deeplinks:LAST_VERSION")
     }
     ```
 

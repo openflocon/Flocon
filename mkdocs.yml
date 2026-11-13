@@ -84,7 +84,7 @@ nav:
     - Connect your app: setup.md
     - Install on macOS: macos-install.md
     - Install on Linux: linux-install.md
-    - Migrating from 1.x: migration.md
+    - Migration: migration.md
     - Troubleshooting: troubleshooting.md
   - Features:
     - Timeline: timeline.md

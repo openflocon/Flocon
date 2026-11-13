@@ -28,12 +28,11 @@ Values are always strings: format numbers and dates yourself before logging them
 
 === "Kotlin"
 
-    Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-tables:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-tables-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-tables:LAST_VERSION")
     }
     ```
 

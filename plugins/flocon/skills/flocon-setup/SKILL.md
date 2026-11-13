@@ -7,7 +7,7 @@ description: Use when installing Flocon in an Android, Kotlin Multiplatform, Swi
 
 Flocon is a debugging SDK: the app talks to Flocon Desktop. This skill puts the SDK in a project, or moves an existing integration to a newer version. It does not debug a running app (that is `flocon-mcp`).
 
-Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs/setup.md` (install), `docs/migration.md` (1.x to 2.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments; for Flutter, the README of `openflocon/FloconFlutter` and the Dart doc comments of the packages. If this skill and those docs disagree, the docs win; tell the user.
+Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs/setup.md` (install), `docs/migration.md` (1.x to 2.0, and the per-module no-ops after 2.0.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments; for Flutter, the README of `openflocon/FloconFlutter` and the Dart doc comments of the packages. If this skill and those docs disagree, the docs win; tell the user.
 
 ## 1. Detect the platform first
 
@@ -40,6 +40,7 @@ Then pick one path, and read only the file you need:
 
 - No Flocon → install: [references/android.md](references/android.md), [references/kmp.md](references/kmp.md), [references/swift.md](references/swift.md) or [references/flutter.md](references/flutter.md).
 - Kotlin Flocon 1.x → migrate: [references/migrations/v1-to-v2.md](references/migrations/v1-to-v2.md).
+- Kotlin Flocon 2.0.0 with per-module `-no-op` artifacts → migrate: [references/migrations/per-module-no-op-to-flocon-no-op.md](references/migrations/per-module-no-op-to-flocon-no-op.md).
 - Already on the target version → only add the missing plugins from the install page.
 
 A future migration is a new file in `references/migrations/`.
@@ -59,7 +60,7 @@ A future migration is a new file in `references/migrations/`.
 ## 4. Platform rules
 
 **Android / KMP**
-- Every real module has a `-no-op` twin with the same API, used in release and in any non-debug variant (dependency substitution for KMP).
+- The real modules go in `implementation` (every variant); a single `flocon-no-op` in `releaseImplementation` (and in every other build type that ships) turns Flocon off. Only `flocon-accessibility` and `flocon-qr-scanner` keep a `-no-op` (debug real, release no-op; dependency substitution for KMP). Flocon is absent from the binary only in a minified (R8) build; without R8 it is inactive but its code stays.
 - Compile every variant you touched (debug, release, and others such as an internal build). List the Gradle tasks first, their names depend on flavors.
 
 **Swift**

@@ -54,8 +54,7 @@ For each call you see:
         dependencies {
             implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
 
-            debugImplementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-lite-no-op:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
         }
         ```
 
@@ -65,12 +64,11 @@ For each call you see:
         dependencies {
             implementation("com.google.protobuf:protobuf-kotlin:$PROTOBUF_VERSION")
 
-            debugImplementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-grpc-interceptor-no-op:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
         }
         ```
 
-    The `-no-op` artifacts expose the same API (`FloconGrpcInterceptor`, `FloconGrpcFormatter`) and forward every call untouched, so the same code compiles in debug and release.
+    With `flocon-no-op` in release builds (see [Release builds](setup.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
 
 === "Swift"
 

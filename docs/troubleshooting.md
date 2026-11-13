@@ -64,6 +64,6 @@ The browser rejects the self-signed certificate of the desktop: open `https://lo
 
 ## Something is connected but a screen is empty
 
-- The feature is not installed in the SDK (`install(...)`), or the Kotlin module is a `-no-op` in the build you run. The desktop only shows the menu entries of the installed plugins.
+- The feature is not installed in the SDK (`install(...)`), or the Kotlin build you run has `flocon-no-op` (or the `-no-op` of accessibility / QR code scanner). The desktop only shows the menu entries of the installed plugins.
 - The feature is not supported on your platform: check the table of [the home page](index.md#platform-support) and the support table of the feature page.
-- Wrong build variant: in Kotlin, the real modules are `debugImplementation`; a release build runs the no-ops.
+- Wrong build variant: in Kotlin, `flocon-no-op` is in `releaseImplementation`, so a release build never connects. Run a debug build.

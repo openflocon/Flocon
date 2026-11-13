@@ -29,8 +29,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
     }
     ```
 
@@ -49,15 +48,13 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
         ```toml
         [libraries]
         flocon-datastores = { module = "io.github.openflocon:flocon-datastores", version.ref = "flocon" }
-        flocon-datastores-no-op = { module = "io.github.openflocon:flocon-datastores-no-op", version.ref = "flocon" }
         ```
 
     === "build.gradle.kts"
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-datastores-no-op:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
         }
         ```
 

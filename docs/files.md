@@ -38,8 +38,7 @@ and a root folder itself is never deleted.
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-files:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-files-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-files:LAST_VERSION")
     }
     ```
 

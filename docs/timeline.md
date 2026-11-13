@@ -40,8 +40,7 @@ To send your own logs, install the timeline plugin:
 
     ```kotlin
     dependencies {
-        debugImplementation("io.github.openflocon:flocon-timeline:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-timeline-no-op:LAST_VERSION")
+        implementation("io.github.openflocon:flocon-timeline:LAST_VERSION")
     }
     ```
 

@@ -30,7 +30,7 @@ Pick the SDK of your app. Each one connects to the same desktop app.
 
 | SDK | Version | Install | Repository |
 |---|---|---|---|
-| **Android & Kotlin Multiplatform** | [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=)](https://central.sonatype.com/artifact/io.github.openflocon/flocon) | `debugImplementation("io.github.openflocon:flocon:LAST_VERSION")` + one module per feature | this repository ([`FloconAndroid/`](FloconAndroid)) |
+| **Android & Kotlin Multiplatform** | [![Maven Central](https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=)](https://central.sonatype.com/artifact/io.github.openflocon/flocon) | `implementation("io.github.openflocon:flocon:LAST_VERSION")` + one module per feature, `flocon-no-op` in `releaseImplementation` | this repository ([`FloconAndroid/`](FloconAndroid)) |
 | **iOS / macOS (Swift)** | [![FloconSwift](https://img.shields.io/github/v/release/openflocon/FloconSwift?label=)](https://github.com/openflocon/FloconSwift/releases) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
 | **Flutter** | [![pub](https://img.shields.io/pub/v/flocon?label=)](https://pub.dev/packages/flocon) | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter) |
 
