@@ -83,32 +83,6 @@ Pick the SDK of your app. Each one connects to the same desktop app.
 
 Then start Flocon in your app (`startFlocon { ... }` in all three SDKs) and run it: **[Getting started](https://openflocon.github.io/Flocon/setup)** walks you through it step by step, emulators and physical devices included. Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
 
-## What you can inspect
-
-Support per SDK (details and limits in the [platform support matrix](https://openflocon.github.io/Flocon/#platform-support)). Click a feature for its page.
-
-| Feature | Android | KMP | Swift | Flutter |
-|---|:---:|:---:|:---:|:---:|
-| [HTTP inspector](https://openflocon.github.io/Flocon/network) (OkHttp, Ktor, URLSession, Dio, `http`) | ✅ | ✅ | ✅ | ✅ |
-| [Request mocking](https://openflocon.github.io/Flocon/mocking) and [bad network](https://openflocon.github.io/Flocon/bad-quality) | ✅ | ✅ | ✅ | ✅ |
-| [GraphQL](https://openflocon.github.io/Flocon/graphql) | ✅ | ✅ | ✅ | ✅ |
-| [WebSocket](https://openflocon.github.io/Flocon/websocket) | ✅ automatic (OkHttp) | ✅ manual | ✅ manual | ✅ manual |
-| [gRPC](https://openflocon.github.io/Flocon/grpc) | ✅ | ❌ | ✅ (add-on) | ❌ |
-| [Images](https://openflocon.github.io/Flocon/image) | ✅ | ✅ | ✅ | ✅ |
-| [Databases](https://openflocon.github.io/Flocon/database) (Room, SQLDelight, SQLite) | ✅ | ✅ | ✅ | ✅ |
-| [Preferences](https://openflocon.github.io/Flocon/sharedpref) (SharedPreferences, DataStore, UserDefaults) | ✅ | ✅ | ✅ | ✅ |
-| [Files](https://openflocon.github.io/Flocon/files) | ✅ | ✅ | ✅ | ✅ |
-| [Dashboards](https://openflocon.github.io/Flocon/dashboard) and [tables](https://openflocon.github.io/Flocon/table) | ✅ | ✅ | ✅ | ✅ |
-| [Deeplinks](https://openflocon.github.io/Flocon/deeplink) | ✅ | ✅ | ✅ | ✅ |
-| [Analytics](https://openflocon.github.io/Flocon/analytics) | ✅ | ✅ | ✅ | ✅ |
-| [Feature flags](https://openflocon.github.io/Flocon/featureflags) | ✅ | ✅ | ✅ | ✅ |
-| [Timeline](https://openflocon.github.io/Flocon/timeline) | ✅ | ✅ | ✅ | ✅ |
-| [Crash reporter](https://openflocon.github.io/Flocon/crashreporter) | ✅ | ✅ | ✅ | ✅ |
-| [Accessibility](https://openflocon.github.io/Flocon/accessibility) | ✅ | ⚠️ partial | ❌ | ❌ |
-| [WebView](https://openflocon.github.io/Flocon/webview) | ✅ | ⚠️ manual API | ❌ | ❌ |
-| [QR code connection](https://openflocon.github.io/Flocon/connect-qr-code/) | ✅ | ❌ | ✅ | ✅ |
-| [AI agents (MCP)](https://openflocon.github.io/Flocon/mcp) | ✅ | ✅ | ✅ | ✅ |
-
 ## Requirements
 
 - **Desktop**: macOS, Linux or Windows. The portable jar needs JDK 21.
