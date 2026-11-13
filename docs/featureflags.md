@@ -32,11 +32,7 @@ The viewer is **read only** on every platform: the desktop never sends a value b
 
     Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](install-kotlin.md#release-builds)):
 
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-feature-flags:LAST_VERSION")
-    }
-    ```
+    Feature flags are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
     Install the plugin when you start Flocon:
 

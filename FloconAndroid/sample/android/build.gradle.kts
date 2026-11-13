@@ -50,7 +50,6 @@ dependencies {
     implementation(projects.flocon.flocon)
     // turns Flocon off in release builds
     releaseImplementation(projects.flocon.floconNoOp)
-    implementation(projects.deeplinks.deeplinks)
     implementation(projects.database.room3.room3)
     implementation(projects.database.room.room)
     implementation(projects.database.sqldelight.sqldelight)
@@ -58,10 +57,7 @@ dependencies {
     implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
     implementation(projects.datastores.datastores)
     implementation(projects.accessibility.accessibility)
-    implementation(projects.featureflags.featureflags)
-    implementation(projects.timeline.timeline)
     implementation(projects.webview.webview)
-    implementation(projects.crashreporter.crashreporter)
     implementation(projects.tables.tables)
     implementation(projects.qrscanner.qrscanner)
 

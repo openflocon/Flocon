@@ -4,12 +4,11 @@ Source of truth: `docs/install-kotlin.md`. Latest version: the newest release on
 
 ## 1. Dependencies
 
-Core, then one module per feature actually used (full list: `docs/migration.md` section 1). Real modules in `implementation`, plus `flocon-no-op` in release:
+Core (`flocon`: network, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards), then one module per other feature actually used (full list: `docs/install-kotlin.md`). Real modules in `implementation`, plus `flocon-no-op` in release:
 
 ```kotlin
 dependencies {
-    implementation(libs.flocon)
-    implementation(libs.flocon.network)                // flocon-network-core
+    implementation(libs.flocon)                        // core: network, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards
     implementation(libs.flocon.okhttp)                 // flocon-okhttp-interceptor
 
     releaseImplementation(libs.flocon.no.op)          // flocon-no-op (alias "flocon-no-op"): turns Flocon off

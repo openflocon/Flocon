@@ -28,7 +28,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
     flocon-no-op = { module = "io.github.openflocon:flocon-no-op", version.ref = "flocon" }
 
-    flocon-network = { module = "io.github.openflocon:flocon-network-core", version.ref = "flocon" }
     flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
     # ... one entry per module you use, see the table below
     ```
@@ -37,7 +36,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     // app/build.gradle.kts
     dependencies {
         implementation(libs.flocon)
-        implementation(libs.flocon.network)
         implementation(libs.flocon.okhttp)
 
         // turns Flocon off in release builds
@@ -54,7 +52,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     flocon-bom = { module = "io.github.openflocon:flocon-bom", version = "LAST_VERSION" }
     flocon = { module = "io.github.openflocon:flocon" }
     flocon-no-op = { module = "io.github.openflocon:flocon-no-op" }
-    flocon-network = { module = "io.github.openflocon:flocon-network-core" }
     ```
 
     ```kotlin
@@ -63,7 +60,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
         releaseImplementation(platform(libs.flocon.bom))
 
         implementation(libs.flocon)
-        implementation(libs.flocon.network)
 
         releaseImplementation(libs.flocon.no.op)
     }
@@ -74,7 +70,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     ```kotlin
     dependencies {
         implementation("io.github.openflocon:flocon:LAST_VERSION")
-        implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
 
         // turns Flocon off in release builds
@@ -89,7 +84,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
         sourceSets {
             commonMain.dependencies {
                 implementation("io.github.openflocon:flocon:LAST_VERSION")
-                implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
                 implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
             }
         }
@@ -102,18 +96,13 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core, [Dashboards](dashboard.md), [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Analytics](analytics.md) | `flocon` | Android, JVM, iOS, Wasm |
-| [Network](network.md) (mocks, bad network, WebSocket logging) | `flocon-network-core` | Android, JVM, iOS, Wasm |
+| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging), [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md) | `flocon` | Android, JVM, iOS, Wasm |
 | OkHttp interceptor (+ WebSockets) | `flocon-okhttp-interceptor` | Android, JVM |
 | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
 | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
 | [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
 | [DataStore](sharedpref.md) | `flocon-datastores` | Android, JVM, iOS |
 | [Tables](table.md) | `flocon-tables` | Android, JVM, iOS, Wasm |
-| [Deeplinks](deeplink.md) | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
-| [Feature flags](featureflags.md) | `flocon-feature-flags` | Android, JVM, iOS, Wasm |
-| [Timeline](timeline.md) | `flocon-timeline` | Android, JVM, iOS, Wasm |
-| [Crash reporter](crashreporter.md) | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
 | [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
 | [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS, Wasm (automatic `attach` on Android) |
 | QR code scanner | `flocon-qr-scanner` | Android |
@@ -165,18 +154,18 @@ Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analy
 
 | Plugin to `install` | Module | Page |
 | :--- | :--- | :--- |
-| `FloconNetwork` | `flocon-network-core` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
+| `FloconNetwork` | `flocon` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
 | `FloconDatabase` | `flocon-database-core` + a Room / SQLDelight provider | [Databases](database.md) |
 | `FloconPreferences` | `flocon` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
 | `FloconFiles` | `flocon` | [Files](files.md) |
 | `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |
 | `FloconTable` | `flocon-tables` | [Tables](table.md) |
-| `FloconDeeplinks` | `flocon-deeplinks` | [Deeplinks](deeplink.md) |
+| `FloconDeeplinks` | `flocon` | [Deeplinks](deeplink.md) |
 | `FloconAnalytics` | `flocon` | [Analytics](analytics.md) |
-| `FloconFeatureFlags` | `flocon-feature-flags` | [Feature flags](featureflags.md) |
-| `FloconCrashReporter` | `flocon-crashreporter` | [Crash reporter](crashreporter.md) |
+| `FloconFeatureFlags` | `flocon` | [Feature flags](featureflags.md) |
+| `FloconCrashReporter` | `flocon` | [Crash reporter](crashreporter.md) |
 | `FloconWebView` | `flocon-webview` | [WebView](webview.md) |
-| `FloconTimeline` | `flocon-timeline` | [Timeline](timeline.md) |
+| `FloconTimeline` | `flocon` | [Timeline](timeline.md) |
 | `FloconAccessibility` | `flocon-accessibility` | [Accessibility](accessibility.md) |
 
 ## Release builds
@@ -189,7 +178,6 @@ Keep the Flocon modules in `implementation` and add `flocon-no-op` to the releas
 // app/build.gradle.kts
 dependencies {
     implementation("io.github.openflocon:flocon:LAST_VERSION")
-    implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
 
     releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
 }

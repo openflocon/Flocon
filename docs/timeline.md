@@ -38,11 +38,7 @@ To send your own logs, install the timeline plugin:
 
 === "Kotlin"
 
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-timeline:LAST_VERSION")
-    }
-    ```
+    The timeline is part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(applicationContext)) {

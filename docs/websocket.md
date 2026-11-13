@@ -43,7 +43,6 @@ WebSocket events go through the network plugin: follow the [network setup](netwo
 
     ```kotlin
     dependencies {
-        implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
         implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
     }
     ```

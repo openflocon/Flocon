@@ -9,14 +9,13 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.openflocon:flocon:LAST_VERSION")
-            implementation("io.github.openflocon:flocon-network-core:LAST_VERSION")
             implementation("io.github.openflocon:flocon-ktor-interceptor:LAST_VERSION")
         }
     }
 }
 ```
 
-Check the platform column of each module in `docs/migration.md` section 1 (for example OkHttp is Android/JVM only, Ktor also covers iOS/Wasm). Wasm has no filesystem or SQLite, so no files/databases.
+Check the platform column of each module in `docs/install-kotlin.md` (for example OkHttp is Android/JVM only, Ktor also covers iOS/Wasm). Wasm has no filesystem or SQLite, so no files/databases.
 
 ## 2. Release builds
 

@@ -38,7 +38,7 @@ For each call you see:
     !!! warning "gRPC version"
         Use `grpc-android` / `grpc-java` **`1.70.0`** or later.
 
-    gRPC calls are reported to the network plugin: add `flocon-network-core` (see [Network](network.md#setup)) and install it:
+    gRPC calls are reported to the network plugin: the network plugin is part of `flocon` (see [Network](network.md#setup)), install it:
 
     ```kotlin
     startFlocon(FloconContext(context)) {

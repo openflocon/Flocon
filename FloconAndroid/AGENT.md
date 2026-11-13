@@ -23,17 +23,16 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 
 Each feature lives in its own folder (`<feature>/<feature>`, Gradle path `:<feature>:<feature>`). Maven `artifactId`s are declared explicitly per module and do not depend on the path. `:flocon:flocon-no-op` turns Flocon off; `accessibility` and `qrscanner` also keep a `-no-op` sibling, because of their Android manifest entries.
 
-- `:flocon:flocon`: Core library providing the plugin registration and context management.
+- `:flocon:flocon`: Core library providing the plugin registration and context management, plus the plugins without external dependency (network, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards).
 - `:database`:
     - `:database:core:core`: Abstractions for database providers.
     - `:database:room:room` / `:database:room3:room3`: Room-based implementations.
 - `:network`:
-    - `:network:core:core`: Core networking abstractions.
+    - The network plugin (`FloconNetwork`) lives in `:flocon:flocon`.
     - `:network:okhttp-interceptor:okhttp-interceptor` / `:network:ktor-interceptor:ktor-interceptor`: Client-specific interceptors.
 - `:grpc`:
     - `:grpc:grpc-interceptor:grpc-interceptor`: Interceptors for gRPC calls.
 - `:datastores:datastores`: Modules for Typed DataStore integration.
-- `:deeplinks:deeplinks`: Abstractions and implementations for handling deep links.
 
 ## 🧩 Core Concepts
 

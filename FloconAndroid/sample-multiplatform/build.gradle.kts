@@ -22,10 +22,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.flocon.flocon)
-            implementation(projects.deeplinks.deeplinks)
             implementation(projects.accessibility.accessibility)
-            implementation(projects.featureflags.featureflags)
-            implementation(projects.timeline.timeline)
             implementation(projects.tables.tables)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
             implementation(projects.database.room3.room3)
@@ -82,7 +79,6 @@ kotlin {
             implementation(libs.sqldelight.android.driver)
             implementation(libs.androidx.room.runtime)
             implementation(projects.datastores.datastores)
-            implementation(projects.crashreporter.crashreporter)
             implementation(projects.tables.tables)
             implementation(projects.webview.webview)
         }

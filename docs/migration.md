@@ -20,7 +20,7 @@ This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts ar
 
 `flocon-no-op`, `flocon-accessibility-no-op` and `flocon-qr-scanner-no-op` are still published.
 
-**Modules merged into `flocon`**: `flocon-analytics`, `flocon-files` and `flocon-sharedprefs` have no external dependency, so they are now part of the core module and no longer published as separate artifacts. Remove them from your build files and version catalog: `flocon` is enough, and the packages and APIs are the same (`FloconAnalytics`, `FloconFiles`, `FloconPreferences`, `Flocon.analyticsPlugin`...). `flocon-datastores` is unchanged.
+**Modules merged into `flocon`**: `flocon-network-core`, `flocon-analytics`, `flocon-files`, `flocon-sharedprefs`, `flocon-deeplinks`, `flocon-feature-flags`, `flocon-timeline` and `flocon-crashreporter` have no external dependency, so they are now part of the core module and no longer published as separate artifacts. Remove them from your build files and version catalog: `flocon` is enough, and the packages and APIs are the same (`FloconNetwork`, `FloconAnalytics`, `FloconFiles`, `FloconPreferences`, `Flocon.featureFlagsPlugin`...). The interceptors (`flocon-okhttp-interceptor`, `flocon-ktor-interceptor`, gRPC) and `flocon-datastores` are unchanged, and `flocon-tables` and `flocon-database-core` stay separate modules.
 
 === "After 2.0.0"
 
@@ -49,7 +49,7 @@ This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts ar
     }
     ```
 
-- **`debugImplementation` becomes `implementation`** for every Flocon module, the module `-no-op` lines are removed, and so are `flocon-analytics`, `flocon-files` and `flocon-sharedprefs` (now in `flocon`). Keep only `releaseImplementation` of `flocon-no-op` (add it to any other build type that ships).
+- **`debugImplementation` becomes `implementation`** for every Flocon module, the module `-no-op` lines are removed, and so are the modules now merged into `flocon` (network core, analytics, files, preferences, deeplinks, feature flags, timeline, crash reporter). Keep only `releaseImplementation` of `flocon-no-op` (add it to any other build type that ships).
 - **Accessibility and QR code scanner** keep their no-op, because their Android manifest entries can't be removed by `flocon-no-op`: keep `debugImplementation` of the real module and `releaseImplementation` of `flocon-accessibility-no-op` / `flocon-qr-scanner-no-op`.
 - **Kotlin Multiplatform**: remove the dependency substitution of every module, except `flocon-accessibility` and `flocon-qr-scanner` if you use them, and add `releaseImplementation` of `flocon-no-op` in the Android app.
 - **Turn R8 on in release** to remove the Flocon code from the app: without minification, Flocon is off at runtime but its code and dependencies stay in the binary.

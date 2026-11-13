@@ -24,10 +24,7 @@ kotlin {
             implementation(projects.sampleMultiplatform)
 
             implementation(projects.flocon.flocon)
-            implementation(projects.deeplinks.deeplinks)
             implementation(projects.accessibility.accessibility)
-            implementation(projects.featureflags.featureflags)
-            implementation(projects.timeline.timeline)
             implementation(projects.tables.tables)
             implementation(projects.database.room3.room3)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
