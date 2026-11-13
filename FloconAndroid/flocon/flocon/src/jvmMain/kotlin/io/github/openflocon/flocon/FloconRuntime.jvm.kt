@@ -5,4 +5,6 @@ internal actual fun isFloconNoOpMarkerPresent(): Boolean = try {
     true
 } catch (_: ClassNotFoundException) {
     false
+} catch (_: LinkageError) {
+    false
 }
