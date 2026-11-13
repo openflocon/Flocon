@@ -8,19 +8,19 @@ class FloconLargeMessageTest {
 
     @Test
     fun `a small message stays on the websocket`() {
-        assertFalse("{\"plugin\":\"network\"}".isTooLargeForWebSocket())
+        assertFalse(isTooLargeForWebSocket("{\"plugin\":\"network\"}"))
     }
 
     @Test
     fun `an ascii message is large only above the threshold`() {
-        assertFalse("a".repeat(LARGE_MESSAGE_THRESHOLD_BYTES).isTooLargeForWebSocket())
-        assertTrue("a".repeat(LARGE_MESSAGE_THRESHOLD_BYTES + 1).isTooLargeForWebSocket())
+        assertFalse(isTooLargeForWebSocket("a".repeat(LARGE_MESSAGE_THRESHOLD_BYTES)))
+        assertTrue(isTooLargeForWebSocket("a".repeat(LARGE_MESSAGE_THRESHOLD_BYTES + 1)))
     }
 
     @Test
     fun `the size is counted in utf8 bytes, not in chars`() {
         // 3 bytes per char: under the threshold in chars, over it in bytes
         val chars = LARGE_MESSAGE_THRESHOLD_BYTES / 3 + 1
-        assertTrue("€".repeat(chars).isTooLargeForWebSocket())
+        assertTrue(isTooLargeForWebSocket("€".repeat(chars)))
     }
 }

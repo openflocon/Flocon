@@ -105,7 +105,7 @@ class FloconClient internal constructor(
                 when (item) {
                     is OutboxItem.Message -> {
                         val message = encode(item.plugin, item.method, item.body)
-                        if (message.isTooLargeForWebSocket()) {
+                        if (isTooLargeForWebSocket(message)) {
                             sendOverHttp(message)
                         } else {
                             outbox.enqueue(message)
@@ -270,5 +270,6 @@ internal class FloconLink(val server: FloconServer) {
 internal const val LARGE_MESSAGE_THRESHOLD_BYTES = 5 * 1024 * 1024
 
 /** A char is at most 3 bytes in UTF-8 (BMP), so the exact size is only computed for big strings. */
-internal fun String.isTooLargeForWebSocket(): Boolean =
-    length.toLong() * 3 > LARGE_MESSAGE_THRESHOLD_BYTES && encodeToByteArray().size > LARGE_MESSAGE_THRESHOLD_BYTES
+internal fun isTooLargeForWebSocket(message: String): Boolean =
+    message.length.toLong() * 3 > LARGE_MESSAGE_THRESHOLD_BYTES &&
+        message.encodeToByteArray().size > LARGE_MESSAGE_THRESHOLD_BYTES
