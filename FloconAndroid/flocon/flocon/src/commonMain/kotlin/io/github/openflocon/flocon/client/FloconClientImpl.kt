@@ -238,8 +238,14 @@ class FloconClient internal constructor(
         // the link is chosen now, with its own http port
         val server = uploadLink.server
         scope.launch {
-            val sent = httpClient.sendMessage(message = message, address = server.host, port = server.httpPort)
-            if (!sent) FloconLogger.log("A message too large for the websocket could not be sent over http, it was dropped")
+            val sent = httpClient.sendMessage(
+                message = message,
+                address = server.host,
+                port = server.httpPort,
+            )
+            if (!sent) {
+                FloconLogger.log("A message too large for the websocket could not be sent over http, it was dropped")
+            }
         }
     }
 
