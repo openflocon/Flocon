@@ -19,13 +19,25 @@ object FloconRuntime {
     @Volatile
     private var enabledOverride: Boolean? = null
 
+    @Volatile
+    private var turnedOffByNoOp: Boolean = false
+
     /** `false` when Flocon is turned off. Must stay a non-inline static method: the R8 rule of `flocon-no-op` targets it. */
     @JvmStatic
-    fun isEnabled(): Boolean = enabledOverride ?: !noOpMarkerPresent
+    fun isEnabled(): Boolean = enabledOverride ?: !(turnedOffByNoOp || noOpMarkerPresent)
+
+    /**
+     * Called by `flocon-no-op` when the app starts, on the platforms where its marker class
+     * can't be looked up (iOS, Wasm).
+     */
+    fun turnOff() {
+        turnedOffByNoOp = true
+    }
 
     /** Forces the switch in tests, `null` goes back to the detection. */
     fun overrideEnabledForTests(enabled: Boolean?) {
         enabledOverride = enabled
+        if (enabled == null) turnedOffByNoOp = false
     }
 }
 

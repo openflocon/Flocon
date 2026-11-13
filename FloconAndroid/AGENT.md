@@ -5,7 +5,7 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 ## 🚀 Key Features
 
 - **Modular Architecture**: Separate modules for different functionalities (network, database, etc.).
-- **Plugin System**: Easily extensible with "no-op" variants for testing and modularity.
+- **Plugin System**: One module per feature; a single `flocon-no-op` turns Flocon off in release builds.
 - **KMP Support**: Targets Android, iOS, JVM, and WasmJs.
 - **Modern Tech Stack**: Uses Room 3, Ktor, OkHttp, gRPC, and Compose Multiplatform.
 
@@ -21,7 +21,7 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 
 ## 📂 Module Structure
 
-Each feature lives in its own folder holding the implementation and its no-op sibling (`<feature>/<feature>` and `<feature>/<feature>-no-op`, Gradle path `:<feature>:<feature>`). Maven `artifactId`s are declared explicitly per module and do not depend on the path.
+Each feature lives in its own folder (`<feature>/<feature>`, Gradle path `:<feature>:<feature>`). Maven `artifactId`s are declared explicitly per module and do not depend on the path. `:flocon:flocon-no-op` turns Flocon off; `accessibility` and `qrscanner` also keep a `-no-op` sibling, because of their Android manifest entries.
 
 - `:flocon:flocon`: Core library providing the plugin registration and context management.
 - `:database`:
@@ -38,7 +38,7 @@ Each feature lives in its own folder holding the implementation and its no-op si
 ## 🧩 Core Concepts
 
 ### Plugins
-Flocon operates on a plugin-based architecture. Modules typically provide a "Core" or implementation module and a "No-Op" module. The No-Op modules allow the app to compile and run without the actual implementation, which is useful for specialized builds or testing.
+Flocon operates on a plugin-based architecture. Apps use the real modules in every variant and add `flocon-no-op` in release: it turns `FloconRuntime` off (nothing is started, every `Flocon.xxxPlugin` is a no-op, interceptors pass calls through), and its R8 rule removes the Flocon code from minified builds.
 
 ### Interceptors
 For networking and gRPC, Flocon uses an interceptor-based approach to hook into the communication pipeline of standard libraries (OkHttp, Ktor, gRPC).
