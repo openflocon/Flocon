@@ -14,7 +14,7 @@ import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.model.FloconFileInfo
 import io.github.openflocon.flocon.plugins.files.model.FloconFolderModel
 import io.github.openflocon.flocon.plugins.files.model.fromdevice.FileDataModel
@@ -298,7 +298,7 @@ internal class FloconFilesPluginImpl(
 }
 
 val Flocon.Companion.filesPlugin: FloconFilesPlugin
-    get() = FloconFilesPluginImpl.plugin ?: pluginNotInitialized("Files", NoOpFilesPlugin())
+    get() = floconPlugin("Files", noOp = { NoOpFilesPlugin() }, installed = { FloconFilesPluginImpl.plugin })
 
 private class NoOpFilesPlugin : FloconFilesPlugin {
     override val key: String = ""

@@ -12,7 +12,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreference
 import io.github.openflocon.flocon.plugins.sharedprefs.model.FloconPreferenceValue
 import io.github.openflocon.flocon.plugins.sharedprefs.model.PreferencesDescriptor
@@ -205,7 +205,7 @@ internal class FloconSharedPrefsPluginImpl(
 }
 
 val Flocon.Companion.preferencesPlugin: FloconPreferencesPlugin
-    get() = FloconSharedPrefsPluginImpl.plugin ?: pluginNotInitialized("Preferences", NoOpPreferencesPlugin())
+    get() = floconPlugin("Preferences", noOp = { NoOpPreferencesPlugin() }, installed = { FloconSharedPrefsPluginImpl.plugin })
 
 private class NoOpPreferencesPlugin : FloconPreferencesPlugin {
     override val key: String = ""

@@ -12,7 +12,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.deeplinks.model.DeeplinkModel
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -107,7 +107,7 @@ internal class FloconDeeplinksPluginImpl(
 }
 
 val Flocon.Companion.deeplinksPlugin: FloconDeeplinksPlugin
-    get() = FloconDeeplinksPluginImpl.plugin ?: pluginNotInitialized("Deeplinks", NoOpDeeplinksPlugin())
+    get() = floconPlugin("Deeplinks", noOp = { NoOpDeeplinksPlugin() }, installed = { FloconDeeplinksPluginImpl.plugin })
 
 private class NoOpDeeplinksPlugin : FloconDeeplinksPlugin {
     override val key: String = ""

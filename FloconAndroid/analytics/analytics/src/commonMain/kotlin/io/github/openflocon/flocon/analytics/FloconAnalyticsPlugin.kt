@@ -15,7 +15,7 @@ import io.github.openflocon.flocon.analytics.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 
 class FloconAnalyticsConfig : FloconPluginConfig
 
@@ -108,7 +108,7 @@ internal class FloconAnalyticsPluginImpl(
 }
 
 val Flocon.Companion.analyticsPlugin: FloconAnalyticsPlugin
-    get() = FloconAnalyticsPluginImpl.plugin ?: pluginNotInitialized("Analytics", NoOpAnalyticsPlugin())
+    get() = floconPlugin("Analytics", noOp = { NoOpAnalyticsPlugin() }, installed = { FloconAnalyticsPluginImpl.plugin })
 
 private class NoOpAnalyticsPlugin : FloconAnalyticsPlugin {
     override val key: String = ""

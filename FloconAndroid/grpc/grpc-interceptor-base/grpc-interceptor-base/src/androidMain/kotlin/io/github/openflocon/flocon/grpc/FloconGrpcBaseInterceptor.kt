@@ -2,6 +2,7 @@ package io.github.openflocon.flocon.grpc
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconLogger
+import io.github.openflocon.flocon.FloconRuntime
 import io.github.openflocon.flocon.grpc.model.RequestHolder
 import io.github.openflocon.flocon.grpc.model.toHeaders
 import io.github.openflocon.flocon.network.core.FloconNetworkPlugin
@@ -31,6 +32,9 @@ abstract class FloconGrpcBaseInterceptor(
         callOptions: CallOptions,
         next: Channel,
     ): ClientCall<ReqT, RespT> {
+        // turned off by flocon-no-op: the call is not intercepted
+        if (!FloconRuntime.isEnabled()) return next.newCall(method, callOptions)
+
         val networkPlugin = Flocon.networkPlugin
 
         val callId = Uuid.random().toString()

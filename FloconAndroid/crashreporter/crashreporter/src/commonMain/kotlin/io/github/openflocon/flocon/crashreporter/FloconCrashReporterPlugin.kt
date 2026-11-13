@@ -12,7 +12,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
 import io.github.openflocon.flocon.crashreporter.model.CrashReportDataModel
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.utils.currentTimeMillis
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -126,7 +126,7 @@ internal class FloconCrashReporterPluginImpl(
 }
 
 val Flocon.Companion.crashReporterPlugin: FloconCrashReporterPlugin
-    get() = FloconCrashReporterPluginImpl.plugin ?: pluginNotInitialized("CrashReporter", NoOpCrashReporterPlugin())
+    get() = floconPlugin("CrashReporter", noOp = { NoOpCrashReporterPlugin() }, installed = { FloconCrashReporterPluginImpl.plugin })
 
 private class NoOpCrashReporterPlugin : FloconCrashReporterPlugin {
     override val key: String = ""

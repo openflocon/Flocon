@@ -9,7 +9,7 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.timeline.model.FloconTimelineLevel
 import io.github.openflocon.flocon.timeline.model.FloconTimelineType
 
@@ -50,7 +50,7 @@ object FloconTimeline : FloconPluginFactory<FloconTimelineConfig, FloconTimeline
 }
 
 val Flocon.Companion.timelinePlugin: FloconTimelinePlugin
-    get() = FloconTimelinePluginImpl.plugin ?: pluginNotInitialized("Timeline", NoOpTimelinePlugin())
+    get() = floconPlugin("Timeline", noOp = { NoOpTimelinePlugin() }, installed = { FloconTimelinePluginImpl.plugin })
 
 private class NoOpTimelinePlugin : FloconTimelinePlugin {
     override val key: String = ""

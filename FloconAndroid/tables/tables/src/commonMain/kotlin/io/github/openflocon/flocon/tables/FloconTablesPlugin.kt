@@ -11,7 +11,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.tables.model.TableItem
 import io.github.openflocon.flocon.tables.model.toRemote
 import kotlin.collections.map
@@ -40,7 +40,7 @@ object FloconTable : FloconPluginFactory<FloconTableConfig, FloconTablePlugin> {
 }
 
 val Flocon.Companion.tablePlugin: FloconTablePlugin
-    get() = FloconTablePluginImpl.plugin ?: pluginNotInitialized("Table", NoOpTablePlugin())
+    get() = floconPlugin("Table", noOp = { NoOpTablePlugin() }, installed = { FloconTablePluginImpl.plugin })
 
 private class NoOpTablePlugin : FloconTablePlugin {
     override val key: String = ""

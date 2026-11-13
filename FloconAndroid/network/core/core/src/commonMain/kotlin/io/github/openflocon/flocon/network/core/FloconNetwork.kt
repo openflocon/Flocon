@@ -9,7 +9,7 @@ import io.github.openflocon.flocon.FloconPluginFactory
 import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.network.core.model.BadQualityConfig
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
@@ -64,7 +64,7 @@ object FloconNetwork : FloconPluginFactory<FloconNetworkConfig, FloconNetworkPlu
 }
 
 val Flocon.Companion.networkPlugin: FloconNetworkPlugin
-    get() = FloconNetworkPluginImpl.plugin ?: pluginNotInitialized("Network", NoOpNetworkPlugin())
+    get() = floconPlugin("Network", noOp = { NoOpNetworkPlugin() }, installed = { FloconNetworkPluginImpl.plugin })
 
 private class NoOpNetworkPlugin : FloconNetworkPlugin {
     override val key: String = ""

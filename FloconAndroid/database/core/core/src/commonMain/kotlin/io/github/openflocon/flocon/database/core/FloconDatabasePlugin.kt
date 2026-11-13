@@ -4,7 +4,7 @@ import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconPlugin
 import io.github.openflocon.flocon.database.core.datasource.FloconDatabaseProvider
 import io.github.openflocon.flocon.database.core.model.FloconDatabaseModel
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 
 interface FloconDatabasePlugin : FloconPlugin {
 
@@ -34,7 +34,7 @@ interface FloconDatabasePlugin : FloconPlugin {
 }
 
 val Flocon.Companion.databasePlugin: FloconDatabasePlugin
-    get() = FloconDatabasePluginImpl.plugin ?: pluginNotInitialized("Database", NoOpDatabasePlugin())
+    get() = floconPlugin("Database", noOp = { NoOpDatabasePlugin() }, installed = { FloconDatabasePluginImpl.plugin })
 
 private class NoOpDatabasePlugin : FloconDatabasePlugin {
     override val key: String = ""
