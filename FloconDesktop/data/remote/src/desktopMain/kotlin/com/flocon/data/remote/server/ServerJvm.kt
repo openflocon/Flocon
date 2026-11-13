@@ -6,6 +6,7 @@ import com.flocon.data.remote.models.FloconIncomingMessageDataModel
 import com.flocon.data.remote.models.FloconOutgoingMessageDataModel
 import io.github.openflocon.domain.messages.models.FloconReceivedFileDomainModel
 import io.github.openflocon.domain.network.repository.NetworkRepository
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
@@ -13,6 +14,7 @@ import io.ktor.server.application.install
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.server.request.receiveMultipart
+import io.ktor.server.request.receiveText
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Paths
@@ -249,6 +252,18 @@ class ServerJvm(
                     }
 
                     call.respondText("file received : ${savedFile?.absolutePath ?: "inconnu"}")
+                }
+
+                // A message too big for the websocket (over 5 MB), sent by the SDK as the same json
+                post("/message") {
+                    val receivedText = call.receiveText()
+                    try {
+                        _receivedMessages.send(json.decodeFromString<FloconIncomingMessageDataModel>(receivedText))
+                        call.respondText("message received")
+                    } catch (e: SerializationException) {
+                        Logger.e(e) { "Error parsing JSON message received over http: ${e.message}" }
+                        call.respondText("invalid message", status = HttpStatusCode.BadRequest)
+                    }
                 }
 
                 // Add network export routes

@@ -6,6 +6,8 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.cio.CIO
+import io.ktor.http.content.TextContent
+import io.github.openflocon.flocon.FloconLogger
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -83,5 +85,18 @@ internal class FloconHttpClientJvm() : FloconHttpClient {
             println("❌ Erreur lors de l’envoi : ${e.message}")
             return false
         }
+    }
+
+    override suspend fun sendMessage(
+        message: String,
+        address: String,
+        port: Int,
+    ): Boolean = try {
+        client.post("https://$address:$port/message") {
+            setBody(TextContent(message, ContentType.Application.Json))
+        }.status.isSuccess()
+    } catch (e: Exception) {
+        FloconLogger.logError("Large message upload failed: ${e.message}", e)
+        false
     }
 }

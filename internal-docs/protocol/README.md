@@ -12,6 +12,9 @@ Source of truth:
 |-----------|------------------|----------------------------------|----------------------------------------|
 | WebSocket | both             | `wss://<host>:<ws port>/`              | All plugin messages (JSON text frames) |
 | HTTPS     | mobile → desktop | `POST https://<host>:<http port>/upload` | File upload (see [files.md](files.md)) |
+| HTTPS     | mobile → desktop | `POST https://<host>:<http port>/message` | A plugin message too big for the websocket (see below) |
+
+A message whose encoded size is above 5 MB (a network call with a huge body, for example) is not sent on the websocket: OkHttp closes the connection when a message is larger than its 16 MiB send queue. The SDK posts the same envelope (see below) as `application/json` to `/message` instead; the desktop handles it like a websocket message. Such a message is sent apart from the websocket ones, so it can arrive after later messages, and it is dropped if the desktop does not answer (an older desktop has no `/message` route).
 
 Both channels use TLS, so apps never need to allow cleartext traffic. The desktop serves a self-signed certificate (SAN `localhost` / `127.0.0.1`) that clients **must accept without verifying it** (trust-all, hostname check disabled): the TLS layer only encrypts the channel, it does not authenticate the desktop. The plain `ws://` / `http://` ports are no longer served.
 
