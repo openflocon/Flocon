@@ -76,7 +76,7 @@ More in the [macOS](https://openflocon.github.io/Flocon/macos-install), [Linux](
 Pick the SDK for your platform. They all connect to the same desktop app.
 
 <table>
-<tr><th align="left">Android &amp; Kotlin Multiplatform &nbsp; <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=maven%20central"></a></th></tr>
+<tr><th align="left"><a href="https://github.com/openflocon/Flocon/tree/main/FloconAndroid">Android &amp; Kotlin Multiplatform</a> &nbsp; <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=maven%20central"></a></th></tr>
 <tr><td>
 
 **Install**
@@ -87,13 +87,13 @@ debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 // + one module per feature you need
 ```
 
-<a href="https://openflocon.github.io/Flocon/install-kotlin"><img alt="Android integration guide" src="https://img.shields.io/badge/Android_integration_guide_%E2%86%92-3DDC84?style=for-the-badge&logo=android&logoColor=black"></a> &nbsp; Source: [`FloconAndroid/`](FloconAndroid)
+<a href="https://openflocon.github.io/Flocon/install-kotlin"><img alt="Android integration guide" src="https://img.shields.io/badge/Android_integration_guide_%E2%86%92-3DDC84?style=for-the-badge&logo=android&logoColor=black"></a>
 
 </td></tr>
 </table>
 
 <table>
-<tr><th align="left">iOS / macOS (Swift) &nbsp; <a href="https://github.com/openflocon/FloconSwift/releases"><img alt="FloconSwift release" src="https://img.shields.io/github/v/release/openflocon/FloconSwift?label=SwiftPM"></a></th></tr>
+<tr><th align="left"><a href="https://github.com/openflocon/FloconSwift">iOS / macOS (Swift)</a> &nbsp; <a href="https://github.com/openflocon/FloconSwift/releases"><img alt="FloconSwift release" src="https://img.shields.io/github/v/release/openflocon/FloconSwift?label=SwiftPM"></a></th></tr>
 <tr><td>
 
 **Install**
@@ -103,13 +103,13 @@ debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 https://github.com/openflocon/FloconSwift.git
 ```
 
-<a href="https://openflocon.github.io/Flocon/install-swift"><img alt="iOS integration guide" src="https://img.shields.io/badge/iOS_integration_guide_%E2%86%92-F05138?style=for-the-badge&logo=swift&logoColor=white"></a> &nbsp; Source: [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc)
+<a href="https://openflocon.github.io/Flocon/install-swift"><img alt="iOS integration guide" src="https://img.shields.io/badge/iOS_integration_guide_%E2%86%92-F05138?style=for-the-badge&logo=swift&logoColor=white"></a> &nbsp; gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc)
 
 </td></tr>
 </table>
 
 <table>
-<tr><th align="left">Flutter &nbsp; <a href="https://pub.dev/packages/flocon"><img alt="pub.dev" src="https://img.shields.io/pub/v/flocon?label=pub"></a></th></tr>
+<tr><th align="left"><a href="https://github.com/openflocon/FloconFlutter">Flutter</a> &nbsp; <a href="https://pub.dev/packages/flocon"><img alt="pub.dev" src="https://img.shields.io/pub/v/flocon?label=pub"></a></th></tr>
 <tr><td>
 
 **Install**
@@ -118,7 +118,7 @@ https://github.com/openflocon/FloconSwift.git
 flutter pub add flocon
 ```
 
-<a href="https://openflocon.github.io/Flocon/install-flutter"><img alt="Flutter integration guide" src="https://img.shields.io/badge/Flutter_integration_guide_%E2%86%92-0175C2?style=for-the-badge&logo=flutter&logoColor=white"></a> &nbsp; Source: [FloconFlutter](https://github.com/openflocon/FloconFlutter)
+<a href="https://openflocon.github.io/Flocon/install-flutter"><img alt="Flutter integration guide" src="https://img.shields.io/badge/Flutter_integration_guide_%E2%86%92-0175C2?style=for-the-badge&logo=flutter&logoColor=white"></a>
 
 </td></tr>
 </table>
