@@ -22,7 +22,7 @@ brew install --cask openflocon/tap/flocon
 
 **Windows**: the `.msi` installer from the [releases](https://github.com/openflocon/Flocon/releases).
 
-More in the [macOS](https://openflocon.github.io/Flocon/macos-install) and [Linux](https://openflocon.github.io/Flocon/linux-install) guides (manual install, `adb`).
+More in the [macOS](https://openflocon.github.io/Flocon/macos-install), [Linux](https://openflocon.github.io/Flocon/linux-install) and [Windows](https://openflocon.github.io/Flocon/windows-install) guides (manual install, `adb`).
 
 ## 2. Add the SDK to your app
 
@@ -34,7 +34,7 @@ Pick the SDK of your app. Each one connects to the same desktop app.
 | **iOS / macOS (Swift)** | [![FloconSwift](https://img.shields.io/github/v/release/openflocon/FloconSwift?label=)](https://github.com/openflocon/FloconSwift/releases) | Swift Package Manager: `https://github.com/openflocon/FloconSwift.git` | [FloconSwift](https://github.com/openflocon/FloconSwift) · gRPC add-on [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc) |
 | **Flutter** | [![pub](https://img.shields.io/pub/v/flocon?label=)](https://pub.dev/packages/flocon) | `flutter pub add flocon` | [FloconFlutter](https://github.com/openflocon/FloconFlutter) |
 
-Then start Flocon in your app (`startFlocon { ... }` in all three SDKs) and run it: **[Connect your app](https://openflocon.github.io/Flocon/setup)** walks you through it step by step, emulators and physical devices included. Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
+Then start Flocon in your app (`startFlocon { ... }` in all three SDKs) and run it: **[Getting started](https://openflocon.github.io/Flocon/setup)** walks you through it step by step, emulators and physical devices included. Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
 
 ## What you can inspect
 
@@ -59,7 +59,7 @@ Support per SDK (details and limits in the [platform support matrix](https://ope
 | [Crash reporter](https://openflocon.github.io/Flocon/crashreporter) | ✅ | ✅ | ✅ | ✅ |
 | [Accessibility](https://openflocon.github.io/Flocon/accessibility) | ✅ | ⚠️ partial | ❌ | ❌ |
 | [WebView](https://openflocon.github.io/Flocon/webview) | ✅ | ⚠️ manual API | ❌ | ❌ |
-| [QR code connection](https://openflocon.github.io/Flocon/setup/#4-connect) | ✅ | ❌ | ✅ | ✅ |
+| [QR code connection](https://openflocon.github.io/Flocon/connect-qr-code/) | ✅ | ❌ | ✅ | ✅ |
 | [AI agents (MCP)](https://openflocon.github.io/Flocon/mcp) | ✅ | ✅ | ✅ | ✅ |
 
 ## AI agents (MCP)

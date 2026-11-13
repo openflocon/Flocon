@@ -23,9 +23,9 @@ adb devices
 ```
 
 - The device must be listed as `device`. If it says `unauthorized`, accept the USB debugging prompt on the phone.
-- `adb` must be in your `PATH` (see the [Linux guide](linux-install.md) for the packages).
+- `adb` must be in your `PATH` (see the [macOS](macos-install.md#android-adb), [Linux](linux-install.md#adb) or [Windows](windows-install.md#adb) guide).
 - Several devices or restarted emulator: unplug, run `adb kill-server`, then `adb devices` again.
-- **Flutter** on an Android emulator: use the host `10.0.2.2` in `connect(host: ...)`, see [Connect your app](setup.md#4-connect).
+- **Flutter** on an Android emulator: use the host `10.0.2.2` in `connect(host: ...)`, see [Connect your app](connect.md#automatic-connection).
 
 ## iOS: the local network permission
 
@@ -39,14 +39,14 @@ On a physical device, iOS asks the user to allow the app to find devices on the 
 
 There is no `adb reverse` for Wi-Fi: the app must be given the IP address of your computer, and both must be on the same network.
 
-- Give the address with `connect { address = "..." }` / `Flocon.connect(...)`, or scan the **QR code** of the desktop Connect dialog. See [Connect your app](setup.md#4-connect).
+- Give the address with `connect { address = "..." }` / `Flocon.connect(...)`, or scan the **QR code** of the desktop Connect dialog. See [Connect over Wi-Fi](connect-wifi.md) and [Connect with a QR code](connect-qr-code.md).
 - Guest or corporate Wi-Fi often isolates devices from each other ("client isolation"): use a personal hotspot or USB for Android.
 - A VPN or a firewall on your computer can block the ports `9023` and `9024`.
 - The address has no scheme and no path: `192.168.1.20` or `192.168.1.20:9023:9024`.
 
 ## Connection fails after changing ports
 
-If you changed the ports in **Settings > Server ports**, or launched the desktop with `--websocket-port` / `--http-port`, the SDK must use the same ones, except on an Android emulator or USB device where `adb reverse` maps the default `9023` / `9024` to the desktop ports. Everywhere else (device over Wi-Fi, iOS, JVM, Wasm, Flutter) set the ports in the SDK, otherwise the app **silently** never connects. See [Ports](setup.md#ports).
+If you changed the ports in **Settings > Server ports**, or launched the desktop with `--websocket-port` / `--http-port`, the SDK must use the same ones, except on an Android emulator or USB device where `adb reverse` maps the default `9023` / `9024` to the desktop ports. Everywhere else (device over Wi-Fi, iOS, JVM, Wasm, Flutter) set the ports in the SDK, otherwise the app **silently** never connects. See [Ports](connect.md#ports).
 
 Desktop ports must be in `1024-65535`, different from each other, and not `9042`.
 
