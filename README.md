@@ -133,10 +133,14 @@ flutter pub add flocon
 startFlocon { ... }
 ```
 
-Then run your app. **[Full documentation](https://openflocon.github.io/Flocon/setup)**, emulators and physical devices included · Coming from Flocon 1.x? See the [migration guide](https://openflocon.github.io/Flocon/migration).
+Then run your app. **[Full documentation](https://openflocon.github.io/Flocon/setup)**, emulators and physical devices included.
 
 </td></tr>
 </table>
+
+## Coming from Flocon 1.x?
+
+See the [migration guide](https://openflocon.github.io/Flocon/migration).
 
 ## Requirements
 
