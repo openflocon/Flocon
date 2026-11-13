@@ -8,7 +8,7 @@ Run the tests of the module(s) you changed, not the full build:
 
 | Touched | Command (examples) |
 |---|---|
-| An SDK plugin in `FloconAndroid/` | `./gradlew :featureflags:featureflags:jvmTest` (add `:featureflags:featureflags-no-op:compileKotlinJvm` when the no-op changes) |
+| An SDK plugin in `FloconAndroid/` | `./gradlew :featureflags:featureflags:jvmTest` (add `:accessibility:accessibility-no-op:compileKotlinJvm` / `:qrscanner:qrscanner-no-op:compileKotlinJvm` when one of the two remaining no-ops changes) |
 | A desktop module in `FloconDesktop/` | `./gradlew :mcp:allTests`, `./gradlew :data:core:allTests`, `./gradlew ktlintFormat` (CI runs `ktlintCheck`; staged `.kt` files are also formatted by the commit hook) |
 | `docs/**` or `mkdocs.yml` | `mkdocs build --strict` |
 
@@ -18,7 +18,7 @@ Only run the checks CI doesn't cover:
 
 | Touched | Command | Why |
 |---|---|---|
-| `FloconAndroid/**` public API or no-op modules | `cd FloconAndroid && ./gradlew :sample:android:assembleDebug :sample:android:assembleRelease` | debug = real impl, release = no-op; not run by `android_pr_check.yml` |
+| `FloconAndroid/**` public API, an entry point, `flocon-no-op` or a manifest | `cd FloconAndroid && ./gradlew :sample:android:assembleDebug :sample:android:assembleRelease && bash scripts/check-release-noop.sh` | debug = Flocon on, release = `flocon-no-op` + R8; the script checks that R8 removed the implementation (also run by `android_pr_check.yml`) |
 
 ## Left to CI
 
