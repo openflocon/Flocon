@@ -103,7 +103,7 @@ debugImplementation("io.github.openflocon:flocon:LAST_VERSION")
 https://github.com/openflocon/FloconSwift.git
 ```
 
-<a href="https://openflocon.github.io/Flocon/install-swift"><img alt="iOS integration guide" src="https://img.shields.io/badge/iOS_integration_guide_%E2%86%92-F05138?style=for-the-badge&logo=swift&logoColor=white"></a> &nbsp; gRPC add-on: [FloconSwiftGrpc](https://github.com/openflocon/FloconSwiftGrpc)
+<a href="https://openflocon.github.io/Flocon/install-swift"><img alt="iOS integration guide" src="https://img.shields.io/badge/iOS_integration_guide_%E2%86%92-F05138?style=for-the-badge&logo=swift&logoColor=white"></a>
 
 </td></tr>
 </table>
