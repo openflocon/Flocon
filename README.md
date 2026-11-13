@@ -32,7 +32,7 @@ Full documentation: **[openflocon.github.io/Flocon](https://openflocon.github.io
 
 Flocon Desktop runs an MCP server (`http://localhost:9042/mcp`). Claude Code, Codex, Cursor, Gemini CLI, Antigravity, Copilot, Android Studio and more can read the network calls, timeline, databases, preferences and crashes of your running app, then mock calls, simulate a bad network, open deeplinks and take screenshots.
 
-<!-- screenshot: mcp-session (an agent conversation next to the call it opened in Flocon) -->
+![An AI agent finds a failing checkout call through the Flocon MCP server and opens it in the Flocon timeline](docs/assets/screenshots/mcp-session.jpg)
 
 ```mermaid
 flowchart LR
