@@ -30,15 +30,7 @@ Property values are always strings.
 
 === "Kotlin"
 
-    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](install-kotlin.md#release-builds)):
-
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-analytics:LAST_VERSION")
-    }
-    ```
-
-    Then install the plugin:
+    Analytics is part of the core module (`flocon`, and `flocon-no-op` for release, see [Release builds](install-kotlin.md#release-builds)), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {

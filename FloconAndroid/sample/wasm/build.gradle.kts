@@ -25,12 +25,10 @@ kotlin {
 
             implementation(projects.flocon.flocon)
             implementation(projects.deeplinks.deeplinks)
-            implementation(projects.analytics.analytics)
             implementation(projects.accessibility.accessibility)
             implementation(projects.featureflags.featureflags)
             implementation(projects.timeline.timeline)
             implementation(projects.tables.tables)
-            implementation(projects.sharedprefs.sharedprefs)
             implementation(projects.database.room3.room3)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
 
