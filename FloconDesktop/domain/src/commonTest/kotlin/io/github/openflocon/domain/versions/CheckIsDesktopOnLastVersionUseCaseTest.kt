@@ -30,6 +30,8 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
     ) : VersionsCheckerRepository {
         override val lastVersion: Flow<String?> = emptyFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = Success(remoteVersion)
+        override fun observeLastSdkVersion(sdk: io.github.openflocon.domain.versions.model.FloconSdk): Flow<String?> = emptyFlow()
+        override suspend fun checkLastSdkVersion(sdk: io.github.openflocon.domain.versions.model.FloconSdk) {}
         override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 

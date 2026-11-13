@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.version
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.DismissClientVersionUseCase
@@ -76,11 +77,18 @@ class VersionCheckerViewModel(
         is IsLastVersionDomainModel.NewVersionAvailable -> SdkUpdateUiModel(
             currentVersion = oldVersion,
             latestVersion = name,
-            dependency = "io.github.openflocon:flocon:$name",
+            dependency = sdk.dependency(version = name),
             releaseNotesLink = link,
         )
 
         is IsLastVersionDomainModel.RunningLastVersion -> null
+    }
+
+    /** The line to put in the project of the app to use [version], in the syntax of the package manager of the SDK. */
+    private fun FloconSdk?.dependency(version: String): String = when (this) {
+        FloconSdk.SWIFT -> ".package(url: \"https://github.com/${FloconSdk.SWIFT.repository}.git\", from: \"$version\")"
+        FloconSdk.FLUTTER -> "flocon: ^$version"
+        FloconSdk.KOTLIN, null -> "io.github.openflocon:flocon:$version"
     }
 
     fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {

@@ -114,6 +114,7 @@ internal class FakeDevicesRepository(
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = flowOf(null)
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
+    override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
 

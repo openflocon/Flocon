@@ -56,7 +56,7 @@ The MCP server of the desktop always listens on port `9042` and this cannot be c
 
 ## The "SDK update" banner
 
-A badge **SDK x -> y** in the top bar of Flocon Desktop means the connected app runs an older SDK than the latest release. Click it to see the versions and the release notes. Update the SDK in your app (and keep the desktop up to date too): an SDK older than the desktop may miss features or fail to connect. You can ignore the notice from the same popup.
+A badge **SDK x -> y** in the top bar of Flocon Desktop means the connected app runs an older SDK than the latest release of **its** SDK: Kotlin, Swift and Flutter are released apart, so a Swift app is compared with the latest FloconSwift release, a Flutter app with the latest FloconFlutter one. Click it to see the versions and the release notes. Update the SDK in your app (and keep the desktop up to date too): an SDK older than the desktop may miss features or fail to connect. You can ignore the notice from the same popup.
 
 ## Web (Kotlin/Wasm)
 

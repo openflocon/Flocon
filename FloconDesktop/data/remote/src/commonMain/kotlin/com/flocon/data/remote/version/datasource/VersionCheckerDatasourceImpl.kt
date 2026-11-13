@@ -21,15 +21,13 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
         }
     }
 
-    override suspend fun fetchLatestVersion(): Either<Throwable, String> {
-        val repo = "openflocon/flocon"
-        val url = "https://api.github.com/repos/$repo/releases/latest"
+    override suspend fun fetchLatestVersion(repository: String): Either<Throwable, String> {
+        val url = "https://api.github.com/repos/$repository/releases/latest"
         return try {
             val release: GithubReleaseRemote = client.get(url).body()
-            val lastVersion = release.tagName.removePrefix("v") // au cas où le tag commence par "v"
-            return lastVersion.success()
+            release.tagName.toVersion().success()
         } catch (t: Throwable) {
-            println("Erreur lors de la récupération de la version GitHub: ${t.message}")
+            println("Failed to fetch the latest release of $repository: ${t.message}")
             t.failure()
         }
     }
@@ -49,7 +47,7 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     }
 
     private fun GithubReleaseRemote.toDomain(): ReleaseNoteDomainModel {
-        val version = tagName.removePrefix("v")
+        val version = tagName.toVersion()
         return ReleaseNoteDomainModel(
             version = version,
             title = name?.takeIf { it.isNotBlank() } ?: version,
@@ -58,6 +56,9 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
             link = htmlUrl ?: "https://github.com/$REPO/releases/tag/$tagName",
         )
     }
+
+    /** "2.0.0", "v2.0.0" and "flocon-v2.0.0" (the Flutter tags) all give "2.0.0". */
+    private fun String.toVersion(): String = dropWhile { !it.isDigit() }
 
     private companion object {
         const val REPO = "openflocon/flocon"

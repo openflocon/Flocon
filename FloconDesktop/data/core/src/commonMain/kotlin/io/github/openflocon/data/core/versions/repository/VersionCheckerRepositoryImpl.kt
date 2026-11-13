@@ -4,10 +4,15 @@ import io.github.openflocon.data.core.versions.datasource.VersionCheckerDatasour
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.success
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -21,10 +26,31 @@ internal class VersionCheckerRepositoryImpl(
     override val lastVersion = _lastVersion.asStateFlow()
 
     override suspend fun checkIsLastVersion(): Either<Throwable, String> = withContext(dispatcherProvider.data) {
-        versionCheckerDatasource.fetchLatestVersion()
-            .alsoSuccess {
-                _lastVersion.value = it
+        versionCheckerDatasource.fetchLatestVersion(repository = FloconSdk.KOTLIN.repository)
+            .alsoSuccess { version ->
+                _lastVersion.value = version
+                // the desktop app and the Kotlin SDK are released from the same repository
+                sdkVersions.update { it + (FloconSdk.KOTLIN to version) }
             }
+    }
+
+    private val sdkVersions = MutableStateFlow<Map<FloconSdk, String>>(emptyMap())
+    private val sdkVersionsMutex = Mutex()
+
+    override fun observeLastSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersions
+        .map { it[sdk] }
+        .distinctUntilChanged()
+
+    override suspend fun checkLastSdkVersion(sdk: FloconSdk) {
+        withContext(dispatcherProvider.data) {
+            // one call per SDK: GitHub limits the requests that are not authenticated
+            sdkVersionsMutex.withLock {
+                if (sdk !in sdkVersions.value) {
+                    versionCheckerDatasource.fetchLatestVersion(repository = sdk.repository)
+                        .alsoSuccess { version -> sdkVersions.update { it + (sdk to version) } }
+                }
+            }
+        }
     }
 
     private val releaseNotesMutex = Mutex()

@@ -34,6 +34,8 @@ class ObserveUpdateAvailableUseCaseTest {
         val versionFlow = MutableStateFlow(initialVersion)
         override val lastVersion: Flow<String?> = versionFlow.asStateFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = throw NotImplementedError()
+        override fun observeLastSdkVersion(sdk: io.github.openflocon.domain.versions.model.FloconSdk): Flow<String?> = versionFlow
+        override suspend fun checkLastSdkVersion(sdk: io.github.openflocon.domain.versions.model.FloconSdk) {}
         override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
@@ -69,6 +71,8 @@ class ObserveUpdateAvailableUseCaseTest {
         override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
 
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(sdkVersionValue)
+
+        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
 
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}

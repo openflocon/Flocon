@@ -37,6 +37,9 @@ interface DevicesRepository {
 
     fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?>
 
+    /** The SDK name of the app (`kotlin`, `swift`, `flutter`). Null until the app says bonjour: it is not stored. */
+    fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?>
+
     suspend fun deleteDevice(deviceId: DeviceId)
     suspend fun deleteApplication(
         deviceId: DeviceId,
