@@ -1,14 +1,61 @@
-<img height="450" alt="flocon_small" src="https://github.com/openflocon/Flocon/blob/main/ressources/flocon_banner_small.jpeg" />
+<p align="center">
+  <img height="450" alt="flocon_small" src="https://github.com/openflocon/Flocon/blob/main/ressources/flocon_banner_small.jpeg" />
+</p>
 
-# Flocon
+<h1 align="center">Flocon</h1>
 
-**Flocon lets you see what your Android, Kotlin Multiplatform, iOS and Flutter apps do: network, databases, preferences, analytics, crashes... from your desktop, and lets AI agents see it too.**
+<p align="center">
+  <b>See what your mobile app does, live on your desktop: network, databases, preferences, analytics, crashes...<br/>
+  And let your AI agent see it too.</b>
+</p>
 
-Inspired by [Flipper](https://github.com/facebook/flipper) by Meta, Flocon is a desktop debugger plus lightweight SDKs. Your app connects to the desktop app, and you observe, inspect and drive it in real time.
+<p align="center">
+  <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=Android%20%26%20KMP" /></a>
+  <a href="https://github.com/openflocon/FloconSwift/releases"><img alt="FloconSwift" src="https://img.shields.io/github/v/release/openflocon/FloconSwift?label=iOS%20%2F%20macOS" /></a>
+  <a href="https://pub.dev/packages/flocon"><img alt="pub.dev" src="https://img.shields.io/pub/v/flocon?label=Flutter" /></a>
+  <a href="https://openflocon.github.io/Flocon/mcp"><img alt="MCP" src="https://img.shields.io/badge/AI%20agents-MCP-black" /></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue" /></a>
+</p>
 
-![Flocon Desktop showing the Timeline of an app](docs/assets/screenshots/home-timeline-graph.jpg)
+<!-- screenshot: hero -->
+| **Network**: every HTTP, GraphQL and gRPC call. Mock it, slow it down. | **Timeline**: what happened right before the crash. |
+|:---:|:---:|
+| ![Network inspector](docs/assets/screenshots/network-detail.jpg) | ![Timeline](docs/assets/screenshots/home-timeline-graph.jpg) |
+| **Preferences**: read and edit SharedPreferences, DataStore, UserDefaults. | **Analytics**: every event your app sends, per provider. |
+| ![Preferences](docs/assets/screenshots/preferences-list.jpg) | ![Analytics](docs/assets/screenshots/analytics-stream.jpg) |
+
+Inspired by [Flipper](https://github.com/facebook/flipper) by Meta, Flocon is a desktop debugger plus lightweight SDKs for Android, Kotlin Multiplatform, iOS and Flutter. Your app connects to the desktop app, and you observe, inspect and drive it in real time.
 
 Full documentation: **[openflocon.github.io/Flocon](https://openflocon.github.io/Flocon/)**
+
+## Your AI agent can see your app
+
+Flocon Desktop runs an MCP server (`http://localhost:9042/mcp`). Claude Code, Codex, Cursor, Gemini CLI, Antigravity, Copilot, Android Studio and more can read the network calls, timeline, databases, preferences and crashes of your running app, then mock calls, simulate a bad network, open deeplinks and take screenshots.
+
+![An AI agent finds a failing checkout call through the Flocon MCP server and opens it in the Flocon timeline](docs/assets/screenshots/mcp-session.jpg)
+
+```mermaid
+flowchart LR
+    App["Your app<br/>Android · iOS · KMP · Flutter"] <--> Desktop["Flocon Desktop"]
+    Desktop <--> MCP["MCP server<br/>localhost:9042/mcp"]
+    MCP <--> Agent["Your AI agent<br/>Claude Code, Codex,<br/>Cursor, Gemini..."]
+```
+
+Try asking:
+
+- *"What happened right before the crash?"*
+- *"Mock `/profile` with a 503 and take a screenshot."*
+- *"Which analytics events are sent on checkout?"*
+- *"Turn on a slow network config and tell me which calls time out."*
+
+Install the plugin in Claude Code (it also ships for Codex, Cursor and Gemini):
+
+```
+/plugin marketplace add openflocon/Flocon
+/plugin install flocon@flocon
+```
+
+See [MCP setup](https://openflocon.github.io/Flocon/mcp), the [tool reference](https://openflocon.github.io/Flocon/mcp-tools) and the [cookbook](https://openflocon.github.io/Flocon/mcp-cookbook).
 
 ## 1. Install the desktop app
 
@@ -61,23 +108,6 @@ Support per SDK (details and limits in the [platform support matrix](https://ope
 | [WebView](https://openflocon.github.io/Flocon/webview) | ✅ | ⚠️ manual API | ❌ | ❌ |
 | [QR code connection](https://openflocon.github.io/Flocon/connect-qr-code/) | ✅ | ❌ | ✅ | ✅ |
 | [AI agents (MCP)](https://openflocon.github.io/Flocon/mcp) | ✅ | ✅ | ✅ | ✅ |
-
-## AI agents (MCP)
-
-Flocon Desktop runs an MCP server (`http://localhost:9042/mcp`), so AI agents can work with your running app:
-
-- inspect network calls, mock them, simulate a bad network
-- read your app files, databases, preferences and analytics events
-- works with Claude Code, Codex, Cursor, Gemini CLI, Antigravity, Copilot, Android Studio and more
-
-Install the plugin in Claude Code (it also ships for Codex, Cursor and Gemini):
-
-```
-/plugin marketplace add openflocon/Flocon
-/plugin install flocon@flocon
-```
-
-See [MCP setup](https://openflocon.github.io/Flocon/mcp), the [tool reference](https://openflocon.github.io/Flocon/mcp-tools) and the [cookbook](https://openflocon.github.io/Flocon/mcp-cookbook).
 
 ## Requirements
 
