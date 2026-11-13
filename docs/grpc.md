@@ -19,7 +19,7 @@ For each call you see:
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Inspect gRPC calls | ✅ `grpc-java` / `grpc-android` | ❌ | ✅ `grpc-swift` 1.x | ❌ |
 | Bad network simulation | ✅ latency and exceptions | ❌ | ❌ | ❌ |

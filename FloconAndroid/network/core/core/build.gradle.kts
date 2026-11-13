@@ -1,4 +1,3 @@
-@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 @file:Suppress("DEPRECATION")
 
 plugins {
@@ -6,7 +5,6 @@ plugins {
     id("flocon.android.library")
     id("flocon.ios.library")
     id("flocon.jvm.library")
-    id("flocon.wasm.library")
     id("flocon.publish")
     alias(libs.plugins.kotlin.serialization)
 }

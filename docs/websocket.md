@@ -17,7 +17,7 @@ For every connection, Flocon records:
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Automatic capture | ✅ OkHttp listener | ✅ OkHttp listener (JVM only), otherwise manual | ❌ manual | ❌ manual |
 | Manual logging | ✅ | ✅ | ✅ `logWebSocketEvent` | ✅ `Flocon.network.logWebSocketEvent` |

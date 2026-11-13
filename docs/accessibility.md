@@ -13,7 +13,7 @@ Flocon streams the **accessibility events** of your application to the desktop, 
 
 The Accessibility plugin is available in the **Kotlin / KMP SDK only**. The Swift and Flutter SDKs do not have it yet.
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Automatic capture | ✅ | ✅ (iOS partial, JVM and Wasm manual only) | ❌ | ❌ |
 | Manual `log()` / `announce()` | ✅ | ✅ | ❌ | ❌ |

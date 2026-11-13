@@ -11,7 +11,7 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Uncaught Kotlin / Java exceptions | ✅ | ✅ (iOS, JVM) | ❌ | ❌ |
 | Uncaught Dart / Flutter errors | ❌ | ❌ | ❌ | ✅ |

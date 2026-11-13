@@ -23,7 +23,7 @@ A response is an image when:
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | `image/*` detection | ✅ | ✅ | ✅ | ✅ |
 | `isImage` predicate | ✅ OkHttp, Ktor | ✅ Ktor (and OkHttp on JVM) | ✅ `FloconNetworkOptions` | ✅ `FloconNetwork` |

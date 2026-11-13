@@ -45,7 +45,7 @@ enum class SampleFeature(
     DatabaseRoom3(SampleScreen.Database, "Dog, Room 3", "Insert a dog in the dogs database", buttonLabel = "Insert"),
     DatabaseRoom2(SampleScreen.Database, "Cat, Room 2", "Insert a cat in the Room 2 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
     DatabaseInMemory(SampleScreen.Database, "Dog, in-memory", "Insert a dog in an in-memory Room 3 database", buttonLabel = "Insert", platforms = SamplePlatform.AndroidOnly),
-    DatabaseSqlDelight(SampleScreen.Database, "Dog, SQLDelight", "Insert a dog in the SQLDelight database", buttonLabel = "Insert", platforms = SamplePlatform.NotWeb),
+    DatabaseSqlDelight(SampleScreen.Database, "Dog, SQLDelight", "Insert a dog in the SQLDelight database", buttonLabel = "Insert"),
     DatabaseFood(SampleScreen.Database, "Food, Room 3", "Insert food in the second database", buttonLabel = "Insert"),
     DatabaseTransactionRoom3(SampleScreen.Database, "Transaction, Room 3", "A dog, a human and their link inserted in one transaction, shown as one row in the query logs", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
     DatabaseNestedTransactionRoom3(SampleScreen.Database, "Nested transactions, Room 3", "A transaction with two transactions inside (humans, then dogs and their links), run with savepoints", buttonLabel = "Run", platforms = SamplePlatform.AndroidOnly),
@@ -67,14 +67,14 @@ enum class SampleFeature(
 
     DataStore(SampleScreen.Preferences, "DataStore", "Update the age stored in a DataStore", buttonLabel = "Update", platforms = SamplePlatform.AndroidOnly),
 
-    Files(SampleScreen.Files, "Write a file", "Creates flocon_sample.txt, then browse it in Flocon", buttonLabel = "Write", platforms = SamplePlatform.NotWeb),
+    Files(SampleScreen.Files, "Write a file", "Creates flocon_sample.txt, then browse it in Flocon", buttonLabel = "Write"),
 
     Dashboard(SampleScreen.Dashboard, "Change user", "Updates the live \"User\" section", buttonLabel = "Change"),
     Table(SampleScreen.Dashboard, "Add table row", "Adds a row to the table \"active_sessions\"", buttonLabel = "Add"),
 
     Deeplink(SampleScreen.Deeplinks, "Register a deeplink", "Registers flocon://runtime/[id] after the install", buttonLabel = "Register"),
 
-    CrashReporter(SampleScreen.Crash, "Crash the app", "Throws an IllegalStateException", buttonLabel = "Crash", platforms = SamplePlatform.NotWeb, crashes = true),
+    CrashReporter(SampleScreen.Crash, "Crash the app", "Throws an IllegalStateException", buttonLabel = "Crash", crashes = true),
 }
 
 sealed interface SampleFeatureStatus {

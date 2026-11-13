@@ -11,7 +11,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | `SharedPreferences` (auto-discovery, editable) | ✅ | n/a | n/a | n/a |
 | Jetpack DataStore (editable) | ✅ | ✅ (iOS, JVM, no Wasm) | n/a | n/a |

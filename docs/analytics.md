@@ -20,7 +20,7 @@ Every recorded event shows:
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Log events (one table per stream) | ✅ | ✅ | ✅ | ✅ |
 

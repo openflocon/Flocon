@@ -6,8 +6,8 @@ paths:
 # Android / KMP SDK rules (`FloconAndroid/`)
 
 ## Multiplatform
-- Put code in `commonMain` unless it truly needs a platform API. Targets are Android, iOS, JVM (desktop) and WasmJs: every new API must compile on all of them.
-- Platform-specific code goes in `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` behind an `expect`/`actual` or an interface, never in common code.
+- Put code in `commonMain` unless it truly needs a platform API. Targets are Android, iOS and JVM (desktop): every new API must compile on all of them.
+- Platform-specific code goes in `androidMain` / `iosMain` / `jvmMain` behind an `expect`/`actual` or an interface, never in common code.
 
 ## Plugin + no-op parity
 - Every published module `X` has a sibling `X-no-op`, both in a folder named after the feature: `featureflags/featureflags` + `featureflags/featureflags-no-op` (Gradle `:featureflags:featureflags` / `:featureflags:featureflags-no-op`), `network/core/core` + `network/core/core-no-op`. Both are registered in `settings.gradle.kts`. The Maven `artifactId` is set explicitly in each module's `mavenPublishing { coordinates(...) }`, so moving a module never changes its published coordinates.

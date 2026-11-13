@@ -38,10 +38,6 @@ gradlePlugin {
             id = "flocon.jvm.library"
             implementationClass = "io.github.openflocon.buildlogic.FloconKotlinJvmConventionPlugin"
         }
-        register("floconWasmLibrary") {
-            id = "flocon.wasm.library"
-            implementationClass = "io.github.openflocon.buildlogic.FloconKotlinWasmConventionPlugin"
-        }
 
         register("floconPublish") {
             id = "flocon.publish"

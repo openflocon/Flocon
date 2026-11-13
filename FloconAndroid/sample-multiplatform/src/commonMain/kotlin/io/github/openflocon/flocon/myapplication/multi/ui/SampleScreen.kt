@@ -19,10 +19,10 @@ enum class SampleScreen(
     WebView("WebView", "Console, page events and bridge calls", SampleCategory.WebView, SampleIcons.WebView, SamplePlatform.AndroidOnly),
     FeatureFlags("Feature flags","Toggle and observe", SampleCategory.FeatureFlags, SampleIcons.FeatureFlags),
     Preferences("Preferences", "Custom store, DataStore, SharedPreferences", SampleCategory.Neutral, SampleIcons.Preferences),
-    Files("Files", "Files the desktop can browse", SampleCategory.Neutral, SampleIcons.Files, SamplePlatform.NotWeb),
+    Files("Files", "Files the desktop can browse", SampleCategory.Neutral, SampleIcons.Files),
     Dashboard("Dashboard & Tables", "Live values and table rows", SampleCategory.Table, SampleIcons.Dashboard),
     Deeplinks("Deeplinks", "Static and runtime links", SampleCategory.Deeplink, SampleIcons.Deeplinks),
     Images("Images", "A scrolling list of remote images", SampleCategory.Neutral, SampleIcons.Images),
     Timeline("Timeline logs", "Navigation, actions, lifecycle and custom events", SampleCategory.Neutral, SampleIcons.Timeline),
-    Crash("Crash reporter", "Throw a test crash", SampleCategory.Crash, SampleIcons.Crash, SamplePlatform.NotWeb),
+    Crash("Crash reporter", "Throw a test crash", SampleCategory.Crash, SampleIcons.Crash),
 }

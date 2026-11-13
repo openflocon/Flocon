@@ -21,7 +21,7 @@ Mocks are applied by the [network](network.md) interceptors. To degrade the real
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | HTTP mocks | ✅ OkHttp, Ktor | ✅ Ktor (and OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `package:http` |
 | gRPC mocks | ❌ | ❌ | ❌ | ❌ |

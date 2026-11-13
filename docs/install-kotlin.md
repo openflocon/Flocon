@@ -11,7 +11,7 @@ Replace `LAST_VERSION` with the version shown on the badge.
 
 Since 2.0 the SDK is split into **one module per feature**: add the core, then only the modules you use. Every module has a `-no-op` twin with the same API, so release builds ship nothing.
 
-Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, iOS, Wasm).
+Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, iOS).
 
 !!! tip "Let your AI agent do it"
     The [Flocon plugin](install-with-ai.md) adds the dependencies, starts Flocon and keeps it out of release builds for you.
@@ -112,23 +112,23 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core, [Dashboards](dashboard.md) | `flocon` | Android, JVM, iOS, Wasm |
-| [Network](network.md) (mocks, bad network, WebSocket logging) | `flocon-network-core` | Android, JVM, iOS, Wasm |
+| Core, [Dashboards](dashboard.md) | `flocon` | Android, JVM, iOS |
+| [Network](network.md) (mocks, bad network, WebSocket logging) | `flocon-network-core` | Android, JVM, iOS |
 | OkHttp interceptor (+ WebSockets) | `flocon-okhttp-interceptor` | Android, JVM |
-| Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
+| Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS |
 | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
-| [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
-| [Preferences](sharedpref.md) | `flocon-sharedprefs` | Android, JVM, iOS, Wasm |
+| [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS |
+| [Preferences](sharedpref.md) | `flocon-sharedprefs` | Android, JVM, iOS |
 | DataStore | `flocon-datastores` | Android, JVM, iOS |
-| [Files](files.md) | `flocon-files` | Android, JVM, iOS, Wasm (no file browsing on Wasm) |
-| [Tables](table.md) | `flocon-tables` | Android, JVM, iOS, Wasm |
-| [Deeplinks](deeplink.md) | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
-| [Analytics](analytics.md) | `flocon-analytics` | Android, JVM, iOS, Wasm |
-| [Feature flags](featureflags.md) | `flocon-feature-flags` | Android, JVM, iOS, Wasm |
-| [Timeline](timeline.md) | `flocon-timeline` | Android, JVM, iOS, Wasm |
-| [Crash reporter](crashreporter.md) | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
-| [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
-| [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS, Wasm (automatic `attach` on Android) |
+| [Files](files.md) | `flocon-files` | Android, JVM, iOS |
+| [Tables](table.md) | `flocon-tables` | Android, JVM, iOS |
+| [Deeplinks](deeplink.md) | `flocon-deeplinks` | Android, JVM, iOS |
+| [Analytics](analytics.md) | `flocon-analytics` | Android, JVM, iOS |
+| [Feature flags](featureflags.md) | `flocon-feature-flags` | Android, JVM, iOS |
+| [Timeline](timeline.md) | `flocon-timeline` | Android, JVM, iOS |
+| [Crash reporter](crashreporter.md) | `flocon-crashreporter` | Android, JVM, iOS |
+| [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS (automatic capture on Android and iOS) |
+| [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS (automatic `attach` on Android) |
 | QR code scanner | `flocon-qr-scanner` | Android |
 | BOM | `flocon-bom` | all |
 

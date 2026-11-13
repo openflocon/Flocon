@@ -113,7 +113,7 @@ Support per SDK (details and limits in the [platform support matrix](https://ope
 
 - **Desktop**: macOS, Linux or Windows. The portable jar needs JDK 21.
 - **Android**: emulator or device, with `adb` for screenshots, recordings and deeplinks.
-- **Kotlin**: KMP targets Android, JVM, iOS and Wasm.
+- **Kotlin**: KMP targets Android, JVM and iOS.
 - **Swift**: iOS 15 / macOS 12, Xcode 16+, Swift Package Manager.
 - **Flutter**: Flutter 3.38.1+ (Dart 3.10+).
 

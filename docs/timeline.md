@@ -11,7 +11,7 @@ The timeline merges the events received by Flocon Desktop into **one chronologic
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Merged view of the other plugins (desktop only, nothing to install) | ✅ | ✅ | ✅ | ✅ |
 | Logs from your app (`navigation`, `userAction`, `lifecycle`, custom) | ✅ | ✅ | ✅ | ✅ |

@@ -15,7 +15,7 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    // not FAIL_ON_PROJECT_REPOS: the Kotlin/Wasm tooling (binaryen, Node.js) adds its own download repositories
+    // not FAIL_ON_PROJECT_REPOS: some build tooling adds its own download repositories
     repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
@@ -77,5 +77,4 @@ includeBuild("build-logic")
 
 include(":sample:android")
 include(":sample:desktop")
-include(":sample:wasm")
 include(":sample:ios")

@@ -3,7 +3,6 @@ plugins {
     id("flocon.android.library")
     id("flocon.ios.library")
     id("flocon.jvm.library")
-    // no wasm: DataStore does not support it
     id("flocon.publish")
 }
 

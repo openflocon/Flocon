@@ -22,7 +22,7 @@ The same capture also feeds [Mocking](mocking.md), [Bad Network Simulation](bad-
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | HTTP capture | ✅ OkHttp, Ktor | ✅ Ktor (and OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `package:http` |
 | Mocks | ✅ | ✅ | ✅ | ✅ |

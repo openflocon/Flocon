@@ -61,7 +61,7 @@ Three steps, a few minutes.
 
     ---
 
-    Android and Kotlin Multiplatform (Android, JVM, iOS, Wasm), one Gradle module per feature.
+    Android and Kotlin Multiplatform (Android, JVM, iOS), one Gradle module per feature.
 
     [:octicons-arrow-right-16: Kotlin SDK](install-kotlin.md)
 

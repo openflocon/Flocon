@@ -11,7 +11,7 @@ Flocon lets you explore the **sandboxed storage** of your app (files, caches, ex
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Browse, download, delete | ✅ | ✅ (iOS, JVM; no Wasm) | ✅ | ✅ |
 | Default folders | ✅ | ✅ | ✅ | ✅ |

@@ -21,23 +21,23 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core + Dashboards | `flocon` | Android, JVM, iOS, Wasm |
-| Network (mocks, bad network) | `flocon-network-core` | Android, JVM, iOS, Wasm |
+| Core + Dashboards | `flocon` | Android, JVM, iOS |
+| Network (mocks, bad network) | `flocon-network-core` | Android, JVM, iOS |
 | OkHttp interceptor + WebSockets | `flocon-okhttp-interceptor` | Android, JVM |
-| Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
+| Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS |
 | gRPC interceptor | `flocon-grpc-interceptor` / `flocon-grpc-interceptor-lite` (+ `flocon-grpc-interceptor-base`) | Android |
-| Databases | `flocon-database-core` + `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
-| SharedPreferences / custom stores | `flocon-sharedprefs` | Android, JVM, iOS, Wasm |
+| Databases | `flocon-database-core` + `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS |
+| SharedPreferences / custom stores | `flocon-sharedprefs` | Android, JVM, iOS |
 | DataStore | `flocon-datastores` | Android, JVM, iOS |
-| Analytics | `flocon-analytics` | Android, JVM, iOS, Wasm |
-| Feature flags | `flocon-feature-flags` | Android, JVM, iOS, Wasm |
-| Tables | `flocon-tables` | Android, JVM, iOS, Wasm |
-| Deeplinks | `flocon-deeplinks` | Android, JVM, iOS, Wasm |
-| Files | `flocon-files` | Android, JVM, iOS (Wasm: no file browsing) |
-| Crash reporter | `flocon-crashreporter` | Android, JVM, iOS, Wasm |
-| Timeline | `flocon-timeline` | Android, JVM, iOS, Wasm |
-| Accessibility | `flocon-accessibility` | Android, JVM, iOS, Wasm |
-| WebView | `flocon-webview` | Android, JVM, iOS, Wasm |
+| Analytics | `flocon-analytics` | Android, JVM, iOS |
+| Feature flags | `flocon-feature-flags` | Android, JVM, iOS |
+| Tables | `flocon-tables` | Android, JVM, iOS |
+| Deeplinks | `flocon-deeplinks` | Android, JVM, iOS |
+| Files | `flocon-files` | Android, JVM, iOS |
+| Crash reporter | `flocon-crashreporter` | Android, JVM, iOS |
+| Timeline | `flocon-timeline` | Android, JVM, iOS |
+| Accessibility | `flocon-accessibility` | Android, JVM, iOS |
+| WebView | `flocon-webview` | Android, JVM, iOS |
 | QR code scanner | `flocon-qr-scanner` | Android |
 
 !!! warning "`flocon-base` is gone"
@@ -49,7 +49,6 @@ Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analyt
 
 ### Platform support details
 
-- **Wasm**: connects to the desktop app (WebSocket) but has no filesystem or SQLite, so files, databases and crash persistence are not available.
 - **iOS**: files, crash reporter (stored in Application Support), network mock persistence, `UserDefaults` preferences and the app icon work. Databases are searched in Documents/Library, or in the folders given with `path(...)`.
 - **JVM**: Room databases are found in the folders given with `room { path("...") }`.
 
@@ -88,7 +87,7 @@ Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analyt
     ```
 
 `FloconContext` is platform specific: `FloconContext(context)` on Android,
-`FloconContext(appName, packageName)` on JVM, `FloconContext()` on iOS and Wasm.
+`FloconContext(appName, packageName)` on JVM, `FloconContext()` on iOS.
 
 A feature only works if its plugin is installed. Calling a plugin that is not installed never
 crashes: Flocon logs it (with `FloconLogger.enabled = true`) and the call does nothing.

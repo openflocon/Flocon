@@ -14,7 +14,7 @@ No more `chrome://inspect` and USB debugging to read a `console.error`.
 
 The WebView plugin is available in the **Kotlin / KMP SDK only**. The Swift and Flutter SDKs do not have it yet.
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Automatic capture (`attach`) | ✅ | ❌ | ❌ | ❌ |
 | Manual API (`logConsole`, `logPageEvent`, `logBridgeCall`) | ✅ | ✅ | ❌ | ❌ |

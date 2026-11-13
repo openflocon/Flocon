@@ -5,7 +5,6 @@ plugins {
     id("flocon.android.library")
     id("flocon.ios.library")
     id("flocon.jvm.library")
-    id("flocon.wasm.library")
     id("flocon.publish")
 }
 
@@ -48,11 +47,6 @@ kotlin {
 
             // to store the device id
             implementation(libs.multiplatform.settings)
-        }
-
-        wasmJsMain.dependencies {
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.js)
         }
     }
 }

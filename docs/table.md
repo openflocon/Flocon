@@ -18,7 +18,7 @@ Common use cases:
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Log table rows | ✅ | ✅ | ✅ | ✅ |
 

@@ -3,7 +3,6 @@ plugins {
     id("flocon.android.library")
     id("flocon.jvm.library")
     id("flocon.ios.library")
-    id("flocon.wasm.library")
     id("flocon.publish")
 }
 

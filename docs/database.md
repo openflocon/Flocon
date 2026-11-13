@@ -13,7 +13,7 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Automatic detection of SQLite files | ✅ (with `room()`) | ✅ iOS (Documents, Library), JVM with `room { path(...) }`, ❌ Wasm | ✅ (Documents, Application Support) | ✅ (databases, documents, support folders) |
 | Browse schema and run SQL | ✅ | ✅ (Wasm: Room 3 only) | ✅ | ✅ |

@@ -6,7 +6,7 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 
 - **Modular Architecture**: Separate modules for different functionalities (network, database, etc.).
 - **Plugin System**: Easily extensible with "no-op" variants for testing and modularity.
-- **KMP Support**: Targets Android, iOS, JVM, and WasmJs.
+- **KMP Support**: Targets Android, iOS and JVM.
 - **Modern Tech Stack**: Uses Room 3, Ktor, OkHttp, gRPC, and Compose Multiplatform.
 
 ## 🛠 Technical Stack

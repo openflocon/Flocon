@@ -3,7 +3,6 @@ plugins {
     id("flocon.android.library")
     id("flocon.jvm.library")
     id("flocon.ios.library")
-    id("flocon.wasm.library")
 
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
@@ -99,8 +98,7 @@ dependencies {
         "kspAndroid",
         "kspJvm",
         "kspIosSimulatorArm64",
-        "kspIosArm64",
-        "kspWasmJs"
+        "kspIosArm64"
     ).forEach {
         add(it, libs.androidx.room3.compiler)
     }

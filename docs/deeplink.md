@@ -11,7 +11,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
 
 ## Platform support
 
-| | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
+| | Android | KMP (iOS / JVM) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | Declare deeplinks, with parameters and variables | ✅ | ✅ | ✅ | ✅ |
 | Open a link from the desktop | ✅ (adb) | ✅ iOS Simulator only (`simctl`) | ✅ iOS Simulator only (`simctl`) | ✅ Android (adb), iOS Simulator |
