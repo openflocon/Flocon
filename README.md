@@ -18,7 +18,7 @@
 </p>
 
 <!-- screenshot: hero -->
-| **Network**: every HTTP, GraphQL and gRPC call. Mock it, slow it down. | **Timeline**: what happened right before the crash. |
+| **Network**: every HTTP, GraphQL and gRPC call. Mock it, slow it down. | **Timeline**: what happened in the app. |
 |:---:|:---:|
 | ![Network inspector](docs/assets/screenshots/network-detail.jpg) | ![Timeline](docs/assets/screenshots/home-timeline-graph.jpg) |
 | **Preferences**: read and edit SharedPreferences, DataStore, UserDefaults. | **Analytics**: every event your app sends, per provider. |
