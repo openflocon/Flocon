@@ -54,7 +54,7 @@ A dashboard is sent once every reactive section has emitted a first value, and s
 
 === "Kotlin"
 
-    Dashboards are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](setup.md). Install the plugin:
+    Dashboards are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md). Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {
@@ -84,7 +84,7 @@ A dashboard is sent once every reactive section has emitted a first value, and s
     flutter pub add flocon
     ```
 
-    The dashboard plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Setup](setup.md)). Every call does nothing before Flocon is started, so you can leave them in your code.
+    The dashboard plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Flutter SDK](install-flutter.md)). Every call does nothing before Flocon is started, so you can leave them in your code.
 
     ```dart
     import 'package:flocon/flocon.dart';

@@ -89,7 +89,7 @@ Inspect and control your running <strong>Android</strong>, <strong>Kotlin Multip
 
     Kotlin (Android, KMP), Swift (iOS, macOS) and Flutter SDKs share the same protocol and the same desktop app. Pick yours and connect in minutes.
 
-    [:octicons-arrow-right-16: Connect your app](setup.md)
+    [:octicons-arrow-right-16: Getting started](setup.md)
 
 </div>
 
@@ -225,7 +225,7 @@ Pick your platform to see which plugins are available. Click a feature for its d
     | [Accessibility](accessibility.md) | ❌ |
     | [WebView](webview.md) | ❌ |
 
-See each page for the exact limits per platform, and [Connect your app](setup.md) for the modules and packages to add.
+See each page for the exact limits per platform, and [Getting started](setup.md) for the modules and packages to add.
 
 ---
 
@@ -233,6 +233,6 @@ See each page for the exact limits per platform, and [Connect your app](setup.md
 
 Ready to inspect your app in real-time?
 
-[Connect your app :octicons-arrow-right-24:](setup.md){ .md-button .md-button--primary .md-button--large }
+[Get started :octicons-arrow-right-24:](setup.md){ .md-button .md-button--primary .md-button--large }
 
 </div>

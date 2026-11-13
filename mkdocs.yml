@@ -81,9 +81,20 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-    - Connect your app: setup.md
-    - Install on macOS: macos-install.md
-    - Install on Linux: linux-install.md
+    - Overview: setup.md
+    - Desktop app:
+      - macOS: macos-install.md
+      - Linux: linux-install.md
+      - Windows: windows-install.md
+    - Client SDK:
+      - With the Flocon plugin (AI): install-with-ai.md
+      - Kotlin (Android & KMP): install-kotlin.md
+      - Swift (iOS & macOS): install-swift.md
+      - Flutter: install-flutter.md
+    - Connect:
+      - Automatic connection: connect.md
+      - Over Wi-Fi: connect-wifi.md
+      - With a QR code: connect-qr-code.md
     - Migration: migration.md
     - Troubleshooting: troubleshooting.md
   - Features:

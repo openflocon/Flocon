@@ -40,7 +40,7 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
 === "Kotlin"
 
-    Add `flocon-network-core` and the interceptor of your HTTP client. `flocon-no-op` turns them off in release builds (see [Release builds](setup.md#release-builds)).
+    Add `flocon-network-core` and the interceptor of your HTTP client. `flocon-no-op` turns them off in release builds (see [Release builds](install-kotlin.md#release-builds)).
 
     === "OkHttp"
 

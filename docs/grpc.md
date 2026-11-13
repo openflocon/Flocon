@@ -68,7 +68,7 @@ For each call you see:
         }
         ```
 
-    With `flocon-no-op` in release builds (see [Release builds](setup.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
+    With `flocon-no-op` in release builds (see [Release builds](install-kotlin.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
 
 === "Swift"
 

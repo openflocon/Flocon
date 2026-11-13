@@ -30,7 +30,7 @@ The viewer is **read only** on every platform: the desktop never sends a value b
 
 === "Kotlin"
 
-    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](install-kotlin.md#release-builds)):
 
     ```kotlin
     dependencies {
@@ -68,7 +68,7 @@ The viewer is **read only** on every platform: the desktop never sends a value b
     flutter pub add flocon
     ```
 
-    The feature flags plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Setup](setup.md)). Registering does nothing before Flocon is started, so you can leave the calls in your code.
+    The feature flags plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Flutter SDK](install-flutter.md)). Registering does nothing before Flocon is started, so you can leave the calls in your code.
 
     ```dart
     import 'package:flocon/flocon.dart';

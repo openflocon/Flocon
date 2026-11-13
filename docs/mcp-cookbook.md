@@ -310,7 +310,7 @@ Calls since: GET /users/42 -> 200 (180 ms), GET /users/42/posts?limit=20 -> 200 
 
 **Goal:** add Flocon to an app (Kotlin, Swift or Flutter), or migrate it from 1.x, with the agent doing the edits.
 
-This one uses the **`flocon-setup` skill** of the [Flocon plugin](mcp.md#the-two-skills), not the MCP tools. Install the plugin first.
+This one uses the **`flocon-setup` skill** of the [Flocon plugin](mcp.md#the-two-skills), not the MCP tools. Install the plugin first, see [Install with the Flocon plugin](install-with-ai.md).
 
 **Prompt**
 
@@ -320,7 +320,7 @@ This one uses the **`flocon-setup` skill** of the [Flocon plugin](mcp.md#the-two
 
 1. **Detects the platform** from the project files: Android (`com.android.application`), Kotlin Multiplatform, Swift (`.xcodeproj`, `Package.swift`) or Flutter (`pubspec.yaml`).
 2. **Detects the version** if Flocon is already there, and picks a path: install, migrate from 1.x to 2.0, or only add the missing plugins.
-3. **Adds the dependencies** following the matching setup: [Kotlin](setup.md) (modules in every variant, `flocon-no-op` for release), Swift Package Manager (`FloconSwift`), or `flutter pub add flocon` and the plugin packages.
+3. **Adds the dependencies** following the matching setup: [Kotlin](install-kotlin.md) (modules in every variant, `flocon-no-op` for release), Swift Package Manager (`FloconSwift`), or `flutter pub add flocon` and the plugin packages.
 4. **Starts Flocon** in the app, and installs **only the plugins the project really uses** (it searches the code instead of guessing).
 5. **Keeps it out of release**: it inspects the real build variants and tells you exactly what it did (SDK inactive vs absent from the binary).
 6. **Builds** the touched targets and says what was **not** verified (running on a device, connection to Flocon Desktop, release build).
@@ -337,4 +337,4 @@ Compiled debug and release. Not verified: the app running on a device and showin
 - Then run the app with Flocon Desktop open, and ask: "List my network calls". If a tool returns nothing, the agent can tell which wiring is missing.
 - The skill follows the docs of each SDK: if the skill and the docs disagree, the docs win, and it tells you.
 - It works on a branch and does not touch your unrelated uncommitted changes.
-- See [Connect your app](setup.md) and [Migrating from 1.x](migration.md).
+- See [Install with the Flocon plugin](install-with-ai.md) and [Migrating from 1.x](migration.md).

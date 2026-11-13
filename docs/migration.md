@@ -7,7 +7,7 @@ description: Breaking changes of the Flocon Kotlin SDK and how to migrate: one f
 
 ## After 2.0.0: one `flocon-no-op` for release builds
 
-This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts are no longer published: the real modules now go in every variant, and a single `flocon-no-op` in release turns Flocon off. See [Release builds](setup.md#release-builds).
+This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts are no longer published: the real modules now go in every variant, and a single `flocon-no-op` in release turns Flocon off. See [Release builds](install-kotlin.md#release-builds).
 
 **Removed artifacts** (remove them from your build files and version catalog):
 
@@ -58,7 +58,7 @@ This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts ar
 ## From 1.x to 2.0
 
 !!! info "Swift and Flutter SDKs"
-    This guide is for the **Kotlin** SDK, the only one that had a 1.x. The Swift SDK ([FloconSwift](https://github.com/openflocon/FloconSwift)) and the Flutter SDK ([FloconFlutter](https://github.com/openflocon/FloconFlutter), packages `flocon`, `flocon_dio`...) were published as 0.x pre-releases and are aligned on **2.0.0** with the desktop and the Kotlin SDK. There is nothing to migrate if you start with them, see [Connect your app](setup.md). If you used a 0.x version, update to 2.0.0 (the Flutter changelog lists no user-facing change for 2.0.0; the Swift SDK has no changelog) and keep the SDK and the desktop on the same major version.
+    This guide is for the **Kotlin** SDK, the only one that had a 1.x. The Swift SDK ([FloconSwift](https://github.com/openflocon/FloconSwift)) and the Flutter SDK ([FloconFlutter](https://github.com/openflocon/FloconFlutter), packages `flocon`, `flocon_dio`...) were published as 0.x pre-releases and are aligned on **2.0.0** with the desktop and the Kotlin SDK. There is nothing to migrate if you start with them, see [Getting started](setup.md). If you used a 0.x version, update to 2.0.0 (the Flutter changelog lists no user-facing change for 2.0.0; the Swift SDK has no changelog) and keep the SDK and the desktop on the same major version.
 
 Flocon 2.0 splits the SDK into **one module per feature**: you only add what you use, and
 `flocon-no-op` turns Flocon off in release builds (2.0.0 had one `-no-op` per module, see [above](#after-200-one-flocon-no-op-for-release-builds)). The SDK is now initialized with a small DSL where you
@@ -96,7 +96,7 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
     The 1.x `flocon-base` artifact no longer exists. Code that logged WebSocket events or database queries
     from a module compiled in every variant must now depend on `flocon-network-core` / `flocon-database-core`.
 
-Add the modules with `implementation`, and `flocon-no-op` with `releaseImplementation`: it turns Flocon off in release. Only `flocon-accessibility` and `flocon-qr-scanner` keep a `-no-op` artifact. See [Release builds](setup.md#release-builds).
+Add the modules with `implementation`, and `flocon-no-op` with `releaseImplementation`: it turns Flocon off in release. Only `flocon-accessibility` and `flocon-qr-scanner` keep a `-no-op` artifact. See [Release builds](install-kotlin.md#release-builds).
 
 #### Platform support details
 

@@ -26,7 +26,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
 
 === "Kotlin"
 
-    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](setup.md#release-builds)):
+    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](install-kotlin.md#release-builds)):
 
     ```kotlin
     dependencies {
@@ -101,7 +101,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
     flutter pub add flocon
     ```
 
-    The deeplinks plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Setup](setup.md)). Once Flocon is started, list your links:
+    The deeplinks plugin is part of the `flocon` package and is always available: no `install(...)` is needed, you only have to start Flocon (see [Flutter SDK](install-flutter.md)). Once Flocon is started, list your links:
 
     ```dart
     import 'package:flocon/flocon.dart';
