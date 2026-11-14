@@ -13,4 +13,10 @@ internal actual fun buildFloconHttpClient(): FloconHttpClient = object : FloconH
         appPackageName: String,
         appInstance: Long
     ): Boolean = false
+
+    override suspend fun sendMessage(
+        message: String,
+        address: String,
+        port: Int,
+    ): Boolean = false
 }
