@@ -16,4 +16,14 @@ internal interface FloconHttpClient {
         appPackageName: String,
         appInstance: Long
     ): Boolean
+
+    /**
+     * Sends an already encoded message (the one the websocket would carry) to `POST /message`.
+     * Used for the messages too big for a websocket frame, see [FloconClient].
+     */
+    suspend fun sendMessage(
+        message: String,
+        address: String,
+        port: Int,
+    ): Boolean
 }
