@@ -17,7 +17,6 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
-import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -243,9 +242,12 @@ class DevicesRepositoryImpl(
                 remoteDeviceDataSource.getConnectionType(message)?.let {
                     localDevicesDataSource.saveConnectionType(deviceId = message.deviceId, connectionType = it)
                 }
-                // only the Kotlin SDKs older than this field do not send their SDK
-                val sdk = remoteDeviceDataSource.getSdk(message) ?: FloconSdk.KOTLIN.sdkName
-                deviceSdks.update { it + ((message.deviceId to message.appPackageName) to sdk) }
+                // no SDK sent (an SDK older than this field): unknown, we do not guess it
+                val sdk = remoteDeviceDataSource.getSdk(message)
+                deviceSdks.update { sdks ->
+                    val key = message.deviceId to message.appPackageName
+                    if (sdk == null) sdks - key else sdks + (key to sdk)
+                }
                 // null for an SDK that does not send its plugins: everything is displayed
                 localDevicesDataSource.saveInstalledPlugins(
                     deviceId = message.deviceId,

@@ -37,7 +37,7 @@ interface DevicesRepository {
 
     fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?>
 
-    /** The SDK name of the app (`kotlin`, `swift`, `flutter`). Null until the app says bonjour: it is not stored. */
+    /** The SDK name of the app (`kotlin`, `swift`, `flutter`). Null until the app says bonjour, and when it does not send it (an SDK older than the field): it is not stored. */
     fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?>
 
     suspend fun deleteDevice(deviceId: DeviceId)
