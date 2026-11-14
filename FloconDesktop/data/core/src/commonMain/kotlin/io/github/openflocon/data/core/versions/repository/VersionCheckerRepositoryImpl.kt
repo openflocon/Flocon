@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 internal class VersionCheckerRepositoryImpl(
     private val dispatcherProvider: DispatcherProvider,
@@ -36,6 +39,7 @@ internal class VersionCheckerRepositoryImpl(
 
     private val sdkVersions = MutableStateFlow<Map<FloconSdk, String>>(emptyMap())
     private val sdkVersionsMutex = Mutex()
+    private val sdkFetchFailures = mutableMapOf<FloconSdk, TimeMark>() // guarded by sdkVersionsMutex
 
     override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersions
         .map { it[sdk] }
@@ -47,9 +51,12 @@ internal class VersionCheckerRepositoryImpl(
             sdkVersionsMutex.withLock {
                 // an SDK we do not know has no repository to look at
                 val repository = sdk.repository ?: return@withLock
-                if (sdk !in sdkVersions.value) {
+                // after a failure (offline, rate limit) wait before asking GitHub again
+                val recentlyFailed = sdkFetchFailures[sdk]?.let { it.elapsedNow() < RETRY_DELAY } ?: false
+                if (sdk !in sdkVersions.value && !recentlyFailed) {
                     versionCheckerDatasource.fetchLatestVersion(repository = repository)
                         .alsoSuccess { version -> sdkVersions.update { it + (sdk to version) } }
+                        .alsoFailure { sdkFetchFailures[sdk] = TimeSource.Monotonic.markNow() }
                 }
             }
         }
@@ -68,6 +75,7 @@ internal class VersionCheckerRepositoryImpl(
 
     private companion object {
         // the desktop app and the Kotlin SDK are released from the same repository
-        const val DESKTOP_REPOSITORY = "openflocon/Flocon"
+        val DESKTOP_REPOSITORY = checkNotNull(FloconSdk.Kotlin.repository)
+        val RETRY_DELAY = 5.minutes
     }
 }

@@ -123,6 +123,7 @@ class DevicesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             devicesMutex.withLock {
                 localDevicesDataSource.clear()
+                deviceSdks.value = emptyMap()
             }
         }
     }
@@ -208,6 +209,7 @@ class DevicesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             localDevicesDataSource.delete(deviceId)
             localCurrentDeviceDataSource.delete(deviceId)
+            deviceSdks.update { sdks -> sdks.filterKeys { (id, _) -> id != deviceId } }
         }
     }
 
@@ -224,6 +226,7 @@ class DevicesRepositoryImpl(
                 deviceId = deviceId,
                 packageName = packageName
             )
+            deviceSdks.update { it - (deviceId to packageName) }
         }
     }
 
