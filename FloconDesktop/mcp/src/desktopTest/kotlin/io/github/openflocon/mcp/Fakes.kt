@@ -29,12 +29,12 @@ import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import io.github.openflocon.domain.timeline.repository.TimelineFocusRepository
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.repository.TimelineRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import io.github.openflocon.domain.versions.model.FloconSdk
 
 internal fun app(
     packageName: String,
