@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import io.github.openflocon.domain.versions.model.FloconSdk
 
 internal fun app(
     packageName: String,
@@ -114,7 +115,7 @@ internal class FakeDevicesRepository(
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = flowOf(null)
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
-    override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
+    override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
 

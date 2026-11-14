@@ -74,7 +74,7 @@ class ObserveUpdateAvailableUseCaseTest {
 
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(sdkVersionValue)
 
-        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
+        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = flowOf(null)
 
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}

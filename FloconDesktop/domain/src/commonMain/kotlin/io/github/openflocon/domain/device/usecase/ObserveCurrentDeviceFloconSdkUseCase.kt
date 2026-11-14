@@ -6,9 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 
-/** The SDK (Kotlin, Swift, Flutter) of the selected app, null when there is none or when it is not one we know. */
+/** The SDK (Kotlin, Swift, Flutter) of the selected app, null when there is none or when it is not known yet. */
 class ObserveCurrentDeviceFloconSdkUseCase(
     private val observeCurrentDeviceIdAndPackageNameUseCase: ObserveCurrentDeviceIdAndPackageNameUseCase,
     private val devicesRepository: DevicesRepository,
@@ -18,7 +17,6 @@ class ObserveCurrentDeviceFloconSdkUseCase(
             flowOf(null)
         } else {
             devicesRepository.observeDeviceSdk(deviceId = current.deviceId, appPackageName = current.packageName)
-                .map { FloconSdk.fromName(it) }
         }
     }.distinctUntilChanged()
 }

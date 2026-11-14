@@ -17,6 +17,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,7 +42,7 @@ class DevicesRepositoryImpl(
     private val devicesMutex = Mutex()
 
     // the SDK of each app that said bonjour since the launch: the SDK says it again at each connection
-    private val deviceSdks = MutableStateFlow<Map<Pair<DeviceId, AppPackageName>, String>>(emptyMap())
+    private val deviceSdks = MutableStateFlow<Map<Pair<DeviceId, AppPackageName>, FloconSdk>>(emptyMap())
 
     override val devices = localDevicesDataSource.devices
         .flowOn(dispatcherProvider.data)
@@ -199,7 +200,7 @@ class DevicesRepositoryImpl(
     override fun observeDeviceSdk(
         deviceId: DeviceId,
         appPackageName: String
-    ): Flow<String?> = deviceSdks
+    ): Flow<FloconSdk?> = deviceSdks
         .map { it[deviceId to appPackageName] }
         .distinctUntilChanged()
 
@@ -243,7 +244,7 @@ class DevicesRepositoryImpl(
                     localDevicesDataSource.saveConnectionType(deviceId = message.deviceId, connectionType = it)
                 }
                 // no SDK sent (an SDK older than this field): unknown, we do not guess it
-                val sdk = remoteDeviceDataSource.getSdk(message)
+                val sdk = FloconSdk.fromName(remoteDeviceDataSource.getSdk(message))
                 deviceSdks.update { sdks ->
                     val key = message.deviceId to message.appPackageName
                     if (sdk == null) sdks - key else sdks + (key to sdk)

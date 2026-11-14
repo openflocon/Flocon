@@ -96,7 +96,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     private class FakeDevicesRepository(
         var currentDeviceIdValue: String? = "device1",
         var sdkVersionValue: String? = "1.0.0",
-        var sdkValue: String? = "kotlin",
+        var sdkValue: FloconSdk? = FloconSdk.Kotlin,
     ) : DevicesRepository {
         override val devices: Flow<List<DeviceDomainModel>> = emptyFlow()
         override val currentDeviceId: Flow<DeviceId?> = flowOf(currentDeviceIdValue)
@@ -127,7 +127,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
 
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(sdkVersionValue)
 
-        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(sdkValue)
+        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = flowOf(sdkValue)
 
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
@@ -224,7 +224,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             val versionsRepo = FakeVersionsCheckerRepository(
                 sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0", FloconSdk.Swift to "2.0.0", FloconSdk.Flutter to "2.0.1"),
             )
-            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = "swift")
+            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = FloconSdk.Swift)
             val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
 
             assertIs<IsLastVersionDomainModel.RunningLastVersion>(useCase().first())
@@ -238,7 +238,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             val versionsRepo = FakeVersionsCheckerRepository(
                 sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0", FloconSdk.Flutter to "2.0.1"),
             )
-            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = "flutter")
+            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = FloconSdk.Flutter)
             val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
 
             val result = useCase().first()
@@ -253,7 +253,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     fun `an unknown SDK or an app that did not say bonjour yet never gets an update`() {
         runBlocking {
             val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "9.0.0"))
-            listOf("react-native", null).forEach { sdk ->
+            listOf(FloconSdk.Other("react-native"), null).forEach { sdk ->
                 val devicesRepo = FakeDevicesRepository(sdkVersionValue = "1.0.0", sdkValue = sdk)
                 val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
 

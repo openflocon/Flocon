@@ -36,6 +36,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import io.github.openflocon.domain.versions.model.FloconSdk
 
 class ExecuteDeeplinkUseCaseTest {
 
@@ -187,7 +188,7 @@ class ExecuteDeeplinkUseCaseTest {
         override suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean = false
         override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = emptyFlow()
-        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<String?> = emptyFlow()
+        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = emptyFlow()
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
         override suspend fun clear() {}
