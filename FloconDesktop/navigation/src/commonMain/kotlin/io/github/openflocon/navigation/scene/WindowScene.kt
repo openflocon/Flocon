@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogModalityType
 import androidx.compose.ui.window.v2.DialogWindow
 import androidx.compose.ui.window.v2.WindowBoundsProvider
 import androidx.compose.ui.window.v2.WindowPositionProvider
@@ -54,6 +55,12 @@ data class WindowScene(
             onCloseRequest = onBack,
             state = state,
             title = windowProperties?.title ?: "",
+            modalityType = if (windowProperties?.modeless == true) {
+                DialogModalityType.Modeless
+            } else {
+                // the default of DialogWindow: blocks the parent window
+                DialogModalityType.ApplicationModal
+            },
         ) {
             // the translucent surface needs the page scenery behind it, like in the main window
             FloconGlassBackground {
@@ -92,7 +99,9 @@ class WindowSceneStrategy : SceneStrategy<FloconRoute> {
 
 data class WindowProperties(
     val size: DpSize? = null,
-    val title: String? = null
+    val title: String? = null,
+    /** When true, the main window stays usable while this window is open. */
+    val modeless: Boolean = false,
 )
 
 private object WindowPropertiesKey : NavMetadataKey<WindowProperties>

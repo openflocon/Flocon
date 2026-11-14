@@ -25,6 +25,7 @@ import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalFeatureEmpty
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.LocalHasDevice
 import io.github.openflocon.flocondesktop.common.ui.featuredoc.helpScreenName
 import io.github.openflocon.flocondesktop.common.ui.feedback.FeedbackHost
+import io.github.openflocon.flocondesktop.device.deviceRoutes
 import io.github.openflocon.flocondesktop.features.accessibility.accessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.adbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.analyticsRoutes
@@ -154,6 +155,7 @@ private fun Content(
                             onAppSelected = { onAction(AppAction.SelectApp(it)) },
                             onRecordClicked = { onAction(AppAction.Record) },
                             onTakeScreenshotClicked = { onAction(AppAction.Screenshoot) },
+                            onClickDetail = { onAction(AppAction.DeviceDetail(it)) },
                             onOpenFolderClicked = { onAction(AppAction.OpenFloconFolder) },
                             sdkUpdate = sdkUpdate,
                             onSdkUpdateIgnored = onSdkUpdateIgnored,
@@ -181,6 +183,7 @@ private fun Content(
             timelineRoutes()
             webViewRoutes()
             accessibilityRoutes()
+            deviceRoutes()
         }
     }
 }

@@ -33,6 +33,7 @@ import io.github.openflocon.flocondesktop.app.ui.releasenotes.ReleaseNotesRoutes
 import io.github.openflocon.flocondesktop.app.ui.settings.SettingsRoutes
 import io.github.openflocon.flocondesktop.common.utils.OpenFile
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
+import io.github.openflocon.flocondesktop.device.DeviceRoutes
 import io.github.openflocon.flocondesktop.features.accessibility.AccessibilityRoutes
 import io.github.openflocon.flocondesktop.features.adbcommander.AdbCommanderRoutes
 import io.github.openflocon.flocondesktop.features.analytics.AnalyticsRoutes
@@ -240,7 +241,13 @@ internal class AppViewModel(
             is AppAction.SelectApp -> onAppSelected(action)
 
             is AppAction.SelectDevice -> onDeviceSelected(action)
+
+            is AppAction.DeviceDetail -> onDeviceDetail(action)
         }
+    }
+
+    private fun onDeviceDetail(action: AppAction.DeviceDetail) {
+        navigationState.navigate(DeviceRoutes.Detail(action.item.id))
     }
 
     private fun onSelectMenu(action: AppAction.SelectMenu) {
