@@ -1,12 +1,14 @@
 package io.github.openflocon.flocon.websocket
 
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.model.FloconFileInfo
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * The android client uses okhttp, because for android-only project there's more chance to having okhttp than ktor
@@ -64,6 +66,25 @@ internal class FloconHttpClientAndroid : FloconHttpClient {
                 println("❌ Erreur serveur (${it.code}): ${it.body?.string()}")
                 return false
             }
+        }
+    }
+
+    override suspend fun sendMessage(
+        message: String,
+        address: String,
+        port: Int,
+    ): Boolean {
+        val request = Request.Builder()
+            .url("https://$address:$port/message")
+            .header("User-Agent", "Flocon")
+            .post(message.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        return try {
+            client.newCall(request).execute().use { it.isSuccessful }
+        } catch (e: Exception) {
+            FloconLogger.logError("Large message upload failed: ${e.message}", e)
+            false
         }
     }
 }

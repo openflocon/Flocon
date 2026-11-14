@@ -28,7 +28,7 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
 
 === "Kotlin"
 
-    Add the database core and the module matching your library (debug real module, release `-no-op`). Replace `LAST_VERSION` with the [latest release](setup.md#2-add-the-sdk), or use the BOM described in [Setup](setup.md):
+    Add the database core and the module matching your library (debug real module, release `-no-op`). Replace `LAST_VERSION` with the [latest release](install-kotlin.md), or use the BOM described in [Kotlin SDK](install-kotlin.md#1-add-the-dependencies):
 
     === "Room 2 (androidx.room)"
 

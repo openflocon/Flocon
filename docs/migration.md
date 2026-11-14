@@ -6,7 +6,7 @@ description: What changed in the Flocon Kotlin SDK 2.0 and how to migrate an app
 # 🧭 Migrating from 1.x to 2.0
 
 !!! info "Swift and Flutter SDKs"
-    This guide is for the **Kotlin** SDK, the only one that had a 1.x. The Swift SDK ([FloconSwift](https://github.com/openflocon/FloconSwift)) and the Flutter SDK ([FloconFlutter](https://github.com/openflocon/FloconFlutter), packages `flocon`, `flocon_dio`...) were published as 0.x pre-releases and are aligned on **2.0.0** with the desktop and the Kotlin SDK. There is nothing to migrate if you start with them, see [Connect your app](setup.md). If you used a 0.x version, update to 2.0.0 (the Flutter changelog lists no user-facing change for 2.0.0; the Swift SDK has no changelog) and keep the SDK and the desktop on the same major version.
+    This guide is for the **Kotlin** SDK, the only one that had a 1.x. The Swift SDK ([FloconSwift](https://github.com/openflocon/FloconSwift)) and the Flutter SDK ([FloconFlutter](https://github.com/openflocon/FloconFlutter), packages `flocon`, `flocon_dio`...) were published as 0.x pre-releases and are aligned on **2.0.0** with the desktop and the Kotlin SDK. There is nothing to migrate if you start with them, see [Getting started](setup.md). If you used a 0.x version, update to 2.0.0 (the Flutter changelog lists no user-facing change for 2.0.0; the Swift SDK has no changelog) and keep the SDK and the desktop on the same major version.
 
 Flocon 2.0 splits the SDK into **one module per feature**: you only add what you use, and every
 module has a `-no-op` twin for release builds. The SDK is now initialized with a small DSL where you
@@ -45,7 +45,7 @@ In 1.x, `io.github.openflocon:flocon` contained every feature. In 2.0, `flocon` 
     from a module compiled in every variant must now depend on `flocon-network-core` / `flocon-database-core`
     in debug and on their `-no-op` in release.
 
-Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`). See [Release builds](setup.md#release-builds).
+Every artifact has a **`-no-op`** version with the same API (e.g. `flocon-analytics-no-op`). See [Release builds](install-kotlin.md#release-builds).
 
 ### Platform support details
 

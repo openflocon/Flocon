@@ -1,9 +1,9 @@
 ---
-title: Linux Installation
+title: Install on Linux
 description: How to install Flocon Desktop on Linux (x64 and arm64).
 ---
 
-# Linux Installation Guide
+# 🐧 Install on Linux
 
 Flocon Desktop is published on [GitHub Releases](https://github.com/openflocon/Flocon/releases) as `.deb` and `.rpm` packages for both x64 and arm64.
 
@@ -45,7 +45,7 @@ sudo zypper install ./Flocon-linux-x64.rpm   # or Flocon-linux-arm64.rpm
 
 ## adb
 
-Flocon uses `adb` for Android screenshots, screen recordings and deeplinks. Install it separately:
+Flocon Desktop uses `adb` to reach Android emulators and USB devices, and for screenshots, screen recordings and deeplinks. Install it separately:
 
 ```bash
 sudo apt install android-tools-adb   # Debian / Ubuntu
@@ -54,3 +54,5 @@ sudo zypper install android-tools    # openSUSE
 ```
 
 Flocon starts from the app menu (Development) or with `/opt/flocon/bin/Flocon`.
+
+Next: [add the SDK to your app](setup.md#2-add-the-sdk-to-your-app).

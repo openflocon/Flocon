@@ -7,7 +7,7 @@ description: Use when installing Flocon in an Android, Kotlin Multiplatform, Swi
 
 Flocon is a debugging SDK: the app talks to Flocon Desktop. This skill puts the SDK in a project, or moves an existing integration to a newer version. It does not debug a running app (that is `flocon-mcp`).
 
-Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs/setup.md` (install), `docs/migration.md` (1.x to 2.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments; for Flutter, the README of `openflocon/FloconFlutter` and the Dart doc comments of the packages. If this skill and those docs disagree, the docs win; tell the user.
+Always follow the docs of the SDK used when they are available: for Kotlin, the repository docs `docs/install-kotlin.md` (install), `docs/connect.md` (connection), `docs/migration.md` (1.x to 2.0) and the feature pages; for Swift, the README of `openflocon/FloconSwift` and its DocC comments; for Flutter, the README of `openflocon/FloconFlutter` and the Dart doc comments of the packages. If this skill and those docs disagree, the docs win; tell the user.
 
 ## 1. Detect the platform first
 

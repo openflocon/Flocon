@@ -1,6 +1,6 @@
 # Install Flocon in an Android project
 
-Source of truth: `docs/setup.md`. Latest version: the newest release on https://github.com/openflocon/Flocon/releases.
+Source of truth: `docs/install-kotlin.md`. Latest version: the newest release on https://github.com/openflocon/Flocon/releases.
 
 ## 1. Dependencies
 
