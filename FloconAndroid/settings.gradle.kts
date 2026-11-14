@@ -32,7 +32,6 @@ include(":accessibility:accessibility")
 // the only no-ops left: their Android manifest entries can't be removed by flocon-no-op
 include(":accessibility:accessibility-no-op")
 include(":datastores:datastores")
-include(":tables:tables")
 include(":webview:webview")
 include(":qrscanner:qrscanner")
 include(":qrscanner:qrscanner-no-op")

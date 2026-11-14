@@ -28,13 +28,7 @@ Values are always strings: format numbers and dates yourself before logging them
 
 === "Kotlin"
 
-    Add the module (`flocon-no-op` turns it off in release builds, see [Release builds](install-kotlin.md#release-builds)):
-
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-tables:LAST_VERSION")
-    }
-    ```
+    Tables are part of the core module (`flocon`, and `flocon-no-op` for release, see [Release builds](install-kotlin.md#release-builds)), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
     Then install the plugin:
 

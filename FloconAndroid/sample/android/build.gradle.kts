@@ -58,7 +58,6 @@ dependencies {
     implementation(projects.datastores.datastores)
     implementation(projects.accessibility.accessibility)
     implementation(projects.webview.webview)
-    implementation(projects.tables.tables)
     implementation(projects.qrscanner.qrscanner)
 
     implementation(platform(libs.okhttp.bom))

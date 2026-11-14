@@ -23,7 +23,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.flocon.flocon)
             implementation(projects.accessibility.accessibility)
-            implementation(projects.tables.tables)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
             implementation(projects.database.room3.room3)
             implementation(projects.database.sqldelight.sqldelight)
@@ -79,7 +78,6 @@ kotlin {
             implementation(libs.sqldelight.android.driver)
             implementation(libs.androidx.room.runtime)
             implementation(projects.datastores.datastores)
-            implementation(projects.tables.tables)
             implementation(projects.webview.webview)
         }
 

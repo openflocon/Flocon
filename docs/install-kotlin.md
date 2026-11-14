@@ -96,13 +96,12 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging), [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md) | `flocon` | Android, JVM, iOS, Wasm |
+| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging), [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md) | `flocon` | Android, JVM, iOS, Wasm |
 | OkHttp interceptor (+ WebSockets) | `flocon-okhttp-interceptor` | Android, JVM |
 | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
 | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
 | [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
 | [DataStore](sharedpref.md) | `flocon-datastores` | Android, JVM, iOS |
-| [Tables](table.md) | `flocon-tables` | Android, JVM, iOS, Wasm |
 | [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
 | [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS, Wasm (automatic `attach` on Android) |
 | QR code scanner | `flocon-qr-scanner` | Android |
@@ -159,7 +158,7 @@ Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analy
 | `FloconPreferences` | `flocon` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
 | `FloconFiles` | `flocon` | [Files](files.md) |
 | `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |
-| `FloconTable` | `flocon-tables` | [Tables](table.md) |
+| `FloconTable` | `flocon` | [Tables](table.md) |
 | `FloconDeeplinks` | `flocon` | [Deeplinks](deeplink.md) |
 | `FloconAnalytics` | `flocon` | [Analytics](analytics.md) |
 | `FloconFeatureFlags` | `flocon` | [Feature flags](featureflags.md) |

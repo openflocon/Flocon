@@ -25,7 +25,6 @@ kotlin {
 
             implementation(projects.flocon.flocon)
             implementation(projects.accessibility.accessibility)
-            implementation(projects.tables.tables)
             implementation(projects.database.room3.room3)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
 

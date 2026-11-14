@@ -20,7 +20,7 @@ This change is for the **Kotlin** SDK only. The per-module `-no-op` artifacts ar
 
 `flocon-no-op`, `flocon-accessibility-no-op` and `flocon-qr-scanner-no-op` are still published.
 
-**Modules merged into `flocon`**: `flocon-network-core`, `flocon-analytics`, `flocon-files`, `flocon-sharedprefs`, `flocon-deeplinks`, `flocon-feature-flags`, `flocon-timeline` and `flocon-crashreporter` have no external dependency, so they are now part of the core module and no longer published as separate artifacts. Remove them from your build files and version catalog: `flocon` is enough, and the packages and APIs are the same (`FloconNetwork`, `FloconAnalytics`, `FloconFiles`, `FloconPreferences`, `Flocon.featureFlagsPlugin`...). The interceptors (`flocon-okhttp-interceptor`, `flocon-ktor-interceptor`, gRPC) and `flocon-datastores` are unchanged, and `flocon-tables` and `flocon-database-core` stay separate modules.
+**Modules merged into `flocon`**: `flocon-network-core`, `flocon-analytics`, `flocon-files`, `flocon-sharedprefs`, `flocon-deeplinks`, `flocon-feature-flags`, `flocon-timeline`, `flocon-crashreporter` and `flocon-tables` have no external dependency, so they are now part of the core module and no longer published as separate artifacts. Remove them from your build files and version catalog: `flocon` is enough, and the packages and APIs are the same (`FloconNetwork`, `FloconAnalytics`, `FloconFiles`, `FloconPreferences`, `Flocon.featureFlagsPlugin`, `FloconTable`...). The interceptors (`flocon-okhttp-interceptor`, `flocon-ktor-interceptor`, gRPC) and `flocon-datastores` are unchanged, and `flocon-database-core` stays a separate module.
 
 === "After 2.0.0"
 
