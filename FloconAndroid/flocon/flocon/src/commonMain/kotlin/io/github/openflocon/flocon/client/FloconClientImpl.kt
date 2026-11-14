@@ -3,6 +3,7 @@ package io.github.openflocon.flocon.client
 import io.github.openflocon.flocon.FloconApp
 import io.github.openflocon.flocon.FloconContext
 import io.github.openflocon.flocon.FloconFile
+import io.github.openflocon.flocon.FloconLogger
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconFileSender
 import io.github.openflocon.flocon.core.FloconMessageSender
@@ -102,7 +103,14 @@ class FloconClient internal constructor(
         scope.launch {
             for (item in items) {
                 when (item) {
-                    is OutboxItem.Message -> outbox.enqueue(encode(item.plugin, item.method, item.body))
+                    is OutboxItem.Message -> {
+                        val message = encode(item.plugin, item.method, item.body)
+                        if (isTooLargeForWebSocket(message)) {
+                            sendOverHttp(message)
+                        } else {
+                            outbox.enqueue(message)
+                        }
+                    }
                     is OutboxItem.Connected -> outbox.connected(item.link.outboxLink, handshake = encode("bonjour", "bonjour", item.handshakeBody))
                     is OutboxItem.Disconnected -> outbox.disconnected(item.link.outboxLink)
                     is OutboxItem.AddLink -> outbox.add(item.link.outboxLink)
@@ -218,6 +226,29 @@ class FloconClient internal constructor(
         }
     }
 
+    /**
+     * A message above [LARGE_MESSAGE_THRESHOLD_BYTES] is never sent on the websocket: OkHttp closes
+     * the connection when a message is bigger than its send queue (16 MiB), and every later message
+     * would be lost. It goes to `POST /message` of the http port instead, like the files.
+     *
+     * It is not kept if the desktop app can't be reached (or is too old to know the route):
+     * it is dropped, the websocket stays up.
+     */
+    private fun sendOverHttp(message: String) {
+        // the link is chosen now, with its own http port
+        val server = uploadLink.server
+        scope.launch {
+            val sent = httpClient.sendMessage(
+                message = message,
+                address = server.host,
+                port = server.httpPort,
+            )
+            if (!sent) {
+                FloconLogger.log("A message too large for the websocket could not be sent over http, it was dropped")
+            }
+        }
+    }
+
     /** The messages kept while disconnected are sent by [onConnected], nothing to do here. */
     override fun sendPendingMessages() = Unit
 }
@@ -240,3 +271,11 @@ internal class FloconLink(val server: FloconServer) {
     @Volatile
     var job: Job? = null
 }
+
+/** Above this size, an encoded message goes over http: far from the 16 MiB websocket queue limit of OkHttp. */
+internal const val LARGE_MESSAGE_THRESHOLD_BYTES = 5 * 1024 * 1024
+
+/** A char is at most 3 bytes in UTF-8 (BMP), so the exact size is only computed for big strings. */
+internal fun isTooLargeForWebSocket(message: String): Boolean =
+    message.length.toLong() * 3 > LARGE_MESSAGE_THRESHOLD_BYTES &&
+        message.encodeToByteArray().size > LARGE_MESSAGE_THRESHOLD_BYTES
