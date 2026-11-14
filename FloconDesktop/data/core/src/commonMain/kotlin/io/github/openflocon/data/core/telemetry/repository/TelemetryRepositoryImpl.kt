@@ -71,8 +71,9 @@ class TelemetryRepositoryImpl(
         }
 
         val allProperties = properties + mapOf(
-            // No person profiles: cheaper on PostHog and nothing is attached to a "user".
-            "\$process_person_profile" to false,
+            // Full: the stored random installation id is the distinct id of a PostHog person, so returning users
+            // show up as one person. Anonymous: the id changes at each launch, a profile would be meaningless.
+            "\$process_person_profile" to (current.level == TelemetryLevelDomainModel.Full),
             "\$session_id" to sessionId,
             // Don't resolve the request IP into a location.
             "\$geoip_disable" to true,

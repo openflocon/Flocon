@@ -140,6 +140,7 @@ class TelemetryRepositoryImplTest {
 
         val id = assertNotNull(local.storedInstallationId)
         assertEquals(id, remote.events.single().distinctId)
+        assertEquals(true, remote.events.single().properties["\$process_person_profile"])
     }
 
     @Test
