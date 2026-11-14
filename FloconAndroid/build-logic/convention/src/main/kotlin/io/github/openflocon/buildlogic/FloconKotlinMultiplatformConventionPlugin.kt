@@ -15,6 +15,10 @@ class FloconKotlinMultiplatformConventionPlugin : Plugin<Project> {
             extensions.configure<KotlinMultiplatformExtension> {
                 compilerOptions {
                     freeCompilerArgs.add("-XXLanguage:+ExpectRefinement")
+                    // the Flocon modules share an internal API, the samples and the apps don't use it
+                    if (!path.startsWith(":sample")) {
+                        optIn.add("io.github.openflocon.flocon.InternalFloconApi")
+                    }
                 }
             }
         }

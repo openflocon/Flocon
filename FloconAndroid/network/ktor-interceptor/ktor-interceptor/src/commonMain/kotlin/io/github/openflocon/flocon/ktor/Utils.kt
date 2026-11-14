@@ -70,7 +70,4 @@ internal fun Map<String, String>.isBrotli(): Boolean {
     return "br".equals(getContentEncoding(), ignoreCase = true)
 }
 
-internal expect fun decodeNetworkBody(
-    bytes: ByteArray,
-    headers: Map<String, String>
-): String
+internal const val BROTLI_BODY_PLACEHOLDER = "[Brotli-encoded body]"

@@ -3,6 +3,7 @@
 package io.github.openflocon.flocon.ktor
 
 import io.github.openflocon.flocon.Flocon
+import io.github.openflocon.flocon.FloconRuntime
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
@@ -38,6 +39,8 @@ class FloconKtorPluginConfig {
 }
 
 val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPluginConfig) {
+    // turned off by flocon-no-op: the calls are not intercepted
+    if (!FloconRuntime.isEnabled()) return@createClientPlugin
 
     val theClient = client
     val isImageCallback = pluginConfig.isImage
@@ -189,7 +192,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             contentType = contentType,
             body = if (isImage) null else {
                 if (responseHeadersMap.isBrotli()) {
-                    decodeNetworkBody(originalBodyBytes, responseHeadersMap)
+                    BROTLI_BODY_PLACEHOLDER
                 } else {
                     originalBodyBytes.decodeToString()
                 }

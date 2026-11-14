@@ -2,7 +2,6 @@
 activity-compose = "1.13.0"
 agp = "9.4.1"
 apollo = "5.2.0"
-brotli = "0.1.2"
 buildconfig = "6.1.2"
 coil = "3.6.3"
 compose = "1.12.1"
@@ -128,7 +127,6 @@ sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", versi
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 
 # Third Party
-brotli-dec = { module = "org.brotli:dec", version.ref = "brotli" }
 google-play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 vanniktech-mavenPublish-gradlePlugin = { group = "com.vanniktech", name = "gradle-maven-publish-plugin", version.ref = "maven-publish" }

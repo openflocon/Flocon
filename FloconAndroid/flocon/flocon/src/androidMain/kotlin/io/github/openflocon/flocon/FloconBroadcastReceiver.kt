@@ -6,6 +6,9 @@ import android.content.Intent
 
 internal class FloconBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
+        // turned off by flocon-no-op
+        if (!FloconRuntime.isEnabled()) return
+
         FloconLogger.log("Started detection broadcast receiver with: ${intent?.action}")
 
         val serial = intent?.getStringExtra("serial")

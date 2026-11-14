@@ -320,7 +320,7 @@ This one uses the **`flocon-setup` skill** of the [Flocon plugin](mcp.md#the-two
 
 1. **Detects the platform** from the project files: Android (`com.android.application`), Kotlin Multiplatform, Swift (`.xcodeproj`, `Package.swift`) or Flutter (`pubspec.yaml`).
 2. **Detects the version** if Flocon is already there, and picks a path: install, migrate from 1.x to 2.0, or only add the missing plugins.
-3. **Adds the dependencies** following the matching setup: [Kotlin](install-kotlin.md) (debug module, `-no-op` twin for release), Swift Package Manager (`FloconSwift`), or `flutter pub add flocon` and the plugin packages.
+3. **Adds the dependencies** following the matching setup: [Kotlin](install-kotlin.md) (modules in every variant, `flocon-no-op` for release), Swift Package Manager (`FloconSwift`), or `flutter pub add flocon` and the plugin packages.
 4. **Starts Flocon** in the app, and installs **only the plugins the project really uses** (it searches the code instead of guessing).
 5. **Keeps it out of release**: it inspects the real build variants and tells you exactly what it did (SDK inactive vs absent from the binary).
 6. **Builds** the touched targets and says what was **not** verified (running on a device, connection to Flocon Desktop, release build).
@@ -328,7 +328,7 @@ This one uses the **`flocon-setup` skill** of the [Flocon plugin](mcp.md#the-two
 **Result** (illustrative)
 
 ```text
-Kotlin SDK 2.0: added flocon (debug) and flocon-no-op (release), network and database plugins.
+Kotlin SDK: added flocon and flocon-no-op (release), network and database plugins.
 Compiled debug and release. Not verified: the app running on a device and showing in Flocon Desktop.
 ```
 

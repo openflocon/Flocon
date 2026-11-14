@@ -104,6 +104,9 @@ fun startFlocon(
     context: FloconContext,
     block: FloconConfiguration.() -> Unit
 ) {
+    // turned off by flocon-no-op: nothing is started, every plugin is a no-op
+    if (!FloconRuntime.isEnabled()) return
+
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     val client = FloconClient(
         context = context,

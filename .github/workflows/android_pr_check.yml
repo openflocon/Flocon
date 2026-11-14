@@ -37,3 +37,7 @@ jobs:
         working-directory: FloconAndroid
         # jvmTest: the plugins unit tests (KMP modules), test: the Android sample unit tests
         run: ./gradlew jvmTest test assemble
+
+      - name: Check that flocon-no-op turns Flocon off in release
+        working-directory: FloconAndroid
+        run: bash scripts/check-release-noop.sh

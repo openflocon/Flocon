@@ -6,7 +6,7 @@ plugins {
     id("flocon.publish")
 }
 
-// every published Flocon module (plugins and their no-op) must be known before the constraints are built
+// every published Flocon module (plugins and flocon-no-op) must be known before the constraints are built
 rootProject.subprojects
     .filter { it.path != project.path && it.path != ":sample" && !it.path.startsWith(":sample:") && it.path != ":sample-multiplatform" }
     .forEach { evaluationDependsOn(it.path) }

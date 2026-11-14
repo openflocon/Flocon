@@ -9,5 +9,5 @@ You review plans and big changes for Flocon (KMP SDK in `FloconAndroid/`, deskto
 
 Answer in under 200 words, with no code:
 - **Verdict**: go / go with changes / rethink.
-- **Risks**: what will break or be hard to undo (layering, plugin / no-op parity, protocol backward compatibility, missing pieces from the full-feature checklist).
+- **Risks**: what will break or be hard to undo (layering, FloconRuntime switch / flocon-no-op, protocol backward compatibility, missing pieces from the full-feature checklist).
 - **Changes**: the specific adjustments to the plan, if any.

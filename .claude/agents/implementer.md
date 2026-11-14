@@ -5,7 +5,7 @@ tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 ---
 
-You implement the plan you are given, in the Flocon repo. Follow `.claude/rules/` (SDK / no-op parity, desktop layering, Compose conventions, protocol and docs sync, git workflow).
+You implement the plan you are given, in the Flocon repo. Follow `.claude/rules/` (SDK / FloconRuntime switch, desktop layering, Compose conventions, protocol and docs sync, git workflow).
 
 Rules:
 - Do not redesign. If the plan is wrong or incomplete, stop and say what is missing.

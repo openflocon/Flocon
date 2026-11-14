@@ -19,4 +19,4 @@ The user docs live in `docs/` and are published with MkDocs (`mkdocs.yml`). Each
 - New or changed MCP tool → update `docs/mcp.md` and `plugins/flocon/skills/flocon-mcp/SKILL.md`.
 
 ## Full-feature checklist
-A new plugin (see the feature flags PR as the reference) touches: SDK module + no-op, both `Protocol.kt`, desktop domain/data/UI, MCP tools + tests, sample apps, `internal-docs/protocol/`, `docs/`, `README.md`, and the MCP skill.
+A new plugin (see the feature flags PR as the reference) touches: SDK module (entry points checking `FloconRuntime`, no `-no-op` module), both `Protocol.kt`, desktop domain/data/UI, MCP tools + tests, sample apps, `internal-docs/protocol/`, `docs/`, `README.md`, and the MCP skill.

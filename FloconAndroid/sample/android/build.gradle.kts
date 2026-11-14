@@ -26,8 +26,9 @@ android {
 
     buildTypes {
         release {
+            // R8 on: flocon-no-op removes the Flocon code from the release build (checked by the CI)
             optimization {
-                enable = false
+                enable = true
             }
         }
     }
@@ -47,22 +48,16 @@ dependencies {
     implementation(projects.sampleMultiplatform)
 
     implementation(projects.flocon.flocon)
-    implementation(projects.deeplinks.deeplinks)
+    // turns Flocon off in release builds
+    releaseImplementation(projects.flocon.floconNoOp)
     implementation(projects.database.room3.room3)
     implementation(projects.database.room.room)
     implementation(projects.database.sqldelight.sqldelight)
     implementation(projects.network.ktorInterceptor.ktorInterceptor)
     implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
-    implementation(projects.sharedprefs.sharedprefs)
-    implementation(projects.files.files)
     implementation(projects.datastores.datastores)
-    implementation(projects.analytics.analytics)
     implementation(projects.accessibility.accessibility)
-    implementation(projects.featureflags.featureflags)
-    implementation(projects.timeline.timeline)
     implementation(projects.webview.webview)
-    implementation(projects.crashreporter.crashreporter)
-    implementation(projects.tables.tables)
     implementation(projects.qrscanner.qrscanner)
 
     implementation(platform(libs.okhttp.bom))
@@ -137,40 +132,13 @@ protobuf {
     }
 }
 
-// Release builds use the no-op version of every Flocon module,
-// including the ones coming transitively from :sample-multiplatform
-val floconNoOpModules = mapOf(
-    ":flocon:flocon" to ":flocon:flocon-no-op",
-    ":analytics:analytics" to ":analytics:analytics-no-op",
-    ":accessibility:accessibility" to ":accessibility:accessibility-no-op",
-    ":featureflags:featureflags" to ":featureflags:featureflags-no-op",
-    ":timeline:timeline" to ":timeline:timeline-no-op",
-    ":webview:webview" to ":webview:webview-no-op",
-    ":crashreporter:crashreporter" to ":crashreporter:crashreporter-no-op",
-    ":database:core:core" to ":database:core:core-no-op",
-    ":database:room:room" to ":database:room:room-no-op",
-    ":database:room3:room3" to ":database:room3:room3-no-op",
-    ":database:sqldelight:sqldelight" to ":database:sqldelight:sqldelight-no-op",
-    ":datastores:datastores" to ":datastores:datastores-no-op",
-    ":deeplinks:deeplinks" to ":deeplinks:deeplinks-no-op",
-    ":files:files" to ":files:files-no-op",
-    ":grpc:grpc-interceptor-base:grpc-interceptor-base" to ":grpc:grpc-interceptor-base:grpc-interceptor-base-no-op",
-    ":grpc:grpc-interceptor:grpc-interceptor" to ":grpc:grpc-interceptor:grpc-interceptor-no-op",
-    ":grpc:grpc-interceptor-lite:grpc-interceptor-lite" to ":grpc:grpc-interceptor-lite:grpc-interceptor-lite-no-op",
-    ":network:core:core" to ":network:core:core-no-op",
-    ":network:ktor-interceptor:ktor-interceptor" to ":network:ktor-interceptor:ktor-interceptor-no-op",
-    ":network:okhttp-interceptor:okhttp-interceptor" to ":network:okhttp-interceptor:okhttp-interceptor-no-op",
-    ":sharedprefs:sharedprefs" to ":sharedprefs:sharedprefs-no-op",
-    ":tables:tables" to ":tables:tables-no-op",
-    ":qrscanner:qrscanner" to ":qrscanner:qrscanner-no-op",
-)
-
+// accessibility and qrscanner add Android manifest entries (a permission, ML Kit) that flocon-no-op
+// can't remove: release builds use their no-op, including through :sample-multiplatform
 configurations.configureEach {
     if (name.startsWith("release")) {
         resolutionStrategy.dependencySubstitution {
-            floconNoOpModules.forEach { (module, noOp) ->
-                substitute(project(module)).using(project(noOp))
-            }
+            substitute(project(":accessibility:accessibility")).using(project(":accessibility:accessibility-no-op"))
+            substitute(project(":qrscanner:qrscanner")).using(project(":qrscanner:qrscanner-no-op"))
         }
     }
 }

@@ -54,6 +54,13 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.js)
         }
+
+        // java.io.File code shared by Android and the JVM (the files plugin)
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        androidMain.get().dependsOn(jvmAndroidMain)
+        jvmMain.get().dependsOn(jvmAndroidMain)
     }
 }
 

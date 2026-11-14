@@ -12,15 +12,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.network.core.core)
+            implementation(projects.flocon.flocon)
 
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.core)
 
             implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)
-
-            implementation(libs.brotli.dec)
         }
 
         androidMain.dependencies {
