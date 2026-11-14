@@ -16,6 +16,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.settings.usecase.StartAdbForwardUseCase
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
@@ -159,6 +160,7 @@ class StartAdbForwardUseCaseTest {
         override suspend fun hasAppIcon(deviceId: DeviceId, appPackageName: String): Boolean = false
         override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {}
         override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = emptyFlow()
+        override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = emptyFlow()
         override suspend fun deleteDevice(deviceId: DeviceId) {}
         override suspend fun deleteApplication(deviceId: DeviceId, packageName: AppPackageName) {}
         override suspend fun clear() {}

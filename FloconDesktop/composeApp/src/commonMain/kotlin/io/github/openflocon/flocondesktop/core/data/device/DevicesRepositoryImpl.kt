@@ -17,10 +17,15 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -35,6 +40,9 @@ class DevicesRepositoryImpl(
     MessagesReceiverRepository {
 
     private val devicesMutex = Mutex()
+
+    // the SDK of each app that said bonjour since the launch: the SDK says it again at each connection
+    private val deviceSdks = MutableStateFlow<Map<Pair<DeviceId, AppPackageName>, FloconSdk>>(emptyMap())
 
     override val devices = localDevicesDataSource.devices
         .flowOn(dispatcherProvider.data)
@@ -115,6 +123,7 @@ class DevicesRepositoryImpl(
         withContext(dispatcherProvider.data) {
             devicesMutex.withLock {
                 localDevicesDataSource.clear()
+                deviceSdks.value = emptyMap()
             }
         }
     }
@@ -189,10 +198,18 @@ class DevicesRepositoryImpl(
     ): Flow<String?> = localDevicesDataSource.observeDeviceSdkVersion(deviceId = deviceId, appPackageName = appPackageName)
         .flowOn(dispatcherProvider.data)
 
+    override fun observeDeviceSdk(
+        deviceId: DeviceId,
+        appPackageName: String
+    ): Flow<FloconSdk?> = deviceSdks
+        .map { it[deviceId to appPackageName] }
+        .distinctUntilChanged()
+
     override suspend fun deleteDevice(deviceId: DeviceId) {
         withContext(dispatcherProvider.data) {
             localDevicesDataSource.delete(deviceId)
             localCurrentDeviceDataSource.delete(deviceId)
+            deviceSdks.update { sdks -> sdks.filterKeys { (id, _) -> id != deviceId } }
         }
     }
 
@@ -209,6 +226,7 @@ class DevicesRepositoryImpl(
                 deviceId = deviceId,
                 packageName = packageName
             )
+            deviceSdks.update { it - (deviceId to packageName) }
         }
     }
 
@@ -227,6 +245,12 @@ class DevicesRepositoryImpl(
             Protocol.FromDevice.Bonjour.Method.Bonjour -> {
                 remoteDeviceDataSource.getConnectionType(message)?.let {
                     localDevicesDataSource.saveConnectionType(deviceId = message.deviceId, connectionType = it)
+                }
+                // no SDK sent (an SDK older than this field): unknown, we do not guess it
+                val sdk = FloconSdk.fromName(remoteDeviceDataSource.getSdk(message))
+                deviceSdks.update { sdks ->
+                    val key = message.deviceId to message.appPackageName
+                    if (sdk == null) sdks - key else sdks + (key to sdk)
                 }
                 // null for an SDK that does not send its plugins: everything is displayed
                 localDevicesDataSource.saveInstalledPlugins(

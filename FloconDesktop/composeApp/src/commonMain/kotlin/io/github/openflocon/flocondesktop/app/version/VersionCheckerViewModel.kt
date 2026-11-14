@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.app.version
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.openflocon.domain.common.DispatcherProvider
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.DismissClientVersionUseCase
@@ -37,6 +38,8 @@ class VersionCheckerViewModel(
         val latestVersion: String,
         val dependency: String,
         val releaseNotesLink: String,
+        /** The name of the SDK this update is for: an ignored update is remembered per SDK. */
+        val sdkName: String,
     )
 
     val desktopUpdate: StateFlow<DesktopUpdateUiModel?> = observeUpdateAvailableUseCase(BuildConfig.APP_VERSION)
@@ -73,19 +76,30 @@ class VersionCheckerViewModel(
     }
 
     private fun IsLastVersionDomainModel.toSdkUpdate(): SdkUpdateUiModel? = when (this) {
-        is IsLastVersionDomainModel.NewVersionAvailable -> SdkUpdateUiModel(
-            currentVersion = oldVersion,
-            latestVersion = name,
-            dependency = "io.github.openflocon:flocon:$name",
-            releaseNotesLink = link,
-        )
+        is IsLastVersionDomainModel.NewVersionAvailable -> sdk?.let { sdk ->
+            SdkUpdateUiModel(
+                currentVersion = oldVersion,
+                latestVersion = name,
+                dependency = sdk.dependency(version = name),
+                releaseNotesLink = link,
+                sdkName = sdk.sdkName,
+            )
+        }
 
         is IsLastVersionDomainModel.RunningLastVersion -> null
     }
 
+    /** The line to put in the project of the app to use [version], in the syntax of the package manager of the SDK. */
+    private fun FloconSdk.dependency(version: String): String = when (this) {
+        FloconSdk.Swift -> ".package(url: \"https://github.com/${FloconSdk.Swift.repository}.git\", from: \"$version\")"
+        FloconSdk.Flutter -> "flocon: ^$version"
+        FloconSdk.Kotlin, is FloconSdk.Other -> "io.github.openflocon:flocon:$version"
+    }
+
     fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            dismissClientVersionUseCase(uimodel.latestVersion)
+            val sdk = FloconSdk.fromName(uimodel.sdkName) ?: return@launch
+            dismissClientVersionUseCase(sdk = sdk, version = uimodel.latestVersion)
         }
     }
 }

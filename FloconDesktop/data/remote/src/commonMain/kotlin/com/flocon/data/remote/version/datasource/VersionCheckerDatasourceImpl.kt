@@ -6,6 +6,8 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.common.success
 import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
+import io.github.z4kn4fein.semver.Version
+import io.github.z4kn4fein.semver.toVersionOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -21,15 +23,14 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
         }
     }
 
-    override suspend fun fetchLatestVersion(): Either<Throwable, String> {
-        val repo = "openflocon/flocon"
-        val url = "https://api.github.com/repos/$repo/releases/latest"
+    override suspend fun fetchLatestVersion(repository: String): Either<Throwable, String> {
+        // not /releases/latest: the newest release can be a pre-release, the latest stable one is searched in the list
+        val url = "https://api.github.com/repos/$repository/releases?per_page=30"
         return try {
-            val release: GithubReleaseRemote = client.get(url).body()
-            val lastVersion = release.tagName.removePrefix("v") // au cas où le tag commence par "v"
-            return lastVersion.success()
+            val releases: List<GithubReleaseRemote> = client.get(url).body()
+            releases.latestStableVersion()?.success() ?: NoStableReleaseException(repository).failure()
         } catch (t: Throwable) {
-            println("Erreur lors de la récupération de la version GitHub: ${t.message}")
+            println("Failed to fetch the latest release of $repository: ${t.message}")
             t.failure()
         }
     }
@@ -39,7 +40,7 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
         return try {
             val releases: List<GithubReleaseRemote> = client.get(url).body()
             releases
-                .filterNot { it.draft || it.prerelease }
+                .filter { it.isStable() }
                 .map { it.toDomain() }
                 .success()
         } catch (t: Throwable) {
@@ -49,7 +50,7 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     }
 
     private fun GithubReleaseRemote.toDomain(): ReleaseNoteDomainModel {
-        val version = tagName.removePrefix("v")
+        val version = tagName.toReleaseVersion()
         return ReleaseNoteDomainModel(
             version = version,
             title = name?.takeIf { it.isNotBlank() } ?: version,
@@ -62,4 +63,29 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     private companion object {
         const val REPO = "openflocon/flocon"
     }
+}
+
+/** A published release that is not a pre-release: neither flagged on GitHub, nor tagged "-rc.1", "-beta.2", "-alpha"... */
+internal fun GithubReleaseRemote.isStable(): Boolean = !draft && !prerelease && tagName.toTagVersionOrNull()?.preRelease == null
+
+/**
+ * The highest stable version of the releases (not the first one: the newest release can be a pre-release, and the order is not the version order).
+ * The tags that are not a version are ignored.
+ */
+internal fun List<GithubReleaseRemote>.latestStableVersion(): String? = filter { it.isStable() }
+    .mapNotNull { it.tagName.toTagVersionOrNull() }
+    .maxOrNull()
+    ?.let { "${it.major}.${it.minor}.${it.patch}" }
+
+private class NoStableReleaseException(repository: String) : Exception("No stable release found for $repository")
+
+private fun String.toTagVersionOrNull(): Version? = dropWhile { !it.isDigit() }.toVersionOrNull(strict = false)
+
+/**
+ * "2.0.0", "v2.0.0" and "flocon-v2.0.0" (the Flutter tags) all give "2.0.0".
+ * The pre-release and build parts are dropped ("2.1.0-rc.1" gives "2.1.0"). A tag that is not a version is kept as is.
+ */
+internal fun String.toReleaseVersion(): String {
+    val version = toTagVersionOrNull() ?: return this
+    return "${version.major}.${version.minor}.${version.patch}"
 }

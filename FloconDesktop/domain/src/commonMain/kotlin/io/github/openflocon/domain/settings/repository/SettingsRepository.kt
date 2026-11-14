@@ -4,6 +4,7 @@ import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -31,11 +32,12 @@ interface SettingsRepository {
 
     suspend fun setDismissedDesktopVersion(version: String)
 
-    val dismissedClientVersionFlow: Flow<String?>
+    /** The update dismissed for [sdk]: the SDKs are released apart, their versions can't be compared with each other. */
+    fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?>
 
-    fun getDismissedClientVersion(): String?
+    fun getDismissedClientVersion(sdk: FloconSdk): String?
 
-    suspend fun setDismissedClientVersion(version: String)
+    suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String)
 
     fun getLastSeenReleaseNotesVersion(): String?
 
