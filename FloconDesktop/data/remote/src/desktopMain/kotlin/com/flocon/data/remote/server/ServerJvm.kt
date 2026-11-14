@@ -25,6 +25,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readReason
 import io.ktor.websocket.readText
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Paths
@@ -260,8 +260,10 @@ class ServerJvm(
                     try {
                         _receivedMessages.send(json.decodeFromString<FloconIncomingMessageDataModel>(receivedText))
                         call.respondText("message received")
-                    } catch (e: SerializationException) {
-                        Logger.e(e) { "Error parsing JSON message received over http: ${e.message}" }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Logger.e(e) { "Error handling message received over http: ${e.message}" }
                         call.respondText("invalid message", status = HttpStatusCode.BadRequest)
                     }
                 }
