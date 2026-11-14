@@ -23,25 +23,27 @@ class ObserveIsClientOnLastVersionUseCase(
     operator fun invoke(): Flow<IsLastVersionDomainModel> = combines(
         observeLastClientSdkVersion(),
         observeCurrentDeviceFloconSdkVersionNameUseCase(),
-        settingsRepository.dismissedClientVersionFlow,
-    ).map { (last, local, dismissed) ->
+    ).flatMapLatest { (last, local) ->
         if (local == null || last == null) {
-            IsLastVersionDomainModel.RunningLastVersion
+            flowOf(IsLastVersionDomainModel.RunningLastVersion)
         } else {
             val (sdk, remote) = last
             // only SDKs with a repository are observed
-            val link = sdk.latestReleaseLink ?: return@map IsLastVersionDomainModel.RunningLastVersion
-            val isNewerThanLocal = isRemoteVersionNewer(localVersion = local, remoteVersion = remote)
-            val isNewerThanDismissed = dismissed == null || isRemoteVersionNewer(localVersion = dismissed, remoteVersion = remote)
-            if (isNewerThanLocal && isNewerThanDismissed) {
-                IsLastVersionDomainModel.NewVersionAvailable(
-                    name = remote,
-                    link = link,
-                    oldVersion = local,
-                    sdk = sdk,
-                )
-            } else {
-                IsLastVersionDomainModel.RunningLastVersion
+            val link = sdk.latestReleaseLink ?: return@flatMapLatest flowOf(IsLastVersionDomainModel.RunningLastVersion)
+            // the dismissed version is the one of this SDK: the versions of the SDKs can't be compared with each other
+            settingsRepository.dismissedClientVersionFlow(sdk).map { dismissed ->
+                val isNewerThanLocal = isRemoteVersionNewer(localVersion = local, remoteVersion = remote)
+                val isNewerThanDismissed = dismissed == null || isRemoteVersionNewer(localVersion = dismissed, remoteVersion = remote)
+                if (isNewerThanLocal && isNewerThanDismissed) {
+                    IsLastVersionDomainModel.NewVersionAvailable(
+                        name = remote,
+                        link = link,
+                        oldVersion = local,
+                        sdk = sdk,
+                    )
+                } else {
+                    IsLastVersionDomainModel.RunningLastVersion
+                }
             }
         }
     }

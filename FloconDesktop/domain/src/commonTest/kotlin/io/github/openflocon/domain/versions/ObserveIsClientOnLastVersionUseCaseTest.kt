@@ -58,13 +58,16 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     }
 
     private class FakeSettingsRepository(
-        initialDismissedClientVersion: String? = null
+        initialDismissedClientVersion: String? = null,
+        dismissed: Map<FloconSdk, String> = emptyMap(),
     ) : SettingsRepository {
-        val dismissedClientFlow = MutableStateFlow(initialDismissedClientVersion)
-        override val dismissedClientVersionFlow: Flow<String?> = dismissedClientFlow.asStateFlow()
-        override fun getDismissedClientVersion(): String? = dismissedClientFlow.value
-        override suspend fun setDismissedClientVersion(version: String) {
-            dismissedClientFlow.value = version
+        val dismissedClientFlow = MutableStateFlow(
+            if (initialDismissedClientVersion != null) dismissed + (FloconSdk.Kotlin to initialDismissedClientVersion) else dismissed,
+        )
+        override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = dismissedClientFlow.map { it[sdk] }
+        override fun getDismissedClientVersion(sdk: FloconSdk): String? = dismissedClientFlow.value[sdk]
+        override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {
+            dismissedClientFlow.value = dismissedClientFlow.value + (sdk to version)
         }
         override var networkSettings: NetworkSettings = NetworkSettings(
             pinnedDetails = false,
@@ -204,7 +207,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             assertEquals("1.1.0", result1.name)
 
             // 2. Dismiss 1.1.0
-            dismissUseCase("1.1.0")
+            dismissUseCase(FloconSdk.Kotlin, "1.1.0")
 
             // 3. Check again: Suppressed
             val result2 = useCase().first()
@@ -245,7 +248,40 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
             assertEquals("2.0.1", result.name)
             assertEquals(FloconSdk.Flutter, result.sdk)
-            assertEquals("https://github.com/openflocon/FloconFlutter/releases/latest", result.link)
+            assertEquals("https://github.com/openflocon/FloconFlutter/releases", result.link)
+        }
+    }
+
+    @Test
+    fun `an update dismissed for an SDK does not hide the update of another SDK`() {
+        runBlocking {
+            val versionsRepo = FakeVersionsCheckerRepository(
+                sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0", FloconSdk.Flutter to "2.0.1"),
+            )
+            // Kotlin 2.1.0 is dismissed: Flutter 2.0.1 is lower than it, but is still a new version for Flutter
+            val settingsRepo = FakeSettingsRepository(dismissed = mapOf(FloconSdk.Kotlin to "2.1.0"))
+            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = FloconSdk.Flutter)
+            val useCase = createUseCase(versionsRepo, settingsRepo, devicesRepo)
+
+            val result = useCase().first()
+            assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
+            assertEquals("2.0.1", result.name)
+
+            DismissClientVersionUseCase(settingsRepo)(FloconSdk.Flutter, "2.0.1")
+            assertIs<IsLastVersionDomainModel.RunningLastVersion>(useCase().first())
+        }
+    }
+
+    @Test
+    fun `a pre-release is offered as an update`() {
+        runBlocking {
+            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0-rc.1"))
+            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = FloconSdk.Kotlin)
+            val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
+
+            val result = useCase().first()
+            assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
+            assertEquals("2.1.0-rc.1", result.name)
         }
     }
 

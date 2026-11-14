@@ -58,9 +58,9 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         override suspend fun setDismissedDesktopVersion(version: String) {
             dismissedVersion = version
         }
-        override val dismissedClientVersionFlow: Flow<String?> = emptyFlow()
-        override fun getDismissedClientVersion(): String? = null
-        override suspend fun setDismissedClientVersion(version: String) {}
+        override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = emptyFlow()
+        override fun getDismissedClientVersion(sdk: FloconSdk): String? = null
+        override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {}
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()

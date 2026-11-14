@@ -38,6 +38,8 @@ class VersionCheckerViewModel(
         val latestVersion: String,
         val dependency: String,
         val releaseNotesLink: String,
+        /** The SDK this update is for: an ignored update is remembered per SDK. */
+        val sdk: FloconSdk,
     )
 
     val desktopUpdate: StateFlow<DesktopUpdateUiModel?> = observeUpdateAvailableUseCase(BuildConfig.APP_VERSION)
@@ -74,26 +76,29 @@ class VersionCheckerViewModel(
     }
 
     private fun IsLastVersionDomainModel.toSdkUpdate(): SdkUpdateUiModel? = when (this) {
-        is IsLastVersionDomainModel.NewVersionAvailable -> SdkUpdateUiModel(
-            currentVersion = oldVersion,
-            latestVersion = name,
-            dependency = sdk.dependency(version = name),
-            releaseNotesLink = link,
-        )
+        is IsLastVersionDomainModel.NewVersionAvailable -> sdk?.let { sdk ->
+            SdkUpdateUiModel(
+                currentVersion = oldVersion,
+                latestVersion = name,
+                dependency = sdk.dependency(version = name),
+                releaseNotesLink = link,
+                sdk = sdk,
+            )
+        }
 
         is IsLastVersionDomainModel.RunningLastVersion -> null
     }
 
     /** The line to put in the project of the app to use [version], in the syntax of the package manager of the SDK. */
-    private fun FloconSdk?.dependency(version: String): String = when (this) {
+    private fun FloconSdk.dependency(version: String): String = when (this) {
         FloconSdk.Swift -> ".package(url: \"https://github.com/${FloconSdk.Swift.repository}.git\", from: \"$version\")"
         FloconSdk.Flutter -> "flocon: ^$version"
-        FloconSdk.Kotlin, is FloconSdk.Other, null -> "io.github.openflocon:flocon:$version"
+        FloconSdk.Kotlin, is FloconSdk.Other -> "io.github.openflocon:flocon:$version"
     }
 
     fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            dismissClientVersionUseCase(uimodel.latestVersion)
+            dismissClientVersionUseCase(sdk = uimodel.sdk, version = uimodel.latestVersion)
         }
     }
 }

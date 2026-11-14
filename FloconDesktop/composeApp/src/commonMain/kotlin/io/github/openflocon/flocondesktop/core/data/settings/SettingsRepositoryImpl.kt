@@ -6,6 +6,7 @@ import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.flocondesktop.core.data.settings.datasource.local.SettingsDataSource
 import io.github.openflocon.flocondesktop.core.data.settings.models.toDomain
 import io.github.openflocon.flocondesktop.core.data.settings.models.toLocal
@@ -72,12 +73,12 @@ internal class SettingsRepositoryImpl(
         localSettingsDataSource.setDismissedDesktopVersion(version)
     }
 
-    override val dismissedClientVersionFlow: Flow<String?> = localSettingsDataSource.dismissedClientVersionFlow
+    override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = localSettingsDataSource.dismissedClientVersionFlow(sdk)
 
-    override fun getDismissedClientVersion(): String? = localSettingsDataSource.getDismissedClientVersion()
+    override fun getDismissedClientVersion(sdk: FloconSdk): String? = localSettingsDataSource.getDismissedClientVersion(sdk)
 
-    override suspend fun setDismissedClientVersion(version: String) {
-        localSettingsDataSource.setDismissedClientVersion(version)
+    override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {
+        localSettingsDataSource.setDismissedClientVersion(sdk, version)
     }
 
     override fun getLastSeenReleaseNotesVersion(): String? = localSettingsDataSource.getLastSeenReleaseNotesVersion()

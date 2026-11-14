@@ -212,9 +212,9 @@ class ExecuteDeeplinkUseCaseTest {
         override val floconDocumentsPath: Flow<String?> = emptyFlow()
         override fun getDismissedDesktopVersion(): String? = null
         override suspend fun setDismissedDesktopVersion(version: String) {}
-        override val dismissedClientVersionFlow: Flow<String?> = emptyFlow()
-        override fun getDismissedClientVersion(): String? = null
-        override suspend fun setDismissedClientVersion(version: String) {}
+        override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = emptyFlow()
+        override fun getDismissedClientVersion(sdk: FloconSdk): String? = null
+        override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {}
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()

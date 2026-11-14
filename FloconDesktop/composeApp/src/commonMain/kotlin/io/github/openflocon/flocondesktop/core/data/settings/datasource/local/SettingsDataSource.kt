@@ -3,6 +3,7 @@ package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.flocondesktop.core.data.settings.models.AnalyticsSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
@@ -25,8 +26,8 @@ internal interface SettingsDataSource {
     fun getDismissedDesktopVersion(): String?
     suspend fun setDismissedDesktopVersion(version: String)
 
-    fun getDismissedClientVersion(): String?
-    suspend fun setDismissedClientVersion(version: String)
+    fun getDismissedClientVersion(sdk: FloconSdk): String?
+    suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String)
 
     val pinnedMenuItems: Flow<List<String>>
     val collapsedMenuSections: Flow<Set<String>>
@@ -69,5 +70,5 @@ internal interface SettingsDataSource {
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
     val theme: StateFlow<ThemeSetting>
-    val dismissedClientVersionFlow: Flow<String?>
+    fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?>
 }
