@@ -109,6 +109,7 @@ private class FakeDevicesRepository(
     override suspend fun hasAppIcon(deviceId: String, appPackageName: String): Boolean = unused()
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = unused()
     override fun observeDeviceSdkVersion(deviceId: String, appPackageName: String): Flow<String?> = unused()
+    override fun observeDeviceSdk(deviceId: String, appPackageName: String): Flow<String?> = unused()
     override suspend fun deleteDevice(deviceId: String) = unused()
     override suspend fun deleteApplication(deviceId: String, packageName: String) = unused()
     override suspend fun clear() = unused()
