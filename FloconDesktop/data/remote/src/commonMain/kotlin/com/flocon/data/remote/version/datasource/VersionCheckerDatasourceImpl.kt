@@ -6,13 +6,13 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.failure
 import io.github.openflocon.domain.common.success
 import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
+import io.github.z4kn4fein.semver.toVersionOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
-import io.github.z4kn4fein.semver.toVersionOrNull
 import kotlinx.serialization.json.Json
 
 class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
@@ -23,10 +23,11 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     }
 
     override suspend fun fetchLatestVersion(repository: String): Either<Throwable, String> {
-        val url = "https://api.github.com/repos/$repository/releases/latest"
+        // not /releases/latest: it never returns the pre-releases, which are offered as updates
+        val url = "https://api.github.com/repos/$repository/releases?per_page=10"
         return try {
-            val release: GithubReleaseRemote = client.get(url).body()
-            release.tagName.toReleaseVersion().success()
+            val releases: List<GithubReleaseRemote> = client.get(url).body()
+            releases.latestReleaseVersion()?.success() ?: NoReleaseException(repository).failure()
         } catch (t: Throwable) {
             println("Failed to fetch the latest release of $repository: ${t.message}")
             t.failure()
@@ -63,11 +64,18 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     }
 }
 
+/** The newest published release (drafts excluded, pre-releases included: GitHub lists the newest first). */
+internal fun List<GithubReleaseRemote>.latestReleaseVersion(): String? = firstOrNull { !it.draft }?.tagName?.toReleaseVersion()
+
+private class NoReleaseException(repository: String) : Exception("No release found for $repository")
+
 /**
  * "2.0.0", "v2.0.0" and "flocon-v2.0.0" (the Flutter tags) all give "2.0.0".
- * The pre-release and build parts are dropped ("2.1.0-rc.1" gives "2.1.0"). A tag that is not a version is kept as is.
+ * The pre-release part is kept ("2.1.0-rc.1"), the build part is dropped as it is ignored by the versions order.
+ * A tag that is not a version is kept as is.
  */
 internal fun String.toReleaseVersion(): String {
     val version = dropWhile { !it.isDigit() }.toVersionOrNull(strict = false) ?: return this
-    return "${version.major}.${version.minor}.${version.patch}"
+    val preRelease = version.preRelease?.let { "-$it" }.orEmpty()
+    return "${version.major}.${version.minor}.${version.patch}$preRelease"
 }

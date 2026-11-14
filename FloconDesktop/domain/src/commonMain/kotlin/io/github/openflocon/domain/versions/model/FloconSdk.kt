@@ -17,8 +17,8 @@ sealed class FloconSdk(
     /** An SDK we do not know: nothing can be compared with it. */
     data class Other(val name: String) : FloconSdk(sdkName = name, repository = null)
 
-    /** Where the release notes of the latest version are, null when the repository is unknown. */
-    val latestReleaseLink: String? get() = repository?.let { "https://github.com/$it/releases/latest" }
+    /** Where the releases are (the latest one first, pre-releases included), null when the repository is unknown. */
+    val latestReleaseLink: String? get() = repository?.let { "https://github.com/$it/releases" }
 
     companion object {
         /** @param sdkName the name sent in the bonjour message. Null when it is missing. */
