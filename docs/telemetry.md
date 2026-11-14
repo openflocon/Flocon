@@ -21,7 +21,7 @@ On first launch, a card asks you to pick a level. **Nothing is sent until you an
 | Level | What it means |
 | --- | --- |
 | **Anonymous** *(opt-in)* | A random identifier is generated in memory at each launch and **never written to disk**. Flocon can count sessions and feature usage, but cannot recognise you across launches. |
-| **Full** *(opt-in)* | A random identifier is stored on your computer so returning users can be counted. Switching back to Anonymous or Disabled deletes it. |
+| **Full** *(opt-in)* | A random identifier is stored on your computer so returning users can be counted. It is the id of a PostHog person profile, which holds only the properties listed below (no name, no email). Switching back to Anonymous or Disabled deletes it. |
 | **Disabled** | Nothing is sent. This is also the behaviour until you answer the consent card. |
 
 Telemetry is also fully disabled when:
@@ -83,7 +83,7 @@ Every event also carries: Flocon version, OS name and architecture, the telemetr
 
 ## Where the data goes
 
-Events are sent to [PostHog Cloud](https://posthog.com) in the **EU region**. No person profiles are created, IP geolocation is disabled, and the PostHog project is configured to discard client IP addresses.
+Events are sent to [PostHog Cloud](https://posthog.com) in the **EU region**. Person profiles are created only at the **Full** level (one per random installation id); **Anonymous** events never create one. IP geolocation is disabled, and the PostHog project is configured to discard client IP addresses.
 
 The full implementation lives in [`FloconDesktop/composeApp/.../telemetry`](https://github.com/openflocon/Flocon/tree/main/FloconDesktop/composeApp/src/commonMain/kotlin/io/github/openflocon/flocondesktop/telemetry).
 
