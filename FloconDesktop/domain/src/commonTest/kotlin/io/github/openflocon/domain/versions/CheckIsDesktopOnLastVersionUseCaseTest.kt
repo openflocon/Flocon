@@ -10,6 +10,7 @@ import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
 import io.github.openflocon.domain.versions.model.FloconSdk
+import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.isRemoteVersionNewer
@@ -33,7 +34,7 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = Success(remoteVersion)
         override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = emptyFlow()
         override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {}
-        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
+        override suspend fun getReleaseNotes(): Either<Throwable, List<ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeSettingsRepository(

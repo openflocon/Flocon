@@ -21,6 +21,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kermit)
+            implementation(libs.kotlin.semver)
 
             implementation(projects.domain)
             implementation(projects.data.core)

@@ -86,9 +86,9 @@ class VersionCheckerViewModel(
 
     /** The line to put in the project of the app to use [version], in the syntax of the package manager of the SDK. */
     private fun FloconSdk?.dependency(version: String): String = when (this) {
-        FloconSdk.SWIFT -> ".package(url: \"https://github.com/${FloconSdk.SWIFT.repository}.git\", from: \"$version\")"
-        FloconSdk.FLUTTER -> "flocon: ^$version"
-        FloconSdk.KOTLIN, null -> "io.github.openflocon:flocon:$version"
+        FloconSdk.Swift -> ".package(url: \"https://github.com/${FloconSdk.Swift.repository}.git\", from: \"$version\")"
+        FloconSdk.Flutter -> "flocon: ^$version"
+        FloconSdk.Kotlin, is FloconSdk.Other, null -> "io.github.openflocon:flocon:$version"
     }
 
     fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {

@@ -12,6 +12,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
+import io.github.z4kn4fein.semver.toVersionOrNull
 import kotlinx.serialization.json.Json
 
 class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
@@ -25,7 +26,7 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
         val url = "https://api.github.com/repos/$repository/releases/latest"
         return try {
             val release: GithubReleaseRemote = client.get(url).body()
-            release.tagName.toVersion().success()
+            release.tagName.toReleaseVersion().success()
         } catch (t: Throwable) {
             println("Failed to fetch the latest release of $repository: ${t.message}")
             t.failure()
@@ -47,7 +48,7 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
     }
 
     private fun GithubReleaseRemote.toDomain(): ReleaseNoteDomainModel {
-        val version = tagName.toVersion()
+        val version = tagName.toReleaseVersion()
         return ReleaseNoteDomainModel(
             version = version,
             title = name?.takeIf { it.isNotBlank() } ?: version,
@@ -57,10 +58,16 @@ class VersionCheckerDatasourceImpl : VersionCheckerDatasource {
         )
     }
 
-    /** "2.0.0", "v2.0.0" and "flocon-v2.0.0" (the Flutter tags) all give "2.0.0". */
-    private fun String.toVersion(): String = dropWhile { !it.isDigit() }
-
     private companion object {
         const val REPO = "openflocon/flocon"
     }
+}
+
+/**
+ * "2.0.0", "v2.0.0" and "flocon-v2.0.0" (the Flutter tags) all give "2.0.0".
+ * The pre-release and build parts are dropped ("2.1.0-rc.1" gives "2.1.0"). A tag that is not a version is kept as is.
+ */
+internal fun String.toReleaseVersion(): String {
+    val version = dropWhile { !it.isDigit() }.toVersionOrNull(strict = false) ?: return this
+    return "${version.major}.${version.minor}.${version.patch}"
 }

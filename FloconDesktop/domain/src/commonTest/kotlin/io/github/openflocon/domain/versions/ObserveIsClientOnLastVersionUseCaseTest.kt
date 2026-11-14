@@ -21,6 +21,7 @@ import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
+import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 import io.github.openflocon.domain.versions.usecase.DismissClientVersionUseCase
 import io.github.openflocon.domain.versions.usecase.ObserveIsClientOnLastVersionUseCase
@@ -53,7 +54,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {
             checkedSdks += sdk
         }
-        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
+        override suspend fun getReleaseNotes(): Either<Throwable, List<ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeSettingsRepository(
@@ -160,7 +161,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     @Test
     fun `when remote client version is newer and no dismissed version, emits NewVersionAvailable`() {
         runBlocking {
-            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.KOTLIN to "1.1.0"))
+            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "1.1.0"))
             val settingsRepo = FakeSettingsRepository(initialDismissedClientVersion = null)
             val devicesRepo = FakeDevicesRepository(sdkVersionValue = "1.0.0")
 
@@ -176,7 +177,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     @Test
     fun `when remote client version is newer and dismissed, emits RunningLastVersion`() {
         runBlocking {
-            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.KOTLIN to "1.1.0"))
+            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "1.1.0"))
             val settingsRepo = FakeSettingsRepository(initialDismissedClientVersion = "1.1.0")
             val devicesRepo = FakeDevicesRepository(sdkVersionValue = "1.0.0")
 
@@ -190,7 +191,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     @Test
     fun `test complete client dismissal and newer version lifecycle`() {
         runBlocking {
-            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.KOTLIN to "1.1.0"))
+            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "1.1.0"))
             val settingsRepo = FakeSettingsRepository(initialDismissedClientVersion = null)
             val devicesRepo = FakeDevicesRepository(sdkVersionValue = "1.0.0")
 
@@ -210,7 +211,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             assertIs<IsLastVersionDomainModel.RunningLastVersion>(result2)
 
             // 4. Remote version updated to 1.2.0: Emits NewVersionAvailable for 1.2.0
-            versionsRepo.sdkVersionsFlow.value = mapOf(FloconSdk.KOTLIN to "1.2.0")
+            versionsRepo.sdkVersionsFlow.value = mapOf(FloconSdk.Kotlin to "1.2.0")
             val result3 = useCase().first()
             assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result3)
             assertEquals("1.2.0", result3.name)
@@ -221,13 +222,13 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     fun `a Swift app is compared with the Swift release, not the Kotlin one`() {
         runBlocking {
             val versionsRepo = FakeVersionsCheckerRepository(
-                sdkVersions = mapOf(FloconSdk.KOTLIN to "2.1.0", FloconSdk.SWIFT to "2.0.0", FloconSdk.FLUTTER to "2.0.1"),
+                sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0", FloconSdk.Swift to "2.0.0", FloconSdk.Flutter to "2.0.1"),
             )
             val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = "swift")
             val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
 
             assertIs<IsLastVersionDomainModel.RunningLastVersion>(useCase().first())
-            assertEquals(listOf(FloconSdk.SWIFT), versionsRepo.checkedSdks)
+            assertEquals(listOf<FloconSdk>(FloconSdk.Swift), versionsRepo.checkedSdks)
         }
     }
 
@@ -235,7 +236,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     fun `a Flutter app with an older version is offered the Flutter release`() {
         runBlocking {
             val versionsRepo = FakeVersionsCheckerRepository(
-                sdkVersions = mapOf(FloconSdk.KOTLIN to "2.1.0", FloconSdk.FLUTTER to "2.0.1"),
+                sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0", FloconSdk.Flutter to "2.0.1"),
             )
             val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = "flutter")
             val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
@@ -243,7 +244,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             val result = useCase().first()
             assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
             assertEquals("2.0.1", result.name)
-            assertEquals(FloconSdk.FLUTTER, result.sdk)
+            assertEquals(FloconSdk.Flutter, result.sdk)
             assertEquals("https://github.com/openflocon/FloconFlutter/releases/latest", result.link)
         }
     }
@@ -251,23 +252,24 @@ class ObserveIsClientOnLastVersionUseCaseTest {
     @Test
     fun `an unknown SDK or an app that did not say bonjour yet never gets an update`() {
         runBlocking {
-            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.KOTLIN to "9.0.0"))
+            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "9.0.0"))
             listOf("react-native", null).forEach { sdk ->
                 val devicesRepo = FakeDevicesRepository(sdkVersionValue = "1.0.0", sdkValue = sdk)
                 val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
 
                 assertIs<IsLastVersionDomainModel.RunningLastVersion>(useCase().first())
             }
-            assertEquals(emptyList(), versionsRepo.checkedSdks)
+            assertEquals(emptyList<FloconSdk>(), versionsRepo.checkedSdks)
         }
     }
 
     @Test
     fun `fromName knows the SDKs the bonjour message names`() {
-        assertEquals(FloconSdk.KOTLIN, FloconSdk.fromName("kotlin"))
-        assertEquals(FloconSdk.SWIFT, FloconSdk.fromName("Swift"))
-        assertEquals(FloconSdk.FLUTTER, FloconSdk.fromName("flutter"))
-        assertNull(FloconSdk.fromName("react-native"))
+        assertEquals(FloconSdk.Kotlin, FloconSdk.fromName("kotlin"))
+        assertEquals(FloconSdk.Swift, FloconSdk.fromName("Swift"))
+        assertEquals(FloconSdk.Flutter, FloconSdk.fromName("flutter"))
+        assertEquals(FloconSdk.Other("react-native"), FloconSdk.fromName("react-native"))
         assertNull(FloconSdk.fromName(null))
+        assertNull(FloconSdk.Other("react-native").repository)
     }
 }

@@ -29,12 +29,14 @@ class ObserveIsClientOnLastVersionUseCase(
             IsLastVersionDomainModel.RunningLastVersion
         } else {
             val (sdk, remote) = last
+            // only SDKs with a repository are observed
+            val link = sdk.latestReleaseLink ?: return@map IsLastVersionDomainModel.RunningLastVersion
             val isNewerThanLocal = isRemoteVersionNewer(localVersion = local, remoteVersion = remote)
             val isNewerThanDismissed = dismissed == null || isRemoteVersionNewer(localVersion = dismissed, remoteVersion = remote)
             if (isNewerThanLocal && isNewerThanDismissed) {
                 IsLastVersionDomainModel.NewVersionAvailable(
                     name = remote,
-                    link = sdk.latestReleaseLink,
+                    link = link,
                     oldVersion = local,
                     sdk = sdk,
                 )
@@ -47,7 +49,7 @@ class ObserveIsClientOnLastVersionUseCase(
     /** The latest version of the SDK of the selected app, fetched the first time this SDK is met. */
     private fun observeLastClientSdkVersion(): Flow<Pair<FloconSdk, String>?> = observeCurrentDeviceFloconSdkUseCase()
         .flatMapLatest { sdk ->
-            if (sdk == null) {
+            if (sdk == null || sdk.repository == null) {
                 flowOf(null)
             } else {
                 versionsCheckerRepository.observeLastClientSdkVersion(sdk)

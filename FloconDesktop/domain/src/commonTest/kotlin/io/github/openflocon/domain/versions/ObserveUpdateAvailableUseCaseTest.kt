@@ -13,6 +13,7 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceFloconSdkV
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
 import io.github.openflocon.domain.versions.model.FloconSdk
+import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 import io.github.openflocon.domain.versions.usecase.ObserveLastAvailableFloconVersionUseCase
 import io.github.openflocon.domain.versions.usecase.ObserveUpdateAvailableUseCase
@@ -37,7 +38,7 @@ class ObserveUpdateAvailableUseCaseTest {
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = throw NotImplementedError()
         override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = versionFlow
         override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {}
-        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
+        override suspend fun getReleaseNotes(): Either<Throwable, List<ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeDevicesRepository(

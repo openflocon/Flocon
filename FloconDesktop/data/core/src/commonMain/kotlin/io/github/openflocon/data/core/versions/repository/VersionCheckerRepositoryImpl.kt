@@ -26,11 +26,11 @@ internal class VersionCheckerRepositoryImpl(
     override val lastDesktopVersion = _lastDesktopVersion.asStateFlow()
 
     override suspend fun checkIsLastVersion(): Either<Throwable, String> = withContext(dispatcherProvider.data) {
-        versionCheckerDatasource.fetchLatestVersion(repository = FloconSdk.KOTLIN.repository)
+        versionCheckerDatasource.fetchLatestVersion(repository = DESKTOP_REPOSITORY)
             .alsoSuccess { version ->
                 _lastDesktopVersion.value = version
                 // the desktop app and the Kotlin SDK are released from the same repository
-                sdkVersions.update { it + (FloconSdk.KOTLIN to version) }
+                sdkVersions.update { it + (FloconSdk.Kotlin to version) }
             }
     }
 
@@ -45,8 +45,10 @@ internal class VersionCheckerRepositoryImpl(
         withContext(dispatcherProvider.data) {
             // one call per SDK: GitHub limits the requests that are not authenticated
             sdkVersionsMutex.withLock {
+                // an SDK we do not know has no repository to look at
+                val repository = sdk.repository ?: return@withLock
                 if (sdk !in sdkVersions.value) {
-                    versionCheckerDatasource.fetchLatestVersion(repository = sdk.repository)
+                    versionCheckerDatasource.fetchLatestVersion(repository = repository)
                         .alsoSuccess { version -> sdkVersions.update { it + (sdk to version) } }
                 }
             }
@@ -62,5 +64,10 @@ internal class VersionCheckerRepositoryImpl(
                 ?: versionCheckerDatasource.fetchReleases()
                     .alsoSuccess { releaseNotesCache = it }
         }
+    }
+
+    private companion object {
+        // the desktop app and the Kotlin SDK are released from the same repository
+        const val DESKTOP_REPOSITORY = "openflocon/Flocon"
     }
 }

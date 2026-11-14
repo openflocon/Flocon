@@ -1,25 +1,31 @@
 package io.github.openflocon.domain.versions.model
 
 /**
- * The SDK families a client app can embed. Each one is released from its own GitHub repository,
+ * The SDK family a client app embeds. Each known one is released from its own GitHub repository,
  * so the latest version to compare a client with depends on its SDK.
  */
-enum class FloconSdk(
+sealed class FloconSdk(
     /** The name sent by the SDK in the bonjour message. */
     val sdkName: String,
-    /** The GitHub repository the SDK is released from, `owner/name`. */
-    val repository: String,
+    /** The GitHub repository the SDK is released from, `owner/name`. Null when we do not know where it is released. */
+    val repository: String?,
 ) {
-    KOTLIN(sdkName = "kotlin", repository = "openflocon/Flocon"),
-    SWIFT(sdkName = "swift", repository = "openflocon/FloconSwift"),
-    FLUTTER(sdkName = "flutter", repository = "openflocon/FloconFlutter"),
-    ;
+    data object Kotlin : FloconSdk(sdkName = "kotlin", repository = "openflocon/Flocon")
+    data object Swift : FloconSdk(sdkName = "swift", repository = "openflocon/FloconSwift")
+    data object Flutter : FloconSdk(sdkName = "flutter", repository = "openflocon/FloconFlutter")
 
-    /** Where the release notes of the latest version are. */
-    val latestReleaseLink: String get() = "https://github.com/$repository/releases/latest"
+    /** An SDK we do not know: nothing can be compared with it. */
+    data class Other(val name: String) : FloconSdk(sdkName = name, repository = null)
+
+    /** Where the release notes of the latest version are, null when the repository is unknown. */
+    val latestReleaseLink: String? get() = repository?.let { "https://github.com/$it/releases/latest" }
 
     companion object {
-        /** @param sdkName the name sent in the bonjour message. Null when it is missing or not one we know. */
-        fun fromName(sdkName: String?): FloconSdk? = entries.firstOrNull { it.sdkName.equals(sdkName, ignoreCase = true) }
+        /** @param sdkName the name sent in the bonjour message. Null when it is missing. */
+        fun fromName(sdkName: String?): FloconSdk? {
+            if (sdkName.isNullOrBlank()) return null
+            return listOf(Kotlin, Swift, Flutter).firstOrNull { it.sdkName.equals(sdkName, ignoreCase = true) }
+                ?: Other(sdkName)
+        }
     }
 }
