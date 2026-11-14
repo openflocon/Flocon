@@ -47,10 +47,10 @@ class ObserveIsClientOnLastVersionUseCaseTest {
         val versionFlow = MutableStateFlow(initialVersion)
         val sdkVersionsFlow = MutableStateFlow(sdkVersions)
         val checkedSdks = mutableListOf<FloconSdk>()
-        override val lastVersion: Flow<String?> = versionFlow.asStateFlow()
+        override val lastDesktopVersion: Flow<String?> = versionFlow.asStateFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = throw NotImplementedError()
-        override fun observeLastSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersionsFlow.map { it[sdk] }
-        override suspend fun checkLastSdkVersion(sdk: FloconSdk) {
+        override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersionsFlow.map { it[sdk] }
+        override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {
             checkedSdks += sdk
         }
         override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()

@@ -22,13 +22,13 @@ internal class VersionCheckerRepositoryImpl(
     private val versionCheckerDatasource: VersionCheckerDatasource,
 ) : VersionsCheckerRepository {
 
-    private val _lastVersion = MutableStateFlow<String?>(null)
-    override val lastVersion = _lastVersion.asStateFlow()
+    private val _lastDesktopVersion = MutableStateFlow<String?>(null)
+    override val lastDesktopVersion = _lastDesktopVersion.asStateFlow()
 
     override suspend fun checkIsLastVersion(): Either<Throwable, String> = withContext(dispatcherProvider.data) {
         versionCheckerDatasource.fetchLatestVersion(repository = FloconSdk.KOTLIN.repository)
             .alsoSuccess { version ->
-                _lastVersion.value = version
+                _lastDesktopVersion.value = version
                 // the desktop app and the Kotlin SDK are released from the same repository
                 sdkVersions.update { it + (FloconSdk.KOTLIN to version) }
             }
@@ -37,11 +37,11 @@ internal class VersionCheckerRepositoryImpl(
     private val sdkVersions = MutableStateFlow<Map<FloconSdk, String>>(emptyMap())
     private val sdkVersionsMutex = Mutex()
 
-    override fun observeLastSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersions
+    override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = sdkVersions
         .map { it[sdk] }
         .distinctUntilChanged()
 
-    override suspend fun checkLastSdkVersion(sdk: FloconSdk) {
+    override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {
         withContext(dispatcherProvider.data) {
             // one call per SDK: GitHub limits the requests that are not authenticated
             sdkVersionsMutex.withLock {

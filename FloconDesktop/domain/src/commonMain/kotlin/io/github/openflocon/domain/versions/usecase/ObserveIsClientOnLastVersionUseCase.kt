@@ -21,7 +21,7 @@ class ObserveIsClientOnLastVersionUseCase(
     private val settingsRepository: SettingsRepository,
 ) {
     operator fun invoke(): Flow<IsLastVersionDomainModel> = combines(
-        observeLastSdkVersion(),
+        observeLastClientSdkVersion(),
         observeCurrentDeviceFloconSdkVersionNameUseCase(),
         settingsRepository.dismissedClientVersionFlow,
     ).map { (last, local, dismissed) ->
@@ -45,13 +45,13 @@ class ObserveIsClientOnLastVersionUseCase(
     }
 
     /** The latest version of the SDK of the selected app, fetched the first time this SDK is met. */
-    private fun observeLastSdkVersion(): Flow<Pair<FloconSdk, String>?> = observeCurrentDeviceFloconSdkUseCase()
+    private fun observeLastClientSdkVersion(): Flow<Pair<FloconSdk, String>?> = observeCurrentDeviceFloconSdkUseCase()
         .flatMapLatest { sdk ->
             if (sdk == null) {
                 flowOf(null)
             } else {
-                versionsCheckerRepository.observeLastSdkVersion(sdk)
-                    .onStart { versionsCheckerRepository.checkLastSdkVersion(sdk) }
+                versionsCheckerRepository.observeLastClientSdkVersion(sdk)
+                    .onStart { versionsCheckerRepository.checkLastClientSdkVersion(sdk) }
                     .map { version -> version?.let { sdk to it } }
             }
         }
