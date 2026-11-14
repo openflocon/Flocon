@@ -8,7 +8,8 @@ import io.github.openflocon.domain.telemetry.usecase.TrackTelemetryEventUseCase
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.ConcurrentHashMap
 
-private const val MCP_TOOL_LIST_DEVICES = "list_devices"
+// tools called every time by the agents: tracking them says nothing
+private val IGNORED_MCP_TOOLS = setOf("list_devices")
 
 /**
  * Single entry point for usage analytics on Flocon Desktop.
@@ -55,7 +56,7 @@ class TelemetryManager(
      * `list_devices` is not tracked: the agents call it first every time, it says nothing.
      */
     fun mcpUsed(tool: String, client: String) {
-        if (tool == MCP_TOOL_LIST_DEVICES) return
+        if (tool in IGNORED_MCP_TOOLS) return
         if (!firstTimeThisLaunch("mcp_used:$tool")) return
         track(TelemetryEvents.MCP_USED, mapOf("tool" to tool, "client" to client))
     }
