@@ -19,8 +19,6 @@ kotlin {
 
             implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)
-
-            implementation(libs.brotli.dec)
         }
 
         androidMain.dependencies {

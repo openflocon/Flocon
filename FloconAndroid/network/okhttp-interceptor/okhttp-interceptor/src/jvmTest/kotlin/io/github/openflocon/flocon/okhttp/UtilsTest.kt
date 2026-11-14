@@ -13,7 +13,7 @@ import kotlin.test.Test
 class UtilsTest {
 
     @Test
-    fun `extractResponseBodyInfo decodes brotli stream`() {
+    fun `extractResponseBodyInfo returns a placeholder for brotli stream`() {
         // "Hello, Brotli!" compressed with Brotli
         val brotliHex = "8b068048656c6c6f2c2042726f746c692103"
         val brotliBytes = brotliHex.decodeHex().toByteArray()
@@ -31,7 +31,7 @@ class UtilsTest {
 
         val (bodyString, bodySize) = extractResponseBodyInfo(response, response.headers.toMap())
 
-        assertEquals("Hello, Brotli!", bodyString)
+        assertEquals(BROTLI_BODY_PLACEHOLDER, bodyString)
     }
 
     @Test

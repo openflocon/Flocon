@@ -21,14 +21,10 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.brotli.dec)
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.android)
         }
 
-        jvmMain.dependencies {
-            implementation(libs.brotli.dec)
-        }
     }
 }
 

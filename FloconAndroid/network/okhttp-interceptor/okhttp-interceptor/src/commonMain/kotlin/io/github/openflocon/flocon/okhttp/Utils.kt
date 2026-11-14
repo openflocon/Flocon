@@ -5,10 +5,9 @@ import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
 import okio.GzipSource
-import okio.buffer
-import okio.source
-import org.brotli.dec.BrotliInputStream
 import java.nio.charset.Charset
+
+internal const val BROTLI_BODY_PLACEHOLDER = "[Brotli-encoded body]"
 
 internal fun getHttpMessage(httpCode: Int): String {
     return when (httpCode) {
@@ -86,12 +85,7 @@ internal fun extractResponseBodyInfo(
 
             bodyString = buffer.clone().readString(charset)
         } else if (responseHeaders.isBrotli()) {
-            BrotliInputStream(buffer.clone().inputStream()).source().buffer().use { brotliResponseBody ->
-                buffer = Buffer()
-                buffer.writeAll(brotliResponseBody)
-            }
-
-            bodyString = buffer.clone().readString(charset)
+            bodyString = BROTLI_BODY_PLACEHOLDER
         } else {
             bodyString = buffer.clone().readString(charset)
         }
@@ -120,10 +114,7 @@ internal fun extractRequestBodyInfo(
             buffer.writeAll(gzippedResponseBody)
         }
     } else if (requestHeaders.isBrotli()) {
-        BrotliInputStream(buffer.inputStream()).source().buffer().use { brotliResponseBody ->
-            buffer = Buffer()
-            buffer.writeAll(brotliResponseBody)
-        }
+        return BROTLI_BODY_PLACEHOLDER to bodySize
     }
 
     val charset = requestBody.contentType().charsetOrUtf8()

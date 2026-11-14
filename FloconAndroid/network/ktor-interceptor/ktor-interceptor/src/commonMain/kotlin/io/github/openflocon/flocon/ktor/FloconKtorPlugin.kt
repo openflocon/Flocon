@@ -192,7 +192,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             contentType = contentType,
             body = if (isImage) null else {
                 if (responseHeadersMap.isBrotli()) {
-                    decodeNetworkBody(originalBodyBytes, responseHeadersMap)
+                    BROTLI_BODY_PLACEHOLDER
                 } else {
                     originalBodyBytes.decodeToString()
                 }

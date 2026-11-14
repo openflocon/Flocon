@@ -29,7 +29,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
 
                 implementation(dependencies.platform(libs.okhttp.bom))
-                implementation(libs.brotli.dec)
             }
         }
     }
