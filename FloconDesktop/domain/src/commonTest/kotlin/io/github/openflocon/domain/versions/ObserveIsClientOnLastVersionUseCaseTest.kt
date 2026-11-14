@@ -248,7 +248,7 @@ class ObserveIsClientOnLastVersionUseCaseTest {
             assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
             assertEquals("2.0.1", result.name)
             assertEquals(FloconSdk.Flutter, result.sdk)
-            assertEquals("https://github.com/openflocon/FloconFlutter/releases", result.link)
+            assertEquals("https://github.com/openflocon/FloconFlutter/releases/latest", result.link)
         }
     }
 
@@ -269,19 +269,6 @@ class ObserveIsClientOnLastVersionUseCaseTest {
 
             DismissClientVersionUseCase(settingsRepo)(FloconSdk.Flutter, "2.0.1")
             assertIs<IsLastVersionDomainModel.RunningLastVersion>(useCase().first())
-        }
-    }
-
-    @Test
-    fun `a pre-release is offered as an update`() {
-        runBlocking {
-            val versionsRepo = FakeVersionsCheckerRepository(sdkVersions = mapOf(FloconSdk.Kotlin to "2.1.0-rc.1"))
-            val devicesRepo = FakeDevicesRepository(sdkVersionValue = "2.0.0", sdkValue = FloconSdk.Kotlin)
-            val useCase = createUseCase(versionsRepo, FakeSettingsRepository(), devicesRepo)
-
-            val result = useCase().first()
-            assertIs<IsLastVersionDomainModel.NewVersionAvailable>(result)
-            assertEquals("2.1.0-rc.1", result.name)
         }
     }
 

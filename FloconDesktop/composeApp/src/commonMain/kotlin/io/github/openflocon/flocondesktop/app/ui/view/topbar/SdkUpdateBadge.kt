@@ -141,7 +141,7 @@ private fun SdkUpdateBadgePreview() {
                 currentVersion = "1.2.0",
                 latestVersion = "1.4.0",
                 dependency = "io.github.openflocon:flocon:1.4.0",
-                releaseNotesLink = "https://github.com/openflocon/Flocon/releases",
+                releaseNotesLink = "https://github.com/openflocon/Flocon/releases/latest",
                 sdkName = "kotlin",
             ),
             onIgnore = {},
