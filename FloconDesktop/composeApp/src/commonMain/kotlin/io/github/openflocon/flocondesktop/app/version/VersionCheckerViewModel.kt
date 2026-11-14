@@ -38,8 +38,8 @@ class VersionCheckerViewModel(
         val latestVersion: String,
         val dependency: String,
         val releaseNotesLink: String,
-        /** The SDK this update is for: an ignored update is remembered per SDK. */
-        val sdk: FloconSdk,
+        /** The name of the SDK this update is for: an ignored update is remembered per SDK. */
+        val sdkName: String,
     )
 
     val desktopUpdate: StateFlow<DesktopUpdateUiModel?> = observeUpdateAvailableUseCase(BuildConfig.APP_VERSION)
@@ -82,7 +82,7 @@ class VersionCheckerViewModel(
                 latestVersion = name,
                 dependency = sdk.dependency(version = name),
                 releaseNotesLink = link,
-                sdk = sdk,
+                sdkName = sdk.sdkName,
             )
         }
 
@@ -98,7 +98,8 @@ class VersionCheckerViewModel(
 
     fun dismissSdkUpdate(uimodel: SdkUpdateUiModel) {
         viewModelScope.launch(dispatcherProvider.viewModel) {
-            dismissClientVersionUseCase(sdk = uimodel.sdk, version = uimodel.latestVersion)
+            val sdk = FloconSdk.fromName(uimodel.sdkName) ?: return@launch
+            dismissClientVersionUseCase(sdk = sdk, version = uimodel.latestVersion)
         }
     }
 }

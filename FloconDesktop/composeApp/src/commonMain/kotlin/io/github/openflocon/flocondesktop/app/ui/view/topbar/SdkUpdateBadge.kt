@@ -38,7 +38,6 @@ import flocondesktop.composeapp.generated.resources.sdk_update_ignore
 import flocondesktop.composeapp.generated.resources.sdk_update_release_notes
 import flocondesktop.composeapp.generated.resources.sdk_update_running
 import flocondesktop.composeapp.generated.resources.sdk_update_title
-import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel.SdkUpdateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
@@ -143,7 +142,7 @@ private fun SdkUpdateBadgePreview() {
                 latestVersion = "1.4.0",
                 dependency = "io.github.openflocon:flocon:1.4.0",
                 releaseNotesLink = "https://github.com/openflocon/Flocon/releases",
-                sdk = FloconSdk.Kotlin,
+                sdkName = "kotlin",
             ),
             onIgnore = {},
         )
