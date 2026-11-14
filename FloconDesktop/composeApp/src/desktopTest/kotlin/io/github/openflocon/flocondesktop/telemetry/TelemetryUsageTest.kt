@@ -93,14 +93,14 @@ class TelemetryUsageTest {
         manager.screenViewed(TelemetryScreen.NetworkDetail)
         manager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
         manager.emptyStateShown("Network")
-        manager.mcpUsed("list_devices", "claude")
+        manager.mcpUsed("list_network_calls", "claude")
         assertTrue(client.events.isEmpty())
 
         manager.setLevel(TelemetryLevelDomainModel.Anonymous)
         manager.screenViewed(TelemetryScreen.NetworkDetail)
         manager.featureUsed(TelemetryFeature.DatabaseQueryExecuted)
         manager.emptyStateShown("Network")
-        manager.mcpUsed("list_devices", "claude")
+        manager.mcpUsed("list_network_calls", "claude")
         assertEquals(4, client.events.size)
     }
 
@@ -157,13 +157,23 @@ class TelemetryUsageTest {
         val client = FakeTelemetryRepository()
         val manager = telemetryManager(client)
 
-        repeat(3) { manager.mcpUsed("list_devices", "claude") }
+        repeat(3) { manager.mcpUsed("list_network_calls", "claude") }
         manager.mcpUsed("get_network_call", "claude")
 
         assertEquals(2, client.events.size)
         val (event, properties) = client.events.first()
         assertEquals(TelemetryEvents.MCP_USED, event)
-        assertEquals(mapOf<String, Any>("tool" to "list_devices", "client" to "claude"), properties)
+        assertEquals(mapOf<String, Any>("tool" to "list_network_calls", "client" to "claude"), properties)
+    }
+
+    @Test
+    fun `list_devices is never sent as an mcp usage`() {
+        val client = FakeTelemetryRepository()
+        val manager = telemetryManager(client)
+
+        manager.mcpUsed("list_devices", "claude")
+
+        assertTrue(client.events.isEmpty())
     }
 
     @Test
