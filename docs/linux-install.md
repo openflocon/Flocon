@@ -19,9 +19,12 @@ A portable jar is also attached (`Flocon-linux-x64.jar`, `Flocon-linux-arm64.jar
 If you use [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux), install the portable jar with its launcher (x64 and arm64). Homebrew installs OpenJDK 21 for you:
 
 ```bash
+brew trust openflocon/tap
 brew install openflocon/tap/flocon
 flocon
 ```
+
+`brew trust` is only needed on recent Homebrew versions, which refuse to load third-party taps until you trust them. If the command is unknown, skip it.
 
 Update it later with `brew upgrade flocon`. Homebrew does not install `adb`: see [adb](#adb) below.
 
