@@ -62,10 +62,11 @@ See [MCP setup](https://openflocon.github.io/Flocon/mcp), the [tool reference](h
 **macOS** (Homebrew, no Gatekeeper prompt):
 
 ```bash
+brew trust openflocon/tap   # recent Homebrew only: third-party taps must be trusted once
 brew install --cask openflocon/tap/flocon
 ```
 
-**Linux**: `brew install openflocon/tap/flocon` (Linuxbrew), or the `.deb` / `.rpm` (x64 and arm64) from the [releases](https://github.com/openflocon/Flocon/releases).
+**Linux**: `brew trust openflocon/tap && brew install openflocon/tap/flocon` (Linuxbrew), or the `.deb` / `.rpm` (x64 and arm64) from the [releases](https://github.com/openflocon/Flocon/releases).
 
 **Windows**: the `.msi` installer from the [releases](https://github.com/openflocon/Flocon/releases).
 
