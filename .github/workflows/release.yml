@@ -74,7 +74,7 @@ jobs:
             mv FloconDesktop/composeApp/build/compose/binaries/main/rpm/*.rpm dist/Flocon-${{ matrix.platform }}.rpm
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-${{ matrix.platform }}.jar
           elif [ "${{ matrix.platform }}" = "windows-x64" ]; then
-            mv FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi dist/
+            mv FloconDesktop/composeApp/build/compose/binaries/main/msi/*.msi dist/Flocon-windows-x64.msi
             mv FloconDesktop/composeApp/build/compose/jars/*.jar dist/Flocon-windows-x64.jar
           fi
 
