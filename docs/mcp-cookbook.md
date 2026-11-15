@@ -122,7 +122,7 @@ Simulation is now off.
 1. `list_databases`: gives the `databaseId`.
 2. `list_database_tables` with `databaseId: "<id>"`: the schema, to find the right table and columns.
 3. `query_database` with `databaseId: "<id>"`, `sql: "SELECT id, email, created_at FROM users ORDER BY created_at DESC LIMIT 3"`.
-4. Optional: `list_database_query_logs` with `databaseId: "<id>"`, `text: "users"`, to see the queries your app ran, if [query logging](database.md#real-time-query-logging) is set up.
+4. Optional: `list_database_query_logs` with `databaseId: "<id>"`, `text: "users"`, to see the queries your app ran, if [query logging](database.md#query-logging) is set up.
 
 **Result** (illustrative)
 
