@@ -25,6 +25,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)
+            // decodes the Brotli bodies seen by the OkHttp / Ktor interceptors
+            implementation(libs.brotli.dec)
 
             implementation(libs.androidx.sqlite)
             implementation(libs.androidx.sqlite.framework)
@@ -34,6 +36,7 @@ kotlin {
             // the OkHttp interceptor (jvmAndroidMain)
             implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)
+            implementation(libs.brotli.dec)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
@@ -63,7 +66,7 @@ kotlin {
             implementation(libs.ktor.client.js)
         }
 
-        // code shared by Android and the JVM: java.io.File (the files plugin), the OkHttp interceptor
+        // code shared by Android and the JVM: java.io.File (the files plugin), the OkHttp interceptor, Brotli
         val jvmAndroidMain by creating {
             dependsOn(commonMain.get())
         }

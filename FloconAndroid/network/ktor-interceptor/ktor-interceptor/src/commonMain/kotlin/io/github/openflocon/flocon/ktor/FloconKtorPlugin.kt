@@ -4,6 +4,8 @@ package io.github.openflocon.flocon.ktor
 
 import io.github.openflocon.flocon.Flocon
 import io.github.openflocon.flocon.FloconRuntime
+import io.github.openflocon.flocon.network.core.BROTLI_BODY_PLACEHOLDER
+import io.github.openflocon.flocon.network.core.decodeBrotli
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallRequest
 import io.github.openflocon.flocon.network.core.model.FloconNetworkCallResponse
 import io.github.openflocon.flocon.network.core.model.FloconNetworkRequest
@@ -192,7 +194,7 @@ val FloconKtorPlugin = createClientPlugin("FloconKtorPlugin", ::FloconKtorPlugin
             contentType = contentType,
             body = if (isImage) null else {
                 if (responseHeadersMap.isBrotli()) {
-                    BROTLI_BODY_PLACEHOLDER
+                    decodeBrotli(originalBodyBytes)?.decodeToString() ?: BROTLI_BODY_PLACEHOLDER
                 } else {
                     originalBodyBytes.decodeToString()
                 }

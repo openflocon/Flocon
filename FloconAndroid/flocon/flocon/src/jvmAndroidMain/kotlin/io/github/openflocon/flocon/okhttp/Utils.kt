@@ -1,13 +1,13 @@
 package io.github.openflocon.flocon.okhttp
 
+import io.github.openflocon.flocon.network.core.BROTLI_BODY_PLACEHOLDER
+import io.github.openflocon.flocon.network.core.decodeBrotli
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
 import okio.GzipSource
 import java.nio.charset.Charset
-
-internal const val BROTLI_BODY_PLACEHOLDER = "[Brotli-encoded body]"
 
 internal fun getHttpMessage(httpCode: Int): String {
     return when (httpCode) {
@@ -85,7 +85,8 @@ internal fun extractResponseBodyInfo(
 
             bodyString = buffer.clone().readString(charset)
         } else if (responseHeaders.isBrotli()) {
-            bodyString = BROTLI_BODY_PLACEHOLDER
+            bodyString = decodeBrotli(buffer.clone().readByteArray())?.toString(charset)
+                ?: BROTLI_BODY_PLACEHOLDER
         } else {
             bodyString = buffer.clone().readString(charset)
         }
@@ -114,7 +115,9 @@ internal fun extractRequestBodyInfo(
             buffer.writeAll(gzippedResponseBody)
         }
     } else if (requestHeaders.isBrotli()) {
-        return BROTLI_BODY_PLACEHOLDER to bodySize
+        val decoded = decodeBrotli(buffer.readByteArray())
+            ?: return BROTLI_BODY_PLACEHOLDER to bodySize
+        buffer = Buffer().write(decoded)
     }
 
     val charset = requestBody.contentType().charsetOrUtf8()
