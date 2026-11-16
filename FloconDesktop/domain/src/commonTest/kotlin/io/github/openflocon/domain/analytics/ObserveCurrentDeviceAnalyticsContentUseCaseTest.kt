@@ -16,6 +16,7 @@ import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainMode
 import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceIdUseCase
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,6 +110,7 @@ private class FakeDevicesRepository(
     override suspend fun hasAppIcon(deviceId: String, appPackageName: String): Boolean = unused()
     override suspend fun askForDeviceAppIcon(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = unused()
     override fun observeDeviceSdkVersion(deviceId: String, appPackageName: String): Flow<String?> = unused()
+    override fun observeDeviceSdk(deviceId: String, appPackageName: String): Flow<FloconSdk?> = unused()
     override suspend fun deleteDevice(deviceId: String) = unused()
     override suspend fun deleteApplication(deviceId: String, packageName: String) = unused()
     override suspend fun clear() = unused()

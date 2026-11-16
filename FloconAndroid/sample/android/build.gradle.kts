@@ -44,26 +44,41 @@ android {
     }
 }
 
+// Flocon modules: local project, or the published Maven artifact with -PfloconUseMaven=true
+// (the root build.gradle.kts also substitutes the transitive ones coming from :sample-multiplatform)
+@Suppress("UNCHECKED_CAST")
+val floconCoordinates = rootProject.extra["floconMavenCoordinates"] as Map<String, String>
+val floconUseMaven = rootProject.extra["floconUseMaven"] as Boolean
+fun flocon(module: ProjectDependency): Any =
+    if (floconUseMaven) floconCoordinates.getValue(module.path) else module
+
 dependencies {
     implementation(projects.sampleMultiplatform)
 
-    implementation(projects.flocon.flocon)
-    // turns Flocon off in release builds
-    releaseImplementation(projects.flocon.floconNoOp)
-    implementation(projects.database.room3.room3)
-    implementation(projects.database.room.room)
-    implementation(projects.database.sqldelight.sqldelight)
-    implementation(projects.network.ktorInterceptor.ktorInterceptor)
-    implementation(projects.datastores.datastores)
-    implementation(projects.accessibility.accessibility)
-    implementation(projects.webview.webview)
-    implementation(projects.qrscanner.qrscanner)
+    implementation(flocon(projects.flocon.flocon))
+    implementation(flocon(projects.deeplinks.deeplinks))
+    implementation(flocon(projects.database.room3.room3))
+    implementation(flocon(projects.database.room.room))
+    implementation(flocon(projects.database.sqldelight.sqldelight))
+    implementation(flocon(projects.network.ktorInterceptor.ktorInterceptor))
+    implementation(flocon(projects.network.okhttpInterceptor.okhttpInterceptor))
+    implementation(flocon(projects.sharedprefs.sharedprefs))
+    implementation(flocon(projects.files.files))
+    implementation(flocon(projects.datastores.datastores))
+    implementation(flocon(projects.analytics.analytics))
+    implementation(flocon(projects.accessibility.accessibility))
+    implementation(flocon(projects.featureflags.featureflags))
+    implementation(flocon(projects.timeline.timeline))
+    implementation(flocon(projects.webview.webview))
+    implementation(flocon(projects.crashreporter.crashreporter))
+    implementation(flocon(projects.tables.tables))
+    implementation(flocon(projects.qrscanner.qrscanner))
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
 
     // gRPC
-    implementation(projects.grpc.grpcInterceptorLite.grpcInterceptorLite)
+    implementation(flocon(projects.grpc.grpcInterceptorLite.grpcInterceptorLite))
     implementation(libs.grpc.android)
     implementation(libs.grpc.stub)
     implementation(libs.grpc.kotlin.stub)
@@ -127,17 +142,6 @@ protobuf {
                     option("lite")
                 }
             }
-        }
-    }
-}
-
-// accessibility and qrscanner add Android manifest entries (a permission, ML Kit) that flocon-no-op
-// can't remove: release builds use their no-op, including through :sample-multiplatform
-configurations.configureEach {
-    if (name.startsWith("release")) {
-        resolutionStrategy.dependencySubstitution {
-            substitute(project(":accessibility:accessibility")).using(project(":accessibility:accessibility-no-op"))
-            substitute(project(":qrscanner:qrscanner")).using(project(":qrscanner:qrscanner-no-op"))
         }
     }
 }

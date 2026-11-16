@@ -12,6 +12,9 @@ Source of truth:
 |-----------|------------------|----------------------------------|----------------------------------------|
 | WebSocket | both             | `wss://<host>:<ws port>/`              | All plugin messages (JSON text frames) |
 | HTTPS     | mobile → desktop | `POST https://<host>:<http port>/upload` | File upload (see [files.md](files.md)) |
+| HTTPS     | mobile → desktop | `POST https://<host>:<http port>/message` | A plugin message too big for the websocket (see below) |
+
+A message whose encoded size is above 5 MB (a network call with a huge body, for example) is not sent on the websocket: OkHttp closes the connection when a message is larger than its 16 MiB send queue. The SDK posts the same envelope (see below) as `application/json` to `/message` instead; the desktop handles it like a websocket message. Such a message is sent apart from the websocket ones, so it can arrive after later messages, and it is dropped if the desktop does not answer (an older desktop has no `/message` route).
 
 Both channels use TLS, so apps never need to allow cleartext traffic. The desktop serves a self-signed certificate (SAN `localhost` / `127.0.0.1`) that clients **must accept without verifying it** (trust-all, hostname check disabled): the TLS layer only encrypts the channel, it does not authenticate the desktop. The plain `ws://` / `http://` ports are no longer served.
 
@@ -77,7 +80,7 @@ Right after a connection is opened, before any other message, the SDK sends `plu
 |------------------|------------|------------------------------------------------------------------------------------------------------|
 | `plugins`        | `String[]` | Lowercase names of the plugins installed in the SDK (the desktop hides the other ones)               |
 | `connectionType` | `String`   | `default` for the default address (localhost: adb reverse, simulator), `wifi` for the address given to the connect module |
-| `sdk`            | `String?`  | SDK family: `kotlin` (this repository), `swift`, `flutter`. Optional: absent for an SDK older than this field. Other SDKs should send their own name |
+| `sdk`            | `String?`  | SDK family: `kotlin` (this repository), `swift`, `flutter`. Optional: absent for an SDK older than this field, the desktop then does not know which SDK it is and shows no update badge. The desktop uses it to compare the app with the latest release of the repository of its SDK (the "SDK update" badge), so an SDK must send its own name |
 
 ```json
 { "plugins": ["network", "database"], "connectionType": "wifi", "sdk": "kotlin" }

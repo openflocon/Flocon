@@ -288,7 +288,7 @@ Runs a read-only SQL query (`SELECT`, `PRAGMA` without value, `EXPLAIN`) and ret
 
 :material-eye: **Read-only** · **Targets: device / app**
 
-Lists the SQL queries executed by the app, newest first, with their arguments. Only available when the app logs its queries to Flocon (see [query logging](database.md#real-time-query-logging)). Each query has a `transactionId` when it ran in a transaction.
+Lists the SQL queries executed by the app, newest first, with their arguments. Only available when the app logs its queries to Flocon (see [query logging](database.md#query-logging)). Each query has a `transactionId` when it ran in a transaction.
 
 | Parameter | Type | Req. | Description |
 |---|---|:---:|---|

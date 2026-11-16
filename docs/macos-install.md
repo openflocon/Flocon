@@ -7,13 +7,23 @@ description: Install Flocon Desktop on macOS with Homebrew or the DMG, and autho
 
 ## 🍺 Homebrew (recommended)
 
-Installing with Homebrew skips the Gatekeeper prompt entirely:
+Installing with Homebrew skips the Gatekeeper prompt entirely. Recent Homebrew versions refuse to load third-party taps until you trust them, so trust the Flocon tap once, then install:
 
 ```bash
+brew trust openflocon/tap
 brew install --cask openflocon/tap/flocon
 ```
 
+If `brew trust` is not a known command, your Homebrew is older and does not need that step: skip it. The cask itself needs a recent Homebrew, so run `brew update` first if the install fails.
+
 Update with `brew upgrade --cask flocon`.
+
+!!! note "Already installed from the DMG?"
+    Homebrew stops with `It seems there is already an App at '/Applications/Flocon.app'`. Replace it with the Homebrew-managed copy:
+
+    ```bash
+    brew install --cask --force openflocon/tap/flocon
+    ```
 
 ---
 

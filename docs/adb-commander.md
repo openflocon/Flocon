@@ -40,7 +40,7 @@ The ADB Commander only needs a working `adb`:
 !!! tip
     The ADB Commander does not need the Flocon SDK in your app: it works with any Android device visible by `adb devices`.
 
-See [Troubleshooting › ADB Connection Issues](troubleshooting.md#2-adb-connection-issues) if your device is not detected.
+See [Troubleshooting › Android emulator or USB device](troubleshooting.md#android-emulator-or-usb-device) if your device is not detected.
 
 ## Limitations
 

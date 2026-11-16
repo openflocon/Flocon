@@ -20,7 +20,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         maven("https://maven-central.storage-download.googleapis.com/maven2/") // Google mirror of Maven Central, avoids rate limits
-        mavenLocal()
+        // skipped with -PfloconUseMaven=true so the samples only see what is really published
+        if (providers.gradleProperty("floconUseMaven").orNull?.toBoolean() != true) {
+            mavenLocal()
+        }
     }
 }
 

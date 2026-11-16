@@ -8,7 +8,9 @@ import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.domain.versions.model.IsLastVersionDomainModel
+import io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel
 import io.github.openflocon.domain.versions.repository.VersionsCheckerRepository
 import io.github.openflocon.domain.versions.usecase.CheckIsDesktopOnLastVersionUseCase
 import io.github.openflocon.domain.versions.usecase.isRemoteVersionNewer
@@ -28,9 +30,11 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
     private class FakeVersionsCheckerRepository(
         var remoteVersion: String = "1.0.0",
     ) : VersionsCheckerRepository {
-        override val lastVersion: Flow<String?> = emptyFlow()
+        override val lastDesktopVersion: Flow<String?> = emptyFlow()
         override suspend fun checkIsLastVersion(): Either<Throwable, String> = Success(remoteVersion)
-        override suspend fun getReleaseNotes(): Either<Throwable, List<io.github.openflocon.domain.versions.model.ReleaseNoteDomainModel>> = throw NotImplementedError()
+        override fun observeLastClientSdkVersion(sdk: FloconSdk): Flow<String?> = emptyFlow()
+        override suspend fun checkLastClientSdkVersion(sdk: FloconSdk) {}
+        override suspend fun getReleaseNotes(): Either<Throwable, List<ReleaseNoteDomainModel>> = throw NotImplementedError()
     }
 
     private class FakeSettingsRepository(
@@ -54,9 +58,9 @@ class CheckIsDesktopOnLastVersionUseCaseTest {
         override suspend fun setDismissedDesktopVersion(version: String) {
             dismissedVersion = version
         }
-        override val dismissedClientVersionFlow: Flow<String?> = emptyFlow()
-        override fun getDismissedClientVersion(): String? = null
-        override suspend fun setDismissedClientVersion(version: String) {}
+        override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = emptyFlow()
+        override fun getDismissedClientVersion(sdk: FloconSdk): String? = null
+        override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {}
         override fun getLastSeenReleaseNotesVersion(): String? = null
         override suspend fun setLastSeenReleaseNotesVersion(version: String) {}
         override val adbPath: Flow<String?> = emptyFlow()

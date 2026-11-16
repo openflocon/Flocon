@@ -9,6 +9,7 @@ import io.github.openflocon.domain.Constant
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.versions.model.FloconSdk
 import io.github.openflocon.flocondesktop.core.data.settings.models.AnalyticsSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.NetworkSettingsLocal
 import io.github.openflocon.flocondesktop.core.data.settings.models.TimelineSettingsLocal
@@ -199,12 +200,12 @@ internal class SettingsDataSourcePrefs(
         settings.putString(DISMISSED_DESKTOP_VERSION, version)
     }
 
-    override val dismissedClientVersionFlow: Flow<String?> = flowSettings.getStringOrNullFlow(DISMISSED_CLIENT_VERSION)
+    override fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?> = flowSettings.getStringOrNullFlow(dismissedClientVersionKey(sdk))
 
-    override fun getDismissedClientVersion(): String? = settings.getStringOrNull(DISMISSED_CLIENT_VERSION)
+    override fun getDismissedClientVersion(sdk: FloconSdk): String? = settings.getStringOrNull(dismissedClientVersionKey(sdk))
 
-    override suspend fun setDismissedClientVersion(version: String) {
-        settings.putString(DISMISSED_CLIENT_VERSION, version)
+    override suspend fun setDismissedClientVersion(sdk: FloconSdk, version: String) {
+        settings.putString(dismissedClientVersionKey(sdk), version)
     }
 
     override fun getLastSeenReleaseNotesVersion(): String? = settings.getStringOrNull(LAST_SEEN_RELEASE_NOTES_VERSION)
@@ -275,6 +276,12 @@ internal class SettingsDataSourcePrefs(
         private const val ANALYTICS_SETTINGS = "analytics_settings"
         private const val DISMISSED_DESKTOP_VERSION = "dismissed_desktop_version"
         private const val DISMISSED_CLIENT_VERSION = "dismissed_client_version"
+
+        // Kotlin keeps the key it had when there was only one dismissed version
+        private fun dismissedClientVersionKey(sdk: FloconSdk) = when (sdk) {
+            FloconSdk.Kotlin -> DISMISSED_CLIENT_VERSION
+            else -> "${DISMISSED_CLIENT_VERSION}_${sdk.sdkName}"
+        }
         private const val LAST_SEEN_RELEASE_NOTES_VERSION = "last_seen_release_notes_version"
 
         private const val NETWORK_SETTINGS = "network_settings"

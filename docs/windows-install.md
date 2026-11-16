@@ -5,7 +5,7 @@ description: Install Flocon Desktop on Windows with the MSI installer.
 
 # 🪟 Install on Windows
 
-Download the `.msi` installer (`Flocon-<version>.msi`, x64) from the [releases page](https://github.com/openflocon/Flocon/releases) and run it. Flocon then starts from the Start menu.
+Download the `.msi` installer (`Flocon-windows-x64.msi`) from the [releases page](https://github.com/openflocon/Flocon/releases) and run it. Flocon then starts from the Start menu.
 
 [:octicons-download-24: Download Flocon Desktop](https://github.com/openflocon/Flocon/releases){ .md-button .md-button--primary }
 

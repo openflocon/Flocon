@@ -7,6 +7,7 @@ import io.github.openflocon.domain.device.models.DeviceId
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.models.HandleDeviceResultDomainModel
 import io.github.openflocon.domain.device.models.RegisterDeviceWithAppDomainModel
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 
 interface DevicesRepository {
@@ -36,6 +37,9 @@ interface DevicesRepository {
 // endregion
 
     fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?>
+
+    /** The SDK of the app. Null until the app says bonjour, and when it does not send it (an SDK older than the field): it is not stored. */
+    fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?>
 
     suspend fun deleteDevice(deviceId: DeviceId)
     suspend fun deleteApplication(

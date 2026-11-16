@@ -29,6 +29,7 @@ import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import io.github.openflocon.domain.timeline.repository.TimelineFocusRepository
 import io.github.openflocon.domain.timeline.repository.TimelinePreferencesRepository
 import io.github.openflocon.domain.timeline.repository.TimelineRepository
+import io.github.openflocon.domain.versions.model.FloconSdk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -114,6 +115,7 @@ internal class FakeDevicesRepository(
 
     override fun observeCurrentDevice(): Flow<DeviceDomainModel?> = flowOf(null)
     override fun observeDeviceSdkVersion(deviceId: DeviceId, appPackageName: String): Flow<String?> = flowOf(null)
+    override fun observeDeviceSdk(deviceId: DeviceId, appPackageName: String): Flow<FloconSdk?> = flowOf(null)
 
     override suspend fun register(registerDeviceWithApp: RegisterDeviceWithAppDomainModel): HandleDeviceResultDomainModel = error("not used")
 

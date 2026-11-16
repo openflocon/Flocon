@@ -23,7 +23,7 @@ Three steps, a few minutes.
 
     ---
 
-    `brew install --cask openflocon/tap/flocon`, or the DMG.
+    `brew trust openflocon/tap && brew install --cask openflocon/tap/flocon`, or the DMG.
 
     [:octicons-arrow-right-16: Install on macOS](macos-install.md)
 

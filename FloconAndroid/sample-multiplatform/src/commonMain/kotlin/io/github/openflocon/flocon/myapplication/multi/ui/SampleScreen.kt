@@ -17,7 +17,7 @@ enum class SampleScreen(
     Analytics("Analytics", "Events and properties", SampleCategory.Analytics, SampleIcons.Analytics),
     Accessibility("Accessibility", "Screen reader events and labels", SampleCategory.Accessibility, SampleIcons.Accessibility),
     WebView("WebView", "Console, page events and bridge calls", SampleCategory.WebView, SampleIcons.WebView, SamplePlatform.AndroidOnly),
-    FeatureFlags("Feature flags","Toggle and observe", SampleCategory.FeatureFlags, SampleIcons.FeatureFlags),
+    FeatureFlags("Feature flags","Inspect the evaluated flags", SampleCategory.FeatureFlags, SampleIcons.FeatureFlags),
     Preferences("Preferences", "Custom store, DataStore, SharedPreferences", SampleCategory.Neutral, SampleIcons.Preferences),
     Files("Files", "Files the desktop can browse", SampleCategory.Neutral, SampleIcons.Files, SamplePlatform.NotWeb),
     Dashboard("Dashboard & Tables", "Live values and table rows", SampleCategory.Table, SampleIcons.Dashboard),
