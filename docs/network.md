@@ -44,18 +44,7 @@ The network plugin is the one that talks to the desktop. The interceptors only r
 
     === "OkHttp"
 
-        ```kotlin
-        dependencies {
-            implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
-        }
-        ```
-
-        With a version catalog:
-
-        ```toml
-        [libraries]
-        flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
-        ```
+        The OkHttp interceptor is part of the core module (`flocon`, Android and JVM): no other dependency is needed.
 
     === "Ktor"
 

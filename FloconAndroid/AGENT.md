@@ -23,13 +23,13 @@ Flocon is a modular, plugin-based framework built with **Kotlin Multiplatform (K
 
 Each feature lives in its own folder (`<feature>/<feature>`, Gradle path `:<feature>:<feature>`). Maven `artifactId`s are declared explicitly per module and do not depend on the path. `:flocon:flocon-no-op` turns Flocon off; `accessibility` and `qrscanner` also keep a `-no-op` sibling, because of their Android manifest entries.
 
-- `:flocon:flocon`: Core library providing the plugin registration and context management, plus the plugins without external dependency (network, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards).
+- `:flocon:flocon`: Core library providing the plugin registration and context management, plus the plugins that need no other dependency (network and its OkHttp interceptor, database, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards).
 - `:database`:
-    - `:database:core:core`: Abstractions for database providers.
+    - The database plugin (`FloconDatabase`) and the provider abstractions live in `:flocon:flocon`.
     - `:database:room:room` / `:database:room3:room3`: Room-based implementations.
 - `:network`:
     - The network plugin (`FloconNetwork`) lives in `:flocon:flocon`.
-    - `:network:okhttp-interceptor:okhttp-interceptor` / `:network:ktor-interceptor:ktor-interceptor`: Client-specific interceptors.
+    - The OkHttp interceptor lives in `:flocon:flocon` (Android and JVM); `:network:ktor-interceptor:ktor-interceptor` is the Ktor one.
 - `:grpc`:
     - `:grpc:grpc-interceptor:grpc-interceptor`: Interceptors for gRPC calls.
 - `:datastores:datastores`: Modules for Typed DataStore integration.

@@ -28,7 +28,7 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     flocon = { module = "io.github.openflocon:flocon", version.ref = "flocon" }
     flocon-no-op = { module = "io.github.openflocon:flocon-no-op", version.ref = "flocon" }
 
-    flocon-okhttp = { module = "io.github.openflocon:flocon-okhttp-interceptor", version.ref = "flocon" }
+    flocon-ktor = { module = "io.github.openflocon:flocon-ktor-interceptor", version.ref = "flocon" }
     # ... one entry per module you use, see the table below
     ```
 
@@ -36,7 +36,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     // app/build.gradle.kts
     dependencies {
         implementation(libs.flocon)
-        implementation(libs.flocon.okhttp)
 
         // turns Flocon off in release builds
         releaseImplementation(libs.flocon.no.op)
@@ -70,7 +69,6 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     ```kotlin
     dependencies {
         implementation("io.github.openflocon:flocon:LAST_VERSION")
-        implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
 
         // turns Flocon off in release builds
         releaseImplementation("io.github.openflocon:flocon-no-op:LAST_VERSION")
@@ -96,11 +94,10 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging), [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md) | `flocon` | Android, JVM, iOS, Wasm |
-| OkHttp interceptor (+ WebSockets) | `flocon-okhttp-interceptor` | Android, JVM |
+| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging, OkHttp interceptor and WebSockets on Android and JVM), [Databases](database.md) plugin, [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md) | `flocon` | Android, JVM, iOS, Wasm |
 | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
 | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
-| [Databases](database.md) | `flocon-database-core` + `flocon-database-room` (Room 2) or `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
+| [Databases](database.md) providers | `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
 | [DataStore](sharedpref.md) | `flocon-datastores` | Android, JVM, iOS |
 | [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
 | [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS, Wasm (automatic `attach` on Android) |
@@ -153,8 +150,8 @@ Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analy
 
 | Plugin to `install` | Module | Page |
 | :--- | :--- | :--- |
-| `FloconNetwork` | `flocon` (+ OkHttp / Ktor / gRPC interceptor) | [Network](network.md) |
-| `FloconDatabase` | `flocon-database-core` + a Room / SQLDelight provider | [Databases](database.md) |
+| `FloconNetwork` | `flocon` (OkHttp interceptor included; + `flocon-ktor-interceptor` / gRPC interceptor) | [Network](network.md) |
+| `FloconDatabase` | `flocon` + a Room / SQLDelight provider | [Databases](database.md) |
 | `FloconPreferences` | `flocon` (+ `flocon-datastores`) | [Preferences](sharedpref.md) |
 | `FloconFiles` | `flocon` | [Files](files.md) |
 | `FloconDashboard` | `flocon` | [Dashboards](dashboard.md) |

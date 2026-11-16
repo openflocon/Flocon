@@ -72,7 +72,6 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
 
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
-            implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
             implementation(projects.database.room3.room3)
             implementation(projects.database.room.room)
             implementation(libs.sqldelight.android.driver)

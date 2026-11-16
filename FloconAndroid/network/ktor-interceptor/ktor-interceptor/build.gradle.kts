@@ -15,7 +15,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.flocon.flocon)
-            api(projects.flocon.flocon)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.client.core)

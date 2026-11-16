@@ -14,7 +14,6 @@ kotlin {
             implementation(projects.flocon.flocon)
             implementation(projects.accessibility.accessibility)
             implementation(projects.network.ktorInterceptor.ktorInterceptor)
-            implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
             implementation(projects.database.room3.room3)
             implementation(projects.database.sqldelight.sqldelight)
             implementation(libs.sqldelight.sqlite.driver)

@@ -14,7 +14,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.flocon.flocon)
-            implementation(projects.database.core.core)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }

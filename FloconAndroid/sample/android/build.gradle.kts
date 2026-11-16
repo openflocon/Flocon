@@ -54,7 +54,6 @@ dependencies {
     implementation(projects.database.room.room)
     implementation(projects.database.sqldelight.sqldelight)
     implementation(projects.network.ktorInterceptor.ktorInterceptor)
-    implementation(projects.network.okhttpInterceptor.okhttpInterceptor)
     implementation(projects.datastores.datastores)
     implementation(projects.accessibility.accessibility)
     implementation(projects.webview.webview)

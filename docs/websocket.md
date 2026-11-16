@@ -39,13 +39,7 @@ WebSocket events go through the network plugin: follow the [network setup](netwo
     }
     ```
 
-    The OkHttp helpers are in the `flocon-okhttp-interceptor` module (Android and JVM):
-
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-okhttp-interceptor:LAST_VERSION")
-    }
-    ```
+    The OkHttp helpers are part of the core module (`flocon`, Android and JVM): no other dependency is needed.
 
 === "Swift"
 
