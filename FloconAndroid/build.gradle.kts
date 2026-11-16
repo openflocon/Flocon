@@ -52,6 +52,10 @@ val floconModules = mapOf(
     ":qrscanner:qrscanner" to "flocon-qr-scanner",
 )
 
+// used by the samples to declare their dependencies: see flocon() in sample/android/build.gradle.kts
+extra["floconUseMaven"] = floconUseMaven
+extra["floconMavenCoordinates"] = floconModules.mapValues { (_, artifactId) -> "$floconGroupId:$artifactId:$floconMavenVersion" }
+
 // :sample:android release builds use the no-op version of every Flocon module,
 // including the ones coming transitively from :sample-multiplatform
 project(":sample:android").configurations.configureEach {
