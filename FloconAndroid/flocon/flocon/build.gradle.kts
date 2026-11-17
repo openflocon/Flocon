@@ -23,13 +23,21 @@ kotlin {
         androidMain.dependencies {
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutines.android)
+            implementation(dependencies.platform(libs.okhttp.bom))
             implementation(libs.okhttp)
+            // decodes the Brotli bodies seen by the OkHttp / Ktor interceptors
+            implementation(libs.brotli.dec)
 
             implementation(libs.androidx.sqlite)
             implementation(libs.androidx.sqlite.framework)
         }
 
         jvmMain.dependencies {
+            // the OkHttp interceptor (jvmAndroidMain)
+            implementation(dependencies.platform(libs.okhttp.bom))
+            implementation(libs.okhttp)
+            implementation(libs.brotli.dec)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
 
@@ -48,12 +56,22 @@ kotlin {
 
             // to store the device id
             implementation(libs.multiplatform.settings)
+
+            // NativeSQLiteDriver, for the database plugin
+            implementation(libs.androidx.sqlite.framework)
         }
 
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.js)
         }
+
+        // code shared by Android and the JVM: java.io.File (the files plugin), the OkHttp interceptor, Brotli
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        androidMain.get().dependsOn(jvmAndroidMain)
+        jvmMain.get().dependsOn(jvmAndroidMain)
     }
 }
 

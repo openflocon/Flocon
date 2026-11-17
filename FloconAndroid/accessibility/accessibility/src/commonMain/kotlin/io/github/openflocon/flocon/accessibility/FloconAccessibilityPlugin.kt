@@ -17,7 +17,7 @@ import io.github.openflocon.flocon.accessibility.model.toItem
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 
 class FloconAccessibilityConfig internal constructor(
     internal val context: FloconContext,
@@ -197,7 +197,7 @@ internal class FloconAccessibilityPluginImpl(
 }
 
 val Flocon.Companion.accessibilityPlugin: FloconAccessibilityPlugin
-    get() = FloconAccessibilityPluginImpl.plugin ?: pluginNotInitialized("Accessibility", NoOpAccessibilityPlugin())
+    get() = floconPlugin("Accessibility", noOp = { NoOpAccessibilityPlugin() }, installed = { FloconAccessibilityPluginImpl.plugin })
 
 private class NoOpAccessibilityPlugin : FloconAccessibilityPlugin {
     override val key: String = ""

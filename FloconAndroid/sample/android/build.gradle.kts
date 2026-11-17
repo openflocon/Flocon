@@ -26,8 +26,9 @@ android {
 
     buildTypes {
         release {
+            // R8 on: flocon-no-op removes the Flocon code from the release build (checked by the CI)
             optimization {
-                enable = false
+                enable = true
             }
         }
     }

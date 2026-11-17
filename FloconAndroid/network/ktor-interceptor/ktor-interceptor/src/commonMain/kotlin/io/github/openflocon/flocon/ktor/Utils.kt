@@ -69,8 +69,3 @@ private fun Map<String, String>.isGzipped(): Boolean {
 internal fun Map<String, String>.isBrotli(): Boolean {
     return "br".equals(getContentEncoding(), ignoreCase = true)
 }
-
-internal expect fun decodeNetworkBody(
-    bytes: ByteArray,
-    headers: Map<String, String>
-): String

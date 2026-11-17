@@ -14,9 +14,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.flocon.flocon)
             // FloconDatastorePreference implements FloconPreference
-            api(projects.sharedprefs.sharedprefs)
+            api(projects.flocon.flocon)
             api(libs.androidx.datastore.preferences.core)
 
             implementation(dependencies.platform(libs.kotlinx.coroutines.bom))

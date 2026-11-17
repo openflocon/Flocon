@@ -27,14 +27,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
 === "Kotlin"
 
-    ```kotlin
-    dependencies {
-        debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
-    }
-    ```
-
-    Install the plugin:
+    Preferences are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {
@@ -49,15 +42,13 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
         ```toml
         [libraries]
         flocon-datastores = { module = "io.github.openflocon:flocon-datastores", version.ref = "flocon" }
-        flocon-datastores-no-op = { module = "io.github.openflocon:flocon-datastores-no-op", version.ref = "flocon" }
         ```
 
     === "build.gradle.kts"
 
         ```kotlin
         dependencies {
-            debugImplementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
-            releaseImplementation("io.github.openflocon:flocon-datastores-no-op:LAST_VERSION")
+            implementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
         }
         ```
 

@@ -16,7 +16,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.flocon.flocon)
-                api(projects.database.core.core)
                 // the app has it (its generated code needs it): no need to bring a version
                 implementation(libs.sqldelight.runtime)
 

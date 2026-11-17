@@ -25,12 +25,7 @@ Flocon records the **uncaught crashes** of your app (type, message, stack trace 
 
 === "Kotlin"
 
-    ```kotlin
-    dependencies {
-        debugImplementation("io.github.openflocon:flocon-crashreporter:LAST_VERSION")
-        releaseImplementation("io.github.openflocon:flocon-crashreporter-no-op:LAST_VERSION")
-    }
-    ```
+    The crash reporter is part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {

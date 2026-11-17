@@ -6,6 +6,7 @@ import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.decode
 import io.github.openflocon.flocon.device.FloconDeviceHandler
 import io.github.openflocon.flocon.model.FloconMessageFromServer
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -69,17 +70,24 @@ class Flocon internal constructor(
         private var started: Flocon? = null
 
         /** The state of the connection to the desktop app. */
-        internal val connectionStateFlow: StateFlow<FloconConnectionState> get() = FloconConnectionStates.state
+        internal val connectionStateFlow: StateFlow<FloconConnectionState>
+            get() = if (FloconRuntime.isEnabled()) FloconConnectionStates.state else idleState
+
+        // the state when Flocon is turned off by flocon-no-op
+        private val idleState: StateFlow<FloconConnectionState> = MutableStateFlow(FloconConnectionState.Idle)
 
         /**
          * Connects to the desktop app at the given address, in addition to the default one,
          * see `Flocon.connect`.
          */
-        internal suspend fun connectToServer(address: String): FloconConnectResult =
-            started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
+        internal suspend fun connectToServer(address: String): FloconConnectResult {
+            if (!FloconRuntime.isEnabled()) return FloconConnectResult.NotStarted
+            return started?.connections?.connectTo(address) ?: FloconConnectResult.NotStarted
+        }
 
         /** Closes the connection added by [connectToServer], see `Flocon.disconnect`. */
         internal suspend fun disconnectFromServer() {
+            if (!FloconRuntime.isEnabled()) return
             started?.connections?.disconnect()
         }
     }
