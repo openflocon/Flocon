@@ -25,30 +25,20 @@ val floconUseMaven = providers.gradleProperty("floconUseMaven").map(String::toBo
 val floconMavenVersion = providers.gradleProperty("floconMavenVersion").orElse(providers.gradleProperty("floconVersion")).get()
 val floconGroupId = providers.gradleProperty("floconGroupId").get()
 
-// project path -> published artifactId. The no-op variant is "<path>-no-op" / "<artifactId>-no-op".
+// project path -> published artifactId
 val floconModules = mapOf(
     ":flocon:flocon" to "flocon",
-    ":analytics:analytics" to "flocon-analytics",
+    ":flocon:flocon-no-op" to "flocon-no-op",
     ":accessibility:accessibility" to "flocon-accessibility",
-    ":featureflags:featureflags" to "flocon-feature-flags",
-    ":timeline:timeline" to "flocon-timeline",
-    ":webview:webview" to "flocon-webview",
-    ":crashreporter:crashreporter" to "flocon-crashreporter",
-    ":database:core:core" to "flocon-database-core",
     ":database:room:room" to "flocon-database-room",
     ":database:room3:room3" to "flocon-database-room3",
     ":database:sqldelight:sqldelight" to "flocon-database-sqldelight",
     ":datastores:datastores" to "flocon-datastores",
-    ":deeplinks:deeplinks" to "flocon-deeplinks",
-    ":files:files" to "flocon-files",
     ":grpc:grpc-interceptor-base:grpc-interceptor-base" to "flocon-grpc-interceptor-base",
     ":grpc:grpc-interceptor:grpc-interceptor" to "flocon-grpc-interceptor",
     ":grpc:grpc-interceptor-lite:grpc-interceptor-lite" to "flocon-grpc-interceptor-lite",
-    ":network:core:core" to "flocon-network-core",
     ":network:ktor-interceptor:ktor-interceptor" to "flocon-ktor-interceptor",
-    ":network:okhttp-interceptor:okhttp-interceptor" to "flocon-okhttp-interceptor",
-    ":sharedprefs:sharedprefs" to "flocon-sharedprefs",
-    ":tables:tables" to "flocon-tables",
+    ":webview:webview" to "flocon-webview",
     ":qrscanner:qrscanner" to "flocon-qr-scanner",
 )
 
@@ -56,12 +46,17 @@ val floconModules = mapOf(
 extra["floconUseMaven"] = floconUseMaven
 extra["floconMavenCoordinates"] = floconModules.mapValues { (_, artifactId) -> "$floconGroupId:$artifactId:$floconMavenVersion" }
 
-// :sample:android release builds use the no-op version of every Flocon module,
-// including the ones coming transitively from :sample-multiplatform
+// :sample:android release builds add flocon-no-op, which turns Flocon off. The only modules it can't handle
+// are the ones with Android manifest entries: they are swapped for their "-no-op" sibling, including when
+// they come transitively from :sample-multiplatform
+val floconManifestModules = mapOf(
+    ":accessibility:accessibility" to "flocon-accessibility",
+    ":qrscanner:qrscanner" to "flocon-qr-scanner",
+)
 project(":sample:android").configurations.configureEach {
     if (name.startsWith("release")) {
         resolutionStrategy.dependencySubstitution {
-            floconModules.forEach { (path, artifactId) ->
+            floconManifestModules.forEach { (path, artifactId) ->
                 val noOpModule = module("$floconGroupId:$artifactId-no-op:$floconMavenVersion")
                 substitute(project(path)).using(if (floconUseMaven) noOpModule else project("$path-no-op"))
             }
@@ -72,7 +67,7 @@ project(":sample:android").configurations.configureEach {
 if (floconUseMaven) {
     listOf(":sample:android", ":sample-multiplatform").forEach { samplePath ->
         project(samplePath).configurations.configureEach {
-            if (samplePath == ":sample:android" && name.startsWith("release")) return@configureEach // no-op, see above
+            if (samplePath == ":sample:android" && name.startsWith("release")) return@configureEach // manifest no-ops, see above
             resolutionStrategy.dependencySubstitution {
                 floconModules.forEach { (path, artifactId) ->
                     substitute(project(path)).using(module("$floconGroupId:$artifactId:$floconMavenVersion"))
