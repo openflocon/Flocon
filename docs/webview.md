@@ -12,12 +12,12 @@ No more `chrome://inspect` and USB debugging to read a `console.error`.
 
 ## Platform support
 
-The WebView plugin is available in the **Kotlin / KMP SDK only**. The Swift and Flutter SDKs do not have it yet.
+The WebView plugin is available in the **Kotlin / KMP** and **Swift** SDKs. The Flutter SDK does not have it yet.
 
 | | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
-| Automatic capture (`attach`) | ✅ | ❌ | ❌ | ❌ |
-| Manual API (`logConsole`, `logPageEvent`, `logBridgeCall`) | ✅ | ✅ | ❌ | ❌ |
+| Automatic capture (`attach`) | ✅ | ❌ | ✅ `WKWebView` | ❌ |
+| Manual API (`logConsole`, `logPageEvent`, `logBridgeCall`) | ✅ | ✅ | ✅ | ❌ |
 
 On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The requests made by the page (`fetch`, `XMLHttpRequest`) are not captured yet.
 
@@ -42,8 +42,17 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
 === "Swift"
 
-    !!! note "Not available in the Swift SDK yet"
-        There is no WebView plugin in FloconSwift (`WKWebView` is not captured).
+    ```swift
+    import Flocon
+
+    #if DEBUG
+    startFlocon { flocon in
+        flocon.install(.webView)
+    }
+    #endif
+    ```
+
+    `Flocon.initialize()` installs every plugin, the WebView included. Until Flocon is started, or if `.webView` is not installed, the calls do nothing.
 
 === "Flutter"
 
@@ -99,7 +108,37 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
 === "Swift"
 
-    !!! note "Not available in the Swift SDK yet"
+    **Attach a `WKWebView`.** Attach each web view once, **after** starting Flocon and setting your own `navigationDelegate`, and before loading a page:
+
+    ```swift
+    let webView = WKWebView()
+    webView.navigationDelegate = self
+
+    Flocon.webViewPlugin.attach(webView, webViewId: "checkout")
+    webView.load(URLRequest(url: url))
+    ```
+
+    `attach` adds a user script that sends the `console` messages, uncaught errors and unhandled promise rejections of every frame, and wraps your `navigationDelegate` to send the page events. Every delegate call is still forwarded to your delegate, so the behavior of your web view does not change. Navigation events (main frame only) are sent only when your delegate implements `webView(_:decidePolicyFor:decisionHandler:)` or its `preferences:` variant. A delegate set after `attach` replaces the wrapper: the page events then stop.
+
+    **Bridge calls.** Flocon cannot see the messages the page sends to a `WKScriptMessageHandler`: log them from the handler itself.
+
+    ```swift
+    func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+        Flocon.webViewPlugin.logBridgeCall(
+            webViewId: "checkout",
+            interfaceName: message.name,
+            method: (message.body as? [String: Any])?["method"] as? String ?? "postMessage",
+            arguments: String(describing: message.body)
+        )
+    }
+    ```
+
+    **Manual API.** For a web view Flocon does not attach to:
+
+    ```swift
+    Flocon.webViewPlugin.logConsole(webViewId: "checkout", level: .warn, message: "slow render")
+    Flocon.webViewPlugin.logPageEvent(webViewId: "checkout", type: .pageFinished, url: "https://example.com")
+    ```
 
 === "Flutter"
 
@@ -114,7 +153,7 @@ The WebViews screen lists three kinds of events, newest first:
 
 - **Console**: `console.log`, `info`, `warn` and `error` of the page, with the source file and line when the browser gives them
 - **Pages**: page started / finished, navigation, and the errors (network error, HTTP error, SSL error)
-- **Bridge**: the calls from the page to a native object exposed with `addJavascriptInterface`, with their arguments and result
+- **Bridge**: the calls from the page to a native object exposed with `addJavascriptInterface` (Android) or a `WKScriptMessageHandler` (Swift), with their arguments and result
 
 Filter by kind with the chips at the top (**All**, **Console**, **Pages**, **Bridge**), or search in the level, message, url and WebView id. Each WebView is identified by the id you give it, so several WebViews of the same app can be told apart. The events also show up in the [timeline](timeline.md) as a **WebView** source.
 

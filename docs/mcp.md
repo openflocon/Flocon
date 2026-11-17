@@ -42,7 +42,8 @@ The tools are the same for every SDK, but each tool returns what **your app's SD
 | Databases, preferences, files | ✅ | ✅ | ✅ |
 | Analytics, feature flags, tables, dashboards, deeplinks, images | ✅ | ✅ | ✅ |
 | Timeline logs, crashes | ✅ | ✅ | ✅ (Dart and Flutter errors) |
-| WebView events, accessibility events | ✅ | ❌ | ❌ |
+| WebView events | ✅ | ✅ | ❌ |
+| Accessibility events | ✅ | ❌ | ❌ |
 | WebSocket message injection | ✅ (OkHttp) | ❌ | ❌ |
 
 See the [platform support matrix](index.md#platform-support) for the details per feature. Screenshots, recordings and deeplinks need `adb` on Android, or a booted Simulator on iOS.

@@ -67,7 +67,7 @@ struct MyApp: App {
 }
 ```
 
-The plugins are `.network` (also intercepts `URLSession.shared`), `.analytics`, `.featureFlags`, `.tables`, `.preferences`, `.files`, `.database`, `.dashboard`, `.deeplinks`, `.timeline` and `.crashReporter`. Those with options take a closure. `Flocon.initialize()` is the short form that installs all of them. `Flocon.isLoggingEnabled = true`, set before starting, prints what the SDK does with the `[Flocon]` prefix.
+The plugins are `.network` (also intercepts `URLSession.shared`), `.analytics`, `.featureFlags`, `.tables`, `.preferences`, `.files`, `.database`, `.dashboard`, `.deeplinks`, `.timeline`, `.webView` and `.crashReporter`. Those with options take a closure. `Flocon.initialize()` is the short form that installs all of them. `Flocon.isLoggingEnabled = true`, set before starting, prints what the SDK does with the `[Flocon]` prefix.
 
 ## Release builds
 

@@ -659,7 +659,7 @@ Deletes the accessibility events received from the app, to isolate the events of
 
 :material-eye: **Read-only** · **Targets: device / app**
 
-What happened in the app's WebViews, newest first: JS console messages, page events (loads, navigation, errors) and calls from the page to a native object (bridge). Requests made by the page are in the network tools. The Swift and Flutter SDKs do not send WebView events yet. See [WebView](webview.md).
+What happened in the app's WebViews, newest first: JS console messages, page events (loads, navigation, errors) and calls from the page to a native object (bridge). Requests made by the page are in the network tools. The Flutter SDK does not send WebView events yet. See [WebView](webview.md).
 
 | Parameter | Type | Req. | Description |
 |---|---|:---:|---|
