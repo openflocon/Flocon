@@ -25,7 +25,7 @@ Add a scanner to your app (in a debug menu, for example). Once the code is read,
 
 === "Kotlin"
 
-    Android only. Add `flocon-qr-scanner` (and its `-no-op` in release), then call:
+    Android only. Add `flocon-qr-scanner` in debug and `flocon-qr-scanner-no-op` in release (see [Release builds](install-kotlin.md#release-builds)), then call:
 
     ```kotlin
     import io.github.openflocon.flocon.qrscanner.scanQrCodeAndConnect

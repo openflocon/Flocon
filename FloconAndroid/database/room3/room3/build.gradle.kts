@@ -21,7 +21,6 @@ kotlin {
             kotlin.srcDir("src/roomMain/kotlin")
             dependencies {
                 api(projects.flocon.flocon)
-                api(projects.database.core.core)
                 api(libs.androidx.room3.runtime)
                 implementation(libs.androidx.sqlite.async)
 
@@ -29,7 +28,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
 
                 implementation(dependencies.platform(libs.okhttp.bom))
-                implementation(libs.brotli.dec)
             }
         }
     }

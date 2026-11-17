@@ -44,7 +44,7 @@ The agent:
 
 1. **Detects the platform** from the project files: Android, Kotlin Multiplatform, Swift (`.xcodeproj`, `Package.swift`) or Flutter (`pubspec.yaml`).
 2. **Detects the version** if Flocon is already there, and picks a path: install, migrate from 1.x to 2.0, or only add the missing plugins.
-3. **Adds the dependencies**: debug module and `-no-op` twin for release in Kotlin, `FloconSwift` with Swift Package Manager, or `flutter pub add flocon` and the plugin packages.
+3. **Adds the dependencies**: the modules and `flocon-no-op` for release in Kotlin, `FloconSwift` with Swift Package Manager, or `flutter pub add flocon` and the plugin packages.
 4. **Starts Flocon** in the app, and installs **only the plugins the project really uses** (it searches the code instead of guessing).
 5. **Keeps it out of release**: it inspects the real build variants and tells you exactly what it did (SDK inactive vs absent from the binary).
 6. **Builds** the touched targets and says what was **not** verified (running on a device, connection to Flocon Desktop, release build).

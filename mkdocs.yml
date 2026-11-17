@@ -95,7 +95,7 @@ nav:
       - Automatic connection: connect.md
       - Over Wi-Fi: connect-wifi.md
       - With a QR code: connect-qr-code.md
-    - Migrating from 1.x: migration.md
+    - Migration: migration.md
     - Troubleshooting: troubleshooting.md
   - Features:
     - Timeline: timeline.md

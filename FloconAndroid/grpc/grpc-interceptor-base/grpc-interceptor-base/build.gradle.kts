@@ -12,7 +12,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             api(projects.flocon.flocon)
-            api(projects.network.core.core)
+            api(projects.flocon.flocon)
             // FloconGrpcBaseInterceptor is a ClientInterceptor
             api(libs.grpc.android)
 

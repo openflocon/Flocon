@@ -11,7 +11,7 @@ import io.github.openflocon.flocon.Protocol
 import io.github.openflocon.flocon.core.FloconEncoder
 import io.github.openflocon.flocon.core.FloconMessageSender
 import io.github.openflocon.flocon.core.encode
-import io.github.openflocon.flocon.error.pluginNotInitialized
+import io.github.openflocon.flocon.floconPlugin
 import io.github.openflocon.flocon.webview.model.WebViewBridgeCall
 import io.github.openflocon.flocon.webview.model.WebViewConsoleLog
 import io.github.openflocon.flocon.webview.model.WebViewPageEvent
@@ -211,7 +211,7 @@ internal class FloconWebViewPluginImpl(
 }
 
 val Flocon.Companion.webViewPlugin: FloconWebViewPlugin
-    get() = FloconWebViewPluginImpl.plugin ?: pluginNotInitialized("WebView", NoOpWebViewPlugin())
+    get() = floconPlugin("WebView", noOp = { NoOpWebViewPlugin() }, installed = { FloconWebViewPluginImpl.plugin })
 
 private class NoOpWebViewPlugin : FloconWebViewPlugin {
     override val key: String = ""

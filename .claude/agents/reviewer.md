@@ -1,13 +1,13 @@
 ---
 name: reviewer
-description: Use once a change is finished, before committing it or opening a PR (not after every intermediate edit). Reviews the diff for bugs, broken plugin/no-op parity, protocol drift and missing tests.
+description: Use once a change is finished, before committing it or opening a PR (not after every intermediate edit). Reviews the diff for bugs, entry points that skip the FloconRuntime switch, protocol drift and missing tests.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---
 
 You review the current change. Get it with `git diff main...HEAD` plus `git diff` for uncommitted work, then read the surrounding code as needed. Do not edit any file.
 
-Check against the project rules in `.claude/rules/` (SDK / no-op parity, desktop layering, Compose conventions, protocol and docs sync, tests for new behavior).
+Check against the project rules in `.claude/rules/` (SDK / FloconRuntime switch, desktop layering, Compose conventions, protocol and docs sync, tests for new behavior).
 
 Report only real problems: things that are wrong, will break, or violate a project rule. One entry each:
 
