@@ -15,7 +15,7 @@ plugins {
 buildConfig {
     packageName("io.github.openflocon.flocondesktop")
 
-    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0")
+    buildConfigField("APP_VERSION", System.getenv("PROJECT_VERSION_NAME") ?: "2.0.0")
 
     // Telemetry (see docs/telemetry.md). Only official builds get a key, from the POSTHOG_API_KEY GitHub secret.
     // Without it (local builds, forks) the app still compiles and telemetry is a no-op.
@@ -134,7 +134,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Flocon"
-            packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "1.0.0"
+            packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "2.0.0"
             macOS {
                 iconFile.set(project.file("src/desktopMain/resources/files/flocon_big.icns"))
                 bundleID = "io.github.openflocon.flocon"
