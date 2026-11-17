@@ -51,6 +51,7 @@ fun MainScreenTopBar(
     recordState: RecordVideoStateUiModel,
     onRecordClicked: () -> Unit,
     onOpenFolderClicked: () -> Unit,
+    onClickDetail: (DeviceItemUiModel) -> Unit,
     modifier: Modifier = Modifier,
     sdkUpdate: VersionCheckerViewModel.SdkUpdateUiModel? = null,
     onSdkUpdateIgnored: (VersionCheckerViewModel.SdkUpdateUiModel) -> Unit = {},
@@ -96,6 +97,7 @@ fun MainScreenTopBar(
             onRecordClicked = onRecordClicked,
             onOpenFolderClicked = onOpenFolderClicked,
             devicesState = devicesState,
+            onDeviceInfoClicked = { devicesState.deviceSelected?.let(onClickDetail) },
         )
         TopBarConnectButton(onClicked = { showConnectDialog = true })
     }

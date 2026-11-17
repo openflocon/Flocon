@@ -1,4 +1,4 @@
-package io.github.openflocon.domain.adb
+package io.github.openflocon.domain.adb.usecase
 
 import io.github.openflocon.domain.adb.model.AdbCommandTargetDomainModel
 import io.github.openflocon.domain.adb.repository.AdbRepository

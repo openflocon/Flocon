@@ -451,6 +451,8 @@
     <string name="connect_ports">ws: %1$d&#160;&#160;&#160;&#160;https: %2$d</string>
     <string name="topbar_open_folder">Ouvrir le dossier Flocon</string>
     <string name="topbar_record">Enregistrer l’écran</string>
+    <string name="topbar_restart">Redémarrer l’app</string>
+    <string name="topbar_device_info">Infos de l’appareil</string>
     <string name="topbar_screenshot">Capture d’écran</string>
     <string name="analytics_selector_caption">Fournisseur</string>
     <string name="tables_selector_caption">Table</string>
@@ -569,4 +571,8 @@
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
     <string name="database_transaction_nested">Transaction imbriquée</string>
+    <string name="device_memory_column_process">Processus</string>
+    <string name="device_memory_column_pid">PID</string>
+    <string name="device_memory_column_usage">Mémoire</string>
+    <string name="device_memory_empty">Pas encore d\'infos mémoire par processus</string>
 </resources>
