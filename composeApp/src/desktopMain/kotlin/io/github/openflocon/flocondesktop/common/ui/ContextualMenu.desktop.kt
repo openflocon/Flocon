@@ -21,3 +21,15 @@ actual fun ContextualMenu(
         content()
     }
 }
+
+@Composable
+actual fun ContextualMenu(
+    itemsProvider: () -> ImmutableList<FloconContextMenuItem>,
+    modifier: Modifier,
+    content: @Composable (() -> Unit)
+) {
+    ContextMenuArea(
+        items = itemsProvider,
+        content = content,
+    )
+}
