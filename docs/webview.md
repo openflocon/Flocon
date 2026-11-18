@@ -25,11 +25,7 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
 === "Kotlin"
 
-    ```kotlin
-    dependencies {
-        implementation("io.github.openflocon:flocon-webview:LAST_VERSION")
-    }
-    ```
+    The WebView plugin is part of the core module (`flocon`, and `flocon-no-op` for release, see [Release builds](install-kotlin.md#release-builds)), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
     Install the plugin when you start Flocon:
 
