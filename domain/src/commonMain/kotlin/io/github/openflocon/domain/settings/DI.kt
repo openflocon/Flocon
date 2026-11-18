@@ -1,7 +1,9 @@
 package io.github.openflocon.domain.settings
 
 import io.github.openflocon.domain.settings.usecase.InitAdbPathUseCase
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
+import io.github.openflocon.domain.settings.usecase.SetAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -24,6 +26,8 @@ internal val settingsModule = module {
     factoryOf(::UpdateServerPortsUseCase)
     factoryOf(::ObserveAppScaleUseCase)
     factoryOf(::SetAppScaleUseCase)
+    factoryOf(::ObserveAppLanguageUseCase)
+    factoryOf(::SetAppLanguageUseCase)
     factoryOf(::ObserveThemeUseCase)
     factoryOf(::SetThemeUseCase)
     factoryOf(::ObserveMascotEnabledUseCase)

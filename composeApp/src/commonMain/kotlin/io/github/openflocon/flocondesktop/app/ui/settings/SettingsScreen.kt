@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.ModeNight
@@ -108,6 +109,9 @@ import flocondesktop.composeapp.generated.resources.settings_licenses_descriptio
 import flocondesktop.composeapp.generated.resources.settings_mascot_description
 import flocondesktop.composeapp.generated.resources.settings_mascot_hide
 import flocondesktop.composeapp.generated.resources.settings_mascot_show
+import flocondesktop.composeapp.generated.resources.settings_language_description
+import flocondesktop.composeapp.generated.resources.settings_language_system
+import flocondesktop.composeapp.generated.resources.settings_language_title
 import flocondesktop.composeapp.generated.resources.settings_mascot_title
 import flocondesktop.composeapp.generated.resources.settings_no_logs
 import flocondesktop.composeapp.generated.resources.settings_open_source_licenses
@@ -354,6 +358,8 @@ private fun SettingsScreen(
 
                 SettingsTab.Appearance -> AppearancePane(
                     appScale = uiState.appScale,
+                    appLanguage = uiState.appLanguage,
+                    languages = uiState.languages,
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
                     onAction = onAction,
@@ -881,6 +887,8 @@ private fun AdbForwardStatusBadge(
 @Composable
 private fun AppearancePane(
     appScale: AppScaleSetting,
+    appLanguage: String?,
+    languages: ImmutableList<LanguageUiModel>,
     currentTheme: ThemeSetting,
     mascotEnabled: Boolean,
     onAction: (SettingsAction) -> Unit,
@@ -918,6 +926,18 @@ private fun AppearancePane(
             ScaleDropdown(
                 selected = appScale.toAppScale(),
                 onSelect = { onAction(SettingsAction.AppScaleChange(it.toSetting())) },
+            )
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_language_title),
+            icon = Icons.Outlined.Language,
+            description = stringResource(Res.string.settings_language_description)
+        ) {
+            LanguageDropdown(
+                selectedTag = appLanguage,
+                languages = languages,
+                onSelect = { onAction(SettingsAction.AppLanguageChange(it)) },
             )
         }
 
@@ -1339,6 +1359,71 @@ private fun ScaleDropdown(
                 onClick = {
                     expanded = false
                     onSelect(scale)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageDropdown(
+    selectedTag: String?,
+    languages: ImmutableList<LanguageUiModel>,
+    onSelect: (String?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val systemLabel = stringResource(Res.string.settings_language_system)
+    val selectedLabel = languages.firstOrNull { it.tag == selectedTag }?.label ?: systemLabel
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                Text(
+                    text = selectedLabel,
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.ink,
+                )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
+                )
+            }
+        },
+    ) {
+        FloconDropdownMenuItem(
+            text = systemLabel,
+            leadingIcon = if (selectedTag == null) Icons.Outlined.Check else null,
+            onClick = {
+                expanded = false
+                onSelect(null)
+            },
+        )
+        languages.forEach { language ->
+            FloconDropdownMenuItem(
+                text = language.label,
+                leadingIcon = if (language.tag == selectedTag) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(language.tag)
                 },
             )
         }

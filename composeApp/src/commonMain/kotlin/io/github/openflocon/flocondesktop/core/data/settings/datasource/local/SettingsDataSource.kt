@@ -18,6 +18,7 @@ internal interface SettingsDataSource {
 
     suspend fun setAdbPath(path: String)
     suspend fun setAppScale(value: AppScaleSetting)
+    suspend fun setAppLanguage(languageTag: String?)
     suspend fun setTheme(value: ThemeSetting)
 
     fun getFloconDocumentsPath(): String?
@@ -69,6 +70,7 @@ internal interface SettingsDataSource {
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
+    val appLanguage: StateFlow<String?>
     val theme: StateFlow<ThemeSetting>
     fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?>
 }

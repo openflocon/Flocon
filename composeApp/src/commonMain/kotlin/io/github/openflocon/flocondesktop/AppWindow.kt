@@ -8,6 +8,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.flocon.data.remote.dataRemoteModule
@@ -21,12 +23,14 @@ import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCas
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
 import io.github.openflocon.flocondesktop.app.AppScreen
 import io.github.openflocon.flocondesktop.app.di.appModule
 import io.github.openflocon.flocondesktop.app.ui.settings.toAppScale
+import io.github.openflocon.flocondesktop.app.ui.settings.toLocale
 import io.github.openflocon.flocondesktop.common.di.commonModule
 import io.github.openflocon.flocondesktop.core.di.coreModule
 import io.github.openflocon.flocondesktop.features.featuresModule
@@ -44,6 +48,7 @@ import org.koin.compose.koinInject
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.util.Locale
 
 @Composable
 fun App(
@@ -95,6 +100,8 @@ fun App(
 
         val appScale by koinInject<ObserveAppScaleUseCase>()()
             .collectAsStateWithLifecycle()
+        val appLanguage by koinInject<ObserveAppLanguageUseCase>()()
+            .collectAsStateWithLifecycle()
         val theme by koinInject<ObserveThemeUseCase>()()
             .collectAsStateWithLifecycle()
         val isDarkTheme = when (theme) {
@@ -106,11 +113,19 @@ fun App(
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
-        FloconTheme(
-            appScale = appScale.toAppScale(),
-            isDarkTheme = isDarkTheme,
-        ) {
-            AppScreen()
+        // the resources follow the default locale: the chosen language replaces it, the system one is restored when none is chosen
+        val systemLocale = remember { Locale.getDefault() }
+        val locale = remember(appLanguage) { appLanguage?.toLocale() ?: systemLocale }
+        Locale.setDefault(locale)
+
+        // the whole UI is composed again so that the new strings are read
+        key(locale) {
+            FloconTheme(
+                appScale = appScale.toAppScale(),
+                isDarkTheme = isDarkTheme,
+            ) {
+                AppScreen()
+            }
         }
 //        }
     }

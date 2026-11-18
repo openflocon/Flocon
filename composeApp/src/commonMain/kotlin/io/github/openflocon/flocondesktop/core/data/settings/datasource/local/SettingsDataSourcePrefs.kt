@@ -73,6 +73,10 @@ internal class SettingsDataSourcePrefs(
             ?: AppScaleSetting.DEFAULT
     }.stateIn(AppScaleSetting.DEFAULT)
 
+    override val appLanguage: StateFlow<String?> = flowSettings
+        .getStringOrNullFlow(APP_LANGUAGE)
+        .stateIn(settings.getStringOrNull(APP_LANGUAGE))
+
     override val theme: StateFlow<ThemeSetting> = flowSettings
         .getStringOrNullFlow(THEME)
         .mapLatest { it.toThemeSetting() }
@@ -190,6 +194,14 @@ internal class SettingsDataSourcePrefs(
         settings.putString(APP_SCALE, value.name)
     }
 
+    override suspend fun setAppLanguage(languageTag: String?) {
+        if (languageTag == null) {
+            settings.remove(APP_LANGUAGE)
+        } else {
+            settings.putString(APP_LANGUAGE, languageTag)
+        }
+    }
+
     override suspend fun setTheme(value: ThemeSetting) {
         settings.putString(THEME, value.name)
     }
@@ -266,6 +278,7 @@ internal class SettingsDataSourcePrefs(
         }
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val APP_SCALE = "app_scale"
+        private const val APP_LANGUAGE = "app_language"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"

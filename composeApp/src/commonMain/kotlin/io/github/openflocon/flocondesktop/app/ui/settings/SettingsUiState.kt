@@ -13,6 +13,9 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 data class SettingsUiState(
     val appScale: AppScaleSetting,
+    // null follows the system language
+    val appLanguage: String? = null,
+    val languages: ImmutableList<LanguageUiModel> = persistentListOf(),
     val logs: ImmutableList<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
     val theme: ThemeSetting,
@@ -26,6 +29,7 @@ data class SettingsUiState(
 
 fun previewSettingsUiState() = SettingsUiState(
     appScale = AppScaleSetting.DEFAULT,
+    languages = persistentListOf(LanguageUiModel("en", "English"), LanguageUiModel("fr", "Français")),
     adbForwardStatus = AdbForwardStatus.OK,
     logs = persistentListOf(
         LogEntryUiModel(LogLevel.DEBUG, "ADB path saved: /usr/local/bin/adb", "12:00:00", LogDomain.Default),

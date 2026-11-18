@@ -22,6 +22,7 @@ internal class SettingsRepositoryImpl(
     // TODO: Consider moving all settings into one StateFlow
     override val adbPath: Flow<String?> = localSettingsDataSource.adbPath
     override val appScale: StateFlow<AppScaleSetting> = localSettingsDataSource.appScale
+    override val appLanguage: StateFlow<String?> = localSettingsDataSource.appLanguage
     override val theme: StateFlow<ThemeSetting> = localSettingsDataSource.theme
 
     override val savedServerPorts: Flow<ServerPortsDomainModel> = localSettingsDataSource.serverPorts
@@ -53,6 +54,10 @@ internal class SettingsRepositoryImpl(
 
     override suspend fun setAppScale(value: AppScaleSetting) {
         localSettingsDataSource.setAppScale(value)
+    }
+
+    override suspend fun setAppLanguage(languageTag: String?) {
+        localSettingsDataSource.setAppLanguage(languageTag)
     }
 
     override suspend fun setTheme(value: ThemeSetting) {

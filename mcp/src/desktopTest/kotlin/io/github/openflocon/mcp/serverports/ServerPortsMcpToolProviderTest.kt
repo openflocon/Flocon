@@ -186,6 +186,7 @@ class ServerPortsMcpToolProviderTest {
         override fun getAdbPath(): String? = null
         override suspend fun setAdbPath(path: String) {}
         override suspend fun setAppScale(value: AppScaleSetting) {}
+        override suspend fun setAppLanguage(languageTag: String?) {}
         override suspend fun setTheme(value: ThemeSetting) {}
         override fun getFloconDocumentsPath(): String? = null
         override suspend fun setFloconDocumentsPath(path: String) {}
@@ -203,6 +204,7 @@ class ServerPortsMcpToolProviderTest {
             saved.value = ports
         }
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
+        override val appLanguage: StateFlow<String?> = MutableStateFlow(null)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
         override fun setAdbForwardStatus(status: AdbForwardStatus) {}

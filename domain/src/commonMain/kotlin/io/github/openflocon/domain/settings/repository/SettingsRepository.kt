@@ -19,6 +19,7 @@ interface SettingsRepository {
     suspend fun setAdbPath(path: String)
 
     suspend fun setAppScale(value: AppScaleSetting)
+    suspend fun setAppLanguage(languageTag: String?)
 
     suspend fun setTheme(value: ThemeSetting)
 
@@ -49,6 +50,9 @@ interface SettingsRepository {
 
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
+
+    /** BCP 47 tag of the language chosen by the user, null to follow the system one. */
+    val appLanguage: StateFlow<String?>
     val theme: StateFlow<ThemeSetting>
     val adbForwardStatus: StateFlow<AdbForwardStatus>
 
