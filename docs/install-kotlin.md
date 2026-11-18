@@ -94,13 +94,12 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
 
 | Feature | Artifact | Platforms |
 | :--- | :--- | :--- |
-| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging, OkHttp interceptor and WebSockets on Android and JVM), [Databases](database.md) plugin, [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md) | `flocon` | Android, JVM, iOS, Wasm |
+| Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging, OkHttp interceptor and WebSockets on Android and JVM), [Databases](database.md) plugin, [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md), [WebView](webview.md) (automatic `attach` on Android) | `flocon` | Android, JVM, iOS, Wasm |
 | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
 | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
 | [Databases](database.md) providers | `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
 | [DataStore](sharedpref.md) | `flocon-datastores` | Android, JVM, iOS |
 | [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
-| [WebView](webview.md) | `flocon-webview` | Android, JVM, iOS, Wasm (automatic `attach` on Android) |
 | QR code scanner | `flocon-qr-scanner` | Android |
 | BOM | `flocon-bom` | all |
 
@@ -160,7 +159,7 @@ Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analy
 | `FloconAnalytics` | `flocon` | [Analytics](analytics.md) |
 | `FloconFeatureFlags` | `flocon` | [Feature flags](featureflags.md) |
 | `FloconCrashReporter` | `flocon` | [Crash reporter](crashreporter.md) |
-| `FloconWebView` | `flocon-webview` | [WebView](webview.md) |
+| `FloconWebView` | `flocon` | [WebView](webview.md) |
 | `FloconTimeline` | `flocon` | [Timeline](timeline.md) |
 | `FloconAccessibility` | `flocon-accessibility` | [Accessibility](accessibility.md) |
 
