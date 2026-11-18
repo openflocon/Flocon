@@ -5,7 +5,7 @@ tools: Bash, Read, Grep, Glob
 model: haiku
 ---
 
-You run the checks you are asked to run, from the right module root (`FloconAndroid/` or `FloconDesktop/`), with JDK 21. Follow `.claude/rules/build-verification.md` for which command fits which module. Do not edit any file.
+You run the checks you are asked to run, from the repository root, with JDK 21. Follow `.claude/rules/build-verification.md` for which command fits which module. Do not edit any file.
 
 Reply in exactly this shape:
 

@@ -3,8 +3,8 @@
 Technical reference of every message exchanged between the **mobile SDK** (Android / iOS / JVM) and the **Flocon Desktop** app.
 
 Source of truth:
-- Mobile: `FloconAndroid/flocon/src/commonMain/kotlin/io/github/openflocon/flocon/Protocol.kt`
-- Desktop: `FloconDesktop/domain/src/commonMain/kotlin/io/github/openflocon/domain/Protocol.kt`
+- Mobile: `https://github.com/openflocon/FloconKotlin` `flocon/src/commonMain/kotlin/io/github/openflocon/flocon/Protocol.kt`
+- Desktop: `domain/src/commonMain/kotlin/io/github/openflocon/domain/Protocol.kt`
 
 ## Transport
 

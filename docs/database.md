@@ -152,7 +152,7 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
     Flocon.databasePlugin.register(id = "dogs", displayName = "dogs", database = dogDatabase)
     ```
 
-    See `FloconAndroid/sample/wasm` in the repository for a complete setup (worker, npm package and KSP for wasmJs).
+    See `sample/wasm` in the [FloconKotlin repository](https://github.com/openflocon/FloconKotlin) for a complete setup (worker, npm package and KSP for wasmJs).
 
     **SQLite files (Kotlin Multiplatform).** Any SQLite file can be registered with its absolute path:
 

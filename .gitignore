@@ -24,10 +24,22 @@ local.properties
 .kotlin/
 kotlin-js-store/
 
-FloconAndroid/.idea/
 site/
 .venv/
 venv/
 
 # graphify
 graphify-out/
+
+# From former FloconDesktop/.gitignore
+.kotlin
+xcuserdata
+!src/**/build/
+.idea
+captures
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
