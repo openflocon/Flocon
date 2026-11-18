@@ -94,6 +94,13 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeInput
+import dev.chrisbanes.haze.HazePerformanceMode
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.hazeBlur
+import dev.chrisbanes.haze.hazeSource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_cluster_events_count
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
@@ -136,6 +143,8 @@ import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 private const val ZoomStep = 1.25
+private val PillBlurRadius = 16.dp
+private const val PillTintAlpha = 0.6f
 
 // the thumb of the time scrollbar never gets shorter, however long the session is
 private const val ScrollbarMinThumbPx = 48f
@@ -400,10 +409,12 @@ internal fun TimelineGraph(
             )
         }
 
+        val hazeState = remember { HazeState() }
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
+                    .hazeSource(hazeState)
                     .semantics { contentDescription = description }
                     .pointerHoverIcon(if (hovered != null || hoveredCluster != null) PointerIcon.Hand else PointerIcon.Default)
                     .onSizeChanged { canvasSize = it }
@@ -554,6 +565,7 @@ internal fun TimelineGraph(
 
             // floating pill over the bottom of the canvas
             GraphControls(
+                hazeState = hazeState,
                 modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = FloconTheme.spacing.medium),
                 session = session,
                 onPreviousSession = onPreviousSession,
@@ -670,15 +682,24 @@ private fun GraphControls(
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
     onLatest: () -> Unit,
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
     val shape = RoundedCornerShape(percent = 50)
+    val blurStyle = remember(colors.bg100) {
+        HazeBlurStyle {
+            blurEnabled(true)
+            blurRadius(PillBlurRadius)
+            backgroundColor(colors.bg100)
+            colorEffects(listOf(HazeColorEffect.tint(colors.bg100.copy(alpha = PillTintAlpha))))
+        }
+    }
     Row(
         modifier = modifier
             .shadow(elevation = 8.dp, shape = shape)
             .clip(shape)
-            .background(colors.bg100)
+            .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle, performanceMode = HazePerformanceMode.Performance)
             .border(width = 1.dp, color = colors.lineStrong, shape = shape)
             .padding(FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
