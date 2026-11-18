@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -74,6 +75,7 @@ import io.github.openflocon.flocondesktop.features.network.list.view.components.
 import io.github.openflocon.flocondesktop.features.network.list.view.components.NetworkImageBadge
 import io.github.openflocon.flocondesktop.features.network.list.view.components.StatusCell
 import io.github.openflocon.flocondesktop.features.network.list.view.components.isFatalError
+import io.github.openflocon.flocondesktop.features.network.options.NetworkItemOptionLabels
 import io.github.openflocon.flocondesktop.features.network.options.networkItemOptions
 import io.github.openflocon.flocondesktop.features.network.options.rememberNetworkItemOptionLabels
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -94,16 +96,19 @@ fun NetworkItem(
     onAction: (NetworkAction) -> Unit,
     modifier: Modifier = Modifier,
     columnWidths: NetworkItemColumnWidths = NetworkItemColumnWidths(), // Default widths provided
+    // resolved once by the list rather than by each row
+    menuLabels: NetworkItemMenuLabels = rememberNetworkItemMenuLabels(),
 ) {
     val colors = FloconTheme.colors
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
+    val onActionCallback by rememberUpdatedState(onAction)
 
+    // built on right click only, not for every row of the list
     ContextualMenu(
-        items = contextualActions(
-            onAction = onAction,
-            state = state,
-        ),
+        itemsProvider = remember(state, menuLabels) {
+            { networkItemMenu(state = state, labels = menuLabels, onAction = { onActionCallback(it) }) }
+        },
     ) {
         val shape = FloconTheme.shapes.medium
         val isError = state.status.isFatalError()
@@ -291,14 +296,24 @@ private fun requestText(text: String, queryColor: Color): AnnotatedString {
     }
 }
 
+/** The labels of the right click menu of a [NetworkItem]. */
+@Immutable
+class NetworkItemMenuLabels(
+    val options: NetworkItemOptionLabels,
+    val selectItem: String,
+    val filter: String,
+    val include: String,
+    val exclude: String,
+    val domain: String,
+    val query: String,
+    val remove: String,
+    val removeLinesAbove: String,
+    val clearOldSessions: String,
+)
+
 @Composable
-private fun contextualActions(
-    onAction: (NetworkAction) -> Unit,
-    state: NetworkItemViewState
-): ImmutableList<FloconContextMenuItem> {
-    val onActionCallback by rememberUpdatedState(onAction)
-    // labels are resolved here: the menu is built outside of the composition
-    val optionLabels = rememberNetworkItemOptionLabels()
+fun rememberNetworkItemMenuLabels(): NetworkItemMenuLabels {
+    val options = rememberNetworkItemOptionLabels()
     val selectItem = stringResource(Res.string.network_select_item)
     val filter = stringResource(Res.string.filter)
     val include = stringResource(Res.string.filter_include)
@@ -308,72 +323,80 @@ private fun contextualActions(
     val remove = stringResource(Res.string.remove)
     val removeLinesAbove = stringResource(Res.string.remove_lines_above)
     val clearOldSessions = stringResource(Res.string.clear_old_sessions)
-    return remember(state, optionLabels) {
-        buildMenu {
-            networkItemOptions(
-                labels = optionLabels,
-                httpActions = state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket,
-                onOption = { onActionCallback(NetworkAction.ItemOption(state.uuid, it)) },
-            )
-            item(label = selectItem, onClick = { onActionCallback(NetworkAction.SelectLine(state.uuid, selected = true)) })
-            separator()
-            subMenu(label = filter) {
-                subMenu(label = include) {
-                    item(label = domain, onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Domain,
-                                    action = TextFilterAction.Include(text = state.domain)
-                                )
+    return remember(options, selectItem, filter, include, exclude, domain, query, remove, removeLinesAbove, clearOldSessions) {
+        NetworkItemMenuLabels(options, selectItem, filter, include, exclude, domain, query, remove, removeLinesAbove, clearOldSessions)
+    }
+}
+
+private fun networkItemMenu(
+    state: NetworkItemViewState,
+    labels: NetworkItemMenuLabels,
+    onAction: (NetworkAction) -> Unit,
+): ImmutableList<FloconContextMenuItem> = with(labels) {
+    buildMenu {
+        networkItemOptions(
+            labels = options,
+            httpActions = state.type !is NetworkItemViewState.NetworkTypeUi.Grpc && state.type !is NetworkItemViewState.NetworkTypeUi.WebSocket,
+            onOption = { onAction(NetworkAction.ItemOption(state.uuid, it)) },
+        )
+        item(label = selectItem, onClick = { onAction(NetworkAction.SelectLine(state.uuid, selected = true)) })
+        separator()
+        subMenu(label = filter) {
+            subMenu(label = include) {
+                item(label = domain, onClick = {
+                    onAction(
+                        NetworkAction.HeaderAction.FilterAction(
+                            OnFilterAction.TextFilter(
+                                column = NetworkTextFilterColumns.Domain,
+                                action = TextFilterAction.Include(text = state.domain)
                             )
                         )
-                    })
-                    item(label = query, onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Query,
-                                    action = TextFilterAction.Include(text = state.type.query)
-                                )
+                    )
+                })
+                item(label = query, onClick = {
+                    onAction(
+                        NetworkAction.HeaderAction.FilterAction(
+                            OnFilterAction.TextFilter(
+                                column = NetworkTextFilterColumns.Query,
+                                action = TextFilterAction.Include(text = state.type.query)
                             )
                         )
-                    })
-                }
-                subMenu(exclude) {
-                    item(domain, onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Domain,
-                                    action = TextFilterAction.Exclude(text = state.domain)
-                                )
-                            )
-                        )
-                    })
-                    item(label = query, onClick = {
-                        onActionCallback(
-                            NetworkAction.HeaderAction.FilterAction(
-                                OnFilterAction.TextFilter(
-                                    column = NetworkTextFilterColumns.Query,
-                                    action = TextFilterAction.Exclude(text = state.type.query)
-                                )
-                            )
-                        )
-                    })
-                }
+                    )
+                })
             }
-            separator()
-            item(label = remove, onClick = { onActionCallback(NetworkAction.Remove(state)) })
-            item(
-                label = removeLinesAbove,
-                onClick = { onActionCallback(NetworkAction.RemoveLinesAbove(state)) }
-            )
-            item(
-                label = clearOldSessions,
-                onClick = { onActionCallback(NetworkAction.ClearOldSession) }
-            )
+            subMenu(exclude) {
+                item(domain, onClick = {
+                    onAction(
+                        NetworkAction.HeaderAction.FilterAction(
+                            OnFilterAction.TextFilter(
+                                column = NetworkTextFilterColumns.Domain,
+                                action = TextFilterAction.Exclude(text = state.domain)
+                            )
+                        )
+                    )
+                })
+                item(label = query, onClick = {
+                    onAction(
+                        NetworkAction.HeaderAction.FilterAction(
+                            OnFilterAction.TextFilter(
+                                column = NetworkTextFilterColumns.Query,
+                                action = TextFilterAction.Exclude(text = state.type.query)
+                            )
+                        )
+                    )
+                })
+            }
         }
+        separator()
+        item(label = remove, onClick = { onAction(NetworkAction.Remove(state)) })
+        item(
+            label = removeLinesAbove,
+            onClick = { onAction(NetworkAction.RemoveLinesAbove(state)) }
+        )
+        item(
+            label = clearOldSessions,
+            onClick = { onAction(NetworkAction.ClearOldSession) }
+        )
     }
 }
 

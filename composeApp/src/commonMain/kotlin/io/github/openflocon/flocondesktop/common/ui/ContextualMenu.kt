@@ -12,3 +12,11 @@ expect fun ContextualMenu(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 )
+
+// right click on desktop, the items being built only when the menu opens: for rows of a long list
+@Composable
+expect fun ContextualMenu(
+    itemsProvider: () -> ImmutableList<FloconContextMenuItem>,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)

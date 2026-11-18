@@ -46,7 +46,7 @@ class NetworkLocalDataSourceRoom(
         filter: NetworkFilterDomainModel,
     ): Flow<PagingData<FloconNetworkCallDomainModel>> = Pager(
         config = PagingConfig(
-            pageSize = 20,
+            pageSize = 60, // rows are light (no bodies): bigger pages keep up with a fast desktop scroll
         ),
         pagingSourceFactory = {
             floconNetworkDao.observeRequestsWithPaging(
@@ -74,7 +74,7 @@ class NetworkLocalDataSourceRoom(
         val args = mutableListOf<Any>()
 
         val sqlQuery = buildString {
-            appendLine("SELECT * FROM FloconNetworkCallEntity")
+            appendLine("SELECT $LIST_COLUMNS FROM FloconNetworkCallEntity")
             appendLine("WHERE deviceId = ?")
             args.add(deviceIdAndPackageName.deviceId)
 
@@ -305,3 +305,19 @@ private fun NetworkSortDomainModel.Column.roomColumnName(): String = when (this)
     NetworkSortDomainModel.Column.Status -> "response_statusFormatted"
     NetworkSortDomainModel.Column.Duration -> "response_durationMs"
 }
+
+// the columns of a list row: bodies and headers are left out (the detail loads them by id), as they can weigh
+// megabytes per call. CASE keeps a missing response (or graphql request) null, so Room still maps it to null.
+private const val LIST_COLUMNS = """
+    callId, deviceId, packageName, appInstance, type, isReplayed,
+    request_url, request_method, request_startTime, request_startTimeFormatted, request_byteSizeFormatted,
+    '{}' AS request_requestHeaders, NULL AS request_requestBody, request_requestByteSize, request_isMocked,
+    request_domainFormatted, request_methodFormatted, request_queryFormatted,
+    CASE WHEN request_graphql_query IS NULL THEN NULL ELSE '' END AS request_graphql_query,
+    request_graphql_operationType, request_websocket_event,
+    response_durationMs, response_durationFormatted, response_responseContentType, NULL AS response_responseBody,
+    CASE WHEN response_responseHeaders IS NULL THEN NULL ELSE '{}' END AS response_responseHeaders,
+    response_responseByteSize, response_responseByteSizeFormatted, response_responseError, response_isImage,
+    response_statusFormatted, response_graphql_isSuccess, response_graphql_responseHttpCode,
+    response_http_responseHttpCode, response_grpc_responseStatus
+"""

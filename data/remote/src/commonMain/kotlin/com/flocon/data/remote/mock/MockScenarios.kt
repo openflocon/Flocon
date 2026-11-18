@@ -20,6 +20,7 @@ import com.flocon.data.remote.mock.scenarios.docWebSocketScenario
 import com.flocon.data.remote.mock.scenarios.docWebViewScenario
 import com.flocon.data.remote.mock.scenarios.emptyScenario
 import com.flocon.data.remote.mock.scenarios.multiDeviceScenario
+import com.flocon.data.remote.mock.scenarios.stressNetworkScenario
 import com.flocon.data.remote.mock.scenarios.stressTimelineScenario
 import com.flocon.data.remote.mock.scenarios.weirdScenario
 
@@ -49,6 +50,7 @@ object MockScenarios {
             multiDeviceScenario,
             weirdScenario,
             stressTimelineScenario,
+            stressNetworkScenario,
         )
     }
 

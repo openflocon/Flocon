@@ -23,6 +23,7 @@ import io.github.openflocon.flocondesktop.features.network.list.model.NetworkAct
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemColumnWidths
 import io.github.openflocon.flocondesktop.features.network.list.model.NetworkItemViewState
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkItem
+import io.github.openflocon.flocondesktop.features.network.list.view.rememberNetworkItemMenuLabels
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
@@ -39,6 +40,7 @@ fun NetworkRowsList(
     modifier: Modifier = Modifier,
 ) {
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
+    val menuLabels = rememberNetworkItemMenuLabels()
 
     Row(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -63,11 +65,11 @@ fun NetworkRowsList(
                         selected = item.uuid == contentState.selectedRequestId,
                         columnWidths = columnWidths,
                         onAction = onAction,
+                        menuLabels = menuLabels,
                         multiSelect = contentState.selecting,
                         multiSelected = contentState.multiSelectedIds.contains(item.uuid),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItem(),
+                        // no animateItem(): calls stream in, each insert would animate every visible row
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 } else {
                     Box(Modifier) // display nothing during load
