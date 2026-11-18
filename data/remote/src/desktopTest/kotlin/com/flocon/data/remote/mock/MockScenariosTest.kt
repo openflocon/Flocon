@@ -38,6 +38,7 @@ class MockScenariosTest {
                 "multi-device",
                 "weird",
                 "stress-timeline",
+                "stress-network",
             ),
             MockScenarios.all.map { it.name },
         )
