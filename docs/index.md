@@ -171,7 +171,7 @@ Pick your platform to see which plugins are available. Click a feature for its d
     | [Timeline](timeline.md) | ✅ | ✅ |
     | [Crash reporter](crashreporter.md) | ✅ | ✅ |
     | [Accessibility](accessibility.md) | ❌ | ⚠️ partial |
-    | [WebView](webview.md) | ❌ | ⚠️ manual API only |
+    | [WebView](webview.md) | ✅ automatic `attach` | ⚠️ manual API only |
 
 === "JVM / Wasm"
 
