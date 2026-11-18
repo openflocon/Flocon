@@ -53,13 +53,13 @@ class VersionCheckerRepositoryImplTest {
 
     @Test
     fun `the desktop check also gives the Kotlin SDK version`() = runBlocking {
-        val datasource = FakeDatasource(mapOf("openflocon/Flocon" to "2.1.0"))
+        val datasource = FakeDatasource(mapOf("openflocon/FloconKotlin" to "2.1.0"))
         val repository = repository(datasource)
 
         repository.checkIsLastVersion()
         repository.checkLastClientSdkVersion(FloconSdk.Kotlin)
 
-        assertEquals(listOf("openflocon/Flocon"), datasource.fetched)
+        assertEquals(listOf("openflocon/FloconKotlin"), datasource.fetched)
         assertEquals("2.1.0", repository.observeLastClientSdkVersion(FloconSdk.Kotlin).first())
     }
 
