@@ -3,6 +3,8 @@ package io.github.openflocon.flocondesktop.features.timeline.graph
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +16,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.LastPage
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.FitScreen
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +42,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -47,6 +60,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -92,10 +106,11 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
 import flocondesktop.composeapp.generated.resources.timeline_graph_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_session_short
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary
-import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in
-import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in_tooltip
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out_tooltip
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
@@ -106,17 +121,19 @@ import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.flocondesktop.features.timeline.view.drawLogGlyph
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconHorizontalScrollbar
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.WithTooltip
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import org.jetbrains.compose.resources.stringResource
 
 private const val ZoomStep = 1.25
 
@@ -330,33 +347,7 @@ internal fun TimelineGraph(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        GraphToolbar(
-            model = model,
-            session = session,
-            onPreviousSession = onPreviousSession,
-            onNextSession = onNextSession,
-            zoomPercent = currentViewport.zoomPercent(trackWidth),
-            onEditingChange = onEditingChange,
-            onZoomPercent = {
-                fitted = false
-                viewport = currentViewport.zoomedToPercent(it, trackWidth)
-            },
-            onZoomIn = {
-                fitted = false
-                viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
-            },
-            onZoomOut = {
-                fitted = false
-                viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
-            },
-            onFit = {
-                fitted = true
-            },
-            onLatest = {
-                fitted = false
-                viewport = currentViewport.jumpedToLatest(displayModel, trackWidth, trackHeight)
-            },
-        )
+        GraphSummary(model = model)
 
         // the trackpad pinch (macOS), Compose does not deliver it
         PinchZoomEffect { factor ->
@@ -560,6 +551,35 @@ internal fun TimelineGraph(
                     ),
                 )
             }
+
+            // floating pill over the bottom of the canvas
+            GraphControls(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = FloconTheme.spacing.medium),
+                session = session,
+                onPreviousSession = onPreviousSession,
+                onNextSession = onNextSession,
+                zoomPercent = currentViewport.zoomPercent(trackWidth),
+                onEditingChange = onEditingChange,
+                onZoomPercent = {
+                    fitted = false
+                    viewport = currentViewport.zoomedToPercent(it, trackWidth)
+                },
+                onZoomIn = {
+                    fitted = false
+                    viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
+                },
+                onZoomOut = {
+                    fitted = false
+                    viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
+                },
+                onFit = {
+                    fitted = true
+                },
+                onLatest = {
+                    fitted = false
+                    viewport = currentViewport.jumpedToLatest(displayModel, trackWidth, trackHeight)
+                },
+            )
         }
 
         // moves along the time with the mouse, under the track (not under the names of the lanes)
@@ -616,8 +636,30 @@ private class GraphPalette(
 )
 
 @Composable
-private fun GraphToolbar(
+private fun GraphSummary(
     model: GraphUiModel,
+    modifier: Modifier = Modifier,
+) {
+    val summary = model.toSummaryText()
+    Text(
+        text = buildString {
+            append(stringResource(Res.string.timeline_graph_summary, summary.visible, summary.sessionDuration, summary.failed))
+            if (summary.slowestName != null && summary.slowestDuration != null) {
+                append(" - ")
+                append(stringResource(Res.string.timeline_graph_slowest, summary.slowestName, summary.slowestDuration))
+            }
+        },
+        style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+        color = FloconTheme.colors.inkMuted,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+// the floating pill: sessions, zoom, fit and latest, icon-led
+@Composable
+private fun GraphControls(
     session: GraphSessionUiModel?,
     onPreviousSession: () -> Unit,
     onNextSession: () -> Unit,
@@ -631,46 +673,102 @@ private fun GraphToolbar(
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val summary = model.toSummaryText()
+    val shape = RoundedCornerShape(percent = 50)
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .shadow(elevation = 8.dp, shape = shape)
+            .clip(shape)
+            .background(colors.bg100)
+            .border(width = 1.dp, color = colors.lineStrong, shape = shape)
+            .padding(FloconTheme.spacing.tiny),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
     ) {
-        Text(
-            text = buildString {
-                append(stringResource(Res.string.timeline_graph_summary, summary.visible, summary.sessionDuration, summary.failed))
-                if (summary.slowestName != null && summary.slowestDuration != null) {
-                    append(" - ")
-                    append(stringResource(Res.string.timeline_graph_slowest, summary.slowestName, summary.slowestDuration))
-                }
-            },
-            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-            color = colors.inkMuted,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
         if (session != null && session.total > 1) {
-            FloconButton(onClick = onPreviousSession) {
-                Text(text = "‹")
-            }
-            Text(
-                text = stringResource(Res.string.timeline_graph_session, session.position, session.total),
-                style = FloconTheme.typography.labelMedium,
-                color = colors.inkMuted,
-                maxLines = 1,
+            GraphPillButton(
+                imageVector = Icons.Default.ChevronLeft,
+                tooltip = stringResource(Res.string.timeline_graph_previous_session),
+                enabled = session.hasPrevious,
+                onClick = onPreviousSession,
             )
-            FloconButton(onClick = onNextSession) {
-                Text(text = "›")
-            }
+            Text(
+                text = stringResource(Res.string.timeline_graph_session_short, session.position, session.total),
+                style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+                color = colors.ink,
+                maxLines = 1,
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.tiny),
+            )
+            GraphPillButton(
+                imageVector = Icons.Default.ChevronRight,
+                tooltip = stringResource(Res.string.timeline_graph_next_session),
+                enabled = session.hasNext,
+                onClick = onNextSession,
+            )
+            GraphPillDot()
         }
-        FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
+        GraphPillButton(
+            imageVector = Icons.Default.Remove,
+            tooltip = stringResource(Res.string.timeline_graph_zoom_out_tooltip),
+            onClick = onZoomOut,
+        )
         GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
-        FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
-        FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
-        FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
+        GraphPillButton(
+            imageVector = Icons.Default.Add,
+            tooltip = stringResource(Res.string.timeline_graph_zoom_in_tooltip),
+            onClick = onZoomIn,
+        )
+        GraphPillDot()
+        GraphPillButton(
+            imageVector = Icons.Outlined.FitScreen,
+            tooltip = stringResource(Res.string.timeline_graph_fit),
+            onClick = onFit,
+        )
+        GraphPillButton(
+            imageVector = Icons.AutoMirrored.Outlined.LastPage,
+            tooltip = stringResource(Res.string.timeline_graph_latest),
+            onClick = onLatest,
+            highlighted = true,
+        )
     }
+}
+
+@Composable
+private fun GraphPillButton(
+    imageVector: ImageVector,
+    tooltip: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    highlighted: Boolean = false,
+) {
+    val colors = FloconTheme.colors
+    WithTooltip(tooltip = tooltip) {
+        FloconIconButton(
+            onClick = onClick,
+            enabled = enabled,
+            shape = RoundedCornerShape(percent = 50),
+            modifier = modifier.background(if (highlighted) colors.accentSoft else Color.Transparent, RoundedCornerShape(percent = 50)),
+        ) {
+            FloconIcon(
+                imageVector = imageVector,
+                tint = when {
+                    !enabled -> colors.inkFaint
+                    highlighted -> colors.accent
+                    else -> colors.inkMuted
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun GraphPillDot() {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = FloconTheme.spacing.tiny)
+            .size(4.dp)
+            .background(FloconTheme.colors.lineStrong, CircleShape),
+    )
 }
 
 // the zoom in percent, typed and validated with enter or when the focus leaves the field

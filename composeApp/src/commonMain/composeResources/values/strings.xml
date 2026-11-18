@@ -96,6 +96,9 @@
     <string name="timeline_graph_summary">%1$d events - %2$s session - %3$d failed</string>
     <string name="timeline_graph_slowest">slowest: %1$s (%2$s)</string>
     <string name="timeline_graph_session">Session %1$d of %2$d</string>
+    <string name="timeline_graph_session_short">%1$d/%2$d</string>
+    <string name="timeline_graph_zoom_in_tooltip">Zoom in</string>
+    <string name="timeline_graph_zoom_out_tooltip">Zoom out</string>
     <string name="timeline_graph_previous_session">Previous session</string>
     <string name="timeline_graph_next_session">Next session</string>
     <string name="timeline_graph_empty">No event in this session</string>
