@@ -11,7 +11,7 @@ Covered plugins: **network, images (network calls with an `image/*` content type
 
 ## Launch
 
-From `FloconDesktop/`, with JDK 21:
+From the repository root, with JDK 21:
 
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 21)
@@ -58,7 +58,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 | `multi-device` | Android with two apps + an iPhone |
 | `weird` | 5 MB body, invalid JSON, unicode, 50×500, 2 000-char URL, old SDK version, odd timestamps |
 
-Code: `FloconDesktop/data/remote/src/commonMain/kotlin/com/flocon/data/remote/mock/` (`scenarios/Scenarios.kt`, the shared `scenarios/SampleData.kt` and `scenarios/DocSampleData.kt`, the request answers in `MockDeviceResponder.kt`).
+Code: `data/remote/src/commonMain/kotlin/com/flocon/data/remote/mock/` (`scenarios/Scenarios.kt`, the shared `scenarios/SampleData.kt` and `scenarios/DocSampleData.kt`, the request answers in `MockDeviceResponder.kt`).
 
 ## Take screenshots / check the data
 

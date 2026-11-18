@@ -85,7 +85,7 @@ Every event also carries: Flocon version, OS name and architecture, the telemetr
 
 Events are sent to [PostHog Cloud](https://posthog.com) in the **EU region**. No person profiles are created, IP geolocation is disabled, and the PostHog project is configured to discard client IP addresses.
 
-The full implementation lives in [`FloconDesktop/composeApp/.../telemetry`](https://github.com/openflocon/Flocon/tree/main/FloconDesktop/composeApp/src/commonMain/kotlin/io/github/openflocon/flocondesktop/telemetry).
+The full implementation lives in [`composeApp/.../telemetry`](https://github.com/openflocon/Flocon/tree/main/composeApp/src/commonMain/kotlin/io/github/openflocon/flocondesktop/telemetry).
 
 ## For contributors
 

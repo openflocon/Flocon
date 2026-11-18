@@ -4,8 +4,8 @@ Code, protocol and docs ship together in the same PR. When a change touches one 
 
 ## Protocol (mobile ⇄ desktop messages)
 - The source of truth is duplicated in two files that must stay identical in plugin/method names:
-  - `FloconAndroid/flocon/src/commonMain/kotlin/io/github/openflocon/flocon/Protocol.kt`
-  - `FloconDesktop/domain/src/commonMain/kotlin/io/github/openflocon/domain/Protocol.kt`
+  - `https://github.com/openflocon/FloconKotlin` `flocon/src/commonMain/kotlin/io/github/openflocon/flocon/Protocol.kt`
+  - `domain/src/commonMain/kotlin/io/github/openflocon/domain/Protocol.kt`
 - Any new/changed plugin, method or payload field → update `internal-docs/protocol/<plugin>.md` (and the plugin table in `internal-docs/protocol/README.md` for a new plugin).
 - Keep changes backward compatible: new fields optional with defaults; don't rename or remove fields an older SDK/desktop still sends.
 

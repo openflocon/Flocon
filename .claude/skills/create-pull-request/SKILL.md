@@ -12,7 +12,7 @@ Only run when the user explicitly asks for a PR.
 Task from the caller: $ARGUMENTS
 
 1. **Check the branch**: not `main`, working tree clean, name follows `git-setup` (`<type>/<feature-kebab>`). Otherwise fix it first following `.claude/skills/git-setup/SKILL.md`.
-2. **Local checks**: the caller lists the checks from `.claude/rules/build-verification.md` it ran and their result. If it gives none, run them for the touched area. If the SDK public API or a no-op module changed, also run `cd FloconAndroid && ./gradlew :sample:android:assembleDebug :sample:android:assembleRelease`. If a check fails, stop and report it. State clearly any check that could not be run.
+2. **Local checks**: the caller lists the checks from `.claude/rules/build-verification.md` it ran and their result. If it gives none, run them for the touched area. If a check fails, stop and report it. State clearly any check that could not be run.
 3. **Check sync**: protocol, `docs/`, MCP docs and README updated per `.claude/rules/docs-protocol-sync.md`.
 4. **Push**: `git push -u origin <branch>`. Never force-push.
 5. **Title**: same format as a commit, `<type>: [AREA] imperative summary` (PRs are squash-merged, the title becomes the commit).
