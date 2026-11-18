@@ -1,7 +1,9 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop.features.timeline.graph
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -112,7 +114,8 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
-import flocondesktop.composeapp.generated.resources.timeline_graph_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_next_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_previous_session
 import flocondesktop.composeapp.generated.resources.timeline_graph_session_short
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary
@@ -134,13 +137,13 @@ import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.WithTooltip
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import org.jetbrains.compose.resources.stringResource
 
 private const val ZoomStep = 1.25
 private val PillBlurRadius = 16.dp
@@ -296,7 +299,8 @@ internal fun TimelineGraph(
         if (!autoScroll || fitted || !opened || !followsLatest) return@LaunchedEffect
         while (true) {
             withFrameMillis { }
-            val endMs = currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
+            val endMs =
+                currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
             // a pixel at least: no new layout for less
             if (viewport.pxPastRight(endMs, trackWidth) >= 1.0) viewport = viewport.followedTo(endMs, trackWidth)
         }
@@ -318,7 +322,8 @@ internal fun TimelineGraph(
         // the rows are those of the new zoom: the groups change with it
         val focusedModel = if (clusterEvents) model.clustered(bucketPxPerMs(bucketOf(focused.pxPerMs)), expandedClusterKeys) else model
         val rowTop = focusedEvent?.let { focusedModel.rowTopOf(it) }
-        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
+        val scrollY =
+            rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
         viewport = focused.copy(scrollY = scrollY)
         onFocusApplied()
     }
@@ -432,7 +437,8 @@ internal fun TimelineGraph(
 
                                     PointerEventType.Move, PointerEventType.Enter -> {
                                         cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
-                                        val cluster = if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
+                                        val cluster =
+                                            if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
                                         hoveredClusterKey = cluster?.key
                                         hovered = if (cluster == null && x >= 0f && y >= 0f) {
                                             currentDisplayModel.hitTest(viewport, x, y + viewport.scrollY)
@@ -474,7 +480,8 @@ internal fun TimelineGraph(
                                 zoomBox?.let { (start, end) ->
                                     fitted = false
                                     stopAutoScroll()
-                                    viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                                    viewport =
+                                        viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
                                 }
                                 zoomBox = null
                             },
@@ -486,7 +493,12 @@ internal fun TimelineGraph(
                                 zoomBox = box.first to change.position
                             } else {
                                 fitted = false
-                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(
+                                    scrollY = (viewport.scrollY - drag.y / density).coerceIn(
+                                        0f,
+                                        maxScroll
+                                    )
+                                )
                             }
                         }
                     },
@@ -532,7 +544,12 @@ internal fun TimelineGraph(
                     onZoom = {
                         fitted = false
                         stopAutoScroll()
-                        viewport = focusedViewport(cluster.startMs, cluster.endMs, trackWidth, minWidthMs = ClusterZoomMinWidthMs).copy(scrollY = viewport.scrollY)
+                        viewport = focusedViewport(
+                            cluster.startMs,
+                            cluster.endMs,
+                            trackWidth,
+                            minWidthMs = ClusterZoomMinWidthMs
+                        ).copy(scrollY = viewport.scrollY)
                         selectedClusterKey = null
                     },
                     onExpand = {
@@ -546,7 +563,9 @@ internal fun TimelineGraph(
                     },
                     modifier = Modifier.offset(
                         x = left.coerceIn(0f, max(widthPx - ClusterPopoverWidthPx, 0f)).dp,
-                        y = (if (below + ClusterPopoverHeightPx <= heightPx) below else AxisHeightPx + rowTop - currentViewport.scrollY - ClusterPopoverHeightPx).coerceAtLeast(0f).dp,
+                        y = (if (below + ClusterPopoverHeightPx <= heightPx) below else AxisHeightPx + rowTop - currentViewport.scrollY - ClusterPopoverHeightPx).coerceAtLeast(
+                            0f
+                        ).dp,
                     ),
                 )
             }
@@ -597,7 +616,12 @@ internal fun TimelineGraph(
         // moves along the time with the mouse, under the track (not under the names of the lanes)
         val scrollbarAdapter = rememberFloconScrollbarAdapter(
             scrollOffset = { viewport.scrollbarOffsetPx() },
-            contentSize = { viewport.scrollbarContentPx(currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs), trackWidth) },
+            contentSize = {
+                viewport.scrollbarContentPx(
+                    currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs),
+                    trackWidth
+                )
+            },
             viewportSize = { trackWidth.toDouble() },
             scrollTo = { offsetPx ->
                 fitted = false
@@ -687,12 +711,11 @@ private fun GraphControls(
 ) {
     val colors = FloconTheme.colors
     val shape = RoundedCornerShape(percent = 50)
-    val blurStyle = remember(colors.bg100) {
+    val blurStyle = remember(colors.islandTopBar) {
         HazeBlurStyle {
             blurEnabled(true)
             blurRadius(PillBlurRadius)
-            backgroundColor(colors.bg100)
-            colorEffects(listOf(HazeColorEffect.tint(colors.bg100.copy(alpha = PillTintAlpha))))
+            backgroundColor(colors.islandTopBar)
         }
     }
     Row(
@@ -932,7 +955,8 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
+                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) }
+                        ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
@@ -949,7 +973,22 @@ private fun DrawScope.drawGraph(
                         drawBar(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width)
                         // a bar too short for its content opens on hover, over the others
                         if (event.key == hoveredKey) {
-                            deferredLabel = { drawBarFull(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width) }
+                            deferredLabel = {
+                                drawBarFull(
+                                    event,
+                                    viewport,
+                                    rowTop,
+                                    fill,
+                                    selected,
+                                    palette,
+                                    measurer,
+                                    labelStyle,
+                                    chipStyle,
+                                    unit,
+                                    imagePainter,
+                                    width
+                                )
+                            }
                         }
                     }
                     i++
@@ -959,7 +998,8 @@ private fun DrawScope.drawGraph(
                     val left = LaneLabelWidthPx + viewport.clusterLeftPx(cluster)
                     val clusterWidth = clusterWidthPx(cluster, viewport.pxPerMs)
                     if (left + clusterWidth < LaneLabelWidthPx || left > width) return@forEach
-                    val selected = cluster.key == selectedClusterKey || cluster.key == hoveredClusterKey || cluster.events.any { it.key == selectedKey }
+                    val selected =
+                        cluster.key == selectedClusterKey || cluster.key == hoveredClusterKey || cluster.events.any { it.key == selectedKey }
                     drawCluster(cluster, left, clusterWidth, rowTop, selected, palette, laneColors, measurer, chipStyle, unit)
                 }
             }
@@ -1092,10 +1132,21 @@ private fun DrawScope.drawCluster(
         }
     }
     if (selected) {
-        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(left - 1f, top - 1f),
+            Size(widthPx + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
     // the total, white with a shadow: readable whatever the colors under it
-    val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow), density = unit, maxLines = 1)
+    val count = measurer.measure(
+        cluster.size.toString(),
+        chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow),
+        density = unit,
+        maxLines = 1
+    )
     drawText(count, topLeft = Offset(left + (widthPx - count.size.width) / 2f, top + (BarHeightPx - count.size.height) / 2f))
     // the number of failed events, in a small rounded badge on the top right corner
     if (cluster.errorCount > 0) {
@@ -1104,9 +1155,17 @@ private fun DrawScope.drawCluster(
         val badgeLeft = left + widthPx - badgeWidth + ClusterBadgeOverhangPx
         val badgeTop = top - ClusterBadgeHeightPx / 4f
         // a flat badge with a soft shadow, no border
-        drawRoundRect(ClusterBadgeShadow, Offset(badgeLeft, badgeTop + ClusterBadgeShadowOffsetPx), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx))
+        drawRoundRect(
+            ClusterBadgeShadow,
+            Offset(badgeLeft, badgeTop + ClusterBadgeShadowOffsetPx),
+            Size(badgeWidth, ClusterBadgeHeightPx),
+            CornerRadius(BarRadiusPx)
+        )
         drawRoundRect(palette.error, Offset(badgeLeft, badgeTop), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx))
-        drawText(errors, topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f))
+        drawText(
+            errors,
+            topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f)
+        )
     }
 }
 
@@ -1129,7 +1188,13 @@ private fun DrawScope.drawBar(
     val top = rowTop + BarTopPx
     drawRoundRect(fill, Offset(x, top), Size(barWidth, BarHeightPx), CornerRadius(BarRadiusPx))
     if (selected) {
-        drawRoundRect(palette.selection, Offset(x - 1f, top - 1f), Size(barWidth + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(x - 1f, top - 1f),
+            Size(barWidth + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
 
     // the content is placed in the visible part of the bar
@@ -1208,7 +1273,13 @@ private fun DrawScope.drawBarFull(
     val top = rowTop + BarTopPx
     drawRoundRect(fill, Offset(left, top), Size(needed, BarHeightPx), CornerRadius(BarRadiusPx))
     if (selected) {
-        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(needed + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(left - 1f, top - 1f),
+            Size(needed + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
     var cursor = left + BarPaddingPx
     val centerY = top + BarHeightPx / 2f
@@ -1292,7 +1363,8 @@ private fun DrawScope.drawInstantFullLabel(
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
     // the lanes (a yellow one, the log markers) have a wide range of colors: the text is picked by contrast against the fill
-    val text = measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    val text =
+        measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through
@@ -1316,7 +1388,8 @@ private fun DrawScope.instantLabelOnTheLeft(x: Float, canvasWidth: Float): Boole
     return x - LaneLabelWidthPx > trackWidth * InstantLabelFlipRatio
 }
 
-private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) = if (onTheLeft) x - InstantLabelOffsetPx - textWidth else x + InstantLabelOffsetPx
+private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) =
+    if (onTheLeft) x - InstantLabelOffsetPx - textWidth else x + InstantLabelOffsetPx
 
 @Composable
 private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {
@@ -1336,11 +1409,11 @@ private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {
 
 private val PreviewHeight = 480.dp
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineGraphDarkPreview() = TimelineGraphPreviewContent(isDarkTheme = true)
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineGraphLightPreview() = TimelineGraphPreviewContent(isDarkTheme = false)
 
