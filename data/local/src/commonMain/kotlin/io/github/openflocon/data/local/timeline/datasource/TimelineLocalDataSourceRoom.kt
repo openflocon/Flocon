@@ -16,10 +16,13 @@ import io.github.openflocon.domain.timeline.models.TimelineEventDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineFilterDomainModel
 import io.github.openflocon.domain.timeline.models.TimelineSummaryDomainModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 // the graph draws at most that many events of a session
 private const val MAX_GRAPH_EVENTS = TIMELINE_MAX_EVENTS
@@ -32,18 +35,35 @@ internal class TimelineLocalDataSourceRoom(
     override fun observeTimeline(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         filter: TimelineFilterDomainModel,
-    ): Flow<PagingData<TimelineEventDomainModel>> {
-        val query = buildTimelineQuery(
-            deviceId = deviceIdAndPackageName.deviceId,
-            packageName = deviceIdAndPackageName.packageName,
-            filter = filter,
-        )
-        return Pager(
+    ): Flow<PagingData<TimelineEventDomainModel>> = channelFlow {
+        var source: TimelineKeysetPagingSource? = null
+        val pager = Pager(
             config = PagingConfig(pageSize = 50),
-            pagingSourceFactory = { timelineDao.observeTimeline(query.toRoomRawQuery()) },
-        ).flow.map { pagingData ->
-            // an event added between two page loads shifts the offsets: the next page can return an event already loaded
-            pagingData.map { it.toDomain() }.distinctBy { Triple(it.source, it.id, it.phase) }
+            pagingSourceFactory = {
+                TimelineKeysetPagingSource(
+                    pageQueries = { cursor, forward, limit ->
+                        buildTimelinePageQueries(
+                            deviceId = deviceIdAndPackageName.deviceId,
+                            packageName = deviceIdAndPackageName.packageName,
+                            filter = filter,
+                            cursor = cursor,
+                            forward = forward,
+                            limit = limit,
+                        )
+                    },
+                    fetch = { timelineDao.getTimelinePage(it.toRoomRawQuery()) },
+                ).also { source = it }
+            },
+        )
+        // a page is not a Room query that watches its tables: when they change, the source is invalidated and the pager loads a new one
+        launch(dispatcherProvider.data) {
+            // the first emission is the current state of the tables, already loaded
+            timelineDao.observeTimelineChanges(TimelineQuery(sql = "SELECT 1", params = emptyList()).toRoomRawQuery())
+                .drop(1)
+                .collect { source?.invalidate() }
+        }
+        pager.flow.collect { pagingData ->
+            send(pagingData.map { it.toDomain() })
         }
     }
 
