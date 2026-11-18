@@ -10,7 +10,7 @@ sealed class FloconSdk(
     /** The GitHub repository the SDK is released from, `owner/name`. Null when we do not know where it is released. */
     val repository: String?,
 ) {
-    data object Kotlin : FloconSdk(sdkName = "kotlin", repository = "openflocon/Flocon")
+    data object Kotlin : FloconSdk(sdkName = "kotlin", repository = "openflocon/FloconKotlin")
     data object Swift : FloconSdk(sdkName = "swift", repository = "openflocon/FloconSwift")
     data object Flutter : FloconSdk(sdkName = "flutter", repository = "openflocon/FloconFlutter")
 
