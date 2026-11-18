@@ -77,7 +77,7 @@ More in the [macOS](https://openflocon.github.io/Flocon/macos-install), [Linux](
 Pick the SDK for your platform. They all connect to the same desktop app.
 
 <table>
-<tr><th align="left"><a href="https://github.com/openflocon/Flocon/tree/main/FloconAndroid">Android &amp; Kotlin Multiplatform</a> &nbsp; <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=maven%20central"></a></th></tr>
+<tr><th align="left"><a href="https://github.com/openflocon/FloconKotlin">Android &amp; Kotlin Multiplatform</a> &nbsp; <a href="https://central.sonatype.com/artifact/io.github.openflocon/flocon"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.openflocon/flocon?label=maven%20central"></a></th></tr>
 <tr><td>
 
 **Install**

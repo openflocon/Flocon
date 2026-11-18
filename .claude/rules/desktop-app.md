@@ -1,9 +1,9 @@
 ---
 paths:
-  - "FloconDesktop/**"
+  - "**"
 ---
 
-# Desktop app rules (`FloconDesktop/`)
+# Desktop app rules
 
 ## Layering
 Features are split across modules, one package per feature (e.g. `featureflags`) in each layer:

@@ -757,7 +757,7 @@ Opens the Flocon documents folder (screenshots, screen recordings, exports) in t
 
 ## Coverage check
 
-Tools registered in the server code (`FloconDesktop/mcp`, one `addTypedTool`, `addTypedToolWithResult` or `addLoggedTool` call each) against tools documented on this page: **57 in code, 57 documented, none missing**.
+Tools registered in the server code (`mcp`, one `addTypedTool`, `addTypedToolWithResult` or `addLoggedTool` call each) against tools documented on this page: **57 in code, 57 documented, none missing**.
 
 | Area | Tools |
 |---|---|

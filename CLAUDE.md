@@ -47,9 +47,8 @@ Explore only locates code. Design exploration still follows the Opus rule above.
 
 Project rules live in `.claude/rules/` and are loaded automatically (path-scoped ones only when working in that folder):
 
-- `android-sdk.md`: KMP SDK conventions, `FloconRuntime` switch and `flocon-no-op` (`FloconAndroid/`)
-- `desktop-app.md`: desktop layering, DI and Room rules (`FloconDesktop/`)
-- `compose.md`: Compose UI conventions: screen structure, state, design system, previews (`FloconDesktop/`)
+- `desktop-app.md`: desktop layering, DI and Room rules
+- `compose.md`: Compose UI conventions: screen structure, state, design system, previews
 - `git-workflow.md`: commit message format, branches, PRs
 - `build-verification.md`: which Gradle / MkDocs checks to run locally, and which are left to CI
 - `docs-protocol-sync.md`: keep `internal-docs/protocol/`, `docs/`, MCP docs and README in sync with code

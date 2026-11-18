@@ -1,9 +1,9 @@
 ---
 paths:
-  - "FloconDesktop/**/*.kt"
+  - "**/*.kt"
 ---
 
-# Compose conventions (`FloconDesktop/`)
+# Compose conventions
 
 Reference implementation: `composeApp/.../features/featureflags/`.
 

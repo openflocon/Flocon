@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
-      - 'FloconDesktop/**'
+      - '**'
       - '.github/workflows/desktop_pr_check.yml'
   workflow_dispatch:
 
@@ -34,9 +34,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Check code style
-        working-directory: FloconDesktop
         run: ./gradlew ktlintCheck
 
       - name: Run tests and assemble
-        working-directory: FloconDesktop
         run: ./gradlew allTests assemble

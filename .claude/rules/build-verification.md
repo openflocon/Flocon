@@ -8,8 +8,7 @@ Run the tests of the module(s) you changed, not the full build:
 
 | Touched | Command (examples) |
 |---|---|
-| An SDK plugin in `FloconAndroid/` | `./gradlew :featureflags:featureflags:jvmTest` (add `:accessibility:accessibility-no-op:compileKotlinJvm` / `:qrscanner:qrscanner-no-op:compileKotlinJvm` when one of the two remaining no-ops changes) |
-| A desktop module in `FloconDesktop/` | `./gradlew :mcp:allTests`, `./gradlew :data:core:allTests`, `./gradlew ktlintFormat` (CI runs `ktlintCheck`; staged `.kt` files are also formatted by the commit hook) |
+| A desktop module | `./gradlew :mcp:allTests`, `./gradlew :data:core:allTests`, `./gradlew ktlintFormat` (CI runs `ktlintCheck`; staged `.kt` files are also formatted by the commit hook) |
 | `docs/**` or `mkdocs.yml` | `mkdocs build --strict` |
 
 ## Before opening a PR
@@ -18,7 +17,6 @@ Only run the checks CI doesn't cover:
 
 | Touched | Command | Why |
 |---|---|---|
-| `FloconAndroid/**` public API, an entry point, `flocon-no-op` or a manifest | `cd FloconAndroid && ./gradlew :sample:android:assembleDebug :sample:android:assembleRelease && bash scripts/check-release-noop.sh` | debug = Flocon on, release = `flocon-no-op` + R8; the script checks that R8 removed the implementation (also run by `android_pr_check.yml`) |
 
 ## Left to CI
 
@@ -26,8 +24,7 @@ The full builds run on every PR. Don't run them locally unless CI fails and you 
 
 | Touched | CI command | Workflow |
 |---|---|---|
-| `FloconAndroid/**` | `./gradlew jvmTest test assemble` | `android_pr_check.yml` |
-| `FloconDesktop/**` | `./gradlew allTests assemble` | `desktop_pr_check.yml` |
+| `**` (desktop) | `./gradlew allTests assemble` | `desktop_pr_check.yml` |
 | `docs/**` or `mkdocs.yml` | `mkdocs build --strict` | `docs.yml` |
 
 A task is done when its module checks pass locally. The PR is done when CI is green; if CI fails, reproduce with the CI command and fix the cause.
