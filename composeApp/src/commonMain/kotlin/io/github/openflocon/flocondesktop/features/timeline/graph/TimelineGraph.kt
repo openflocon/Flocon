@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.openflocon.flocondesktop.features.timeline.graph
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +18,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.LastPage
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.FitScreen
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +44,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -47,6 +62,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -80,6 +96,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeInput
+import dev.chrisbanes.haze.HazePerformanceMode
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.hazeBlur
+import dev.chrisbanes.haze.hazeSource
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.timeline_cluster_events_count
 import flocondesktop.composeapp.generated.resources.timeline_graph_description
@@ -91,11 +113,13 @@ import flocondesktop.composeapp.generated.resources.timeline_graph_legend_bar
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_failed
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_instant
 import flocondesktop.composeapp.generated.resources.timeline_graph_legend_rows
-import flocondesktop.composeapp.generated.resources.timeline_graph_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_next_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_previous_session
+import flocondesktop.composeapp.generated.resources.timeline_graph_session_short
 import flocondesktop.composeapp.generated.resources.timeline_graph_slowest
 import flocondesktop.composeapp.generated.resources.timeline_graph_summary
-import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in
-import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_in_tooltip
+import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_out_tooltip
 import flocondesktop.composeapp.generated.resources.timeline_graph_zoom_unit
 import io.github.openflocon.domain.common.time.formatTimestamp
 import io.github.openflocon.domain.timeline.models.TimelineSource
@@ -106,9 +130,11 @@ import io.github.openflocon.flocondesktop.features.timeline.view.categoryColors
 import io.github.openflocon.flocondesktop.features.timeline.view.drawLogGlyph
 import io.github.openflocon.flocondesktop.features.timeline.view.label
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconHorizontalScrollbar
+import io.github.openflocon.library.designsystem.components.FloconIcon
+import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconTextField
+import io.github.openflocon.library.designsystem.components.WithTooltip
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -119,6 +145,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 private const val ZoomStep = 1.25
+private val PillBlurRadius = 16.dp
+private const val PillTintAlpha = 0.6f
 
 // the thumb of the time scrollbar never gets shorter, however long the session is
 private const val ScrollbarMinThumbPx = 48f
@@ -270,7 +298,8 @@ internal fun TimelineGraph(
         if (!autoScroll || fitted || !opened || !followsLatest) return@LaunchedEffect
         while (true) {
             withFrameMillis { }
-            val endMs = currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
+            val endMs =
+                currentModel.panLimitMs(isMostRecentSession = true, nowTimestamp = System.currentTimeMillis(), latestMs = currentLatestMs) ?: continue
             // a pixel at least: no new layout for less
             if (viewport.pxPastRight(endMs, trackWidth) >= 1.0) viewport = viewport.followedTo(endMs, trackWidth)
         }
@@ -292,7 +321,8 @@ internal fun TimelineGraph(
         // the rows are those of the new zoom: the groups change with it
         val focusedModel = if (clusterEvents) model.clustered(bucketPxPerMs(bucketOf(focused.pxPerMs)), expandedClusterKeys) else model
         val rowTop = focusedEvent?.let { focusedModel.rowTopOf(it) }
-        val scrollY = rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
+        val scrollY =
+            rowTop?.let { (it - (trackHeight - RowHeightPx) / 2f).coerceIn(0f, max(focusedModel.contentHeightPx() - trackHeight, 0f)) } ?: 0f
         viewport = focused.copy(scrollY = scrollY)
         onFocusApplied()
     }
@@ -330,33 +360,7 @@ internal fun TimelineGraph(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        GraphToolbar(
-            model = model,
-            session = session,
-            onPreviousSession = onPreviousSession,
-            onNextSession = onNextSession,
-            zoomPercent = currentViewport.zoomPercent(trackWidth),
-            onEditingChange = onEditingChange,
-            onZoomPercent = {
-                fitted = false
-                viewport = currentViewport.zoomedToPercent(it, trackWidth)
-            },
-            onZoomIn = {
-                fitted = false
-                viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
-            },
-            onZoomOut = {
-                fitted = false
-                viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
-            },
-            onFit = {
-                fitted = true
-            },
-            onLatest = {
-                fitted = false
-                viewport = currentViewport.jumpedToLatest(displayModel, trackWidth, trackHeight)
-            },
-        )
+        GraphSummary(model = model)
 
         // the trackpad pinch (macOS), Compose does not deliver it
         PinchZoomEffect { factor ->
@@ -409,10 +413,12 @@ internal fun TimelineGraph(
             )
         }
 
+        val hazeState = remember { HazeState() }
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
+                    .hazeSource(hazeState)
                     .semantics { contentDescription = description }
                     .pointerHoverIcon(if (hovered != null || hoveredCluster != null) PointerIcon.Hand else PointerIcon.Default)
                     .onSizeChanged { canvasSize = it }
@@ -430,7 +436,8 @@ internal fun TimelineGraph(
 
                                     PointerEventType.Move, PointerEventType.Enter -> {
                                         cursorMs = if (x >= 0f && x <= trackWidth) viewport.msAt(x).toLong() else null
-                                        val cluster = if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
+                                        val cluster =
+                                            if (x >= 0f && y >= 0f) currentDisplayModel.hitTestCluster(viewport, x, y + viewport.scrollY) else null
                                         hoveredClusterKey = cluster?.key
                                         hovered = if (cluster == null && x >= 0f && y >= 0f) {
                                             currentDisplayModel.hitTest(viewport, x, y + viewport.scrollY)
@@ -472,7 +479,8 @@ internal fun TimelineGraph(
                                 zoomBox?.let { (start, end) ->
                                     fitted = false
                                     stopAutoScroll()
-                                    viewport = viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
+                                    viewport =
+                                        viewport.zoomedToRange(start.x / density - LaneLabelWidthPx, end.x / density - LaneLabelWidthPx, trackWidth)
                                 }
                                 zoomBox = null
                             },
@@ -484,7 +492,12 @@ internal fun TimelineGraph(
                                 zoomBox = box.first to change.position
                             } else {
                                 fitted = false
-                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(scrollY = (viewport.scrollY - drag.y / density).coerceIn(0f, maxScroll))
+                                viewport = pannedBy(-drag.x / density / viewport.pxPerMs).copy(
+                                    scrollY = (viewport.scrollY - drag.y / density).coerceIn(
+                                        0f,
+                                        maxScroll
+                                    )
+                                )
                             }
                         }
                     },
@@ -530,7 +543,12 @@ internal fun TimelineGraph(
                     onZoom = {
                         fitted = false
                         stopAutoScroll()
-                        viewport = focusedViewport(cluster.startMs, cluster.endMs, trackWidth, minWidthMs = ClusterZoomMinWidthMs).copy(scrollY = viewport.scrollY)
+                        viewport = focusedViewport(
+                            cluster.startMs,
+                            cluster.endMs,
+                            trackWidth,
+                            minWidthMs = ClusterZoomMinWidthMs
+                        ).copy(scrollY = viewport.scrollY)
                         selectedClusterKey = null
                     },
                     onExpand = {
@@ -544,7 +562,9 @@ internal fun TimelineGraph(
                     },
                     modifier = Modifier.offset(
                         x = left.coerceIn(0f, max(widthPx - ClusterPopoverWidthPx, 0f)).dp,
-                        y = (if (below + ClusterPopoverHeightPx <= heightPx) below else AxisHeightPx + rowTop - currentViewport.scrollY - ClusterPopoverHeightPx).coerceAtLeast(0f).dp,
+                        y = (if (below + ClusterPopoverHeightPx <= heightPx) below else AxisHeightPx + rowTop - currentViewport.scrollY - ClusterPopoverHeightPx).coerceAtLeast(
+                            0f
+                        ).dp,
                     ),
                 )
             }
@@ -560,12 +580,47 @@ internal fun TimelineGraph(
                     ),
                 )
             }
+
+            // floating pill over the bottom of the canvas
+            GraphControls(
+                hazeState = hazeState,
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = FloconTheme.spacing.medium),
+                session = session,
+                onPreviousSession = onPreviousSession,
+                onNextSession = onNextSession,
+                zoomPercent = currentViewport.zoomPercent(trackWidth),
+                onEditingChange = onEditingChange,
+                onZoomPercent = {
+                    fitted = false
+                    viewport = currentViewport.zoomedToPercent(it, trackWidth)
+                },
+                onZoomIn = {
+                    fitted = false
+                    viewport = currentViewport.zoomed(ZoomStep, trackWidth / 2)
+                },
+                onZoomOut = {
+                    fitted = false
+                    viewport = currentViewport.zoomed(1 / ZoomStep, trackWidth / 2)
+                },
+                onFit = {
+                    fitted = true
+                },
+                onLatest = {
+                    fitted = false
+                    viewport = currentViewport.jumpedToLatest(displayModel, trackWidth, trackHeight)
+                },
+            )
         }
 
         // moves along the time with the mouse, under the track (not under the names of the lanes)
         val scrollbarAdapter = rememberFloconScrollbarAdapter(
             scrollOffset = { viewport.scrollbarOffsetPx() },
-            contentSize = { viewport.scrollbarContentPx(currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs), trackWidth) },
+            contentSize = {
+                viewport.scrollbarContentPx(
+                    currentModel.panLimitMs(currentFollowsLatest, System.currentTimeMillis(), currentLatestMs),
+                    trackWidth
+                )
+            },
             viewportSize = { trackWidth.toDouble() },
             scrollTo = { offsetPx ->
                 fitted = false
@@ -616,8 +671,30 @@ private class GraphPalette(
 )
 
 @Composable
-private fun GraphToolbar(
+private fun GraphSummary(
     model: GraphUiModel,
+    modifier: Modifier = Modifier,
+) {
+    val summary = model.toSummaryText()
+    Text(
+        text = buildString {
+            append(stringResource(Res.string.timeline_graph_summary, summary.visible, summary.sessionDuration, summary.failed))
+            if (summary.slowestName != null && summary.slowestDuration != null) {
+                append(" - ")
+                append(stringResource(Res.string.timeline_graph_slowest, summary.slowestName, summary.slowestDuration))
+            }
+        },
+        style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+        color = FloconTheme.colors.inkMuted,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+// the floating pill: sessions, zoom, fit and latest, icon-led
+@Composable
+private fun GraphControls(
     session: GraphSessionUiModel?,
     onPreviousSession: () -> Unit,
     onNextSession: () -> Unit,
@@ -628,49 +705,113 @@ private fun GraphToolbar(
     onZoomOut: () -> Unit,
     onFit: () -> Unit,
     onLatest: () -> Unit,
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
     val colors = FloconTheme.colors
-    val summary = model.toSummaryText()
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-    ) {
-        Text(
-            text = buildString {
-                append(stringResource(Res.string.timeline_graph_summary, summary.visible, summary.sessionDuration, summary.failed))
-                if (summary.slowestName != null && summary.slowestDuration != null) {
-                    append(" - ")
-                    append(stringResource(Res.string.timeline_graph_slowest, summary.slowestName, summary.slowestDuration))
-                }
-            },
-            style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
-            color = colors.inkMuted,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-        if (session != null && session.total > 1) {
-            FloconButton(onClick = onPreviousSession) {
-                Text(text = "‹")
-            }
-            Text(
-                text = stringResource(Res.string.timeline_graph_session, session.position, session.total),
-                style = FloconTheme.typography.labelMedium,
-                color = colors.inkMuted,
-                maxLines = 1,
-            )
-            FloconButton(onClick = onNextSession) {
-                Text(text = "›")
-            }
+    val shape = RoundedCornerShape(percent = 50)
+    val blurStyle = remember(colors.islandTopBar) {
+        HazeBlurStyle {
+            blurEnabled(true)
+            blurRadius(PillBlurRadius)
+            backgroundColor(colors.islandTopBar)
         }
-        FloconButton(onClick = onZoomOut) { Text(stringResource(Res.string.timeline_graph_zoom_out)) }
-        GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
-        FloconButton(onClick = onZoomIn) { Text(stringResource(Res.string.timeline_graph_zoom_in)) }
-        FloconButton(onClick = onLatest) { Text(stringResource(Res.string.timeline_graph_latest)) }
-        FloconButton(onClick = onFit) { Text(stringResource(Res.string.timeline_graph_fit)) }
     }
+    Row(
+        modifier = modifier
+            .shadow(elevation = 8.dp, shape = shape)
+            .clip(shape)
+            .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle, performanceMode = HazePerformanceMode.Performance)
+            .border(width = 1.dp, color = colors.lineStrong, shape = shape)
+            .padding(FloconTheme.spacing.tiny),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny),
+    ) {
+        if (session != null && session.total > 1) {
+            GraphPillButton(
+                imageVector = Icons.Default.ChevronLeft,
+                tooltip = stringResource(Res.string.timeline_graph_previous_session),
+                enabled = session.hasPrevious,
+                onClick = onPreviousSession,
+            )
+            Text(
+                text = stringResource(Res.string.timeline_graph_session_short, session.position, session.total),
+                style = FloconTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+                color = colors.ink,
+                maxLines = 1,
+                modifier = Modifier.padding(horizontal = FloconTheme.spacing.tiny),
+            )
+            GraphPillButton(
+                imageVector = Icons.Default.ChevronRight,
+                tooltip = stringResource(Res.string.timeline_graph_next_session),
+                enabled = session.hasNext,
+                onClick = onNextSession,
+            )
+            GraphPillDot()
+        }
+        GraphPillButton(
+            imageVector = Icons.Default.Remove,
+            tooltip = stringResource(Res.string.timeline_graph_zoom_out_tooltip),
+            onClick = onZoomOut,
+        )
+        GraphZoomField(percent = zoomPercent, onPercentChange = onZoomPercent, onEditingChange = onEditingChange)
+        GraphPillButton(
+            imageVector = Icons.Default.Add,
+            tooltip = stringResource(Res.string.timeline_graph_zoom_in_tooltip),
+            onClick = onZoomIn,
+        )
+        GraphPillDot()
+        GraphPillButton(
+            imageVector = Icons.Outlined.FitScreen,
+            tooltip = stringResource(Res.string.timeline_graph_fit),
+            onClick = onFit,
+        )
+        GraphPillButton(
+            imageVector = Icons.AutoMirrored.Outlined.LastPage,
+            tooltip = stringResource(Res.string.timeline_graph_latest),
+            onClick = onLatest,
+            highlighted = true,
+        )
+    }
+}
+
+@Composable
+private fun GraphPillButton(
+    imageVector: ImageVector,
+    tooltip: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    highlighted: Boolean = false,
+) {
+    val colors = FloconTheme.colors
+    WithTooltip(tooltip = tooltip) {
+        FloconIconButton(
+            onClick = onClick,
+            enabled = enabled,
+            shape = RoundedCornerShape(percent = 50),
+            modifier = modifier.background(if (highlighted) colors.accentSoft else Color.Transparent, RoundedCornerShape(percent = 50)),
+        ) {
+            FloconIcon(
+                imageVector = imageVector,
+                tint = when {
+                    !enabled -> colors.inkFaint
+                    highlighted -> colors.accent
+                    else -> colors.inkMuted
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun GraphPillDot() {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = FloconTheme.spacing.tiny)
+            .size(4.dp)
+            .background(FloconTheme.colors.lineStrong, CircleShape),
+    )
 }
 
 // the zoom in percent, typed and validated with enter or when the focus leaves the field
@@ -813,7 +954,8 @@ private fun DrawScope.drawGraph(
                     val event = row[i]
                     if (event.startMs - margin > viewEndMs) break
                     val selected = event.key == selectedKey
-                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) } ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
+                    val fill = event.logGlyph?.let { palette.logGlyphColors.getValue(it.color) }
+                        ?: if (event.isError) palette.error else laneColors.getValue(event.lane)
                     if (event.isInstant) {
                         val hoveredInstant = event.key == hoveredKey
                         drawInstant(
@@ -830,7 +972,22 @@ private fun DrawScope.drawGraph(
                         drawBar(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width)
                         // a bar too short for its content opens on hover, over the others
                         if (event.key == hoveredKey) {
-                            deferredLabel = { drawBarFull(event, viewport, rowTop, fill, selected, palette, measurer, labelStyle, chipStyle, unit, imagePainter, width) }
+                            deferredLabel = {
+                                drawBarFull(
+                                    event,
+                                    viewport,
+                                    rowTop,
+                                    fill,
+                                    selected,
+                                    palette,
+                                    measurer,
+                                    labelStyle,
+                                    chipStyle,
+                                    unit,
+                                    imagePainter,
+                                    width
+                                )
+                            }
                         }
                     }
                     i++
@@ -840,7 +997,8 @@ private fun DrawScope.drawGraph(
                     val left = LaneLabelWidthPx + viewport.clusterLeftPx(cluster)
                     val clusterWidth = clusterWidthPx(cluster, viewport.pxPerMs)
                     if (left + clusterWidth < LaneLabelWidthPx || left > width) return@forEach
-                    val selected = cluster.key == selectedClusterKey || cluster.key == hoveredClusterKey || cluster.events.any { it.key == selectedKey }
+                    val selected =
+                        cluster.key == selectedClusterKey || cluster.key == hoveredClusterKey || cluster.events.any { it.key == selectedKey }
                     drawCluster(cluster, left, clusterWidth, rowTop, selected, palette, laneColors, measurer, chipStyle, unit)
                 }
             }
@@ -973,10 +1131,21 @@ private fun DrawScope.drawCluster(
         }
     }
     if (selected) {
-        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(widthPx + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(left - 1f, top - 1f),
+            Size(widthPx + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
     // the total, white with a shadow: readable whatever the colors under it
-    val count = measurer.measure(cluster.size.toString(), chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow), density = unit, maxLines = 1)
+    val count = measurer.measure(
+        cluster.size.toString(),
+        chipStyle.copy(color = ClusterCountColor, shadow = ClusterCountShadow),
+        density = unit,
+        maxLines = 1
+    )
     drawText(count, topLeft = Offset(left + (widthPx - count.size.width) / 2f, top + (BarHeightPx - count.size.height) / 2f))
     // the number of failed events, in a small rounded badge on the top right corner
     if (cluster.errorCount > 0) {
@@ -985,9 +1154,17 @@ private fun DrawScope.drawCluster(
         val badgeLeft = left + widthPx - badgeWidth + ClusterBadgeOverhangPx
         val badgeTop = top - ClusterBadgeHeightPx / 4f
         // a flat badge with a soft shadow, no border
-        drawRoundRect(ClusterBadgeShadow, Offset(badgeLeft, badgeTop + ClusterBadgeShadowOffsetPx), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx))
+        drawRoundRect(
+            ClusterBadgeShadow,
+            Offset(badgeLeft, badgeTop + ClusterBadgeShadowOffsetPx),
+            Size(badgeWidth, ClusterBadgeHeightPx),
+            CornerRadius(BarRadiusPx)
+        )
         drawRoundRect(palette.error, Offset(badgeLeft, badgeTop), Size(badgeWidth, ClusterBadgeHeightPx), CornerRadius(BarRadiusPx))
-        drawText(errors, topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f))
+        drawText(
+            errors,
+            topLeft = Offset(badgeLeft + (badgeWidth - errors.size.width) / 2f, badgeTop + (ClusterBadgeHeightPx - errors.size.height) / 2f)
+        )
     }
 }
 
@@ -1010,7 +1187,13 @@ private fun DrawScope.drawBar(
     val top = rowTop + BarTopPx
     drawRoundRect(fill, Offset(x, top), Size(barWidth, BarHeightPx), CornerRadius(BarRadiusPx))
     if (selected) {
-        drawRoundRect(palette.selection, Offset(x - 1f, top - 1f), Size(barWidth + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(x - 1f, top - 1f),
+            Size(barWidth + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
 
     // the content is placed in the visible part of the bar
@@ -1089,7 +1272,13 @@ private fun DrawScope.drawBarFull(
     val top = rowTop + BarTopPx
     drawRoundRect(fill, Offset(left, top), Size(needed, BarHeightPx), CornerRadius(BarRadiusPx))
     if (selected) {
-        drawRoundRect(palette.selection, Offset(left - 1f, top - 1f), Size(needed + 2f, BarHeightPx + 2f), CornerRadius(BarRadiusPx), style = Stroke(2f))
+        drawRoundRect(
+            palette.selection,
+            Offset(left - 1f, top - 1f),
+            Size(needed + 2f, BarHeightPx + 2f),
+            CornerRadius(BarRadiusPx),
+            style = Stroke(2f)
+        )
     }
     var cursor = left + BarPaddingPx
     val centerY = top + BarHeightPx / 2f
@@ -1173,7 +1362,8 @@ private fun DrawScope.drawInstantFullLabel(
     val centerY = rowTop + RowHeightPx / 2f
     val onTheLeft = instantLabelOnTheLeft(x, canvasWidth)
     // the lanes (a yellow one, the log markers) have a wide range of colors: the text is picked by contrast against the fill
-    val text = measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
+    val text =
+        measurer.measure(event.name, labelStyle.copy(color = readableInkOn(fill), fontWeight = FontWeight.Normal), density = unit, maxLines = 1)
     val left = instantLabelX(x, text.size.width, onTheLeft)
     val top = centerY - text.size.height / 2f
     // the colors of the lanes are opaque: nothing of the labels under it shows through
@@ -1217,11 +1407,11 @@ private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {
 
 private val PreviewHeight = 480.dp
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineGraphDarkPreview() = TimelineGraphPreviewContent(isDarkTheme = true)
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun TimelineGraphLightPreview() = TimelineGraphPreviewContent(isDarkTheme = false)
 

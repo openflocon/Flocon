@@ -55,6 +55,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.zxing.core)
+            implementation(libs.haze)
+            implementation(libs.haze.blur)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
