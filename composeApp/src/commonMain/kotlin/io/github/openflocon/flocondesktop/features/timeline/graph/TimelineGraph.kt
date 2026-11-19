@@ -100,7 +100,6 @@ import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.HazePerformanceMode
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.HazeBlurStyle
-import dev.chrisbanes.haze.blur.HazeColorEffect
 import dev.chrisbanes.haze.blur.hazeBlur
 import dev.chrisbanes.haze.hazeSource
 import flocondesktop.composeapp.generated.resources.Res
@@ -1388,8 +1387,7 @@ private fun DrawScope.instantLabelOnTheLeft(x: Float, canvasWidth: Float): Boole
     return x - LaneLabelWidthPx > trackWidth * InstantLabelFlipRatio
 }
 
-private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) =
-    if (onTheLeft) x - InstantLabelOffsetPx - textWidth else x + InstantLabelOffsetPx
+private fun instantLabelX(x: Float, textWidth: Int, onTheLeft: Boolean) = if (onTheLeft) x - InstantLabelOffsetPx - textWidth else x + InstantLabelOffsetPx
 
 @Composable
 private fun TimelineGraphPreviewContent(isDarkTheme: Boolean) {
