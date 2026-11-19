@@ -6,7 +6,6 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.screenshot_saved_at
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
-import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceInstalledPluginsUseCase
 import io.github.openflocon.domain.device.usecase.TakeScreenshotUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.domain.log.LogDomain
@@ -59,6 +58,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -84,7 +84,6 @@ internal class AppViewModel(
     private val settingsRepository: SettingsRepository,
     private val getFloconDocumentPathUseCase: GetFloconDocumentPathUseCase,
     private val telemetryManager: TelemetryManager,
-    observeCurrentDeviceInstalledPluginsUseCase: ObserveCurrentDeviceInstalledPluginsUseCase,
     observeMenuPreferencesUseCase: ObserveMenuPreferencesUseCase,
     private val togglePinnedMenuItemUseCase: TogglePinnedMenuItemUseCase,
     private val toggleCollapsedMenuSectionUseCase: ToggleCollapsedMenuSectionUseCase,
@@ -98,21 +97,17 @@ internal class AppViewModel(
         )
     )
 
-    // the items depend on the plugins installed in the SDK of the selected app, and on the user preferences (pins, collapsed sections)
-    private val menuState: StateFlow<MenuState> = combine(
-        observeCurrentDeviceInstalledPluginsUseCase(),
-        observeMenuPreferencesUseCase(),
-    ) { installedPlugins, preferences ->
-        buildMenu().applyPreferences(
-            installedPlugins = installedPlugins,
-            pinnedIds = preferences.pinnedItems,
-            collapsedSectionIds = preferences.collapsedSections,
-            hiddenIds = preferences.hiddenItems,
-        )
-    }
+    // the items depend on the user preferences (pins, collapsed sections, hidden items)
+    private val menuState: StateFlow<MenuState> = observeMenuPreferencesUseCase()
+        .map { preferences ->
+            buildMenu().applyPreferences(
+                pinnedIds = preferences.pinnedItems,
+                collapsedSectionIds = preferences.collapsedSections,
+                hiddenIds = preferences.hiddenItems,
+            )
+        }
         .stateInWhileSubscribed(
             buildMenu().applyPreferences(
-                installedPlugins = null,
                 pinnedIds = emptyList(),
                 collapsedSectionIds = emptySet(),
             )
