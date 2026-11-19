@@ -11,8 +11,8 @@ Replace `LAST_VERSION` with the version shown on the badge.
 
 Since 2.0 the SDK is split into **one module per feature**. From **2.0.1**, most of them are part of the core (`flocon`): add the core, then only the modules you still need. Add them in every variant, plus `flocon-no-op` in release: it turns Flocon off, see [Release builds](#release-builds).
 
-!!! info "Version 2.0.0 or earlier?"
-    Before 2.0.1, each feature was its own module with its own `-no-op` twin, added with `debugImplementation` / `releaseImplementation`. Every section below has a **2.0.0 and earlier** tab for it, and the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds) lists what changed.
+!!! info "Version 2.0.0?"
+    Before 2.0.1, each feature was its own module with its own `-no-op` twin, added with `debugImplementation` / `releaseImplementation`. Every section below has a **2.0.0** tab for it, and the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds) lists what changed.
 
 Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, iOS, Wasm).
 
@@ -108,7 +108,7 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     | QR code scanner | `flocon-qr-scanner` | Android |
     | BOM | `flocon-bom` | all |
 
-=== "2.0.0 and earlier"
+=== "2.0.0"
 
     === "Version catalog"
 
@@ -286,7 +286,7 @@ Each plugin is then reachable with `Flocon.xxxPlugin` (for example `Flocon.analy
     | `FloconTimeline` | `flocon` | [Timeline](timeline.md) |
     | `FloconAccessibility` | `flocon-accessibility` | [Accessibility](accessibility.md) |
 
-=== "2.0.0 and earlier"
+=== "2.0.0"
 
     | Plugin to `install` | Module | Page |
     | :--- | :--- | :--- |
@@ -356,7 +356,7 @@ Flocon is a debugging tool: once connected, the desktop can read your network ca
 
     The iOS framework, desktop (JVM) and Wasm targets have no release configuration: add `flocon-no-op` to the build that ships (e.g. a release-only Gradle module or flavor), or call `startFlocon` only behind your app's own debug check.
 
-=== "2.0.0 and earlier"
+=== "2.0.0"
 
     Use `debugImplementation` with the `-no-op` twin in `releaseImplementation`, as in [step 1](#1-add-the-dependencies). The no-op has the same API: nothing is started and no connection is made. Use `flocon-no-op` **and** the no-op of every module you use. In a shared Kotlin Multiplatform module, which has a single variant, swap the modules in the release configurations of the app:
 

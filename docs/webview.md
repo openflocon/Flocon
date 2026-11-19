@@ -29,7 +29,7 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 
         The WebView plugin is part of the core module (`flocon`, and `flocon-no-op` for release, see [Release builds](install-kotlin.md#release-builds)), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
-    === "2.0.0 and earlier"
+    === "2.0.0"
 
         ```kotlin
         dependencies {

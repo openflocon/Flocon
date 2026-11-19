@@ -30,7 +30,7 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
 
         Deeplinks are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
-    === "2.0.0 and earlier"
+    === "2.0.0"
 
         Add the module (the `-no-op` twin keeps the same API in release builds, see [Release builds](install-kotlin.md#release-builds)):
 

@@ -31,7 +31,7 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
         Preferences are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
 
-    === "2.0.0 and earlier"
+    === "2.0.0"
 
         ```kotlin
         dependencies {
