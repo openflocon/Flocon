@@ -27,7 +27,20 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
 
 === "Kotlin"
 
-    Preferences are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
+    === "2.0.1 and later"
+
+        Preferences are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
+
+    === "2.0.0 and earlier"
+
+        ```kotlin
+        dependencies {
+            debugImplementation("io.github.openflocon:flocon-sharedprefs:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-sharedprefs-no-op:LAST_VERSION")
+        }
+        ```
+
+    Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {
@@ -51,6 +64,9 @@ Flocon shows the key-value storage of your app (`SharedPreferences`, Jetpack Dat
             implementation("io.github.openflocon:flocon-datastores:LAST_VERSION")
         }
         ```
+
+    !!! note "Before 2.0.1"
+        `flocon-datastores` went in `debugImplementation`, with `flocon-datastores-no-op` in `releaseImplementation`.
 
 === "Swift"
 

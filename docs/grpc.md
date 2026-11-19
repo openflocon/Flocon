@@ -68,6 +68,9 @@ For each call you see:
         }
         ```
 
+    !!! note "Before 2.0.1"
+        The gRPC interceptors were added with `debugImplementation`, and their `-no-op` twin (`flocon-grpc-interceptor-lite-no-op` or `flocon-grpc-interceptor-no-op`) with `releaseImplementation`. The network plugin was in a separate `flocon-network-core` module. See the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds).
+
     With `flocon-no-op` in release builds (see [Release builds](install-kotlin.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
 
 === "Swift"
