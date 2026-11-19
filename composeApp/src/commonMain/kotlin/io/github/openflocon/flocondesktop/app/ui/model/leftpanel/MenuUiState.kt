@@ -8,7 +8,6 @@ import flocondesktop.composeapp.generated.resources.menu_actions
 import flocondesktop.composeapp.generated.resources.menu_data
 import flocondesktop.composeapp.generated.resources.menu_network
 import flocondesktop.composeapp.generated.resources.menu_storage
-import io.github.openflocon.domain.device.models.DevicePlugin
 import io.github.openflocon.flocondesktop.app.ui.model.SubScreen
 import io.github.openflocon.flocondesktop.app.ui.model.id
 import io.github.openflocon.flocondesktop.app.ui.view.icon
@@ -108,38 +107,37 @@ internal fun buildMenu() = MenuState(
             id = "network",
             title = Res.string.menu_network,
             items = persistentListOf(
-                item(subScreen = SubScreen.Network, plugin = DevicePlugin.Network),
-                item(subScreen = SubScreen.Images, plugin = DevicePlugin.Images),
+                item(subScreen = SubScreen.Network),
+                item(subScreen = SubScreen.Images),
             ),
         ),
         MenuSection(
             id = "storage",
             title = Res.string.menu_storage,
             items = persistentListOf(
-                item(SubScreen.Database, plugin = DevicePlugin.Database),
-                item(SubScreen.SharedPreferences, plugin = DevicePlugin.SharedPreferences),
-                item(SubScreen.Files, plugin = DevicePlugin.Files),
+                item(SubScreen.Database),
+                item(SubScreen.SharedPreferences),
+                item(SubScreen.Files),
             ),
         ),
         MenuSection(
             id = "data",
             title = Res.string.menu_data,
             items = persistentListOf(
-                item(SubScreen.Dashboard, plugin = DevicePlugin.Dashboard),
-                item(SubScreen.Analytics, plugin = DevicePlugin.Analytics),
-                item(SubScreen.Tables, plugin = DevicePlugin.Tables),
-                item(SubScreen.CrashReporter, plugin = DevicePlugin.CrashReporter),
-                item(SubScreen.FeatureFlags, plugin = DevicePlugin.FeatureFlags),
-                item(SubScreen.Accessibility, plugin = DevicePlugin.Accessibility),
-                item(SubScreen.WebView, plugin = DevicePlugin.WebView),
+                item(SubScreen.Dashboard),
+                item(SubScreen.Analytics),
+                item(SubScreen.Tables),
+                item(SubScreen.CrashReporter),
+                item(SubScreen.FeatureFlags),
+                item(SubScreen.Accessibility),
+                item(SubScreen.WebView),
             ),
         ),
         MenuSection(
             id = "actions",
             title = Res.string.menu_actions,
             items = persistentListOf(
-                item(SubScreen.Deeplinks, plugin = DevicePlugin.Deeplinks),
-                // adb only, not related to a plugin of the SDK: always displayed
+                item(SubScreen.Deeplinks),
                 item(SubScreen.AdbCommander),
             ),
         ),
@@ -148,13 +146,11 @@ internal fun buildMenu() = MenuState(
 
 private fun item(
     subScreen: SubScreen,
-    plugin: DevicePlugin? = null,
     pinnable: Boolean = true,
 ): MenuItem = MenuItem(
     screen = subScreen,
     icon = subScreen.icon(),
     isEnabled = true,
-    requiredPlugin = plugin,
     isPinnable = pinnable,
 )
 
@@ -168,13 +164,11 @@ internal fun startScreenCandidates(hiddenIds: Set<String>): List<MenuItem> = bui
     hideableMenuItems().filterNot { it.screen.id in hiddenIds }
 
 /**
- * - hides the items whose plugin is not installed in the SDK of the app ([installedPlugins] null = unknown, nothing is hidden)
  * - hides the items the user turned off in the settings ([hiddenIds])
  * - moves the pinned items to the top, in the order they have been pinned
  * - marks the collapsed sections
  */
 internal fun MenuState.applyPreferences(
-    installedPlugins: Set<String>?,
     pinnedIds: List<String>,
     collapsedSectionIds: Set<String>,
     hiddenIds: Set<String> = emptySet(),
@@ -182,7 +176,6 @@ internal fun MenuState.applyPreferences(
     val visibleSections = sections.map { section ->
         section.copy(
             items = section.items
-                .filter { it.requiredPlugin?.isInstalled(installedPlugins) ?: true }
                 .filterNot { it.isPinnable && it.screen.id in hiddenIds }
                 .toImmutableList(),
         )
