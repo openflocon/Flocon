@@ -65,6 +65,9 @@ The network plugin is the one that talks to the desktop. The interceptors only r
         flocon-ktor = { module = "io.github.openflocon:flocon-ktor-interceptor", version.ref = "flocon" }
         ```
 
+    !!! note "Before 2.0.1"
+        The network core and the OkHttp interceptor were separate modules, each with its own `-no-op` twin: `flocon-network-core` and `flocon-okhttp-interceptor` (OkHttp), or `flocon-network-core` and `flocon-ktor-interceptor` (Ktor), in `debugImplementation`, and the matching `-no-op` artifacts (`flocon-network-core-no-op`, `flocon-okhttp-interceptor-no-op`, `flocon-ktor-interceptor-no-op`) in `releaseImplementation`. See the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds).
+
     Then install the plugin when you start Flocon:
 
     ```kotlin

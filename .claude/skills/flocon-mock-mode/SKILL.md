@@ -57,6 +57,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 | `empty` | A connected device with no data (empty states) |
 | `multi-device` | Android with two apps + an iPhone |
 | `weird` | 5 MB body, invalid JSON, unicode, 50×500, 2 000-char URL, old SDK version, odd timestamps |
+| `stress-network` | 5 000 network calls with ~20 KB JSON bodies and headers, every method and status, exceptions, images, pending calls: to test the network list scroll |
 
 Code: `data/remote/src/commonMain/kotlin/com/flocon/data/remote/mock/` (`scenarios/Scenarios.kt`, the shared `scenarios/SampleData.kt` and `scenarios/DocSampleData.kt`, the request answers in `MockDeviceResponder.kt`).
 

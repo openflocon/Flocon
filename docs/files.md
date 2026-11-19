@@ -36,7 +36,20 @@ and a root folder itself is never deleted.
 
 === "Kotlin"
 
-    Files are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies). Install the plugin:
+    === "2.0.1 and later"
+
+        Files are part of the core module (`flocon`, and `flocon-no-op` for release), so there is nothing more to add than the [core dependencies](install-kotlin.md#1-add-the-dependencies).
+
+    === "2.0.0"
+
+        ```kotlin
+        dependencies {
+            debugImplementation("io.github.openflocon:flocon-files:LAST_VERSION")
+            releaseImplementation("io.github.openflocon:flocon-files-no-op:LAST_VERSION")
+        }
+        ```
+
+    Install the plugin:
 
     ```kotlin
     startFlocon(FloconContext(context)) {

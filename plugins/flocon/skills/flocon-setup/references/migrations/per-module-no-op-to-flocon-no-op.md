@@ -5,7 +5,7 @@ Source of truth: `docs/migration.md`, section "After 2.0.0: one `flocon-no-op` f
 ## Procedure
 
 1. **Inventory.** Search `*.gradle.kts` and `libs.versions.toml` for `openflocon` and `-no-op`. Note for each hit: module, configuration (`debugImplementation`, `releaseImplementation`, other build types, dependency substitution).
-2. **Update the version** to the new one.
+2. **Update the version** to 2.0.1 or later (the merged modules and the single `flocon-no-op` do not exist in 2.0.0). If 2.0.1 is not published yet, check Maven Central and tell the user.
 2b. **Merged modules**: remove `flocon-network-core`, `flocon-okhttp-interceptor`, `flocon-database-core`, `flocon-analytics`, `flocon-files`, `flocon-sharedprefs`, `flocon-deeplinks`, `flocon-feature-flags`, `flocon-timeline`, `flocon-crashreporter` and `flocon-tables` (catalog entries and dependencies): they are now part of `flocon`, with the same packages and APIs. Keep `flocon-ktor-interceptor`, the gRPC interceptors, `flocon-datastores` and the database providers (`flocon-database-room`, `flocon-database-room3`, `flocon-database-sqldelight`).
 3. **Real modules**: `debugImplementation` of each Flocon module becomes `implementation`, except `flocon-accessibility` and `flocon-qr-scanner`, which stay in `debugImplementation`.
 4. **No-ops**: remove every module `-no-op` (catalog entries and dependencies), except `flocon-accessibility-no-op` and `flocon-qr-scanner-no-op`. Keep `flocon-no-op` in `releaseImplementation`, and add it to every other build type that ships.
