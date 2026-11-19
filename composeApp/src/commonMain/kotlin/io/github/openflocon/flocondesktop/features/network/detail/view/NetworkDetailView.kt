@@ -61,7 +61,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
@@ -96,13 +95,11 @@ import flocondesktop.composeapp.generated.resources.network_export_headers_image
 import flocondesktop.composeapp.generated.resources.network_export_response_summary_image
 import flocondesktop.composeapp.generated.resources.network_export_summary_image
 import flocondesktop.composeapp.generated.resources.network_full_url
-import flocondesktop.composeapp.generated.resources.network_header_method
 import flocondesktop.composeapp.generated.resources.network_header_request_time
 import flocondesktop.composeapp.generated.resources.network_header_time
 import flocondesktop.composeapp.generated.resources.network_headers
 import flocondesktop.composeapp.generated.resources.network_image_response
 import flocondesktop.composeapp.generated.resources.network_jwt
-import flocondesktop.composeapp.generated.resources.network_log_title
 import flocondesktop.composeapp.generated.resources.network_no_body
 import flocondesktop.composeapp.generated.resources.network_open_jwt_decoder
 import flocondesktop.composeapp.generated.resources.network_query_name
@@ -158,6 +155,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.roundToInt
 
 private const val LARGE_BODY_LENGTH = 1_000_000
 private val KeyWidth = 140.dp
@@ -267,7 +265,8 @@ private fun NetworkDetailContent(
         Box(
             modifier = Modifier
                 .layout { measurable, _ ->
-                    val widthPx = 700.dp.roundToPx()
+                    // same density as the one provided to FullLogExport below
+                    val widthPx = (700 * maxOf(2f, density)).roundToInt()
                     val placeable = measurable.measure(
                         Constraints(
                             minWidth = widthPx,
@@ -276,7 +275,8 @@ private fun NetworkDetailContent(
                             maxHeight = Constraints.Infinity
                         )
                     )
-                    layout(0, 0) {
+                    // real size: the recorded layer takes the size of this node (0x0 gave an unreadable image)
+                    layout(placeable.width, placeable.height) {
                         placeable.place(0, 0)
                     }
                 }
@@ -294,8 +294,6 @@ private fun NetworkDetailContent(
             ) {
                 FullLogExport(
                     state = uiState,
-                    linesLabelWidth = 130.dp,
-                    headersLabelWidth = 150.dp,
                     modifier = Modifier.width(700.dp)
                 )
             }
@@ -1089,295 +1087,135 @@ private fun ImageCard(
     }
 }
 
+/** Same look as the detail panel (panel background, header, section cards), drawn off screen to export the whole log as an image */
 @Composable
 private fun FullLogExport(
     state: NetworkDetailViewState,
     modifier: Modifier = Modifier,
-    linesLabelWidth: Dp = 130.dp,
-    headersLabelWidth: Dp = 150.dp,
 ) {
+    val fullUrlLabel = stringResource(Res.string.network_full_url)
+    val timeLabel = stringResource(Res.string.network_header_request_time)
+    val durationLabel = stringResource(Res.string.network_header_time)
+    val sizeLabel = stringResource(Res.string.network_request_size)
+    val infoEntries = buildList {
+        add(fullUrlLabel to state.fullUrl)
+        add(timeLabel to state.requestTimeFormatted)
+        state.durationFormatted?.let { add(durationLabel to it) }
+        add(sizeLabel to state.requestSize)
+    }
+
     Column(
         modifier = modifier
-            .background(FloconTheme.colors.bg100)
+            .panelBackground()
             .padding(FloconTheme.spacing.large),
         verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
     ) {
-        // Summary Card
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = FloconTheme.colors.bg200,
-                    shape = RoundedCornerShape(12.dp),
-                )
-                .padding(FloconTheme.spacing.medium)
-        ) {
-            Text(
-                text = stringResource(Res.string.network_log_title),
-                style = FloconTheme.typography.titleMedium,
-                color = FloconTheme.colors.inkMuted,
-                modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-            )
-
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.network_full_url),
-                value = state.fullUrl,
-                contentColor = FloconTheme.colors.ink,
-                labelWidth = linesLabelWidth,
-            )
-
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.network_header_method),
-                contentColor = FloconTheme.colors.ink,
-                labelWidth = linesLabelWidth,
-            ) {
-                when (val m = state.method) {
-                    is NetworkDetailViewState.Method.Http -> MethodTag(method = m.method)
-
-                    is NetworkDetailViewState.Method.MethodName -> {
-                        Text(
-                            text = m.name,
-                            style = FloconTheme.typography.bodySmall,
-                            color = FloconTheme.colors.inkMuted,
-                            modifier = Modifier
-                                .background(
-                                    color = FloconTheme.colors.bg100,
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .padding(
-                                    horizontal = FloconTheme.spacing.small,
-                                    vertical = FloconTheme.spacing.compact
-                                ),
-                        )
-                    }
+        DetailHeader(
+            label = state.host.ifEmpty { stringResource(Res.string.network_details_title) },
+            title = state.path.ifEmpty { state.fullUrl },
+            chips = {
+                when (val method = state.method) {
+                    is NetworkDetailViewState.Method.Http -> MethodTag(method = method.method)
+                    is NetworkDetailViewState.Method.MethodName -> DetailChip(text = method.name)
                 }
-            }
-
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = state.statusLabel,
-                contentColor = FloconTheme.colors.ink,
-                labelWidth = linesLabelWidth,
-            ) {
                 StatusCell(status = state.status)
-            }
+            },
+        )
 
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.network_header_request_time),
-                value = state.requestTimeFormatted,
-                labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colors.ink
-            )
-
-            state.durationFormatted?.let {
-                FloconLineDescription(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.network_header_time),
-                    value = it,
-                    labelWidth = linesLabelWidth,
-                    contentColor = FloconTheme.colors.ink
-                )
-            }
-
-            FloconLineDescription(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.network_request_size),
-                value = state.requestSize,
-                labelWidth = linesLabelWidth,
-                contentColor = FloconTheme.colors.ink
-            )
+        ExportCard(title = stringResource(Res.string.network_request_info)) {
+            DetailKeyValueList(entries = infoEntries)
         }
 
-        // GraphQL Section (if any)
-        state.graphQlSection?.let {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = FloconTheme.colors.bg200,
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    .padding(FloconTheme.spacing.medium)
-            ) {
-                Text(
-                    text = "GraphQL",
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colors.inkMuted,
-                    modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                )
+        state.graphQlSection?.let { graphQl ->
+            ExportCard(title = "GraphQl") {
+                DetailKeyValueList(entries = listOf(stringResource(Res.string.network_query_name) to graphQl.queryName))
                 FloconLineDescription(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.network_query_name),
-                    value = it.queryName,
-                    contentColor = FloconTheme.colors.inkMuted,
-                    labelWidth = linesLabelWidth,
-                )
-                FloconLineDescription(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
                     label = stringResource(Res.string.general_type),
-                    labelWidth = linesLabelWidth,
-                    contentColor = FloconTheme.colors.inkMuted
+                    labelWidth = KeyWidth,
+                    contentColor = FloconTheme.colors.inkMuted,
                 ) {
-                    MethodTag(method = it.method)
+                    MethodTag(method = graphQl.method)
                 }
             }
         }
 
-        // Request Headers (if any)
         state.requestHeaders?.takeIf { it.isNotEmpty() }?.let { headers ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = FloconTheme.colors.bg200,
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    .padding(FloconTheme.spacing.medium)
-            ) {
-                Text(
-                    text = stringResource(Res.string.network_request_headers),
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colors.inkMuted,
-                    modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                )
-                DetailHeaders(
-                    headers = headers,
-                    labelWidth = headersLabelWidth,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            ExportHeadersCard(title = stringResource(Res.string.network_request_headers), headers = headers)
         }
 
-        // Request Body (if any)
         if (state.requestBodyIsNotBlank) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = FloconTheme.colors.bg200,
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    .padding(FloconTheme.spacing.medium)
-            ) {
-                Text(
-                    text = state.requestBodyTitle,
-                    style = FloconTheme.typography.titleSmall,
-                    color = FloconTheme.colors.inkMuted,
-                    modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                )
-                FloconCodeBlock(
-                    code = formatBodyForExport(state.requestBody),
-                    containerColor = FloconTheme.colors.bg100,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            ExportBodyCard(title = state.requestBodyTitle, body = state.requestBody)
         }
 
-        // Response Section
         when (val res = state.response) {
             is NetworkDetailViewState.Response.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = FloconTheme.colors.bg200,
-                            shape = RoundedCornerShape(12.dp),
-                        )
-                        .padding(FloconTheme.spacing.medium)
-                ) {
-                    Text(
-                        text = "Response (${res.size})",
-                        style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colors.inkMuted,
-                        modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                    )
-                    FloconLineDescription(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = stringResource(Res.string.network_response_size),
-                        value = res.size,
-                        labelWidth = linesLabelWidth,
-                        contentColor = FloconTheme.colors.ink
-                    )
+                ExportCard(title = stringResource(Res.string.network_response_info)) {
+                    DetailKeyValueList(entries = listOf(stringResource(Res.string.network_response_size) to res.size))
                 }
-
                 res.headers?.takeIf { it.isNotEmpty() }?.let { headers ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = FloconTheme.colors.bg200,
-                                shape = RoundedCornerShape(12.dp),
-                            )
-                            .padding(FloconTheme.spacing.medium)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.network_response_headers),
-                            style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colors.inkMuted,
-                            modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                        )
-                        DetailHeaders(
-                            headers = headers,
-                            labelWidth = headersLabelWidth,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    ExportHeadersCard(title = stringResource(Res.string.network_response_headers), headers = headers)
                 }
-
                 if (res.responseBodyIsNotBlank) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = FloconTheme.colors.bg200,
-                                shape = RoundedCornerShape(12.dp),
-                            )
-                            .padding(FloconTheme.spacing.medium)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.network_response_body),
-                            style = FloconTheme.typography.titleSmall,
-                            color = FloconTheme.colors.inkMuted,
-                            modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                        )
-                        FloconCodeBlock(
-                            code = formatBodyForExport(res.body),
-                            containerColor = FloconTheme.colors.bg100,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    ExportBodyCard(title = stringResource(Res.string.network_response_body), body = res.body)
                 }
             }
 
-            is NetworkDetailViewState.Response.Error -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = FloconTheme.colors.bg200,
-                            shape = RoundedCornerShape(12.dp),
-                        )
-                        .padding(FloconTheme.spacing.medium)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.network_response_error),
-                        style = FloconTheme.typography.titleSmall,
-                        color = FloconTheme.colors.statusError,
-                        modifier = Modifier.padding(bottom = FloconTheme.spacing.small)
-                    )
-                    FloconCodeBlock(
-                        code = formatBodyForExport(res.issue),
-                        containerColor = FloconTheme.colors.bg100,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+            is NetworkDetailViewState.Response.Error ->
+                ExportBodyCard(title = stringResource(Res.string.network_response_error), body = res.issue)
 
             null -> Unit
         }
+    }
+}
+
+@Composable
+private fun ExportCard(
+    title: String,
+    badge: String? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    DetailSectionCard(
+        title = title,
+        badge = badge,
+        copyContentDescription = "",
+        onCopy = null,
+        content = content,
+    )
+}
+
+@Composable
+private fun ExportHeadersCard(
+    title: String,
+    headers: ImmutableList<NetworkDetailHeaderUi>,
+) {
+    ExportCard(title = title, badge = headers.size.toString()) {
+        DetailHeaders(
+            headers = headers,
+            labelWidth = HeadersLabelWidth,
+            framed = false,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun ExportBodyCard(
+    title: String,
+    body: String,
+) {
+    ExportCard(title = title) {
+        FloconCodeBlock(
+            code = formatBodyForExport(body),
+            containerColor = FloconTheme.colors.bg000,
+            contentColor = FloconTheme.colors.inkMuted,
+            borderColor = FloconTheme.colors.line,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(FloconTheme.spacing.medium),
+        )
     }
 }
 
