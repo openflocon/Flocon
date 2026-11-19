@@ -95,12 +95,14 @@ internal fun DetailHeader(
     chips: (@Composable RowScope.() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    SelectionContainer {
-        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+    // The selection containers stay on the texts only: `actions` opens popups (dropdown menus), and
+    // composables rendered in another layer must not register in a parent SelectionContainer.
+    Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SelectionContainer(modifier = Modifier.weight(1f)) {
                 Text(
                     text = label.uppercase(),
                     style = FloconTheme.typography.labelSmall.copy(
@@ -108,23 +110,25 @@ internal fun DetailHeader(
                         letterSpacing = 0.6.sp,
                     ),
                     color = FloconTheme.colors.ink.copy(alpha = 0.6f),
-                    modifier = Modifier.weight(1f),
                 )
-                actions?.invoke(this)
             }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                icon?.invoke()
+            actions?.invoke(this)
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            icon?.invoke()
+            SelectionContainer(modifier = Modifier.weight(1f, fill = false)) {
                 Text(
                     text = title,
                     style = FloconTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                     color = FloconTheme.colors.ink,
-                    modifier = Modifier.weight(1f, fill = false),
                 )
             }
-            if (chips != null) {
+        }
+        if (chips != null) {
+            SelectionContainer {
                 FlowRow(
                     verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
                     horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.compact),
