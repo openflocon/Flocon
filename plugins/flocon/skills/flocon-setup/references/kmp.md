@@ -4,6 +4,8 @@ Source of truth: `docs/install-kotlin.md`.
 
 ## 1. Dependencies (shared module)
 
+This setup needs the Kotlin SDK **2.0.1 or later**. On 2.0.0 the modules are separate and each has its own `-no-op`: see the 2.0.0 tabs of `docs/install-kotlin.md`, or migrate. If 2.0.1 is not published yet, check the latest version on Maven Central.
+
 ```kotlin
 kotlin {
     sourceSets {

@@ -4,6 +4,8 @@ Source of truth: `docs/install-kotlin.md`. Latest version: the newest release on
 
 ## 1. Dependencies
 
+This setup needs the Kotlin SDK **2.0.1 or later** (single `flocon-no-op`, modules merged into `flocon`). On 2.0.0 the modules are separate and each has its own `-no-op`: use the 2.0.0 tabs of `docs/install-kotlin.md`, or migrate. If 2.0.1 is not published yet, check the latest version on Maven Central before writing it in the build.
+
 Core (`flocon`: network and its OkHttp interceptor, the database plugin, preferences, files, analytics, deeplinks, feature flags, timeline, crash reporter, dashboards), then one module per other feature actually used (full list: `docs/install-kotlin.md`). Real modules in `implementation`, plus `flocon-no-op` in release:
 
 ```kotlin

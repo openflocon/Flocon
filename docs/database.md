@@ -54,6 +54,9 @@ Flocon lists the **SQLite databases** of your app (Room, SQLDelight, Core Data s
         }
         ```
 
+    !!! note "Before 2.0.1"
+        The database plugin was a separate `flocon-database-core` module. Each provider went in `debugImplementation`, with its `-no-op` twin (`flocon-database-core-no-op`, `flocon-database-room-no-op`, `flocon-database-room3-no-op` or `flocon-database-sqldelight-no-op`) in `releaseImplementation`. See the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds).
+
     For Room, install the plugin. `room()` (from `io.github.openflocon.flocon.database.room`, or `.room3`) adds the Room provider:
 
     ```kotlin
