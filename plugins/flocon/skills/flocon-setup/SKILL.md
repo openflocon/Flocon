@@ -30,7 +30,7 @@ A repository can hold several apps: handle each app with its platform rules.
 | :--- | :--- |
 | `io.github.openflocon` in `libs.versions.toml` / `*.gradle.kts` | Flocon already used: read its version |
 | `Flocon.initialize(` or `import io.github.openflocon.flocon.plugins.` | Kotlin SDK 1.x |
-| `startFlocon(` | Kotlin SDK 2.x |
+| `startFlocon(` | Kotlin SDK 2.x: 2.0.0 has one `-no-op` per module and separate modules (`flocon-network-core`...); 2.0.1 and later merge them into `flocon` with a single `flocon-no-op` |
 
 **Swift** (`openflocon/FloconSwift`): read the version from `Package.resolved` / `project.pbxproj` (revision or version of `FloconSwift`, and `FloconSwiftGrpc`). Do not use the start function as a version marker: the Swift SDK has both `startFlocon { }` and `Flocon.initialize()`. Details in [references/swift.md](references/swift.md).
 
@@ -40,7 +40,7 @@ Then pick one path, and read only the file you need:
 
 - No Flocon → install: [references/android.md](references/android.md), [references/kmp.md](references/kmp.md), [references/swift.md](references/swift.md) or [references/flutter.md](references/flutter.md).
 - Kotlin Flocon 1.x → migrate: [references/migrations/v1-to-v2.md](references/migrations/v1-to-v2.md).
-- Kotlin Flocon 2.0.0 with per-module `-no-op` artifacts → migrate: [references/migrations/per-module-no-op-to-flocon-no-op.md](references/migrations/per-module-no-op-to-flocon-no-op.md).
+- Kotlin Flocon 2.0.0 (one `-no-op` per module, modules not yet merged into `flocon`) → migrate to 2.0.1 or later: [references/migrations/per-module-no-op-to-flocon-no-op.md](references/migrations/per-module-no-op-to-flocon-no-op.md).
 - Already on the target version → only add the missing plugins from the install page.
 
 A future migration is a new file in `references/migrations/`.
