@@ -24,6 +24,7 @@ internal fun DatabaseFilterField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    placeholder: String = stringResource(Res.string.database_filter_placeholder),
 ) {
     FloconTextFieldWithoutM3(
         value = value,
@@ -33,7 +34,7 @@ internal fun DatabaseFilterField(
             .height(FloconTheme.sizes.controlHeight)
             .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium),
         placeholder = defaultPlaceHolder(
-            stringResource(Res.string.database_filter_placeholder),
+            placeholder,
             color = FloconTheme.colors.inkFaint,
         ),
         leadingComponent = {
