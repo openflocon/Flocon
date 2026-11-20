@@ -199,9 +199,6 @@ import org.koin.compose.viewmodel.koinViewModel
 // Tabs
 // ---------------------------------------------------------------------------
 
-// changing the language composes the screens again: this is the tab to open back, as the remembered state is lost
-private var tabToRestoreAfterLanguageChange: SettingsTab? = null
-
 private enum class SettingsTab(val label: String, val icon: ImageVector) {
     General("General", Icons.Outlined.Folder),
     Adb("Adb", Icons.Outlined.Cable),
@@ -305,12 +302,7 @@ private fun SettingsScreen(
     onToggleLogLevel: (LogLevel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTab by remember {
-        mutableStateOf(
-            tabToRestoreAfterLanguageChange?.also { tabToRestoreAfterLanguageChange = null }
-                ?: if (needsAdbSetup) SettingsTab.Adb else SettingsTab.General,
-        )
-    }
+    var selectedTab by remember { mutableStateOf(if (needsAdbSetup) SettingsTab.Adb else SettingsTab.General) }
 
     Row(modifier = modifier) {
         // ── Drawer ──────────────────────────────────────────────────────────
@@ -943,10 +935,7 @@ private fun AppearancePane(
         ) {
             LanguageDropdown(
                 selected = appLanguage,
-                onSelect = {
-                    tabToRestoreAfterLanguageChange = SettingsTab.Appearance
-                    onAction(SettingsAction.AppLanguageChange(it))
-                },
+                onSelect = { onAction(SettingsAction.AppLanguageChange(it)) },
             )
         }
 
