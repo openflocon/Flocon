@@ -363,7 +363,9 @@ internal fun TimelineContent(
             linkedRowIndices(itemCount, railCallKey, railLinkKey) { (rows.peek(it) as? TimelineItemUiModel.Row)?.row }
         }
 
-        if (settings.graph) {
+        if (showEmptyState) {
+            // the empty state already fills the screen: nothing below it
+        } else if (settings.graph) {
             // a click opens the event in the detail panel, like a click on a row of the list
             TimelineGraph(
                 model = graph,
