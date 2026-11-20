@@ -148,7 +148,7 @@ fun SharedPrefScreen(
         }
     } else {
         var sidebarFilter by rememberSaveable { mutableStateOf("") }
-        val sidebarWidth = 420.dp
+        val sidebarWidth = 340.dp
         val barHeight = FloconTheme.sizes.controlHeight + FloconTheme.spacing.small * 2
         val shape = remember(sidebarWidth, barHeight) { LShape(sidebarWidth, barHeight) }
 
