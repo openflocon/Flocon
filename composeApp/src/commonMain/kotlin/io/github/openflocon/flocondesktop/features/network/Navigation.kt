@@ -6,6 +6,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
+import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.mock_dialog_title
+import flocondesktop.composeapp.generated.resources.network_bad_network
+import flocondesktop.composeapp.generated.resources.network_mocks_title
 import io.github.openflocon.domain.models.settings.NetworkDetailTab
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
@@ -122,7 +126,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     }
     entry<NetworkRoutes.Mocks>(
         metadata = BigDialogSceneStrategy.bigDialog(
-            BigDialogProperties(title = "Mocks")
+            BigDialogProperties(title = Res.string.network_mocks_title)
         )
     ) {
         NetworkMocksWindow(
@@ -131,7 +135,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     }
     entry<NetworkRoutes.MockEdition>(
         metadata = BigDialogSceneStrategy.bigDialog(
-            BigDialogProperties(title = "Mock")
+            BigDialogProperties(title = Res.string.mock_dialog_title)
         )
     ) {
         NetworkMockEditionScreen(
@@ -141,7 +145,7 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     }
     entry<NetworkRoutes.BadNetworkQuality>(
         metadata = BigDialogSceneStrategy.bigDialog(
-            BigDialogProperties(title = "Bad network")
+            BigDialogProperties(title = Res.string.network_bad_network)
         )
     ) {
         BadNetworkQualityScreen()

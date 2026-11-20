@@ -436,6 +436,17 @@
     <string name="settings_language_description">Langue de l’application. « Système » suit celle de l’ordinateur.</string>
     <string name="settings_language_system">Système</string>
     <string name="settings_language_title">Langue</string>
+    <string name="settings_tab_general">Général</string>
+    <string name="settings_tab_adb">ADB</string>
+    <string name="settings_tab_appearance">Apparence</string>
+    <string name="settings_tab_plugins">Plugins</string>
+    <string name="settings_tab_data">Données</string>
+    <string name="settings_tab_logs">Logs</string>
+    <string name="settings_tab_privacy">Confidentialité</string>
+    <string name="settings_tab_release_notes">Notes de version</string>
+    <string name="settings_tab_about">À propos</string>
+    <string name="release_notes_title">Nouveautés</string>
+    <string name="mock_dialog_title">Mock</string>
     <string name="settings_select_documents_folder">Sélectionner le dossier de documents de Flocon</string>
     <string name="settings_system_logs_title">Logs système de Flocon</string>
     <string name="settings_theme_description">Choisissez le jeu de couleurs de Flocon. Le mode clair utilise des fonds clairs, le mode sombre des fonds sombres, et Système s’adapte automatiquement à votre système d’exploitation.</string>

@@ -142,6 +142,15 @@ import flocondesktop.composeapp.generated.resources.settings_server_ports_websoc
 import flocondesktop.composeapp.generated.resources.settings_start_screen_description
 import flocondesktop.composeapp.generated.resources.settings_start_screen_title
 import flocondesktop.composeapp.generated.resources.settings_system_logs_title
+import flocondesktop.composeapp.generated.resources.settings_tab_about
+import flocondesktop.composeapp.generated.resources.settings_tab_adb
+import flocondesktop.composeapp.generated.resources.settings_tab_appearance
+import flocondesktop.composeapp.generated.resources.settings_tab_data
+import flocondesktop.composeapp.generated.resources.settings_tab_general
+import flocondesktop.composeapp.generated.resources.settings_tab_logs
+import flocondesktop.composeapp.generated.resources.settings_tab_plugins
+import flocondesktop.composeapp.generated.resources.settings_tab_privacy
+import flocondesktop.composeapp.generated.resources.settings_tab_release_notes
 import flocondesktop.composeapp.generated.resources.settings_test
 import flocondesktop.composeapp.generated.resources.settings_theme
 import flocondesktop.composeapp.generated.resources.settings_theme_dark
@@ -199,16 +208,16 @@ import org.koin.compose.viewmodel.koinViewModel
 // Tabs
 // ---------------------------------------------------------------------------
 
-private enum class SettingsTab(val label: String, val icon: ImageVector) {
-    General("General", Icons.Outlined.Folder),
-    Adb("Adb", Icons.Outlined.Cable),
-    Appearance("Appearance", Icons.Outlined.TextFields),
-    Plugins("Plugins", Icons.Outlined.Extension),
-    Data("Data", Icons.Outlined.Storage),
-    Logs("Logs", Icons.AutoMirrored.Outlined.List),
-    Privacy("Privacy", Icons.Outlined.PrivacyTip),
-    ReleaseNotes("Release notes", Icons.Outlined.NewReleases),
-    About("About", Icons.Outlined.Info),
+private enum class SettingsTab(val label: StringResource, val icon: ImageVector) {
+    General(Res.string.settings_tab_general, Icons.Outlined.Folder),
+    Adb(Res.string.settings_tab_adb, Icons.Outlined.Cable),
+    Appearance(Res.string.settings_tab_appearance, Icons.Outlined.TextFields),
+    Plugins(Res.string.settings_tab_plugins, Icons.Outlined.Extension),
+    Data(Res.string.settings_tab_data, Icons.Outlined.Storage),
+    Logs(Res.string.settings_tab_logs, Icons.AutoMirrored.Outlined.List),
+    Privacy(Res.string.settings_tab_privacy, Icons.Outlined.PrivacyTip),
+    ReleaseNotes(Res.string.settings_tab_release_notes, Icons.Outlined.NewReleases),
+    About(Res.string.settings_tab_about, Icons.Outlined.Info),
 }
 
 // ---------------------------------------------------------------------------
@@ -452,7 +461,7 @@ private fun DrawerItem(
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = tab.label,
+                text = stringResource(tab.label),
                 style = FloconTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = contentColor,
@@ -1420,12 +1429,64 @@ private fun LanguageDropdown(
 @Composable
 private fun AppLanguageSetting.label(): String = when (this) {
     AppLanguageSetting.System -> stringResource(Res.string.settings_language_system)
+
     // the other ones are written in their own language, so they can be found whatever the current one is
     AppLanguageSetting.English -> "English"
+
     AppLanguageSetting.French -> "Français"
+
+    AppLanguageSetting.German -> "Deutsch"
+
+    AppLanguageSetting.Spanish -> "Español"
+
+    AppLanguageSetting.PortugueseBrazil -> "Português (Brasil)"
+
+    AppLanguageSetting.PortuguesePortugal -> "Português (Portugal)"
+
+    AppLanguageSetting.Japanese -> "日本語"
+
+    AppLanguageSetting.Korean -> "한국어"
+
+    AppLanguageSetting.Italian -> "Italiano"
+
+    AppLanguageSetting.Indonesian -> "Bahasa Indonesia"
+
+    AppLanguageSetting.Hindi -> "हिन्दी"
+
+    AppLanguageSetting.Turkish -> "Türkçe"
+
+    AppLanguageSetting.Russian -> "Русский"
+
+    AppLanguageSetting.Ukrainian -> "Українська"
+
+    AppLanguageSetting.Polish -> "Polski"
+
+    AppLanguageSetting.Vietnamese -> "Tiếng Việt"
+
+    AppLanguageSetting.Dutch -> "Nederlands"
+
+    AppLanguageSetting.Swedish -> "Svenska"
+
+    AppLanguageSetting.Czech -> "Čeština"
+
+    AppLanguageSetting.Romanian -> "Română"
+
+    AppLanguageSetting.Hungarian -> "Magyar"
+
+    AppLanguageSetting.Greek -> "Ελληνικά"
+
+    AppLanguageSetting.Thai -> "ไทย"
+
+    AppLanguageSetting.Bengali -> "বাংলা"
+
+    AppLanguageSetting.Malay -> "Bahasa Melayu"
+
     AppLanguageSetting.ChineseSimplified -> "简体中文"
+
     AppLanguageSetting.ChineseTraditionalTaiwan -> "繁體中文（台灣）"
+
     AppLanguageSetting.ChineseTraditionalHongKong -> "繁體中文（香港）"
+
     AppLanguageSetting.ChineseTraditionalMacau -> "繁體中文（澳門）"
 }
 

@@ -55,6 +55,8 @@ import io.github.openflocon.navigation.scene.BigDialogSceneStrategy.Companion.BI
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 private val PanelBlurRadius = 24.dp
 private const val PanelTintAlpha = 0.75f
@@ -143,7 +145,7 @@ private data class BigDialogScene(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = properties.title,
+                        text = stringResource(properties.title),
                         color = FloconTheme.colors.ink,
                         fontWeight = FontWeight.SemiBold,
                         style = FloconTheme.typography.headlineSmall
@@ -182,7 +184,7 @@ private data class BigDialogScene(
 }
 
 data class BigDialogProperties(
-    val title: String
+    val title: StringResource
 )
 
 class BigDialogSceneStrategy : SceneStrategy<FloconRoute> {

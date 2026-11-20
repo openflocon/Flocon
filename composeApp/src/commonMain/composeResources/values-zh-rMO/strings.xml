@@ -619,6 +619,17 @@
     <string name="settings_language_description">應用程式的顯示語言。「系統」會跟隨電腦的語言。</string>
     <string name="settings_language_system">系統</string>
     <string name="settings_language_title">語言</string>
+    <string name="settings_tab_general">一般</string>
+    <string name="settings_tab_adb">ADB</string>
+    <string name="settings_tab_appearance">外觀</string>
+    <string name="settings_tab_plugins">外掛程式</string>
+    <string name="settings_tab_data">資料</string>
+    <string name="settings_tab_logs">日誌</string>
+    <string name="settings_tab_privacy">隱私權</string>
+    <string name="settings_tab_release_notes">版本資訊</string>
+    <string name="settings_tab_about">關於</string>
+    <string name="release_notes_title">新功能</string>
+    <string name="mock_dialog_title">模擬回應</string>
     <string name="settings_select_documents_folder">選擇 Flocon 檔案儲存目錄</string>
     <string name="settings_system_logs_title">Flocon 系統日誌</string>
     <string name="settings_theme_description">選擇淺色、深色或跟隨系統。選擇「跟隨系統」後，Flocon 會隨系統自動切換主題。</string>
