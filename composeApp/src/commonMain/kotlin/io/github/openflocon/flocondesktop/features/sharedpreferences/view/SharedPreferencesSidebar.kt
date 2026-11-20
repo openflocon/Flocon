@@ -29,6 +29,7 @@ import io.github.openflocon.flocondesktop.features.sharedpreferences.model.Devic
 import io.github.openflocon.flocondesktop.features.sharedpreferences.model.SharedPrefsStateUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
+import io.github.openflocon.library.designsystem.components.WithTooltip
 import org.jetbrains.compose.resources.stringResource
 
 /** The preference files of the device, listed on the left of the screen. */
@@ -103,14 +104,18 @@ private fun SharedPreferencesSidebarItem(
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         PreferenceTypeIcon(preference.typeKind)
-        Text(
-            preference.name,
-            color = FloconTheme.colors.ink,
-            style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        WithTooltip(
+            tooltip = preference.name,
             modifier = Modifier.weight(1f),
-        )
+        ) {
+            Text(
+                preference.name,
+                color = FloconTheme.colors.ink,
+                style = FloconTheme.typography.listItem.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         preference.type?.let {
             Text(
                 it,
