@@ -1440,27 +1440,45 @@ private fun AppLanguageSetting.label(): String = when (this) {
     AppLanguageSetting.Spanish -> "Español"
 
     AppLanguageSetting.PortugueseBrazil -> "Português (Brasil)"
+
     AppLanguageSetting.PortuguesePortugal -> "Português (Portugal)"
 
     AppLanguageSetting.Japanese -> "日本語"
 
     AppLanguageSetting.Korean -> "한국어"
+
     AppLanguageSetting.Italian -> "Italiano"
+
     AppLanguageSetting.Indonesian -> "Bahasa Indonesia"
+
     AppLanguageSetting.Hindi -> "हिन्दी"
+
     AppLanguageSetting.Turkish -> "Türkçe"
+
     AppLanguageSetting.Russian -> "Русский"
+
     AppLanguageSetting.Ukrainian -> "Українська"
+
     AppLanguageSetting.Polish -> "Polski"
+
     AppLanguageSetting.Vietnamese -> "Tiếng Việt"
+
     AppLanguageSetting.Dutch -> "Nederlands"
+
     AppLanguageSetting.Swedish -> "Svenska"
+
     AppLanguageSetting.Czech -> "Čeština"
+
     AppLanguageSetting.Romanian -> "Română"
+
     AppLanguageSetting.Hungarian -> "Magyar"
+
     AppLanguageSetting.Greek -> "Ελληνικά"
+
     AppLanguageSetting.Thai -> "ไทย"
+
     AppLanguageSetting.Bengali -> "বাংলা"
+
     AppLanguageSetting.Malay -> "Bahasa Melayu"
 
     AppLanguageSetting.ChineseSimplified -> "简体中文"
