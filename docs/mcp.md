@@ -13,50 +13,9 @@ Flocon Desktop embeds an **MCP server** ([Model Context Protocol](https://modelc
 
 > *"What happened in the app just before it crashed?"*
 
-## What your agent gets
-
-**It can see** everything Flocon captured from the connected app: the [network calls](network.md) (HTTP, GraphQL, gRPC, WebSocket) with bodies and a ready cURL, the [databases](database.md), the [preferences](sharedpref.md), the app [files](files.md), the [analytics events](analytics.md), the [feature flags](featureflags.md), the [crashes](crashreporter.md), the [images](image.md), the [accessibility](accessibility.md) and [WebView](webview.md) events, the [dashboards](dashboard.md) and [tables](table.md), and a single [timeline](timeline.md) of what the app did around a moment.
-
-**It can act**:
-
-- **On app behavior**: create and edit [network mocks](mocking.md), simulate a [bad network](bad-quality.md), inject a WebSocket message, edit the value of an existing preference key.
-- **On the device**: open a [deeplink](deeplink.md), take a screenshot, record the screen, move the accessibility focus.
-- **On Flocon Desktop**: show a zone of the timeline or a screen in the window, change the server ports.
-
-All the tools are listed in the [Tools Reference](mcp-tools.md), and real workflows are in the [Cookbook](mcp-cookbook.md).
-
-!!! info "Local only"
-    The MCP server listens on `127.0.0.1` only: it is not reachable from your local network. It has no authentication, so any program running on your computer can call it while Flocon Desktop is open.
-
-    Captured data is read-only: an agent cannot modify, delete or replay network calls, files, databases, analytics events, feature flags or crashes. The one exception is the value of an **existing** preference key, with `set_shared_preference_value`. Only read-only SQL (`SELECT`, `PRAGMA` without value, `EXPLAIN`) runs on databases.
-
-    Every tool is flagged read-only or not in the [Tools Reference](mcp-tools.md#legend), and agents are told to name what they changed (mocks left enabled, active bad network config...). Flocon only counts, anonymously, which tool is called and the kind of client: see [Telemetry](telemetry.md).
-
-## Which apps feed which data
-
-The tools are the same for every SDK, but each tool returns what **your app's SDK sends**. An empty answer for a feature your app does not use is normal, not a bug.
-
-| Data | Kotlin (Android / KMP) | Swift | Flutter |
-|---|:---:|:---:|:---:|
-| Network, mocks, bad network | ✅ | ✅ (instrumented `URLSession`s) | ✅ (Dio, `package:http`) |
-| Databases, preferences, files | ✅ | ✅ | ✅ |
-| Analytics, feature flags, tables, dashboards, deeplinks, images | ✅ | ✅ | ✅ |
-| Timeline logs, crashes | ✅ | ✅ | ✅ (Dart and Flutter errors) |
-| WebView events | ✅ | ✅ | ❌ |
-| Accessibility events | ✅ | ❌ | ❌ |
-| WebSocket message injection | ✅ (OkHttp) | ❌ | ❌ |
-
-See the [platform support matrix](index.md#platform-support) for the details per feature. Screenshots, recordings and deeplinks need `adb` on Android, or a booted Simulator on iOS.
-
 ## Setup
 
-Flocon Desktop must be running. The server starts with it and listens on:
-
-```
-http://localhost:9042/mcp
-```
-
-It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
+Flocon Desktop must be running: the MCP server starts with it. Declare it in your agent:
 
 === "Claude Code"
 
@@ -260,6 +219,41 @@ It uses the **Streamable HTTP** transport (stateless). Declare it in your agent:
     }
     ```
 
+## What your agent gets
+
+**It can see** everything Flocon captured from the connected app: the [network calls](network.md) (HTTP, GraphQL, gRPC, WebSocket) with bodies and a ready cURL, the [databases](database.md), the [preferences](sharedpref.md), the app [files](files.md), the [analytics events](analytics.md), the [feature flags](featureflags.md), the [crashes](crashreporter.md), the [images](image.md), the [accessibility](accessibility.md) and [WebView](webview.md) events, the [dashboards](dashboard.md) and [tables](table.md), and a single [timeline](timeline.md) of what the app did around a moment.
+
+**It can act**:
+
+- **On app behavior**: create and edit [network mocks](mocking.md), simulate a [bad network](bad-quality.md), inject a WebSocket message, edit the value of an existing preference key.
+- **On the device**: open a [deeplink](deeplink.md), take a screenshot, record the screen, move the accessibility focus.
+- **On Flocon Desktop**: show a zone of the timeline or a screen in the window, change the server ports.
+
+All the tools are listed in the [Tools Reference](mcp-tools.md), and real workflows are in the [Cookbook](mcp-cookbook.md).
+
+!!! info "Local only"
+    The MCP server listens on `127.0.0.1` only: it is not reachable from your local network. It has no authentication, so any program running on your computer can call it while Flocon Desktop is open.
+
+    Captured data is read-only: an agent cannot modify, delete or replay network calls, files, databases, analytics events, feature flags or crashes. The one exception is the value of an **existing** preference key, with `set_shared_preference_value`. Only read-only SQL (`SELECT`, `PRAGMA` without value, `EXPLAIN`) runs on databases.
+
+    Every tool is flagged read-only or not in the [Tools Reference](mcp-tools.md#legend), and agents are told to name what they changed (mocks left enabled, active bad network config...). Flocon only counts, anonymously, which tool is called and the kind of client: see [Telemetry](telemetry.md).
+
+## Which apps feed which data
+
+The tools are the same for every SDK, but each tool returns what **your app's SDK sends**. An empty answer for a feature your app does not use is normal, not a bug.
+
+| Data | Kotlin (Android / KMP) | Swift | Flutter |
+|---|:---:|:---:|:---:|
+| Network, mocks, bad network | ✅ | ✅ (instrumented `URLSession`s) | ✅ (Dio, `package:http`) |
+| Databases, preferences, files | ✅ | ✅ | ✅ |
+| Analytics, feature flags, tables, dashboards, deeplinks, images | ✅ | ✅ | ✅ |
+| Timeline logs, crashes | ✅ | ✅ | ✅ (Dart and Flutter errors) |
+| WebView events | ✅ | ✅ | ❌ |
+| Accessibility events | ✅ | ❌ | ❌ |
+| WebSocket message injection | ✅ (OkHttp) | ❌ | ❌ |
+
+See the [platform support matrix](index.md#platform-support) for the details per feature. Screenshots, recordings and deeplinks need `adb` on Android, or a booted Simulator on iOS.
+
 ## The two skills
 
 The Flocon plugin (Claude Code, Codex, Cursor) also installs two skills: short instructions your agent loads when relevant.
@@ -292,6 +286,8 @@ npx @modelcontextprotocol/inspector
 Then connect to `http://localhost:9042/mcp` with the **Streamable HTTP** transport. The **Tools** tab lists the 57 tools and lets you call them by hand.
 
 ## Port 9042
+
+The MCP server listens on `http://localhost:9042/mcp` and uses the **Streamable HTTP** transport (stateless).
 
 The MCP server always uses port **9042**: it cannot be changed from Flocon. This is not the port your apps use: they connect to Flocon Desktop on the websocket port (default 9023) and HTTP port (default 9024). Those two can be changed in the Flocon settings, or by an agent with `set_server_ports`. Port 9042 is reserved, so you cannot use it for them.
 
