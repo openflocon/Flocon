@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.device.usecase.GetFloconDocumentPathUseCase
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
@@ -115,6 +116,8 @@ class FloconFolderMcpToolProviderTest {
         override fun getAdbPath(): String? = null
         override suspend fun setAdbPath(path: String) {}
         override suspend fun setAppScale(value: AppScaleSetting) {}
+
+        override suspend fun setAppLanguage(value: AppLanguageSetting) {}
         override suspend fun setTheme(value: ThemeSetting) {}
         override fun getFloconDocumentsPath(): String? = path
         override suspend fun setFloconDocumentsPath(path: String) {}
@@ -130,6 +133,8 @@ class FloconFolderMcpToolProviderTest {
         override val savedServerPorts: Flow<ServerPortsDomainModel> = emptyFlow()
         override suspend fun setServerPorts(ports: ServerPortsDomainModel) {}
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
+
+        override val appLanguage: StateFlow<AppLanguageSetting> = MutableStateFlow(AppLanguageSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
         override fun setAdbForwardStatus(status: AdbForwardStatus) {}

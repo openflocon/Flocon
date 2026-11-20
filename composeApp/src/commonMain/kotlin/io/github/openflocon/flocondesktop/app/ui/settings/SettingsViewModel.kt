@@ -26,17 +26,20 @@ import io.github.openflocon.domain.menu.usecase.SetStartScreenUseCase
 import io.github.openflocon.domain.menu.usecase.ToggleHiddenMenuItemUseCase
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
 import io.github.openflocon.domain.settings.repository.SettingsRepository
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.domain.settings.usecase.ServerPortsError
+import io.github.openflocon.domain.settings.usecase.SetAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.SetAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.SetMascotEnabledUseCase
 import io.github.openflocon.domain.settings.usecase.SetThemeUseCase
@@ -71,6 +74,8 @@ class SettingsViewModel(
     private val testAdbUseCase: TestAdbUseCase,
     observeAppScaleUseCase: ObserveAppScaleUseCase,
     private val setAppScaleUseCase: SetAppScaleUseCase,
+    observeAppLanguageUseCase: ObserveAppLanguageUseCase,
+    private val setAppLanguageUseCase: SetAppLanguageUseCase,
     observeThemeUseCase: ObserveThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
     observeMascotEnabledUseCase: ObserveMascotEnabledUseCase,
@@ -132,17 +137,18 @@ class SettingsViewModel(
     }
 
     val uiState = combine(
-        observeAppScaleUseCase(),
+        combine(observeAppScaleUseCase(), observeAppLanguageUseCase()) { appScale, appLanguage -> appScale to appLanguage },
         combine(observeThemeUseCase(), observeMascotEnabledUseCase()) { theme, mascotEnabled -> theme to mascotEnabled },
         filteredLogs,
         settingsRepository.adbForwardStatus,
         combine(selectedLogDomains, selectedLogLevels, observeMenuPreferencesUseCase()) { domains, levels, menuPreferences ->
             Triple(domains, levels, menuPreferences)
         },
-    ) { appScale, (theme, mascotEnabled), logs, forwardStatus, (domains, levels, menuPreferences) ->
+    ) { (appScale, appLanguage), (theme, mascotEnabled), logs, forwardStatus, (domains, levels, menuPreferences) ->
         val startScreenOptions = startScreenCandidates(menuPreferences.hiddenItems)
         SettingsUiState(
             appScale = appScale,
+            appLanguage = appLanguage,
             theme = theme,
             mascotEnabled = mascotEnabled,
             logs = logs.map { it.toUiModel() }.toImmutableList(),
@@ -165,6 +171,7 @@ class SettingsViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState(
                 appScale = AppScaleSetting.DEFAULT,
+                appLanguage = AppLanguageSetting.DEFAULT,
                 theme = ThemeSetting.DEFAULT,
                 mascotEnabled = true,
                 logs = persistentListOf(),
@@ -209,6 +216,7 @@ class SettingsViewModel(
     fun onAction(action: SettingsAction) {
         when (action) {
             is SettingsAction.AppScaleChange -> onAppScaleChange(action)
+            is SettingsAction.AppLanguageChange -> onAppLanguageChange(action)
             is SettingsAction.ThemeChange -> onThemeChange(action)
             is SettingsAction.MascotEnabledChange -> onMascotEnabledChange(action)
             is SettingsAction.ToggleMenuItem -> onToggleMenuItem(action)
@@ -231,6 +239,12 @@ class SettingsViewModel(
     private fun onAppScaleChange(action: SettingsAction.AppScaleChange) {
         viewModelScope.launch {
             setAppScaleUseCase(action.value)
+        }
+    }
+
+    private fun onAppLanguageChange(action: SettingsAction.AppLanguageChange) {
+        viewModelScope.launch {
+            setAppLanguageUseCase(action.value)
         }
     }
 

@@ -616,6 +616,9 @@
     <string name="settings_reverse_forwarding_description">Flocon 在電腦上執行本機服務。開啟 ADB 反向連接埠轉送後，裝置即可連線該服務，傳輸記錄、鍵值儲存資料和截圖。</string>
     <string name="settings_scale_description">調整整個應用程式的縮放比例，包括文字大小和介面元素間距。</string>
     <string name="settings_scale_title">介面縮放</string>
+    <string name="settings_language_description">應用程式的顯示語言。「系統」會跟隨電腦的語言。</string>
+    <string name="settings_language_system">系統</string>
+    <string name="settings_language_title">語言</string>
     <string name="settings_select_documents_folder">選擇 Flocon 檔案儲存目錄</string>
     <string name="settings_system_logs_title">Flocon 系統記錄</string>
     <string name="settings_theme_description">選擇淺色、深色或依系統設定。選擇「依系統設定」後，Flocon 會隨系統自動切換佈景主題。</string>

@@ -1,5 +1,6 @@
 package io.github.openflocon.domain.settings.repository
 
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
@@ -19,6 +20,8 @@ interface SettingsRepository {
     suspend fun setAdbPath(path: String)
 
     suspend fun setAppScale(value: AppScaleSetting)
+
+    suspend fun setAppLanguage(value: AppLanguageSetting)
 
     suspend fun setTheme(value: ThemeSetting)
 
@@ -49,6 +52,8 @@ interface SettingsRepository {
 
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
+
+    val appLanguage: StateFlow<AppLanguageSetting>
     val theme: StateFlow<ThemeSetting>
     val adbForwardStatus: StateFlow<AdbForwardStatus>
 

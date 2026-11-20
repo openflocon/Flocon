@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.core.data.settings.datasource.local
 
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -18,6 +19,8 @@ internal interface SettingsDataSource {
 
     suspend fun setAdbPath(path: String)
     suspend fun setAppScale(value: AppScaleSetting)
+
+    suspend fun setAppLanguage(value: AppLanguageSetting)
     suspend fun setTheme(value: ThemeSetting)
 
     fun getFloconDocumentsPath(): String?
@@ -69,6 +72,8 @@ internal interface SettingsDataSource {
     val floconDocumentsPath: Flow<String?>
     val adbPath: Flow<String?>
     val appScale: StateFlow<AppScaleSetting>
+
+    val appLanguage: StateFlow<AppLanguageSetting>
     val theme: StateFlow<ThemeSetting>
     fun dismissedClientVersionFlow(sdk: FloconSdk): Flow<String?>
 }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.flocon.data.remote.dataRemoteModule
@@ -21,6 +23,7 @@ import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCas
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
@@ -44,6 +47,10 @@ import org.koin.compose.koinInject
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.util.Locale
+
+// the locale of the computer, to come back to it when the language is "System"
+private val systemLocale: Locale = Locale.getDefault()
 
 @Composable
 fun App(
@@ -106,11 +113,22 @@ fun App(
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
-        FloconTheme(
-            appScale = appScale.toAppScale(),
-            isDarkTheme = isDarkTheme,
-        ) {
-            AppScreen()
+        val appLanguage by koinInject<ObserveAppLanguageUseCase>()()
+            .collectAsStateWithLifecycle()
+        val locale = remember(appLanguage) {
+            (appLanguage.languageTag?.let(Locale::forLanguageTag) ?: systemLocale)
+                // the string resources read the default locale when they are composed
+                .also { Locale.setDefault(it) }
+        }
+
+        // the screens are composed again to read the strings of the new language
+        key(locale) {
+            FloconTheme(
+                appScale = appScale.toAppScale(),
+                isDarkTheme = isDarkTheme,
+            ) {
+                AppScreen()
+            }
         }
 //        }
     }

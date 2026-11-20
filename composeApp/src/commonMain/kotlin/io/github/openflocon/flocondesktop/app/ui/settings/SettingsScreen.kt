@@ -51,6 +51,7 @@ import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.TextFields
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -104,6 +105,9 @@ import flocondesktop.composeapp.generated.resources.settings_data_size
 import flocondesktop.composeapp.generated.resources.settings_data_title
 import flocondesktop.composeapp.generated.resources.settings_documents_description
 import flocondesktop.composeapp.generated.resources.settings_documents_folder_path
+import flocondesktop.composeapp.generated.resources.settings_language_description
+import flocondesktop.composeapp.generated.resources.settings_language_system
+import flocondesktop.composeapp.generated.resources.settings_language_title
 import flocondesktop.composeapp.generated.resources.settings_licenses_description
 import flocondesktop.composeapp.generated.resources.settings_mascot_description
 import flocondesktop.composeapp.generated.resources.settings_mascot_hide
@@ -158,6 +162,7 @@ import flocondesktop.composeapp.generated.resources.telemetry_unavailable_do_not
 import io.github.openflocon.domain.log.LogDomain
 import io.github.openflocon.domain.models.maintenance.AutoPurgeInterval
 import io.github.openflocon.domain.models.maintenance.PurgeInterval
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -354,6 +359,7 @@ private fun SettingsScreen(
 
                 SettingsTab.Appearance -> AppearancePane(
                     appScale = uiState.appScale,
+                    appLanguage = uiState.appLanguage,
                     currentTheme = uiState.theme,
                     mascotEnabled = uiState.mascotEnabled,
                     onAction = onAction,
@@ -881,6 +887,7 @@ private fun AdbForwardStatusBadge(
 @Composable
 private fun AppearancePane(
     appScale: AppScaleSetting,
+    appLanguage: AppLanguageSetting,
     currentTheme: ThemeSetting,
     mascotEnabled: Boolean,
     onAction: (SettingsAction) -> Unit,
@@ -918,6 +925,17 @@ private fun AppearancePane(
             ScaleDropdown(
                 selected = appScale.toAppScale(),
                 onSelect = { onAction(SettingsAction.AppScaleChange(it.toSetting())) },
+            )
+        }
+
+        SettingsCard(
+            title = stringResource(Res.string.settings_language_title),
+            icon = Icons.Outlined.Translate,
+            description = stringResource(Res.string.settings_language_description)
+        ) {
+            LanguageDropdown(
+                selected = appLanguage,
+                onSelect = { onAction(SettingsAction.AppLanguageChange(it)) },
             )
         }
 
@@ -1343,6 +1361,72 @@ private fun ScaleDropdown(
             )
         }
     }
+}
+
+@Composable
+private fun LanguageDropdown(
+    selected: AppLanguageSetting,
+    onSelect: (AppLanguageSetting) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    FloconDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        onExpandRequest = { expanded = true },
+        modifier = modifier,
+        anchorContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                modifier = Modifier
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg200)
+                    .border(
+                        width = 1.dp,
+                        color = FloconTheme.colors.lineStrong,
+                        shape = FloconTheme.shapes.medium,
+                    )
+                    .clickable { expanded = true }
+                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+            ) {
+                Text(
+                    text = selected.label(),
+                    style = FloconTheme.typography.bodyMedium,
+                    color = FloconTheme.colors.ink,
+                )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = null,
+                    tint = FloconTheme.colors.inkMuted,
+                )
+            }
+        },
+    ) {
+        AppLanguageSetting.entries.forEach { language ->
+            FloconDropdownMenuItem(
+                text = language.label(),
+                leadingIcon = if (language == selected) Icons.Outlined.Check else null,
+                onClick = {
+                    expanded = false
+                    onSelect(language)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppLanguageSetting.label(): String = when (this) {
+    AppLanguageSetting.System -> stringResource(Res.string.settings_language_system)
+    // the other ones are written in their own language, so they can be found whatever the current one is
+    AppLanguageSetting.English -> "English"
+    AppLanguageSetting.French -> "Français"
+    AppLanguageSetting.ChineseSimplified -> "简体中文"
+    AppLanguageSetting.ChineseTraditionalTaiwan -> "繁體中文（台灣）"
+    AppLanguageSetting.ChineseTraditionalHongKong -> "繁體中文（香港）"
+    AppLanguageSetting.ChineseTraditionalMacau -> "繁體中文（澳門）"
 }
 
 @Composable

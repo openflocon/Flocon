@@ -433,6 +433,9 @@
     <string name="settings_reverse_forwarding_description">Flocon lance un serveur local qui communique avec le daemon de l’appareil. La redirection de port inversée permet un transfert de données à haut débit (logs, préférences, captures d’écran).</string>
     <string name="settings_scale_description">Met à l’échelle toute l’application : la taille des textes et l’espacement entre les éléments.</string>
     <string name="settings_scale_title">Échelle</string>
+    <string name="settings_language_description">Langue de l’application. « Système » suit celle de l’ordinateur.</string>
+    <string name="settings_language_system">Système</string>
+    <string name="settings_language_title">Langue</string>
     <string name="settings_select_documents_folder">Sélectionner le dossier de documents de Flocon</string>
     <string name="settings_system_logs_title">Logs système de Flocon</string>
     <string name="settings_theme_description">Choisissez le jeu de couleurs de Flocon. Le mode clair utilise des fonds clairs, le mode sombre des fonds sombres, et Système s’adapte automatiquement à votre système d’exploitation.</string>

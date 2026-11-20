@@ -6,6 +6,7 @@ import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
 import io.github.openflocon.domain.Constant
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
 import io.github.openflocon.domain.models.settings.ThemeSetting
@@ -72,6 +73,11 @@ internal class SettingsDataSourcePrefs(
             ?: legacyMultiplier?.let { AppScaleSetting.fromLegacyMultiplier(it) }
             ?: AppScaleSetting.DEFAULT
     }.stateIn(AppScaleSetting.DEFAULT)
+
+    override val appLanguage: StateFlow<AppLanguageSetting> = flowSettings
+        .getStringOrNullFlow(APP_LANGUAGE)
+        .map { name -> AppLanguageSetting.entries.firstOrNull { it.name == name } ?: AppLanguageSetting.DEFAULT }
+        .stateIn(AppLanguageSetting.DEFAULT)
 
     override val theme: StateFlow<ThemeSetting> = flowSettings
         .getStringOrNullFlow(THEME)
@@ -186,6 +192,10 @@ internal class SettingsDataSourcePrefs(
         settings.putString(FLOCON_DOCUMENTS_PATH, path)
     }
 
+    override suspend fun setAppLanguage(value: AppLanguageSetting) {
+        settings.putString(APP_LANGUAGE, value.name)
+    }
+
     override suspend fun setAppScale(value: AppScaleSetting) {
         settings.putString(APP_SCALE, value.name)
     }
@@ -266,6 +276,7 @@ internal class SettingsDataSourcePrefs(
         }
         private const val FLOCON_DOCUMENTS_PATH = "flocon_documents_path"
         private const val APP_SCALE = "app_scale"
+        private const val APP_LANGUAGE = "app_language"
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"

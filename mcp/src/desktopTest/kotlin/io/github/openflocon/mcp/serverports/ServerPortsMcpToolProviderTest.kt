@@ -1,5 +1,6 @@
 package io.github.openflocon.mcp.serverports
 
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.NetworkSettings
 import io.github.openflocon.domain.models.settings.ServerPortsDomainModel
@@ -186,6 +187,8 @@ class ServerPortsMcpToolProviderTest {
         override fun getAdbPath(): String? = null
         override suspend fun setAdbPath(path: String) {}
         override suspend fun setAppScale(value: AppScaleSetting) {}
+
+        override suspend fun setAppLanguage(value: AppLanguageSetting) {}
         override suspend fun setTheme(value: ThemeSetting) {}
         override fun getFloconDocumentsPath(): String? = null
         override suspend fun setFloconDocumentsPath(path: String) {}
@@ -203,6 +206,8 @@ class ServerPortsMcpToolProviderTest {
             saved.value = ports
         }
         override val appScale: StateFlow<AppScaleSetting> = MutableStateFlow(AppScaleSetting.DEFAULT)
+
+        override val appLanguage: StateFlow<AppLanguageSetting> = MutableStateFlow(AppLanguageSetting.DEFAULT)
         override val theme: StateFlow<ThemeSetting> = MutableStateFlow(ThemeSetting.DEFAULT)
         override val adbForwardStatus: StateFlow<AdbForwardStatus> = MutableStateFlow(AdbForwardStatus.UNKNOWN)
         override fun setAdbForwardStatus(status: AdbForwardStatus) {}
