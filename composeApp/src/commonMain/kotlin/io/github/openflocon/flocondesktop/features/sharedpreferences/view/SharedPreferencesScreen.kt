@@ -6,6 +6,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
+import flocondesktop.composeapp.generated.resources.preferences_sidebar_filter_placeholder
+import io.github.openflocon.flocondesktop.common.ui.LShape
+import io.github.openflocon.flocondesktop.features.database.view.databases_tables.DatabaseFilterField
+import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -118,96 +128,141 @@ fun SharedPrefScreen(
     val lazyListState = rememberLazyListState()
     val scrollAdapter = rememberFloconScrollbarAdapter(lazyListState)
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        modifier = modifier.fillMaxSize()
-    ) {
-        FloconPageTopBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .mascotPlatform(),
-            trailing = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
-            selector = if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
-                null
-            } else {
-                {
-                    SharedPreferenceSelector(
-                        state = deviceSharedPrefs,
-                        onSharedPrefSelected = onSharedPrefSelected,
-                    )
-                }
-            },
-            filterBar = {
-                FilterBar(
-                    filterText = filterText,
-                    placeholderText = stringResource(Res.string.filter),
-                    onTextChange = { filterText.value = it },
-                    modifier = Modifier.weight(1f),
-                )
-            },
-            actions = {
-                PreferenceAutoUpdate(
-                    state = autoUpdateState,
-                    onChange = onAutoUpdateChange,
-                    onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
-                    refreshClicked = refreshClicked,
-                )
-            },
-        )
-
+    if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .floconPanel()
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+            modifier = modifier.fillMaxSize()
         ) {
-            if (deviceSharedPrefs is SharedPrefsStateUiModel.Empty) {
-                FeatureEmptyState(
-                    doc = FeatureDoc.SharedPreferences,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            } else {
-                SharedPreferencesHeader()
-                Box(Modifier.weight(1f).fillMaxWidth()) {
-                    LazyColumn(
-                        state = lazyListState,
-                        modifier = Modifier.fillMaxSize()
+            FloconPageTopBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .mascotPlatform(),
+                trailing = { FeatureDocButton(doc = FeatureDoc.SharedPreferences) },
+            )
+            FeatureEmptyState(
+                doc = FeatureDoc.SharedPreferences,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .floconPanel(),
+            )
+        }
+    } else {
+        var sidebarFilter by rememberSaveable { mutableStateOf("") }
+        val sidebarWidth = 300.dp
+        val barHeight = FloconTheme.sizes.controlHeight + FloconTheme.spacing.small * 2
+        val shape = remember(sidebarWidth, barHeight) { LShape(sidebarWidth, barHeight) }
+
+        Box(modifier.fillMaxSize()) {
+            // the L is only the background: the content on the right is outside of it
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape)
+                    .background(FloconTheme.colors.islandSidebar)
+                    .border(1.dp, FloconTheme.colors.line, shape)
+            )
+            Column(Modifier.fillMaxSize()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(barHeight)
+                        .mascotPlatform(),
+                ) {
+                    DatabaseFilterField(
+                        value = sidebarFilter,
+                        onValueChange = { sidebarFilter = it },
+                        placeholder = stringResource(Res.string.preferences_sidebar_filter_placeholder),
+                        modifier = Modifier
+                            .width(sidebarWidth)
+                            .padding(horizontal = FloconTheme.spacing.small),
+                    )
+                    FloconVerticalDivider(modifier = Modifier.height(FloconTheme.sizes.controlHeight))
+                    FilterBar(
+                        filterText = filterText,
+                        placeholderText = stringResource(Res.string.filter),
+                        onTextChange = { filterText.value = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = FloconTheme.spacing.small),
+                    )
+                    FloconVerticalDivider(modifier = Modifier.height(FloconTheme.sizes.controlHeight))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                        modifier = Modifier.padding(horizontal = FloconTheme.spacing.small),
                     ) {
-                        items(sharedPrefRows, key = { it.key }) {
-                            SharedPreferenceRow(
-                                model = it,
-                                isExpanded = it.key in expandedKeys,
-                                onToggleExpanded = { key ->
-                                    expandedKeys = if (key in expandedKeys) expandedKeys - key else expandedKeys + key
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                onValueChanged = changeValue,
-                                onEditClicked = onEditClicked,
-                                onCopyClicked = onCopyClicked,
-                                onDeleteClicked = { row -> rowToDelete = row },
+                        PreferenceAutoUpdate(
+                            state = autoUpdateState,
+                            onChange = onAutoUpdateChange,
+                            onAutoUpdateDelayChanged = onAutoUpdateDelayChanged,
+                            refreshClicked = refreshClicked,
+                        )
+                        FeatureDocButton(doc = FeatureDoc.SharedPreferences)
+                    }
+                }
+                Row(Modifier.fillMaxSize()) {
+                    SharedPreferencesSidebar(
+                        state = deviceSharedPrefs,
+                        filter = sidebarFilter,
+                        onSharedPrefSelected = onSharedPrefSelected,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(sidebarWidth),
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                start = FloconTheme.spacing.small,
+                                top = FloconTheme.spacing.small,
+                            )
+                            .floconPanel()
+                    ) {
+                        SharedPreferencesHeader()
+                        Box(Modifier.weight(1f).fillMaxWidth()) {
+                            LazyColumn(
+                                state = lazyListState,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(sharedPrefRows, key = { it.key }) {
+                                    SharedPreferenceRow(
+                                        model = it,
+                                        isExpanded = it.key in expandedKeys,
+                                        onToggleExpanded = { key ->
+                                            expandedKeys = if (key in expandedKeys) expandedKeys - key else expandedKeys + key
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onValueChanged = changeValue,
+                                        onEditClicked = onEditClicked,
+                                        onCopyClicked = onCopyClicked,
+                                        onDeleteClicked = { row -> rowToDelete = row },
+                                    )
+                                }
+                            }
+                            if (rows !is SharedPreferencesRowsStateUiModel.Loading && rows.rows.isEmpty() && deviceSharedPrefs is SharedPrefsStateUiModel.WithContent) {
+                                SharedPreferencesEmptyState(
+                                    title = stringResource(Res.string.preferences_file_empty_title, deviceSharedPrefs.selected.name),
+                                    subtitle = stringResource(Res.string.preferences_file_empty_subtitle),
+                                    icon = Icons.Outlined.Inbox,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else if (filterText.value.isNotBlank() && rows.rows.isNotEmpty() && sharedPrefRows.isEmpty()) {
+                                SharedPreferencesEmptyState(
+                                    title = stringResource(Res.string.preferences_no_match_title, filterText.value),
+                                    subtitle = null,
+                                    icon = Icons.Outlined.Search,
+                                    modifier = Modifier.fillMaxSize(),
+                                    onClearFilter = { filterText.value = "" },
+                                )
+                            }
+                            FloconVerticalScrollbar(
+                                adapter = scrollAdapter,
+                                modifier = Modifier.fillMaxHeight()
+                                    .align(Alignment.TopEnd),
                             )
                         }
                     }
-                    if (rows !is SharedPreferencesRowsStateUiModel.Loading && rows.rows.isEmpty() && deviceSharedPrefs is SharedPrefsStateUiModel.WithContent) {
-                        SharedPreferencesEmptyState(
-                            title = stringResource(Res.string.preferences_file_empty_title, deviceSharedPrefs.selected.name),
-                            subtitle = stringResource(Res.string.preferences_file_empty_subtitle),
-                            icon = Icons.Outlined.Inbox,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    } else if (filterText.value.isNotBlank() && rows.rows.isNotEmpty() && sharedPrefRows.isEmpty()) {
-                        SharedPreferencesEmptyState(
-                            title = stringResource(Res.string.preferences_no_match_title, filterText.value),
-                            subtitle = null,
-                            icon = Icons.Outlined.Search,
-                            modifier = Modifier.fillMaxSize(),
-                            onClearFilter = { filterText.value = "" },
-                        )
-                    }
-                    FloconVerticalScrollbar(
-                        adapter = scrollAdapter,
-                        modifier = Modifier.fillMaxHeight()
-                            .align(Alignment.TopEnd),
-                    )
                 }
             }
         }
