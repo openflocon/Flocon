@@ -7,7 +7,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.flocon.data.remote.dataRemoteModule
@@ -21,6 +25,7 @@ import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCas
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
 import io.github.openflocon.flocondesktop.adb.AdbRepositoryImpl
@@ -44,6 +49,10 @@ import org.koin.compose.koinInject
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.util.Locale
+
+// the locale of the computer, to come back to it when the language is "System"
+private val systemLocale: Locale = Locale.getDefault()
 
 @Composable
 fun App(
@@ -106,11 +115,26 @@ fun App(
 //        KoinScope(
 //            scopeDefinition = { createScope(MainRoutes.Sub.Main) }
 //        ) {
-        FloconTheme(
-            appScale = appScale.toAppScale(),
-            isDarkTheme = isDarkTheme,
-        ) {
-            AppScreen()
+        val appLanguage by koinInject<ObserveAppLanguageUseCase>()()
+            .collectAsStateWithLifecycle()
+        remember(appLanguage) {
+            // the resources read the default locale to know the language to load
+            Locale.setDefault(appLanguage.languageTag?.let(Locale::forLanguageTag) ?: systemLocale)
+        }
+
+        // the resources are loaded again when the density changes: a tiny change makes the strings follow the new language,
+        // without composing the screens from scratch (which would close the dialogs)
+        val density = LocalDensity.current
+        val languageDensity = remember(density, appLanguage) {
+            Density(density.density, density.fontScale * (1f + 1e-5f * appLanguage.ordinal))
+        }
+        CompositionLocalProvider(LocalDensity provides languageDensity) {
+            FloconTheme(
+                appScale = appScale.toAppScale(),
+                isDarkTheme = isDarkTheme,
+            ) {
+                AppScreen()
+            }
         }
 //        }
     }

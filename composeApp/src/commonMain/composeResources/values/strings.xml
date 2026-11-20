@@ -619,6 +619,9 @@
     <string name="settings_reverse_forwarding_description">Flocon runs a local server that communicates with the daemon on the device. Reverse port forwarding enables high-throughput data transfer (logs, preferences, screenshots).</string>
     <string name="settings_scale_description">Scale the whole application: the size of the texts and the spacing between the elements.</string>
     <string name="settings_scale_title">Scale</string>
+    <string name="settings_language_description">Language of the application. “System” follows the one of the computer.</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_title">Language</string>
     <string name="settings_select_documents_folder">Select Flocon Documents Folder</string>
     <string name="settings_system_logs_title">Flocon System Logs</string>
     <string name="settings_theme_description">Choose the color scheme of Flocon. Light mode uses bright backgrounds, Dark mode uses dark backgrounds, and System automatically matches your operating system.</string>

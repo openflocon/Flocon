@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.settings
 
 import androidx.compose.runtime.Immutable
 import io.github.openflocon.domain.log.LogDomain
+import io.github.openflocon.domain.models.settings.AppLanguageSetting
 import io.github.openflocon.domain.models.settings.AppScaleSetting
 import io.github.openflocon.domain.models.settings.ThemeSetting
 import io.github.openflocon.domain.settings.repository.AdbForwardStatus
@@ -13,6 +14,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 data class SettingsUiState(
     val appScale: AppScaleSetting,
+    val appLanguage: AppLanguageSetting,
     val logs: ImmutableList<LogEntryUiModel>,
     val adbForwardStatus: AdbForwardStatus,
     val theme: ThemeSetting,
@@ -26,6 +28,7 @@ data class SettingsUiState(
 
 fun previewSettingsUiState() = SettingsUiState(
     appScale = AppScaleSetting.DEFAULT,
+    appLanguage = AppLanguageSetting.DEFAULT,
     adbForwardStatus = AdbForwardStatus.OK,
     logs = persistentListOf(
         LogEntryUiModel(LogLevel.DEBUG, "ADB path saved: /usr/local/bin/adb", "12:00:00", LogDomain.Default),

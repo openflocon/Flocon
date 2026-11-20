@@ -616,6 +616,9 @@
     <string name="settings_reverse_forwarding_description">Flocon 在电脑上运行本地服务。开启 ADB 反向端口转发后，设备即可连接该服务，传输日志、键值存储数据和截图。</string>
     <string name="settings_scale_description">调整整个应用的缩放比例，包括文字大小和界面元素间距。</string>
     <string name="settings_scale_title">界面缩放</string>
+    <string name="settings_language_description">应用程序的显示语言。“系统”将跟随电脑的语言。</string>
+    <string name="settings_language_system">系统</string>
+    <string name="settings_language_title">语言</string>
     <string name="settings_select_documents_folder">选择 Flocon 文件保存目录</string>
     <string name="settings_system_logs_title">Flocon 系统日志</string>
     <string name="settings_theme_description">选择浅色、深色或跟随系统。选择“跟随系统”后，Flocon 会随系统自动切换主题。</string>
