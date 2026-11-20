@@ -1444,6 +1444,14 @@ private fun AppLanguageSetting.label(): String = when (this) {
     AppLanguageSetting.Japanese -> "日本語"
 
     AppLanguageSetting.Korean -> "한국어"
+    AppLanguageSetting.Italian -> "Italiano"
+    AppLanguageSetting.Indonesian -> "Bahasa Indonesia"
+    AppLanguageSetting.Hindi -> "हिन्दी"
+    AppLanguageSetting.Turkish -> "Türkçe"
+    AppLanguageSetting.Russian -> "Русский"
+    AppLanguageSetting.Ukrainian -> "Українська"
+    AppLanguageSetting.Polish -> "Polski"
+    AppLanguageSetting.Vietnamese -> "Tiếng Việt"
 
     AppLanguageSetting.ChineseSimplified -> "简体中文"
 
