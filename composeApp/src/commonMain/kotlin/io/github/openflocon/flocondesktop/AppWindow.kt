@@ -7,8 +7,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
@@ -115,14 +117,18 @@ fun App(
 //        ) {
         val appLanguage by koinInject<ObserveAppLanguageUseCase>()()
             .collectAsStateWithLifecycle()
-        val locale = remember(appLanguage) {
-            (appLanguage.languageTag?.let(Locale::forLanguageTag) ?: systemLocale)
-                // the string resources read the default locale when they are composed
-                .also { Locale.setDefault(it) }
+        remember(appLanguage) {
+            // the resources read the default locale to know the language to load
+            Locale.setDefault(appLanguage.languageTag?.let(Locale::forLanguageTag) ?: systemLocale)
         }
 
-        // the screens are composed again to read the strings of the new language
-        key(locale) {
+        // the resources are loaded again when the density changes: a tiny change makes the strings follow the new language,
+        // without composing the screens from scratch (which would close the dialogs)
+        val density = LocalDensity.current
+        val languageDensity = remember(density, appLanguage) {
+            Density(density.density, density.fontScale * (1f + 1e-5f * appLanguage.ordinal))
+        }
+        CompositionLocalProvider(LocalDensity provides languageDensity) {
             FloconTheme(
                 appScale = appScale.toAppScale(),
                 isDarkTheme = isDarkTheme,
