@@ -1,5 +1,6 @@
 package io.github.openflocon.data.local.timeline.datasource
 
+import io.github.openflocon.data.local.timeline.models.TimelineRowEntity
 import io.github.openflocon.data.local.timelinelog.dao.MAX_TIMELINE_LOGS
 import io.github.openflocon.domain.timeline.models.TIMELINE_DATABASE_STATEMENT_ROOM
 import io.github.openflocon.domain.timeline.models.TIMELINE_DURATION_BUCKETS_MS
@@ -223,10 +224,19 @@ internal class TimelineQuery(
     val params: List<Any>,
 )
 
-private class Union(
-    val sql: String?, // null: nothing to query
+// one SELECT of the union, with its own parameters
+private class UnionBranch(
+    val kind: String,
+    val sql: String,
     val params: List<Any>,
 )
+
+private class Union(
+    val branches: List<UnionBranch>,
+) {
+    val sql: String? = branches.takeIf { it.isNotEmpty() }?.joinToString(separator = " UNION ALL ") { it.sql } // null: nothing to query
+    val params: List<Any> = branches.flatMap { it.params }
+}
 
 /**
  * The words to keep (include, any of them) or hide (exclude, none of them) in a [column], as conditions to add to a WHERE.
@@ -261,11 +271,11 @@ private fun buildUnion(
     includeNetworkResponses: Boolean = true, // false: one event per network call
     ignoredFacets: Set<TimelineFacet> = emptySet(), // facets not applied, to count their values
 ): Union {
-    val params = ArrayList<Any>()
     val text = filter.text?.takeIf { it.isNotBlank() }?.let { "%$it%" }
     val appInstance = filter.appInstance
 
     fun branch(
+        kind: String,
         select: String,
         from: String,
         appInstanceColumn: String?, // null: the source does not store the session
@@ -278,7 +288,8 @@ private fun buildUnion(
         networkRules: Boolean = false, // the status, host and duration rules of the network calls
         databaseRules: Boolean = false, // the sql rules and the transactions of the database logs
         logRules: Boolean = false, // the tagged logs switch and the tag rules of the logs
-    ): String {
+    ): UnionBranch {
+        val params = ArrayList<Any>()
         val where = StringBuilder("WHERE deviceId = ?")
         params.add(deviceId)
         if (extraCondition != null) {
@@ -331,7 +342,11 @@ private fun buildUnion(
         val facetColumns = TimelineFacet.entries.joinToString { "${facetExpressions[it] ?: "NULL"} AS ${it.column()}" }
         val selectQuery = "SELECT $select, $facetColumns FROM $from $where"
         // a UNION ALL member cannot have its own ORDER BY / LIMIT: wrap it
-        return if (orderLimit != null) "SELECT * FROM ($selectQuery $orderLimit)" else selectQuery
+        return UnionBranch(
+            kind = kind,
+            sql = if (orderLimit != null) "SELECT * FROM ($selectQuery $orderLimit)" else selectQuery,
+            params = params,
+        )
     }
 
     val networkFacets = mapOf(
@@ -347,6 +362,7 @@ private fun buildUnion(
         if (TimelineSource.Network in filter.sources) {
             add(
                 branch(
+                    kind = KIND_NETWORK,
                     select = "'$KIND_NETWORK' AS kind, callId AS id, request_startTime AS ts, " +
                         "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
                         "$NETWORK_METHOD AS method, " +
@@ -366,6 +382,7 @@ private fun buildUnion(
         if (includeNetworkResponses && TimelineSource.Network in filter.sources) {
             add(
                 branch(
+                    kind = KIND_NETWORK_RESPONSE,
                     select = "'$KIND_NETWORK_RESPONSE' AS kind, callId AS id, " +
                         "request_startTime + CAST(response_durationMs AS INTEGER) AS ts, " +
                         "$NETWORK_TITLE AS title, response_statusFormatted AS subtitle, appInstance AS appInstance, " +
@@ -388,6 +405,7 @@ private fun buildUnion(
         if (TimelineSource.Database in filter.sources) {
             add(
                 branch(
+                    kind = KIND_DATABASE,
                     select = "'$KIND_DATABASE' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
                         "sqlQuery AS title, dbName AS subtitle, appInstance AS appInstance, $NO_NETWORK_FIELDS, $DATABASE_TRANSACTION_COLUMNS",
                     from = "DatabaseQueryLogEntity",
@@ -406,6 +424,7 @@ private fun buildUnion(
         if (TimelineSource.Analytics in filter.sources) {
             add(
                 branch(
+                    kind = KIND_ANALYTICS,
                     select = "'$KIND_ANALYTICS' AS kind, itemId AS id, createdAt AS ts, " +
                         "eventName AS title, analyticsTableId AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AnalyticsItemEntity",
@@ -419,6 +438,7 @@ private fun buildUnion(
         if (TimelineSource.Accessibility in filter.sources) {
             add(
                 branch(
+                    kind = KIND_ACCESSIBILITY,
                     select = "'$KIND_ACCESSIBILITY' AS kind, id AS id, createdAt AS ts, " +
                         "COALESCE(text, contentDescription, type) AS title, type AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AccessibilityEventEntity",
@@ -433,6 +453,7 @@ private fun buildUnion(
             add(
                 branch(
                     // a page event without message is told by its url, then by its type
+                    kind = KIND_WEBVIEW,
                     select = "'$KIND_WEBVIEW' AS kind, eventId AS id, timestamp AS ts, " +
                         "COALESCE(message, url, label) AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "WebViewEventEntity",
@@ -446,6 +467,7 @@ private fun buildUnion(
         if (TimelineSource.Crash in filter.sources) {
             add(
                 branch(
+                    kind = KIND_CRASH,
                     select = "'$KIND_CRASH' AS kind, crashId AS id, timestamp AS ts, " +
                         "exceptionType AS title, exceptionMessage AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "CrashReportEntity",
@@ -460,6 +482,7 @@ private fun buildUnion(
             add(
                 branch(
                     // the device and the package are stored by the table, not by its items
+                    kind = KIND_TABLE,
                     select = "'$KIND_TABLE' AS kind, TableItemEntity.itemId AS id, TableItemEntity.createdAt AS ts, " +
                         "TableEntity.name AS title, TableItemEntity.`values` AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "TableItemEntity JOIN TableEntity ON TableEntity.id = TableItemEntity.tableId",
@@ -473,6 +496,7 @@ private fun buildUnion(
         if (TimelineSource.Deeplink in filter.sources) {
             add(
                 branch(
+                    kind = KIND_DEEPLINK,
                     select = "'$KIND_DEEPLINK' AS kind, CAST(id AS TEXT) AS id, executedAt AS ts, " +
                         "link AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "DeeplinkEntity",
@@ -488,6 +512,7 @@ private fun buildUnion(
             add(
                 branch(
                     // the level is a facet column too (read back by the outer select), an ERROR log is flagged in SQL
+                    kind = KIND_LOG,
                     select = "'$KIND_LOG' AS kind, CAST(id AS TEXT) AS id, timestamp AS ts, " +
                         "value AS title, type AS subtitle, appInstance AS appInstance, " +
                         "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, " +
@@ -509,6 +534,7 @@ private fun buildUnion(
         if (TimelineSource.Adb in filter.sources) {
             add(
                 branch(
+                    kind = KIND_ADB,
                     select = "'$KIND_ADB' AS kind, CAST(id AS TEXT) AS id, executedAt AS ts, " +
                         "command AS title, output AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "AdbCommandHistoryEntity",
@@ -521,10 +547,7 @@ private fun buildUnion(
         }
     }
 
-    return Union(
-        sql = branches.takeIf { it.isNotEmpty() }?.joinToString(separator = " UNION ALL "),
-        params = params,
-    )
+    return Union(branches)
 }
 
 /**
@@ -558,10 +581,9 @@ private fun TimelineSource.kind(): String = when (this) {
 }
 
 /**
- * The time bounds and the events asked by the filter, applied to the rows of the union: " WHERE ..." (with a trailing space),
- * or an empty string when the filter asks for neither.
+ * The time bounds and the events asked by the filter, applied to the rows of the union, as conditions to add to a WHERE.
  */
-private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableList<Any>): String {
+private fun outerConditionList(filter: TimelineFilterDomainModel, params: MutableList<Any>): MutableList<String> {
     val conditions = ArrayList<String>()
     filter.fromMs?.let {
         conditions.add("u.ts >= ?")
@@ -584,6 +606,14 @@ private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableLi
             )
         }
     }
+    return conditions
+}
+
+/**
+ * " WHERE ..." (with a trailing space) for the conditions of [outerConditionList], or an empty string when the filter asks for none.
+ */
+private fun outerConditions(filter: TimelineFilterDomainModel, params: MutableList<Any>): String {
+    val conditions = outerConditionList(filter, params)
     return if (conditions.isEmpty()) "" else conditions.joinToString(prefix = "WHERE ", separator = " AND ", postfix = " ")
 }
 
@@ -591,6 +621,43 @@ private const val EMPTY_ROWS =
     "SELECT '' AS kind, '' AS id, 0 AS ts, '' AS title, NULL AS subtitle, NULL AS appInstance, " +
         "NULL AS method, NULL AS statusCode, NULL AS durationMs, 0 AS isImage, 0 AS hasError, NULL AS responseByteSize, $NO_TRANSACTION_COLUMNS, " +
         "NULL AS level, NULL AS sessionStart WHERE 0"
+
+// the columns of an event, read back from the union (`u`): the level and the value of each facet are the facet columns of the union
+private val OUTER_COLUMNS = "u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
+    "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath, u.${TimelineFacet.LogLevel.column()} AS level, " +
+    "$FACET_VALUES_JSON AS facetValues"
+
+// the start of the session of an event: the latest app start before it
+private const val SESSION_START_COLUMN = "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart"
+
+/**
+ * The app starts are the sessions: a row each, at the time the app started, whether the session holds events or not.
+ * They have no text, so they are hidden while the text filter is used.
+ */
+private fun appStartBranch(
+    deviceId: String,
+    packageName: String,
+    filter: TimelineFilterDomainModel,
+): UnionBranch? {
+    if (TimelineSource.AppStart !in filter.sources || !filter.text.isNullOrBlank()) return null
+    val params = ArrayList<Any>()
+    val appStartSessions = sessionsSql(deviceId, packageName, params)
+    val appInstance = filter.appInstance
+    val where = StringBuilder("WHERE appInstance IS NOT NULL")
+    if (appInstance != null) {
+        where.append(" AND appInstance = ?")
+        params.add(appInstance)
+    }
+    if (filter.currentSessionOnly) {
+        where.append(" AND appInstance = ${latestSessionSql(deviceId, packageName, params)}")
+    }
+    return UnionBranch(
+        kind = KIND_APP_START,
+        sql = "SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts, '' AS title, " +
+            "NULL AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS FROM ($appStartSessions) $where",
+        params = params,
+    )
+}
 
 /**
  * The events of the selected sources sorted by time, newest first. Each one carries the start of its session
@@ -604,47 +671,114 @@ internal fun buildTimelineQuery(
     filter: TimelineFilterDomainModel,
 ): TimelineQuery {
     val union = buildUnion(deviceId, packageName, filter)
-    val showAppStarts = TimelineSource.AppStart in filter.sources && filter.text.isNullOrBlank()
-    if (union.sql == null && !showAppStarts) return TimelineQuery(sql = EMPTY_ROWS, params = emptyList())
+    val appStart = appStartBranch(deviceId, packageName, filter)
+    if (union.sql == null && appStart == null) return TimelineQuery(sql = EMPTY_ROWS, params = emptyList())
 
     val params = ArrayList<Any>()
     val sessions = sessionsSql(deviceId, packageName, params)
-    val members = ArrayList<String>()
-    union.sql?.let {
-        members.add(it)
-        params.addAll(union.params)
-    }
-    if (showAppStarts) {
-        val appStartSessions = sessionsSql(deviceId, packageName, params)
-        val appInstance = filter.appInstance
-        val where = StringBuilder("WHERE appInstance IS NOT NULL")
-        if (appInstance != null) {
-            where.append(" AND appInstance = ?")
-            params.add(appInstance)
-        }
-        if (filter.currentSessionOnly) {
-            where.append(" AND appInstance = ${latestSessionSql(deviceId, packageName, params)}")
-        }
-        members.add(
-            "SELECT '$KIND_APP_START' AS kind, CAST(appInstance AS TEXT) AS id, appInstance AS ts, '' AS title, " +
-                "NULL AS subtitle, appInstance AS appInstance, $NO_NETWORK_COLUMNS, $NO_FACETS FROM ($appStartSessions) $where"
-        )
-    }
+    val members = union.branches + listOfNotNull(appStart)
+    members.forEach { params.addAll(it.params) }
 
     val outerWhere = outerConditions(filter, params)
     return TimelineQuery(
         sql = "WITH sessions(appInstance) AS ($sessions) " +
-            "SELECT u.kind, u.id, u.ts, u.title, u.subtitle, u.appInstance, u.method, u.statusCode, u.durationMs, u.isImage, u.hasError, u.responseByteSize, " +
-            "u.transactionId, u.txQueryCount, u.txStart, u.txEnd, u.isTransactionControl, u.nestedTransactionId, u.nestedQueryCount, u.transactionDepth, u.nestedPath, u.${TimelineFacet.LogLevel.column()} AS level, " +
-            "$FACET_VALUES_JSON AS facetValues, " +
-            "(SELECT MAX(appInstance) FROM sessions WHERE appInstance <= u.ts) AS sessionStart " +
-            "FROM (${members.joinToString(separator = " UNION ALL ")}) u " +
+            "SELECT $OUTER_COLUMNS, $SESSION_START_COLUMN " +
+            "FROM (${members.joinToString(separator = " UNION ALL ") { it.sql }}) u " +
             outerWhere +
             // an app start is below the events that happened at the same time
             // at the same time, the response is above its request
             "ORDER BY u.ts DESC, (u.kind = '$KIND_APP_START') ASC, (u.kind = '$KIND_NETWORK_RESPONSE') DESC, u.id DESC",
         params = params,
     )
+}
+
+/**
+ * Where a page starts: the event it follows (or precedes) in the order of the timeline.
+ */
+internal data class TimelineCursor(
+    val ts: Long,
+    val kind: String,
+    val id: String,
+)
+
+internal fun TimelineRowEntity.cursor() = TimelineCursor(ts = ts, kind = kind, id = id)
+
+// at the same time, an app start is below the events and the response is above its request: the position of a kind among the events of a same time
+private fun kindOrder(kind: String): Int = (if (kind == KIND_APP_START) 2 else 0) + (if (kind == KIND_NETWORK_RESPONSE) 0 else 1)
+
+/**
+ * The order of [buildTimelineQuery]: newest first. Used to merge the pages of each kind.
+ */
+internal val TimelineRowOrder: Comparator<TimelineRowEntity> = compareByDescending<TimelineRowEntity> { it.ts }
+    .thenBy { kindOrder(it.kind) }
+    .thenByDescending { it.id }
+    .thenByDescending { it.kind }
+
+/**
+ * The condition of the rows of [kind] that come after (or before when not [forward]) the [cursor].
+ * All the rows of a kind share their place among the events of a same time: only the kind of the cursor tells which side the ties are.
+ */
+private fun cursorCondition(kind: String, cursor: TimelineCursor, forward: Boolean, params: MutableList<Any>): String {
+    // forward goes to the older events: a lower time
+    val strict = if (forward) "<" else ">"
+    val tied = kindOrder(kind).compareTo(kindOrder(cursor.kind))
+    // a kind that sorts after the cursor kind keeps its events of the same time when going forward, it sorts before going backward
+    val sameTimeFollows = if (forward) tied > 0 else tied < 0
+    return when {
+        tied == 0 -> {
+            // the events of a same time and place are told by their id, then by their kind
+            val sameIdFollows = if (forward) kind < cursor.kind else kind > cursor.kind
+            val idComparison = "CAST(u.id AS TEXT) $strict${if (sameIdFollows) "=" else ""} ?"
+            params.add(cursor.ts)
+            params.add(cursor.ts)
+            params.add(cursor.id)
+            "(u.ts $strict ? OR (u.ts = ? AND $idComparison))"
+        }
+        sameTimeFollows -> {
+            params.add(cursor.ts)
+            "u.ts $strict= ?"
+        }
+        else -> {
+            params.add(cursor.ts)
+            "u.ts $strict ?"
+        }
+    }
+}
+
+/**
+ * One query per kind of event, each returning at most [limit] events following the [cursor] (null: the newest ones), in the order of the timeline,
+ * or preceding it, nearest first, when not [forward]. Sorting each kind alone is far cheaper than sorting their union, and a page
+ * costs the same wherever it starts (a keyset instead of an offset). The pages of the kinds are merged by [TimelineRowOrder]:
+ * keeping the first [limit] of them gives the page of the union.
+ * Each event carries the start of its session, like [buildTimelineQuery].
+ */
+internal fun buildTimelinePageQueries(
+    deviceId: String,
+    packageName: String,
+    filter: TimelineFilterDomainModel,
+    cursor: TimelineCursor?,
+    forward: Boolean,
+    limit: Int,
+): List<TimelineQuery> {
+    val union = buildUnion(deviceId, packageName, filter)
+    val members = union.branches + listOfNotNull(appStartBranch(deviceId, packageName, filter))
+    return members.map { member ->
+        val params = ArrayList<Any>()
+        val sessions = sessionsSql(deviceId, packageName, params)
+        params.addAll(member.params)
+        val conditions = outerConditionList(filter, params)
+        if (cursor != null) conditions.add(cursorCondition(member.kind, cursor, forward, params))
+        val where = if (conditions.isEmpty()) "" else conditions.joinToString(prefix = "WHERE ", separator = " AND ", postfix = " ")
+        val direction = if (forward) "DESC" else "ASC"
+        TimelineQuery(
+            sql = "WITH sessions(appInstance) AS ($sessions) " +
+                "SELECT $OUTER_COLUMNS, $SESSION_START_COLUMN " +
+                // the page is cut before the session start is looked up: it is only computed for the events kept
+                "FROM (SELECT * FROM (${member.sql}) u ${where}ORDER BY u.ts $direction, CAST(u.id AS TEXT) $direction LIMIT $limit) u " +
+                "ORDER BY u.ts DESC, CAST(u.id AS TEXT) DESC",
+            params = params,
+        )
+    }
 }
 
 /**

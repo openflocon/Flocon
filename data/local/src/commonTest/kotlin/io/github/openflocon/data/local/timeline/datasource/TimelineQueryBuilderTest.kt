@@ -864,4 +864,100 @@ class TimelineQueryBuilderTest {
 
         assertFalse(query.sql.contains(") u WHERE"))
     }
+
+    private fun pages(
+        filter: TimelineFilterDomainModel = TimelineFilterDomainModel(),
+        cursor: TimelineCursor? = null,
+        forward: Boolean = true,
+    ) = buildTimelinePageQueries("device", "com.app", filter, cursor, forward, limit = 50)
+
+    @Test
+    fun `a page query is made for each kind of event and the app starts`() {
+        val queries = pages()
+
+        // the network calls are two kinds: the requests and the responses
+        assertEquals(eventBranches + 1, queries.size)
+        assertTrue(queries.none { it.sql.contains("UNION ALL") })
+        assertTrue(queries.all { it.sql.contains("LIMIT 50") })
+        assertTrue(queries.all { it.sql.endsWith("ORDER BY u.ts DESC, CAST(u.id AS TEXT) DESC") })
+        // every placeholder has its parameter
+        queries.forEach { assertEquals(it.sql.count { c -> c == '?' }, it.params.size) }
+    }
+
+    @Test
+    fun `only the selected sources have a page query`() {
+        val queries = pages(TimelineFilterDomainModel(sources = setOf(TimelineSource.Database)))
+
+        assertEquals(1, queries.size)
+        assertTrue(queries.single().sql.contains("FROM DatabaseQueryLogEntity"))
+    }
+
+    @Test
+    fun `the app starts are not paged while the text filter is used`() {
+        val queries = pages(TimelineFilterDomainModel(sources = setOf(TimelineSource.AppStart), text = "foo"))
+
+        assertTrue(queries.isEmpty())
+    }
+
+    @Test
+    fun `the first page has no cursor condition`() {
+        val queries = pages()
+
+        assertTrue(queries.none { it.sql.contains("CAST(u.id AS TEXT) <") })
+        assertTrue(queries.none { it.sql.contains("u.ts <") })
+    }
+
+    @Test
+    fun `the next page of a kind starts after the cursor`() {
+        val queries = pages(cursor = TimelineCursor(ts = 500, kind = KIND_LOG, id = "7"))
+        val log = queries.single { it.sql.contains("FROM TimelineLogEntity") }
+        val database = queries.single { it.sql.contains("FROM DatabaseQueryLogEntity") }
+        val response = queries.single { it.sql.contains("'$KIND_NETWORK_RESPONSE' AS kind") }
+        val appStart = queries.single { it.sql.contains("'$KIND_APP_START' AS kind") }
+
+        // same kind: the events of the same time are told by their id (the log of the cursor is not repeated)
+        assertTrue(log.sql.contains("(u.ts < ? OR (u.ts = ? AND CAST(u.id AS TEXT) < ?))"))
+        assertEquals(listOf<Any>(500L, 500L, "7"), log.params.takeLast(3))
+        // a kind that sorts like the log, with a greater name: its event of the same id comes before the log in the order, so after the log
+        assertTrue(database.sql.contains("CAST(u.id AS TEXT) <= ?"))
+        // the responses are above the other events of a same time: none of theirs is after the cursor
+        assertTrue(response.sql.contains("u.ts < ?"))
+        assertFalse(response.sql.contains("u.ts <= ?"))
+        // the app starts are below the other events of a same time: all of theirs are after the cursor
+        assertTrue(appStart.sql.contains("u.ts <= ?"))
+    }
+
+    @Test
+    fun `the previous page is read from the cursor to the newest, nearest first`() {
+        val queries = pages(cursor = TimelineCursor(ts = 500, kind = KIND_LOG, id = "7"), forward = false)
+        val log = queries.single { it.sql.contains("FROM TimelineLogEntity") }
+        val response = queries.single { it.sql.contains("'$KIND_NETWORK_RESPONSE' AS kind") }
+        val appStart = queries.single { it.sql.contains("'$KIND_APP_START' AS kind") }
+
+        assertTrue(log.sql.contains("ORDER BY u.ts ASC, CAST(u.id AS TEXT) ASC LIMIT 50"))
+        assertTrue(log.sql.contains("(u.ts > ? OR (u.ts = ? AND CAST(u.id AS TEXT) > ?))"))
+        assertTrue(response.sql.contains("u.ts >= ?"))
+        assertTrue(appStart.sql.contains("u.ts > ?"))
+        assertFalse(appStart.sql.contains("u.ts >= ?"))
+    }
+
+    @Test
+    fun `the page queries have the filters of the union`() {
+        val filter = TimelineFilterDomainModel(sources = setOf(TimelineSource.Log), text = "needle", fromMs = 10, toMs = 20)
+        val query = pages(filter).single()
+
+        assertTrue(query.sql.contains("value LIKE ?"))
+        assertTrue(query.sql.contains("u.ts >= ?"))
+        assertTrue(query.sql.contains("u.ts <= ?"))
+        assertTrue(query.params.containsAll(listOf<Any>("%needle%", 10L, 20L)))
+    }
+
+    @Test
+    fun `the session start is looked up for the events of the page only`() {
+        val query = pages().first()
+
+        // the lookup is outside of the sorted and limited select
+        assertTrue(query.sql.indexOf("AS sessionStart") < query.sql.indexOf("FROM (SELECT * FROM"))
+        assertTrue(query.sql.indexOf("LIMIT 50") > query.sql.indexOf("FROM (SELECT * FROM"))
+    }
 }
