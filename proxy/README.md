@@ -9,3 +9,5 @@ bun run build:all  # compiles the binaries into composeApp/appResources/<platfor
 ```
 
 The binaries are not committed: the release build must run `bun run build:all` before packaging, and sign the macOS binaries with the app.
+
+Design, status and next steps (handoff for agents): `internal-docs/plans/2026-11-22-proxy-mode.md`.
