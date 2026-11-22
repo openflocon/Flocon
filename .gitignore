@@ -43,3 +43,7 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+
+# flocon-proxy binaries, built by `bun run build:all` in proxy/
+composeApp/appResources/*/flocon-proxy
+composeApp/appResources/*/flocon-proxy.exe

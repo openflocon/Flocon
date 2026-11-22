@@ -134,6 +134,9 @@ compose.desktop {
         }
 
         nativeDistributions {
+            // Native binaries shipped with the app (flocon-proxy, built from proxy/ with `bun run build:all`).
+            // Per-OS folders: common, macos-arm64, macos-x64, windows-x64, linux-x64.
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("appResources"))
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Flocon"
             packageVersion = System.getenv("PROJECT_VERSION_NAME") ?: "2.0.0"
