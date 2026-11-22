@@ -45,9 +45,7 @@ async function loadOrCreateCA(): Promise<{ key: string; cert: string }> {
   if (existsSync(keyPath) && existsSync(certPath)) {
     return { key: readFileSync(keyPath, "utf8"), cert: readFileSync(certPath, "utf8") };
   }
-  const ca = await mockttp.generateCACertificate({
-    subject: { commonName: "Flocon Proxy CA", organizationName: "Flocon" },
-  });
+  const ca = await mockttp.generateCACertificate({ commonName: "Flocon Proxy CA", organizationName: "Flocon" });
   writeFileSync(keyPath, ca.key, { mode: 0o600 });
   writeFileSync(certPath, ca.cert);
   return ca;
@@ -106,14 +104,34 @@ function sendToFlocon(ip: string, plugin: string, method: string, body: unknown)
 }
 
 // ---------- Helpers ----------
-async function readBody(body: mockttp.CompletedBody): Promise<{ text: string | null; size: number }> {
+// Under Bun, mockttp sometimes hands out its in-progress body (asBuffer / asDecodedBuffer) instead of the
+// completed one (buffer / getDecodedBuffer): both shapes are read here.
+type AnyBody = Partial<mockttp.CompletedBody> & {
+  asBuffer?: () => Promise<Buffer>;
+  asDecodedBuffer?: () => Promise<Buffer>;
+};
+
+async function rawBuffer(body: AnyBody): Promise<Buffer | undefined> {
+  if (body.buffer) return body.buffer;
+  return body.asBuffer?.().catch(() => undefined);
+}
+
+async function readBody(body: AnyBody | undefined): Promise<{ text: string | null; size: number }> {
+  if (!body) return { text: null, size: 0 };
+  const raw = await rawBuffer(body);
+  const rawSize = raw?.length ?? 0;
   try {
-    const buf = await body.getDecodedBuffer(); // handles gzip / br / deflate
-    if (!buf) return { text: null, size: body.buffer.length };
+    // handles gzip / br / deflate
+    const buf = body.getDecodedBuffer ? await body.getDecodedBuffer() : await body.asDecodedBuffer?.();
+    if (!buf) return { text: null, size: rawSize };
     return { text: buf.length ? buf.subarray(0, MAX_BODY).toString("utf8") : null, size: buf.length };
   } catch {
-    return { text: null, size: body.buffer.length };
+    return { text: null, size: rawSize };
   }
+}
+
+async function bodySize(body: AnyBody | undefined): Promise<number> {
+  return body ? ((await rawBuffer(body))?.length ?? 0) : 0;
 }
 
 function flatHeaders(h: mockttp.Headers): Record<string, string> {
@@ -231,7 +249,7 @@ async function main() {
     const headers = flatHeaders(res.headers);
     const contentType = headers["content-type"] ?? null;
     const isImage = !!contentType?.startsWith("image/");
-    const body = isImage ? { text: null, size: res.body.buffer.length } : await readBody(res.body);
+    const body = isImage ? { text: null, size: await bodySize(res.body) } : await readBody(res.body);
     sendToFlocon(ip, "network", "log_network_call_response", {
       floconCallId: res.id,
       floconNetworkType: "http",
@@ -280,6 +298,10 @@ async function main() {
   process.stdin.on("end", stop);
   process.stdin.resume();
 }
+
+// One bad request must not stop the capture of the others: log it and keep running.
+process.on("unhandledRejection", (e) => console.error("unhandled rejection", e));
+process.on("uncaughtException", (e) => console.error("uncaught exception", e));
 
 main().catch((e) => {
   emit({ event: "error", message: String(e?.message ?? e) });

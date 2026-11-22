@@ -87,7 +87,9 @@ CA page (`http://<mac ip>:<ca port>/`): `/` is an HTML page with instructions, `
 - Done: everything in the table above. CI (`Desktop - Pull Request Check`) is green on `a1ae8f6`.
 - **Never run for real.** The session that wrote it had no Bun, npm or Gradle access. The proxy, the `ProxyManager` process handling and the selector UI have only been checked by CI (compile + unit tests + ktlint). The first thing to do on a Mac is the manual test below.
 - Wired (second session): `ProxyManager` behind `domain/proxy` (`ProxyRepository`, `RunProxyUseCase` collected in `App()`), on/off saved in the settings (`proxy_enabled`), and `ProxyDialog` (router button in the top bar) that guides the phone: Wi-Fi proxy server/port, QR code to the CA page, iOS/Android steps. Strings in English and French only (the other languages fall back to English).
-- Still **never run with the real binary** (no Bun on the machine). Without the binary the dialog shows "not included in this build".
+- **Manual test done on macOS arm64** (Bun 1.4.5, mockttp 3.17.2): `bun run dev` and the compiled binary (`build:macos-arm64`, ~94 MB) proxy HTTP, HTTPS (with the Flocon CA) and gzip; bodies, POST bodies and status codes land in Room under `proxy-<ip>`; the CA page serves `/`, `/ca.crt`, `/ca.mobileconfig`; SIGTERM stops it in ~0.5 s. From the app: the toggle starts the binary from `compose.application.resources.dir` (filled by `./gradlew :composeApp:run` when the binary exists before the run), the dialog shows the IPs, port and QR code, and turning it off kills the process. Not tested yet: a real phone.
+- Fixes from the test: `generateCACertificate` takes `commonName` / `organizationName` at the top level; under Bun, mockttp sometimes hands out its in-progress body (`asBuffer` / `asDecodedBuffer`) instead of the completed one (`buffer` / `getDecodedBuffer`), so `readBody` reads both; a missing body no longer crashes the process, and uncaught errors are logged instead of stopping the proxy.
+- Without the binary the dialog shows "not included in this build".
 
 ## Manual test (do this first)
 
@@ -111,7 +113,7 @@ Things to check while testing:
 
 Follow the repo rules: layering in `.claude/rules/desktop-app.md`, UI in `.claude/rules/compose.md`, docs sync in `.claude/rules/docs-protocol-sync.md`.
 
-- [ ] **Manual test** above; fix `proxy/src/index.ts` from the results.
+- [x] **Manual test** above (Mac only; a real phone is still to do).
 - [x] **Wire `ProxyManager`**: register it in a Koin module (desktop source set), with `floconWebsocketUrl = "wss://127.0.0.1:${ports.websocketPort}/"` from `ObserveServerPortsUseCase` (restart the proxy when the port changes) and `dataDir` = the Flocon data dir (`~/.flocon/` is already used by `ServerJvm`). If the UI is in `commonMain`, put an interface (e.g. `ProxyController` with `state` / `start` / `stop`) where commonMain can see it, and the JVM implementation in desktopMain. Ask the `architect` agent if it touches `domain`.
 - [x] **UI**: a toggle to start/stop the proxy. Suggested place: next to the existing Connect dialog (`features/connect/ConnectDialog.kt`, which already has `QrCodeImage`) or in Settings. When `Running`, show `<ip>:<proxyPort>` for the Wi-Fi proxy setting and a QR code to `caUrl`, with the iOS / Android steps (see `docs/proxy.md`). Show `Failed.message`. Optionally list `tls-error` hosts ("the app may pin its certificates").
 - [x] **Persist** the on/off choice (DataStore settings like the others) and restart the proxy at launch if it was on.
