@@ -13,7 +13,7 @@ Flocon logs your **gRPC calls** in the Network screen. Open a call to see the se
 For each call you see:
 
 - the **server** as the URL, and the **full method name** (`helloworld.Greeter/SayHello`);
-- the **request and response messages**, as JSON for grpc-java and grpc-swift, or in Wire's text format for Square Wire;
+- the **request and response messages**, as JSON for grpc-java and grpc-swift, or as generated message strings for Square Wire (for example, `HelloRequest{name=World}`);
 - the **metadata** (headers), the **duration** and the **gRPC status** (`OK`, `NOT_FOUND`...);
 - the **error**, such as a refused connection, when the call fails.
 
@@ -28,9 +28,6 @@ For each call you see:
 
 !!! note "Not available in the Flutter SDK yet"
     Flutter has no gRPC interceptor. Only HTTP calls (Dio, `package:http`) and WebSocket events are reported.
-
-!!! info "Square Wire release status"
-    The [Square Wire adapter](https://github.com/openflocon/FloconKotlin/pull/4) is awaiting its first Maven Central release. The setup below applies to an SDK build that includes `flocon-wire-grpc`.
 
 ## Setup
 
@@ -76,13 +73,18 @@ For each call you see:
 
 === "Kotlin (Square Wire)"
 
+    !!! info "Unreleased adapter"
+        No published Flocon SDK version contains this module yet. To try it, check out [FloconKotlin PR #4](https://github.com/openflocon/FloconKotlin/pull/4) and run `PROJECT_VERSION_NAME=wire-local ./publishLocal.sh` from the SDK root. Add `mavenLocal()` to your app's dependency repositories and use `wire-local` for `LAST_VERSION` in your Flocon dependencies.
+
     Install the [network plugin](network.md#setup) at startup with `install(FloconNetwork)`. Add the adapter to the module that creates your Wire service. For Kotlin Multiplatform, put the dependency in `commonMain.dependencies`.
 
     ```kotlin
     implementation("io.github.openflocon:flocon-wire-grpc:LAST_VERSION")
     ```
 
-    Use the same version as your Flocon SDK. The adapter builds against Wire 7.2.2 and wraps the client your app already uses. On iOS and Wasm, supply a Wire `GrpcClient` with a transport for that target.
+    Use the same version for the adapter and the Flocon SDK. The adapter depends on Wire 7.2.2 and wraps the client your app already uses. On iOS and Wasm, supply a Wire `GrpcClient` with a transport for that target.
+
+    On Android, add `flocon-no-op` to the app's [release configuration](install-kotlin.md#release-builds). In those builds, `withFlocon` returns the original client.
 
 === "Swift"
 
