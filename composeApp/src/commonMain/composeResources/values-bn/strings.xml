@@ -39,6 +39,7 @@
     <string name="device_platform_android">ANDROID</string>
     <string name="device_platform_ios">IOS</string>
     <string name="device_platform_desktop">DESKTOP</string>
+    <string name="device_platform_proxy">PROXY</string>
     <string name="download">ডাউনলোড</string>
     <string name="error_exporting_csv">CSV এক্সপোর্ট করতে সমস্যা হয়েছে</string>
     <string name="export_csv">CSV এক্সপোর্ট</string>

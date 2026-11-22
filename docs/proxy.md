@@ -27,7 +27,7 @@ The in-app SDK stays the recommended mode: it knows which app made the call, lin
 
 The iOS Simulator uses the network of the Mac: set the proxy in the macOS network settings instead.
 
-Each phone appears as a device named `Proxy <phone IP>`.
+Each phone appears as a device named `Proxy <phone IP>`, in its own **Proxy** group of the device selector, with a router icon: it is kept apart from the devices that use the SDK.
 
 ## Limits
 

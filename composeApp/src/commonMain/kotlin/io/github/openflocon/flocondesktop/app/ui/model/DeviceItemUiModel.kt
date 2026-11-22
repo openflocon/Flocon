@@ -16,6 +16,9 @@ data class DeviceItemUiModel(
         Android,
         Desktop,
         ios,
+
+        /** Traffic captured by the Flocon proxy (no SDK): one device per phone IP. */
+        Proxy,
         Unknown,
     }
 }

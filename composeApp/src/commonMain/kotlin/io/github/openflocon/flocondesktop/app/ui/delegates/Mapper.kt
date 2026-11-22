@@ -35,6 +35,7 @@ private fun mapToPlatformUi(platform: String): DeviceItemUiModel.Platform = when
     "android" -> DeviceItemUiModel.Platform.Android
     "desktop" -> DeviceItemUiModel.Platform.Desktop
     "ios" -> DeviceItemUiModel.Platform.ios
+    "proxy" -> DeviceItemUiModel.Platform.Proxy
     else -> DeviceItemUiModel.Platform.Unknown
 }
 

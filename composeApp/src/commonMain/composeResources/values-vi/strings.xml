@@ -39,6 +39,7 @@
     <string name="device_platform_android">ANDROID</string>
     <string name="device_platform_ios">IOS</string>
     <string name="device_platform_desktop">DESKTOP</string>
+    <string name="device_platform_proxy">PROXY</string>
     <string name="download">Tải xuống</string>
     <string name="error_exporting_csv">Lỗi khi xuất csv</string>
     <string name="export_csv">Xuất CSV</string>
