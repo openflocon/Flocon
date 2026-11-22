@@ -102,6 +102,7 @@ Requirements: Android API 23+, or a Kotlin Multiplatform project (Android, JVM, 
     | Core: [Dashboards](dashboard.md), [Network](network.md) (mocks, bad network, WebSocket logging, OkHttp interceptor and WebSockets on Android and JVM), [Databases](database.md) plugin, [Preferences](sharedpref.md), [Files](files.md) (no file browsing on Wasm), [Deeplinks](deeplink.md), [Analytics](analytics.md), [Feature flags](featureflags.md), [Timeline](timeline.md), [Crash reporter](crashreporter.md), [Tables](table.md), [WebView](webview.md) (automatic `attach` on Android) | `flocon` | Android, JVM, iOS, Wasm |
     | Ktor plugin | `flocon-ktor-interceptor` | Android, JVM, iOS, Wasm |
     | [gRPC](grpc.md) | `flocon-grpc-interceptor`, `flocon-grpc-interceptor-lite`, `flocon-grpc-interceptor-base` | Android |
+    | [Square Wire unary gRPC](grpc.md#setup) (upcoming) | `flocon-wire-grpc` | Android, JVM, iOS, Wasm |
     | [Databases](database.md) providers | `flocon-database-room` (Room 2), `flocon-database-room3` (Room 3) or `flocon-database-sqldelight` | Android, JVM, iOS (+ Wasm for Room 3) |
     | [DataStore](sharedpref.md) | `flocon-datastores` | Android, JVM, iOS |
     | [Accessibility](accessibility.md) | `flocon-accessibility` | Android, JVM, iOS, Wasm (automatic capture on Android and iOS) |
