@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -39,27 +40,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.proxy_android_step_app
+import flocondesktop.composeapp.generated.resources.proxy_android_step_download
+import flocondesktop.composeapp.generated.resources.proxy_android_step_install
+import flocondesktop.composeapp.generated.resources.proxy_android_step_wifi
 import flocondesktop.composeapp.generated.resources.proxy_binary_not_found
-import flocondesktop.composeapp.generated.resources.proxy_ca_android
-import flocondesktop.composeapp.generated.resources.proxy_ca_ios
+import flocondesktop.composeapp.generated.resources.proxy_certificate_page
 import flocondesktop.composeapp.generated.resources.proxy_copy
 import flocondesktop.composeapp.generated.resources.proxy_devices_hint
 import flocondesktop.composeapp.generated.resources.proxy_experimental
 import flocondesktop.composeapp.generated.resources.proxy_failed
 import flocondesktop.composeapp.generated.resources.proxy_intro
+import flocondesktop.composeapp.generated.resources.proxy_ios_step_download
+import flocondesktop.composeapp.generated.resources.proxy_ios_step_install
+import flocondesktop.composeapp.generated.resources.proxy_ios_step_trust
+import flocondesktop.composeapp.generated.resources.proxy_ios_step_wifi
 import flocondesktop.composeapp.generated.resources.proxy_no_address
 import flocondesktop.composeapp.generated.resources.proxy_off
+import flocondesktop.composeapp.generated.resources.proxy_once_hint
 import flocondesktop.composeapp.generated.resources.proxy_pick_network
+import flocondesktop.composeapp.generated.resources.proxy_platform_android
+import flocondesktop.composeapp.generated.resources.proxy_platform_ios
 import flocondesktop.composeapp.generated.resources.proxy_port
 import flocondesktop.composeapp.generated.resources.proxy_server
 import flocondesktop.composeapp.generated.resources.proxy_starting
-import flocondesktop.composeapp.generated.resources.proxy_step_ca
-import flocondesktop.composeapp.generated.resources.proxy_step_ca_hint
-import flocondesktop.composeapp.generated.resources.proxy_step_wifi
-import flocondesktop.composeapp.generated.resources.proxy_step_wifi_hint
 import flocondesktop.composeapp.generated.resources.proxy_title
-import flocondesktop.composeapp.generated.resources.proxy_wifi_android
-import flocondesktop.composeapp.generated.resources.proxy_wifi_ios
+import flocondesktop.composeapp.generated.resources.proxy_wifi_values
 import io.github.openflocon.flocondesktop.features.connect.view.QrCodeImage
 import io.github.openflocon.flocondesktop.features.proxy.ProxyViewModel
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyAddressUiModel
@@ -71,14 +77,24 @@ import io.github.openflocon.library.designsystem.components.FloconCircularProgre
 import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconSegmentedTextToggle
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private val DialogWidth = 720.dp
 private val QrSize = 180.dp
 private val LabelWidth = 56.dp
+private val StepNumberSize = 20.dp
+
+// code, not translated
+private const val USER_CERTIFICATES_SNIPPET = """<debug-overrides>
+  <trust-anchors>
+    <certificates src="user" />
+  </trust-anchors>
+</debug-overrides>"""
 
 /** Starts / stops the proxy and walks the user through the setup of the phone. */
 @Composable
@@ -236,15 +252,9 @@ private fun PhoneSetup(
             modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge),
         ) {
-            WifiStep(
-                address = selected,
-                modifier = Modifier.weight(1f),
-            )
+            ProxyValues(address = selected)
             Box(Modifier.fillMaxHeight().width(1.dp).background(FloconTheme.colors.line))
-            CertificateStep(
-                address = selected,
-                modifier = Modifier.weight(1f),
-            )
+            PlatformSteps(modifier = Modifier.weight(1f))
         }
         Text(
             text = stringResource(Res.string.proxy_devices_hint),
@@ -291,50 +301,113 @@ private fun NetworkPicker(
     }
 }
 
+/** What the phone needs: the Wi-Fi proxy values and the QR code to the certificate page. */
 @Composable
-private fun WifiStep(
+private fun ProxyValues(
     address: ProxyAddressUiModel,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        StepTitle(text = stringResource(Res.string.proxy_step_wifi))
-        StepText(text = stringResource(Res.string.proxy_step_wifi_hint))
+        StepTitle(text = stringResource(Res.string.proxy_wifi_values))
         CopyableValue(label = stringResource(Res.string.proxy_server), value = address.ip)
         CopyableValue(label = stringResource(Res.string.proxy_port), value = address.proxyPort)
-        StepText(text = stringResource(Res.string.proxy_wifi_ios))
-        StepText(text = stringResource(Res.string.proxy_wifi_android))
+        StepTitle(
+            text = stringResource(Res.string.proxy_certificate_page),
+            modifier = Modifier.padding(top = FloconTheme.spacing.medium),
+        )
+        QrCodeImage(
+            content = address.caUrl,
+            modifier = Modifier
+                .size(QrSize)
+                .clip(FloconTheme.shapes.large),
+        )
+        CopyableValue(label = null, value = address.caUrl)
+    }
+}
+
+private enum class PhonePlatform { Android, Ios }
+
+/** The steps stay here, on the desktop: the phone only visits the certificate page for a few seconds. */
+@Composable
+private fun PlatformSteps(
+    modifier: Modifier = Modifier,
+) {
+    var platform by remember { mutableStateOf(PhonePlatform.Android) }
+    val steps = when (platform) {
+        PhonePlatform.Android -> listOf(
+            Res.string.proxy_android_step_wifi,
+            Res.string.proxy_android_step_download,
+            Res.string.proxy_android_step_install,
+            Res.string.proxy_android_step_app,
+        )
+
+        PhonePlatform.Ios -> listOf(
+            Res.string.proxy_ios_step_wifi,
+            Res.string.proxy_ios_step_download,
+            Res.string.proxy_ios_step_install,
+            Res.string.proxy_ios_step_trust,
+        )
+    }
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+    ) {
+        FloconSegmentedTextToggle(
+            options = persistentListOf(
+                stringResource(Res.string.proxy_platform_android),
+                stringResource(Res.string.proxy_platform_ios),
+            ),
+            selectedIndex = platform.ordinal,
+            onSelect = { platform = PhonePlatform.entries[it] },
+        )
+        steps.forEachIndexed { index, step ->
+            NumberedStep(number = index + 1, text = stringResource(step))
+        }
+        if (platform == PhonePlatform.Android) {
+            Text(
+                text = USER_CERTIFICATES_SNIPPET,
+                style = FloconTheme.typography.monoMedium,
+                color = FloconTheme.colors.ink,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(FloconTheme.colors.bg100, FloconTheme.shapes.medium)
+                    .padding(FloconTheme.spacing.small),
+            )
+        }
+        StepText(text = stringResource(Res.string.proxy_once_hint))
     }
 }
 
 @Composable
-private fun CertificateStep(
-    address: ProxyAddressUiModel,
+private fun NumberedStep(
+    number: Int,
+    text: String,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Row(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        StepTitle(text = stringResource(Res.string.proxy_step_ca))
-        StepText(text = stringResource(Res.string.proxy_step_ca_hint))
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        ) {
-            QrCodeImage(
-                content = address.caUrl,
-                modifier = Modifier
-                    .size(QrSize)
-                    .clip(FloconTheme.shapes.large),
-            )
-            CopyableValue(label = null, value = address.caUrl)
-        }
-        StepText(text = stringResource(Res.string.proxy_ca_ios))
-        StepText(text = stringResource(Res.string.proxy_ca_android))
+        Text(
+            text = number.toString(),
+            style = FloconTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.accentInk,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .size(StepNumberSize)
+                .background(FloconTheme.colors.accent, CircleShape),
+        )
+        Text(
+            text = text,
+            style = FloconTheme.typography.bodyMedium,
+            color = FloconTheme.colors.ink,
+        )
     }
 }
 

@@ -178,6 +178,51 @@ function mobileconfig(certPem: string): string {
 </dict></plist>`;
 }
 
+// ---------- CA page (opened on the phone for a few seconds: the steps are shown in Flocon Desktop) ----------
+const PAGE_TEXT = {
+  en: {
+    title: "Flocon Proxy",
+    android: "Download the certificate",
+    ios: "Install the profile",
+    other: "Other phone: ",
+    next: "Then follow the steps shown in Flocon Desktop.",
+  },
+  fr: {
+    title: "Flocon Proxy",
+    android: "Télécharger le certificat",
+    ios: "Installer le profil",
+    other: "Autre téléphone : ",
+    next: "Puis suis les étapes affichées dans Flocon Desktop.",
+  },
+};
+
+function caPage(req: Request): string {
+  const ua = req.headers.get("user-agent") ?? "";
+  const text = /^fr\b/i.test(req.headers.get("accept-language") ?? "") ? PAGE_TEXT.fr : PAGE_TEXT.en;
+  const android = { href: "/ca.crt", label: text.android };
+  const ios = { href: "/ca.mobileconfig", label: text.ios };
+  // the button of the phone first, the other one in small below
+  const [main, other] = /iPhone|iPad|iPod/i.test(ua) ? [ios, android] : [android, ios];
+  return `<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>${text.title}</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+         gap: 20px; padding: 24px; box-sizing: border-box; background: #111111; color: #ECECEC;
+         font: 16px -apple-system, system-ui, sans-serif; text-align: center; }
+  h1 { margin: 0; font-size: 24px; }
+  .main { display: block; width: 100%; max-width: 360px; padding: 18px; border-radius: 14px; background: #F5B440;
+          color: #1C1405; font-weight: 700; font-size: 18px; text-decoration: none; }
+  .other { color: #A3A3A3; font-size: 14px; }
+  p { margin: 0; color: #A3A3A3; }
+</style></head><body>
+  <h1>${text.title}</h1>
+  <a class="main" href="${main.href}">${main.label}</a>
+  <p>${text.next}</p>
+  <a class="other" href="${other.href}">${text.other}${other.label}</a>
+</body></html>`;
+}
+
 function startCAServer(certPem: string) {
   const der = Buffer.from(pemToBase64Der(certPem), "base64");
   Bun.serve({
@@ -202,20 +247,7 @@ function startCAServer(certPem: string) {
             "Content-Disposition": 'attachment; filename="flocon-ca.crt"',
           },
         });
-      return new Response(
-        `<!doctype html><html><head><meta name="viewport" content="width=device-width"></head>
-         <body style="font-family:-apple-system,sans-serif;padding:2em">
-         <h2>Flocon Proxy</h2>
-         <p><a href="/ca.mobileconfig">iOS: install the profile</a><br>
-         then Settings › General › About › Certificate Trust Settings › enable "Flocon Proxy CA"</p>
-         <p><a href="/ca.crt">Android: download the certificate</a><br>
-         then Settings › Security &amp; privacy › More security settings › Encryption &amp; credentials ›
-         Install a certificate › CA certificate, and pick flocon-ca.crt in Downloads
-         (search "CA certificate" in Settings if the path differs).<br>
-         The app must trust user CAs (network_security_config debug-overrides).</p>
-         </body></html>`,
-        { headers: { "Content-Type": "text/html; charset=utf-8" } },
-      );
+      return new Response(caPage(req), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     },
   });
 }
