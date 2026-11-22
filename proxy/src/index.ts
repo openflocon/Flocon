@@ -193,8 +193,15 @@ function startCAServer(certPem: string) {
           },
         });
       if (pathname === "/ca.pem") return new Response(certPem, { headers: { "Content-Type": "application/x-pem-file" } });
+      // Android 11+ refuses to install a CA opened from the browser ("must be installed in Settings"):
+      // the file is downloaded as is, then installed from Settings › … › Install a certificate › CA certificate.
       if (pathname === "/ca.crt")
-        return new Response(der, { headers: { "Content-Type": "application/x-x509-ca-cert" } });
+        return new Response(der, {
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "Content-Disposition": 'attachment; filename="flocon-ca.crt"',
+          },
+        });
       return new Response(
         `<!doctype html><html><head><meta name="viewport" content="width=device-width"></head>
          <body style="font-family:-apple-system,sans-serif;padding:2em">
@@ -202,7 +209,10 @@ function startCAServer(certPem: string) {
          <p><a href="/ca.mobileconfig">iOS: install the profile</a><br>
          then Settings › General › About › Certificate Trust Settings › enable "Flocon Proxy CA"</p>
          <p><a href="/ca.crt">Android: download the certificate</a><br>
-         the app must trust user CAs (network_security_config debug-overrides)</p>
+         then Settings › Security &amp; privacy › More security settings › Encryption &amp; credentials ›
+         Install a certificate › CA certificate, and pick flocon-ca.crt in Downloads
+         (search "CA certificate" in Settings if the path differs).<br>
+         The app must trust user CAs (network_security_config debug-overrides).</p>
          </body></html>`,
         { headers: { "Content-Type": "text/html; charset=utf-8" } },
       );

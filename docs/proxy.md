@@ -13,7 +13,7 @@ The in-app SDK stays the recommended mode: it knows which app made the call, lin
 2. On the phone, on the same Wi-Fi network, set the Wi-Fi proxy to **Manual**, with that IP and port.
 3. Scan the QR code (or open `http://<computer IP>:<CA port>/` on the phone) and install the Flocon CA:
     - **iOS**: install the profile, then enable it in *Settings › General › About › Certificate Trust Settings*.
-    - **Android**: install the certificate. Apps only trust user certificates if their `network_security_config` allows it, for example in debug builds:
+    - **Android**: download the certificate, then install it from *Settings › Security › Encryption & credentials › Install a certificate › CA certificate* (search "CA certificate" in Settings if the path differs). Since Android 11, a CA certificate opened from the browser is refused ("must be installed in Settings"). Apps only trust user certificates if their `network_security_config` allows it, for example in debug builds:
 
 ```xml
 <network-security-config>

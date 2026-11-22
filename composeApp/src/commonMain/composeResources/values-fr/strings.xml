@@ -606,6 +606,6 @@
     <string name="proxy_step_ca">2 · Installer le certificat Flocon</string>
     <string name="proxy_step_ca_hint">Scanne avec le téléphone, ou ouvre cette page dans son navigateur. Une seule fois suffit : le certificat est conservé.</string>
     <string name="proxy_ca_ios">iOS : ouvre-la dans Safari, installe le profil, puis active-le dans Réglages › Général › Informations › Réglages des certificats.</string>
-    <string name="proxy_ca_android">Android : installe-le comme certificat CA. Les apps ne lui font confiance que si leur network_security_config autorise les certificats utilisateur (par ex. en debug).</string>
+    <string name="proxy_ca_android">Android : télécharge-le, puis installe-le depuis Paramètres › Sécurité › Chiffrement et identifiants › Installer un certificat › Certificat CA (cherche « certificat CA » dans les Paramètres). Depuis le navigateur, Android 11+ refuse de l'installer. Les apps ne lui font confiance que si leur network_security_config autorise les certificats utilisateur (par ex. en debug).</string>
     <string name="proxy_devices_hint">Chaque téléphone apparaît comme « Proxy &lt;IP&gt; » dans le sélecteur d'appareil, dans son propre groupe Proxy. Les apps qui épinglent leurs certificats refusent le proxy.</string>
 </resources>
