@@ -68,7 +68,7 @@ CA page (`http://<mac ip>:<ca port>/`): `/` is an HTML page with instructions, `
 | `composeApp/build.gradle.kts` | `nativeDistributions { appResourcesRootDir.set(…"appResources") }` |
 | `composeApp/src/desktopMain/…/features/proxy/ProxyManager.kt` | Starts the binary (from `compose.application.resources.dir`, or `appResources/<platform>/` in dev), picks free ports, maps stdout to `StateFlow<ProxyState>`, restarts with a backoff (1 s → 30 s, reset after a 30 s run), kills the process on stop / app exit |
 | `composeApp/src/desktopMain/…/features/proxy/ProxyEvent.kt` | `ProxyState` (`Stopped`, `Starting`, `Running(proxyPort, caPort, ips)` with `caUrl`, `Failed`), `ProxyEvent`, `parseProxyEvent` |
-| `composeApp/src/desktopTest/…/features/proxy/ProxyEventTest.kt` | Parsing, `caUrl`, platform folder |
+| `composeApp/src/desktopTest/…/features/proxy/ProxyEventTest.kt`, `ProxyMapperTest.kt`, `domain/…/proxy/RunProxyUseCaseTest.kt` | Parsing, platform folder, UI mapping (`caUrl`), start/stop/restart rules |
 | `composeApp/src/commonMain/…/app/ui/model/DeviceItemUiModel.kt` | `Platform.Proxy` |
 | `composeApp/src/commonMain/…/app/ui/delegates/Mapper.kt` | `"proxy"` → `Platform.Proxy` |
 | `composeApp/src/commonMain/…/app/ui/model/DevicesStateUiModel.kt` | Group order: Android, iOS, Desktop, **Proxy**, Unknown |
@@ -76,6 +76,9 @@ CA page (`http://<mac ip>:<ca port>/`): `/` is an HTML page with instructions, `
 | `composeApp/src/commonMain/…/app/ui/view/topbar/app/TopBarApp.kt` | Router icon when the app has no icon |
 | `composeApp/src/commonMain/composeResources/values*/strings.xml` | `device_platform_proxy` (`PROXY`, `代理` in Chinese) |
 | `composeApp/src/desktopTest/…/app/ui/delegates/DevicePlatformMapperTest.kt` | Proxy mapping and group order |
+| `domain/…/proxy/` | `ProxyStateDomainModel`, `ProxyRepository`, `RunProxyUseCase` (follows on/off + websocket port), `Observe/SetProxyEnabledUseCase`, `ObserveProxyStateUseCase` |
+| `composeApp/src/desktopMain/…/features/proxy/ProxyRepositoryImpl.kt`, `ProxyPlatformModule.desktop.kt` | Repository over `ProxyManager` + `SettingsDataSource.proxyEnabled`; Koin (`actual val proxyPlatformModule`) |
+| `composeApp/src/commonMain/…/features/proxy/` | `ProxyViewModel`, `mapper/`, `model/`, `view/ProxyDialog.kt`; opened by `TopBarProxyButton` |
 | `docs/proxy.md` (+ `mkdocs.yml` nav, under Network) | User docs, marked experimental |
 | `internal-docs/protocol/README.md` | § "Proxy client" |
 
@@ -83,7 +86,8 @@ CA page (`http://<mac ip>:<ca port>/`): `/` is an HTML page with instructions, `
 
 - Done: everything in the table above. CI (`Desktop - Pull Request Check`) is green on `a1ae8f6`.
 - **Never run for real.** The session that wrote it had no Bun, npm or Gradle access. The proxy, the `ProxyManager` process handling and the selector UI have only been checked by CI (compile + unit tests + ktlint). The first thing to do on a Mac is the manual test below.
-- `ProxyManager` is **not registered in Koin and not called from anywhere yet**.
+- Wired (second session): `ProxyManager` behind `domain/proxy` (`ProxyRepository`, `RunProxyUseCase` collected in `App()`), on/off saved in the settings (`proxy_enabled`), and `ProxyDialog` (router button in the top bar) that guides the phone: Wi-Fi proxy server/port, QR code to the CA page, iOS/Android steps. Strings in English and French only (the other languages fall back to English).
+- Still **never run with the real binary** (no Bun on the machine). Without the binary the dialog shows "not included in this build".
 
 ## Manual test (do this first)
 
@@ -108,9 +112,9 @@ Things to check while testing:
 Follow the repo rules: layering in `.claude/rules/desktop-app.md`, UI in `.claude/rules/compose.md`, docs sync in `.claude/rules/docs-protocol-sync.md`.
 
 - [ ] **Manual test** above; fix `proxy/src/index.ts` from the results.
-- [ ] **Wire `ProxyManager`**: register it in a Koin module (desktop source set), with `floconWebsocketUrl = "wss://127.0.0.1:${ports.websocketPort}/"` from `ObserveServerPortsUseCase` (restart the proxy when the port changes) and `dataDir` = the Flocon data dir (`~/.flocon/` is already used by `ServerJvm`). If the UI is in `commonMain`, put an interface (e.g. `ProxyController` with `state` / `start` / `stop`) where commonMain can see it, and the JVM implementation in desktopMain. Ask the `architect` agent if it touches `domain`.
-- [ ] **UI**: a toggle to start/stop the proxy. Suggested place: next to the existing Connect dialog (`features/connect/ConnectDialog.kt`, which already has `QrCodeImage`) or in Settings. When `Running`, show `<ip>:<proxyPort>` for the Wi-Fi proxy setting and a QR code to `caUrl`, with the iOS / Android steps (see `docs/proxy.md`). Show `Failed.message`. Optionally list `tls-error` hosts ("the app may pin its certificates").
-- [ ] **Persist** the on/off choice (DataStore settings like the others) and restart the proxy at launch if it was on.
+- [x] **Wire `ProxyManager`**: register it in a Koin module (desktop source set), with `floconWebsocketUrl = "wss://127.0.0.1:${ports.websocketPort}/"` from `ObserveServerPortsUseCase` (restart the proxy when the port changes) and `dataDir` = the Flocon data dir (`~/.flocon/` is already used by `ServerJvm`). If the UI is in `commonMain`, put an interface (e.g. `ProxyController` with `state` / `start` / `stop`) where commonMain can see it, and the JVM implementation in desktopMain. Ask the `architect` agent if it touches `domain`.
+- [x] **UI**: a toggle to start/stop the proxy. Suggested place: next to the existing Connect dialog (`features/connect/ConnectDialog.kt`, which already has `QrCodeImage`) or in Settings. When `Running`, show `<ip>:<proxyPort>` for the Wi-Fi proxy setting and a QR code to `caUrl`, with the iOS / Android steps (see `docs/proxy.md`). Show `Failed.message`. Optionally list `tls-error` hosts ("the app may pin its certificates").
+- [x] **Persist** the on/off choice (DataStore settings like the others) and restart the proxy at launch if it was on.
 - [ ] **Release** (`.github/workflows/release.yml`): before `packageDistributionForCurrentOS`, set up Bun, run `bun install && bun run build:<platform>` in `proxy/` for the runner's OS/arch. On macOS, make sure the binary is signed with the app (hardened runtime) and passes notarization. `packageUberJarForCurrentOS` does not include `appResources`, so in the uber jar the proxy is unavailable: `ProxyState.Failed("binary not found")` is the expected behavior, show it clearly.
 - [ ] **Docs**: drop the "Work in progress" warning in `docs/proxy.md` once the UI exists, and add screenshots (`flocon-mock-mode` skill).
 - [ ] Later / optional: apply Flocon mocks and bad-network settings to proxied calls (read `setup_mocks` / `setup_bad_network_config` from the websocket, answer with mockttp rules); WebSocket frames through the proxy as `log_websocket_event`; a "Proxy" filter or badge in the Network list.

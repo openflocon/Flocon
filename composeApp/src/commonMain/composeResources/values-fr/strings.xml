@@ -586,4 +586,26 @@
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
     <string name="database_transaction_nested">Transaction imbriquée</string>
+    <string name="topbar_proxy">Mode proxy</string>
+    <string name="proxy_title">Mode proxy</string>
+    <string name="proxy_experimental">Expérimental</string>
+    <string name="proxy_intro">Voir les appels HTTP(S) d'un téléphone sans le SDK Flocon : WebViews, SDK tiers et autres apps compris.</string>
+    <string name="proxy_off">Active-le, puis suis les étapes pour configurer le téléphone. Il reste actif au prochain lancement.</string>
+    <string name="proxy_starting">Démarrage du proxy…</string>
+    <string name="proxy_binary_not_found">Le proxy n'est pas inclus dans ce build de Flocon. Utilise l'installeur (dmg, msi, deb) plutôt que le jar, ou compile-le depuis proxy/ en développement.</string>
+    <string name="proxy_failed">Le proxy n'a pas pu démarrer : %1$s</string>
+    <string name="proxy_no_address">Aucune adresse réseau locale trouvée. Vérifie que cet ordinateur est connecté à un réseau.</string>
+    <string name="proxy_pick_network">Réseau du téléphone</string>
+    <string name="proxy_step_wifi">1 · Configurer le proxy Wi-Fi</string>
+    <string name="proxy_step_wifi_hint">Sur le téléphone, sur le même Wi-Fi que cet ordinateur, mets le proxy en Manuel :</string>
+    <string name="proxy_server">Serveur</string>
+    <string name="proxy_port">Port</string>
+    <string name="proxy_copy">Copier</string>
+    <string name="proxy_wifi_ios">iOS : Réglages › Wi-Fi › ⓘ › Configurer le proxy › Manuel</string>
+    <string name="proxy_wifi_android">Android : Paramètres › Wi-Fi › le réseau › Modifier › Proxy › Manuel</string>
+    <string name="proxy_step_ca">2 · Installer le certificat Flocon</string>
+    <string name="proxy_step_ca_hint">Scanne avec le téléphone, ou ouvre cette page dans son navigateur. Une seule fois suffit : le certificat est conservé.</string>
+    <string name="proxy_ca_ios">iOS : ouvre-la dans Safari, installe le profil, puis active-le dans Réglages › Général › Informations › Réglages des certificats.</string>
+    <string name="proxy_ca_android">Android : installe-le comme certificat CA. Les apps ne lui font confiance que si leur network_security_config autorise les certificats utilisateur (par ex. en debug).</string>
+    <string name="proxy_devices_hint">Chaque téléphone apparaît comme « Proxy &lt;IP&gt; » dans le sélecteur d'appareil, dans son propre groupe Proxy. Les apps qui épinglent leurs certificats refusent le proxy.</string>
 </resources>

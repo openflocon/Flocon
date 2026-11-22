@@ -1,7 +1,7 @@
 # Proxy mode (experimental)
 
 !!! warning "Work in progress"
-    The proxy binary and its process manager are in place; the toggle and the QR code in the desktop UI are not wired yet.
+    The proxy binary is not shipped in the release builds yet: until then, the dialog says it is not included in this build.
 
 Flocon Desktop can run an HTTP(S) proxy on your computer. Any phone that uses it shows its traffic in the **Network** screen, **without the Flocon SDK** in the app. It also sees calls the SDK can't intercept: WebViews, third-party SDKs, other apps.
 
@@ -9,9 +9,9 @@ The in-app SDK stays the recommended mode: it knows which app made the call, lin
 
 ## Set up the phone
 
-1. Start the proxy in Flocon Desktop. It shows your computer IP and the proxy port (`8080` by default).
+1. In Flocon Desktop, click the router button of the top bar and turn the proxy on. It stays on at the next launch. The dialog shows your computer IP, the proxy port (`8080` by default) and a QR code to the certificate page, with the steps below.
 2. On the phone, on the same Wi-Fi network, set the Wi-Fi proxy to **Manual**, with that IP and port.
-3. Open `http://<computer IP>:<CA port>/` on the phone and install the Flocon CA:
+3. Scan the QR code (or open `http://<computer IP>:<CA port>/` on the phone) and install the Flocon CA:
     - **iOS**: install the profile, then enable it in *Settings › General › About › Certificate Trust Settings*.
     - **Android**: install the certificate. Apps only trust user certificates if their `network_security_config` allows it, for example in debug builds:
 

@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.proxy
 
 import co.touchlab.kermit.Logger
+import io.github.openflocon.domain.proxy.models.ProxyStateDomainModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
@@ -23,59 +26,63 @@ import java.util.concurrent.TimeUnit
  * land in the Network screen, one device per phone using the proxy.
  */
 class ProxyManager(
-    private val floconWebsocketUrl: String,
     private val dataDir: File,
     private val scope: CoroutineScope,
 ) {
-    private val _state = MutableStateFlow<ProxyState>(ProxyState.Stopped)
-    val state: StateFlow<ProxyState> = _state.asStateFlow()
+    private val _state = MutableStateFlow<ProxyStateDomainModel>(ProxyStateDomainModel.Stopped)
+    val state: StateFlow<ProxyStateDomainModel> = _state.asStateFlow()
 
     @Volatile private var process: Process? = null
     private var job: Job? = null
 
-    @Volatile private var wantedRunning = false
+    // start / stop never overlap, so that only one process runs at a time
+    private val mutex = Mutex()
 
     init {
         Runtime.getRuntime().addShutdownHook(Thread { killProcess() })
     }
 
-    fun start(preferredPort: Int = DEFAULT_PROXY_PORT) {
-        if (wantedRunning) return
-        wantedRunning = true
-        job = scope.launch(Dispatchers.IO) { runWithRestart(preferredPort) }
+    /** Starts the proxy, or restarts it when it already runs (e.g. the websocket port changed). */
+    suspend fun start(floconWebsocketUrl: String, preferredPort: Int = DEFAULT_PROXY_PORT) = mutex.withLock {
+        stopLocked()
+        job = scope.launch(Dispatchers.IO) { runWithRestart(floconWebsocketUrl, preferredPort) }
     }
 
-    fun stop() {
-        wantedRunning = false
-        job?.cancel()
+    suspend fun stop() = mutex.withLock { stopLocked() }
+
+    private suspend fun stopLocked() {
+        job?.let {
+            it.cancel()
+            // the stdout reader of the process ends once the process is dead
+            killProcess()
+            it.join()
+        }
         job = null
-        killProcess()
-        _state.value = ProxyState.Stopped
+        _state.value = ProxyStateDomainModel.Stopped
     }
 
-    private suspend fun runWithRestart(preferredPort: Int) {
+    private suspend fun runWithRestart(floconWebsocketUrl: String, preferredPort: Int) {
         var backoffMs = MIN_BACKOFF_MS
-        while (wantedRunning && currentCoroutineContext().isActive) {
+        while (currentCoroutineContext().isActive) {
             val startedAt = System.currentTimeMillis()
-            val exitCode = runOnce(preferredPort) ?: return
-            if (!wantedRunning) return
+            val exitCode = runOnce(floconWebsocketUrl, preferredPort) ?: return
+            if (!currentCoroutineContext().isActive) return
             // The process ran for a while: it is a one-off crash, not a crash loop.
             if (System.currentTimeMillis() - startedAt > STABLE_RUN_MS) backoffMs = MIN_BACKOFF_MS
-            if (_state.value !is ProxyState.Failed) {
-                _state.value = ProxyState.Failed("Proxy stopped (exit code $exitCode), restarting…")
+            if (_state.value !is ProxyStateDomainModel.Failed) {
+                _state.value = ProxyStateDomainModel.Failed("Proxy stopped (exit code $exitCode), restarting…")
             }
             delay(backoffMs)
             backoffMs = (backoffMs * 2).coerceAtMost(MAX_BACKOFF_MS)
         }
     }
 
-    /** @return the exit code, or null when the proxy cannot be started at all. */
-    private fun runOnce(preferredPort: Int): Int? {
-        _state.value = ProxyState.Starting
+    /** @return the exit code, or null when the proxy cannot be started at all (or was stopped meanwhile). */
+    private suspend fun runOnce(floconWebsocketUrl: String, preferredPort: Int): Int? {
+        _state.value = ProxyStateDomainModel.Starting
         val binary = resolveBinary()
         if (binary == null) {
-            _state.value = ProxyState.Failed("flocon-proxy binary not found for this platform")
-            wantedRunning = false
+            _state.value = ProxyStateDomainModel.BinaryNotFound
             return null
         }
         dataDir.mkdirs()
@@ -94,17 +101,21 @@ class ProxyManager(
                 .start()
         } catch (t: Throwable) {
             Logger.e(t) { "Cannot start flocon-proxy" }
-            _state.value = ProxyState.Failed(t.message ?: "Cannot start flocon-proxy")
-            wantedRunning = false
+            _state.value = ProxyStateDomainModel.Failed(t.message ?: "Cannot start flocon-proxy")
             return null
         }
         process = p
+        // stopped while starting: stop() may have run before `process` was set
+        if (!currentCoroutineContext().isActive) {
+            killProcess()
+            return null
+        }
 
         p.inputStream.bufferedReader().useLines { lines ->
             lines.forEach { line ->
                 when (val event = parseProxyEvent(line)) {
-                    is ProxyEvent.Ready -> _state.value = ProxyState.Running(event.proxyPort, event.caPort, event.ips)
-                    is ProxyEvent.Error -> _state.value = ProxyState.Failed(event.message)
+                    is ProxyEvent.Ready -> _state.value = ProxyStateDomainModel.Running(event.proxyPort, event.caPort, event.ips)
+                    is ProxyEvent.Error -> _state.value = ProxyStateDomainModel.Failed(event.message)
                     is ProxyEvent.TlsError -> Logger.w { "flocon-proxy TLS error on ${event.host}: ${event.reason}" }
                     null -> Unit
                 }

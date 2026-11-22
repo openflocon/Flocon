@@ -776,4 +776,26 @@
     <string name="desktop_update_installed">Installed: %1$s</string>
     <string name="timeline_transactions_expanded">Expand transactions by default</string>
     <string name="database_transaction_nested">Nested transaction</string>
+    <string name="topbar_proxy">Proxy mode</string>
+    <string name="proxy_title">Proxy mode</string>
+    <string name="proxy_experimental">Experimental</string>
+    <string name="proxy_intro">See the HTTP(S) calls of a phone without the Flocon SDK: WebViews, third-party SDKs and other apps too.</string>
+    <string name="proxy_off">Turn it on, then follow the steps to set up the phone. It stays on at the next launch.</string>
+    <string name="proxy_starting">Starting the proxy…</string>
+    <string name="proxy_binary_not_found">The proxy is not included in this build of Flocon. Use the installer (dmg, msi, deb) rather than the jar, or build it from proxy/ in development.</string>
+    <string name="proxy_failed">The proxy could not start: %1$s</string>
+    <string name="proxy_no_address">No local network address found. Check that this computer is connected to a network.</string>
+    <string name="proxy_pick_network">Network of the phone</string>
+    <string name="proxy_step_wifi">1 · Set the Wi-Fi proxy</string>
+    <string name="proxy_step_wifi_hint">On the phone, same Wi-Fi as this computer, set the proxy to Manual:</string>
+    <string name="proxy_server">Server</string>
+    <string name="proxy_port">Port</string>
+    <string name="proxy_copy">Copy</string>
+    <string name="proxy_wifi_ios">iOS: Settings › Wi-Fi › ⓘ › Configure Proxy › Manual</string>
+    <string name="proxy_wifi_android">Android: Settings › Wi-Fi › the network › Edit › Proxy › Manual</string>
+    <string name="proxy_step_ca">2 · Install the Flocon certificate</string>
+    <string name="proxy_step_ca_hint">Scan with the phone, or open this page in its browser. Once is enough: the certificate is kept.</string>
+    <string name="proxy_ca_ios">iOS: open it in Safari, install the profile, then turn it on in Settings › General › About › Certificate Trust Settings.</string>
+    <string name="proxy_ca_android">Android: install it as a CA certificate. Apps only trust it if their network_security_config allows user certificates (e.g. in debug builds).</string>
+    <string name="proxy_devices_hint">Each phone shows up as “Proxy &lt;IP&gt;” in the device selector, in its own Proxy group. Apps that pin their certificates refuse the proxy.</string>
 </resources>

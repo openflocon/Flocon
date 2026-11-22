@@ -14,6 +14,7 @@ import io.github.openflocon.flocondesktop.features.featureflags.featureFlagsModu
 import io.github.openflocon.flocondesktop.features.files.filesModule
 import io.github.openflocon.flocondesktop.features.images.imagesModule
 import io.github.openflocon.flocondesktop.features.network.networkModule
+import io.github.openflocon.flocondesktop.features.proxy.proxyModule
 import io.github.openflocon.flocondesktop.features.sharedpreferences.sharedPreferencesModule
 import io.github.openflocon.flocondesktop.features.table.tableModule
 import io.github.openflocon.flocondesktop.features.timeline.timelineModule
@@ -32,6 +33,7 @@ val featuresModule = module {
         imagesModule,
         messagesModule,
         networkModule,
+        proxyModule,
         sharedPreferencesModule,
         dashboardModule,
         tableModule,

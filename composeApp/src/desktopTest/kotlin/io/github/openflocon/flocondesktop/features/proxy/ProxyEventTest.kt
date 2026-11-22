@@ -40,12 +40,6 @@ class ProxyEventTest {
     }
 
     @Test
-    fun `ca url uses the first ip`() {
-        assertEquals("http://192.168.1.12:8081/", ProxyState.Running(8080, 8081, listOf("192.168.1.12", "10.0.0.2")).caUrl)
-        assertNull(ProxyState.Running(8080, 8081, emptyList()).caUrl)
-    }
-
-    @Test
     fun `platform folder matches the appResources layout`() {
         assertEquals("macos-arm64", currentPlatformFolder("Mac OS X", "aarch64"))
         assertEquals("macos-x64", currentPlatformFolder("Mac OS X", "x86_64"))
