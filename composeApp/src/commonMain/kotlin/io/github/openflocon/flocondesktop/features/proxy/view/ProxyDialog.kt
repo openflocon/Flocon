@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -29,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.proxy_android_step_app
@@ -69,14 +68,16 @@ import flocondesktop.composeapp.generated.resources.proxy_wifi_values
 import io.github.openflocon.flocondesktop.features.connect.view.QrCodeImage
 import io.github.openflocon.flocondesktop.features.proxy.ProxyViewModel
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyAddressUiModel
+import io.github.openflocon.flocondesktop.features.proxy.model.ProxyMoodUiModel
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyStatusUiModel
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyUiState
 import io.github.openflocon.flocondesktop.features.proxy.model.previewProxyUiState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
-import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconMascotDialog
+import io.github.openflocon.library.designsystem.components.FloconPixelPalette
 import io.github.openflocon.library.designsystem.components.FloconSegmentedTextToggle
 import io.github.openflocon.library.designsystem.components.FloconSwitch
 import kotlinx.collections.immutable.ImmutableList
@@ -120,15 +121,19 @@ private fun ProxyDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FloconDialog(
+    FloconMascotDialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = modifier.width(DialogWidth),
+        width = DialogWidth,
+        mascotEnabled = uiState.mascotEnabled,
+        mascotPawsY = ProxyMascotPeekPawsY,
+        mascot = { ProxyMascotPeek(mood = uiState.mood, modifier = it) },
+        modifier = modifier,
     ) {
-        // FloconDialog has no border, drawn here so that the window stands out
-        Column(modifier = Modifier.border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(10.dp))) {
+        Column {
             Header(
                 enabled = uiState.enabled,
+                mood = uiState.mood,
+                codeRain = uiState.mascotEnabled,
                 onEnabledChange = onEnabledChange,
                 onClose = onDismissRequest,
             )
@@ -177,6 +182,43 @@ private fun ProxyDialog(
 @Composable
 private fun Header(
     enabled: Boolean,
+    mood: ProxyMoodUiModel,
+    codeRain: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val base = FloconTheme.colors.bg000
+    // a hint of the rain's color in the bar, solid behind the title and the badge so they stay readable
+    val barColor = when {
+        !codeRain -> base
+        mood == ProxyMoodUiModel.Watching -> FloconPixelPalette.Neon.copy(alpha = 0.04f).compositeOver(base)
+        mood == ProxyMoodUiModel.Glitched -> FloconPixelPalette.Red.copy(alpha = 0.06f).compositeOver(base)
+        else -> base
+    }
+    Box(modifier = modifier.fillMaxWidth().background(barColor)) {
+        if (codeRain) {
+            ProxyCodeRain(
+                color = if (mood == ProxyMoodUiModel.Glitched) FloconPixelPalette.Red else FloconPixelPalette.Neon,
+                headColor = if (mood == ProxyMoodUiModel.Watching) FloconPixelPalette.NeonHead else null,
+                animated = mood != ProxyMoodUiModel.Asleep,
+                strength = if (mood == ProxyMoodUiModel.Asleep) 0.22f else 1f,
+                modifier = Modifier.matchParentSize(),
+            )
+        }
+        HeaderContent(
+            enabled = enabled,
+            labelBackground = barColor.copy(alpha = 0.85f),
+            onEnabledChange = onEnabledChange,
+            onClose = onClose,
+        )
+    }
+}
+
+@Composable
+private fun HeaderContent(
+    enabled: Boolean,
+    labelBackground: Color,
     onEnabledChange: (Boolean) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
@@ -184,8 +226,7 @@ private fun Header(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(FloconTheme.colors.bg000)
-            .padding(start = FloconTheme.spacing.extraLarge, end = FloconTheme.spacing.small),
+            .padding(start = FloconTheme.spacing.large, end = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
     ) {
@@ -194,6 +235,9 @@ private fun Header(
             style = FloconTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = FloconTheme.colors.ink,
+            modifier = Modifier
+                .background(labelBackground, FloconTheme.shapes.small)
+                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         )
         Text(
             text = stringResource(Res.string.proxy_experimental).uppercase(),
@@ -201,7 +245,7 @@ private fun Header(
             fontWeight = FontWeight.SemiBold,
             color = FloconTheme.colors.accent,
             modifier = Modifier
-                .background(FloconTheme.colors.accentSoft, FloconTheme.shapes.small)
+                .background(FloconTheme.colors.accentSoft.compositeOver(labelBackground.copy(alpha = 1f)), FloconTheme.shapes.small)
                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         )
         Box(Modifier.weight(1f))

@@ -54,6 +54,15 @@ object FloconPixelPalette {
     val Dirt = Color(0xFF7A5230)
     val DirtDark = Color(0xFF4A3020)
     val Red = Color(0xFFE5484D)
+    val RedDark = Color(0xFF7A1F22)
+
+    // the proxy mode: a long black coat, dark shades, green code
+    val Coat = Color(0xFF0E0E12)
+    val CoatLight = Color(0xFF22222C)
+    val Shades = Color(0xFF08080C)
+    val Neon = Color(0xFF7CFFA0)
+    val NeonDark = Color(0xFF1F8F48)
+    val NeonHead = Color(0xFFE1FFE8)
     val Sand = Color(0xFFF2C46D)
     val Glass = Color(0xFFCFE8F5)
     val Spark = Color(0xFFFFD34D)

@@ -8,7 +8,23 @@ import kotlinx.collections.immutable.persistentListOf
 data class ProxyUiState(
     val enabled: Boolean,
     val status: ProxyStatusUiModel,
+    /** How the mascot and the code rain look, following the status. */
+    val mood: ProxyMoodUiModel,
+    /** The mascot and the code rain can be turned off in the settings. */
+    val mascotEnabled: Boolean,
 )
+
+@Immutable
+enum class ProxyMoodUiModel {
+    /** Running: the code rains, the mascot watches. */
+    Watching,
+
+    /** Off or starting: the rain is frozen, the mascot sleeps. */
+    Asleep,
+
+    /** Failed: the rain turns red, the shades slip. */
+    Glitched,
+}
 
 @Immutable
 sealed interface ProxyStatusUiModel {
@@ -32,6 +48,12 @@ data class ProxyAddressUiModel(
 fun previewProxyUiState(status: ProxyStatusUiModel = previewRunningProxyStatus()) = ProxyUiState(
     enabled = status != ProxyStatusUiModel.Off,
     status = status,
+    mood = when (status) {
+        is ProxyStatusUiModel.Running -> ProxyMoodUiModel.Watching
+        ProxyStatusUiModel.BinaryNotFound, is ProxyStatusUiModel.Failed -> ProxyMoodUiModel.Glitched
+        else -> ProxyMoodUiModel.Asleep
+    },
+    mascotEnabled = true,
 )
 
 fun previewRunningProxyStatus() = ProxyStatusUiModel.Running(
