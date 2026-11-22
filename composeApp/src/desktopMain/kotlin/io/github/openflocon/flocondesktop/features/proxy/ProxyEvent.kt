@@ -36,8 +36,11 @@ internal fun parseProxyEvent(line: String): ProxyEvent? {
                 .orEmpty()
             ProxyEvent.Ready(proxyPort, caPort, ips)
         }
+
         "error" -> ProxyEvent.Error(obj.string("message") ?: "Unknown error")
+
         "tls-error" -> ProxyEvent.TlsError(obj.string("host"), obj.string("reason"))
+
         else -> null
     }
 }
