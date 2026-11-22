@@ -106,7 +106,7 @@ curl -x http://127.0.0.1:8080 --cacert .ca/flocon-ca.pem https://example.com
 Things to check while testing:
 - mockttp API names used in `index.ts` against the installed version (`generateCACertificate`, `getLocal({ https, http2 })`, `forAnyWebSocket`, events `request` / `response` / `abort` / `tls-client-error`, `body.getDecodedBuffer()`, `timingEvents.startTime`). Fix any that changed.
 - Bun accepts `new WebSocket(url, { tls: { rejectUnauthorized: false } })` against the desktop self-signed certificate.
-- The phone's own SDK websocket to the desktop (if the app has the SDK) may go through the proxy. If it shows up as noise, skip hosts/ports of Flocon in the proxy (`forAnyRequest` → don't report requests to the Flocon ports).
+- Done: the phone's own SDK websocket to the desktop goes through the Wi-Fi proxy too. It used to fail (502: the proxy refused the self-signed certificate of Flocon Desktop), so connections to this computer (`localhost`, `127.0.0.1`, its IPv4s) are now passed through without TLS interception (`tlsPassthrough`) and are not reported.
 - `bun build --compile` output size per platform, and that the binary starts from `composeApp/appResources/<platform>/` with `./gradlew :composeApp:run`. Check that the `run` task sets `compose.application.resources.dir`, otherwise fix the dev fallback path in `ProxyManager.resolveBinary()`.
 
 ## Next steps

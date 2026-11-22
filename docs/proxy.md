@@ -31,6 +31,8 @@ Each phone appears as a device named `Proxy <phone IP>`, in its own **Proxy** gr
 
 ## Limits
 
+- An app with the Flocon SDK keeps working with the proxy on: connections to your computer go through untouched.
+
 - Apps that pin their certificates refuse the proxy: their HTTPS calls fail.
 - Mocks and bad network simulation are not applied to proxied calls yet.
 - Bodies above 2 MB are truncated.

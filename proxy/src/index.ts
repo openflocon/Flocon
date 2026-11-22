@@ -258,7 +258,10 @@ async function main() {
   connectFlocon();
   startCAServer(ca.cert);
 
-  const proxy = mockttp.getLocal({ https: ca, http2: "fallback" });
+  // Connections to this computer are not intercepted: they are the Flocon SDK talking to Flocon Desktop
+  // (whose self-signed certificate the proxy would refuse), and they are not the traffic of the app anyway.
+  const thisComputer = ["localhost", "127.0.0.1", ...localIPv4s()].map((hostname) => ({ hostname }));
+  const proxy = mockttp.getLocal({ https: { ...ca, tlsPassthrough: thisComputer }, http2: "fallback" });
   await proxy.forAnyRequest().thenPassThrough();
   await proxy.forAnyWebSocket().thenPassThrough();
 
