@@ -9,7 +9,7 @@ The in-app SDK stays the recommended mode: it knows which app made the call, lin
 
 ## Set up the phone
 
-1. In Flocon Desktop, click the router button of the top bar and turn the proxy on. It stays on at the next launch. The dialog shows your computer IP, the proxy port (`8080` by default), a QR code to the certificate page, and the steps below for Android and iOS.
+1. In Flocon Desktop, click the router button of the top bar, then **Activate**. It stays on at the next launch. The dialog shows your computer IP, the proxy port (`8080` by default), a QR code to the certificate page, and the steps below for Android and iOS.
 2. On the phone, on the same Wi-Fi network, set the Wi-Fi proxy to **Manual**, with that IP and port.
 3. Scan the QR code (or open `http://<computer IP>:<CA port>/` on the phone) and install the Flocon CA:
     - **iOS**: install the profile, then enable it in *Settings › General › About › Certificate Trust Settings*.

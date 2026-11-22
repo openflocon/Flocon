@@ -590,7 +590,7 @@
     <string name="proxy_title">Mode proxy</string>
     <string name="proxy_experimental">Expérimental</string>
     <string name="proxy_intro">Voir les appels HTTP(S) d'un téléphone sans le SDK Flocon : WebViews, SDK tiers et autres apps compris.</string>
-    <string name="proxy_off">Active-le, puis suis les étapes pour configurer le téléphone. Il reste actif au prochain lancement.</string>
+    <string name="proxy_off">Clique sur Activer, puis suis les étapes pour configurer le téléphone. Il reste actif au prochain lancement.</string>
     <string name="proxy_starting">Démarrage du proxy…</string>
     <string name="proxy_binary_not_found">Le proxy n'est pas inclus dans ce build de Flocon. Utilise l'installeur (dmg, msi, deb) plutôt que le jar, ou compile-le depuis proxy/ en développement.</string>
     <string name="proxy_failed">Le proxy n'a pas pu démarrer : %1$s</string>
@@ -613,4 +613,6 @@
     <string name="proxy_ios_step_install">Réglages › Général › VPN et gestion de l'appareil › Flocon Proxy › Installer.</string>
     <string name="proxy_ios_step_trust">Réglages › Général › Informations › Réglages des certificats › active « Flocon Proxy CA ».</string>
     <string name="proxy_once_hint">Le certificat ne s'installe qu'une fois. La prochaine fois, seul le proxy Wi-Fi suffit.</string>
+    <string name="proxy_activate">Activer</string>
+    <string name="proxy_disable">Désactiver</string>
 </resources>

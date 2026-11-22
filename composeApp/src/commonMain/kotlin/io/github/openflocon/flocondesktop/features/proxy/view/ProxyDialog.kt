@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.proxy_activate
 import flocondesktop.composeapp.generated.resources.proxy_android_step_app
 import flocondesktop.composeapp.generated.resources.proxy_android_step_download
 import flocondesktop.composeapp.generated.resources.proxy_android_step_install
@@ -47,6 +48,7 @@ import flocondesktop.composeapp.generated.resources.proxy_binary_not_found
 import flocondesktop.composeapp.generated.resources.proxy_certificate_page
 import flocondesktop.composeapp.generated.resources.proxy_copy
 import flocondesktop.composeapp.generated.resources.proxy_devices_hint
+import flocondesktop.composeapp.generated.resources.proxy_disable
 import flocondesktop.composeapp.generated.resources.proxy_experimental
 import flocondesktop.composeapp.generated.resources.proxy_failed
 import flocondesktop.composeapp.generated.resources.proxy_intro
@@ -73,13 +75,14 @@ import io.github.openflocon.flocondesktop.features.proxy.model.ProxyStatusUiMode
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyUiState
 import io.github.openflocon.flocondesktop.features.proxy.model.previewProxyUiState
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconMascotDialog
+import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconPixelPalette
 import io.github.openflocon.library.designsystem.components.FloconSegmentedTextToggle
-import io.github.openflocon.library.designsystem.components.FloconSwitch
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -131,10 +134,8 @@ private fun ProxyDialog(
     ) {
         Column {
             Header(
-                enabled = uiState.enabled,
                 mood = uiState.mood,
                 codeRain = uiState.mascotEnabled,
-                onEnabledChange = onEnabledChange,
                 onClose = onDismissRequest,
             )
             Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colors.line))
@@ -142,11 +143,21 @@ private fun ProxyDialog(
                 modifier = Modifier.padding(FloconTheme.spacing.extraLarge),
                 verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
             ) {
-                Text(
-                    text = stringResource(Res.string.proxy_intro),
-                    style = FloconTheme.typography.bodyMedium,
-                    color = FloconTheme.colors.inkMuted,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.proxy_intro),
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colors.inkMuted,
+                        modifier = Modifier.weight(1f),
+                    )
+                    ActivationButton(
+                        enabled = uiState.enabled,
+                        onEnabledChange = onEnabledChange,
+                    )
+                }
                 when (val status = uiState.status) {
                     ProxyStatusUiModel.Off -> Message(text = stringResource(Res.string.proxy_off))
 
@@ -181,10 +192,8 @@ private fun ProxyDialog(
 
 @Composable
 private fun Header(
-    enabled: Boolean,
     mood: ProxyMoodUiModel,
     codeRain: Boolean,
-    onEnabledChange: (Boolean) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -207,9 +216,7 @@ private fun Header(
             )
         }
         HeaderContent(
-            enabled = enabled,
             labelBackground = barColor.copy(alpha = 0.85f),
-            onEnabledChange = onEnabledChange,
             onClose = onClose,
         )
     }
@@ -217,9 +224,7 @@ private fun Header(
 
 @Composable
 private fun HeaderContent(
-    enabled: Boolean,
     labelBackground: Color,
-    onEnabledChange: (Boolean) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -249,12 +254,43 @@ private fun HeaderContent(
                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         )
         Box(Modifier.weight(1f))
-        FloconSwitch(
-            checked = enabled,
-            onCheckedChange = onEnabledChange,
-        )
         FloconIconButton(onClick = onClose, modifier = Modifier.padding(vertical = FloconTheme.spacing.small)) {
             FloconIcon(Icons.Outlined.Close)
+        }
+    }
+}
+
+/** "Activate" when the proxy is off, "Disable" when it is on (whatever its state: starting, failed…). */
+@Composable
+private fun ActivationButton(
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (enabled) {
+        FloconOutlinedButton(
+            onClick = { onEnabledChange(false) },
+            modifier = modifier,
+        ) {
+            Text(
+                text = stringResource(Res.string.proxy_disable),
+                style = FloconTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = FloconTheme.colors.ink,
+            )
+        }
+    } else {
+        FloconButton(
+            onClick = { onEnabledChange(true) },
+            containerColor = FloconTheme.colors.accent,
+            modifier = modifier,
+        ) {
+            Text(
+                text = stringResource(Res.string.proxy_activate),
+                style = FloconTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colors.accentInk,
+            )
         }
     }
 }
