@@ -121,7 +121,6 @@ import org.koin.compose.viewmodel.koinViewModel
 private val DialogWidth = 720.dp
 private val ContentHeight = 370.dp
 private val PhoneWidth = 220.dp
-private val PhoneHeight = 300.dp
 private val PhoneBorder = 4.dp
 private val PhoneShape = RoundedCornerShape(28.dp)
 private val PhoneNotchWidth = 44.dp
@@ -545,7 +544,7 @@ private fun StepContent(
     val address = addresses.firstOrNull { it.ip == selectedIp } ?: addresses.first()
     val android = platform == PhonePlatform.Android
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
         when (step) {
             SetupStep.Wifi -> Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -730,7 +729,7 @@ private fun PhoneProxyMockup(
     val colors = FloconTheme.colors
     Column(
         modifier = modifier
-            .size(PhoneWidth, PhoneHeight)
+            .width(PhoneWidth)
             .border(PhoneBorder, colors.lineStrong, PhoneShape)
             .background(colors.bg000, PhoneShape)
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.large),
@@ -771,6 +770,13 @@ private fun PhoneProxyMockup(
                 value = address.proxyPort,
             )
         }
+        Box(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = FloconTheme.spacing.small)
+                .size(PhoneNotchWidth, PhoneNotchHeight)
+                .background(colors.line, CircleShape),
+        )
     }
 }
 
