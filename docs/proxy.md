@@ -1,7 +1,7 @@
 # Proxy mode (experimental)
 
 !!! note
-    The proxy is shipped in the installers (dmg, msi, deb, rpm). The `.jar` builds do not include it: the dialog then says it is not included in this build.
+    The proxy runs with the Node.js of your computer (18 or later), found even when it comes from Homebrew, nvm or Volta. Without Node.js, Flocon downloads a standalone proxy (~100 MB) the first time you activate it, then keeps it.
 
 Flocon Desktop can run an HTTP(S) proxy on your computer. Any phone that uses it shows its traffic in the **Network** screen, **without the Flocon SDK** in the app. It also sees calls the SDK can't intercept: WebViews, third-party SDKs, other apps.
 

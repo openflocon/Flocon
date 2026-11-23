@@ -30,7 +30,9 @@ enum class ProxyMoodUiModel {
 sealed interface ProxyStatusUiModel {
     data object Off : ProxyStatusUiModel
     data object Starting : ProxyStatusUiModel
-    data object BinaryNotFound : ProxyStatusUiModel
+
+    /** No Node.js on the computer: the standalone proxy is being downloaded, once. [percent] is null while unknown. */
+    data class Downloading(val percent: Int?) : ProxyStatusUiModel
     data class Failed(val message: String) : ProxyStatusUiModel
 
     /** One address per network of the computer: the phone uses the one of its Wi-Fi. */
@@ -52,7 +54,7 @@ fun previewProxyUiState(status: ProxyStatusUiModel = previewRunningProxyStatus()
     status = status,
     mood = when (status) {
         is ProxyStatusUiModel.Running -> ProxyMoodUiModel.Watching
-        ProxyStatusUiModel.BinaryNotFound, is ProxyStatusUiModel.Failed -> ProxyMoodUiModel.Glitched
+        is ProxyStatusUiModel.Failed -> ProxyMoodUiModel.Glitched
         else -> ProxyMoodUiModel.Asleep
     },
     mascotEnabled = true,

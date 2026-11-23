@@ -14,6 +14,6 @@ sealed interface ProxyStateDomainModel {
 
     data class Failed(val message: String) : ProxyStateDomainModel
 
-    /** The binary is not shipped in this build (uber jar, or not built in dev, see `proxy/README.md`). */
-    data object BinaryNotFound : ProxyStateDomainModel
+    /** No Node.js on the computer: the standalone proxy is being downloaded. [progress] is 0..1, null while unknown. */
+    data class Downloading(val progress: Float?) : ProxyStateDomainModel
 }

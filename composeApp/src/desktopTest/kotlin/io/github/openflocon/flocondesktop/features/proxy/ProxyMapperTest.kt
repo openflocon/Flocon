@@ -44,12 +44,13 @@ class ProxyMapperTest {
         assertEquals(ProxyMoodUiModel.Asleep, mapToProxyUiState(true, ProxyStateDomainModel.Starting, mascotEnabled = true).mood)
         assertEquals(ProxyMoodUiModel.Watching, mapToProxyUiState(true, ProxyStateDomainModel.Running(8080, 8081, listOf("1.2.3.4")), mascotEnabled = true).mood)
         assertEquals(ProxyMoodUiModel.Glitched, mapToProxyUiState(true, ProxyStateDomainModel.Failed("boom"), mascotEnabled = true).mood)
-        assertEquals(ProxyMoodUiModel.Glitched, mapToProxyUiState(true, ProxyStateDomainModel.BinaryNotFound, mascotEnabled = true).mood)
+        assertEquals(ProxyMoodUiModel.Asleep, mapToProxyUiState(true, ProxyStateDomainModel.Downloading(0.5f), mascotEnabled = true).mood)
     }
 
     @Test
     fun `failures are kept apart`() {
-        assertEquals(ProxyStatusUiModel.BinaryNotFound, mapToProxyUiState(true, ProxyStateDomainModel.BinaryNotFound, mascotEnabled = true).status)
+        assertEquals(ProxyStatusUiModel.Downloading(42), mapToProxyUiState(true, ProxyStateDomainModel.Downloading(0.42f), mascotEnabled = true).status)
+        assertEquals(ProxyStatusUiModel.Downloading(null), mapToProxyUiState(true, ProxyStateDomainModel.Downloading(null), mascotEnabled = true).status)
         assertEquals(ProxyStatusUiModel.Failed("boom"), mapToProxyUiState(true, ProxyStateDomainModel.Failed("boom"), mascotEnabled = true).status)
     }
 }

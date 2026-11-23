@@ -591,7 +591,6 @@
     <string name="proxy_experimental">Expérimental</string>
     <string name="proxy_intro">Voir les appels HTTP(S) d'un téléphone sans le SDK Flocon : WebViews, SDK tiers et autres apps compris.</string>
     <string name="proxy_starting">Démarrage du proxy…</string>
-    <string name="proxy_binary_not_found">Le proxy n'est pas inclus dans ce build de Flocon. Utilise l'installeur (dmg, msi, deb) plutôt que le jar, ou compile-le depuis proxy/ en développement.</string>
     <string name="proxy_failed">Le proxy n'a pas pu démarrer : %1$s</string>
     <string name="proxy_no_address">Aucune adresse réseau locale trouvée. Vérifie que cet ordinateur est connecté à un réseau.</string>
     <string name="proxy_server">Serveur</string>
@@ -645,4 +644,6 @@
     <string name="proxy_ios_cert_3">Fais-lui confiance :</string>
     <string name="proxy_ios_cert_3a">Réglages › Général › Informations › Réglages des certificats</string>
     <string name="proxy_ios_cert_3b">Active « Flocon Proxy CA »</string>
+    <string name="proxy_downloading">Téléchargement du proxy… %1$s</string>
+    <string name="proxy_downloading_hint">Node.js n'est pas installé sur cet ordinateur : Flocon télécharge un proxy autonome (~100 Mo), une seule fois. Avec Node.js 18+, rien à télécharger.</string>
 </resources>

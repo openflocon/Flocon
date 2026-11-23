@@ -59,12 +59,13 @@ import flocondesktop.composeapp.generated.resources.proxy_android_wifi_1
 import flocondesktop.composeapp.generated.resources.proxy_android_wifi_2
 import flocondesktop.composeapp.generated.resources.proxy_app_heading
 import flocondesktop.composeapp.generated.resources.proxy_back
-import flocondesktop.composeapp.generated.resources.proxy_binary_not_found
 import flocondesktop.composeapp.generated.resources.proxy_certificate_heading
 import flocondesktop.composeapp.generated.resources.proxy_copy
 import flocondesktop.composeapp.generated.resources.proxy_devices_hint
 import flocondesktop.composeapp.generated.resources.proxy_disable
 import flocondesktop.composeapp.generated.resources.proxy_done
+import flocondesktop.composeapp.generated.resources.proxy_downloading
+import flocondesktop.composeapp.generated.resources.proxy_downloading_hint
 import flocondesktop.composeapp.generated.resources.proxy_experimental
 import flocondesktop.composeapp.generated.resources.proxy_failed
 import flocondesktop.composeapp.generated.resources.proxy_intro
@@ -118,6 +119,7 @@ import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
 import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
+import io.github.openflocon.library.designsystem.components.FloconLinearProgressIndicator
 import io.github.openflocon.library.designsystem.components.FloconMascotDialog
 import io.github.openflocon.library.designsystem.components.FloconOutlinedButton
 import io.github.openflocon.library.designsystem.components.FloconPixelPalette
@@ -241,10 +243,7 @@ private fun ProxyDialog(
                             Message(text = stringResource(Res.string.proxy_starting))
                         }
 
-                        ProxyStatusUiModel.BinaryNotFound -> Message(
-                            text = stringResource(Res.string.proxy_binary_not_found),
-                            color = FloconTheme.colors.statusWarning,
-                        )
+                        is ProxyStatusUiModel.Downloading -> DownloadingPanel(percent = status.percent)
 
                         is ProxyStatusUiModel.Failed -> Message(
                             text = stringResource(Res.string.proxy_failed, status.message),
@@ -529,6 +528,37 @@ private fun OffPanel(
                 modifier = Modifier.padding(horizontal = FloconTheme.spacing.large),
             )
         }
+    }
+}
+
+/** No Node.js: the standalone proxy is downloaded, once, with a progress bar. */
+@Composable
+private fun DownloadingPanel(
+    percent: Int?,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.widthIn(max = IntroMaxWidth),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
+    ) {
+        Text(
+            text = stringResource(Res.string.proxy_downloading, percent?.let { "$it %" }.orEmpty()),
+            style = FloconTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.ink,
+        )
+        if (percent != null) {
+            FloconLinearProgressIndicator(progress = percent / 100f, modifier = Modifier.fillMaxWidth())
+        } else {
+            FloconLinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
+        Text(
+            text = stringResource(Res.string.proxy_downloading_hint),
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.inkMuted,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -1136,10 +1166,10 @@ private fun ProxyDialogOffPreview() {
 
 @Preview
 @Composable
-private fun ProxyDialogBinaryNotFoundPreview() {
+private fun ProxyDialogDownloadingPreview() {
     FloconTheme {
         ProxyDialog(
-            uiState = previewProxyUiState(status = ProxyStatusUiModel.BinaryNotFound),
+            uiState = previewProxyUiState(status = ProxyStatusUiModel.Downloading(percent = 42)),
             onEnabledChange = {},
             onDismissRequest = {},
         )

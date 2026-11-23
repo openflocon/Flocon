@@ -3,18 +3,22 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "mockttp": "^3.15.0"
+    "mockttp": "^3.15.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/ws": "^8.5.12",
+    "@types/node": "^22.10.0"
   },
   "scripts": {
     "dev": "bun run src/index.ts --port 8080 --ca-dir ./.ca",
-    "build:macos-arm64": "bun build src/index.ts --compile --minify --target=bun-darwin-arm64 --outfile ../composeApp/appResources/macos-arm64/flocon-proxy",
-    "build:macos-x64": "bun build src/index.ts --compile --minify --target=bun-darwin-x64 --outfile ../composeApp/appResources/macos-x64/flocon-proxy",
-    "build:windows-x64": "bun build src/index.ts --compile --minify --target=bun-windows-x64 --outfile ../composeApp/appResources/windows-x64/flocon-proxy.exe",
-    "build:linux-x64": "bun build src/index.ts --compile --minify --target=bun-linux-x64 --outfile ../composeApp/appResources/linux-x64/flocon-proxy",
-    "build:linux-arm64": "bun build src/index.ts --compile --minify --target=bun-linux-arm64 --outfile ../composeApp/appResources/linux-arm64/flocon-proxy",
-    "build:all": "bun run build:macos-arm64 && bun run build:macos-x64 && bun run build:windows-x64 && bun run build:linux-x64 && bun run build:linux-arm64"
+    "dev:node": "bun run build:node && node ../composeApp/src/desktopMain/resources/proxy/flocon-proxy.mjs --port 8080 --ca-dir ./.ca",
+    "build:node": "bun build src/index.ts --target=node --minify --outfile ../composeApp/src/desktopMain/resources/proxy/flocon-proxy.mjs",
+    "build:macos-arm64": "bun build src/index.ts --compile --minify --target=bun-darwin-arm64 --outfile dist/flocon-proxy-macos-arm64",
+    "build:macos-x64": "bun build src/index.ts --compile --minify --target=bun-darwin-x64 --outfile dist/flocon-proxy-macos-x64",
+    "build:windows-x64": "bun build src/index.ts --compile --minify --target=bun-windows-x64 --outfile dist/flocon-proxy-windows-x64.exe",
+    "build:linux-x64": "bun build src/index.ts --compile --minify --target=bun-linux-x64 --outfile dist/flocon-proxy-linux-x64",
+    "build:linux-arm64": "bun build src/index.ts --compile --minify --target=bun-linux-arm64 --outfile dist/flocon-proxy-linux-arm64"
   }
 }

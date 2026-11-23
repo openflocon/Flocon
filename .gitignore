@@ -44,6 +44,5 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-# flocon-proxy binaries, built by `bun run build:all` in proxy/
-composeApp/appResources/*/flocon-proxy
-composeApp/appResources/*/flocon-proxy.exe
+# flocon-proxy bundle for Node, built by `bun run build:node` in proxy/ (the release workflow builds it)
+composeApp/src/desktopMain/resources/proxy/

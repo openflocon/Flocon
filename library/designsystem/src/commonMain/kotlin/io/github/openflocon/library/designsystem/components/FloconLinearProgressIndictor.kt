@@ -14,3 +14,17 @@ fun FloconLinearProgressIndicator(
         color = FloconTheme.colors.accent
     )
 }
+
+/** A determinate bar: [progress] from 0 to 1. */
+@Composable
+fun FloconLinearProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier
+) {
+    LinearProgressIndicator(
+        progress = { progress },
+        modifier = modifier,
+        color = FloconTheme.colors.accent,
+        trackColor = FloconTheme.colors.line,
+    )
+}

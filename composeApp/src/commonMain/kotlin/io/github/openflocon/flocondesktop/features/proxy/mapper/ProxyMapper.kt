@@ -19,8 +19,8 @@ internal fun mapToProxyUiState(
         status = status,
         mood = when (status) {
             is ProxyStatusUiModel.Running -> ProxyMoodUiModel.Watching
-            ProxyStatusUiModel.BinaryNotFound, is ProxyStatusUiModel.Failed -> ProxyMoodUiModel.Glitched
-            ProxyStatusUiModel.Off, ProxyStatusUiModel.Starting -> ProxyMoodUiModel.Asleep
+            is ProxyStatusUiModel.Failed -> ProxyMoodUiModel.Glitched
+            ProxyStatusUiModel.Off, ProxyStatusUiModel.Starting, is ProxyStatusUiModel.Downloading -> ProxyMoodUiModel.Asleep
         },
         mascotEnabled = mascotEnabled,
     )
@@ -39,7 +39,7 @@ private fun proxyStatus(
         ProxyStateDomainModel.Starting,
         -> ProxyStatusUiModel.Starting
 
-        ProxyStateDomainModel.BinaryNotFound -> ProxyStatusUiModel.BinaryNotFound
+        is ProxyStateDomainModel.Downloading -> ProxyStatusUiModel.Downloading(state.progress?.let { (it * 100).toInt() })
 
         is ProxyStateDomainModel.Failed -> ProxyStatusUiModel.Failed(state.message)
 

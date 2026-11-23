@@ -19,14 +19,15 @@ import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
 
 /**
- * Starts and watches the `flocon-proxy` binary shipped in the app native resources
- * (built from `proxy/`, see `appResourcesRootDir` in composeApp/build.gradle.kts).
+ * Starts and watches the proxy built from `proxy/`: with the Node.js of the computer when it has one,
+ * else with the standalone binary downloaded once from the release (see [ProxyRuntime]).
  *
  * The proxy connects back to the Flocon websocket like any SDK, so the calls it sees
  * land in the Network screen, one device per phone using the proxy.
  */
 class ProxyManager(
     private val dataDir: File,
+    private val appVersion: String,
     private val scope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow<ProxyStateDomainModel>(ProxyStateDomainModel.Stopped)
@@ -80,22 +81,24 @@ class ProxyManager(
     /** @return the exit code, or null when the proxy cannot be started at all (or was stopped meanwhile). */
     private suspend fun runOnce(floconWebsocketUrl: String, preferredPort: Int): Int? {
         _state.value = ProxyStateDomainModel.Starting
-        val binary = resolveBinary()
-        if (binary == null) {
-            _state.value = ProxyStateDomainModel.BinaryNotFound
-            return null
-        }
+        val runtime = resolveRuntime() ?: return null
+        if (!currentCoroutineContext().isActive) return null
         dataDir.mkdirs()
         val proxyPort = freePort(preferredPort)
         val caPort = freePort(proxyPort + 1)
 
         val p = try {
             ProcessBuilder(
-                binary.absolutePath,
-                "--port", proxyPort.toString(),
-                "--ca-port", caPort.toString(),
-                "--flocon-ws", floconWebsocketUrl,
-                "--ca-dir", File(dataDir, "proxy-ca").absolutePath,
+                runtime + listOf(
+                    "--port",
+                    proxyPort.toString(),
+                    "--ca-port",
+                    caPort.toString(),
+                    "--flocon-ws",
+                    floconWebsocketUrl,
+                    "--ca-dir",
+                    File(dataDir, "proxy-ca").absolutePath,
+                ),
             )
                 .redirectError(ProcessBuilder.Redirect.appendTo(File(dataDir, "flocon-proxy.log")))
                 .start()
@@ -131,15 +134,22 @@ class ProxyManager(
         if (!p.waitFor(2, TimeUnit.SECONDS)) p.destroyForcibly()
     }
 
-    private fun resolveBinary(): File? {
-        val name = if (currentPlatformFolder().startsWith("windows")) "flocon-proxy.exe" else "flocon-proxy"
-        // Packaged app: Compose Desktop exposes the native resources folder of the current OS.
-        val packaged = System.getProperty("compose.application.resources.dir")?.let { File(it, name) }
-        // `./gradlew run`: read from the source tree.
-        val dev = File("appResources/${currentPlatformFolder()}/$name")
-        return listOfNotNull(packaged, dev)
-            .firstOrNull { it.exists() }
-            ?.also { it.setExecutable(true) }
+    /** The command that runs the proxy: Node + the bundle, or the binary (downloaded if needed). Null on a failure. */
+    private fun resolveRuntime(): List<String>? {
+        val versionDir = File(dataDir, "proxy/$appVersion")
+        ProxyRuntime.nodeCommand(versionDir)?.let { return it }
+        ProxyRuntime.downloadedBinary(versionDir)?.let { return listOf(it.absolutePath) }
+        return try {
+            _state.value = ProxyStateDomainModel.Downloading(progress = null)
+            val binary = ProxyRuntime.downloadBinary(appVersion, versionDir) { progress ->
+                _state.value = ProxyStateDomainModel.Downloading(progress)
+            }
+            listOf(binary.absolutePath)
+        } catch (t: Throwable) {
+            Logger.e(t) { "Cannot download flocon-proxy" }
+            _state.value = ProxyStateDomainModel.Failed("Cannot download the proxy: ${t.message}")
+            null
+        }
     }
 
     private fun freePort(preferred: Int): Int = runCatching { ServerSocket(preferred).use { it.localPort } }

@@ -14,6 +14,9 @@
 import * as mockttp from "mockttp";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { createServer, type IncomingMessage } from "node:http";
+import { randomUUID } from "node:crypto";
+import WebSocket from "ws";
 import { networkInterfaces } from "node:os";
 
 // ---------- Args ----------
@@ -58,14 +61,15 @@ let ws: WebSocket | null = null;
 
 function connectFlocon() {
   // The desktop serves a self-signed certificate: clients must accept it without verifying it
-  // (see internal-docs/protocol/README.md, Transport). `tls` is a Bun extension of the constructor.
-  ws = new WebSocket(FLOCON_WS, { tls: { rejectUnauthorized: false } } as any);
-  ws.onopen = () => {
+  // (see internal-docs/protocol/README.md, Transport). `ws` runs the same under Node and Bun.
+  const socket = new WebSocket(FLOCON_WS, { rejectUnauthorized: false });
+  ws = socket;
+  socket.on("open", () => {
     greetedDevices.clear(); // a new session needs a new handshake for every device
     flushQueue();
-  };
-  ws.onclose = () => setTimeout(connectFlocon, 1000);
-  ws.onerror = () => ws?.close();
+  });
+  socket.on("close", () => setTimeout(connectFlocon, 1000));
+  socket.on("error", () => socket.close());
 }
 
 function flushQueue() {
@@ -157,7 +161,7 @@ function pemToBase64Der(pem: string): string {
 }
 
 function mobileconfig(certPem: string): string {
-  const uuid = () => crypto.randomUUID().toUpperCase();
+  const uuid = () => randomUUID().toUpperCase();
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -196,9 +200,9 @@ const PAGE_TEXT = {
   },
 };
 
-function caPage(req: Request): string {
-  const ua = req.headers.get("user-agent") ?? "";
-  const text = /^fr\b/i.test(req.headers.get("accept-language") ?? "") ? PAGE_TEXT.fr : PAGE_TEXT.en;
+function caPage(req: IncomingMessage): string {
+  const ua = req.headers["user-agent"] ?? "";
+  const text = /^fr\b/i.test(req.headers["accept-language"] ?? "") ? PAGE_TEXT.fr : PAGE_TEXT.en;
   const android = { href: "/ca.crt", label: text.android };
   const ios = { href: "/ca.mobileconfig", label: text.ios };
   // the button of the phone first, the other one in small below
@@ -225,31 +229,29 @@ function caPage(req: Request): string {
 
 function startCAServer(certPem: string) {
   const der = Buffer.from(pemToBase64Der(certPem), "base64");
-  Bun.serve({
-    port: CA_PORT,
-    hostname: "0.0.0.0",
-    fetch(req) {
-      const { pathname } = new URL(req.url);
-      if (pathname === "/ca.mobileconfig")
-        return new Response(mobileconfig(certPem), {
-          headers: {
-            "Content-Type": "application/x-apple-aspen-config",
-            "Content-Disposition": 'attachment; filename="flocon-ca.mobileconfig"',
-          },
-        });
-      if (pathname === "/ca.pem") return new Response(certPem, { headers: { "Content-Type": "application/x-pem-file" } });
-      // Android 11+ refuses to install a CA opened from the browser ("must be installed in Settings"):
-      // the file is downloaded as is, then installed from Settings › … › Install a certificate › CA certificate.
-      if (pathname === "/ca.crt")
-        return new Response(der, {
-          headers: {
-            "Content-Type": "application/octet-stream",
-            "Content-Disposition": 'attachment; filename="flocon-ca.crt"',
-          },
-        });
-      return new Response(caPage(req), { headers: { "Content-Type": "text/html; charset=utf-8" } });
-    },
-  });
+  const send = (res: import("node:http").ServerResponse, body: string | Buffer, headers: Record<string, string>) => {
+    res.writeHead(200, headers);
+    res.end(body);
+  };
+  createServer((req, res) => {
+    const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
+    if (pathname === "/ca.mobileconfig") {
+      return send(res, mobileconfig(certPem), {
+        "Content-Type": "application/x-apple-aspen-config",
+        "Content-Disposition": 'attachment; filename="flocon-ca.mobileconfig"',
+      });
+    }
+    if (pathname === "/ca.pem") return send(res, certPem, { "Content-Type": "application/x-pem-file" });
+    // Android 11+ refuses to install a CA opened from the browser ("must be installed in Settings"):
+    // the file is downloaded as is, then installed from Settings › … › Install a certificate › CA certificate.
+    if (pathname === "/ca.crt") {
+      return send(res, der, {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": 'attachment; filename="flocon-ca.crt"',
+      });
+    }
+    return send(res, caPage(req), { "Content-Type": "text/html; charset=utf-8" });
+  }).listen(CA_PORT, "0.0.0.0");
 }
 
 // ---------- Main ----------
