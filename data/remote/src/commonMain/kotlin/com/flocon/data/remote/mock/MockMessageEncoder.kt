@@ -21,6 +21,7 @@ import com.flocon.data.remote.dashboard.models.TextFieldConfigDataModel
 import com.flocon.data.remote.database.models.DatabaseQueryLogModel
 import com.flocon.data.remote.database.models.DeviceDataBaseDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinkReceivedDataModel
+import com.flocon.data.remote.deeplink.models.DeeplinkSuggestionReceivedDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinkVariableReceivedDataModel
 import com.flocon.data.remote.deeplink.models.DeeplinksReceivedDataModel
 import com.flocon.data.remote.featureflags.model.FeatureFlagDataModel
@@ -152,7 +153,12 @@ internal class MockMessageEncoder(private val json: Json) {
                                 description = deeplink.description,
                                 parameters = deeplink.parameters.map {
                                     when (it) {
-                                        is MockEvent.Deeplinks.Parameter.AutoComplete -> DeeplinkReceivedDataModel.Parameter.AutoComplete(it.name, it.values)
+                                        is MockEvent.Deeplinks.Parameter.AutoComplete -> DeeplinkReceivedDataModel.Parameter.AutoComplete(
+                                            name = it.name,
+                                            autoComplete = it.suggestions.map(MockEvent.Deeplinks.Suggestion::value),
+                                            suggestions = it.suggestions.map(MockEvent.Deeplinks.Suggestion::toReceived),
+                                        )
+
                                         is MockEvent.Deeplinks.Parameter.Variable -> DeeplinkReceivedDataModel.Parameter.Variable(it.name, it.variableName)
                                     }
                                 },
@@ -161,7 +167,13 @@ internal class MockMessageEncoder(private val json: Json) {
                         variables = event.variables.map {
                             DeeplinkVariableReceivedDataModel(
                                 name = it.name,
-                                mode = it.suggestions?.let(DeeplinkVariableReceivedDataModel.Mode::AutoComplete)
+                                mode = it.suggestions
+                                    ?.let { suggestions ->
+                                        DeeplinkVariableReceivedDataModel.Mode.AutoComplete(
+                                            suggestions = suggestions.map(MockEvent.Deeplinks.Suggestion::value),
+                                            items = suggestions.map(MockEvent.Deeplinks.Suggestion::toReceived),
+                                        )
+                                    }
                                     ?: DeeplinkVariableReceivedDataModel.Mode.Input,
                                 description = it.description,
                             )
@@ -457,3 +469,5 @@ private fun MockEvent.Dashboard.Element.toDataModel() = when (this) {
     is MockEvent.Dashboard.Element.Markdown -> DashboardElementDataModel(markdown = MarkdownConfigDataModel(label = label, value = value))
     is MockEvent.Dashboard.Element.Html -> DashboardElementDataModel(html = HtmlConfigDataModel(label = label, value = value))
 }
+
+private fun MockEvent.Deeplinks.Suggestion.toReceived() = DeeplinkSuggestionReceivedDataModel(value = value, label = label, isDefault = isDefault)

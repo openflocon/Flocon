@@ -20,8 +20,10 @@ import io.github.openflocon.domain.device.usecase.ObserveCurrentDeviceCapabiliti
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.common.utils.stateInWhileSubscribed
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.buildLink
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.defaultOrFirst
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.mapToUi
 import io.github.openflocon.flocondesktop.features.deeplinks.mapper.parseFreeformLink
+import io.github.openflocon.flocondesktop.features.deeplinks.mapper.toUi
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenAction
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
@@ -92,7 +94,7 @@ class DeepLinkViewModel(
                     value = when (val mode = variable.mode) {
                         is DeeplinkVariableDomainModel.Mode.AutoComplete -> variablesValues.getOrDefault(
                             key = variable.name,
-                            defaultValue = mode.suggestions.firstOrNull() ?: ""
+                            defaultValue = mode.suggestions.defaultOrFirst()?.value ?: ""
                         )
 
                         is DeeplinkVariableDomainModel.Mode.Input -> variablesValues.getOrDefault(
@@ -105,7 +107,7 @@ class DeepLinkViewModel(
                             DeeplinkVariableViewState.Mode.Input
 
                         is DeeplinkVariableDomainModel.Mode.AutoComplete ->
-                            DeeplinkVariableViewState.Mode.AutoComplete(mode.suggestions)
+                            DeeplinkVariableViewState.Mode.AutoComplete(mode.suggestions.toUi())
                     },
                 )
             },

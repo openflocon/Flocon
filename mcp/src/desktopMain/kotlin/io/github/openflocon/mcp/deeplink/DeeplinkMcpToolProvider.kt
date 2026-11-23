@@ -1,6 +1,7 @@
 package io.github.openflocon.mcp.deeplink
 
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkSuggestionDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
 import io.github.openflocon.mcp.McpTargetResolver
@@ -100,7 +101,8 @@ internal class DeeplinkMcpToolProvider(
                 is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkParameterMcpModel(
                     name = parameter.name,
                     type = DeeplinkParameterType.AutoComplete,
-                    suggestions = parameter.autoComplete,
+                    suggestions = parameter.suggestions.map { it.value },
+                    suggestionItems = parameter.suggestions.map { it.toMcp() },
                 )
 
                 is DeeplinkDomainModel.Parameter.Variable -> DeeplinkParameterMcpModel(
@@ -119,7 +121,10 @@ internal class DeeplinkMcpToolProvider(
             name = name,
             description = description,
             mode = DeeplinkVariableMode.AutoComplete,
-            suggestions = mode.suggestions,
+            suggestions = mode.suggestions.map { it.value },
+            suggestionItems = mode.suggestions.map { it.toMcp() },
         )
     }
+
+    private fun DeeplinkSuggestionDomainModel.toMcp() = DeeplinkSuggestionMcpModel(value = value, label = label, isDefault = isDefault)
 }

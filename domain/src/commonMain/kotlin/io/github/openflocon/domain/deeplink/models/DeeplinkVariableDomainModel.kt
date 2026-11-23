@@ -10,6 +10,6 @@ data class DeeplinkVariableDomainModel(
 
         object Input : Mode
 
-        data class AutoComplete(val suggestions: List<String>) : Mode
+        data class AutoComplete(val suggestions: List<DeeplinkSuggestionDomainModel>) : Mode
     }
 }

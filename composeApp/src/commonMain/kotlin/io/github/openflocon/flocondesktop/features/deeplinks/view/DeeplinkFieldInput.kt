@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkSuggestionUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import kotlinx.collections.immutable.persistentListOf
 
 /** The input of a field of a deeplink, with the suggestions of the app when it declared some. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,8 +36,12 @@ internal fun DeeplinkFieldInput(
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val suggestions = remember(value, part.autoComplete) {
-        part.autoComplete?.filter { it.contains(value, ignoreCase = true) }.orEmpty()
+    val suggestions = remember(value, part.suggestions) {
+        // the field holds a value, which can be the one of a labelled suggestion: show every suggestion then
+        val selected = part.suggestions?.firstOrNull { it.value == value }
+        part.suggestions
+            ?.filter { selected != null || it.value.contains(value, ignoreCase = true) || it.text.contains(value, ignoreCase = true) }
+            .orEmpty()
     }
 
     ExposedDropdownMenuBox(
@@ -76,13 +82,12 @@ internal fun DeeplinkFieldInput(
                 onDismissRequest = { isExpanded = false },
             ) {
                 suggestions.forEach { suggestion ->
-                    Text(
-                        text = suggestion,
-                        style = FloconTheme.typography.bodySmall,
+                    DeeplinkSuggestionItem(
+                        suggestion = suggestion,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onValueChange(suggestion)
+                                onValueChange(suggestion.value)
                                 isExpanded = false
                             }
                             .padding(
@@ -101,7 +106,13 @@ internal fun DeeplinkFieldInput(
 private fun DeeplinkFieldInputPreview() {
     FloconTheme {
         DeeplinkFieldInput(
-            part = DeeplinkPart.TextField("productId", autoComplete = listOf("4821", "9930")),
+            part = DeeplinkPart.TextField(
+                label = "productId",
+                suggestions = persistentListOf(
+                    previewDeeplinkSuggestionUiModel(value = "4821", label = "Running shoes", isDefault = true),
+                    previewDeeplinkSuggestionUiModel(value = "9930"),
+                ),
+            ),
             value = "",
             onValueChange = {},
             modifier = Modifier.background(FloconTheme.colors.bg100),

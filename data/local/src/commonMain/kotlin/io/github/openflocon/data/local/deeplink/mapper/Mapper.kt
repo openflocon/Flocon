@@ -1,8 +1,10 @@
 package io.github.openflocon.data.local.deeplink.mapper
 
 import io.github.openflocon.data.local.deeplink.models.DeeplinkEntity
+import io.github.openflocon.data.local.deeplink.models.DeeplinkSuggestionEntity
 import io.github.openflocon.data.local.deeplink.models.DeeplinkVariableEntity
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkSuggestionDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import kotlinx.serialization.json.Json
@@ -27,7 +29,7 @@ fun DeeplinkEntity.toDomainModel(
 fun DeeplinkVariableEntity.toDomainModel(): DeeplinkVariableDomainModel = DeeplinkVariableDomainModel(
     name = name,
     mode = when (mode) {
-        is DeeplinkVariableEntity.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(mode.suggestions)
+        is DeeplinkVariableEntity.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(toDomainSuggestions(mode.suggestions, mode.items))
         DeeplinkVariableEntity.Mode.Input -> DeeplinkVariableDomainModel.Mode.Input
     },
     description = description
@@ -68,7 +70,11 @@ fun DeeplinkVariableDomainModel.toEntity(
     description = description,
     isHistory = isHistory,
     mode = when (val mode = mode) {
-        is DeeplinkVariableDomainModel.Mode.AutoComplete -> DeeplinkVariableEntity.Mode.AutoComplete(mode.suggestions)
+        is DeeplinkVariableDomainModel.Mode.AutoComplete -> DeeplinkVariableEntity.Mode.AutoComplete(
+            suggestions = mode.suggestions.map { it.value },
+            items = mode.suggestions.map { it.toEntity() },
+        )
+
         DeeplinkVariableDomainModel.Mode.Input -> DeeplinkVariableEntity.Mode.Input
     }
 )
@@ -103,7 +109,8 @@ fun toEntities(
 private fun DeeplinkDomainModel.Parameter.toEntity() = when (this) {
     is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkEntity.Parameter.AutoComplete(
         name = name,
-        autoComplete = autoComplete
+        autoComplete = suggestions.map { it.value },
+        suggestions = suggestions.map { it.toEntity() },
     )
 
     is DeeplinkDomainModel.Parameter.Variable -> DeeplinkEntity.Parameter.Variable(
@@ -115,7 +122,7 @@ private fun DeeplinkDomainModel.Parameter.toEntity() = when (this) {
 private fun DeeplinkEntity.Parameter.toDomain() = when (this) {
     is DeeplinkEntity.Parameter.AutoComplete -> DeeplinkDomainModel.Parameter.AutoComplete(
         name = name,
-        autoComplete = autoComplete
+        suggestions = toDomainSuggestions(autoComplete, suggestions),
     )
 
     is DeeplinkEntity.Parameter.Variable -> DeeplinkDomainModel.Parameter.Variable(
@@ -123,3 +130,13 @@ private fun DeeplinkEntity.Parameter.toDomain() = when (this) {
         variableName = variableName
     )
 }
+
+private fun DeeplinkSuggestionDomainModel.toEntity() = DeeplinkSuggestionEntity(value = value, label = label, isDefault = isDefault)
+
+/** The labelled suggestions when they were stored, else the plain values stored by previous versions. */
+private fun toDomainSuggestions(
+    values: List<String>,
+    suggestions: List<DeeplinkSuggestionEntity>?,
+): List<DeeplinkSuggestionDomainModel> = suggestions
+    ?.map { DeeplinkSuggestionDomainModel(value = it.value, label = it.label, isDefault = it.isDefault) }
+    ?: values.map { DeeplinkSuggestionDomainModel(value = it) }

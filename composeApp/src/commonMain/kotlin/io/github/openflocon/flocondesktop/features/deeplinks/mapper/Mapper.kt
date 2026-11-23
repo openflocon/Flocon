@@ -1,9 +1,13 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.mapper
 
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkSuggestionDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkPart
+import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkSuggestionUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 data class DeeplinkItem(
     val model: DeeplinkDomainModel,
@@ -87,7 +91,7 @@ internal fun parseDeeplinkString(
                 when (parameter) {
                     is DeeplinkDomainModel.Parameter.AutoComplete -> DeeplinkPart.TextField(
                         label = value,
-                        autoComplete = parameter.autoComplete
+                        suggestions = parameter.suggestions.toUi()
                     )
 
                     is DeeplinkDomainModel.Parameter.Variable -> {
@@ -105,7 +109,7 @@ internal fun parseDeeplinkString(
             result.add(
                 DeeplinkPart.TextField(
                     label = value,
-                    autoComplete = null
+                    suggestions = null
                 )
             )
         }
@@ -129,4 +133,12 @@ private fun List<DeeplinkVariableDomainModel>.firstSuggestionOf(variableName: St
     ?.mode
     ?.let { it as? DeeplinkVariableDomainModel.Mode.AutoComplete }
     ?.suggestions
-    ?.firstOrNull()
+    ?.defaultOrFirst()
+    ?.value
+
+internal fun List<DeeplinkSuggestionDomainModel>.toUi(): ImmutableList<DeeplinkSuggestionUiModel> = map {
+    DeeplinkSuggestionUiModel(value = it.value, label = it.label, isDefault = it.isDefault)
+}.toImmutableList()
+
+/** The suggestion the app marked as default, else the first one. */
+internal fun List<DeeplinkSuggestionDomainModel>.defaultOrFirst(): DeeplinkSuggestionDomainModel? = firstOrNull { it.isDefault } ?: firstOrNull()

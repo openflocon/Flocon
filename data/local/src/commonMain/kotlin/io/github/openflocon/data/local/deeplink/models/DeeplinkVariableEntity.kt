@@ -47,6 +47,9 @@ data class DeeplinkVariableEntity(
 
         @Serializable
         @SerialName("auto_complete")
-        data class AutoComplete(val suggestions: List<String>) : Mode
+        data class AutoComplete(
+            val suggestions: List<String> = emptyList(), // the values, as stored before the labels
+            val items: List<DeeplinkSuggestionEntity>? = null,
+        ) : Mode
     }
 }

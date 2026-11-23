@@ -210,7 +210,12 @@ internal fun MockDeviceBuilder.sampleDeeplinks() {
             variable("productId", "productId")
         }
         deeplink("flocon-shop://catalog?category=[category]&sort=[sort]", label = "Catalog", description = "Catalog filtered by category") {
-            autoComplete("category", "shoes", "shirts", "jackets", "accessories")
+            autoComplete("category") {
+                suggest("shoes", label = "Shoes", isDefault = true)
+                suggest("shirts", label = "T-shirts & shirts")
+                suggest("jackets", label = "Jackets & coats")
+                suggest("accessories")
+            }
             autoComplete("sort", "price_asc", "price_desc", "newest")
         }
         deeplink("flocon-shop://checkout?cartId=[cartId]&promo=[promo]", label = "Checkout") {
@@ -223,7 +228,11 @@ internal fun MockDeviceBuilder.sampleDeeplinks() {
         deeplink("flocon-shop://settings")
         variable("productId", description = "Id of a product, e.g. p-1042")
         variable("cartId", description = "Current cart id")
-        variable("promoCode", description = "Promo code to apply", suggestions = listOf("WELCOME10", "SUMMER25", "FREESHIP"))
+        variable("promoCode", description = "Promo code to apply") {
+            suggest("WELCOME10", label = "Welcome offer (-10%)", isDefault = true)
+            suggest("SUMMER25", label = "Summer sale (-25%)")
+            suggest("FREESHIP")
+        }
         variable("orderId", suggestions = listOf("o-5521", "o-5522", "o-5523"))
     }
 }

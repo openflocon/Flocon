@@ -37,8 +37,10 @@ import androidx.compose.ui.unit.dp
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.deeplink_value_required
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkSuggestionUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconIcon
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
 // the name before an input, so the inputs of a group line up
@@ -104,7 +106,8 @@ internal fun DeeplinkVariableChip(
                     modifier = Modifier.weight(1f),
                 ) {
                     VariableInputField(
-                        value = value,
+                        // the label of the picked suggestion, when it has one
+                        value = mode.suggestions.firstOrNull { it.value == value }?.text ?: value,
                         onValueChange = {
                             value = it
                             onValueChange(it)
@@ -122,14 +125,13 @@ internal fun DeeplinkVariableChip(
                             onDismissRequest = { isExpanded = false },
                         ) {
                             mode.suggestions.forEach { suggestion ->
-                                Text(
-                                    text = suggestion,
-                                    style = FloconTheme.typography.bodySmall,
+                                DeeplinkSuggestionItem(
+                                    suggestion = suggestion,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            value = suggestion
-                                            onValueChange(suggestion)
+                                            value = suggestion.value
+                                            onValueChange(suggestion.value)
                                             isExpanded = false
                                         }
                                         .padding(
@@ -219,7 +221,11 @@ private fun DeeplinkVariablesPanelPreview() {
                     value = "staging",
                     mode =
                     DeeplinkVariableViewState.Mode.AutoComplete(
-                        listOf("dev", "staging", "prod")
+                        persistentListOf(
+                            previewDeeplinkSuggestionUiModel(value = "dev", label = "Development"),
+                            previewDeeplinkSuggestionUiModel(value = "staging", label = "Staging", isDefault = true),
+                            previewDeeplinkSuggestionUiModel(value = "prod"),
+                        )
                     ),
                 ),
                 onValueChange = {}
