@@ -132,7 +132,7 @@ Pick your platform to see which plugins are available. Click a feature for its d
     | [Bad network simulation](bad-quality.md) | ✅ |
     | [GraphQL](graphql.md) | ✅ |
     | [WebSockets](websocket.md) | ✅ automatic (OkHttp) |
-    | [gRPC](grpc.md) | ✅ |
+    | [gRPC](grpc.md) | ✅ grpc-java · Square Wire unary (upcoming) |
     | [Images](image.md) | ✅ |
     | [Databases](database.md) | ✅ Room, SQLDelight |
     | [Preferences](sharedpref.md) | ✅ SharedPreferences, DataStore |
@@ -158,7 +158,7 @@ Pick your platform to see which plugins are available. Click a feature for its d
     | [Bad network simulation](bad-quality.md) | ✅ | ✅ |
     | [GraphQL](graphql.md) | ✅ | ✅ |
     | [WebSockets](websocket.md) | ✅ manual logging | ✅ manual logging |
-    | [gRPC](grpc.md) | ✅ add-on `FloconSwiftGrpc` | ❌ |
+    | [gRPC](grpc.md) | ✅ add-on `FloconSwiftGrpc` | Square Wire unary (upcoming) |
     | [Images](image.md) | ✅ | ✅ |
     | [Databases](database.md) | ✅ SQLite (Core Data, GRDB...) | ✅ Room, SQLDelight |
     | [Preferences](sharedpref.md) | ✅ UserDefaults, keychain | ✅ DataStore |
@@ -184,7 +184,7 @@ Pick your platform to see which plugins are available. Click a feature for its d
     | [Bad network simulation](bad-quality.md) | ✅ | ✅ |
     | [GraphQL](graphql.md) | ✅ | ✅ |
     | [WebSockets](websocket.md) | ✅ manual logging | ✅ manual logging |
-    | [gRPC](grpc.md) | ❌ | ❌ |
+    | [gRPC](grpc.md) | Square Wire unary (upcoming) | Square Wire unary (upcoming) |
     | [Images](image.md) | ✅ | ✅ |
     | [Databases](database.md) | ✅ Room, SQLDelight | ✅ Room 3 only |
     | [Preferences](sharedpref.md) | ✅ DataStore | ✅ (no DataStore) |
