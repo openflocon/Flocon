@@ -1,7 +1,7 @@
 # Proxy mode (experimental)
 
-!!! warning "Work in progress"
-    The proxy binary is not shipped in the release builds yet: until then, the dialog says it is not included in this build.
+!!! note
+    The proxy is shipped in the installers (dmg, msi, deb, rpm). The `.jar` builds do not include it: the dialog then says it is not included in this build.
 
 Flocon Desktop can run an HTTP(S) proxy on your computer. Any phone that uses it shows its traffic in the **Network** screen, **without the Flocon SDK** in the app. It also sees calls the SDK can't intercept: WebViews, third-party SDKs, other apps.
 

@@ -45,5 +45,6 @@ class ProxyEventTest {
         assertEquals("macos-x64", currentPlatformFolder("Mac OS X", "x86_64"))
         assertEquals("windows-x64", currentPlatformFolder("Windows 11", "amd64"))
         assertEquals("linux-x64", currentPlatformFolder("Linux", "amd64"))
+        assertEquals("linux-arm64", currentPlatformFolder("Linux", "aarch64"))
     }
 }

@@ -162,6 +162,6 @@ internal fun currentPlatformFolder(
     return when {
         "mac" in os -> if (arm) "macos-arm64" else "macos-x64"
         "win" in os -> "windows-x64"
-        else -> "linux-x64"
+        else -> if (arm) "linux-arm64" else "linux-x64"
     }
 }

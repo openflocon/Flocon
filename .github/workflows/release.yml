@@ -51,6 +51,19 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y rpm
 
+      # The proxy mode runs a binary shipped in the app (composeApp/appResources/<platform>/),
+      # compiled with Bun from proxy/ for the platform of the runner. The uber jar does not ship it.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.5
+
+      - name: Build the proxy binary
+        working-directory: proxy
+        run: |
+          bun install --frozen-lockfile
+          bun run build:${{ matrix.platform }}
+
       - name: Build with Gradle
         run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
