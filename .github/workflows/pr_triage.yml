@@ -1,0 +1,40 @@
+name: PR - Label and assign author
+
+on:
+  # pull_request_target gives a write token for PRs from forks too.
+  # Safe here: the workflow never checks out or runs code from the PR.
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign the author and add the label
+        uses: actions/github-script@v7
+        env:
+          LABEL: needs review
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+
+            // Skip bots (dependabot, ...): they cannot be assigned.
+            if (pr.user.type !== 'Bot') {
+              await github.rest.issues.addAssignees({
+                owner, repo,
+                issue_number: pr.number,
+                assignees: [pr.user.login],
+              });
+            }
+
+            // The label is created automatically if it does not exist yet.
+            await github.rest.issues.addLabels({
+              owner, repo,
+              issue_number: pr.number,
+              labels: [process.env.LABEL],
+            });
