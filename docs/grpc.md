@@ -5,7 +5,7 @@ description: Inspect gRPC calls and their Protocol Buffers messages in Flocon, o
 
 # ⚡ gRPC
 
-Flocon logs your **gRPC calls** in the Network screen: the server, the method, the request and response messages as JSON, the metadata, the duration and the gRPC status. It saves you from decoding Protocol Buffers by hand.
+Flocon logs your **gRPC calls** in the Network screen. Open a call to see the server, method, decoded messages, metadata, duration and gRPC status.
 
 ![The Network screen of Flocon Desktop](assets/screenshots/grpc-list.jpg)
 ![Detail of a grpc call: authority](assets/screenshots/grpc-detail.jpg)
@@ -13,7 +13,7 @@ Flocon logs your **gRPC calls** in the Network screen: the server, the method, t
 For each call you see:
 
 - the **server** as the URL, and the **full method name** (`helloworld.Greeter/SayHello`);
-- the **request and response messages**, serialised as JSON;
+- the **request and response messages**, as JSON for grpc-java and grpc-swift, or as generated message strings for Square Wire (for example, `HelloRequest{name=World}`);
 - the **metadata** (headers), the **duration** and the **gRPC status** (`OK`, `NOT_FOUND`...);
 - the **error**, such as a refused connection, when the call fails.
 
@@ -21,24 +21,19 @@ For each call you see:
 
 | | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
-| Inspect gRPC calls | ✅ `grpc-java` / `grpc-android` | ❌ | ✅ `grpc-swift` 1.x | ❌ |
-| Bad network simulation | ✅ latency and exceptions | ❌ | ❌ | ❌ |
+| Inspect grpc-java or grpc-swift calls | ✅ `grpc-java` / `grpc-android` | ❌ | ✅ `grpc-swift` 1.x | ❌ |
+| Inspect unary Square Wire calls | Upcoming | Upcoming (requires a Wire client for the target) | — | — |
+| Bad network simulation | ✅ latency and exceptions with `grpc-java` | ❌ | ❌ | ❌ |
 | Mocks | ❌ | ❌ | ❌ | ❌ |
 
 !!! note "Not available in the Flutter SDK yet"
     Flutter has no gRPC interceptor. Only HTTP calls (Dio, `package:http`) and WebSocket events are reported.
 
-!!! note "Not available in Kotlin Multiplatform yet"
-    The gRPC interceptors are Android only (`grpc-java`). On iOS, use the [Swift SDK](#setup) with `grpc-swift`.
-
 ## Setup
 
 === "Kotlin"
 
-    !!! warning "gRPC version"
-        Use `grpc-android` / `grpc-java` **`1.70.0`** or later.
-
-    gRPC calls are reported to the network plugin: the network plugin is part of `flocon` (see [Network](network.md#setup)), install it:
+    Install the [network plugin](network.md#setup) when you start Flocon. On Android, use the app context.
 
     ```kotlin
     startFlocon(FloconContext(context)) {
@@ -46,32 +41,68 @@ For each call you see:
     }
     ```
 
-    Android projects use either the standard Protobuf runtime or the lite one. Flocon has one artifact for each, to serialise the messages to JSON properly:
+    === "grpc-java (Android)"
 
-    === "Protobuf Lite (recommended for Android)"
+        !!! warning "gRPC version"
+            Use `grpc-android` / `grpc-java` **`1.70.0`** or later.
 
-        ```kotlin
-        dependencies {
-            implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
+        Android projects use either the standard Protobuf runtime or the lite one. Flocon has one artifact for each, to serialise the messages to JSON properly:
 
-            implementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
-        }
-        ```
+        === "Protobuf Lite (recommended for Android)"
 
-    === "Full Protobuf"
+            ```kotlin
+            dependencies {
+                implementation("com.google.protobuf:protobuf-kotlin-lite:$PROTOBUF_VERSION")
 
-        ```kotlin
-        dependencies {
-            implementation("com.google.protobuf:protobuf-kotlin:$PROTOBUF_VERSION")
+                implementation("io.github.openflocon:flocon-grpc-interceptor-lite:LAST_VERSION")
+            }
+            ```
 
-            implementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
-        }
-        ```
+        === "Full Protobuf"
 
-    !!! note "Before 2.0.1"
-        The gRPC interceptors were added with `debugImplementation`, and their `-no-op` twin (`flocon-grpc-interceptor-lite-no-op` or `flocon-grpc-interceptor-no-op`) with `releaseImplementation`. The network plugin was in a separate `flocon-network-core` module. See the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds).
+            ```kotlin
+            dependencies {
+                implementation("com.google.protobuf:protobuf-kotlin:$PROTOBUF_VERSION")
 
-    With `flocon-no-op` in release builds (see [Release builds](install-kotlin.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
+                implementation("io.github.openflocon:flocon-grpc-interceptor:LAST_VERSION")
+            }
+            ```
+
+        !!! note "Before 2.0.1"
+            The gRPC interceptors were added with `debugImplementation`, and their `-no-op` twin (`flocon-grpc-interceptor-lite-no-op` or `flocon-grpc-interceptor-no-op`) with `releaseImplementation`. The network plugin was in a separate `flocon-network-core` module. See the [migration guide](migration.md#after-200-one-flocon-no-op-for-release-builds).
+
+        With `flocon-no-op` in release builds (see [Release builds](install-kotlin.md#release-builds)), the interceptor forwards every call untouched, so the same code runs in debug and release.
+
+    === "Square Wire"
+
+        !!! info "Unreleased adapter"
+            No published Flocon SDK version contains this module yet. To try it, check out [FloconKotlin PR #4](https://github.com/openflocon/FloconKotlin/pull/4) and run `PROJECT_VERSION_NAME=wire-local ./publishLocal.sh` from the SDK root. Add `mavenLocal()` to your app's dependency repositories and use `wire-local` for `LAST_VERSION` in your Flocon dependencies.
+
+        Add the adapter to the module that creates your Wire service.
+
+        === "Android"
+
+            ```kotlin
+            dependencies {
+                implementation("io.github.openflocon:flocon-wire-grpc:LAST_VERSION")
+            }
+            ```
+
+        === "Kotlin Multiplatform"
+
+            ```kotlin
+            kotlin {
+                sourceSets {
+                    commonMain.dependencies {
+                        implementation("io.github.openflocon:flocon-wire-grpc:LAST_VERSION")
+                    }
+                }
+            }
+            ```
+
+        Use the same version for the adapter and the Flocon SDK. The adapter depends on Wire 7.2.2 and wraps the client your app already uses. On iOS and Wasm, supply a Wire `GrpcClient` with a transport for that target.
+
+        On Android, add `flocon-no-op` to the app's [release configuration](install-kotlin.md#release-builds). In those builds, `withFlocon` returns the original client.
 
 === "Swift"
 
@@ -111,15 +142,31 @@ For each call you see:
 
 === "Kotlin"
 
-    Attach `FloconGrpcInterceptor` to your `ManagedChannelBuilder`:
+    === "grpc-java (Android)"
 
-    ```kotlin
-    // lite artifact: io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
-    // full artifact: io.github.openflocon.flocon.grpc.FloconGrpcInterceptor
-    val channel = ManagedChannelBuilder.forAddress(host, port)
-        .intercept(FloconGrpcInterceptor())
-        .build()
-    ```
+        Attach `FloconGrpcInterceptor` to your `ManagedChannelBuilder`:
+
+        ```kotlin
+        // lite artifact: io.github.openflocon.flocon.grpc.lite.FloconGrpcInterceptor
+        // full artifact: io.github.openflocon.flocon.grpc.FloconGrpcInterceptor
+        val channel = ManagedChannelBuilder.forAddress(host, port)
+            .intercept(FloconGrpcInterceptor())
+            .build()
+        ```
+
+    === "Square Wire"
+
+        Wrap your configured `GrpcClient` before constructing the generated service. Pass the host and port from your endpoint configuration as `authority`. Flocon uses it as the displayed server name.
+
+        ```kotlin
+        import io.github.openflocon.flocon.wire.grpc.withFlocon
+
+        val client = grpcClient.withFlocon(authority = "api.example.com:443")
+        val greeter = GrpcGreeterClient(client)
+        val reply = greeter.SayHello().execute(HelloRequest(name = "World"))
+        ```
+
+        In **Network**, open `helloworld.Greeter/SayHello` to see the request, response and final gRPC status. Streaming calls pass directly to Wire. If you also use Flocon's OkHttp interceptor, exclude requests tagged with Wire's `GrpcMethod` in its `shouldLog` filter to avoid a second HTTP entry.
 
 === "Swift"
 
@@ -152,18 +199,18 @@ For each call you see:
 !!! tip "In the Timeline"
     gRPC calls also show up in the [Timeline](timeline.md), like any network call.
 
-gRPC calls are listed with the other calls in the **Network** screen. Their URL is the server, their method is the full method name, and their status is the gRPC status (`OK`, `NOT_FOUND`...). Click a call to see its metadata and its request and response messages as formatted JSON.
+gRPC calls are listed with the other calls in the **Network** screen. Their URL is the server, their method is the full method name, and their status is the gRPC status (`OK`, `NOT_FOUND`...). Click a call to see its metadata and decoded request and response messages.
 
 ![A grpc call that failed](assets/screenshots/grpc-error.jpg)
 
-The [bad network simulation](bad-quality.md) applies to gRPC calls on Android. Mocks do not.
+The [bad network simulation](bad-quality.md) applies to the Android grpc-java interceptor. gRPC mocks are unavailable across SDKs.
 
 ## With AI agents (MCP)
 
 gRPC calls come through the network tools, with their status:
 
 - `list_network_calls`: filter on the gRPC type, or on errors only (a status other than `OK`).
-- `get_network_call`: returns the metadata, the JSON messages and the gRPC status.
+- `get_network_call`: returns the metadata, decoded messages and gRPC status.
 
 > "List the gRPC calls that failed with a status other than OK and show me the request of the first one."
 
@@ -171,7 +218,8 @@ See the [MCP cookbook](mcp-cookbook.md) for full workflows.
 
 ## Limitations
 
-- Android (`grpc-java`) and iOS / macOS (`grpc-swift` 1.x) only. No Kotlin Multiplatform, no Flutter.
+- The Square Wire adapter records unary calls only. On JVM, keep the original `GrpcClient` for Wire's `newBuilder()`.
+- The Flutter SDK has no gRPC interceptor.
 - gRPC calls cannot be mocked.
 - On Swift, a streaming call shows only its first request message and its last response message.
 - The Swift SDK does not apply the bad network simulation to gRPC.
