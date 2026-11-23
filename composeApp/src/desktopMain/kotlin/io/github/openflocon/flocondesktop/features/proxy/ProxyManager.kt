@@ -44,9 +44,13 @@ class ProxyManager(
     }
 
     /** Starts the proxy, or restarts it when it already runs (e.g. the websocket port changed). */
-    suspend fun start(floconWebsocketUrl: String, preferredPort: Int = DEFAULT_PROXY_PORT) = mutex.withLock {
+    suspend fun start(
+        floconWebsocketUrl: String,
+        locale: String,
+        preferredPort: Int = DEFAULT_PROXY_PORT,
+    ) = mutex.withLock {
         stopLocked()
-        job = scope.launch(Dispatchers.IO) { runWithRestart(floconWebsocketUrl, preferredPort) }
+        job = scope.launch(Dispatchers.IO) { runWithRestart(floconWebsocketUrl, locale, preferredPort) }
     }
 
     suspend fun stop() = mutex.withLock { stopLocked() }
@@ -62,11 +66,11 @@ class ProxyManager(
         _state.value = ProxyStateDomainModel.Stopped
     }
 
-    private suspend fun runWithRestart(floconWebsocketUrl: String, preferredPort: Int) {
+    private suspend fun runWithRestart(floconWebsocketUrl: String, locale: String, preferredPort: Int) {
         var backoffMs = MIN_BACKOFF_MS
         while (currentCoroutineContext().isActive) {
             val startedAt = System.currentTimeMillis()
-            val exitCode = runOnce(floconWebsocketUrl, preferredPort) ?: return
+            val exitCode = runOnce(floconWebsocketUrl, locale, preferredPort) ?: return
             if (!currentCoroutineContext().isActive) return
             // The process ran for a while: it is a one-off crash, not a crash loop.
             if (System.currentTimeMillis() - startedAt > STABLE_RUN_MS) backoffMs = MIN_BACKOFF_MS
@@ -79,7 +83,7 @@ class ProxyManager(
     }
 
     /** @return the exit code, or null when the proxy cannot be started at all (or was stopped meanwhile). */
-    private suspend fun runOnce(floconWebsocketUrl: String, preferredPort: Int): Int? {
+    private suspend fun runOnce(floconWebsocketUrl: String, locale: String, preferredPort: Int): Int? {
         _state.value = ProxyStateDomainModel.Starting
         val runtime = resolveRuntime() ?: return null
         if (!currentCoroutineContext().isActive) return null
@@ -96,6 +100,7 @@ class ProxyManager(
                     caPort.toString(),
                     "--flocon-ws",
                     floconWebsocketUrl,
+                    "--locale", locale,
                     "--ca-dir",
                     File(dataDir, "proxy-ca").absolutePath,
                 ),

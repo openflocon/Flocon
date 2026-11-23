@@ -184,13 +184,15 @@ function mobileconfig(certPem: string): string {
 }
 
 // ---------- CA page (opened on the phone for a few seconds: the steps are shown in Flocon Desktop) ----------
-const PAGE_TEXT = {
+// The page follows the language of Flocon Desktop (--locale), English when it has no translation.
+const PAGE_TEXTS_BY_LANGUAGE = {
   en: {
     title: "Flocon Proxy",
     subtitle: "Install the Flocon certificate so that Flocon Desktop sees the HTTPS calls of this phone.",
     android: "Download the certificate",
     ios: "Install the profile",
-    other: "Other phone: ",
+    otherAndroid: "Other phone: Download the certificate",
+    otherIos: "Other phone: Install the profile",
     next: "Then follow the steps shown in Flocon Desktop.",
     once: "Once per phone.",
   },
@@ -199,24 +201,33 @@ const PAGE_TEXT = {
     subtitle: "Installe le certificat Flocon pour que Flocon Desktop voie les appels HTTPS de ce téléphone.",
     android: "Télécharger le certificat",
     ios: "Installer le profil",
-    other: "Autre téléphone : ",
+    otherAndroid: "Autre téléphone : Télécharger le certificat",
+    otherIos: "Autre téléphone : Installer le profil",
     next: "Puis suis les étapes affichées dans Flocon Desktop.",
     once: "Une seule fois par téléphone.",
   },
 };
+type PageTexts = (typeof PAGE_TEXTS_BY_LANGUAGE)["en"];
+
+const PAGE_LANGUAGE = arg("locale", "en").toLowerCase().split(/[-_]/)[0];
+const PAGE_TEXTS: PageTexts =
+  PAGE_TEXTS_BY_LANGUAGE[PAGE_LANGUAGE as keyof typeof PAGE_TEXTS_BY_LANGUAGE] ?? PAGE_TEXTS_BY_LANGUAGE.en;
+
+const escapeHtml = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const DOWNLOAD_ICON =
   '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
 
 function caPage(req: IncomingMessage): string {
   const ua = req.headers["user-agent"] ?? "";
-  const text = /^fr\b/i.test(req.headers["accept-language"] ?? "") ? PAGE_TEXT.fr : PAGE_TEXT.en;
-  const android = { href: "/ca.crt", label: text.android };
-  const ios = { href: "/ca.mobileconfig", label: text.ios };
-  // the button of the phone first, the other one in small below
-  const [main, other] = /iPhone|iPad|iPod/i.test(ua) ? [ios, android] : [android, ios];
-  return `<!doctype html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>${text.title}</title>
+  const t = Object.fromEntries(Object.entries(PAGE_TEXTS).map(([k, v]) => [k, escapeHtml(v)])) as PageTexts;
+  // the button of the phone first, the link to the other platform in small below
+  const iphone = /iPhone|iPad|iPod/i.test(ua);
+  const main = iphone ? { href: "/ca.mobileconfig", label: t.ios } : { href: "/ca.crt", label: t.android };
+  const other = iphone ? { href: "/ca.crt", label: t.otherAndroid } : { href: "/ca.mobileconfig", label: t.otherIos };
+  return `<!doctype html><html lang="${PAGE_LANGUAGE in PAGE_TEXTS_BY_LANGUAGE ? PAGE_LANGUAGE : "en"}"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>${t.title}</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -235,19 +246,18 @@ function caPage(req: IncomingMessage): string {
   .main:active { transform: scale(0.98); }
   .next { margin: 0; color: #ECECEC; font-size: 14px; }
   .divider { width: 100%; height: 1px; background: #2A2A2F; }
-  .other { color: #A3A3A3; font-size: 14px; text-decoration: none; }
-  .other b { color: #F5B440; font-weight: 600; }
+  .other { color: #F5B440; font-size: 14px; font-weight: 600; text-decoration: none; }
   .once { margin: 0; color: #6B6B7B; font-size: 12px; }
 </style></head><body>
   <main class="card">
     <img class="logo" src="${FLOCON_LOGO}" alt="Flocon">
-    <h1>${text.title}</h1>
-    <p class="subtitle">${text.subtitle}</p>
+    <h1>${t.title}</h1>
+    <p class="subtitle">${t.subtitle}</p>
     <a class="main" href="${main.href}">${DOWNLOAD_ICON}${main.label}</a>
-    <p class="next">${text.next}</p>
+    <p class="next">${t.next}</p>
     <div class="divider"></div>
-    <a class="other" href="${other.href}">${text.other}<b>${other.label}</b></a>
-    <p class="once">${text.once}</p>
+    <a class="other" href="${other.href}">${other.label}</a>
+    <p class="once">${t.once}</p>
   </main>
 </body></html>`;
 }

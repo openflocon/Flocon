@@ -6,6 +6,7 @@ import io.github.openflocon.domain.proxy.models.ProxyStateDomainModel
 import io.github.openflocon.domain.proxy.repository.ProxyRepository
 import io.github.openflocon.domain.proxy.usecase.RunProxyUseCase
 import io.github.openflocon.domain.settings.FakeSettingsRepository
+import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveServerPortsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +27,7 @@ class RunProxyUseCaseTest {
         override suspend fun setEnabled(enabled: Boolean) {
             isEnabled.value = enabled
         }
-        override suspend fun start(websocketPort: Int) {
+        override suspend fun start(websocketPort: Int, languageTag: String?) {
             calls += "start $websocketPort"
         }
         override suspend fun stop() {
@@ -38,7 +39,7 @@ class RunProxyUseCaseTest {
     private val settings = FakeSettingsRepository().apply {
         savedPorts.value = ServerPortsDomainModel(websocketPort = 9023, httpPort = 9024)
     }
-    private val useCase = RunProxyUseCase(proxy, ObserveServerPortsUseCase(settings, ServerPortsOverrides.None))
+    private val useCase = RunProxyUseCase(proxy, ObserveServerPortsUseCase(settings, ServerPortsOverrides.None), ObserveAppLanguageUseCase(settings))
 
     @Test
     fun `follows the choice of the user and the websocket port`() = runTest {
