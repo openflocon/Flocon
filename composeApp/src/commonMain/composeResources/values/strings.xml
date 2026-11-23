@@ -791,11 +791,9 @@
     <string name="proxy_devices_hint">Each phone shows up as “Proxy &lt;IP&gt;” in the device selector, in its own Proxy group. Apps that pin their certificates refuse the proxy.</string>
     <string name="proxy_platform_android">Android</string>
     <string name="proxy_platform_ios">iOS</string>
-    <string name="proxy_android_step_wifi">Settings › Wi-Fi › your network › Edit › Proxy: Manual, with the server and the port.</string>
     <string name="proxy_android_step_download">Scan the QR code and tap “Download the certificate”: flocon-ca.crt is saved in Downloads.</string>
     <string name="proxy_android_step_install">Settings › Security › Encryption &amp; credentials › Install a certificate › CA certificate › flocon-ca.crt, then “Install anyway”. Search “CA certificate” in Settings if the path differs: opening it from the browser is refused since Android 11.</string>
     <string name="proxy_android_step_app">Your app trusts it only if its network_security_config allows user certificates, for example in debug builds:</string>
-    <string name="proxy_ios_step_wifi">Settings › Wi-Fi › ⓘ next to your network › Configure Proxy › Manual, with the server and the port.</string>
     <string name="proxy_ios_step_download">Scan the QR code with the Camera, open it in Safari, tap “Install the profile”, then Allow.</string>
     <string name="proxy_ios_step_install">Settings › General › VPN &amp; Device Management › Flocon Proxy › Install.</string>
     <string name="proxy_ios_step_trust">Settings › General › About › Certificate Trust Settings › turn on “Flocon Proxy CA”.</string>
@@ -816,4 +814,11 @@
     <string name="proxy_next">Next</string>
     <string name="proxy_done">Done</string>
     <string name="proxy_running">Running</string>
+    <string name="proxy_android_wifi_1">Settings › Wi-Fi › tap your network › Edit (pencil or ⚙).</string>
+    <string name="proxy_android_wifi_2">Advanced options › Proxy: Manual.</string>
+    <string name="proxy_ios_wifi_1">Settings › Wi-Fi › ⓘ next to your network.</string>
+    <string name="proxy_ios_wifi_2">Configure Proxy › Manual.</string>
+    <string name="proxy_wifi_3">Type the server and the port shown here, then save.</string>
+    <string name="proxy_wifi_proxy_label">Proxy</string>
+    <string name="proxy_wifi_manual">Manual</string>
 </resources>

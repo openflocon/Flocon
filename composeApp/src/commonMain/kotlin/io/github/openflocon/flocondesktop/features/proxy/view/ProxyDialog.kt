@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +38,6 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +48,8 @@ import flocondesktop.composeapp.generated.resources.proxy_activate
 import flocondesktop.composeapp.generated.resources.proxy_android_step_app
 import flocondesktop.composeapp.generated.resources.proxy_android_step_download
 import flocondesktop.composeapp.generated.resources.proxy_android_step_install
-import flocondesktop.composeapp.generated.resources.proxy_android_step_wifi
+import flocondesktop.composeapp.generated.resources.proxy_android_wifi_1
+import flocondesktop.composeapp.generated.resources.proxy_android_wifi_2
 import flocondesktop.composeapp.generated.resources.proxy_app_heading
 import flocondesktop.composeapp.generated.resources.proxy_back
 import flocondesktop.composeapp.generated.resources.proxy_binary_not_found
@@ -63,7 +65,8 @@ import flocondesktop.composeapp.generated.resources.proxy_ios_step_app
 import flocondesktop.composeapp.generated.resources.proxy_ios_step_download
 import flocondesktop.composeapp.generated.resources.proxy_ios_step_install
 import flocondesktop.composeapp.generated.resources.proxy_ios_step_trust
-import flocondesktop.composeapp.generated.resources.proxy_ios_step_wifi
+import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_1
+import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_2
 import flocondesktop.composeapp.generated.resources.proxy_next
 import flocondesktop.composeapp.generated.resources.proxy_no_address
 import flocondesktop.composeapp.generated.resources.proxy_off_title
@@ -80,7 +83,10 @@ import flocondesktop.composeapp.generated.resources.proxy_step_app_label
 import flocondesktop.composeapp.generated.resources.proxy_step_certificate_label
 import flocondesktop.composeapp.generated.resources.proxy_step_wifi_label
 import flocondesktop.composeapp.generated.resources.proxy_title
+import flocondesktop.composeapp.generated.resources.proxy_wifi_3
 import flocondesktop.composeapp.generated.resources.proxy_wifi_heading
+import flocondesktop.composeapp.generated.resources.proxy_wifi_manual
+import flocondesktop.composeapp.generated.resources.proxy_wifi_proxy_label
 import io.github.openflocon.flocondesktop.features.connect.view.QrCodeImage
 import io.github.openflocon.flocondesktop.features.proxy.ProxyViewModel
 import io.github.openflocon.flocondesktop.features.proxy.model.ProxyAddressUiModel
@@ -105,6 +111,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private val DialogWidth = 720.dp
 private val ContentHeight = 260.dp
+private val WifiCardWidth = 260.dp
+private val SettingsRowHeight = 44.dp
 private val QrSize = 176.dp
 private val LabelWidth = 56.dp
 private val StepNumberSize = 22.dp
@@ -526,33 +534,35 @@ private fun StepContent(
 
     Box(modifier = modifier.fillMaxSize()) {
         when (step) {
-            SetupStep.Wifi -> Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.large)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge)) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium),
-                    ) {
-                        StepHeading(text = stringResource(Res.string.proxy_wifi_heading))
-                        NumberedStep(
-                            number = 1,
-                            text = stringResource(if (android) Res.string.proxy_android_step_wifi else Res.string.proxy_ios_step_wifi),
+            SetupStep.Wifi -> Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge),
+            ) {
+                // what the proxy settings of the phone look like once filled, at the place of the QR code of the next step
+                Column(
+                    modifier = Modifier.width(WifiCardWidth),
+                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                ) {
+                    WifiSettingsCard(address = address)
+                    // the computer may be on several networks: the phone uses the one of its Wi-Fi
+                    if (addresses.size > 1) {
+                        NetworkPicker(
+                            addresses = addresses,
+                            selectedIp = address.ip,
+                            onSelect = { selectedIp = it },
                         )
                     }
-                    Column(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                    ) {
-                        CopyableValue(label = stringResource(Res.string.proxy_server), value = address.ip, large = true)
-                        CopyableValue(label = stringResource(Res.string.proxy_port), value = address.proxyPort, large = true)
-                    }
                 }
-                // the computer may be on several networks: the phone uses the one of its Wi-Fi
-                if (addresses.size > 1) {
-                    NetworkPicker(
-                        addresses = addresses,
-                        selectedIp = address.ip,
-                        onSelect = { selectedIp = it },
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)) {
+                    StepHeading(text = stringResource(Res.string.proxy_wifi_heading))
+                    val steps = if (android) {
+                        listOf(Res.string.proxy_android_wifi_1, Res.string.proxy_android_wifi_2, Res.string.proxy_wifi_3)
+                    } else {
+                        listOf(Res.string.proxy_ios_wifi_1, Res.string.proxy_ios_wifi_2, Res.string.proxy_wifi_3)
+                    }
+                    steps.forEachIndexed { index, text ->
+                        NumberedStep(number = index + 1, text = stringResource(text))
+                    }
                 }
             }
 
@@ -692,6 +702,59 @@ private fun FooterButton(
     }
 }
 
+/** The proxy settings of the phone, filled: Manual, the server and the port, each with a copy button. */
+@Composable
+private fun WifiSettingsCard(
+    address: ProxyAddressUiModel,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(FloconTheme.colors.bg000, FloconTheme.shapes.large)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large),
+    ) {
+        SettingsRow(label = stringResource(Res.string.proxy_wifi_proxy_label), value = stringResource(Res.string.proxy_wifi_manual), copyable = false)
+        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colors.line))
+        SettingsRow(label = stringResource(Res.string.proxy_server), value = address.ip, copyable = true)
+        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colors.line))
+        SettingsRow(label = stringResource(Res.string.proxy_port), value = address.proxyPort, copyable = true)
+    }
+}
+
+@Composable
+private fun SettingsRow(
+    label: String,
+    value: String,
+    copyable: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(SettingsRowHeight)
+            .padding(start = FloconTheme.spacing.medium, end = FloconTheme.spacing.extraSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = FloconTheme.typography.bodySmall,
+            color = FloconTheme.colors.inkMuted,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = value,
+            style = if (copyable) FloconTheme.typography.monoMedium else FloconTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (copyable) FloconTheme.colors.ink else FloconTheme.colors.accent,
+            maxLines = 1,
+            modifier = Modifier.padding(end = if (copyable) 0.dp else FloconTheme.spacing.small),
+        )
+        if (copyable) CopyButton(value = value)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NetworkPicker(
     addresses: ImmutableList<ProxyAddressUiModel>,
@@ -699,10 +762,12 @@ private fun NetworkPicker(
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    // wraps: the computer may be on more networks than the column has room for
+    FlowRow(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
+        itemVerticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
         Text(
             text = stringResource(Res.string.proxy_pick_network),
@@ -808,7 +873,6 @@ private fun CopyableValue(
     label: String?,
     value: String,
     modifier: Modifier = Modifier,
-    large: Boolean = false,
 ) {
     Row(
         modifier = modifier,
@@ -826,7 +890,7 @@ private fun CopyableValue(
         }
         Text(
             text = value,
-            style = if (large) FloconTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace) else FloconTheme.typography.monoMedium,
+            style = FloconTheme.typography.monoMedium,
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
         )
