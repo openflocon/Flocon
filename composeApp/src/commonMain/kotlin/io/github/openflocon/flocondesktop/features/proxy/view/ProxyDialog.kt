@@ -121,8 +121,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private val DialogWidth = 720.dp
-private val ContentHeight = 370.dp
-private val PhoneWidth = 220.dp
+private val ContentHeight = 420.dp
+
+// the proportions of a phone (about 1:1.9), so that it does not look squashed
+private val PhoneWidth = 196.dp
+private val PhoneHeight = 372.dp
 private val PhoneBorder = 4.dp
 private val PhoneShape = RoundedCornerShape(28.dp)
 private val PhoneNotchWidth = 44.dp
@@ -733,7 +736,7 @@ private fun PhoneProxyMockup(
     val colors = FloconTheme.colors
     Column(
         modifier = modifier
-            .width(PhoneWidth)
+            .size(PhoneWidth, PhoneHeight)
             .border(PhoneBorder, colors.lineStrong, PhoneShape)
             .background(colors.bg000, PhoneShape)
             .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.large),
@@ -774,10 +777,11 @@ private fun PhoneProxyMockup(
                 value = address.proxyPort,
             )
         }
+        // the rest of the screen is empty, the home bar sits at the bottom
+        Box(Modifier.weight(1f))
         Box(
             Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = FloconTheme.spacing.small)
                 .size(PhoneNotchWidth, PhoneNotchHeight)
                 .background(colors.line, CircleShape),
         )
@@ -854,7 +858,7 @@ private fun CopyableChip(
         Text(
             text = value,
             // big: it is read on the computer and typed on the phone
-            style = FloconTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
+            style = FloconTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace),
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
             maxLines = 1,
