@@ -206,17 +206,18 @@ private fun Header(
         else -> base
     }
     Box(modifier = modifier.fillMaxWidth().background(barColor)) {
-        if (codeRain) {
+        // the code rains while the proxy runs (red on a failure); asleep, a cursor types "Wake up…"
+        if (codeRain && mood != ProxyMoodUiModel.Asleep) {
             ProxyCodeRain(
                 color = if (mood == ProxyMoodUiModel.Glitched) FloconPixelPalette.Red else FloconPixelPalette.Neon,
                 headColor = if (mood == ProxyMoodUiModel.Watching) FloconPixelPalette.NeonHead else null,
-                animated = mood != ProxyMoodUiModel.Asleep,
-                strength = if (mood == ProxyMoodUiModel.Asleep) 0.22f else 1f,
+                animated = true,
                 modifier = Modifier.matchParentSize(),
             )
         }
         HeaderContent(
             labelBackground = barColor.copy(alpha = 0.85f),
+            wakeUp = codeRain && mood == ProxyMoodUiModel.Asleep,
             onClose = onClose,
         )
     }
@@ -225,6 +226,7 @@ private fun Header(
 @Composable
 private fun HeaderContent(
     labelBackground: Color,
+    wakeUp: Boolean,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -253,6 +255,9 @@ private fun HeaderContent(
                 .background(FloconTheme.colors.accentSoft.compositeOver(labelBackground.copy(alpha = 1f)), FloconTheme.shapes.small)
                 .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.tiny),
         )
+        if (wakeUp) {
+            ProxyWakeUpText(modifier = Modifier.padding(start = FloconTheme.spacing.small))
+        }
         Box(Modifier.weight(1f))
         FloconIconButton(onClick = onClose, modifier = Modifier.padding(vertical = FloconTheme.spacing.small)) {
             FloconIcon(Icons.Outlined.Close)

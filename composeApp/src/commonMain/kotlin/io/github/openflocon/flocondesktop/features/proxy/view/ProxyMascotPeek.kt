@@ -47,6 +47,12 @@ private val WatchingLoop: List<Beat> = buildList {
     repeat(14) { add(Beat.Still) }
 }
 private val WatchingFrames: ImmutableList<Int> = WatchingLoop.indices.toList().toImmutableList()
+
+/** The sleeping loop, 4.8 s: two slow breaths (the head rises and sinks), a "z" floating up, an ear twitch. */
+private const val SleepingLoopFrames = 48
+private const val BreathFrames = 24
+private val EarTwitch = 40..42
+private val SleepingFrames: ImmutableList<Int> = (0 until SleepingLoopFrames).toList().toImmutableList()
 private val StillFrame: ImmutableList<Int> = persistentListOf(0)
 
 /**
@@ -60,17 +66,30 @@ internal fun ProxyMascotPeek(
     modifier: Modifier = Modifier,
 ) {
     FloconPixelScene(
-        frames = if (mood == ProxyMoodUiModel.Watching) WatchingFrames else StillFrame,
+        frames = when (mood) {
+            ProxyMoodUiModel.Watching -> WatchingFrames
+            ProxyMoodUiModel.Asleep -> SleepingFrames
+            ProxyMoodUiModel.Glitched -> StillFrame
+        },
         frameMs = FrameMs,
         gridWidth = GridWidth,
         gridHeight = GridHeight,
         modifier = modifier.size(ProxyMascotPeekWidth, ProxyMascotPeekHeight),
     ) { frame ->
         val beat = if (mood == ProxyMoodUiModel.Watching) WatchingLoop[frame] else Beat.Still
-        val head = offset(if (beat == Beat.Glance) 1 else 0, 0)
+        // asleep, the head sinks by one pixel on the out-breath
+        val breathOut = mood == ProxyMoodUiModel.Asleep && frame % BreathFrames >= BreathFrames / 2
+        val head = offset(if (beat == Beat.Glance) 1 else 0, if (breathOut) 1 else 0)
         drawBody()
-        head.drawHead(earUp = mood == ProxyMoodUiModel.Watching && beat != Beat.EarDown)
-        drawCoat()
+        head.drawHead(
+            earUp = when (mood) {
+                ProxyMoodUiModel.Watching -> beat != Beat.EarDown
+                ProxyMoodUiModel.Asleep -> frame in EarTwitch
+                ProxyMoodUiModel.Glitched -> false
+            },
+        )
+        // before the coat (asleep: not the chosen one yet), an office shirt and tie
+        if (mood == ProxyMoodUiModel.Asleep) drawShirt() else drawCoat()
         when (mood) {
             ProxyMoodUiModel.Watching -> head.drawShades(
                 top = 10,
@@ -85,9 +104,9 @@ internal fun ProxyMascotPeek(
             )
 
             ProxyMoodUiModel.Asleep -> {
-                // shades pushed up on the forehead, eye closed
-                head.drawShades(top = 6, glint = FloconPixelPalette.Neon, glintDark = FloconPixelPalette.NeonDark)
+                // eye closed, no shades yet, a "z" floating up from the head
                 head.mirrored(21, 4, 3, 1, FloconPixelPalette.Ink)
+                drawSleepZ(frame)
             }
 
             ProxyMoodUiModel.Glitched -> {
@@ -121,6 +140,28 @@ private fun FloconPixelScope.drawHead(earUp: Boolean) {
     val earY = if (earUp) 0 else 2
     mirrored(15, earY, 3, 7, FloconPixelPalette.Ear)
     mirrored(15, earY + 5, 3, 2, FloconPixelPalette.Pink)
+}
+
+/** A white office shirt and a dark tie, between the chin and the paws. */
+private fun FloconPixelScope.drawShirt() {
+    pixels(3, 18, 12, 2, FloconPixelPalette.Shirt)
+    pixels(3, 18, 1, 2, FloconPixelPalette.ShirtShade)
+    pixels(14, 18, 1, 2, FloconPixelPalette.ShirtShade)
+    pixels(8, 17, 3, 1, FloconPixelPalette.Shirt)
+    pixels(9, 18, 1, 2, FloconPixelPalette.Ink)
+}
+
+/** A small "z" rising above the head over the loop, then the next one. */
+private fun FloconPixelScope.drawSleepZ(frame: Int) {
+    val step = (frame % BreathFrames) / 6 // 0..3: the z climbs
+    val x = 2 + step
+    val y = 3 - step
+    val color = if (step == 3) FloconPixelPalette.Sleep.copy(alpha = 0.5f) else FloconPixelPalette.Sleep
+    // 4 x 4, so that the diagonal reads as a "z"
+    pixels(x, y, 4, 1, color)
+    pixels(x + 2, y + 1, 1, 1, color)
+    pixels(x + 1, y + 2, 1, 1, color)
+    pixels(x, y + 3, 4, 1, color)
 }
 
 /** A long black coat with a raised collar, between the chin and the paws. */

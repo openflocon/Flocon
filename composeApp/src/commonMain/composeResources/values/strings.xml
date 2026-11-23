@@ -805,4 +805,5 @@
     <string name="proxy_once_hint">The certificate is installed once. Next time, only the Wi-Fi proxy is needed.</string>
     <string name="proxy_activate">Activate</string>
     <string name="proxy_disable">Disable</string>
+    <string name="proxy_wake_up">Wake up…</string>
 </resources>

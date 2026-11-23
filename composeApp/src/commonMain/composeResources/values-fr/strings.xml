@@ -615,4 +615,5 @@
     <string name="proxy_once_hint">Le certificat ne s'installe qu'une fois. La prochaine fois, seul le proxy Wi-Fi suffit.</string>
     <string name="proxy_activate">Activer</string>
     <string name="proxy_disable">Désactiver</string>
+    <string name="proxy_wake_up">Réveille-toi…</string>
 </resources>

@@ -63,6 +63,8 @@ object FloconPixelPalette {
     val Neon = Color(0xFF7CFFA0)
     val NeonDark = Color(0xFF1F8F48)
     val NeonHead = Color(0xFFE1FFE8)
+    val Shirt = Color(0xFFECEAF2)
+    val ShirtShade = Color(0xFFC9C6D4)
     val Sand = Color(0xFFF2C46D)
     val Glass = Color(0xFFCFE8F5)
     val Spark = Color(0xFFFFD34D)
