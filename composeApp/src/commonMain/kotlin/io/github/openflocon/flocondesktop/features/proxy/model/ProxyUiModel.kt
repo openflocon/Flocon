@@ -40,6 +40,8 @@ sealed interface ProxyStatusUiModel {
 @Immutable
 data class ProxyAddressUiModel(
     val ip: String,
+    /** The network interface of the computer it belongs to (en0, utun4…), if known. */
+    val interfaceName: String?,
     val proxyPort: String,
     /** Page to open on the phone to install the Flocon CA. */
     val caUrl: String,
@@ -58,7 +60,7 @@ fun previewProxyUiState(status: ProxyStatusUiModel = previewRunningProxyStatus()
 
 fun previewRunningProxyStatus() = ProxyStatusUiModel.Running(
     addresses = persistentListOf(
-        ProxyAddressUiModel(ip = "192.168.1.20", proxyPort = "8080", caUrl = "http://192.168.1.20:8081/"),
-        ProxyAddressUiModel(ip = "10.0.0.12", proxyPort = "8080", caUrl = "http://10.0.0.12:8081/"),
+        ProxyAddressUiModel(ip = "192.168.1.20", interfaceName = "en0", proxyPort = "8080", caUrl = "http://192.168.1.20:8081/"),
+        ProxyAddressUiModel(ip = "10.0.0.12", interfaceName = "utun4", proxyPort = "8080", caUrl = "http://10.0.0.12:8081/"),
     ),
 )

@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,12 +68,18 @@ import flocondesktop.composeapp.generated.resources.proxy_ios_step_install
 import flocondesktop.composeapp.generated.resources.proxy_ios_step_trust
 import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_1
 import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_2
+import flocondesktop.composeapp.generated.resources.proxy_network_hint
 import flocondesktop.composeapp.generated.resources.proxy_next
 import flocondesktop.composeapp.generated.resources.proxy_no_address
 import flocondesktop.composeapp.generated.resources.proxy_off_title
 import flocondesktop.composeapp.generated.resources.proxy_once_hint
 import flocondesktop.composeapp.generated.resources.proxy_persist_hint
-import flocondesktop.composeapp.generated.resources.proxy_pick_network
+import flocondesktop.composeapp.generated.resources.proxy_phone_auto_android
+import flocondesktop.composeapp.generated.resources.proxy_phone_auto_ios
+import flocondesktop.composeapp.generated.resources.proxy_phone_host_android
+import flocondesktop.composeapp.generated.resources.proxy_phone_off_android
+import flocondesktop.composeapp.generated.resources.proxy_phone_off_ios
+import flocondesktop.composeapp.generated.resources.proxy_phone_port_android
 import flocondesktop.composeapp.generated.resources.proxy_platform_android
 import flocondesktop.composeapp.generated.resources.proxy_platform_ios
 import flocondesktop.composeapp.generated.resources.proxy_port
@@ -97,6 +104,8 @@ import io.github.openflocon.flocondesktop.features.proxy.model.previewProxyUiSta
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconButton
 import io.github.openflocon.library.designsystem.components.FloconCircularProgressIndicator
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenu
+import io.github.openflocon.library.designsystem.components.FloconDropdownMenuItem
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconMascotDialog
@@ -110,9 +119,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private val DialogWidth = 720.dp
-private val ContentHeight = 260.dp
-private val WifiCardWidth = 260.dp
-private val SettingsRowHeight = 44.dp
+private val ContentHeight = 370.dp
+private val PhoneWidth = 220.dp
+private val PhoneHeight = 300.dp
+private val PhoneBorder = 4.dp
+private val PhoneShape = RoundedCornerShape(28.dp)
+private val PhoneNotchWidth = 44.dp
+private val PhoneNotchHeight = 5.dp
 private val QrSize = 176.dp
 private val LabelWidth = 56.dp
 private val StepNumberSize = 22.dp
@@ -538,21 +551,8 @@ private fun StepContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraLarge),
             ) {
-                // what the proxy settings of the phone look like once filled, at the place of the QR code of the next step
-                Column(
-                    modifier = Modifier.width(WifiCardWidth),
-                    verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-                ) {
-                    WifiSettingsCard(address = address)
-                    // the computer may be on several networks: the phone uses the one of its Wi-Fi
-                    if (addresses.size > 1) {
-                        NetworkPicker(
-                            addresses = addresses,
-                            selectedIp = address.ip,
-                            onSelect = { selectedIp = it },
-                        )
-                    }
-                }
+                // the proxy settings of the phone once filled, at the place of the QR code of the next step
+                PhoneProxyMockup(address = address, android = android)
                 Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)) {
                     StepHeading(text = stringResource(Res.string.proxy_wifi_heading))
                     val steps = if (android) {
@@ -562,6 +562,21 @@ private fun StepContent(
                     }
                     steps.forEachIndexed { index, text ->
                         NumberedStep(number = index + 1, text = stringResource(text))
+                    }
+                    Row(
+                        modifier = Modifier.padding(start = StepNumberSize + FloconTheme.spacing.small),
+                        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                    ) {
+                        CopyableChip(value = address.ip)
+                        CopyableChip(value = address.proxyPort)
+                    }
+                    // the computer may be on several networks: the phone uses the one of its Wi-Fi
+                    if (addresses.size > 1) {
+                        NetworkDropdown(
+                            addresses = addresses,
+                            selected = address,
+                            onSelect = { selectedIp = it.ip },
+                        )
                     }
                 }
             }
@@ -702,95 +717,233 @@ private fun FooterButton(
     }
 }
 
-/** The proxy settings of the phone, filled: Manual, the server and the port, each with a copy button. */
+/**
+ * A phone open on its proxy settings, filled: Manual checked, the server and the port highlighted.
+ * The labels follow the platform, so that the user finds the same words on the phone.
+ */
 @Composable
-private fun WifiSettingsCard(
+private fun PhoneProxyMockup(
     address: ProxyAddressUiModel,
+    android: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val colors = FloconTheme.colors
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .background(FloconTheme.colors.bg000, FloconTheme.shapes.large)
-            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.large),
+            .size(PhoneWidth, PhoneHeight)
+            .border(PhoneBorder, colors.lineStrong, PhoneShape)
+            .background(colors.bg000, PhoneShape)
+            .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.large),
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        SettingsRow(label = stringResource(Res.string.proxy_wifi_proxy_label), value = stringResource(Res.string.proxy_wifi_manual), copyable = false)
-        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colors.line))
-        SettingsRow(label = stringResource(Res.string.proxy_server), value = address.ip, copyable = true)
-        Box(Modifier.fillMaxWidth().height(1.dp).background(FloconTheme.colors.line))
-        SettingsRow(label = stringResource(Res.string.proxy_port), value = address.proxyPort, copyable = true)
+        Box(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .size(PhoneNotchWidth, PhoneNotchHeight)
+                .background(colors.line, CircleShape),
+        )
+        Text(
+            text = "‹ " + stringResource(Res.string.proxy_wifi_proxy_label),
+            style = FloconTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = colors.ink,
+        )
+        Column(modifier = Modifier.fillMaxWidth().background(colors.bg100, FloconTheme.shapes.medium)) {
+            PhoneOption(text = stringResource(if (android) Res.string.proxy_phone_off_android else Res.string.proxy_phone_off_ios), checked = false)
+            Box(Modifier.fillMaxWidth().height(1.dp).background(colors.line))
+            PhoneOption(text = stringResource(Res.string.proxy_wifi_manual), checked = true)
+            Box(Modifier.fillMaxWidth().height(1.dp).background(colors.line))
+            PhoneOption(text = stringResource(if (android) Res.string.proxy_phone_auto_android else Res.string.proxy_phone_auto_ios), checked = false)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colors.bg100, FloconTheme.shapes.medium)
+                .padding(FloconTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+        ) {
+            PhoneField(
+                label = stringResource(if (android) Res.string.proxy_phone_host_android else Res.string.proxy_server),
+                value = address.ip,
+            )
+            PhoneField(
+                label = stringResource(if (android) Res.string.proxy_phone_port_android else Res.string.proxy_port),
+                value = address.proxyPort,
+            )
+        }
     }
 }
 
 @Composable
-private fun SettingsRow(
-    label: String,
-    value: String,
-    copyable: Boolean,
+private fun PhoneOption(
+    text: String,
+    checked: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(SettingsRowHeight)
-            .padding(start = FloconTheme.spacing.medium, end = FloconTheme.spacing.extraSmall),
+            .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.compact),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = label,
+            text = text,
             style = FloconTheme.typography.bodySmall,
-            color = FloconTheme.colors.inkMuted,
+            color = if (checked) FloconTheme.colors.ink else FloconTheme.colors.inkMuted,
             modifier = Modifier.weight(1f),
         )
-        Text(
-            text = value,
-            style = if (copyable) FloconTheme.typography.monoMedium else FloconTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (copyable) FloconTheme.colors.ink else FloconTheme.colors.accent,
-            maxLines = 1,
-            modifier = Modifier.padding(end = if (copyable) 0.dp else FloconTheme.spacing.small),
-        )
-        if (copyable) CopyButton(value = value)
+        if (checked) {
+            FloconIcon(
+                imageVector = Icons.Outlined.Check,
+                tint = FloconTheme.colors.accent,
+                modifier = Modifier.size(StepCheckSize),
+            )
+        }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/** A field of the phone, its value highlighted: what the user types. */
 @Composable
-private fun NetworkPicker(
-    addresses: ImmutableList<ProxyAddressUiModel>,
-    selectedIp: String,
-    onSelect: (String) -> Unit,
+private fun PhoneField(
+    label: String,
+    value: String,
     modifier: Modifier = Modifier,
 ) {
-    // wraps: the computer may be on more networks than the column has room for
-    FlowRow(
-        modifier = modifier,
-        itemVerticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-    ) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.tiny)) {
         Text(
-            text = stringResource(Res.string.proxy_pick_network),
-            style = FloconTheme.typography.bodySmall,
+            text = label,
+            style = FloconTheme.typography.labelSmall,
             color = FloconTheme.colors.inkMuted,
         )
-        addresses.forEach { address ->
-            val selected = address.ip == selectedIp
-            val shape = FloconTheme.shapes.medium
+        Text(
+            text = value,
+            style = FloconTheme.typography.monoMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.accentInk,
+            maxLines = 1,
+            modifier = Modifier
+                .background(FloconTheme.colors.accent, FloconTheme.shapes.small)
+                .padding(horizontal = FloconTheme.spacing.compact, vertical = FloconTheme.spacing.tiny),
+        )
+    }
+}
+
+/** A value to type on the phone, in a chip with a button to copy it. */
+@Composable
+private fun CopyableChip(
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .background(FloconTheme.colors.bg000, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(start = FloconTheme.spacing.medium),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = value,
+            style = FloconTheme.typography.monoMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.ink,
+            maxLines = 1,
+        )
+        CopyButton(value = value)
+    }
+}
+
+/** The networks of the computer: the phone reaches it on the one of its Wi-Fi. */
+@Composable
+private fun NetworkDropdown(
+    addresses: ImmutableList<ProxyAddressUiModel>,
+    selected: ProxyAddressUiModel,
+    onSelect: (ProxyAddressUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+    ) {
+        StepText(text = stringResource(Res.string.proxy_network_hint))
+        FloconDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            onExpandRequest = { expanded = true },
+            anchorContent = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FloconTheme.shapes.medium)
+                        .background(FloconTheme.colors.bg000)
+                        .border(1.dp, if (expanded) FloconTheme.colors.accent else FloconTheme.colors.line, FloconTheme.shapes.medium)
+                        .clickable { expanded = !expanded }
+                        .pointerHoverIcon(PointerIcon.Hand)
+                        .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.small),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+                ) {
+                    Box(Modifier.size(StatusDotSize).background(FloconTheme.colors.accent, CircleShape))
+                    NetworkLabel(address = selected, modifier = Modifier.weight(1f))
+                    FloconIcon(
+                        imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                        tint = FloconTheme.colors.inkMuted,
+                    )
+                }
+            },
+        ) {
+            addresses.forEach { address ->
+                FloconDropdownMenuItem(
+                    text = address.ip,
+                    onClick = {
+                        onSelect(address)
+                        expanded = false
+                    },
+                    leadingContent = {
+                        Box(Modifier.size(StepCheckSize)) {
+                            if (address.ip == selected.ip) {
+                                FloconIcon(imageVector = Icons.Outlined.Check, tint = FloconTheme.colors.accent)
+                            }
+                        }
+                    },
+                    secondaryAction = address.interfaceName?.let { name ->
+                        {
+                            Text(
+                                text = name,
+                                style = FloconTheme.typography.bodySmall,
+                                color = FloconTheme.colors.inkMuted,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NetworkLabel(
+    address: ProxyAddressUiModel,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
+    ) {
+        Text(
+            text = address.ip,
+            style = FloconTheme.typography.monoMedium,
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.ink,
+            maxLines = 1,
+        )
+        address.interfaceName?.let {
             Text(
-                text = address.ip,
-                style = FloconTheme.typography.monoMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = FloconTheme.colors.ink,
+                text = it,
+                style = FloconTheme.typography.bodySmall,
+                color = FloconTheme.colors.inkMuted,
                 maxLines = 1,
-                softWrap = false,
-                modifier = Modifier
-                    .clip(shape)
-                    .background(if (selected) FloconTheme.colors.accentSoft else FloconTheme.colors.bg000)
-                    .border(1.dp, if (selected) FloconTheme.colors.accent.copy(alpha = 0.4f) else FloconTheme.colors.line, shape)
-                    .clickable { onSelect(address.ip) }
-                    .pointerHoverIcon(PointerIcon.Hand)
-                    .padding(horizontal = FloconTheme.spacing.medium, vertical = FloconTheme.spacing.extraSmall),
             )
         }
     }

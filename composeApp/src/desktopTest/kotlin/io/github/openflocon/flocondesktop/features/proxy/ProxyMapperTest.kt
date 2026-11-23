@@ -22,12 +22,17 @@ class ProxyMapperTest {
     }
 
     @Test
-    fun `running gives one address per ip with its ca page`() {
-        val status = mapToProxyUiState(true, ProxyStateDomainModel.Running(8080, 8081, listOf("192.168.1.12", "10.0.0.2")), mascotEnabled = true).status
+    fun `running gives one address per reachable ip with its interface and ca page`() {
+        val status = mapToProxyUiState(
+            enabled = true,
+            state = ProxyStateDomainModel.Running(8080, 8081, listOf("192.168.1.12", "10.0.0.2", "169.254.10.1")),
+            mascotEnabled = true,
+            interfaceNames = mapOf("192.168.1.12" to "en0"),
+        ).status
         assertEquals(
             listOf(
-                ProxyAddressUiModel("192.168.1.12", "8080", "http://192.168.1.12:8081/"),
-                ProxyAddressUiModel("10.0.0.2", "8080", "http://10.0.0.2:8081/"),
+                ProxyAddressUiModel("192.168.1.12", "en0", "8080", "http://192.168.1.12:8081/"),
+                ProxyAddressUiModel("10.0.0.2", null, "8080", "http://10.0.0.2:8081/"),
             ),
             (status as ProxyStatusUiModel.Running).addresses,
         )

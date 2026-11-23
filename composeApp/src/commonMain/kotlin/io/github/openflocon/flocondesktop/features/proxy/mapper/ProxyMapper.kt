@@ -11,8 +11,9 @@ internal fun mapToProxyUiState(
     enabled: Boolean,
     state: ProxyStateDomainModel,
     mascotEnabled: Boolean,
+    interfaceNames: Map<String, String> = emptyMap(),
 ): ProxyUiState {
-    val status = proxyStatus(enabled, state)
+    val status = proxyStatus(enabled, state, interfaceNames)
     return ProxyUiState(
         enabled = enabled,
         status = status,
@@ -25,7 +26,11 @@ internal fun mapToProxyUiState(
     )
 }
 
-private fun proxyStatus(enabled: Boolean, state: ProxyStateDomainModel): ProxyStatusUiModel = if (!enabled) {
+private fun proxyStatus(
+    enabled: Boolean,
+    state: ProxyStateDomainModel,
+    interfaceNames: Map<String, String>,
+): ProxyStatusUiModel = if (!enabled) {
     ProxyStatusUiModel.Off
 } else {
     when (state) {
@@ -40,11 +45,15 @@ private fun proxyStatus(enabled: Boolean, state: ProxyStateDomainModel): ProxySt
 
         is ProxyStateDomainModel.Running -> ProxyStatusUiModel.Running(
             addresses = state.ips
+                // link-local addresses (169.254.x.x, a USB or Thunderbolt link) are not reachable from a phone on Wi-Fi
+                .filterNot { it.startsWith(LINK_LOCAL_PREFIX) }
                 .map { ip ->
                     // the CA page is plain http: the phone does not trust the Flocon CA yet
-                    ProxyAddressUiModel(ip = ip, proxyPort = state.proxyPort.toString(), caUrl = "http://$ip:${state.caPort}/")
+                    ProxyAddressUiModel(ip = ip, interfaceName = interfaceNames[ip], proxyPort = state.proxyPort.toString(), caUrl = "http://$ip:${state.caPort}/")
                 }
                 .toImmutableList(),
         )
     }
 }
+
+private const val LINK_LOCAL_PREFIX = "169.254."

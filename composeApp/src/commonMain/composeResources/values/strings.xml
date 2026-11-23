@@ -784,7 +784,6 @@
     <string name="proxy_binary_not_found">The proxy is not included in this build of Flocon. Use the installer (dmg, msi, deb) rather than the jar, or build it from proxy/ in development.</string>
     <string name="proxy_failed">The proxy could not start: %1$s</string>
     <string name="proxy_no_address">No local network address found. Check that this computer is connected to a network.</string>
-    <string name="proxy_pick_network">Network of the phone</string>
     <string name="proxy_server">Server</string>
     <string name="proxy_port">Port</string>
     <string name="proxy_copy">Copy</string>
@@ -818,7 +817,14 @@
     <string name="proxy_android_wifi_2">Advanced options › Proxy: Manual.</string>
     <string name="proxy_ios_wifi_1">Settings › Wi-Fi › ⓘ next to your network.</string>
     <string name="proxy_ios_wifi_2">Configure Proxy › Manual.</string>
-    <string name="proxy_wifi_3">Type the server and the port shown here, then save.</string>
     <string name="proxy_wifi_proxy_label">Proxy</string>
     <string name="proxy_wifi_manual">Manual</string>
+    <string name="proxy_wifi_3">Type what is highlighted in yellow, then save:</string>
+    <string name="proxy_phone_off_android">None</string>
+    <string name="proxy_phone_off_ios">Off</string>
+    <string name="proxy_phone_auto_android">Proxy Auto-Config</string>
+    <string name="proxy_phone_auto_ios">Automatic</string>
+    <string name="proxy_phone_host_android">Proxy hostname</string>
+    <string name="proxy_phone_port_android">Proxy port</string>
+    <string name="proxy_network_hint">Your computer is on several networks: pick the one of the phone’s Wi-Fi.</string>
 </resources>
