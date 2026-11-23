@@ -5,6 +5,9 @@ import io.github.openflocon.domain.proxy.models.ProxyStateDomainModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +17,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
@@ -23,12 +27,14 @@ import java.util.concurrent.TimeUnit
  * else with the standalone binary downloaded once from the release (see [ProxyRuntime]).
  *
  * The proxy connects back to the Flocon websocket like any SDK, so the calls it sees
- * land in the Network screen, one device per phone using the proxy.
+ * land in the Network screen, under the Android phone adb finds for them ([ProxyDeviceLinker]),
+ * else one "Proxy <ip>" device per phone.
  */
 class ProxyManager(
     private val dataDir: File,
     private val appVersion: String,
     private val scope: CoroutineScope,
+    private val deviceLinker: ProxyDeviceLinker,
 ) {
     private val _state = MutableStateFlow<ProxyStateDomainModel>(ProxyStateDomainModel.Stopped)
     val state: StateFlow<ProxyStateDomainModel> = _state.asStateFlow()
@@ -119,15 +125,41 @@ class ProxyManager(
             return null
         }
 
-        p.inputStream.bufferedReader().useLines { lines ->
-            lines.forEach { line ->
-                when (val event = parseProxyEvent(line)) {
-                    is ProxyEvent.Ready -> _state.value = ProxyStateDomainModel.Running(event.proxyPort, event.caPort, event.ips)
-                    is ProxyEvent.Error -> _state.value = ProxyStateDomainModel.Failed(event.message)
-                    is ProxyEvent.TlsError -> Logger.w { "flocon-proxy TLS error on ${event.host}: ${event.reason}" }
-                    null -> Unit
+        val stdin = p.outputStream.bufferedWriter()
+        val refreshRequests = Channel<Unit>(Channel.CONFLATED)
+        var linkJob: Job? = null
+        try {
+            p.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    when (val event = parseProxyEvent(line)) {
+                        is ProxyEvent.Ready -> {
+                            _state.value = ProxyStateDomainModel.Running(event.proxyPort, event.caPort, event.ips)
+                            linkJob?.cancel()
+                            linkJob = scope.launch(Dispatchers.IO) {
+                                deviceLinker.run(event.proxyPort, event.caPort, refreshRequests) { command ->
+                                    // the process may be dead already: it is restarted, the command is sent again then
+                                    runCatching {
+                                        stdin.write(command)
+                                        stdin.newLine()
+                                        stdin.flush()
+                                    }
+                                }
+                            }
+                        }
+
+                        is ProxyEvent.Error -> _state.value = ProxyStateDomainModel.Failed(event.message)
+
+                        is ProxyEvent.TlsError -> Logger.w { "flocon-proxy TLS error on ${event.host}: ${event.reason}" }
+
+                        is ProxyEvent.Client -> refreshRequests.trySend(Unit)
+
+                        null -> Unit
+                    }
                 }
             }
+        } finally {
+            // removes the `adb reverse` of the phones, also when the proxy is stopped
+            withContext(NonCancellable) { linkJob?.cancelAndJoin() }
         }
         return p.waitFor()
     }

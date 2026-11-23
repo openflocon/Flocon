@@ -27,7 +27,14 @@ The in-app SDK stays the recommended mode: it knows which app made the call, lin
 
 The iOS Simulator uses the network of the Mac: set the proxy in the macOS network settings instead.
 
-Each phone appears as a device named `Proxy <phone IP>`, in its own **Proxy** group of the device selector, with a router icon: it is kept apart from the devices that use the SDK.
+### Android phone plugged with adb
+
+When adb sees the phone (USB, or adb over Wi-Fi), Flocon sets up `adb reverse` for it: set the Wi-Fi proxy of the phone to `127.0.0.1` and the proxy port. This also works when the phone is not on the network of your computer.
+
+## Where the calls show up
+
+- **Android phone seen by adb** (plugged with `adb reverse`, or on the Wi-Fi): its calls show up under the phone itself, as a **Proxy** app. With an app using the SDK on it, it is the same device: pick the app of the SDK or **Proxy** in the device selector. Without the SDK, the device is named after the phone (`samsung SM-S911B`).
+- **Other phones** (iPhone, Android without adb): a device named `Proxy <phone IP>`, in its own **Proxy** group of the device selector, with a router icon.
 
 ## Limits
 

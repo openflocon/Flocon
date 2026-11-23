@@ -24,6 +24,12 @@ class ProxyEventTest {
     }
 
     @Test
+    fun `parses the client event`() {
+        assertEquals(ProxyEvent.Client("192.168.1.12"), parseProxyEvent("""{"event":"client","ip":"192.168.1.12"}"""))
+        assertNull(parseProxyEvent("""{"event":"client"}"""))
+    }
+
+    @Test
     fun `parses error and tls-error events`() {
         assertEquals(ProxyEvent.Error("port in use"), parseProxyEvent("""{"event":"error","message":"port in use"}"""))
         assertEquals(

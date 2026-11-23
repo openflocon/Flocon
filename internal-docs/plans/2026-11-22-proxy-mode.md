@@ -13,7 +13,7 @@ The in-app SDK stays the main mode. The proxy is a complement: it has no app con
 1. **The proxy is a separate TypeScript program, not Kotlin code.** It is built on [mockttp](https://github.com/httptoolkit/mockttp) (HTTP Toolkit): CA generation, MITM, HTTP/2 and WebSockets are already done. Picked over mitmproxy (Python, heavier) and a Netty + BouncyCastle MITM in Kotlin (weeks of work).
 2. **It runs with the Node.js of the computer; without Node, Flocon downloads a standalone binary.** The installers only ship a ~5 MB JS bundle (they grow by ~2 MB, against ~100 MB per platform for an embedded binary). Most developers have Node. *(First version embedded the Bun-compiled binary in every installer; changed after review.)*
 3. **The proxy talks the regular Flocon protocol.** It connects to the desktop websocket like any SDK (`bonjour`, then `network` messages), so the whole desktop pipeline (domain, data, Room, Network screen, MCP) works unchanged. No new protocol plugin, no `Protocol.kt` change.
-4. **One "device" per phone, kept apart from SDK devices.** Proxy traffic is **not** merged into the device that runs the SDK (matching by IP breaks on the simulator and with `adb reverse`, and merging would show every call twice). Each phone is `Proxy <IP>`, in its own **PROXY** group of the device selector, with a router icon.
+4. **Android phones seen by adb are linked to their real device; the others are `Proxy <IP>`.** *(Changed after review, iOS left aside.)* `ProxyDeviceLinker` finds the phone with adb: by its own proxy port for `adb reverse` (every phone comes from 127.0.0.1, so each serial gets `adb -s <serial> reverse tcp:<proxy port> tcp:<its port>`), by its Wi-Fi IP otherwise (`ip -4 -o addr show`, or the serial of adb over Wi-Fi). The calls go under the device of its SDK app when Flocon knows its serial, as a separate **Proxy** app (`flocon.proxy`), so they are not shown twice. Without the SDK: `android-<ro.serialno>`, named `<manufacturer> <model>`. Anything else (iPhone, simulator, phone without adb) stays `Proxy <IP>` in the **PROXY** group.
 5. **The setup steps live in the desktop dialog**, not on the phone: the phone only opens the certificate page for a few seconds.
 
 ## How it works
@@ -39,11 +39,11 @@ See `internal-docs/protocol/README.md` § "Proxy client" and `internal-docs/prot
 
 | Envelope field | Value |
 |---|---|
-| `deviceId` | `proxy-<phone IP>` (IP from mockttp `remoteIpAddress`, `::ffff:` stripped) |
+| `deviceId` | the linked device (see decision 4), else `proxy-<phone IP>` (IP from mockttp `remoteIpAddress`, `::ffff:` stripped) |
 | `deviceName` | `Proxy <phone IP>` |
 | `appName` / `appPackageName` | `Proxy` / `flocon.proxy` |
 | `appInstance` | start time of the proxy process |
-| `platform` | `proxy`. Not `android` or `ios`, so the platform features (screenshots, adb…) stay off |
+| `platform` | the linked device's, else `proxy`: not `android` or `ios`, so the platform features (screenshots, adb…) stay off |
 | `bonjour` body | `{"plugins":["network"],"connectionType":"wifi","sdk":"proxy"}`. Keep `wifi`: with `default`, `supportsAdb()` would be true |
 
 - `bonjour` is sent once per phone IP and per websocket session, before that phone's first message.
@@ -61,6 +61,11 @@ stdout, one JSON object per line (`parseProxyEvent`):
 - `{"event":"ready","proxyPort":8080,"caPort":8081,"ips":["192.168.1.12"]}`
 - `{"event":"error","message":"…"}`
 - `{"event":"tls-error","host":"api.example.com","reason":"cert-rejected"}`: the CA is not trusted on the phone, or the app pins its certificates. Only logged today.
+- `{"event":"client","ip":"192.168.1.12"}`: a phone not linked to a device used the proxy (once per IP and per `devices` command): `ProxyDeviceLinker` refreshes at once instead of at its next round (every 5 s).
+
+stdin, one JSON object per line, from `ProxyDeviceLinker` (sent again when it changes, and after every `ready`):
+- `{"cmd":"devices","ips":{"<ip>":<device>},"ports":{"<port>":<device>}}`, `<device>` = `{"deviceId","deviceName","platform","connectionType"?}`. Each command replaces the previous one. The proxy starts one more mockttp per port in `ports` (and stops the ones gone): their calls go to that device, the calls of the main port go by IP. The device of a call is picked when its request starts. `connectionType` left out: the `bonjour` has none, so the SDK's is kept.
+- The `adb reverse` of the proxy and CA ports are removed when the proxy stops; an unplugged phone gets them again when it comes back.
 
 stderr goes to `~/.flocon/flocon-proxy.log`. The proxy stops on SIGTERM/SIGINT and when its stdin closes (Flocon died). The CA (`flocon-ca.key` / `flocon-ca.pem`) is kept in `~/.flocon/proxy-ca/`, so a phone installs it once. `ProxyManager` restarts a crashed proxy with a backoff (1 s → 30 s), never runs two processes (a mutex around start/stop), and kills it when Flocon quits.
 
@@ -121,7 +126,8 @@ Follow the repo rules: layering in `.claude/rules/desktop-app.md`, UI in `.claud
 
 - [ ] **Test the download path for real**: needs a published release (or pre-release) with the assets, then a computer without Node. Draft assets are not reachable at `releases/download/…`. In dev the version is `2.0.0`, which has no assets: without Node the dialog shows the download error.
 - [ ] **Test on an iPhone** (profile install, Certificate Trust Settings, calls captured).
-- [ ] **USB mode in the dialog**: when an Android phone is plugged in, set up `adb reverse` for the proxy and CA ports and tell the user to use `127.0.0.1:8080` (works when the phone is not on the computer's network). Could also `adb push` the CA to Downloads and open the Security settings (`am start -a android.settings.SECURITY_SETTINGS`), leaving only "Install a certificate › CA certificate".
+- [x] `adb reverse` of the proxy and CA ports for each plugged Android phone (`ProxyDeviceLinker`).
+- [ ] **USB mode in the dialog**: tell the user to use `127.0.0.1:<proxy port>` when an Android phone is plugged in. Could also `adb push` the CA to Downloads and open the Security settings (`am start -a android.settings.SECURITY_SETTINGS`), leaving only "Install a certificate › CA certificate".
 - [ ] **Show the hosts that refuse the CA** (`tls-error` events) in the dialog: "these apps pin their certificates or don't trust user CAs".
 - [ ] **Merge FloconKotlin#6** (sample trusts user CAs in debug).
 - [ ] **Docs**: screenshots of the dialog in `docs/proxy.md` (`flocon-mock-mode` skill); mention the USB mode once it exists.

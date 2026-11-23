@@ -9,9 +9,20 @@
 //
 // stdout: one JSON object per line, read by ProxyManager in Flocon Desktop:
 //   {"event":"ready","proxyPort":8080,"caPort":8081,"ips":["192.168.1.12"]}
+//   {"event":"client","ip":"192.168.1.12"}   a phone not linked to a device yet used the proxy
 //   {"event":"error","message":"..."}
+//
+// stdin: one JSON object per line, sent by Flocon Desktop to link the proxy traffic to the real device
+// (the Android phone found with adb) instead of a "Proxy <ip>" device:
+//   {"cmd":"devices","ips":{"192.168.1.12":<device>},"ports":{"18100":<device>}}
+//   <device> = {"deviceId":"…","deviceName":"…","platform":"android","connectionType":"wifi"}
+// connectionType is left out for a device of the SDK: its own connection type is kept (adb stays on).
+// "ips": the Wi-Fi addresses of the phones. "ports": one extra proxy port per phone plugged with
+// `adb reverse` (all of them reach the proxy from 127.0.0.1, only the port tells them apart).
+// Each command replaces the previous one. When stdin closes (Flocon died), the proxy stops.
 
 import * as mockttp from "mockttp";
+import { createInterface } from "node:readline";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createServer, type IncomingMessage } from "node:http";
@@ -85,25 +96,66 @@ function sendRaw(s: string) {
   }
 }
 
-/** Sends a Flocon envelope on behalf of the phone at `ip`. */
-function sendToFlocon(ip: string, plugin: string, method: string, body: unknown) {
+// ---------- Devices: who used the proxy ----------
+/** The device a call is shown under in Flocon Desktop. */
+// connectionType: sent in the bonjour, null to keep the one of the SDK on the same device
+type Device = { deviceId: string; deviceName: string; platform: string; connectionType: string | null };
+
+// filled by the "devices" command of Flocon Desktop
+let deviceByIp = new Map<string, Device>();
+let deviceByPort = new Map<number, Device>();
+const reportedIps = new Set<string>();
+
+/** A phone Flocon Desktop does not know: one "Proxy <ip>" device per IP address. */
+function unlinkedDevice(ip: string): Device {
+  // "wifi": the adb features stay off for it
+  return { deviceId: `proxy-${ip}`, deviceName: `Proxy ${ip}`, platform: "proxy", connectionType: "wifi" };
+}
+
+/** The device of a call: by the proxy port for `adb reverse` phones, else by the IP of the phone. */
+function deviceOf(ip: string, port: number | null): Device {
+  const linked = (port !== null ? deviceByPort.get(port) : undefined) ?? deviceByIp.get(ip);
+  if (linked) return linked;
+  if (!reportedIps.has(ip)) {
+    reportedIps.add(ip);
+    emit({ event: "client", ip }); // Flocon Desktop looks for this phone now, not at its next refresh
+  }
+  return unlinkedDevice(ip);
+}
+
+function parseDevices(value: unknown): Map<string, Device> {
+  const out = new Map<string, Device>();
+  if (!value || typeof value !== "object") return out;
+  for (const [key, d] of Object.entries(value as Record<string, any>)) {
+    if (typeof d?.deviceId === "string" && typeof d?.deviceName === "string" && typeof d?.platform === "string") {
+      const connectionType = typeof d.connectionType === "string" ? d.connectionType : null;
+      out.set(key, { deviceId: d.deviceId, deviceName: d.deviceName, platform: d.platform, connectionType });
+    }
+  }
+  return out;
+}
+
+/** Sends a Flocon envelope on behalf of `device`. */
+function sendToFlocon(device: Device, plugin: string, method: string, body: unknown) {
   const envelope = (p: string, m: string, b: unknown) =>
     JSON.stringify({
-      deviceId: `proxy-${ip}`,
-      deviceName: `Proxy ${ip}`,
+      deviceId: device.deviceId,
+      deviceName: device.deviceName,
       appName: "Proxy",
       appPackageName: "flocon.proxy",
       appInstance: APP_INSTANCE,
-      platform: "proxy",
+      platform: device.platform,
       versionName: VERSION,
       plugin: p,
       method: m,
       body: JSON.stringify(b),
     });
 
-  if (!greetedDevices.has(ip) && ws?.readyState === WebSocket.OPEN) {
-    greetedDevices.add(ip);
-    sendRaw(envelope("bonjour", "bonjour", { plugins: ["network"], connectionType: "wifi", sdk: "proxy" }));
+  if (!greetedDevices.has(device.deviceId) && ws?.readyState === WebSocket.OPEN) {
+    greetedDevices.add(device.deviceId);
+    // no connection type: the one sent by the SDK of the same phone is kept
+    const connection = device.connectionType ? { connectionType: device.connectionType } : {};
+    sendRaw(envelope("bonjour", "bonjour", { plugins: ["network"], ...connection, sdk: "proxy" }));
   }
   sendRaw(envelope(plugin, method, body));
 }
@@ -289,12 +341,14 @@ function startCAServer(certPem: string) {
   }).listen(CA_PORT, "0.0.0.0");
 }
 
-// ---------- Main ----------
-async function main() {
-  const ca = await loadOrCreateCA();
-  connectFlocon();
-  startCAServer(ca.cert);
+// ---------- Proxy servers ----------
+type CA = { key: string; cert: string };
 
+/**
+ * Starts one mockttp proxy on `port`. `extraPort` is true for the ports of the `adb reverse` phones:
+ * their calls are linked to a device by this port, the others by the IP of the phone.
+ */
+async function startProxyServer(ca: CA, port: number, extraPort: boolean): Promise<mockttp.Mockttp> {
   // Connections to this computer are not intercepted: they are the Flocon SDK talking to Flocon Desktop
   // (whose self-signed certificate the proxy would refuse), and they are not the traffic of the app anyway.
   const thisComputer = ["localhost", "127.0.0.1", ...localIPv4s()].map((hostname) => ({ hostname }));
@@ -302,15 +356,24 @@ async function main() {
   await proxy.forAnyRequest().thenPassThrough();
   await proxy.forAnyWebSocket().thenPassThrough();
 
-  const ipByRequest = new Map<string, string>();
+  // the device is picked when the request starts: its response goes to the same device
+  const deviceByRequest = new Map<string, Device>();
   const startByRequest = new Map<string, number>();
+  const deviceOfRequest = (ip: string | undefined) => deviceOf(clientIp(ip), extraPort ? port : null);
+  const done = (id: string) => {
+    const device = deviceByRequest.get(id);
+    const start = startByRequest.get(id);
+    deviceByRequest.delete(id);
+    startByRequest.delete(id);
+    return { device, start };
+  };
 
   await proxy.on("request", async (req) => {
-    const ip = clientIp(req.remoteIpAddress);
-    ipByRequest.set(req.id, ip);
+    const device = deviceOfRequest(req.remoteIpAddress);
+    deviceByRequest.set(req.id, device);
     startByRequest.set(req.id, req.timingEvents.startTime);
     const body = await readBody(req.body);
-    sendToFlocon(ip, "network", "log_network_call_request", {
+    sendToFlocon(device, "network", "log_network_call_request", {
       floconCallId: req.id,
       floconNetworkType: "http",
       isMocked: false,
@@ -324,15 +387,12 @@ async function main() {
   });
 
   await proxy.on("response", async (res) => {
-    const ip = ipByRequest.get(res.id) ?? "unknown";
-    const start = startByRequest.get(res.id);
-    ipByRequest.delete(res.id);
-    startByRequest.delete(res.id);
+    const { device, start } = done(res.id);
     const headers = flatHeaders(res.headers);
     const contentType = headers["content-type"] ?? null;
     const isImage = !!contentType?.startsWith("image/");
     const body = isImage ? { text: null, size: await bodySize(res.body) } : await readBody(res.body);
-    sendToFlocon(ip, "network", "log_network_call_response", {
+    sendToFlocon(device ?? unlinkedDevice("unknown"), "network", "log_network_call_response", {
       floconCallId: res.id,
       floconNetworkType: "http",
       isMocked: false,
@@ -347,11 +407,8 @@ async function main() {
   });
 
   await proxy.on("abort", (req) => {
-    const ip = ipByRequest.get(req.id) ?? clientIp(req.remoteIpAddress);
-    const start = startByRequest.get(req.id);
-    ipByRequest.delete(req.id);
-    startByRequest.delete(req.id);
-    sendToFlocon(ip, "network", "log_network_call_response", {
+    const { device, start } = done(req.id);
+    sendToFlocon(device ?? deviceOfRequest(req.remoteIpAddress), "network", "log_network_call_response", {
       floconCallId: req.id,
       floconNetworkType: "http",
       isMocked: false,
@@ -367,18 +424,68 @@ async function main() {
     emit({ event: "tls-error", host: e.tlsMetadata?.sniHostname ?? null, reason: e.failureCause });
   });
 
-  await proxy.start(PROXY_PORT);
+  await proxy.start(port);
+  return proxy;
+}
+
+// one proxy per `adb reverse` phone, started and stopped by the "devices" commands
+const extraProxies = new Map<number, Promise<mockttp.Mockttp | null>>();
+
+function syncExtraProxies(ca: CA, ports: number[]) {
+  for (const [port, proxy] of extraProxies) {
+    if (ports.includes(port)) continue;
+    extraProxies.delete(port);
+    proxy.then((p) => p?.stop()).catch(() => {});
+  }
+  for (const port of ports) {
+    if (extraProxies.has(port)) continue;
+    extraProxies.set(
+      port,
+      startProxyServer(ca, port, true).catch((e) => {
+        console.error(`cannot listen on ${port}`, e);
+        extraProxies.delete(port);
+        return null;
+      }),
+    );
+  }
+}
+
+function onCommand(ca: CA, line: string) {
+  let command: any;
+  try {
+    command = JSON.parse(line);
+  } catch {
+    return;
+  }
+  if (command?.cmd !== "devices") return;
+  deviceByIp = parseDevices(command.ips);
+  const byPort = parseDevices(command.ports);
+  deviceByPort = new Map([...byPort].map(([port, device]) => [Number(port), device]));
+  reportedIps.clear(); // a phone still unknown is reported again
+  syncExtraProxies(ca, [...deviceByPort.keys()].filter((port) => Number.isInteger(port) && port > 0));
+}
+
+// ---------- Main ----------
+async function main() {
+  const ca = await loadOrCreateCA();
+  connectFlocon();
+  startCAServer(ca.cert);
+
+  const proxy = await startProxyServer(ca, PROXY_PORT, false);
   emit({ event: "ready", proxyPort: proxy.port, caPort: CA_PORT, ips: localIPv4s() });
 
   const stop = async () => {
-    await proxy.stop().catch(() => {});
+    await Promise.all(
+      [Promise.resolve(proxy), ...extraProxies.values()].map((p) => p.then((it) => it?.stop()).catch(() => {})),
+    );
     process.exit(0);
   };
   process.on("SIGTERM", stop);
   process.on("SIGINT", stop);
-  // If Flocon dies without killing us, our stdin closes: stop too.
-  process.stdin.on("end", stop);
-  process.stdin.resume();
+  // Commands of Flocon Desktop. If Flocon dies without killing us, our stdin closes: stop too.
+  createInterface({ input: process.stdin })
+    .on("line", (line) => onCommand(ca, line))
+    .on("close", stop);
 }
 
 // One bad request must not stop the capture of the others: log it and keep running.

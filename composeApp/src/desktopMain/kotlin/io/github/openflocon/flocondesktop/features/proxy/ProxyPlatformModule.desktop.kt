@@ -16,8 +16,10 @@ actual val proxyPlatformModule: Module = module {
             // the binary downloaded without Node comes from the release of this version
             appVersion = BuildConfig.APP_VERSION,
             scope = get(),
+            deviceLinker = get(),
         )
     }
+    singleOf(::ProxyDeviceLinker)
     singleOf(::ProxyRepositoryImpl) {
         bind<ProxyRepository>()
     }

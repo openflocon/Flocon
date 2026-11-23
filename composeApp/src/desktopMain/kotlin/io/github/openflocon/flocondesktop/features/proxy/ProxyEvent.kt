@@ -13,6 +13,9 @@ internal sealed interface ProxyEvent {
     data class Ready(val proxyPort: Int, val caPort: Int, val ips: List<String>) : ProxyEvent
     data class Error(val message: String) : ProxyEvent
     data class TlsError(val host: String?, val reason: String?) : ProxyEvent
+
+    /** A phone the proxy cannot link to a device used it. */
+    data class Client(val ip: String) : ProxyEvent
 }
 
 internal fun parseProxyEvent(line: String): ProxyEvent? {
@@ -30,6 +33,8 @@ internal fun parseProxyEvent(line: String): ProxyEvent? {
         "error" -> ProxyEvent.Error(obj.string("message") ?: "Unknown error")
 
         "tls-error" -> ProxyEvent.TlsError(obj.string("host"), obj.string("reason"))
+
+        "client" -> obj.string("ip")?.let(ProxyEvent::Client)
 
         else -> null
     }
