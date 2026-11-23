@@ -48,9 +48,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.proxy_activate
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_1
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_2
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_2a
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_2b
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_2c
+import flocondesktop.composeapp.generated.resources.proxy_android_cert_hint
 import flocondesktop.composeapp.generated.resources.proxy_android_step_app
-import flocondesktop.composeapp.generated.resources.proxy_android_step_download
-import flocondesktop.composeapp.generated.resources.proxy_android_step_install
 import flocondesktop.composeapp.generated.resources.proxy_android_wifi_1
 import flocondesktop.composeapp.generated.resources.proxy_android_wifi_2
 import flocondesktop.composeapp.generated.resources.proxy_app_heading
@@ -64,10 +68,14 @@ import flocondesktop.composeapp.generated.resources.proxy_done
 import flocondesktop.composeapp.generated.resources.proxy_experimental
 import flocondesktop.composeapp.generated.resources.proxy_failed
 import flocondesktop.composeapp.generated.resources.proxy_intro
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_1
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_2
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_2a
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_2b
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_3
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_3a
+import flocondesktop.composeapp.generated.resources.proxy_ios_cert_3b
 import flocondesktop.composeapp.generated.resources.proxy_ios_step_app
-import flocondesktop.composeapp.generated.resources.proxy_ios_step_download
-import flocondesktop.composeapp.generated.resources.proxy_ios_step_install
-import flocondesktop.composeapp.generated.resources.proxy_ios_step_trust
 import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_1
 import flocondesktop.composeapp.generated.resources.proxy_ios_wifi_2
 import flocondesktop.composeapp.generated.resources.proxy_network_hint
@@ -116,6 +124,7 @@ import io.github.openflocon.library.designsystem.components.FloconPixelPalette
 import io.github.openflocon.library.designsystem.components.FloconSegmentedTextToggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -131,7 +140,6 @@ private val PhoneShape = RoundedCornerShape(28.dp)
 private val PhoneNotchWidth = 44.dp
 private val PhoneNotchHeight = 5.dp
 private val QrSize = 176.dp
-private val LabelWidth = 56.dp
 private val StepNumberSize = 22.dp
 private val StepCheckSize = 14.dp
 private val StepperLineWidth = 24.dp
@@ -599,15 +607,32 @@ private fun StepContent(
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.medium)) {
                     StepHeading(text = stringResource(Res.string.proxy_certificate_heading))
+                    // the long paths of the settings, cut into short sub-steps
                     val steps = if (android) {
-                        listOf(Res.string.proxy_android_step_download, Res.string.proxy_android_step_install)
+                        listOf(
+                            Res.string.proxy_android_cert_1 to emptyList(),
+                            Res.string.proxy_android_cert_2 to listOf(
+                                Res.string.proxy_android_cert_2a,
+                                Res.string.proxy_android_cert_2b,
+                                Res.string.proxy_android_cert_2c,
+                            ),
+                        )
                     } else {
-                        listOf(Res.string.proxy_ios_step_download, Res.string.proxy_ios_step_install, Res.string.proxy_ios_step_trust)
+                        listOf(
+                            Res.string.proxy_ios_cert_1 to emptyList(),
+                            Res.string.proxy_ios_cert_2 to listOf(Res.string.proxy_ios_cert_2a, Res.string.proxy_ios_cert_2b),
+                            Res.string.proxy_ios_cert_3 to listOf(Res.string.proxy_ios_cert_3a, Res.string.proxy_ios_cert_3b),
+                        )
                     }
-                    steps.forEachIndexed { index, text ->
-                        NumberedStep(number = index + 1, text = stringResource(text))
+                    steps.forEachIndexed { index, (text, subSteps) ->
+                        NumberedStep(
+                            number = index + 1,
+                            text = stringResource(text),
+                            subSteps = subSteps.map { stringResource(it) }.toImmutableList(),
+                        )
                     }
-                    CopyableValue(label = null, value = address.caUrl)
+                    if (android) StepText(text = stringResource(Res.string.proxy_android_cert_hint))
+                    UrlBlock(url = address.caUrl)
                 }
             }
 
@@ -842,6 +867,32 @@ private fun PhoneField(
     }
 }
 
+/** The address of the certificate page, readable from afar on a dark block, to type on the phone if it cannot scan. */
+@Composable
+private fun UrlBlock(
+    url: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(FloconTheme.colors.bg000, FloconTheme.shapes.medium)
+            .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
+            .padding(start = FloconTheme.spacing.medium),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = url,
+            style = FloconTheme.typography.titleSmall.copy(fontFamily = FontFamily.Monospace),
+            fontWeight = FontWeight.Bold,
+            color = FloconTheme.colors.ink,
+            maxLines = 1,
+            modifier = Modifier.weight(1f),
+        )
+        CopyButton(value = url)
+    }
+}
+
 /** A value to type on the phone, in a chip with a button to copy it. */
 @Composable
 private fun CopyableChip(
@@ -969,6 +1020,7 @@ private fun NumberedStep(
     number: Int,
     text: String,
     modifier: Modifier = Modifier,
+    subSteps: ImmutableList<String> = persistentListOf(),
 ) {
     Row(
         modifier = modifier,
@@ -990,11 +1042,28 @@ private fun NumberedStep(
                 color = FloconTheme.colors.accentInk,
             )
         }
-        Text(
-            text = text,
-            style = FloconTheme.typography.bodyMedium,
-            color = FloconTheme.colors.ink,
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall)) {
+            Text(
+                text = text,
+                style = FloconTheme.typography.bodyMedium,
+                color = FloconTheme.colors.ink,
+            )
+            subSteps.forEachIndexed { index, subStep ->
+                Row(horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small)) {
+                    Text(
+                        text = "${'a' + index}.",
+                        style = FloconTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = FloconTheme.colors.accent,
+                    )
+                    Text(
+                        text = subStep,
+                        style = FloconTheme.typography.bodyMedium,
+                        color = FloconTheme.colors.inkMuted,
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -1039,37 +1108,6 @@ private fun CopyButton(
         tooltip = stringResource(Res.string.proxy_copy),
         modifier = modifier,
     )
-}
-
-/** A value to type on the phone, with a button to copy it (to send it to the phone, for instance). */
-@Composable
-private fun CopyableValue(
-    label: String?,
-    value: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
-    ) {
-        if (label != null) {
-            Text(
-                text = label,
-                style = FloconTheme.typography.bodySmall,
-                color = FloconTheme.colors.inkMuted,
-                textAlign = TextAlign.End,
-                modifier = Modifier.width(LabelWidth),
-            )
-        }
-        Text(
-            text = value,
-            style = FloconTheme.typography.monoMedium,
-            fontWeight = FontWeight.Bold,
-            color = FloconTheme.colors.ink,
-        )
-        CopyButton(value = value)
-    }
 }
 
 @Preview

@@ -600,12 +600,7 @@
     <string name="proxy_devices_hint">Chaque téléphone apparaît comme « Proxy &lt;IP&gt; » dans le sélecteur d'appareil, dans son propre groupe Proxy. Les apps qui épinglent leurs certificats refusent le proxy.</string>
     <string name="proxy_platform_android">Android</string>
     <string name="proxy_platform_ios">iOS</string>
-    <string name="proxy_android_step_download">Scanne le QR code et touche « Télécharger le certificat » : flocon-ca.crt est enregistré dans Téléchargements.</string>
-    <string name="proxy_android_step_install">Paramètres › Sécurité › Chiffrement et identifiants › Installer un certificat › Certificat CA › flocon-ca.crt, puis « Installer quand même ». Cherche « certificat CA » dans les Paramètres si le chemin diffère : depuis le navigateur, Android 11+ refuse de l'installer.</string>
     <string name="proxy_android_step_app">Ton app ne lui fait confiance que si sa network_security_config autorise les certificats utilisateur, par exemple en debug :</string>
-    <string name="proxy_ios_step_download">Scanne le QR code avec l'appareil photo, ouvre-le dans Safari, touche « Installer le profil », puis Autoriser.</string>
-    <string name="proxy_ios_step_install">Réglages › Général › VPN et gestion de l'appareil › Flocon Proxy › Installer.</string>
-    <string name="proxy_ios_step_trust">Réglages › Général › Informations › Réglages des certificats › active « Flocon Proxy CA ».</string>
     <string name="proxy_once_hint">Le certificat ne s'installe qu'une fois. La prochaine fois, seul le proxy Wi-Fi suffit.</string>
     <string name="proxy_activate">Activer le proxy</string>
     <string name="proxy_disable">Désactiver</string>
@@ -637,4 +632,17 @@
     <string name="proxy_phone_host_android">Nom d'hôte du proxy</string>
     <string name="proxy_phone_port_android">Port du proxy</string>
     <string name="proxy_network_hint">Ton ordinateur est sur plusieurs réseaux : choisis celui du Wi-Fi du téléphone.</string>
+    <string name="proxy_android_cert_1">Scanne le QR code et touche « Télécharger le certificat » : flocon-ca.crt arrive dans Téléchargements.</string>
+    <string name="proxy_android_cert_2">Installe-le depuis les Paramètres :</string>
+    <string name="proxy_android_cert_2a">Sécurité › Chiffrement et identifiants</string>
+    <string name="proxy_android_cert_2b">Installer un certificat › Certificat CA</string>
+    <string name="proxy_android_cert_2c">Choisis flocon-ca.crt, puis « Installer quand même »</string>
+    <string name="proxy_android_cert_hint">Chemin différent sur ton téléphone ? Cherche « certificat CA » dans les Paramètres. Depuis le navigateur, Android 11+ refuse de l'installer.</string>
+    <string name="proxy_ios_cert_1">Scanne le QR code avec l'appareil photo, ouvre-le dans Safari, touche « Installer le profil », puis Autoriser.</string>
+    <string name="proxy_ios_cert_2">Installe le profil :</string>
+    <string name="proxy_ios_cert_2a">Réglages › Général › VPN et gestion de l'appareil</string>
+    <string name="proxy_ios_cert_2b">Flocon Proxy › Installer</string>
+    <string name="proxy_ios_cert_3">Fais-lui confiance :</string>
+    <string name="proxy_ios_cert_3a">Réglages › Général › Informations › Réglages des certificats</string>
+    <string name="proxy_ios_cert_3b">Active « Flocon Proxy CA »</string>
 </resources>
