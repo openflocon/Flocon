@@ -17,6 +17,7 @@ import { join } from "node:path";
 import { createServer, type IncomingMessage } from "node:http";
 import { randomUUID } from "node:crypto";
 import WebSocket from "ws";
+import { FLOCON_LOGO } from "./logo";
 import { networkInterfaces } from "node:os";
 
 // ---------- Args ----------
@@ -186,19 +187,26 @@ function mobileconfig(certPem: string): string {
 const PAGE_TEXT = {
   en: {
     title: "Flocon Proxy",
+    subtitle: "Install the Flocon certificate so that Flocon Desktop sees the HTTPS calls of this phone.",
     android: "Download the certificate",
     ios: "Install the profile",
     other: "Other phone: ",
     next: "Then follow the steps shown in Flocon Desktop.",
+    once: "Once per phone.",
   },
   fr: {
     title: "Flocon Proxy",
+    subtitle: "Installe le certificat Flocon pour que Flocon Desktop voie les appels HTTPS de ce téléphone.",
     android: "Télécharger le certificat",
     ios: "Installer le profil",
     other: "Autre téléphone : ",
     next: "Puis suis les étapes affichées dans Flocon Desktop.",
+    once: "Une seule fois par téléphone.",
   },
 };
+
+const DOWNLOAD_ICON =
+  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
 
 function caPage(req: IncomingMessage): string {
   const ua = req.headers["user-agent"] ?? "";
@@ -211,19 +219,36 @@ function caPage(req: IncomingMessage): string {
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>${text.title}</title>
 <style>
   :root { color-scheme: dark; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-         gap: 20px; padding: 24px; box-sizing: border-box; background: #111111; color: #ECECEC;
-         font: 16px -apple-system, system-ui, sans-serif; text-align: center; }
-  h1 { margin: 0; font-size: 24px; }
-  .main { display: block; width: 100%; max-width: 360px; padding: 18px; border-radius: 14px; background: #F5B440;
-          color: #1C1405; font-weight: 700; font-size: 18px; text-decoration: none; }
-  .other { color: #A3A3A3; font-size: 14px; }
-  p { margin: 0; color: #A3A3A3; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+         background: radial-gradient(120% 70% at 50% 0%, #3A2A0E 0%, #141318 55%, #0D0D10 100%);
+         color: #ECECEC; font: 16px/1.45 -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; text-align: center; }
+  .card { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; gap: 18px;
+          padding: 32px 24px 24px; border-radius: 28px; background: rgba(27, 27, 31, 0.86);
+          border: 1px solid rgba(245, 180, 64, 0.18); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+  .logo { width: 104px; height: 104px; border-radius: 26px; box-shadow: 0 10px 30px rgba(245, 180, 64, 0.35); }
+  h1 { margin: 4px 0 0; font-size: 26px; letter-spacing: -0.01em; }
+  .subtitle { margin: 0; color: #B9B9C4; font-size: 15px; }
+  .main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 6px;
+          padding: 18px 16px; border-radius: 16px; background: #F5B440; color: #1C1405; font-weight: 700; font-size: 17px; white-space: nowrap;
+          text-decoration: none; box-shadow: 0 8px 22px rgba(245, 180, 64, 0.35); }
+  .main:active { transform: scale(0.98); }
+  .next { margin: 0; color: #ECECEC; font-size: 14px; }
+  .divider { width: 100%; height: 1px; background: #2A2A2F; }
+  .other { color: #A3A3A3; font-size: 14px; text-decoration: none; }
+  .other b { color: #F5B440; font-weight: 600; }
+  .once { margin: 0; color: #6B6B7B; font-size: 12px; }
 </style></head><body>
-  <h1>${text.title}</h1>
-  <a class="main" href="${main.href}">${main.label}</a>
-  <p>${text.next}</p>
-  <a class="other" href="${other.href}">${text.other}${other.label}</a>
+  <main class="card">
+    <img class="logo" src="${FLOCON_LOGO}" alt="Flocon">
+    <h1>${text.title}</h1>
+    <p class="subtitle">${text.subtitle}</p>
+    <a class="main" href="${main.href}">${DOWNLOAD_ICON}${main.label}</a>
+    <p class="next">${text.next}</p>
+    <div class="divider"></div>
+    <a class="other" href="${other.href}">${text.other}<b>${other.label}</b></a>
+    <p class="once">${text.once}</p>
+  </main>
 </body></html>`;
 }
 
