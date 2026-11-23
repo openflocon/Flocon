@@ -142,3 +142,15 @@ internal fun List<DeeplinkSuggestionDomainModel>.toUi(): ImmutableList<DeeplinkS
 
 /** The suggestion the app marked as default, else the first one. */
 internal fun List<DeeplinkSuggestionDomainModel>.defaultOrFirst(): DeeplinkSuggestionDomainModel? = firstOrNull { it.isDefault } ?: firstOrNull()
+
+/** What the field displays for [value]: the label of the suggestion with this value, else the value itself. */
+internal fun List<DeeplinkSuggestionUiModel>?.displayTextOf(value: String): String = this
+    ?.firstOrNull { it.value == value }
+    ?.text
+    ?: value
+
+/** The value of what the user typed: the value of the suggestion with this label, else the typed text itself. */
+internal fun List<DeeplinkSuggestionUiModel>?.valueForInput(text: String): String = this
+    ?.firstOrNull { it.label != null && it.label == text }
+    ?.value
+    ?: text
