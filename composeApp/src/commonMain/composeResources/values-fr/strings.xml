@@ -590,7 +590,6 @@
     <string name="proxy_title">Mode proxy</string>
     <string name="proxy_experimental">Expérimental</string>
     <string name="proxy_intro">Voir les appels HTTP(S) d'un téléphone sans le SDK Flocon : WebViews, SDK tiers et autres apps compris.</string>
-    <string name="proxy_off">Clique sur Activer, puis suis les étapes pour configurer le téléphone. Il reste actif au prochain lancement.</string>
     <string name="proxy_starting">Démarrage du proxy…</string>
     <string name="proxy_binary_not_found">Le proxy n'est pas inclus dans ce build de Flocon. Utilise l'installeur (dmg, msi, deb) plutôt que le jar, ou compile-le depuis proxy/ en développement.</string>
     <string name="proxy_failed">Le proxy n'a pas pu démarrer : %1$s</string>
@@ -600,8 +599,6 @@
     <string name="proxy_port">Port</string>
     <string name="proxy_copy">Copier</string>
     <string name="proxy_devices_hint">Chaque téléphone apparaît comme « Proxy &lt;IP&gt; » dans le sélecteur d'appareil, dans son propre groupe Proxy. Les apps qui épinglent leurs certificats refusent le proxy.</string>
-    <string name="proxy_wifi_values">Proxy Wi-Fi (Manuel)</string>
-    <string name="proxy_certificate_page">Page du certificat</string>
     <string name="proxy_platform_android">Android</string>
     <string name="proxy_platform_ios">iOS</string>
     <string name="proxy_android_step_wifi">Paramètres › Wi-Fi › ton réseau › Modifier › Proxy : Manuel, avec le serveur et le port.</string>
@@ -613,7 +610,20 @@
     <string name="proxy_ios_step_install">Réglages › Général › VPN et gestion de l'appareil › Flocon Proxy › Installer.</string>
     <string name="proxy_ios_step_trust">Réglages › Général › Informations › Réglages des certificats › active « Flocon Proxy CA ».</string>
     <string name="proxy_once_hint">Le certificat ne s'installe qu'une fois. La prochaine fois, seul le proxy Wi-Fi suffit.</string>
-    <string name="proxy_activate">Activer</string>
+    <string name="proxy_activate">Activer le proxy</string>
     <string name="proxy_disable">Désactiver</string>
     <string name="proxy_wake_up">Réveille-toi…</string>
+    <string name="proxy_step_wifi_label">Wi-Fi</string>
+    <string name="proxy_step_certificate_label">Certificat</string>
+    <string name="proxy_step_app_label">Ton app</string>
+    <string name="proxy_wifi_heading">Configure le proxy Wi-Fi</string>
+    <string name="proxy_certificate_heading">Installe le certificat Flocon</string>
+    <string name="proxy_app_heading">Fais-lui confiance dans ton app</string>
+    <string name="proxy_ios_step_app">Rien de plus à faire : une fois activé dans Réglages des certificats, les apps l'acceptent, sauf celles qui épinglent leurs certificats.</string>
+    <string name="proxy_off_title">Le proxy est coupé</string>
+    <string name="proxy_persist_hint">Une fois activé, il le reste au prochain lancement.</string>
+    <string name="proxy_back">Précédent</string>
+    <string name="proxy_next">Suivant</string>
+    <string name="proxy_done">Terminé</string>
+    <string name="proxy_running">Actif</string>
 </resources>
