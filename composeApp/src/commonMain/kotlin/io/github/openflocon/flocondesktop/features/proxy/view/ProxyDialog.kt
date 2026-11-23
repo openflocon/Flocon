@@ -39,7 +39,9 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -459,7 +461,9 @@ private fun StepperItem(
             } else {
                 Text(
                     text = number.toString(),
-                    style = FloconTheme.typography.labelMedium,
+                    style = FloconTheme.typography.labelMedium.copy(
+                        lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both),
+                    ),
                     fontWeight = FontWeight.Bold,
                     color = if (current) colors.accentInk else colors.inkFaint,
                 )
@@ -844,12 +848,13 @@ private fun CopyableChip(
         modifier = modifier
             .background(FloconTheme.colors.bg000, FloconTheme.shapes.medium)
             .border(1.dp, FloconTheme.colors.line, FloconTheme.shapes.medium)
-            .padding(start = FloconTheme.spacing.medium),
+            .padding(start = FloconTheme.spacing.large, top = FloconTheme.spacing.extraSmall, bottom = FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = value,
-            style = FloconTheme.typography.monoMedium,
+            // big: it is read on the computer and typed on the phone
+            style = FloconTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
             fontWeight = FontWeight.Bold,
             color = FloconTheme.colors.ink,
             maxLines = 1,
@@ -965,16 +970,22 @@ private fun NumberedStep(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small),
     ) {
-        Text(
-            text = number.toString(),
-            style = FloconTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = FloconTheme.colors.accentInk,
-            textAlign = TextAlign.Center,
+        // the number centered in its circle, whatever the line height of the font
+        Box(
             modifier = Modifier
                 .size(StepNumberSize)
                 .background(FloconTheme.colors.accent, CircleShape),
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = number.toString(),
+                style = FloconTheme.typography.labelMedium.copy(
+                    lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both),
+                ),
+                fontWeight = FontWeight.Bold,
+                color = FloconTheme.colors.accentInk,
+            )
+        }
         Text(
             text = text,
             style = FloconTheme.typography.bodyMedium,
