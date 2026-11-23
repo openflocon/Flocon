@@ -25,9 +25,9 @@ A **profile** describes how the network misbehaves. Only one profile is active a
 | | Android | KMP (iOS / JVM / Wasm) | Swift (iOS / macOS) | Flutter |
 |---|:---:|:---:|:---:|:---:|
 | HTTP calls | ✅ OkHttp, Ktor | ✅ Ktor (and OkHttp on JVM) | ✅ `URLSession` | ✅ Dio, `package:http` |
-| gRPC calls | ✅ | ❌ | ❌ | ❌ |
+| gRPC calls | ✅ grpc-java | ❌ | ❌ | ❌ |
 
-- On Android, gRPC calls get the **latency** and the **exception** errors. The HTTP errors of a profile are ignored for gRPC. See [gRPC](grpc.md).
+- On Android, the grpc-java interceptor applies **latency** and **exception** errors. The HTTP errors of a profile are ignored for gRPC. See [gRPC](grpc.md).
 - On Swift and Flutter, the exception class of the profile is turned into the closest native error (`URLError` on Swift, `DioException` on Dio). A timeout class gives a timeout, a connection class a connection error.
 - The active profile is saved on the device, and applies from the next launch too.
 
