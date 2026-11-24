@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.app
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,7 +70,7 @@ internal fun TopBarAppDropdown(
                                 expanded = false
                             },
                             modifier = Modifier
-                                .width(FloconTheme.sizes.appDropdownWidth)
+                                .widthIn(min = FloconTheme.sizes.appDropdownWidth)
                                 .clip(FloconTheme.shapes.medium)
                                 .clickable {
                                     onAppSelected(app)
