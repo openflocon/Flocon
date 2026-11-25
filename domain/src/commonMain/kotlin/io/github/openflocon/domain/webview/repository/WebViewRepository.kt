@@ -22,5 +22,8 @@ interface WebViewRepository {
         limit: Int,
     ): List<WebViewEventDomainModel>
 
+    // null when the event does not exist (anymore)
+    fun observeEvent(id: String): Flow<WebViewEventDomainModel?>
+
     suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel)
 }

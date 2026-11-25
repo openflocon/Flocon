@@ -186,6 +186,15 @@ class TimelineQueryBuilderTest {
     }
 
     @Test
+    fun `the title of a webview event skips an empty message, so an http error is never blank`() {
+        val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.WebView)))
+
+        assertTrue(query.sql.contains("$WEBVIEW_TITLE AS title"))
+        assertTrue(WEBVIEW_TITLE.contains("NULLIF(message, '')"))
+        assertTrue(WEBVIEW_TITLE.contains("'HTTP ' || statusCode"))
+    }
+
+    @Test
     fun `the adb commands are only scoped by the device`() {
         val query = build(TimelineFilterDomainModel(sources = setOf(TimelineSource.Adb)))
 

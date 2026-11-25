@@ -153,7 +153,7 @@ On iOS, JVM and Wasm (Kotlin) there is no `attach` yet: use the manual API. The 
 ## In Flocon Desktop
 
 !!! tip "In the Timeline"
-    Console messages, page loads and bridge calls also show up in the [Timeline](timeline.md).
+    Console messages, page loads and bridge calls also show up in the [Timeline](timeline.md). Click one of them there to open its detail panel: the full message, the result of a bridge call, the URL, the source and line, the HTTP status and the time. An HTTP error is told by its status and URL even when the WebView gives no reason phrase.
 
 The WebViews screen lists three kinds of events, newest first:
 

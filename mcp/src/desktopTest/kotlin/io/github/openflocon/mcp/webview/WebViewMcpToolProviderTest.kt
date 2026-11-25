@@ -136,5 +136,7 @@ private class FakeWebViewRepository(
         filter: String?,
     ): Flow<PagingData<WebViewEventDomainModel>> = error("not used")
 
+    override fun observeEvent(id: String): Flow<WebViewEventDomainModel?> = error("not used")
+
     override suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) = error("not used")
 }

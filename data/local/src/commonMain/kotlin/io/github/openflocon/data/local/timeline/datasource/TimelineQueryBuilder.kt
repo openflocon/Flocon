@@ -17,6 +17,13 @@ internal const val KIND_DATABASE = "database"
 internal const val KIND_ANALYTICS = "analytics"
 internal const val KIND_ACCESSIBILITY = "accessibility"
 internal const val KIND_WEBVIEW = "webview"
+
+// The text of a WebView row. The SDKs send an empty message (not null) when they have nothing to say, e.g. the reason
+// phrase of an HTTP error, so an empty message is skipped like a missing one: the row is told by its HTTP status and url,
+// then by its url, then by its type, and never blank.
+internal const val WEBVIEW_TITLE = "CASE WHEN statusCode IS NOT NULL " +
+    "THEN 'HTTP ' || statusCode || COALESCE(' ' || NULLIF(message, ''), '') || COALESCE(' - ' || NULLIF(url, ''), '') " +
+    "ELSE COALESCE(NULLIF(message, ''), NULLIF(url, ''), label) END"
 internal const val KIND_CRASH = "crash"
 internal const val KIND_TABLE = "table"
 internal const val KIND_DEEPLINK = "deeplink"
@@ -432,13 +439,12 @@ private fun buildUnion(
         if (TimelineSource.WebView in filter.sources) {
             add(
                 branch(
-                    // a page event without message is told by its url, then by its type
                     select = "'$KIND_WEBVIEW' AS kind, eventId AS id, timestamp AS ts, " +
-                        "COALESCE(message, url, label) AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
+                        "$WEBVIEW_TITLE AS title, label AS subtitle, NULL AS appInstance, $NO_NETWORK_COLUMNS",
                     from = "WebViewEventEntity",
                     appInstanceColumn = null, // the events do not store the session
                     // the text displayed in the row, and the WebView
-                    textColumns = listOf("COALESCE(message, url, label)", "webViewId"),
+                    textColumns = listOf(WEBVIEW_TITLE, "webViewId"),
                     facetExpressions = mapOf(TimelineFacet.WebViewKind to "kind"),
                 )
             )

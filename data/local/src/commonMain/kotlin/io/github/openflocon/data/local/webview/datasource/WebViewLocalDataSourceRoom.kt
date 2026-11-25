@@ -60,6 +60,9 @@ internal class WebViewLocalDataSourceRoom(
         limit = limit,
     ).map { it.toDomain() }
 
+    override fun observeEvent(id: String): Flow<WebViewEventDomainModel?> = webViewEventDao.observeById(id)
+        .map { it?.toDomain() }
+
     override suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         webViewEventDao.clearAll(
             deviceId = deviceIdAndPackageName.deviceId,

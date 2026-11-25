@@ -64,6 +64,16 @@
     <string name="webview_filter_console">Console</string>
     <string name="webview_filter_pages">Pages</string>
     <string name="webview_filter_bridge">Bridge</string>
+    <string name="webview_detail_message">Message</string>
+    <string name="webview_detail_copy_message">Copy the message</string>
+    <string name="webview_detail_result">Result</string>
+    <string name="webview_detail_copy_result">Copy the result</string>
+    <string name="webview_detail_details">Details</string>
+    <string name="webview_detail_webview">WebView</string>
+    <string name="webview_detail_url">URL</string>
+    <string name="webview_detail_source">Source</string>
+    <string name="webview_detail_status">HTTP status</string>
+    <string name="webview_detail_time">Time</string>
     <string name="timeline_empty">No event yet</string>
     <string name="timeline_source_network">Network</string>
     <string name="timeline_source_analytics">Analytics</string>

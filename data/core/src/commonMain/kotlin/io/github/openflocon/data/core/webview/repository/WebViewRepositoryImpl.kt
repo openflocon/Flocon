@@ -83,6 +83,9 @@ class WebViewRepositoryImpl(
         )
     }
 
+    override fun observeEvent(id: String): Flow<WebViewEventDomainModel?> = localDataSource.observeEvent(id)
+        .flowOn(dispatcherProvider.data)
+
     override suspend fun clearAll(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel) {
         withContext(dispatcherProvider.data) {
             localDataSource.clearAll(deviceIdAndPackageName)

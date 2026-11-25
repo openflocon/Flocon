@@ -237,7 +237,7 @@ From the desktop UI, you can:
 - **Read the counters**: number of events, sessions, HTTP errors and crashes of what is displayed.
 - **Options** (⋮ menu): auto scroll to the newest event, invert the direction of the list, pin the detail panel (it then stays next to the list instead of covering it).
 - **Filter**: toggle the sources (the selection is remembered) and search a text (`Ctrl+K` / `Cmd+K` focuses the search field).
-- **Open an event**: click a row to open its detail in a side panel (network call, analytics event, log, database query, table row, crash, deeplink, ADB command). App starts and WebView events have nothing to open: the WebViews screen shows them.
+- **Open an event**: click a row to open its detail in a side panel (network call, analytics event, log, database query, table row, crash, deeplink, ADB command, WebView event). App starts have nothing to open. The panel of a WebView event shows the full message (copyable), the result of a bridge call, the URL, the source file and line, the HTTP status and the time.
 
 ---
 

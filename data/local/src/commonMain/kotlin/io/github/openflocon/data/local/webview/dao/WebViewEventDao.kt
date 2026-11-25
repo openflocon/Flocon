@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import io.github.openflocon.data.local.webview.models.WebViewEventEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WebViewEventDao {
@@ -59,6 +60,9 @@ interface WebViewEventDao {
         newestFirst: Boolean,
         limit: Int,
     ): List<WebViewEventEntity>
+
+    @Query("SELECT * FROM WebViewEventEntity WHERE eventId = :eventId")
+    fun observeById(eventId: String): Flow<WebViewEventEntity?>
 
     @Query(
         """

@@ -13,6 +13,7 @@ import io.github.openflocon.flocondesktop.features.network.NetworkRoutes
 import io.github.openflocon.flocondesktop.features.table.TableRoutes
 import io.github.openflocon.flocondesktop.features.timeline.TimelineRoutes
 import io.github.openflocon.flocondesktop.features.timeline.model.TimelineRowUiModel
+import io.github.openflocon.flocondesktop.features.webview.WebViewRoutes
 import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
 import kotlin.test.Test
@@ -79,8 +80,11 @@ class DestinationTest {
     }
 
     @Test
-    fun `a webview event opens nothing`() {
-        assertNull(row(TimelineSource.WebView, id = "event-1").toDestination())
+    fun `a webview event opens its detail panel`() {
+        assertEquals(
+            TimelineDestination.Panel(WebViewRoutes.Detail(id = "event-1")),
+            row(TimelineSource.WebView, id = "event-1").toDestination(),
+        )
     }
 
     @Test
@@ -130,14 +134,14 @@ class DestinationTest {
 
     @Test
     fun `every other source has a destination`() {
-        (TimelineSource.entries - TimelineSource.AppStart - TimelineSource.WebView).forEach {
+        (TimelineSource.entries - TimelineSource.AppStart).forEach {
             assertNotNull(row(it).toDestination(), "$it should open something")
         }
     }
 
     @Test
     fun `every panel opened from the timeline is pinned with the timeline, the same panel from its screen is not`() {
-        TimelineSource.entries.filter { it != TimelineSource.AppStart && it != TimelineSource.WebView }.forEach { source ->
+        TimelineSource.entries.filter { it != TimelineSource.AppStart }.forEach { source ->
             val route = (row(source, id = "3").toDestination() as TimelineDestination.Panel).route as PanelRoute
 
             assertEquals(PanelPinGroups.Timeline, route.pinGroup, "$source")
