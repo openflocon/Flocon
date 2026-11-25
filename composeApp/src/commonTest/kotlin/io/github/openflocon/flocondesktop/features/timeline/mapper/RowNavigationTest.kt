@@ -60,15 +60,16 @@ class RowNavigationTest {
 
     @Test
     fun `the same event repeated is linked, the others are not`() {
-        val name = "screen_view"
+        val name = "https://acme.io/open"
         assertEquals(
-            previewTimelineRowUiModel(TimelineSource.Analytics, id = "1", title = name).linkKey(),
-            previewTimelineRowUiModel(TimelineSource.Analytics, id = "2", title = name).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Deeplink, id = "1", title = name).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Deeplink, id = "2", title = name).linkKey(),
         )
         assertNotEquals(
-            previewTimelineRowUiModel(TimelineSource.Analytics, title = name).linkKey(),
+            previewTimelineRowUiModel(TimelineSource.Crash, title = name).linkKey(),
             previewTimelineRowUiModel(TimelineSource.Deeplink, title = name).linkKey(),
         )
+        assertNull(previewTimelineRowUiModel(TimelineSource.Analytics, title = "screen_view").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.Database, title = "SELECT 1").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.Network, title = "https://acme.io").linkKey())
         assertNull(previewTimelineRowUiModel(TimelineSource.AppStart, title = "").linkKey())
@@ -83,9 +84,9 @@ class RowNavigationTest {
 
     private val linkRows = listOf(
         previewTimelineRowUiModel(TimelineSource.Database, id = "1", title = "SELECT 1"),
-        previewTimelineRowUiModel(TimelineSource.Analytics, id = "2", title = "screen_view"),
+        previewTimelineRowUiModel(TimelineSource.Deeplink, id = "2", title = "acme://home"),
         previewTimelineRowUiModel(TimelineSource.Network, id = "n", title = "https://acme.io", phase = TimelinePhase.Response),
-        previewTimelineRowUiModel(TimelineSource.Analytics, id = "3", title = "screen_view"),
+        previewTimelineRowUiModel(TimelineSource.Deeplink, id = "3", title = "acme://home"),
         previewTimelineRowUiModel(TimelineSource.Network, id = "n", title = "https://acme.io"),
         previewTimelineRowUiModel(TimelineSource.AppStart, id = "s", title = ""),
     )
@@ -104,6 +105,6 @@ class RowNavigationTest {
 
     @Test
     fun `the same event repeated is linked`() {
-        assertEquals(listOf(1, 3), linked(callKey = null, linkKey = "Analytics:screen_view"))
+        assertEquals(listOf(1, 3), linked(callKey = null, linkKey = "Deeplink:acme://home"))
     }
 }
