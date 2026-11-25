@@ -112,6 +112,7 @@ jobs:
           sed -E \
             -e 's/^(\* )(feat|fix|refact|perf|docs|test|chore)(\([^)]*\))?: /\1/' \
             -e 's/^(\* )\[([^]]+)\] /\1**\2**: /' \
+            -e 's/^(\* (\*\*[^*]+\*\*: )?)([a-z])/\1\u\3/' \
             notes.md > notes-clean.md
           gh release edit "$TAG" --notes-file notes-clean.md
 
