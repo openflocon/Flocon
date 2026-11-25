@@ -1,0 +1,50 @@
+name: PR - Label and assign author
+
+on:
+  # pull_request_target gives a write token for PRs from forks too.
+  # Safe here: the workflow never checks out or runs code from the PR.
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, edited]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign the author and label by PR type
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const issue_number = pr.number;
+
+            // Assign the author once, when the PR opens (bots cannot be assigned).
+            if (context.payload.action !== 'edited' && pr.user.type !== 'Bot') {
+              await github.rest.issues.addAssignees({
+                owner, repo, issue_number,
+                assignees: [pr.user.login],
+              });
+            }
+
+            // Bumps (Dependabot, `chore(deps): bump ...`) are dependencies.
+            // Otherwise the title follows the commit format: `feat: ...`, `fix(scope): ...`.
+            const byType = { feat: 'enhancements', fix: 'bug' };
+            const managed = ['dependencies', ...Object.values(byType)];
+            const type = (pr.title.match(/^(\w+)(?:\([^)]*\))?:/) || [])[1];
+            const label = /\bbump(s|ed)?\b/i.test(pr.title) ? 'dependencies' : byType[type];
+            if (!label) return; // refact, perf, docs, test, chore...: no label
+
+            await github.rest.issues.addLabels({
+              owner, repo, issue_number, labels: [label],
+            });
+
+            // If the title changed, drop the other managed labels.
+            for (const name of managed) {
+              if (name !== label && pr.labels.some((l) => l.name === name)) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number, name });
+              }
+            }
