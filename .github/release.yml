@@ -1,4 +1,7 @@
 changelog:
+  exclude:
+    labels:
+      - 'skip-changelog'
   categories:
     - title: 🏕 Features
       labels:
@@ -6,6 +9,12 @@ changelog:
     - title: 🛠 Fixes
       labels:
         - 'bug'
+    - title: 📚 Docs
+      labels:
+        - 'documentation'
     - title: 👒 Dependencies
       labels:
         - 'dependencies'
+    - title: 🧹 Other changes
+      labels:
+        - '*'
