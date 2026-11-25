@@ -32,11 +32,11 @@ jobs:
 
             // Bumps (Dependabot, `chore(deps): bump ...`) are dependencies.
             // Otherwise the title follows the commit format: `feat: ...`, `fix(scope): ...`.
-            const byType = { feat: 'enhancements', fix: 'bug' };
+            const byType = { feat: 'enhancements', fix: 'bug', docs: 'documentation' };
             const managed = ['dependencies', ...Object.values(byType)];
             const type = (pr.title.match(/^(\w+)(?:\([^)]*\))?:/) || [])[1];
             const label = /\bbump(s|ed)?\b/i.test(pr.title) ? 'dependencies' : byType[type];
-            if (!label) return; // refact, perf, docs, test, chore...: no label
+            if (!label) return; // refact, perf, test, chore...: no label
 
             await github.rest.issues.addLabels({
               owner, repo, issue_number, labels: [label],

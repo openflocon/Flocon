@@ -6,6 +6,7 @@ changelog:
     - title: 🏕 Features
       labels:
         - 'enhancement'
+        - 'enhancements'
     - title: 🛠 Fixes
       labels:
         - 'bug'
