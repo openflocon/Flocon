@@ -775,4 +775,11 @@
     <string name="desktop_update_installed">Installiert: %1$s</string>
     <string name="timeline_transactions_expanded">Transaktionen standardmäßig ausklappen</string>
     <string name="database_transaction_nested">Verschachtelte Transaktion</string>
+    <string name="database_row_update">Aktualisieren</string>
+    <string name="database_row_set_null">Auf NULL setzen</string>
+    <string name="database_row_updated">Zeile aktualisiert</string>
+    <string name="database_row_update_not_found">Zeile nicht aktualisiert: Sie wurde auf dem Gerät gelöscht oder geändert</string>
+    <string name="database_row_update_device_changed">Zeile nicht aktualisiert: Das ausgewählte Gerät oder die App hat sich geändert</string>
+    <string name="database_row_update_failed">Aktualisierung fehlgeschlagen: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s erwartet eine Zahl</string>
 </resources>

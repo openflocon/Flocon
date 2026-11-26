@@ -768,4 +768,11 @@
     <string name="desktop_update_installed">ติดตั้งแล้ว: %1$s</string>
     <string name="timeline_transactions_expanded">ขยายทรานแซกชันตามค่าเริ่มต้น</string>
     <string name="database_transaction_nested">ทรานแซกชันซ้อน</string>
+    <string name="database_row_update">อัปเดต</string>
+    <string name="database_row_set_null">ตั้งค่าเป็น NULL</string>
+    <string name="database_row_updated">อัปเดตแถวแล้ว</string>
+    <string name="database_row_update_not_found">ไม่ได้อัปเดตแถว: แถวถูกลบหรือเปลี่ยนแปลงบนอุปกรณ์</string>
+    <string name="database_row_update_device_changed">ไม่ได้อัปเดตแถว: อุปกรณ์หรือแอปที่เลือกเปลี่ยนไปแล้ว</string>
+    <string name="database_row_update_failed">อัปเดตไม่สำเร็จ: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s ต้องเป็นตัวเลข</string>
 </resources>

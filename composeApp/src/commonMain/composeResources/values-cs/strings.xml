@@ -789,4 +789,11 @@
     <string name="desktop_update_installed">Nainstalováno: %1$s</string>
     <string name="timeline_transactions_expanded">Ve výchozím stavu rozbalit transakce</string>
     <string name="database_transaction_nested">Vnořená transakce</string>
+    <string name="database_row_update">Aktualizovat</string>
+    <string name="database_row_set_null">Nastavit NULL</string>
+    <string name="database_row_updated">Řádek byl aktualizován</string>
+    <string name="database_row_update_not_found">Řádek nebyl aktualizován: v zařízení byl smazán nebo změněn</string>
+    <string name="database_row_update_device_changed">Řádek nebyl aktualizován: vybrané zařízení nebo aplikace se změnily</string>
+    <string name="database_row_update_failed">Aktualizace se nezdařila: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s vyžaduje číslo</string>
 </resources>

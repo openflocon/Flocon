@@ -1,12 +1,14 @@
 package io.github.openflocon.flocondesktop.features.database
 
 import io.github.openflocon.domain.database.usecase.GetDatabaseQueryLogsUseCase
+import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseRowUpdatedNotifier
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseSelectorDelegate
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseQueryLogsToMarkdownProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ExportDatabaseResultToCsvProcessor
 import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQueryProcessor
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -14,6 +16,8 @@ import org.koin.dsl.module
 internal val databaseModule = module {
     viewModelOf(::DatabaseViewModel)
     viewModelOf(::DatabaseTabViewModel)
+    viewModelOf(::DatabaseRowDetailViewModel)
+    singleOf(::DatabaseRowUpdatedNotifier)
     factoryOf(::DatabaseSelectorDelegate)
     factoryOf(::ImportSqlQueryProcessor)
     factoryOf(::ExportDatabaseResultToCsvProcessor)
