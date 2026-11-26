@@ -17,17 +17,24 @@ jobs:
       - name: Assign the author and label by PR type
         uses: actions/github-script@v7
         with:
+          # GitHub sometimes answers 500 on these calls: retry before giving up.
+          retries: 3
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request;
             const issue_number = pr.number;
 
             // Assign the author once, when the PR opens (bots cannot be assigned).
+            // A failure here must not skip the labels below: it is only a warning.
             if (context.payload.action !== 'edited' && pr.user.type !== 'Bot') {
-              await github.rest.issues.addAssignees({
-                owner, repo, issue_number,
-                assignees: [pr.user.login],
-              });
+              try {
+                await github.rest.issues.addAssignees({
+                  owner, repo, issue_number,
+                  assignees: [pr.user.login],
+                });
+              } catch (error) {
+                core.warning(`Could not assign ${pr.user.login}: ${error.message}`);
+              }
             }
 
             // Bumps (Dependabot, `chore(deps): bump ...`) are dependencies.
