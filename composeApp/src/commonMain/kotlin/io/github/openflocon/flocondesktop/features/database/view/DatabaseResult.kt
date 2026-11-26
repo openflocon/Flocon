@@ -68,6 +68,9 @@ import org.koin.mp.KoinPlatform
 
 private val DefaultColumnWidth = 200.dp
 private val MinColumnWidth = 48.dp
+
+// the table scrolls horizontally, so nothing else stops a column from growing: past ~262k px, Compose cannot measure it (#888)
+private val MaxColumnWidth = 2000.dp
 private val HandleWidth = 8.dp
 
 @Serializable
@@ -215,7 +218,7 @@ fun DatabaseResult(
                             columnsWidth = columnsWidth,
                             scrollState = horizontalScrollState,
                             onResize = { index, delta ->
-                                columnsWidth[index] = (columnsWidth[index] + delta).coerceAtLeast(MinColumnWidth)
+                                columnsWidth[index] = (columnsWidth[index] + delta).coerceIn(MinColumnWidth, MaxColumnWidth)
                             },
                             modifier = Modifier.matchParentSize(),
                         )
