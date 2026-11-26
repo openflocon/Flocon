@@ -48,7 +48,10 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
         install(FloconDeeplinks) {
             variable("host") {
                 description = "Host scheme/domain"
-                autoComplete(listOf("flocon", "myapp"))
+                autoComplete {
+                    "Flocon" suggestDefault "flocon"
+                    "My app" suggest "myapp"
+                }
             }
 
             variable("sample_comment")
@@ -60,6 +63,11 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
             deeplink("[host]://user/[userId]") {
                 label = "User Profile"
                 "userId" withAutoComplete listOf("101", "202", "303")
+                "tab" withAutoComplete {
+                    suggest("posts")                      // the value only
+                    "Friends list" suggest "friends"      // a label, then the value
+                    "Everything" suggestDefault "all"     // pre-selected
+                }
                 "host" withVariable "host"
             }
 
@@ -91,11 +99,23 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
                         "myapp://user/[userId]",
                         label: "User",
                         description: "Open the profile of a user",
-                        parameters: [.autoComplete("userId", ["Florent", "David"])]
+                        parameters: [
+                            .autoComplete("userId", ["Florent", "David"]),
+                            .autoComplete("tab") { suggestions in
+                                suggestions.suggest("posts")
+                                suggestions.suggest("friends", label: "Friends list")
+                                suggestions.suggestDefault("all", label: "Everything")
+                            },
+                        ]
                     ),
                     FloconDeeplink("myapp://[env]/settings", parameters: [.variable("env", variableName: "env")]),
                 ],
-                variables: [FloconDeeplinkVariable("env", suggestions: ["staging", "production"])]
+                variables: [
+                    FloconDeeplinkVariable("env") { suggestions in
+                        suggestions.suggest("production", label: "Production")
+                        suggestions.suggestDefault("staging", label: "Staging")
+                    },
+                ]
             )
         }
     }
@@ -120,11 +140,23 @@ Your app declares its deeplinks, with the parts to fill in (`[userId]`) and valu
           'myapp://user/[userId]',
           label: 'User',
           description: 'Open the profile of a user',
-          parameters: [FloconDeeplinkParameter.autoComplete('userId', ['Florent', 'David'])],
+          parameters: [
+            FloconDeeplinkParameter.autoComplete('userId', ['Florent', 'David']),
+            FloconDeeplinkParameter.suggestions('tab', [
+              FloconDeeplinkSuggestion('posts'),
+              FloconDeeplinkSuggestion('friends', label: 'Friends list'),
+              FloconDeeplinkSuggestion('all', label: 'Everything', isDefault: true),
+            ]),
+          ],
         ),
         FloconDeeplink('myapp://[env]/settings', parameters: [FloconDeeplinkParameter.variable('env', variableName: 'env')]),
       ],
-      variables: [FloconDeeplinkVariable('env', suggestions: ['staging', 'production'])],
+      variables: [
+        FloconDeeplinkVariable('env', suggestionItems: [
+          FloconDeeplinkSuggestion('production', label: 'Production'),
+          FloconDeeplinkSuggestion('staging', label: 'Staging', isDefault: true),
+        ]),
+      ],
     );
     ```
 
@@ -136,6 +168,19 @@ Write the parts to fill in between brackets: `myapp://user/[userId]`. Each part 
 
 - **A field** you type each time, optionally with **autocomplete suggestions** (`withAutoComplete` in Kotlin, `.autoComplete(name, suggestions)` in Swift, `FloconDeeplinkParameter.autoComplete(name, suggestions)` in Flutter).
 - **A variable**: a value shared by several deeplinks (`[host]`, a user id, an environment), edited once in the desktop (`withVariable` in Kotlin, `.variable(name, variableName:)` in Swift, `FloconDeeplinkParameter.variable(name, variableName:)` in Flutter).
+
+### Labels and a default suggestion
+
+A suggestion can have a **label**: the desktop shows the label (and the value next to it) in the list, and puts the **value** in the link. One suggestion can be the **default**: it is pre-selected while the field is empty (for a variable that has suggestions, the first suggestion is used when none is marked as default). Plain values keep working, so you can mix both. If several suggestions are marked as default, the first one wins, and a value declared twice keeps its last declaration.
+
+| | Label | Default |
+|---|---|---|
+| Kotlin | `"Friends list" suggest "friends"` | `"Everything" suggestDefault "all"` or `suggestDefault("all")` |
+| Swift | `suggest("friends", label: "Friends list")` | `suggestDefault("all", label: "Everything")` |
+| Flutter | `FloconDeeplinkSuggestion('friends', label: 'Friends list')` | `FloconDeeplinkSuggestion('all', isDefault: true)` |
+| React Native | `{ value: 'friends', label: 'Friends list' }` | `{ value: 'all', isDefault: true }` |
+
+The Kotlin block is available on `withAutoComplete` (parameters) and `autoComplete` (variables); the Swift block on `.autoComplete(_:suggestions:)` and `FloconDeeplinkVariable(_:description:suggestions:)`.
 
 A variable is either a free text input, or has a list of suggestions (`autoComplete(...)` in Kotlin, `suggestions:` in Swift and Flutter). A link that uses a variable without a value shows **N required** in the sidebar and cannot be sent.
 
@@ -201,7 +246,7 @@ Open **Deeplinks** in the sidebar. The screen has a filter and tabs at the top, 
 
 ## With AI agents (MCP)
 
-- `list_deeplinks`: the deeplinks declared by the app (link, label, description, parameters) and their variables.
+- `list_deeplinks`: the deeplinks declared by the app (link, label, description, parameters) and their variables. The suggestions come as plain `suggestions` (values) and as `suggestionItems` (value, label, `isDefault`) when the app gave labels or a default.
 - `list_deeplink_history`: the links recently opened from Flocon, with the parameters used.
 - `open_deeplink`: opens a full link on the device (adb on Android, the booted Simulator on iOS), optionally keeping it in the history.
 

@@ -21,6 +21,9 @@ internal data class DeeplinkVariableReceivedDataModel(
 
         @Serializable
         @SerialName("auto_complete")
-        data class AutoComplete(val suggestions: List<String>) : Mode
+        data class AutoComplete(
+            val suggestions: List<String> = emptyList(), // values only: what SDKs without labels send
+            val items: List<DeeplinkSuggestionReceivedDataModel>? = null, // preferred when present
+        ) : Mode
     }
 }

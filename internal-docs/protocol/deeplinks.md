@@ -32,6 +32,7 @@ Polymorphic, discriminated by `type`:
 |-----------------|----------------|----------------|-------------------------------------|
 | `auto_complete` | `name`         | `String`       | Parameter name                      |
 |                 | `autoComplete` | `List<String>` | Suggested values                    |
+|                 | `suggestions`  | `List<DeeplinkSuggestion>?` | Same suggestions with a label and a default, see below |
 | `variable`      | `name`         | `String`       | Parameter name                      |
 |                 | `variableName` | `String`       | Name of a `DeeplinkVariable`        |
 
@@ -51,6 +52,17 @@ Polymorphic, discriminated by `type`:
 |-----------------|---------------|----------------|----------------------|
 | `input`         | –             | –              | Free text input      |
 | `auto_complete` | `suggestions` | `List<String>` | Suggested values     |
+|                 | `items`       | `List<DeeplinkSuggestion>?` | Same suggestions with a label and a default, see below |
+
+### `DeeplinkSuggestion`
+
+| Key         | Type      | Description                                                              |
+|-------------|-----------|--------------------------------------------------------------------------|
+| `value`     | `String`  | What is inserted in the link                                             |
+| `label`     | `String?` | What the desktop shows instead of the value                              |
+| `isDefault` | `Boolean` | Omitted = `false`. Pre-selected while the field is empty (first one wins) |
+
+Backward compatibility: `autoComplete` / `suggestions` always carry the plain values, so a desktop that does not know the detailed list keeps working. An SDK with labels sends both; the desktop uses the detailed list (`suggestions` of a parameter, `items` of a variable) when it is present and falls back to the plain values otherwise.
 
 ### Example
 
@@ -68,13 +80,31 @@ Polymorphic, discriminated by `type`:
       "description": "Open a user profile",
       "parameters": [
         { "type": "variable", "name": "userId", "variableName": "userId" },
-        { "type": "auto_complete", "name": "tab", "autoComplete": ["posts", "friends"] }
+        {
+          "type": "auto_complete",
+          "name": "tab",
+          "autoComplete": ["posts", "friends"],
+          "suggestions": [
+            { "value": "posts", "isDefault": true },
+            { "value": "friends", "label": "Friends list" }
+          ]
+        }
       ]
     }
   ],
   "variables": [
     { "name": "userId", "description": "Current user id" },
-    { "name": "env", "mode": { "type": "auto_complete", "suggestions": ["prod", "staging"] } }
+    {
+      "name": "env",
+      "mode": {
+        "type": "auto_complete",
+        "suggestions": ["prod", "staging"],
+        "items": [
+          { "value": "prod", "label": "Production" },
+          { "value": "staging", "label": "Staging", "isDefault": true }
+        ]
+      }
+    }
   ]
 }
 ```

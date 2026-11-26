@@ -34,12 +34,14 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScree
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScreenState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkTabUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkSuggestionUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconPageTopBar
 import io.github.openflocon.library.designsystem.components.FloconVerticalDivider
 import io.github.openflocon.library.designsystem.components.floconPanel
 import io.github.openflocon.navigation.mascot.mascotPlatform
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.viewmodel.koinViewModel
 
 private val SidebarWidth = 340.dp
@@ -193,7 +195,13 @@ private fun DeeplinkScreenPreview() {
                         name = "env",
                         description = null,
                         value = "staging",
-                        mode = DeeplinkVariableViewState.Mode.AutoComplete(listOf("dev", "staging", "prod")),
+                        mode = DeeplinkVariableViewState.Mode.AutoComplete(
+                            persistentListOf(
+                                previewDeeplinkSuggestionUiModel(value = "dev"),
+                                previewDeeplinkSuggestionUiModel(value = "staging", isDefault = true),
+                                previewDeeplinkSuggestionUiModel(value = "prod"),
+                            )
+                        ),
                     ),
                 ),
                 tabs = listOf(

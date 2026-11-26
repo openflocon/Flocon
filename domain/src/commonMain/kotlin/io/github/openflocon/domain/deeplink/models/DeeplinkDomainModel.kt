@@ -12,7 +12,7 @@ data class DeeplinkDomainModel(
 
         data class AutoComplete(
             override val name: String,
-            val autoComplete: List<String>
+            val suggestions: List<DeeplinkSuggestionDomainModel>
         ) : Parameter
 
         data class Variable(

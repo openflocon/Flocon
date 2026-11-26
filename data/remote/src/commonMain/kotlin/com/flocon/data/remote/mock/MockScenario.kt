@@ -107,7 +107,7 @@ sealed interface MockEvent {
         sealed interface Parameter {
             val name: String
 
-            data class AutoComplete(override val name: String, val values: List<String>) : Parameter
+            data class AutoComplete(override val name: String, val suggestions: List<Suggestion>) : Parameter
 
             data class Variable(override val name: String, val variableName: String) : Parameter
         }
@@ -115,7 +115,13 @@ sealed interface MockEvent {
         data class Variable(
             val name: String,
             val description: String? = null,
-            val suggestions: List<String>? = null, // null = free input
+            val suggestions: List<Suggestion>? = null, // null = free input
+        )
+
+        data class Suggestion(
+            val value: String,
+            val label: String? = null,
+            val isDefault: Boolean = false,
         )
     }
 

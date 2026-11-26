@@ -48,7 +48,8 @@ data class DeeplinkEntity(
         @SerialName("auto_complete")
         data class AutoComplete(
             override val name: String,
-            val autoComplete: List<String>
+            val autoComplete: List<String> = emptyList(), // the values, as stored before the labels
+            val suggestions: List<DeeplinkSuggestionEntity>? = null,
         ) : Parameter
 
         @Serializable
