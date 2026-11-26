@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,7 +65,7 @@ internal fun TopBarDeviceDropdown(
                 )
                 group.devices.forEach { device ->
                     TopBarDeviceRow(
-                        modifier = Modifier.width(FloconTheme.sizes.deviceDropdownWidth),
+                        modifier = Modifier.widthIn(min = FloconTheme.sizes.deviceDropdownWidth),
                         device = device,
                         selected = state.deviceSelected.id == device.id,
                         onClick = {

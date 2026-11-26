@@ -62,6 +62,7 @@ class MainFloconNavigationState(initialScreen: FloconRoute = LoadingRoute) : Flo
     }
 
     fun menu(route: FloconRoute) {
+        closePanel()
         _stack[0] = route
     }
 }

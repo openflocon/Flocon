@@ -146,7 +146,7 @@ fun DatabaseResult(
 
                                                 selectedItem = item
                                                 KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
                                             }
                                         }
 
@@ -164,7 +164,7 @@ fun DatabaseResult(
 
                                                 selectedItem = item
                                                 KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns))
+                                                    .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
                                             }
                                         }
 
@@ -186,7 +186,7 @@ fun DatabaseResult(
                                 onItemSelected = {
                                     selectedItem = it
                                     KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                        .navigate(DatabaseRoutes.Detail(it, result.columns))
+                                        .navigate(DatabaseRoutes.Detail(it, result.columns, result.editTarget))
                                 }
                             )
 

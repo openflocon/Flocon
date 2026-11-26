@@ -786,7 +786,7 @@
     <string name="proxy_server">Server</string>
     <string name="proxy_port">Port</string>
     <string name="proxy_copy">Copy</string>
-    <string name="proxy_devices_hint">Each phone shows up as “Proxy &lt;IP&gt;” in the device selector, in its own Proxy group. Apps that pin their certificates refuse the proxy.</string>
+    <string name="proxy_devices_hint">Android phones seen by adb show up under the phone itself, as a “Proxy” app. The others show up as “Proxy &lt;IP&gt;”, in their own Proxy group. Apps that pin their certificates refuse the proxy.</string>
     <string name="proxy_platform_android">Android</string>
     <string name="proxy_platform_ios">iOS</string>
     <string name="proxy_android_step_app">Your app trusts it only if its network_security_config allows user certificates, for example in debug builds:</string>
@@ -836,4 +836,11 @@
     <string name="proxy_ios_cert_3b">Turn on “Flocon Proxy CA”</string>
     <string name="proxy_downloading">Downloading the proxy… %1$s</string>
     <string name="proxy_downloading_hint">Node.js is not installed on this computer: Flocon downloads a standalone proxy (~100 MB), once. With Node.js 18+, nothing to download.</string>
+    <string name="database_row_update">Update</string>
+    <string name="database_row_set_null">Set NULL</string>
+    <string name="database_row_updated">Row updated</string>
+    <string name="database_row_update_not_found">Row not updated: it was deleted or changed on the device</string>
+    <string name="database_row_update_device_changed">Row not updated: the selected device or app changed</string>
+    <string name="database_row_update_failed">Update failed: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s expects a number</string>
 </resources>

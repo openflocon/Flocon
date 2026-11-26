@@ -771,4 +771,11 @@
     <string name="desktop_update_installed">已安装：%1$s</string>
     <string name="timeline_transactions_expanded">默认展开事务</string>
     <string name="database_transaction_nested">嵌套事务</string>
+    <string name="database_row_update">更新</string>
+    <string name="database_row_set_null">设为 NULL</string>
+    <string name="database_row_updated">行已更新</string>
+    <string name="database_row_update_not_found">行未更新：它已在设备上被删除或修改</string>
+    <string name="database_row_update_device_changed">行未更新：所选设备或应用已更改</string>
+    <string name="database_row_update_failed">更新失败：%1$s</string>
+    <string name="database_row_update_invalid_number">%1$s 需要数字</string>
 </resources>

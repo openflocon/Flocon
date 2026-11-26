@@ -771,4 +771,11 @@
     <string name="desktop_update_installed">已安裝：%1$s</string>
     <string name="timeline_transactions_expanded">預設展開交易</string>
     <string name="database_transaction_nested">巢狀交易</string>
+    <string name="database_row_update">更新</string>
+    <string name="database_row_set_null">設為 NULL</string>
+    <string name="database_row_updated">資料列已更新</string>
+    <string name="database_row_update_not_found">資料列未更新：它已在裝置上遭到刪除或修改</string>
+    <string name="database_row_update_device_changed">資料列未更新：所選裝置或應用程式已變更</string>
+    <string name="database_row_update_failed">更新失敗：%1$s</string>
+    <string name="database_row_update_invalid_number">%1$s 需要數字</string>
 </resources>

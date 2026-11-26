@@ -790,4 +790,11 @@
     <string name="desktop_update_installed">Встановлено: %1$s</string>
     <string name="timeline_transactions_expanded">Розгортати транзакції за замовчуванням</string>
     <string name="database_transaction_nested">Вкладена транзакція</string>
+    <string name="database_row_update">Оновити</string>
+    <string name="database_row_set_null">Установити NULL</string>
+    <string name="database_row_updated">Рядок оновлено</string>
+    <string name="database_row_update_not_found">Рядок не оновлено: його видалено або змінено на пристрої</string>
+    <string name="database_row_update_device_changed">Рядок не оновлено: вибраний пристрій або застосунок змінився</string>
+    <string name="database_row_update_failed">Не вдалося оновити: %1$s</string>
+    <string name="database_row_update_invalid_number">Для %1$s потрібне число</string>
 </resources>

@@ -11,6 +11,7 @@ sealed interface QueryResultUiModel {
     data class Values(
         val columns: List<String>,
         val rows: ImmutableList<DatabaseRowUiModel>,
+        val editTarget: DatabaseRowEditTargetUiModel? = null,
     ) : QueryResultUiModel
 }
 

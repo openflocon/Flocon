@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">Installata: %1$s</string>
     <string name="timeline_transactions_expanded">Espandi le transazioni per impostazione predefinita</string>
     <string name="database_transaction_nested">Transazione annidata</string>
+    <string name="database_row_update">Aggiorna</string>
+    <string name="database_row_set_null">Imposta NULL</string>
+    <string name="database_row_updated">Riga aggiornata</string>
+    <string name="database_row_update_not_found">Riga non aggiornata: è stata eliminata o modificata sul dispositivo</string>
+    <string name="database_row_update_device_changed">Riga non aggiornata: il dispositivo o l'app selezionati sono cambiati</string>
+    <string name="database_row_update_failed">Aggiornamento non riuscito: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s richiede un numero</string>
 </resources>

@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">Installerad: %1$s</string>
     <string name="timeline_transactions_expanded">Fäll ut transaktioner som standard</string>
     <string name="database_transaction_nested">Nästlad transaktion</string>
+    <string name="database_row_update">Uppdatera</string>
+    <string name="database_row_set_null">Sätt NULL</string>
+    <string name="database_row_updated">Raden uppdaterad</string>
+    <string name="database_row_update_not_found">Raden uppdaterades inte: den har tagits bort eller ändrats på enheten</string>
+    <string name="database_row_update_device_changed">Raden uppdaterades inte: den valda enheten eller appen har ändrats</string>
+    <string name="database_row_update_failed">Uppdateringen misslyckades: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s kräver ett tal</string>
 </resources>

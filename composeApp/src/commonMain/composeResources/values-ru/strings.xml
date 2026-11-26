@@ -790,4 +790,11 @@
     <string name="desktop_update_installed">Установлено: %1$s</string>
     <string name="timeline_transactions_expanded">Разворачивать транзакции по умолчанию</string>
     <string name="database_transaction_nested">Вложенная транзакция</string>
+    <string name="database_row_update">Обновить</string>
+    <string name="database_row_set_null">Установить NULL</string>
+    <string name="database_row_updated">Строка обновлена</string>
+    <string name="database_row_update_not_found">Строка не обновлена: она удалена или изменена на устройстве</string>
+    <string name="database_row_update_device_changed">Строка не обновлена: выбранное устройство или приложение изменилось</string>
+    <string name="database_row_update_failed">Не удалось обновить: %1$s</string>
+    <string name="database_row_update_invalid_number">Для %1$s требуется число</string>
 </resources>

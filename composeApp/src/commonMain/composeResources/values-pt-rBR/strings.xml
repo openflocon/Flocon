@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">Instalado: %1$s</string>
     <string name="timeline_transactions_expanded">Expandir transações por padrão</string>
     <string name="database_transaction_nested">Transação aninhada</string>
+    <string name="database_row_update">Atualizar</string>
+    <string name="database_row_set_null">Definir NULL</string>
+    <string name="database_row_updated">Linha atualizada</string>
+    <string name="database_row_update_not_found">Linha não atualizada: ela foi excluída ou alterada no dispositivo</string>
+    <string name="database_row_update_device_changed">Linha não atualizada: o dispositivo ou app selecionado mudou</string>
+    <string name="database_row_update_failed">Falha ao atualizar: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s requer um número</string>
 </resources>

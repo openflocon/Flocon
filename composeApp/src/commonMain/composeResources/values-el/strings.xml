@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">Εγκατεστημένο: %1$s</string>
     <string name="timeline_transactions_expanded">Ανάπτυξη συναλλαγών από προεπιλογή</string>
     <string name="database_transaction_nested">Εμφωλευμένη συναλλαγή</string>
+    <string name="database_row_update">Ενημέρωση</string>
+    <string name="database_row_set_null">Ορισμός NULL</string>
+    <string name="database_row_updated">Η γραμμή ενημερώθηκε</string>
+    <string name="database_row_update_not_found">Η γραμμή δεν ενημερώθηκε: διαγράφηκε ή άλλαξε στη συσκευή</string>
+    <string name="database_row_update_device_changed">Η γραμμή δεν ενημερώθηκε: άλλαξε η επιλεγμένη συσκευή ή εφαρμογή</string>
+    <string name="database_row_update_failed">Η ενημέρωση απέτυχε: %1$s</string>
+    <string name="database_row_update_invalid_number">Το %1$s απαιτεί αριθμό</string>
 </resources>

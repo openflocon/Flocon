@@ -35,9 +35,9 @@ class MockDeviceResponderTest {
 
     private fun responder() = MockDeviceResponder(device, Instant.fromEpochMilliseconds(1_800_000_000_000), json)
 
-    private fun query(sql: String): String {
+    private fun query(sql: String, responder: MockDeviceResponder = responder()): String {
         val body = """{"query":${Json.encodeToString(String.serializer(), sql)},"requestId":"r1","database":"db"}"""
-        val reply = responder().respond(FloconOutgoingMessageDataModel("database", "query", body)).single() as MockReply.Message
+        val reply = responder.respond(FloconOutgoingMessageDataModel("database", "query", body)).single() as MockReply.Message
         return reply.body
     }
 
@@ -56,6 +56,16 @@ class MockDeviceResponderTest {
     @Test
     fun `unsupported sql is an error`() {
         assertTrue(query("DROP TABLE users").contains("Error"))
+    }
+
+    @Test
+    fun `updates a row, as long as it holds the previous values`() {
+        val responder = responder()
+        val update = """UPDATE "users" SET "name" = 'O''Brien' WHERE "id" = '1' AND "name" IS 'Jane'"""
+
+        assertTrue(query(update, responder).contains("affectedCount\\\\\\\":1"))
+        assertTrue(query("SELECT * FROM users", responder).contains("O'Brien"))
+        assertTrue(query(update, responder).contains("affectedCount\\\\\\\":0"))
     }
 
     @Test

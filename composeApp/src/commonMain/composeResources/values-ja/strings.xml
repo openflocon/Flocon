@@ -769,4 +769,11 @@
     <string name="desktop_update_installed">インストール済み: %1$s</string>
     <string name="timeline_transactions_expanded">トランザクションをデフォルトで展開</string>
     <string name="database_transaction_nested">ネストされたトランザクション</string>
+    <string name="database_row_update">更新</string>
+    <string name="database_row_set_null">NULLを設定</string>
+    <string name="database_row_updated">行を更新しました</string>
+    <string name="database_row_update_not_found">行は更新されませんでした: デバイス上で削除または変更されています</string>
+    <string name="database_row_update_device_changed">行は更新されませんでした: 選択中のデバイスまたはアプリが変わりました</string>
+    <string name="database_row_update_failed">更新に失敗しました: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s には数値が必要です</string>
 </resources>

@@ -769,4 +769,11 @@
     <string name="desktop_update_installed">Đã cài đặt: %1$s</string>
     <string name="timeline_transactions_expanded">Mở rộng giao dịch theo mặc định</string>
     <string name="database_transaction_nested">Giao dịch lồng nhau</string>
+    <string name="database_row_update">Cập nhật</string>
+    <string name="database_row_set_null">Đặt NULL</string>
+    <string name="database_row_updated">Đã cập nhật hàng</string>
+    <string name="database_row_update_not_found">Hàng chưa được cập nhật: hàng đã bị xóa hoặc thay đổi trên thiết bị</string>
+    <string name="database_row_update_device_changed">Hàng chưa được cập nhật: thiết bị hoặc ứng dụng đã chọn đã thay đổi</string>
+    <string name="database_row_update_failed">Cập nhật thất bại: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s yêu cầu một số</string>
 </resources>

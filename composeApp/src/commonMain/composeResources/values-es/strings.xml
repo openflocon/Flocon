@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">Instalada: %1$s</string>
     <string name="timeline_transactions_expanded">Expandir transacciones por defecto</string>
     <string name="database_transaction_nested">Transacción anidada</string>
+    <string name="database_row_update">Actualizar</string>
+    <string name="database_row_set_null">Poner NULL</string>
+    <string name="database_row_updated">Fila actualizada</string>
+    <string name="database_row_update_not_found">Fila no actualizada: se eliminó o cambió en el dispositivo</string>
+    <string name="database_row_update_device_changed">Fila no actualizada: cambió el dispositivo o la app seleccionados</string>
+    <string name="database_row_update_failed">Error al actualizar: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s requiere un número</string>
 </resources>

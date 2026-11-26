@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.view
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -23,48 +24,74 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import coil3.compose.AsyncImage
 import com.composeunstyled.Text
 import flocondesktop.composeapp.generated.resources.Res
-import flocondesktop.composeapp.generated.resources.copied_to_clipboard
+import flocondesktop.composeapp.generated.resources.database_row_set_null
+import flocondesktop.composeapp.generated.resources.database_row_update
 import flocondesktop.composeapp.generated.resources.general_copy_all_content
 import flocondesktop.composeapp.generated.resources.images_preview
-import io.github.openflocon.domain.feedback.FeedbackDisplayer
+import io.github.openflocon.flocondesktop.features.database.DatabaseRowDetailViewModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowDetailAction
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowDetailUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
+import io.github.openflocon.flocondesktop.features.database.model.previewDatabaseRowDetailUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.common.copyToClipboard
 import io.github.openflocon.library.designsystem.common.isImageUrl
+import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
+import io.github.openflocon.library.designsystem.components.FloconTextField
 import io.github.openflocon.library.designsystem.components.FloconVerticalScrollbar
+import io.github.openflocon.library.designsystem.components.defaultPlaceHolder
 import io.github.openflocon.library.designsystem.components.rememberFloconScrollbarAdapter
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DatabaseRowDetail(
     state: DetailResultItem,
     columns: List<String>,
     modifier: Modifier = Modifier,
+    editTarget: DatabaseRowEditTargetUiModel? = null,
+) {
+    val params = DatabaseRowDetailViewModel.Params(
+        columns = columns,
+        values = state.item.items,
+        editTarget = editTarget,
+    )
+    val viewModel = koinViewModel<DatabaseRowDetailViewModel>(key = params.toString()) {
+        parametersOf(params)
+    }
+
+    DatabaseRowDetail(
+        uiState = viewModel.uiState,
+        onAction = viewModel::onAction,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun DatabaseRowDetail(
+    uiState: DatabaseRowDetailUiModel,
+    onAction: (DatabaseRowDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scrollState: ScrollState = rememberScrollState()
 
     val scrollAdapter = rememberFloconScrollbarAdapter(scrollState)
-
-    val scope = rememberCoroutineScope()
-    val feedbackDisplayer = koinInject<FeedbackDisplayer>()
 
     Box(modifier) {
         Column(
@@ -77,47 +104,43 @@ fun DatabaseRowDetail(
                     .border(1.dp, FloconTheme.colors.bg100)
                     .padding(vertical = FloconTheme.spacing.medium)
                     .padding(horizontal = FloconTheme.spacing.small),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.small, Alignment.End),
                 verticalAlignment = Alignment.Top,
             ) {
+                if (uiState.isEditable) {
+                    DetailHeaderButton(
+                        text = stringResource(Res.string.database_row_update),
+                        onClick = { onAction(DatabaseRowDetailAction.Update) },
+                        imageVector = Icons.Outlined.Save,
+                        enabled = uiState.canUpdate,
+                    )
+                }
                 DetailHeaderButton(
                     text = stringResource(Res.string.general_copy_all_content),
-                    onClick = {
-                        copyToClipboard(
-                            state.toCopiableText(
-                                columns = columns,
-                            )
-                        )
-                        scope.launch {
-                            feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
-                        }
-                    },
+                    onClick = { onAction(DatabaseRowDetailAction.CopyAll) },
                     imageVector = Icons.Outlined.CopyAll,
                 )
             }
 
-            SelectionContainer(
-                Modifier.fillMaxSize(),
-            ) {
+            val fields: @Composable () -> Unit = {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(top = FloconTheme.spacing.medium, bottom = FloconTheme.spacing.doubleExtraLarge),
                 ) {
-                    itemsIndexed(columns) { index, column ->
+                    itemsIndexed(
+                        items = uiState.fields,
+                        key = { index, field -> "$index-${field.column}" },
+                    ) { index, field ->
                         DetailItem(
-                            column = column,
-                            copyValue = {
-                                copyToClipboard(it)
-                                scope.launch {
-                                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
-                                }
-                            },
-                            value = state.item.items.getOrNull(index),
+                            field = field,
+                            onValueChanged = { onAction(DatabaseRowDetailAction.ValueChanged(index, it)) },
+                            onNullChanged = { onAction(DatabaseRowDetailAction.NullChanged(index, it)) },
+                            onCopyValue = { onAction(DatabaseRowDetailAction.CopyValue(it)) },
                             modifier = Modifier.fillMaxSize()
                                 .padding(horizontal = 18.dp)
                         )
 
-                        if (index != columns.lastIndex) {
+                        if (index != uiState.fields.lastIndex) {
                             FloconHorizontalDivider(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -127,6 +150,16 @@ fun DatabaseRowDetail(
                         }
                     }
                 }
+            }
+
+            // text fields handle their own selection
+            if (uiState.isEditable) {
+                fields()
+            } else {
+                SelectionContainer(
+                    modifier = Modifier.fillMaxSize(),
+                    content = fields,
+                )
             }
         }
 
@@ -140,11 +173,13 @@ fun DatabaseRowDetail(
 
 @Composable
 private fun DetailItem(
-    column: String,
-    value: String?,
-    copyValue: (String) -> Unit,
+    field: DatabaseRowDetailUiModel.Field,
+    onValueChanged: (String) -> Unit,
+    onNullChanged: (Boolean) -> Unit,
+    onCopyValue: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val value = field.value
     val contentColor = FloconTheme.colors.ink
 
     val valueOrNull = value ?: "NULL"
@@ -164,7 +199,7 @@ private fun DetailItem(
             Text(
                 modifier = Modifier.weight(1f),
                 style = FloconTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                text = column,
+                text = field.column,
                 color = contentColor,
             )
 
@@ -176,7 +211,7 @@ private fun DetailItem(
                     .clip(FloconTheme.shapes.small)
                     .clickable(enabled = value != null) {
                         value?.let {
-                            copyValue(it)
+                            onCopyValue(it)
                         }
                     }
             ) {
@@ -189,27 +224,51 @@ private fun DetailItem(
             }
         }
 
-        // copy button
-
         Spacer(modifier = Modifier.height(FloconTheme.spacing.tiny))
 
         val isImageUrl = remember(value) {
             value?.isImageUrl() == true
         }
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = FloconTheme.spacing.extraSmall)
-                .background(
-                    shape = FloconTheme.shapes.medium,
-                    color = FloconTheme.colors.bg000,
+        if (field.isEditable) {
+            FloconTextField(
+                value = value.orEmpty(),
+                onValueChange = onValueChanged,
+                placeholder = defaultPlaceHolder("NULL".takeIf { value == null }),
+                singleLine = false,
+                textStyle = FloconTheme.typography.bodyMedium,
+                containerColor = FloconTheme.colors.bg000,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+            ) {
+                FloconCheckbox(
+                    checked = value == null,
+                    onCheckedChange = onNullChanged,
                 )
-                .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
-            style = FloconTheme.typography.bodyMedium,
-            text = valueOrNull,
-            color = valueColor,
-        )
+                Text(
+                    style = FloconTheme.typography.bodySmall,
+                    text = stringResource(Res.string.database_row_set_null),
+                    color = contentColor,
+                )
+            }
+        } else {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = FloconTheme.spacing.extraSmall)
+                    .background(
+                        shape = FloconTheme.shapes.medium,
+                        color = FloconTheme.colors.bg000,
+                    )
+                    .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
+                style = FloconTheme.typography.bodyMedium,
+                text = valueOrNull,
+                color = valueColor,
+            )
+        }
 
         if (isImageUrl) {
             // Coil image
@@ -232,15 +291,18 @@ private fun DetailHeaderButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val shape = FloconTheme.shapes.large
     Row(
-        modifier = modifier.clip(shape)
+        modifier = modifier
+            .alpha(if (enabled) 1f else 0.4f)
+            .clip(shape)
             .border(
                 width = 0.5.dp,
                 shape = shape,
                 color = FloconTheme.colors.ink,
-            ).clickable(onClick = onClick)
+            ).clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = FloconTheme.spacing.small, vertical = FloconTheme.spacing.extraSmall),
         horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
@@ -265,22 +327,13 @@ private fun DetailHeaderButton(
     }
 }
 
-// copy it as markdown
-private fun DetailResultItem.toCopiableText(
-    columns: List<String>,
-): String = buildString {
-    columns.fastForEachIndexed { index, column ->
-        append("### ")
-        append(column)
-        append(": ")
-        append("\n")
-        append("\n")
-        appendLine(item.items.getOrNull(index) ?: "NULL")
-
-        if (index != columns.lastIndex) {
-            append("\n")
-            appendLine("--------")
-            append("\n")
-        }
+@Preview
+@Composable
+private fun DatabaseRowDetailPreview() {
+    FloconTheme {
+        DatabaseRowDetail(
+            uiState = previewDatabaseRowDetailUiModel(),
+            onAction = {},
+        )
     }
 }

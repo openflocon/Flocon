@@ -63,6 +63,9 @@ internal class MockDeviceResponder(
     private val preferences = device.events.filterIsInstance<MockEvent.SharedPreferences>().flatMap { it.preferences }
         .associate { it.name to it.rows.toMutableList() }
 
+    /** The rows of the tables, kept to apply the updates: database id and table name to rows. */
+    private val tableRows = mutableMapOf<Pair<String, String>, List<List<String?>>>()
+
     private var downloadFolder: File? = null
 
     fun respond(message: FloconOutgoingMessageDataModel): List<MockReply> = try {
@@ -124,7 +127,8 @@ internal class MockDeviceResponder(
 
     /**
      * A tiny SQL model, enough for what the desktop sends: the list of tables, `PRAGMA table_info`, and
-     * `SELECT <columns | * | COUNT(*)> FROM <table> [WHERE col = value] [LIMIT n [OFFSET m]]`. Anything else is an error.
+     * `SELECT <columns | * | COUNT(*)> FROM <table> [WHERE col = value] [LIMIT n [OFFSET m]]`, and the update of a row
+     * as the desktop writes it. Anything else is an error.
      */
     private fun runQuery(databaseId: String, sql: String): DatabaseExecuteSqlResponseDataModel {
         val database = databases[databaseId] ?: return error(sql, "no such database: $databaseId")
@@ -155,19 +159,60 @@ internal class MockDeviceResponder(
             val (selected, tableName, rest) = select.destructured
             val table = database.tables.firstOrNull { it.name.equals(tableName, ignoreCase = true) }
                 ?: return error(sql, "no such table: $tableName")
-            return select(table, selected.trim(), rest, sql)
+            return select(table, rowsOf(databaseId, table), selected.trim(), rest, sql)
         }
 
-        return error(sql, "Flocon mock mode only answers SELECT queries on the sample tables")
+        val update = UPDATE_REGEX.matchEntire(statement)
+        if (update != null) {
+            val (tableName, assignments, conditions) = update.destructured
+            val table = database.tables.firstOrNull { it.name.equals(tableName, ignoreCase = true) }
+                ?: return error(sql, "no such table: $tableName")
+            return update(databaseId, table, assignments, conditions, sql)
+        }
+
+        return error(sql, "Flocon mock mode only answers SELECT and UPDATE queries on the sample tables")
+    }
+
+    private fun rowsOf(databaseId: String, table: MockEvent.Databases.Table) = tableRows[databaseId to table.name] ?: table.rows
+
+    private fun update(
+        databaseId: String,
+        table: MockEvent.Databases.Table,
+        assignments: String,
+        conditions: String,
+        sql: String,
+    ): DatabaseExecuteSqlResponseDataModel {
+        fun parse(text: String): List<Pair<Int, String?>>? = COMPARISON_REGEX.findAll(text).toList().map { match ->
+            val column = match.groupValues[1].replace("\"\"", "\"")
+            val index = table.columns.indexOfFirst { it.name.equals(column, ignoreCase = true) }
+            if (index < 0) return null
+            val literal = match.groupValues[2]
+            index to if (literal.equals("NULL", ignoreCase = true)) null else literal.removeSurrounding("'").replace("''", "'")
+        }
+
+        val values = parse(assignments) ?: return error(sql, "no such column")
+        val where = parse(conditions) ?: return error(sql, "no such column")
+
+        var affected = 0
+        tableRows[databaseId to table.name] = rowsOf(databaseId, table).map { row ->
+            if (where.all { (index, value) -> row.getOrNull(index) == value }) {
+                affected++
+                row.toMutableList().apply { values.forEach { (index, value) -> set(index, value) } }
+            } else {
+                row
+            }
+        }
+        return DatabaseExecuteSqlResponseDataModel.UpdateDelete(affectedCount = affected)
     }
 
     private fun select(
         table: MockEvent.Databases.Table,
+        tableRows: List<List<String?>>,
         selected: String,
         rest: String,
         sql: String,
     ): DatabaseExecuteSqlResponseDataModel {
-        var rows = table.rows
+        var rows = tableRows
 
         Regex("""where\s+[`"']?(\w+)[`"']?\s*=\s*'?([^'\s]+)'?""", RegexOption.IGNORE_CASE).find(rest)?.let { where ->
             val index = table.columns.indexOfFirst { it.name.equals(where.groupValues[1], ignoreCase = true) }
@@ -378,4 +423,18 @@ internal class MockDeviceResponder(
     // endregion
 
     private fun reply(plugin: String, method: String, body: String) = MockReply.Message(plugin, method, body)
+
+    private companion object {
+        private const val IDENTIFIER = "\"(?:[^\"]|\"\")*\""
+        private const val LITERAL = "(?:'(?:[^']|'')*'|NULL)"
+        private const val ASSIGNMENT = "$IDENTIFIER\\s*=\\s*$LITERAL"
+        private const val CONDITION = "$IDENTIFIER\\s*(?:=|\\bIS\\b)\\s*$LITERAL"
+
+        /** `UPDATE "table" SET "a" = 'x', ... WHERE "id" = '1' AND "a" IS NULL ...` */
+        val UPDATE_REGEX = Regex(
+            "UPDATE\\s+\"(\\w+)\"\\s+SET\\s+($ASSIGNMENT(?:\\s*,\\s*$ASSIGNMENT)*)\\s+WHERE\\s+($CONDITION(?:\\s+AND\\s+$CONDITION)*)",
+            RegexOption.IGNORE_CASE,
+        )
+        val COMPARISON_REGEX = Regex("\"((?:[^\"]|\"\")*)\"\\s*(?:=|\\bIS\\b)\\s*($LITERAL)", RegexOption.IGNORE_CASE)
+    }
 }

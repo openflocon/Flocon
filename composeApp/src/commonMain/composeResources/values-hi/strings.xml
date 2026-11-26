@@ -776,4 +776,11 @@
     <string name="desktop_update_installed">इंस्टॉल्ड: %1$s</string>
     <string name="timeline_transactions_expanded">ट्रांज़ैक्शन डिफ़ॉल्ट रूप से फैलाएँ</string>
     <string name="database_transaction_nested">नेस्टेड ट्रांज़ैक्शन</string>
+    <string name="database_row_update">अपडेट करें</string>
+    <string name="database_row_set_null">NULL सेट करें</string>
+    <string name="database_row_updated">पंक्ति अपडेट हो गई</string>
+    <string name="database_row_update_not_found">पंक्ति अपडेट नहीं हुई: डिवाइस पर इसे मिटा दिया गया या बदल दिया गया</string>
+    <string name="database_row_update_device_changed">पंक्ति अपडेट नहीं हुई: चुना गया डिवाइस या ऐप बदल गया</string>
+    <string name="database_row_update_failed">अपडेट नहीं हो सका: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s में संख्या होनी चाहिए</string>
 </resources>

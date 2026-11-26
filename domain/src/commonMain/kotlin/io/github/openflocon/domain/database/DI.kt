@@ -1,17 +1,20 @@
 package io.github.openflocon.domain.database
 
 import io.github.openflocon.domain.database.usecase.AskForDeviceDatabasesUseCase
+import io.github.openflocon.domain.database.usecase.BuildUpdateRowQueryUseCase
 import io.github.openflocon.domain.database.usecase.ClearDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.CountDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.GetDatabaseByIdUseCase
 import io.github.openflocon.domain.database.usecase.GetDeviceDatabaseTablesUseCase
+import io.github.openflocon.domain.database.usecase.GetRowEditTargetUseCase
 import io.github.openflocon.domain.database.usecase.GetTableColumnsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveCurrentDeviceSelectedDatabaseAndTablesUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDatabaseQueryLogsUseCase
 import io.github.openflocon.domain.database.usecase.ObserveDeviceDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
+import io.github.openflocon.domain.database.usecase.UpdateDatabaseRowUseCase
 import io.github.openflocon.domain.database.usecase.favorite.DeleteFavoriteQueryDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.ObserveFavoriteQueriesUseCase
@@ -36,4 +39,7 @@ internal val databaseModule = module {
     factoryOf(::CountDatabaseQueryLogsUseCase)
     factoryOf(::ObserveDatabaseQueryLogUseCase)
     factoryOf(::ClearDatabaseQueryLogsUseCase)
+    factoryOf(::GetRowEditTargetUseCase)
+    factoryOf(::BuildUpdateRowQueryUseCase)
+    factoryOf(::UpdateDatabaseRowUseCase)
 }

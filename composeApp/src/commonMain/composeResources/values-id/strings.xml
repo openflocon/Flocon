@@ -769,4 +769,11 @@
     <string name="desktop_update_installed">Terpasang: %1$s</string>
     <string name="timeline_transactions_expanded">Perluas transaksi secara default</string>
     <string name="database_transaction_nested">Transaksi bersarang</string>
+    <string name="database_row_update">Perbarui</string>
+    <string name="database_row_set_null">Setel NULL</string>
+    <string name="database_row_updated">Baris diperbarui</string>
+    <string name="database_row_update_not_found">Baris tidak diperbarui: sudah dihapus atau diubah di perangkat</string>
+    <string name="database_row_update_device_changed">Baris tidak diperbarui: perangkat atau aplikasi yang dipilih berubah</string>
+    <string name="database_row_update_failed">Gagal memperbarui: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s harus berupa angka</string>
 </resources>
