@@ -1,6 +1,5 @@
 package io.github.openflocon.data.local.timeline.dao
 
-import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
@@ -23,6 +22,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TimelineDao {
+    // one page of one kind of event: see buildTimelinePageQueries
+    @RawQuery
+    suspend fun getTimelinePage(
+        query: RoomRawQuery,
+    ): List<TimelineRowEntity>
+
+    // emits when a table of the timeline changes: the pages loaded are out of date. The query is only there to be run
     @RawQuery(
         observedEntities = [
             FloconNetworkCallEntity::class,
@@ -38,9 +44,9 @@ interface TimelineDao {
             TimelineLogEntity::class,
         ]
     )
-    fun observeTimeline(
+    fun observeTimelineChanges(
         query: RoomRawQuery,
-    ): PagingSource<Int, TimelineRowEntity>
+    ): Flow<List<Int>>
 
     @RawQuery(
         observedEntities = [
