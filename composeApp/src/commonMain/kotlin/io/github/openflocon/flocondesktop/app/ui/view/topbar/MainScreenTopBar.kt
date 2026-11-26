@@ -33,8 +33,10 @@ import io.github.openflocon.flocondesktop.app.ui.model.DevicesStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.model.RecordVideoStateUiModel
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarActions
 import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarConnectButton
+import io.github.openflocon.flocondesktop.app.ui.view.topbar.actions.TopBarProxyButton
 import io.github.openflocon.flocondesktop.app.version.VersionCheckerViewModel
 import io.github.openflocon.flocondesktop.features.connect.view.ConnectDialog
+import io.github.openflocon.flocondesktop.features.proxy.view.ProxyDialog
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.floconIsland
 import org.jetbrains.compose.resources.stringResource
@@ -58,6 +60,10 @@ fun MainScreenTopBar(
     var showConnectDialog by remember { mutableStateOf(false) }
     if (showConnectDialog) {
         ConnectDialog(onDismissRequest = { showConnectDialog = false })
+    }
+    var showProxyDialog by remember { mutableStateOf(false) }
+    if (showProxyDialog) {
+        ProxyDialog(onDismissRequest = { showProxyDialog = false })
     }
 
     Row(
@@ -97,6 +103,7 @@ fun MainScreenTopBar(
             onOpenFolderClicked = onOpenFolderClicked,
             devicesState = devicesState,
         )
+        TopBarProxyButton(onClicked = { showProxyDialog = true })
         TopBarConnectButton(onClicked = { showConnectDialog = true })
     }
 }

@@ -75,6 +75,7 @@ internal fun toRowEditColumns(
             name = it.name,
             isPrimaryKey = it.primaryKey,
             affinity = it.affinity(),
+            isNullable = it.nullable,
         )
     }
 }

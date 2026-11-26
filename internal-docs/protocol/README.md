@@ -88,6 +88,13 @@ Right after a connection is opened, before any other message, the SDK sends `plu
 
 The desktop shows a wifi icon next to a device connected with `wifi`.
 
+## Proxy client
+
+`flocon-proxy` (in `proxy/`, see `docs/proxy.md`) is a client like the SDKs: it sends `bonjour` then `network` messages, one device per phone using the proxy, with `appPackageName: "flocon.proxy"` and `sdk: "proxy"` in `bonjour` (no SDK update badge). It only sends, and ignores Desktop → Mobile messages.
+
+- A phone Flocon Desktop linked to an Android device found with adb: the `deviceId`, `deviceName` and `platform` of that device (the one of its SDK app when Flocon knows its serial). For a device of the SDK, `bonjour` has **no `connectionType`**: the one sent by the SDK is kept. `connectionType` is optional in `bonjour` for this reason.
+- Any other phone: `deviceId: "proxy-<phone IP>"`, `platform: "proxy"`, `connectionType: "wifi"` (adb features off).
+
 ## Conventions used in this folder
 
 - Examples of `body` are shown **decoded** (as real JSON) for readability. On the wire they are a JSON string inside the envelope.

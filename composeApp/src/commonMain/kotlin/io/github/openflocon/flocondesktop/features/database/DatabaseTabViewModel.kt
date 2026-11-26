@@ -21,6 +21,7 @@ import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseRowUpdatedNotifier
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditColumn
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
+import io.github.openflocon.flocondesktop.features.database.mapper.canSetNull
 import io.github.openflocon.flocondesktop.features.database.mapper.displayRowUpdateResult
 import io.github.openflocon.flocondesktop.features.database.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
@@ -252,7 +253,7 @@ class DatabaseTabViewModel(
                     }
                 }
 
-                is DatabaseTabAction.SetCellNull -> writeCell(rowIndex = action.rowIndex, columnIndex = action.columnIndex, value = null)
+                is DatabaseTabAction.SetCellNull -> if ((queryResult.value as? QueryResultUiModel.Values)?.editTarget?.canSetNull(action.columnIndex) == true) writeCell(rowIndex = action.rowIndex, columnIndex = action.columnIndex, value = null)
 
                 is DatabaseTabAction.CopyCellValue -> {
                     copyToClipboard(action.value)

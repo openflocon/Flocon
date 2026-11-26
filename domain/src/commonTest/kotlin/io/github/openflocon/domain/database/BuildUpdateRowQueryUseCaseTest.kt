@@ -15,7 +15,7 @@ class BuildUpdateRowQueryUseCaseTest {
         name: String,
         isPrimaryKey: Boolean = false,
         affinity: DatabaseColumnAffinity = DatabaseColumnAffinity.Text,
-    ) = DatabaseRowEditTargetDomainModel.Column(name, isPrimaryKey, affinity)
+    ) = DatabaseRowEditTargetDomainModel.Column(name, isPrimaryKey, affinity, isNullable = true)
 
     private fun target(vararg columns: DatabaseRowEditTargetDomainModel.Column) = DatabaseRowEditTargetDomainModel(
         deviceId = "device",

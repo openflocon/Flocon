@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -46,10 +44,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.connect_copy
@@ -65,11 +60,9 @@ import io.github.openflocon.flocondesktop.features.connect.model.LocalAddressUiM
 import io.github.openflocon.flocondesktop.features.connect.model.previewConnectUiState
 import io.github.openflocon.flocondesktop.features.connect.model.previewSingleConnectUiState
 import io.github.openflocon.library.designsystem.FloconTheme
-import io.github.openflocon.library.designsystem.components.FloconDialog
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconIconButton
-import io.github.openflocon.library.designsystem.components.FloconSurface
-import io.github.openflocon.library.designsystem.components.escape.EscapeHandler
+import io.github.openflocon.library.designsystem.components.FloconMascotDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -77,10 +70,6 @@ import org.koin.compose.viewmodel.koinViewModel
 private val SingleWidth = 420.dp
 private val MultiWidth = 680.dp
 private val QrSize = 216.dp
-
-/** The paws rest on the top edge of the window: the surface starts a bit above their bottom. */
-private val MascotPawsOverlap = 8.dp
-private val MascotEndOffset = 56.dp
 
 @Composable
 fun ConnectDialog(
@@ -107,72 +96,23 @@ private fun ConnectDialog(
 ) {
     val multiple = uiState.addresses.size > 1
 
-    ConnectDialogFrame(
+    FloconMascotDialog(
         onDismissRequest = onDismissRequest,
         width = if (multiple) MultiWidth else SingleWidth,
         mascotEnabled = uiState.mascotEnabled,
+        mascotPawsY = ConnectMascotPeekPawsY,
+        mascot = { ConnectMascotPeek(modifier = it) },
         modifier = modifier,
     ) {
-        // FloconDialog has no border, drawn here over the content so that the window stands out
-        Box(modifier = Modifier.border(1.dp, FloconTheme.colors.lineStrong, RoundedCornerShape(10.dp))) {
-            if (multiple) {
-                MultipleAddresses(
-                    uiState = uiState,
-                    onClose = onDismissRequest,
-                )
-            } else {
-                SingleAddress(
-                    address = uiState.addresses.firstOrNull(),
-                    onClose = onDismissRequest,
-                )
-            }
-        }
-    }
-}
-
-/**
- * The window of the dialog. With the mascot, it looks at the window from above: it has to be
- * drawn outside of the surface, which clips its content, so the dialog is built here.
- */
-@Composable
-private fun ConnectDialogFrame(
-    onDismissRequest: () -> Unit,
-    width: Dp,
-    mascotEnabled: Boolean,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    val properties = DialogProperties(usePlatformDefaultWidth = false)
-    if (!mascotEnabled) {
-        FloconDialog(
-            onDismissRequest = onDismissRequest,
-            properties = properties,
-            modifier = modifier.width(width),
-        ) {
-            content()
-        }
-        return
-    }
-    Dialog(onDismissRequest = onDismissRequest, properties = properties) {
-        EscapeHandler {
-            onDismissRequest()
-            true
-        }
-        Box(modifier = modifier.width(width)) {
-            FloconSurface(
-                color = FloconTheme.colors.floating,
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .padding(top = ConnectMascotPeekPawsY + MascotPawsOverlap)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-            ) {
-                content()
-            }
-            ConnectMascotPeek(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = MascotEndOffset),
+        if (multiple) {
+            MultipleAddresses(
+                uiState = uiState,
+                onClose = onDismissRequest,
+            )
+        } else {
+            SingleAddress(
+                address = uiState.addresses.firstOrNull(),
+                onClose = onDismissRequest,
             )
         }
     }

@@ -39,6 +39,7 @@
     <string name="device_platform_android">ANDROID</string>
     <string name="device_platform_ios">IOS</string>
     <string name="device_platform_desktop">DESKTOP</string>
+    <string name="device_platform_proxy">PROXY</string>
     <string name="download">ดาวน์โหลด</string>
     <string name="error_exporting_csv">เกิดข้อผิดพลาดขณะส่งออก csv</string>
     <string name="export_csv">ส่งออก CSV</string>

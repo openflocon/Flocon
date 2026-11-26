@@ -39,6 +39,15 @@ class RowEditGuardsTest {
     }
 
     @Test
+    fun `tells which columns are NOT NULL`() {
+        val tableColumns = table + DatabaseTableDomainModel.Column(name = "name", type = "TEXT", nullable = false, primaryKey = false)
+
+        val columns = toRowEditColumns(tableColumns, listOf("a", "b", "name", "price"))
+
+        assertEquals(listOf(true, true, false, true), columns?.map { it.isNullable })
+    }
+
+    @Test
     fun `requires the whole primary key`() {
         assertNotNull(toRowEditColumns(table, listOf("a", "b")))
         assertNull(toRowEditColumns(table, listOf("a", "price")))
@@ -56,8 +65,8 @@ class RowEditGuardsTest {
     @Test
     fun `refuses a text in a column of numbers, when it changed`() {
         val columns = listOf(
-            DatabaseRowEditTargetDomainModel.Column("count", false, DatabaseColumnAffinity.Integer),
-            DatabaseRowEditTargetDomainModel.Column("price", false, DatabaseColumnAffinity.Real),
+            DatabaseRowEditTargetDomainModel.Column("count", false, DatabaseColumnAffinity.Integer, isNullable = true),
+            DatabaseRowEditTargetDomainModel.Column("price", false, DatabaseColumnAffinity.Real, isNullable = true),
         )
         val original = listOf("old", "1.5")
 

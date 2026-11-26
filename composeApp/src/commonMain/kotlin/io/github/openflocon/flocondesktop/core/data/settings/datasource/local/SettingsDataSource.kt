@@ -53,6 +53,9 @@ internal interface SettingsDataSource {
     val mascotEnabled: Flow<Boolean>
     suspend fun setMascotEnabled(enabled: Boolean)
 
+    val proxyEnabled: Flow<Boolean>
+    suspend fun setProxyEnabled(enabled: Boolean)
+
     val transactionsExpandedByDefault: Flow<Boolean>
     suspend fun setTransactionsExpandedByDefault(expanded: Boolean)
 

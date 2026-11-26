@@ -24,7 +24,7 @@ sealed interface DevicesStateUiModel {
         val devices: List<DeviceItemUiModel>,
         override val deviceSelected: DeviceItemUiModel,
     ) : DevicesStateUiModel {
-        /** The devices grouped by platform, in the order Android, iOS, Desktop, others. */
+        /** The devices grouped by platform, in the order Android, iOS, Desktop, Proxy, others. */
         val groups: ImmutableList<DevicePlatformGroupUiModel> = PlatformsOrder.mapNotNull { platform ->
             devices.filter { it.platform == platform }
                 .takeIf { it.isNotEmpty() }
@@ -43,6 +43,7 @@ private val PlatformsOrder = listOf(
     DeviceItemUiModel.Platform.Android,
     DeviceItemUiModel.Platform.ios,
     DeviceItemUiModel.Platform.Desktop,
+    DeviceItemUiModel.Platform.Proxy,
     DeviceItemUiModel.Platform.Unknown,
 )
 

@@ -73,6 +73,7 @@ import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditColumn
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
+import io.github.openflocon.flocondesktop.features.database.mapper.canSetNull
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseCellEditUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
@@ -91,6 +92,9 @@ import org.jetbrains.compose.resources.stringResource
 
 private val DefaultColumnWidth = 200.dp
 private val MinColumnWidth = 48.dp
+
+// the table scrolls horizontally, so nothing else stops a column from growing: past ~262k px, Compose cannot measure it (#888)
+private val MaxColumnWidth = 2000.dp
 private val HandleWidth = 8.dp
 
 @Composable
@@ -196,7 +200,7 @@ fun DatabaseResult(
                         columnsWidth = columnsWidth,
                         scrollState = horizontalScrollState,
                         onResize = { index, delta ->
-                            columnsWidth[index] = (columnsWidth[index] + delta).coerceAtLeast(MinColumnWidth)
+                            columnsWidth[index] = (columnsWidth[index] + delta).coerceIn(MinColumnWidth, MaxColumnWidth)
                         },
                         modifier = Modifier.matchParentSize(),
                     )
@@ -240,6 +244,7 @@ private fun DatabaseResultRow(
                 value = item,
                 width = columnsWidth.getOrElse(columnIndex) { DefaultColumnWidth },
                 isEditable = isRowEditable && editTarget?.canEditColumn(columnIndex) == true,
+                canSetNull = isRowEditable && editTarget?.canSetNull(columnIndex) == true,
                 cellEdit = cellEdit?.takeIf { it.columnIndex == columnIndex },
                 menuLabels = menuLabels,
                 onStartEdit = { onAction(DatabaseTabAction.StartCellEdit(rowIndex = index, columnIndex = columnIndex)) },
@@ -265,6 +270,7 @@ private fun DatabaseResultCell(
     value: String?,
     width: Dp,
     isEditable: Boolean,
+    canSetNull: Boolean,
     /** Only when this cell is edited. */
     cellEdit: DatabaseCellEditUiModel?,
     menuLabels: CellMenuLabels,
@@ -295,7 +301,7 @@ private fun DatabaseResultCell(
                     buildList {
                         if (isEditable) {
                             add(FloconContextMenuItem.Item(label = menuLabels.edit, onClick = onStartEdit))
-                            if (value != null) {
+                            if (value != null && canSetNull) {
                                 add(FloconContextMenuItem.Item(label = menuLabels.setNull, onClick = onSetNull))
                             }
                         }

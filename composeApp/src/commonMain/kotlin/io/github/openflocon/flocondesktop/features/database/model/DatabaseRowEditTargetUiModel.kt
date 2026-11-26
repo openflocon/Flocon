@@ -15,6 +15,7 @@ data class DatabaseRowEditTargetUiModel(
         val name: String,
         val isPrimaryKey: Boolean,
         val affinity: Affinity,
+        val isNullable: Boolean,
     )
 
     enum class Affinity { Integer, Text, Blob, Real, Numeric }

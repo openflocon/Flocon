@@ -1,0 +1,214 @@
+package io.github.openflocon.flocondesktop.features.proxy
+
+import co.touchlab.kermit.Logger
+import io.github.openflocon.domain.proxy.models.ProxyStateDomainModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.net.ServerSocket
+import java.util.concurrent.TimeUnit
+
+/**
+ * Starts and watches the proxy built from `proxy/`: with the Node.js of the computer when it has one,
+ * else with the standalone binary downloaded once from the release (see [ProxyRuntime]).
+ *
+ * The proxy connects back to the Flocon websocket like any SDK, so the calls it sees
+ * land in the Network screen, under the Android phone adb finds for them ([ProxyDeviceLinker]),
+ * else one "Proxy <ip>" device per phone.
+ */
+class ProxyManager(
+    private val dataDir: File,
+    private val appVersion: String,
+    private val scope: CoroutineScope,
+    private val deviceLinker: ProxyDeviceLinker,
+) {
+    private val _state = MutableStateFlow<ProxyStateDomainModel>(ProxyStateDomainModel.Stopped)
+    val state: StateFlow<ProxyStateDomainModel> = _state.asStateFlow()
+
+    @Volatile private var process: Process? = null
+    private var job: Job? = null
+
+    // start / stop never overlap, so that only one process runs at a time
+    private val mutex = Mutex()
+
+    init {
+        Runtime.getRuntime().addShutdownHook(Thread { killProcess() })
+    }
+
+    /** Starts the proxy, or restarts it when it already runs (e.g. the websocket port changed). */
+    suspend fun start(
+        floconWebsocketUrl: String,
+        locale: String,
+        preferredPort: Int = DEFAULT_PROXY_PORT,
+    ) = mutex.withLock {
+        stopLocked()
+        job = scope.launch(Dispatchers.IO) { runWithRestart(floconWebsocketUrl, locale, preferredPort) }
+    }
+
+    suspend fun stop() = mutex.withLock { stopLocked() }
+
+    private suspend fun stopLocked() {
+        job?.let {
+            it.cancel()
+            // the stdout reader of the process ends once the process is dead
+            killProcess()
+            it.join()
+        }
+        job = null
+        _state.value = ProxyStateDomainModel.Stopped
+    }
+
+    private suspend fun runWithRestart(floconWebsocketUrl: String, locale: String, preferredPort: Int) {
+        var backoffMs = MIN_BACKOFF_MS
+        while (currentCoroutineContext().isActive) {
+            val startedAt = System.currentTimeMillis()
+            val exitCode = runOnce(floconWebsocketUrl, locale, preferredPort) ?: return
+            if (!currentCoroutineContext().isActive) return
+            // The process ran for a while: it is a one-off crash, not a crash loop.
+            if (System.currentTimeMillis() - startedAt > STABLE_RUN_MS) backoffMs = MIN_BACKOFF_MS
+            if (_state.value !is ProxyStateDomainModel.Failed) {
+                _state.value = ProxyStateDomainModel.Failed("Proxy stopped (exit code $exitCode), restarting…")
+            }
+            delay(backoffMs)
+            backoffMs = (backoffMs * 2).coerceAtMost(MAX_BACKOFF_MS)
+        }
+    }
+
+    /** @return the exit code, or null when the proxy cannot be started at all (or was stopped meanwhile). */
+    private suspend fun runOnce(floconWebsocketUrl: String, locale: String, preferredPort: Int): Int? {
+        _state.value = ProxyStateDomainModel.Starting
+        val runtime = resolveRuntime() ?: return null
+        if (!currentCoroutineContext().isActive) return null
+        dataDir.mkdirs()
+        val proxyPort = freePort(preferredPort)
+        val caPort = freePort(proxyPort + 1)
+
+        val p = try {
+            ProcessBuilder(
+                runtime + listOf(
+                    "--port",
+                    proxyPort.toString(),
+                    "--ca-port",
+                    caPort.toString(),
+                    "--flocon-ws",
+                    floconWebsocketUrl,
+                    "--locale", locale,
+                    "--ca-dir",
+                    File(dataDir, "proxy-ca").absolutePath,
+                ),
+            )
+                .redirectError(ProcessBuilder.Redirect.appendTo(File(dataDir, "flocon-proxy.log")))
+                .start()
+        } catch (t: Throwable) {
+            Logger.e(t) { "Cannot start flocon-proxy" }
+            _state.value = ProxyStateDomainModel.Failed(t.message ?: "Cannot start flocon-proxy")
+            return null
+        }
+        process = p
+        // stopped while starting: stop() may have run before `process` was set
+        if (!currentCoroutineContext().isActive) {
+            killProcess()
+            return null
+        }
+
+        val stdin = p.outputStream.bufferedWriter()
+        val refreshRequests = Channel<Unit>(Channel.CONFLATED)
+        var linkJob: Job? = null
+        try {
+            p.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    when (val event = parseProxyEvent(line)) {
+                        is ProxyEvent.Ready -> {
+                            _state.value = ProxyStateDomainModel.Running(event.proxyPort, event.caPort, event.ips)
+                            linkJob?.cancel()
+                            linkJob = scope.launch(Dispatchers.IO) {
+                                deviceLinker.run(event.proxyPort, event.caPort, refreshRequests) { command ->
+                                    // the process may be dead already: it is restarted, the command is sent again then
+                                    runCatching {
+                                        stdin.write(command)
+                                        stdin.newLine()
+                                        stdin.flush()
+                                    }
+                                }
+                            }
+                        }
+
+                        is ProxyEvent.Error -> _state.value = ProxyStateDomainModel.Failed(event.message)
+
+                        is ProxyEvent.TlsError -> Logger.w { "flocon-proxy TLS error on ${event.host}: ${event.reason}" }
+
+                        is ProxyEvent.Client -> refreshRequests.trySend(Unit)
+
+                        null -> Unit
+                    }
+                }
+            }
+        } finally {
+            // removes the `adb reverse` of the phones, also when the proxy is stopped
+            withContext(NonCancellable) { linkJob?.cancelAndJoin() }
+        }
+        return p.waitFor()
+    }
+
+    private fun killProcess() {
+        val p = process ?: return
+        process = null
+        p.destroy() // SIGTERM: lets the proxy close its connections
+        if (!p.waitFor(2, TimeUnit.SECONDS)) p.destroyForcibly()
+    }
+
+    /** The command that runs the proxy: Node + the bundle, or the binary (downloaded if needed). Null on a failure. */
+    private fun resolveRuntime(): List<String>? {
+        val versionDir = File(dataDir, "proxy/$appVersion")
+        ProxyRuntime.nodeCommand(versionDir)?.let { return it }
+        ProxyRuntime.downloadedBinary(versionDir)?.let { return listOf(it.absolutePath) }
+        return try {
+            _state.value = ProxyStateDomainModel.Downloading(progress = null)
+            val binary = ProxyRuntime.downloadBinary(appVersion, versionDir) { progress ->
+                _state.value = ProxyStateDomainModel.Downloading(progress)
+            }
+            listOf(binary.absolutePath)
+        } catch (t: Throwable) {
+            Logger.e(t) { "Cannot download flocon-proxy" }
+            _state.value = ProxyStateDomainModel.Failed("Cannot download the proxy: ${t.message}")
+            null
+        }
+    }
+
+    private fun freePort(preferred: Int): Int = runCatching { ServerSocket(preferred).use { it.localPort } }
+        .getOrElse { ServerSocket(0).use { it.localPort } }
+
+    companion object {
+        const val DEFAULT_PROXY_PORT = 8080
+        private const val MIN_BACKOFF_MS = 1_000L
+        private const val MAX_BACKOFF_MS = 30_000L
+        private const val STABLE_RUN_MS = 30_000L
+    }
+}
+
+internal fun currentPlatformFolder(
+    osName: String = System.getProperty("os.name"),
+    osArch: String = System.getProperty("os.arch"),
+): String {
+    val os = osName.lowercase()
+    val arm = osArch.lowercase().let { it == "aarch64" || it == "arm64" }
+    return when {
+        "mac" in os -> if (arm) "macos-arm64" else "macos-x64"
+        "win" in os -> "windows-x64"
+        else -> if (arm) "linux-arm64" else "linux-x64"
+    }
+}

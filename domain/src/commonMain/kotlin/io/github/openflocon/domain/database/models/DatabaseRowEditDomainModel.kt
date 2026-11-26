@@ -16,6 +16,8 @@ data class DatabaseRowEditTargetDomainModel(
         val name: String,
         val isPrimaryKey: Boolean,
         val affinity: DatabaseColumnAffinity,
+        /** `false` for a NOT NULL column. */
+        val isNullable: Boolean,
     )
 }
 

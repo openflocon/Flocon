@@ -14,6 +14,7 @@ fun DatabaseRowEditTargetDomainModel.toUi() = DatabaseRowEditTargetUiModel(
             name = it.name,
             isPrimaryKey = it.isPrimaryKey,
             affinity = DatabaseRowEditTargetUiModel.Affinity.valueOf(it.affinity.name),
+            isNullable = it.isNullable,
         )
     },
 )
@@ -28,6 +29,7 @@ fun DatabaseRowEditTargetUiModel.toDomain() = DatabaseRowEditTargetDomainModel(
             name = it.name,
             isPrimaryKey = it.isPrimaryKey,
             affinity = DatabaseColumnAffinity.valueOf(it.affinity.name),
+            isNullable = it.isNullable,
         )
     },
 )

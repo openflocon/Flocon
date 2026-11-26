@@ -7,5 +7,8 @@ fun DatabaseRowEditTargetUiModel?.canEditRow(values: List<String?>): Boolean = t
     columns.size == values.size &&
     columns.withIndex().none { (index, column) -> column.isPrimaryKey && values[index] == null }
 
+/** NOT NULL columns, and the primary key which finds the row back, can't be set to `NULL`. */
+fun DatabaseRowEditTargetUiModel.canSetNull(index: Int): Boolean = columns.getOrNull(index)?.let { it.isNullable && !it.isPrimaryKey } == true
+
 /** Blobs are displayed as a placeholder, they can't be written back. */
 fun DatabaseRowEditTargetUiModel.canEditColumn(index: Int): Boolean = columns.getOrNull(index)?.affinity.let { it != null && it != DatabaseRowEditTargetUiModel.Affinity.Blob }
