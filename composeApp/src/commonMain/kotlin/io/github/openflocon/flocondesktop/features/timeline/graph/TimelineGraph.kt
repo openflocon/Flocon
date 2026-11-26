@@ -1230,7 +1230,7 @@ private fun DrawScope.drawBar(
             density = unit,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            constraints = Constraints(maxWidth = remaining.toInt()),
+            constraints = labelConstraints(remaining, canvasWidth),
         )
     }
     drawText(text, topLeft = Offset(cursor, centerY - text.size.height / 2f))
@@ -1341,7 +1341,7 @@ private fun DrawScope.drawInstant(
         density = unit,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
-        constraints = if (room == null) Constraints() else Constraints(maxWidth = room.toInt().coerceAtLeast(0)),
+        constraints = if (room == null) Constraints() else labelConstraints(room, canvasWidth),
     )
     drawText(text, topLeft = Offset(instantLabelX(x, text.size.width, onTheLeft), centerY - text.size.height / 2f))
 }

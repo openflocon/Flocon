@@ -255,6 +255,20 @@ class GraphLayoutTest {
     }
 
     @Test
+    fun `the label of a far instant fits in the canvas`() {
+        val events = previewGraphEvents()
+        val first = events.first { it.row.id == "2" } // 20 ms
+        val next = events.first { it.row.id == "9" } // 860 ms
+
+        // zoomed in a lot: the room is far more than Constraints can hold (issue #888)
+        val room = instantLabelRoomPx(first, next, pxPerMs = 1_000.0, onTheLeft = false)!!
+        assertTrue(room > 262_143f)
+        assertEquals(1_200, labelConstraints(room, canvasWidthPx = 1_200f).maxWidth)
+        // no room: nothing to write
+        assertEquals(0, labelConstraints(-50f, canvasWidthPx = 1_200f).maxWidth)
+    }
+
+    @Test
     fun `hit test finds an instant by its label`() {
         val analyticsTop = model.laneTops()[model.lanes.indexOfFirst { it.lane == GraphLane.Analytics }]
         // app_open at 20 ms, 1 px per ms: its label is on the right of the diamond, before screen_view at 860 ms

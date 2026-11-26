@@ -1,5 +1,6 @@
 package io.github.openflocon.flocondesktop.features.timeline.graph
 
+import androidx.compose.ui.unit.Constraints
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -26,6 +27,11 @@ internal fun showBarChip(widthPx: Float) = widthPx >= ChipMinWidthPx
 
 // [remainingPx]: the width left in the bar once the icon and the chip are placed
 internal fun showBarText(remainingPx: Float) = remainingPx >= TextMinWidthPx
+
+// the constraints of a label at most [maxWidthPx] wide, never wider than the canvas: the room of an instant can be far more
+// than Constraints can hold (about 262k px) when its neighbour is far or the zoom is high, and measuring with it would throw
+internal fun labelConstraints(maxWidthPx: Float, canvasWidthPx: Float): Constraints =
+    Constraints(maxWidth = maxWidthPx.coerceIn(0f, canvasWidthPx.coerceAtLeast(0f)).toInt())
 
 /**
  * What the viewport of the graph shows: the time at the left of the track, the zoom and the vertical scroll.
