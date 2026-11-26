@@ -8,11 +8,11 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
 import io.github.openflocon.domain.common.DispatcherProvider
 import io.github.openflocon.domain.common.combines
+import io.github.openflocon.domain.database.models.DatabaseRowUpdateResultDomainModel
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.GetRowEditTargetUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
 import io.github.openflocon.domain.database.usecase.UpdateDatabaseRowUseCase
-import io.github.openflocon.domain.database.models.DatabaseRowUpdateResultDomainModel
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
