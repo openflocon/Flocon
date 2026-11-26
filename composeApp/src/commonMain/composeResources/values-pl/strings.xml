@@ -484,7 +484,6 @@
     <string name="general_clear">Wyczyść</string>
     <string name="general_copy">Kopiuj</string>
     <string name="general_copy_all">Kopiuj wszystko</string>
-    <string name="general_copy_all_content">Kopiuj całą zawartość</string>
     <string name="general_copy_as_image">Kopiuj jako obraz</string>
     <string name="general_copy_as_markdown">Kopiuj jako Markdown</string>
     <string name="general_copy_path">Kopiuj ścieżkę</string>
@@ -789,7 +788,6 @@
     <string name="desktop_update_installed">Zainstalowana: %1$s</string>
     <string name="timeline_transactions_expanded">Domyślnie rozwijaj transakcje</string>
     <string name="database_transaction_nested">Transakcja zagnieżdżona</string>
-    <string name="database_row_update">Aktualizuj</string>
     <string name="database_row_set_null">Ustaw NULL</string>
     <string name="database_row_updated">Wiersz zaktualizowany</string>
     <string name="database_row_update_not_found">Wiersz niezaktualizowany: został usunięty lub zmieniony na urządzeniu</string>

@@ -474,7 +474,6 @@
     <string name="general_clear">Clear</string>
     <string name="general_copy">Copy</string>
     <string name="general_copy_all">Copy All</string>
-    <string name="general_copy_all_content">Copy all content</string>
     <string name="general_copy_as_image">Copy as image</string>
     <string name="general_copy_as_markdown">Copy as Markdown</string>
     <string name="general_copy_path">Copy Path</string>
@@ -775,7 +774,6 @@
     <string name="desktop_update_installed">Installed: %1$s</string>
     <string name="timeline_transactions_expanded">Expand transactions by default</string>
     <string name="database_transaction_nested">Nested transaction</string>
-    <string name="database_row_update">Update</string>
     <string name="database_row_set_null">Set NULL</string>
     <string name="database_row_updated">Row updated</string>
     <string name="database_row_update_not_found">Row not updated: it was deleted or changed on the device</string>

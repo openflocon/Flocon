@@ -308,7 +308,6 @@
     <string name="general_clear">Effacer</string>
     <string name="general_copy">Copier</string>
     <string name="general_copy_all">Tout copier</string>
-    <string name="general_copy_all_content">Copier tout le contenu</string>
     <string name="general_copy_as_image">Copier en image</string>
     <string name="general_copy_as_markdown">Copier en Markdown</string>
     <string name="general_copy_path">Copier le chemin</string>
@@ -585,7 +584,6 @@
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
     <string name="database_transaction_nested">Transaction imbriquée</string>
-    <string name="database_row_update">Mettre à jour</string>
     <string name="database_row_set_null">Mettre à NULL</string>
     <string name="database_row_updated">Ligne mise à jour</string>
     <string name="database_row_update_not_found">Ligne non mise à jour : elle a été supprimée ou modifiée sur l'appareil</string>

@@ -474,7 +474,6 @@
     <string name="general_clear">Cancella</string>
     <string name="general_copy">Copia</string>
     <string name="general_copy_all">Copia tutto</string>
-    <string name="general_copy_all_content">Copia tutto il contenuto</string>
     <string name="general_copy_as_image">Copia come immagine</string>
     <string name="general_copy_as_markdown">Copia come Markdown</string>
     <string name="general_copy_path">Copia percorso</string>
@@ -775,7 +774,6 @@
     <string name="desktop_update_installed">Installata: %1$s</string>
     <string name="timeline_transactions_expanded">Espandi le transazioni per impostazione predefinita</string>
     <string name="database_transaction_nested">Transazione annidata</string>
-    <string name="database_row_update">Aggiorna</string>
     <string name="database_row_set_null">Imposta NULL</string>
     <string name="database_row_updated">Riga aggiornata</string>
     <string name="database_row_update_not_found">Riga non aggiornata: è stata eliminata o modificata sul dispositivo</string>

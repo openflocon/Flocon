@@ -474,7 +474,6 @@
     <string name="general_clear">Temizle</string>
     <string name="general_copy">Kopyala</string>
     <string name="general_copy_all">Tümünü kopyala</string>
-    <string name="general_copy_all_content">Tüm içeriği kopyala</string>
     <string name="general_copy_as_image">Görsel olarak kopyala</string>
     <string name="general_copy_as_markdown">Markdown olarak kopyala</string>
     <string name="general_copy_path">Yolu kopyala</string>
@@ -775,7 +774,6 @@
     <string name="desktop_update_installed">Yüklü: %1$s</string>
     <string name="timeline_transactions_expanded">Transaction'ları varsayılan olarak genişlet</string>
     <string name="database_transaction_nested">İç içe transaction</string>
-    <string name="database_row_update">Güncelle</string>
     <string name="database_row_set_null">NULL yap</string>
     <string name="database_row_updated">Satır güncellendi</string>
     <string name="database_row_update_not_found">Satır güncellenmedi: cihazda silinmiş veya değiştirilmiş</string>

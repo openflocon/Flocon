@@ -71,7 +71,6 @@ import flocondesktop.composeapp.generated.resources.general_copy_value
 import flocondesktop.composeapp.generated.resources.general_edit
 import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
-import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditColumn
 import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseCellEditUiModel
@@ -86,22 +85,13 @@ import io.github.openflocon.library.designsystem.components.FloconHorizontalDivi
 import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
 import io.github.openflocon.library.designsystem.components.floconTableHeader
 import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
-import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
-import org.koin.mp.KoinPlatform
 
 private val DefaultColumnWidth = 200.dp
 private val MinColumnWidth = 48.dp
 private val HandleWidth = 8.dp
-
-@Serializable
-data class DetailResultItem(
-    val index: Int,
-    val item: DatabaseRowUiModel,
-)
 
 @Composable
 fun DatabaseResult(
@@ -127,8 +117,8 @@ fun DatabaseResult(
             is QueryResultUiModel.Values -> {
                 val color = FloconTheme.colors.line
 
-                var selectedItem by remember(result) {
-                    mutableStateOf<DetailResultItem?>(null)
+                var selectedIndex by remember(result.columns) {
+                    mutableStateOf<Int?>(null)
                 }
                 val horizontalScrollState = rememberScrollState()
                 val columnsWidth = remember(result.columns) {
@@ -174,55 +164,9 @@ fun DatabaseResult(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .horizontalScroll(horizontalScrollState)
-                                    .onPreviewKeyEvent { event ->
-                                        // the arrows move the cursor of the cell being edited
-                                        if (event.type != KeyEventType.KeyDown || cellEdit != null) {
-                                            return@onPreviewKeyEvent false
-                                        }
-
-                                        when (event.key) {
-                                            Key.DirectionUp -> {
-                                                selectedItem?.index?.let { i ->
-                                                    val newIndex = i - 1
-                                                    result.rows.getOrNull(newIndex)?.let {
-                                                        val item = DetailResultItem(
-                                                            index = newIndex,
-                                                            item = it
-                                                        )
-
-                                                        selectedItem = item
-                                                        KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                            .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
-                                                    }
-                                                }
-
-                                                true
-                                            }
-
-                                            Key.DirectionDown -> {
-                                                selectedItem?.index?.let { i ->
-                                                    val newIndex = i + 1
-                                                    result.rows.getOrNull(newIndex)?.let {
-                                                        val item = DetailResultItem(
-                                                            index = newIndex,
-                                                            item = it
-                                                        )
-
-                                                        selectedItem = item
-                                                        KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                            .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
-                                                    }
-                                                }
-
-                                                true
-                                            }
-
-                                            else -> false
-                                        }
-                                    }
                             ) {
                                 itemsIndexed(result.rows) { index, row ->
-                                    val selected = index == selectedItem?.index
+                                    val selected = index == selectedIndex
 
                                     DatabaseResultRow(
                                         index = index,
@@ -233,11 +177,7 @@ fun DatabaseResult(
                                         cellEdit = cellEdit?.takeIf { it.rowIndex == index },
                                         menuLabels = menuLabels,
                                         onAction = onAction,
-                                        onItemSelected = {
-                                            selectedItem = it
-                                            KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                .navigate(DatabaseRoutes.Detail(it, result.columns, result.editTarget))
-                                        }
+                                        onSelected = { selectedIndex = index },
                                     )
 
                                     if (index != result.rows.lastIndex) {
@@ -275,7 +215,7 @@ private fun DatabaseResultRow(
     cellEdit: DatabaseCellEditUiModel?,
     menuLabels: CellMenuLabels,
     onAction: (DatabaseTabAction) -> Unit,
-    onItemSelected: (DetailResultItem) -> Unit,
+    onSelected: () -> Unit,
 ) {
     val isRowEditable = editTarget.canEditRow(row.items)
     Row(
@@ -290,14 +230,7 @@ private fun DatabaseResultRow(
                 }
             )
             .padding(horizontal = FloconTheme.spacing.small)
-            .clickable {
-                onItemSelected(
-                    DetailResultItem(
-                        index = index,
-                        item = row
-                    )
-                )
-            },
+            .clickable(onClick = onSelected),
         verticalAlignment = Alignment.CenterVertically
     ) {
         row.items.forEachIndexed { columnIndex, item ->
