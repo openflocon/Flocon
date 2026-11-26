@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
@@ -141,6 +142,14 @@ private fun AppImage(
                     FloconIcon(
                         imageVector = Icons.Default.Terminal,
                         tint = FloconTheme.colors.catTable,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+
+                DeviceItemUiModel.Platform.Proxy -> {
+                    FloconIcon(
+                        imageVector = Icons.Default.Router,
+                        tint = FloconTheme.colors.catWebView,
                         modifier = Modifier.size(18.dp),
                     )
                 }

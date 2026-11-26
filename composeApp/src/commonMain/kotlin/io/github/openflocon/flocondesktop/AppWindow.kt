@@ -25,6 +25,7 @@ import io.github.openflocon.domain.maintenance.usecase.AutoCleanMediaFilesUseCas
 import io.github.openflocon.domain.maintenance.usecase.AutoPurgeDatabaseUseCase
 import io.github.openflocon.domain.models.settings.ServerPortsOverrides
 import io.github.openflocon.domain.models.settings.ThemeSetting
+import io.github.openflocon.domain.proxy.usecase.RunProxyUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppLanguageUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveAppScaleUseCase
 import io.github.openflocon.domain.settings.usecase.ObserveThemeUseCase
@@ -100,6 +101,12 @@ fun App(
                 runCatching { autoCleanMediaFiles() }
                     .onFailure { Logger.e("App", it) { "Automatic screenshots and recordings cleanup failed" } }
             }
+        }
+
+        val runProxy = koinInject<RunProxyUseCase>()
+        LaunchedEffect(Unit) {
+            // started at launch when the user left it on, see the proxy mode dialog
+            withContext(Dispatchers.IO) { runProxy() }
         }
 
         val appScale by koinInject<ObserveAppScaleUseCase>()()

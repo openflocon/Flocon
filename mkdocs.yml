@@ -107,6 +107,7 @@ nav:
       - WebSockets: websocket.md
       - gRPC: grpc.md
       - Images: image.md
+      - Proxy mode (experimental): proxy.md
     - Storage:
       - Databases: database.md
       - Preferences: sharedpref.md

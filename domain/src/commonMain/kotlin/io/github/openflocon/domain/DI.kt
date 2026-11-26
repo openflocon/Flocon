@@ -18,6 +18,7 @@ import io.github.openflocon.domain.mcp.mcpDomainModule
 import io.github.openflocon.domain.menu.menuModule
 import io.github.openflocon.domain.messages.messagesModule
 import io.github.openflocon.domain.network.networkModule
+import io.github.openflocon.domain.proxy.proxyModule
 import io.github.openflocon.domain.screen.screenModule
 import io.github.openflocon.domain.settings.settingsModule
 import io.github.openflocon.domain.sharedpreference.sharedPreferencesModule
@@ -44,6 +45,7 @@ val domainModule = module {
         filesModule,
         imagesModule,
         networkModule,
+        proxyModule,
         settingsModule,
         maintenanceModule,
         sharedPreferencesModule,

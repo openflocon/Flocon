@@ -39,6 +39,7 @@
     <string name="device_platform_android">Android</string>
     <string name="device_platform_ios">iOS</string>
     <string name="device_platform_desktop">桌面端</string>
+    <string name="device_platform_proxy">代理</string>
     <string name="download">下载</string>
     <string name="error_exporting_csv">导出 CSV 失败</string>
     <string name="export_csv">导出 CSV</string>

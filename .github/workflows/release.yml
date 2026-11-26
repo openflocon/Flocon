@@ -51,6 +51,21 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y rpm
 
+      # The proxy mode (proxy/) runs with the Node.js of the computer: its JS bundle (~5 MB) is shipped in
+      # every package, the jar included. Without Node, Flocon downloads the standalone binary of the runner's
+      # platform, published below as a release asset with its SHA-256.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.5
+
+      - name: Build the proxy
+        working-directory: proxy
+        run: |
+          bun install --frozen-lockfile
+          bun run build:node
+          bun run build:${{ matrix.platform }}
+
       - name: Build with Gradle
         run: ./gradlew packageDistributionForCurrentOS packageUberJarForCurrentOS
         env:
@@ -62,6 +77,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
+          # the standalone proxy, downloaded by Flocon when the computer has no Node.js
+          for proxy in proxy/dist/flocon-proxy-*; do
+            mv "$proxy" dist/
+            (cd dist && sha256sum "$(basename "$proxy")" > "$(basename "$proxy").sha256")
+          done
           if [ "${{ matrix.platform }}" = "macos-arm64" ]; then
             mv composeApp/build/compose/binaries/main/dmg/*.dmg dist/Flocon-macos-arm64.dmg
             mv composeApp/build/compose/jars/*.jar dist/Flocon-macos-arm64.jar

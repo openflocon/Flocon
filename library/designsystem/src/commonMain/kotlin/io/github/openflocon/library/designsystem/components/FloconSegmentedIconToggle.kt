@@ -32,7 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,8 +46,6 @@ private val ControlRadius = 8.dp
 private val SegmentRadius = 6.dp
 private val SegmentIconSize = 15.dp
 private val SegmentPadding = 2.dp
-private const val ShortTextLength = 2
-private const val LongTextWidthFactor = 1.5f
 
 @Immutable
 data class FloconSegmentedIconOption(
@@ -89,9 +89,17 @@ fun FloconSegmentedTextToggle(
     onSelect: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // a segment is as wide as a square one, unless its text is longer than a few characters
-    val segmentWidths = options.map {
-        if (it.length > ShortTextLength) FloconTheme.sizes.controlHeight * LongTextWidthFactor else FloconTheme.sizes.controlHeight
+    // a segment is as wide as a square one, or as its text plus some room on each side when it is longer
+    val textStyle = FloconTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val minWidth = FloconTheme.sizes.controlHeight
+    val horizontalPadding = FloconTheme.spacing.medium
+    val segmentWidths = remember(options, textStyle, density, minWidth, horizontalPadding) {
+        options.map {
+            val textWidth = with(density) { measurer.measure(it, textStyle).size.width.toDp() }
+            maxOf(minWidth, textWidth + horizontalPadding * 2)
+        }
     }
     SlidingSegmentedControl(
         segmentWidths = segmentWidths,

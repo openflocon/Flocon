@@ -39,6 +39,7 @@
     <string name="device_platform_android">ANDROID</string>
     <string name="device_platform_ios">IOS</string>
     <string name="device_platform_desktop">DESKTOP</string>
+    <string name="device_platform_proxy">PROXY</string>
     <string name="download">Descargar</string>
     <string name="error_exporting_csv">Error al exportar el CSV</string>
     <string name="export_csv">Exportar CSV</string>

@@ -103,6 +103,13 @@ internal class SettingsDataSourcePrefs(
         settings.putBoolean(MASCOT_ENABLED, enabled)
     }
 
+    override val proxyEnabled: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(PROXY_ENABLED)
+        .mapLatest { it ?: false }
+
+    override suspend fun setProxyEnabled(enabled: Boolean) {
+        settings.putBoolean(PROXY_ENABLED, enabled)
+    }
+
     override val transactionsExpandedByDefault: Flow<Boolean> = flowSettings.getBooleanOrNullFlow(TRANSACTIONS_EXPANDED_BY_DEFAULT)
         .mapLatest { it ?: true }
 
@@ -280,6 +287,7 @@ internal class SettingsDataSourcePrefs(
         private const val FONT_SIZE_MULTIPLIER = "font_size_multiplier" // former setting, read for the migration
         private const val THEME = "theme"
         private const val MASCOT_ENABLED = "mascot_enabled"
+        private const val PROXY_ENABLED = "proxy_enabled"
         private const val TRANSACTIONS_EXPANDED_BY_DEFAULT = "transactions_expanded_by_default"
         private const val AUTO_PURGE_DAYS = "auto_purge_days"
         private const val AUTO_MEDIA_CLEANUP_DAYS = "auto_media_cleanup_days"

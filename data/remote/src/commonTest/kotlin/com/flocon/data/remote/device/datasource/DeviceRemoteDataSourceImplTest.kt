@@ -58,6 +58,15 @@ class DeviceRemoteDataSourceImplTest {
     }
 
     @Test
+    fun `a bonjour without connection type keeps its plugins and sdk`() {
+        // the proxy, for calls linked to a device of the SDK
+        val message = bonjour("""{"plugins":["network"],"sdk":"proxy"}""")
+        assertNull(dataSource.getConnectionType(message))
+        assertEquals(setOf("network"), dataSource.getInstalledPlugins(message))
+        assertEquals("proxy", dataSource.getSdk(message))
+    }
+
+    @Test
     fun `an unreadable bonjour message has no connection type`() {
         assertNull(dataSource.getConnectionType(bonjour("bonjour")))
     }

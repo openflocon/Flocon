@@ -2,6 +2,7 @@ package io.github.openflocon.flocondesktop.app.ui.view.topbar.device
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DesktopWindows
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -13,6 +14,7 @@ import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.device_platform_android
 import flocondesktop.composeapp.generated.resources.device_platform_desktop
 import flocondesktop.composeapp.generated.resources.device_platform_ios
+import flocondesktop.composeapp.generated.resources.device_platform_proxy
 import io.github.openflocon.flocondesktop.app.ui.model.DeviceItemUiModel.Platform
 import io.github.openflocon.library.designsystem.FloconTheme
 import org.jetbrains.compose.resources.stringResource
@@ -39,6 +41,7 @@ internal fun Platform.logo(): ImageVector = when (this) {
     Platform.Android -> AndroidLogo
     Platform.ios -> AppleLogo
     Platform.Desktop -> Icons.Filled.DesktopWindows
+    Platform.Proxy -> Icons.Filled.Router
     Platform.Unknown -> Icons.Filled.Smartphone
 }
 
@@ -50,6 +53,7 @@ internal fun Platform.color(): Color {
         Platform.Android -> colors.catTable
         Platform.ios -> colors.catNetwork
         Platform.Desktop -> colors.catAnalytics
+        Platform.Proxy -> colors.catWebView
         Platform.Unknown -> colors.inkMuted
     }
 }
@@ -59,5 +63,6 @@ internal fun Platform.label(): String = when (this) {
     Platform.Android -> stringResource(Res.string.device_platform_android)
     Platform.ios -> stringResource(Res.string.device_platform_ios)
     Platform.Desktop -> stringResource(Res.string.device_platform_desktop)
+    Platform.Proxy -> stringResource(Res.string.device_platform_proxy)
     Platform.Unknown -> ""
 }
