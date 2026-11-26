@@ -90,9 +90,7 @@ private fun DatabaseTabViewContent(
         DatabaseContent(
             state = state,
             modifier = Modifier.fillMaxWidth(),
-            onExportCsvClicked = {
-                onAction(DatabaseTabAction.ExportCsv)
-            },
+            onAction = onAction,
         )
     }
 }

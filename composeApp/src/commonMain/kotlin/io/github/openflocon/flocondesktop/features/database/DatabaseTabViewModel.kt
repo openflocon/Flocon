@@ -11,13 +11,20 @@ import io.github.openflocon.domain.common.combines
 import io.github.openflocon.domain.database.usecase.ExecuteDatabaseQueryUseCase
 import io.github.openflocon.domain.database.usecase.GetRowEditTargetUseCase
 import io.github.openflocon.domain.database.usecase.ObserveLastSuccessQueriesUseCase
+import io.github.openflocon.domain.database.usecase.UpdateDatabaseRowUseCase
+import io.github.openflocon.domain.database.models.DatabaseRowUpdateResultDomainModel
 import io.github.openflocon.domain.database.usecase.favorite.GetFavoriteQueryByIdDatabaseUseCase
 import io.github.openflocon.domain.database.usecase.favorite.SaveQueryAsFavoriteDatabaseUseCase
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
 import io.github.openflocon.domain.device.usecase.GetCurrentDeviceIdAndPackageNameUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseRowUpdatedNotifier
+import io.github.openflocon.flocondesktop.features.database.mapper.canEditColumn
+import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
+import io.github.openflocon.flocondesktop.features.database.mapper.displayRowUpdateResult
+import io.github.openflocon.flocondesktop.features.database.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseCellEditUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
@@ -34,6 +41,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -61,6 +69,7 @@ class DatabaseTabViewModel(
     private val getRowEditTargetUseCase: GetRowEditTargetUseCase,
     private val rowUpdatedNotifier: DatabaseRowUpdatedNotifier,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
+    private val updateDatabaseRowUseCase: UpdateDatabaseRowUseCase,
 ) : ViewModel() {
 
     @Immutable
@@ -111,6 +120,8 @@ class DatabaseTabViewModel(
 
     private val queryResult = MutableStateFlow<QueryResultUiModel?>(null)
 
+    private val cellEdit = MutableStateFlow<DatabaseCellEditUiModel?>(null)
+
     /** One query at a time, so that the result and its edit target are the ones of the last query run. */
     private val queryMutex = Mutex()
 
@@ -127,11 +138,11 @@ class DatabaseTabViewModel(
      */
     private var lastEditTarget: EditTarget? = null
 
-    val state: StateFlow<DatabaseScreenState> = queryResult.map { queryResult ->
+    val state: StateFlow<DatabaseScreenState> = combine(queryResult, cellEdit) { queryResult, cellEdit ->
         if (queryResult == null) {
             DatabaseScreenState.Idle
         } else {
-            DatabaseScreenState.Result(queryResult)
+            DatabaseScreenState.Result(result = queryResult, cellEdit = cellEdit)
         }
     }.flowOn(dispatcherProvider.viewModel)
         .stateIn(
@@ -229,6 +240,67 @@ class DatabaseTabViewModel(
                         )
                     }
                 }
+
+                is DatabaseTabAction.StartCellEdit -> startCellEdit(rowIndex = action.rowIndex, columnIndex = action.columnIndex)
+
+                DatabaseTabAction.CancelCellEdit -> cellEdit.value = null
+
+                is DatabaseTabAction.CommitCellEdit -> {
+                    val edit = cellEdit.value
+                    if (edit != null && !edit.isSaving && edit.isAt(action.rowIndex, action.columnIndex)) {
+                        writeCell(rowIndex = action.rowIndex, columnIndex = action.columnIndex, value = action.value)
+                    }
+                }
+
+                is DatabaseTabAction.SetCellNull -> writeCell(rowIndex = action.rowIndex, columnIndex = action.columnIndex, value = null)
+
+                is DatabaseTabAction.CopyCellValue -> {
+                    copyToClipboard(action.value)
+                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+                }
+            }
+        }
+    }
+
+    /** The row and the column of the cell, when it can be written back. */
+    private fun editableCell(rowIndex: Int, columnIndex: Int): Pair<DatabaseRowEditTargetUiModel, List<String?>>? {
+        val result = queryResult.value as? QueryResultUiModel.Values ?: return null
+        val target = result.editTarget ?: return null
+        val row = result.rows.getOrNull(rowIndex)?.items ?: return null
+        if (!target.canEditRow(row) || !target.canEditColumn(columnIndex)) return null
+        return target to row
+    }
+
+    private fun startCellEdit(rowIndex: Int, columnIndex: Int) {
+        if (editableCell(rowIndex, columnIndex) == null) return
+        cellEdit.value = DatabaseCellEditUiModel(rowIndex = rowIndex, columnIndex = columnIndex)
+    }
+
+    private suspend fun writeCell(rowIndex: Int, columnIndex: Int, value: String?) {
+        val (target, original) = editableCell(rowIndex, columnIndex) ?: return
+        val isEdited = { edit: DatabaseCellEditUiModel? -> edit?.isAt(rowIndex, columnIndex) == true }
+        if (original[columnIndex] == value) {
+            cellEdit.update { it.takeUnless(isEdited) }
+            return
+        }
+        cellEdit.update { if (isEdited(it)) it?.copy(isSaving = true) else it }
+
+        val update = updateDatabaseRowUseCase(
+            target = target.toDomain(),
+            original = original,
+            edited = original.toMutableList().apply { set(columnIndex, value) },
+        )
+        if (update == DatabaseRowUpdateResultDomainModel.Updated) {
+            // the rows are read again by every tab showing this table, this one included
+            rowUpdatedNotifier.notifyUpdated(target)
+        }
+        feedbackDisplayer.displayRowUpdateResult(update)
+
+        cellEdit.update {
+            when {
+                !isEdited(it) -> it
+                update is DatabaseRowUpdateResultDomainModel.InvalidNumber -> it?.copy(isSaving = false, isInvalid = true)
+                else -> null
             }
         }
     }
@@ -312,6 +384,8 @@ class DatabaseTabViewModel(
                 )
             }
             if (editAutoUpdate) {
+                // another query: its rows are not the ones of the cell
+                cellEdit.value = null
                 autoUpdate.update {
                     it.copy(
                         query = query,
@@ -355,6 +429,7 @@ class DatabaseTabViewModel(
     private suspend fun clearQuery() {
         updateQuery("")
         queryResult.update { null }
+        cellEdit.value = null
         autoUpdate.update {
             it.copy(
                 query = null,

@@ -6,6 +6,11 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +31,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,13 +43,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.isPrimaryPressed
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,11 +66,21 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_row_set_null
+import flocondesktop.composeapp.generated.resources.general_copy_value
+import flocondesktop.composeapp.generated.resources.general_edit
 import flocondesktop.composeapp.generated.resources.nb_lines
+import io.github.openflocon.flocondesktop.common.ui.ContextualMenu
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
+import io.github.openflocon.flocondesktop.features.database.mapper.canEditColumn
+import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseCellEditUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.common.FloconContextMenuItem
 import io.github.openflocon.library.designsystem.components.FloconColumnResizeHandle
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
@@ -62,6 +88,7 @@ import io.github.openflocon.library.designsystem.components.floconTableHeader
 import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
@@ -79,7 +106,8 @@ data class DetailResultItem(
 @Composable
 fun DatabaseResult(
     result: QueryResultUiModel?,
-    onExportCsvClicked: () -> Unit,
+    cellEdit: DatabaseCellEditUiModel?,
+    onAction: (DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (result == null) {
@@ -106,6 +134,11 @@ fun DatabaseResult(
                 val columnsWidth = remember(result.columns) {
                     mutableStateListOf<Dp>().apply { repeat(result.columns.size) { add(DefaultColumnWidth) } }
                 }
+                val menuLabels = CellMenuLabels(
+                    edit = stringResource(Res.string.general_edit),
+                    setNull = stringResource(Res.string.database_row_set_null),
+                    copy = stringResource(Res.string.general_copy_value),
+                )
 
                 Column(
                     modifier = Modifier
@@ -121,7 +154,7 @@ fun DatabaseResult(
                     ResultHeader(
                         result = result,
                         modifier = Modifier.fillMaxWidth(),
-                        onExportCsvClicked = onExportCsvClicked
+                        onExportCsvClicked = { onAction(DatabaseTabAction.ExportCsv) },
                     )
                     FloconHorizontalDivider(
                         color = color,
@@ -142,7 +175,8 @@ fun DatabaseResult(
                                     .fillMaxSize()
                                     .horizontalScroll(horizontalScrollState)
                                     .onPreviewKeyEvent { event ->
-                                        if (event.type != KeyEventType.KeyDown) {
+                                        // the arrows move the cursor of the cell being edited
+                                        if (event.type != KeyEventType.KeyDown || cellEdit != null) {
                                             return@onPreviewKeyEvent false
                                         }
 
@@ -195,6 +229,10 @@ fun DatabaseResult(
                                         row = row,
                                         columnsWidth = columnsWidth,
                                         selected = selected,
+                                        editTarget = result.editTarget,
+                                        cellEdit = cellEdit?.takeIf { it.rowIndex == index },
+                                        menuLabels = menuLabels,
+                                        onAction = onAction,
                                         onItemSelected = {
                                             selectedItem = it
                                             KoinPlatform.getKoin().get<MainFloconNavigationState>()
@@ -232,8 +270,14 @@ private fun DatabaseResultRow(
     row: DatabaseRowUiModel,
     columnsWidth: List<Dp>,
     selected: Boolean,
+    editTarget: DatabaseRowEditTargetUiModel?,
+    /** Only when a cell of this row is edited. */
+    cellEdit: DatabaseCellEditUiModel?,
+    menuLabels: CellMenuLabels,
+    onAction: (DatabaseTabAction) -> Unit,
     onItemSelected: (DetailResultItem) -> Unit,
 ) {
+    val isRowEditable = editTarget.canEditRow(row.items)
     Row(
         modifier = Modifier
             .height(FloconTheme.sizes.rowHeight)
@@ -256,24 +300,190 @@ private fun DatabaseResultRow(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        row.items.forEachIndexed { index, item ->
-            Text(
-                text = item ?: "NULL",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                color = FloconTheme.colors.inkMuted,
-                modifier = Modifier
-                    .width(columnsWidth.getOrElse(index) { DefaultColumnWidth })
-                    .graphicsLayer {
-                        if (item == null) {
-                            alpha = 0.5f
-                        }
-                    }
-                    .padding(horizontal = FloconTheme.spacing.extraSmall),
+        row.items.forEachIndexed { columnIndex, item ->
+            DatabaseResultCell(
+                value = item,
+                width = columnsWidth.getOrElse(columnIndex) { DefaultColumnWidth },
+                isEditable = isRowEditable && editTarget?.canEditColumn(columnIndex) == true,
+                cellEdit = cellEdit?.takeIf { it.columnIndex == columnIndex },
+                menuLabels = menuLabels,
+                onStartEdit = { onAction(DatabaseTabAction.StartCellEdit(rowIndex = index, columnIndex = columnIndex)) },
+                onSetNull = { onAction(DatabaseTabAction.SetCellNull(rowIndex = index, columnIndex = columnIndex)) },
+                onCopy = { onAction(DatabaseTabAction.CopyCellValue(item ?: "NULL")) },
+                onCommit = { onAction(DatabaseTabAction.CommitCellEdit(rowIndex = index, columnIndex = columnIndex, value = it)) },
+                onCancel = { onAction(DatabaseTabAction.CancelCellEdit) },
             )
         }
     }
+}
+
+@Immutable
+private class CellMenuLabels(
+    val edit: String,
+    val setNull: String,
+    val copy: String,
+)
+
+/** Double click edits the value, like the database inspector of Android Studio; right click sets it to `NULL`. */
+@Composable
+private fun DatabaseResultCell(
+    value: String?,
+    width: Dp,
+    isEditable: Boolean,
+    /** Only when this cell is edited. */
+    cellEdit: DatabaseCellEditUiModel?,
+    menuLabels: CellMenuLabels,
+    onStartEdit: () -> Unit,
+    onSetNull: () -> Unit,
+    onCopy: () -> Unit,
+    onCommit: (String) -> Unit,
+    onCancel: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .width(width)
+            .fillMaxHeight(),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        if (cellEdit != null) {
+            DatabaseCellTextField(
+                initialValue = value.orEmpty(),
+                cellEdit = cellEdit,
+                onCommit = onCommit,
+                onCancel = onCancel,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        } else {
+            val startEdit by rememberUpdatedState(onStartEdit)
+            ContextualMenu(
+                itemsProvider = {
+                    buildList {
+                        if (isEditable) {
+                            add(FloconContextMenuItem.Item(label = menuLabels.edit, onClick = onStartEdit))
+                            if (value != null) {
+                                add(FloconContextMenuItem.Item(label = menuLabels.setNull, onClick = onSetNull))
+                            }
+                        }
+                        add(FloconContextMenuItem.Item(label = menuLabels.copy, onClick = onCopy))
+                    }.toImmutableList()
+                },
+            ) {
+                Text(
+                    text = value ?: "NULL",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color = FloconTheme.colors.inkMuted,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(
+                            if (isEditable) {
+                                // not consumed: the row is selected by the same clicks
+                                Modifier.pointerInput(Unit) {
+                                    var lastClickUptime = 0L
+                                    awaitEachGesture {
+                                        awaitFirstDown()
+                                        if (!currentEvent.buttons.isPrimaryPressed) return@awaitEachGesture
+                                        val up = waitForUpOrCancellation() ?: return@awaitEachGesture
+                                        if (up.uptimeMillis - lastClickUptime <= viewConfiguration.doubleTapTimeoutMillis) {
+                                            lastClickUptime = 0L
+                                            startEdit()
+                                        } else {
+                                            lastClickUptime = up.uptimeMillis
+                                        }
+                                    }
+                                }
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .graphicsLayer {
+                            if (value == null) {
+                                alpha = 0.5f
+                            }
+                        }
+                        .padding(horizontal = FloconTheme.spacing.extraSmall),
+                )
+            }
+        }
+    }
+}
+
+/** Enter or leaving the field writes the value, Escape cancels. */
+@Composable
+private fun DatabaseCellTextField(
+    initialValue: String,
+    cellEdit: DatabaseCellEditUiModel,
+    onCommit: (String) -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var value by remember { mutableStateOf(TextFieldValue(initialValue, selection = TextRange(0, initialValue.length))) }
+    val focusRequester = remember { FocusRequester() }
+    // the field leaves the composition when the value is written: it must not be written twice
+    var wasFocused by remember { mutableStateOf(false) }
+    var isDone by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+    LaunchedEffect(cellEdit.isInvalid) {
+        if (cellEdit.isInvalid) {
+            isDone = false
+            focusRequester.requestFocus()
+        }
+    }
+
+    fun commit() {
+        if (isDone) return
+        isDone = true
+        onCommit(value.text)
+    }
+
+    BasicTextField(
+        value = value,
+        onValueChange = { value = it },
+        singleLine = true,
+        readOnly = cellEdit.isSaving,
+        textStyle = FloconTheme.typography.bodySmall.copy(
+            fontFamily = FontFamily.Monospace,
+            color = FloconTheme.colors.ink,
+        ),
+        cursorBrush = SolidColor(FloconTheme.colors.accent),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged {
+                if (it.isFocused) {
+                    wasFocused = true
+                } else if (wasFocused) {
+                    commit()
+                }
+            }
+            .onPreviewKeyEvent { event ->
+                if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                when (event.key) {
+                    Key.Enter, Key.NumPadEnter -> {
+                        commit()
+                        true
+                    }
+
+                    Key.Escape -> {
+                        isDone = true
+                        onCancel()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+            .background(FloconTheme.colors.bg000, FloconTheme.shapes.small)
+            .border(
+                width = 1.dp,
+                color = if (cellEdit.isInvalid) FloconTheme.colors.statusError else FloconTheme.colors.accent,
+                shape = FloconTheme.shapes.small,
+            )
+            .padding(horizontal = FloconTheme.spacing.extraSmall, vertical = 2.dp),
+    )
 }
 
 @Composable
@@ -371,7 +581,8 @@ private fun DatabaseResultViewPreviewText() {
         val result = QueryResultUiModel.Text(text = "This is a sample text result.")
         DatabaseResult(
             result = result,
-            onExportCsvClicked = {},
+            cellEdit = null,
+            onAction = {},
         )
     }
 }
@@ -390,7 +601,8 @@ private fun DatabaseResultViewPreviewValues() {
     FloconTheme {
         DatabaseResult(
             result = result,
-            onExportCsvClicked = {},
+            cellEdit = null,
+            onAction = {},
         )
     }
 }
@@ -401,7 +613,8 @@ private fun DatabaseResultViewPreviewNull() {
     FloconTheme {
         DatabaseResult(
             result = null,
-            onExportCsvClicked = {},
+            cellEdit = null,
+            onAction = {},
         )
     }
 }

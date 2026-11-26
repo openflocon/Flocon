@@ -8,15 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.copied_to_clipboard
-import flocondesktop.composeapp.generated.resources.database_row_update_device_changed
-import flocondesktop.composeapp.generated.resources.database_row_update_failed
-import flocondesktop.composeapp.generated.resources.database_row_update_invalid_number
-import flocondesktop.composeapp.generated.resources.database_row_update_not_found
-import flocondesktop.composeapp.generated.resources.database_row_updated
 import io.github.openflocon.domain.database.models.DatabaseRowUpdateResultDomainModel
 import io.github.openflocon.domain.database.usecase.UpdateDatabaseRowUseCase
 import io.github.openflocon.domain.feedback.FeedbackDisplayer
 import io.github.openflocon.flocondesktop.features.database.delegate.DatabaseRowUpdatedNotifier
+import io.github.openflocon.flocondesktop.features.database.mapper.displayRowUpdateResult
 import io.github.openflocon.flocondesktop.features.database.mapper.toDomain
 import io.github.openflocon.flocondesktop.features.database.mapper.toRowDetailUiModel
 import io.github.openflocon.flocondesktop.features.database.mapper.toRowMarkdown
@@ -86,7 +82,7 @@ class DatabaseRowDetailViewModel(
                 if (it == DatabaseRowUpdateResultDomainModel.Updated) {
                     rowUpdatedNotifier.notifyUpdated(target)
                 }
-                displayResult(it)
+                feedbackDisplayer.displayRowUpdateResult(it)
             }
         }
         viewModelScope.launch {
@@ -96,24 +92,6 @@ class DatabaseRowDetailViewModel(
             isSaving = false
             uiState = buildUiState()
         }
-    }
-
-    private suspend fun displayResult(result: DatabaseRowUpdateResultDomainModel) {
-        val message = when (result) {
-            DatabaseRowUpdateResultDomainModel.Updated -> getString(Res.string.database_row_updated)
-            DatabaseRowUpdateResultDomainModel.RowNotFound -> getString(Res.string.database_row_update_not_found)
-            DatabaseRowUpdateResultDomainModel.DeviceChanged -> getString(Res.string.database_row_update_device_changed)
-            is DatabaseRowUpdateResultDomainModel.InvalidNumber -> getString(Res.string.database_row_update_invalid_number, result.column)
-            is DatabaseRowUpdateResultDomainModel.Failed -> getString(Res.string.database_row_update_failed, result.message)
-        }
-        feedbackDisplayer.displayMessage(
-            message = message,
-            type = if (result == DatabaseRowUpdateResultDomainModel.Updated) {
-                FeedbackDisplayer.MessageType.Success
-            } else {
-                FeedbackDisplayer.MessageType.Error
-            },
-        )
     }
 
     private fun copy(text: String) {

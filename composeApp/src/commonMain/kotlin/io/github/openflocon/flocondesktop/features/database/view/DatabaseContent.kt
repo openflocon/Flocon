@@ -3,11 +3,12 @@ package io.github.openflocon.flocondesktop.features.database.view
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseScreenState
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseTabAction
 
 @Composable
 fun DatabaseContent(
     state: DatabaseScreenState,
-    onExportCsvClicked: () -> Unit,
+    onAction: (DatabaseTabAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state) {
@@ -18,8 +19,9 @@ fun DatabaseContent(
         is DatabaseScreenState.Result -> {
             DatabaseResult(
                 result = state.result,
+                cellEdit = state.cellEdit,
                 modifier = modifier,
-                onExportCsvClicked = onExportCsvClicked,
+                onAction = onAction,
             )
         }
     }
