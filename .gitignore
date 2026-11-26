@@ -46,3 +46,6 @@ captures
 
 # flocon-proxy bundle for Node, built by `bun run build:node` in proxy/ (the release workflow builds it)
 composeApp/src/desktopMain/resources/proxy/
+
+# JVM crash logs
+hs_err_pid*.log
