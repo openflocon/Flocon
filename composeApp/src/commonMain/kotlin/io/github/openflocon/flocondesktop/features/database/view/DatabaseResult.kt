@@ -104,100 +104,102 @@ fun DatabaseResult(
         return
     }
 
-    SelectionContainer(modifier) {
-        when (result) {
-            is QueryResultUiModel.Text -> {
+    when (result) {
+        is QueryResultUiModel.Text -> {
+            SelectionContainer(modifier) {
                 Text(
                     text = result.text,
                     color = FloconTheme.colors.ink,
                     modifier = Modifier.padding(FloconTheme.spacing.small),
                 )
             }
+        }
 
-            is QueryResultUiModel.Values -> {
-                val color = FloconTheme.colors.line
+        is QueryResultUiModel.Values -> {
+            val color = FloconTheme.colors.line
 
-                var selectedIndex by remember(result.columns) {
-                    mutableStateOf<Int?>(null)
-                }
-                val horizontalScrollState = rememberScrollState()
-                val columnsWidth = remember(result.columns) {
-                    mutableStateListOf<Dp>().apply { repeat(result.columns.size) { add(DefaultColumnWidth) } }
-                }
-                val menuLabels = CellMenuLabels(
-                    edit = stringResource(Res.string.general_edit),
-                    setNull = stringResource(Res.string.database_row_set_null),
-                    copy = stringResource(Res.string.general_copy_value),
+            var selectedIndex by remember(result.columns) {
+                mutableStateOf<Int?>(null)
+            }
+            val horizontalScrollState = rememberScrollState()
+            val columnsWidth = remember(result.columns) {
+                mutableStateListOf<Dp>().apply { repeat(result.columns.size) { add(DefaultColumnWidth) } }
+            }
+            val menuLabels = CellMenuLabels(
+                edit = stringResource(Res.string.general_edit),
+                setNull = stringResource(Res.string.database_row_set_null),
+                copy = stringResource(Res.string.general_copy_value),
+            )
+
+            // no SelectionContainer: a selection kept on a cell recreated by a refresh crashes,
+            // the values are copied with the right click
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .clip(FloconTheme.shapes.medium)
+                    .background(FloconTheme.colors.bg100)
+                    .border(
+                        width = 1.dp,
+                        color = color,
+                        shape = FloconTheme.shapes.medium
+                    )
+            ) {
+                ResultHeader(
+                    result = result,
+                    modifier = Modifier.fillMaxWidth(),
+                    onExportCsvClicked = { onAction(DatabaseTabAction.ExportCsv) },
+                )
+                FloconHorizontalDivider(
+                    color = color,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(FloconTheme.shapes.medium)
-                        .background(FloconTheme.colors.bg100)
-                        .border(
-                            width = 1.dp,
-                            color = color,
-                            shape = FloconTheme.shapes.medium
+                Box(Modifier.fillMaxSize()) {
+                    Column(Modifier.fillMaxSize()) {
+                        ResultColumnsHeader(
+                            columns = result.columns,
+                            columnsWidth = columnsWidth,
+                            scrollState = horizontalScrollState,
+                            modifier = Modifier.fillMaxWidth(),
                         )
-                ) {
-                    ResultHeader(
-                        result = result,
-                        modifier = Modifier.fillMaxWidth(),
-                        onExportCsvClicked = { onAction(DatabaseTabAction.ExportCsv) },
-                    )
-                    FloconHorizontalDivider(
-                        color = color,
-                        modifier = Modifier.fillMaxWidth()
-                    )
 
-                    Box(Modifier.fillMaxSize()) {
-                        Column(Modifier.fillMaxSize()) {
-                            ResultColumnsHeader(
-                                columns = result.columns,
-                                columnsWidth = columnsWidth,
-                                scrollState = horizontalScrollState,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .horizontalScroll(horizontalScrollState)
+                        ) {
+                            itemsIndexed(result.rows) { index, row ->
+                                val selected = index == selectedIndex
 
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .horizontalScroll(horizontalScrollState)
-                            ) {
-                                itemsIndexed(result.rows) { index, row ->
-                                    val selected = index == selectedIndex
+                                DatabaseResultRow(
+                                    index = index,
+                                    row = row,
+                                    columnsWidth = columnsWidth,
+                                    selected = selected,
+                                    editTarget = result.editTarget,
+                                    cellEdit = cellEdit?.takeIf { it.rowIndex == index },
+                                    menuLabels = menuLabels,
+                                    onAction = onAction,
+                                    onSelected = { selectedIndex = index },
+                                )
 
-                                    DatabaseResultRow(
-                                        index = index,
-                                        row = row,
-                                        columnsWidth = columnsWidth,
-                                        selected = selected,
-                                        editTarget = result.editTarget,
-                                        cellEdit = cellEdit?.takeIf { it.rowIndex == index },
-                                        menuLabels = menuLabels,
-                                        onAction = onAction,
-                                        onSelected = { selectedIndex = index },
+                                if (index != result.rows.lastIndex) {
+                                    FloconHorizontalDivider(
+                                        color = color,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
-
-                                    if (index != result.rows.lastIndex) {
-                                        FloconHorizontalDivider(
-                                            color = color,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    }
                                 }
                             }
                         }
-                        ColumnResizeHandles(
-                            columnsWidth = columnsWidth,
-                            scrollState = horizontalScrollState,
-                            onResize = { index, delta ->
-                                columnsWidth[index] = (columnsWidth[index] + delta).coerceAtLeast(MinColumnWidth)
-                            },
-                            modifier = Modifier.matchParentSize(),
-                        )
                     }
+                    ColumnResizeHandles(
+                        columnsWidth = columnsWidth,
+                        scrollState = horizontalScrollState,
+                        onResize = { index, delta ->
+                            columnsWidth[index] = (columnsWidth[index] + delta).coerceAtLeast(MinColumnWidth)
+                        },
+                        modifier = Modifier.matchParentSize(),
+                    )
                 }
             }
         }
