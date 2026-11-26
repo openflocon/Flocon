@@ -30,11 +30,11 @@ import io.github.openflocon.flocondesktop.features.network.list.model.header.OnF
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.NetworkColumnsTypeUiModel
 import io.github.openflocon.flocondesktop.features.network.list.model.header.columns.base.isFiltered
 import io.github.openflocon.flocondesktop.features.network.list.model.header.previewNetworkHeaderUiState
-import io.github.openflocon.flocondesktop.features.network.list.view.components.ColumnResizeHandle
 import io.github.openflocon.flocondesktop.features.network.list.view.components.HeaderDropdown
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.MethodFilterDropdownContent
 import io.github.openflocon.flocondesktop.features.network.list.view.filters.TextFilterDropdownContent
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconColumnResizeHandle
 import io.github.openflocon.library.designsystem.components.floconTableHeaderBackground
 import org.jetbrains.compose.resources.stringResource
 
@@ -181,7 +181,7 @@ private fun ResizableHeaderCell(
             modifier = Modifier.matchParentSize(),
             contentAlignment = handleAlignment,
         ) {
-            ColumnResizeHandle(onResize = onResize)
+            FloconColumnResizeHandle(onResize = onResize)
         }
     }
 }

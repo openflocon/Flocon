@@ -1,4 +1,4 @@
-package io.github.openflocon.flocondesktop.features.network.list.view.components
+package io.github.openflocon.library.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -27,7 +27,7 @@ private val LineWidth = 2.dp
 
 /** Thin grab zone at the right edge of a header cell: drag it horizontally to resize the column. */
 @Composable
-fun ColumnResizeHandle(
+fun FloconColumnResizeHandle(
     onResize: (delta: Dp) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -41,7 +41,7 @@ fun ColumnResizeHandle(
             .width(HandleWidth)
             .fillMaxHeight()
             .hoverable(interactionSource)
-            .pointerHoverIcon(PointerIcon.Hand)
+            .pointerHoverIcon(HorizontalResizePointerIcon)
             .draggable(
                 orientation = Orientation.Horizontal,
                 interactionSource = interactionSource,
@@ -58,3 +58,6 @@ fun ColumnResizeHandle(
         }
     }
 }
+
+/** Left-right arrow cursor shown over the resize handle. */
+internal expect val HorizontalResizePointerIcon: PointerIcon

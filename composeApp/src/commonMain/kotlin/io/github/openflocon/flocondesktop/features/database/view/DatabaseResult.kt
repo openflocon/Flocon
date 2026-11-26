@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,12 +27,14 @@ import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
@@ -43,14 +46,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
 import flocondesktop.composeapp.generated.resources.nb_lines
 import io.github.openflocon.flocondesktop.features.database.DatabaseRoutes
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowUiModel
 import io.github.openflocon.flocondesktop.features.database.model.QueryResultUiModel
 import io.github.openflocon.library.designsystem.FloconTheme
+import io.github.openflocon.library.designsystem.components.FloconColumnResizeHandle
 import io.github.openflocon.library.designsystem.components.FloconHorizontalDivider
 import io.github.openflocon.library.designsystem.components.FloconTableHeaderLabel
 import io.github.openflocon.library.designsystem.components.floconTableHeader
@@ -60,6 +65,10 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
+
+private val DefaultColumnWidth = 200.dp
+private val MinColumnWidth = 48.dp
+private val HandleWidth = 8.dp
 
 @Serializable
 data class DetailResultItem(
@@ -73,8 +82,6 @@ fun DatabaseResult(
     onExportCsvClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val columnsWidth = 200.dp
-
     if (result == null) {
         return
     }
@@ -96,6 +103,9 @@ fun DatabaseResult(
                     mutableStateOf<DetailResultItem?>(null)
                 }
                 val horizontalScrollState = rememberScrollState()
+                val columnsWidth = remember(result.columns) {
+                    mutableStateListOf<Dp>().apply { repeat(result.columns.size) { add(DefaultColumnWidth) } }
+                }
 
                 Column(
                     modifier = Modifier
@@ -118,85 +128,97 @@ fun DatabaseResult(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    ResultColumnsHeader(
-                        columns = result.columns,
-                        columnsWidth = columnsWidth,
-                        scrollState = horizontalScrollState,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .horizontalScroll(horizontalScrollState)
-                            .onPreviewKeyEvent { event ->
-                                if (event.type != KeyEventType.KeyDown) {
-                                    return@onPreviewKeyEvent false
-                                }
-
-                                when (event.key) {
-                                    Key.DirectionUp -> {
-                                        selectedItem?.index?.let { i ->
-                                            val newIndex = i - 1
-                                            result.rows.getOrNull(newIndex)?.let {
-                                                val item = DetailResultItem(
-                                                    index = newIndex,
-                                                    item = it
-                                                )
-
-                                                selectedItem = item
-                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
-                                            }
-                                        }
-
-                                        true
-                                    }
-
-                                    Key.DirectionDown -> {
-                                        selectedItem?.index?.let { i ->
-                                            val newIndex = i + 1
-                                            result.rows.getOrNull(newIndex)?.let {
-                                                val item = DetailResultItem(
-                                                    index = newIndex,
-                                                    item = it
-                                                )
-
-                                                selectedItem = item
-                                                KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                                    .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
-                                            }
-                                        }
-
-                                        true
-                                    }
-
-                                    else -> false
-                                }
-                            }
-                    ) {
-                        itemsIndexed(result.rows) { index, row ->
-                            val selected = index == selectedItem?.index
-
-                            DatabaseResultRow(
-                                index = index,
-                                row = row,
+                    Box(Modifier.fillMaxSize()) {
+                        Column(Modifier.fillMaxSize()) {
+                            ResultColumnsHeader(
+                                columns = result.columns,
                                 columnsWidth = columnsWidth,
-                                selected = selected,
-                                onItemSelected = {
-                                    selectedItem = it
-                                    KoinPlatform.getKoin().get<MainFloconNavigationState>()
-                                        .navigate(DatabaseRoutes.Detail(it, result.columns, result.editTarget))
-                                }
+                                scrollState = horizontalScrollState,
+                                modifier = Modifier.fillMaxWidth(),
                             )
 
-                            if (index != result.rows.lastIndex) {
-                                FloconHorizontalDivider(
-                                    color = color,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .horizontalScroll(horizontalScrollState)
+                                    .onPreviewKeyEvent { event ->
+                                        if (event.type != KeyEventType.KeyDown) {
+                                            return@onPreviewKeyEvent false
+                                        }
+
+                                        when (event.key) {
+                                            Key.DirectionUp -> {
+                                                selectedItem?.index?.let { i ->
+                                                    val newIndex = i - 1
+                                                    result.rows.getOrNull(newIndex)?.let {
+                                                        val item = DetailResultItem(
+                                                            index = newIndex,
+                                                            item = it
+                                                        )
+
+                                                        selectedItem = item
+                                                        KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                            .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
+                                                    }
+                                                }
+
+                                                true
+                                            }
+
+                                            Key.DirectionDown -> {
+                                                selectedItem?.index?.let { i ->
+                                                    val newIndex = i + 1
+                                                    result.rows.getOrNull(newIndex)?.let {
+                                                        val item = DetailResultItem(
+                                                            index = newIndex,
+                                                            item = it
+                                                        )
+
+                                                        selectedItem = item
+                                                        KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                            .navigate(DatabaseRoutes.Detail(item, result.columns, result.editTarget))
+                                                    }
+                                                }
+
+                                                true
+                                            }
+
+                                            else -> false
+                                        }
+                                    }
+                            ) {
+                                itemsIndexed(result.rows) { index, row ->
+                                    val selected = index == selectedItem?.index
+
+                                    DatabaseResultRow(
+                                        index = index,
+                                        row = row,
+                                        columnsWidth = columnsWidth,
+                                        selected = selected,
+                                        onItemSelected = {
+                                            selectedItem = it
+                                            KoinPlatform.getKoin().get<MainFloconNavigationState>()
+                                                .navigate(DatabaseRoutes.Detail(it, result.columns, result.editTarget))
+                                        }
+                                    )
+
+                                    if (index != result.rows.lastIndex) {
+                                        FloconHorizontalDivider(
+                                            color = color,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
                             }
                         }
+                        ColumnResizeHandles(
+                            columnsWidth = columnsWidth,
+                            scrollState = horizontalScrollState,
+                            onResize = { index, delta ->
+                                columnsWidth[index] = (columnsWidth[index] + delta).coerceAtLeast(MinColumnWidth)
+                            },
+                            modifier = Modifier.matchParentSize(),
+                        )
                     }
                 }
             }
@@ -208,7 +230,7 @@ fun DatabaseResult(
 private fun DatabaseResultRow(
     index: Int,
     row: DatabaseRowUiModel,
-    columnsWidth: Dp,
+    columnsWidth: List<Dp>,
     selected: Boolean,
     onItemSelected: (DetailResultItem) -> Unit,
 ) {
@@ -242,7 +264,7 @@ private fun DatabaseResultRow(
                 style = FloconTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 color = FloconTheme.colors.inkMuted,
                 modifier = Modifier
-                    .width(columnsWidth)
+                    .width(columnsWidth.getOrElse(index) { DefaultColumnWidth })
                     .graphicsLayer {
                         if (item == null) {
                             alpha = 0.5f
@@ -257,7 +279,7 @@ private fun DatabaseResultRow(
 @Composable
 private fun ResultColumnsHeader(
     columns: List<String>,
-    columnsWidth: Dp,
+    columnsWidth: List<Dp>,
     scrollState: ScrollState,
     modifier: Modifier = Modifier,
 ) {
@@ -268,13 +290,38 @@ private fun ResultColumnsHeader(
             .padding(horizontal = FloconTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        columns.fastForEach { column ->
+        columns.fastForEachIndexed { index, column ->
             FloconTableHeaderLabel(
                 text = column,
                 uppercase = false,
                 modifier = Modifier
-                    .width(columnsWidth)
+                    .width(columnsWidth.getOrElse(index) { DefaultColumnWidth })
                     .padding(all = FloconTheme.spacing.extraSmall),
+            )
+        }
+    }
+}
+
+/**
+ * Resize handles drawn over the whole table (header and rows), one at the right edge of each
+ * column, following the horizontal scroll.
+ */
+@Composable
+private fun ColumnResizeHandles(
+    columnsWidth: List<Dp>,
+    scrollState: ScrollState,
+    onResize: (index: Int, delta: Dp) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val startPadding = FloconTheme.spacing.small
+    Box(modifier.clipToBounds()) {
+        var columnEnd = startPadding
+        columnsWidth.forEachIndexed { index, width ->
+            columnEnd += width
+            val handleStart = columnEnd - HandleWidth / 2
+            FloconColumnResizeHandle(
+                onResize = { delta -> onResize(index, delta) },
+                modifier = Modifier.offset { IntOffset(handleStart.roundToPx() - scrollState.value, 0) },
             )
         }
     }
