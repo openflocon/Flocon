@@ -775,4 +775,11 @@
     <string name="desktop_update_installed">Installed: %1$s</string>
     <string name="timeline_transactions_expanded">Expand transactions by default</string>
     <string name="database_transaction_nested">Nested transaction</string>
+    <string name="database_row_update">Update</string>
+    <string name="database_row_set_null">Set NULL</string>
+    <string name="database_row_updated">Row updated</string>
+    <string name="database_row_update_not_found">Row not updated: it was deleted or changed on the device</string>
+    <string name="database_row_update_device_changed">Row not updated: the selected device or app changed</string>
+    <string name="database_row_update_failed">Update failed: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s expects a number</string>
 </resources>

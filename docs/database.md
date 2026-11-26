@@ -337,7 +337,7 @@ Flocon can display all SQL queries executed by your app in real time. It is grea
 
 - **Sidebar**: the databases of the app with their tables and columns (type, primary key, not null). Use the filter field to find a database, table or column, and double-click a table to open it.
 - **SQL editor**: write a query and run it, the result is shown as a table. Open several tabs, turn on auto-update to re-run a query regularly, copy the result or export it to CSV.
-- **Row detail**: select a row to see its values in full.
+- **Row detail**: select a row to see its values in full. When the query reads a single table and returns its whole primary key, the values are editable: change them and press **Update** to write the changed columns on the device. See the limitations below.
 - **Saved queries**: save a query as a favorite from the editor and run it again later.
 - **Query logs**: **See all queries** opens the queries your app ran on a database, newest first, with their arguments (you can copy the query or its arguments). The queries of a transaction are grouped in one row (count, duration, committed, rolled back or in progress).
 
@@ -362,3 +362,6 @@ See the [MCP cookbook](mcp-cookbook.md) for full workflows.
 - Wasm: no SQLite files, only Room 3 with `WebWorkerSQLiteDriver`.
 - Swift and Flutter: queries are logged by hand, and transactions are not grouped.
 - The MCP tools only run read-only queries.
+- Row editing (row detail panel): only for a plain `SELECT` on one table (`*` or a list of columns, with optional `WHERE`, `ORDER BY` and `LIMIT`). Joins, aliases, expressions, sub queries and grouping make the result read-only, and so do views, tables without a primary key, and primary keys of decimal or blob type. The result must hold the whole primary key. Blob and untyped columns are read-only too.
+- Row editing: **Set NULL** writes `NULL` instead of an empty text. Only the changed columns are written, and an `INTEGER` or `REAL` column only takes a number.
+- Row editing: **Update** is refused if a text or integer value changed on the device since the query ran, or if the selected device or app changed. The update is not saved in the query history, and the query tab refreshes afterwards.

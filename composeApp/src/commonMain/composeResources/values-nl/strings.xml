@@ -775,4 +775,11 @@
     <string name="desktop_update_installed">Geïnstalleerd: %1$s</string>
     <string name="timeline_transactions_expanded">Transacties standaard uitklappen</string>
     <string name="database_transaction_nested">Geneste transactie</string>
+    <string name="database_row_update">Bijwerken</string>
+    <string name="database_row_set_null">Op NULL zetten</string>
+    <string name="database_row_updated">Rij bijgewerkt</string>
+    <string name="database_row_update_not_found">Rij niet bijgewerkt: deze is op het apparaat verwijderd of gewijzigd</string>
+    <string name="database_row_update_device_changed">Rij niet bijgewerkt: het geselecteerde apparaat of de app is gewijzigd</string>
+    <string name="database_row_update_failed">Bijwerken mislukt: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s verwacht een getal</string>
 </resources>

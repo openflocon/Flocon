@@ -789,4 +789,11 @@
     <string name="desktop_update_installed">Zainstalowana: %1$s</string>
     <string name="timeline_transactions_expanded">Domyślnie rozwijaj transakcje</string>
     <string name="database_transaction_nested">Transakcja zagnieżdżona</string>
+    <string name="database_row_update">Aktualizuj</string>
+    <string name="database_row_set_null">Ustaw NULL</string>
+    <string name="database_row_updated">Wiersz zaktualizowany</string>
+    <string name="database_row_update_not_found">Wiersz niezaktualizowany: został usunięty lub zmieniony na urządzeniu</string>
+    <string name="database_row_update_device_changed">Wiersz niezaktualizowany: zmieniło się wybrane urządzenie lub aplikacja</string>
+    <string name="database_row_update_failed">Aktualizacja nie powiodła się: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s wymaga liczby</string>
 </resources>

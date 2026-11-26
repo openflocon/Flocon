@@ -775,4 +775,11 @@
     <string name="desktop_update_installed">ইনস্টল করা: %1$s</string>
     <string name="timeline_transactions_expanded">ডিফল্টভাবে ট্রানজ্যাকশন বড় করে দেখান</string>
     <string name="database_transaction_nested">নেস্টেড ট্রানজ্যাকশন</string>
+    <string name="database_row_update">আপডেট</string>
+    <string name="database_row_set_null">NULL সেট করুন</string>
+    <string name="database_row_updated">সারি আপডেট হয়েছে</string>
+    <string name="database_row_update_not_found">সারি আপডেট হয়নি: ডিভাইসে এটি মুছে ফেলা বা পরিবর্তন করা হয়েছে</string>
+    <string name="database_row_update_device_changed">সারি আপডেট হয়নি: নির্বাচিত ডিভাইস বা অ্যাপ পরিবর্তিত হয়েছে</string>
+    <string name="database_row_update_failed">আপডেট ব্যর্থ হয়েছে: %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s-এ একটি সংখ্যা দিতে হবে</string>
 </resources>

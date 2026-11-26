@@ -42,6 +42,8 @@ Desktop → Mobile: empty body. Mobile → Desktop: list of available databases.
 { "requestId": "3f2b…", "database": "app_database", "query": "SELECT id, name FROM user LIMIT 2" }
 ```
 
+The desktop also sends `UPDATE` statements through this same `query` method, when a row is edited in the row detail panel. They are not saved in the query history. The desktop expects an `UpdateDelete` result for them: `affectedCount` `0` means the row was not found, and an `Error` is shown as a failure.
+
 ## `query` (Mobile → Desktop)
 
 ### `QueryResult`

@@ -585,4 +585,11 @@
     <string name="desktop_update_installed">Installée : %1$s</string>
     <string name="timeline_transactions_expanded">Déplier les transactions par défaut</string>
     <string name="database_transaction_nested">Transaction imbriquée</string>
+    <string name="database_row_update">Mettre à jour</string>
+    <string name="database_row_set_null">Mettre à NULL</string>
+    <string name="database_row_updated">Ligne mise à jour</string>
+    <string name="database_row_update_not_found">Ligne non mise à jour : elle a été supprimée ou modifiée sur l'appareil</string>
+    <string name="database_row_update_device_changed">Ligne non mise à jour : l'appareil ou l'application sélectionnés ont changé</string>
+    <string name="database_row_update_failed">Échec de la mise à jour : %1$s</string>
+    <string name="database_row_update_invalid_number">%1$s attend un nombre</string>
 </resources>
