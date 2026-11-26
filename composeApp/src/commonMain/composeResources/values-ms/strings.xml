@@ -768,6 +768,9 @@
     <string name="desktop_update_installed">Dipasang: %1$s</string>
     <string name="timeline_transactions_expanded">Kembangkan transaksi secara lalai</string>
     <string name="database_transaction_nested">Transaksi bersarang</string>
+    <string name="general_copy_all_content">Salin semua kandungan</string>
+    <string name="database_row_update">Kemas kini</string>
+    <string name="database_row_detail">Lihat butiran</string>
     <string name="database_row_set_null">Tetapkan NULL</string>
     <string name="database_row_updated">Baris dikemas kini</string>
     <string name="database_row_update_not_found">Baris tidak dikemas kini: ia telah dipadam atau diubah pada peranti</string>

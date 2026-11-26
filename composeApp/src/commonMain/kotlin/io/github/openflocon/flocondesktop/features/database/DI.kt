@@ -16,6 +16,7 @@ import org.koin.dsl.module
 internal val databaseModule = module {
     viewModelOf(::DatabaseViewModel)
     viewModelOf(::DatabaseTabViewModel)
+    viewModelOf(::DatabaseRowDetailViewModel)
     singleOf(::DatabaseRowUpdatedNotifier)
     factoryOf(::DatabaseSelectorDelegate)
     factoryOf(::ImportSqlQueryProcessor)

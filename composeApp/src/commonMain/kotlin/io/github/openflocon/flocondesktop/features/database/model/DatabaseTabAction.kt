@@ -17,4 +17,10 @@ sealed interface DatabaseTabAction {
     data class CommitCellEdit(val rowIndex: Int, val columnIndex: Int, val value: String) : DatabaseTabAction
     data class SetCellNull(val rowIndex: Int, val columnIndex: Int) : DatabaseTabAction
     data class CopyCellValue(val value: String) : DatabaseTabAction
+
+    /** The whole row as markdown. */
+    data class CopyRow(val rowIndex: Int) : DatabaseTabAction
+
+    /** Opens the detail panel of the row. */
+    data class ShowRowDetail(val rowIndex: Int) : DatabaseTabAction
 }

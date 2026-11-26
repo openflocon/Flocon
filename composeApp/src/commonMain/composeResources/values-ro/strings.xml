@@ -782,6 +782,9 @@
     <string name="desktop_update_installed">Instalat: %1$s</string>
     <string name="timeline_transactions_expanded">Extinde tranzacțiile implicit</string>
     <string name="database_transaction_nested">Tranzacție imbricată</string>
+    <string name="general_copy_all_content">Copiază tot conținutul</string>
+    <string name="database_row_update">Actualizează</string>
+    <string name="database_row_detail">Afișează detaliile</string>
     <string name="database_row_set_null">Setează NULL</string>
     <string name="database_row_updated">Rând actualizat</string>
     <string name="database_row_update_not_found">Rândul nu a fost actualizat: a fost șters sau modificat pe dispozitiv</string>

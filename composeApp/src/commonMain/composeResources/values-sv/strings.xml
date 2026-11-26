@@ -775,6 +775,9 @@
     <string name="desktop_update_installed">Installerad: %1$s</string>
     <string name="timeline_transactions_expanded">Fäll ut transaktioner som standard</string>
     <string name="database_transaction_nested">Nästlad transaktion</string>
+    <string name="general_copy_all_content">Kopiera allt innehåll</string>
+    <string name="database_row_update">Uppdatera</string>
+    <string name="database_row_detail">Visa detaljer</string>
     <string name="database_row_set_null">Sätt NULL</string>
     <string name="database_row_updated">Raden uppdaterad</string>
     <string name="database_row_update_not_found">Raden uppdaterades inte: den har tagits bort eller ändrats på enheten</string>

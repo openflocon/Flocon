@@ -775,6 +775,9 @@
     <string name="desktop_update_installed">Telepítve: %1$s</string>
     <string name="timeline_transactions_expanded">Tranzakciók alapértelmezett kibontása</string>
     <string name="database_transaction_nested">Beágyazott tranzakció</string>
+    <string name="general_copy_all_content">Teljes tartalom másolása</string>
+    <string name="database_row_update">Frissítés</string>
+    <string name="database_row_detail">Részletek megjelenítése</string>
     <string name="database_row_set_null">NULL beállítása</string>
     <string name="database_row_updated">A sor frissítve</string>
     <string name="database_row_update_not_found">A sor nem frissült: törölték vagy módosították az eszközön</string>

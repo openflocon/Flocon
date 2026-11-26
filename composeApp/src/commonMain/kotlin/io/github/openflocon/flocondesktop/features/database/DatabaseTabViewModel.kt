@@ -24,6 +24,7 @@ import io.github.openflocon.flocondesktop.features.database.mapper.canEditRow
 import io.github.openflocon.flocondesktop.features.database.mapper.canSetNull
 import io.github.openflocon.flocondesktop.features.database.mapper.displayRowUpdateResult
 import io.github.openflocon.flocondesktop.features.database.mapper.toDomain
+import io.github.openflocon.flocondesktop.features.database.mapper.toRowMarkdown
 import io.github.openflocon.flocondesktop.features.database.mapper.toUi
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseCellEditUiModel
 import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
@@ -35,6 +36,7 @@ import io.github.openflocon.flocondesktop.features.database.processor.ImportSqlQ
 import io.github.openflocon.flocondesktop.telemetry.TelemetryFeature
 import io.github.openflocon.flocondesktop.telemetry.TelemetryManager
 import io.github.openflocon.library.designsystem.common.copyToClipboard
+import io.github.openflocon.navigation.MainFloconNavigationState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
@@ -71,6 +73,7 @@ class DatabaseTabViewModel(
     private val rowUpdatedNotifier: DatabaseRowUpdatedNotifier,
     private val getCurrentDeviceIdAndPackageNameUseCase: GetCurrentDeviceIdAndPackageNameUseCase,
     private val updateDatabaseRowUseCase: UpdateDatabaseRowUseCase,
+    private val navigationState: MainFloconNavigationState,
 ) : ViewModel() {
 
     @Immutable
@@ -258,6 +261,19 @@ class DatabaseTabViewModel(
                 is DatabaseTabAction.CopyCellValue -> {
                     copyToClipboard(action.value)
                     feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+                }
+
+                is DatabaseTabAction.CopyRow -> (queryResult.value as? QueryResultUiModel.Values)?.let { result ->
+                    val row = result.rows.getOrNull(action.rowIndex) ?: return@let
+                    copyToClipboard(toRowMarkdown(result.columns, row.items))
+                    feedbackDisplayer.displayMessage(getString(Res.string.copied_to_clipboard))
+                }
+
+                is DatabaseTabAction.ShowRowDetail -> (queryResult.value as? QueryResultUiModel.Values)?.let { result ->
+                    val row = result.rows.getOrNull(action.rowIndex) ?: return@let
+                    navigationState.navigate(
+                        DatabaseRoutes.Detail(columns = result.columns, values = row.items, editTarget = result.editTarget),
+                    )
                 }
             }
         }

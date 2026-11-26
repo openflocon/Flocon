@@ -645,6 +645,9 @@
     <string name="proxy_ios_cert_3b">Active « Flocon Proxy CA »</string>
     <string name="proxy_downloading">Téléchargement du proxy… %1$s</string>
     <string name="proxy_downloading_hint">Node.js n'est pas installé sur cet ordinateur : Flocon télécharge un proxy autonome (~100 Mo), une seule fois. Avec Node.js 18+, rien à télécharger.</string>
+    <string name="general_copy_all_content">Copier tout le contenu</string>
+    <string name="database_row_update">Mettre à jour</string>
+    <string name="database_row_detail">Voir le détail</string>
     <string name="database_row_set_null">Mettre à NULL</string>
     <string name="database_row_updated">Ligne mise à jour</string>
     <string name="database_row_update_not_found">Ligne non mise à jour : elle a été supprimée ou modifiée sur l'appareil</string>

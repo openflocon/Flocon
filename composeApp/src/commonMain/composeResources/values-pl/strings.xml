@@ -789,6 +789,9 @@
     <string name="desktop_update_installed">Zainstalowana: %1$s</string>
     <string name="timeline_transactions_expanded">Domyślnie rozwijaj transakcje</string>
     <string name="database_transaction_nested">Transakcja zagnieżdżona</string>
+    <string name="general_copy_all_content">Kopiuj całą zawartość</string>
+    <string name="database_row_update">Aktualizuj</string>
+    <string name="database_row_detail">Pokaż szczegóły</string>
     <string name="database_row_set_null">Ustaw NULL</string>
     <string name="database_row_updated">Wiersz zaktualizowany</string>
     <string name="database_row_update_not_found">Wiersz niezaktualizowany: został usunięty lub zmieniony na urządzeniu</string>

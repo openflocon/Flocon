@@ -775,6 +775,9 @@
     <string name="desktop_update_installed">Installata: %1$s</string>
     <string name="timeline_transactions_expanded">Espandi le transazioni per impostazione predefinita</string>
     <string name="database_transaction_nested">Transazione annidata</string>
+    <string name="general_copy_all_content">Copia tutto il contenuto</string>
+    <string name="database_row_update">Aggiorna</string>
+    <string name="database_row_detail">Mostra dettagli</string>
     <string name="database_row_set_null">Imposta NULL</string>
     <string name="database_row_updated">Riga aggiornata</string>
     <string name="database_row_update_not_found">Riga non aggiornata: è stata eliminata o modificata sul dispositivo</string>

@@ -66,7 +66,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import flocondesktop.composeapp.generated.resources.Res
+import flocondesktop.composeapp.generated.resources.database_row_detail
 import flocondesktop.composeapp.generated.resources.database_row_set_null
+import flocondesktop.composeapp.generated.resources.general_copy_all_content
 import flocondesktop.composeapp.generated.resources.general_copy_value
 import flocondesktop.composeapp.generated.resources.general_edit
 import flocondesktop.composeapp.generated.resources.nb_lines
@@ -133,6 +135,8 @@ fun DatabaseResult(
                 edit = stringResource(Res.string.general_edit),
                 setNull = stringResource(Res.string.database_row_set_null),
                 copy = stringResource(Res.string.general_copy_value),
+                copyRow = stringResource(Res.string.general_copy_all_content),
+                detail = stringResource(Res.string.database_row_detail),
             )
 
             // no SelectionContainer: a selection kept on a cell recreated by a refresh crashes,
@@ -250,6 +254,8 @@ private fun DatabaseResultRow(
                 onStartEdit = { onAction(DatabaseTabAction.StartCellEdit(rowIndex = index, columnIndex = columnIndex)) },
                 onSetNull = { onAction(DatabaseTabAction.SetCellNull(rowIndex = index, columnIndex = columnIndex)) },
                 onCopy = { onAction(DatabaseTabAction.CopyCellValue(item ?: "NULL")) },
+                onCopyRow = { onAction(DatabaseTabAction.CopyRow(index)) },
+                onShowDetail = { onAction(DatabaseTabAction.ShowRowDetail(index)) },
                 onCommit = { onAction(DatabaseTabAction.CommitCellEdit(rowIndex = index, columnIndex = columnIndex, value = it)) },
                 onCancel = { onAction(DatabaseTabAction.CancelCellEdit) },
             )
@@ -262,6 +268,8 @@ private class CellMenuLabels(
     val edit: String,
     val setNull: String,
     val copy: String,
+    val copyRow: String,
+    val detail: String,
 )
 
 /** Double click edits the value, like the database inspector of Android Studio; right click sets it to `NULL`. */
@@ -277,6 +285,8 @@ private fun DatabaseResultCell(
     onStartEdit: () -> Unit,
     onSetNull: () -> Unit,
     onCopy: () -> Unit,
+    onCopyRow: () -> Unit,
+    onShowDetail: () -> Unit,
     onCommit: (String) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -306,6 +316,8 @@ private fun DatabaseResultCell(
                             }
                         }
                         add(FloconContextMenuItem.Item(label = menuLabels.copy, onClick = onCopy))
+                        add(FloconContextMenuItem.Item(label = menuLabels.copyRow, onClick = onCopyRow))
+                        add(FloconContextMenuItem.Item(label = menuLabels.detail, onClick = onShowDetail))
                     }.toImmutableList()
                 },
             ) {

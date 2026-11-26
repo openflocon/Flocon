@@ -775,6 +775,9 @@
     <string name="desktop_update_installed">Geïnstalleerd: %1$s</string>
     <string name="timeline_transactions_expanded">Transacties standaard uitklappen</string>
     <string name="database_transaction_nested">Geneste transactie</string>
+    <string name="general_copy_all_content">Alle inhoud kopiëren</string>
+    <string name="database_row_update">Bijwerken</string>
+    <string name="database_row_detail">Details tonen</string>
     <string name="database_row_set_null">Op NULL zetten</string>
     <string name="database_row_updated">Rij bijgewerkt</string>
     <string name="database_row_update_not_found">Rij niet bijgewerkt: deze is op het apparaat verwijderd of gewijzigd</string>

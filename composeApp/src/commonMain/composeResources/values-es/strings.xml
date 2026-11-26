@@ -775,6 +775,9 @@
     <string name="desktop_update_installed">Instalada: %1$s</string>
     <string name="timeline_transactions_expanded">Expandir transacciones por defecto</string>
     <string name="database_transaction_nested">Transacción anidada</string>
+    <string name="general_copy_all_content">Copiar todo el contenido</string>
+    <string name="database_row_update">Actualizar</string>
+    <string name="database_row_detail">Ver detalles</string>
     <string name="database_row_set_null">Poner NULL</string>
     <string name="database_row_updated">Fila actualizada</string>
     <string name="database_row_update_not_found">Fila no actualizada: se eliminó o cambió en el dispositivo</string>

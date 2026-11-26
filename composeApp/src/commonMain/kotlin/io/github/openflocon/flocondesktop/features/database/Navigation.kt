@@ -4,6 +4,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.metadata
 import io.github.openflocon.flocondesktop.app.keepMenu
 import io.github.openflocon.flocondesktop.app.menu
+import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEditTargetUiModel
+import io.github.openflocon.flocondesktop.features.database.view.DatabaseDetails
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseQueryLogPanel
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
 import io.github.openflocon.navigation.FloconRoute
@@ -16,6 +18,14 @@ sealed interface DatabaseRoutes : FloconRoute {
 
     @Serializable
     data object Main : DatabaseRoutes
+
+    @Serializable
+    data class Detail(
+        val columns: List<String>,
+        val values: List<String?>,
+        val editTarget: DatabaseRowEditTargetUiModel? = null,
+    ) : DatabaseRoutes,
+        PanelRoute
 
     @Serializable
     data class QueryLogPanel(
@@ -37,6 +47,18 @@ fun EntryProviderScope<FloconRoute>.databaseRoutes() {
         }
     ) {
         DatabaseScreen()
+    }
+    entry<DatabaseRoutes.Detail>(
+        metadata = metadata {
+            panel()
+            keepMenu()
+        }
+    ) {
+        DatabaseDetails(
+            values = it.values,
+            columns = it.columns,
+            editTarget = it.editTarget,
+        )
     }
     entry<DatabaseRoutes.QueryLogPanel>(
         metadata = metadata {

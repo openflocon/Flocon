@@ -835,6 +835,9 @@
     <string name="proxy_ios_cert_3b">Turn on “Flocon Proxy CA”</string>
     <string name="proxy_downloading">Downloading the proxy… %1$s</string>
     <string name="proxy_downloading_hint">Node.js is not installed on this computer: Flocon downloads a standalone proxy (~100 MB), once. With Node.js 18+, nothing to download.</string>
+    <string name="general_copy_all_content">Copy all content</string>
+    <string name="database_row_update">Update</string>
+    <string name="database_row_detail">Show details</string>
     <string name="database_row_set_null">Set NULL</string>
     <string name="database_row_updated">Row updated</string>
     <string name="database_row_update_not_found">Row not updated: it was deleted or changed on the device</string>
