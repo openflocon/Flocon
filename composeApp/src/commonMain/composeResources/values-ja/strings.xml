@@ -470,7 +470,6 @@
     <string name="general_clear">クリア</string>
     <string name="general_copy">コピー</string>
     <string name="general_copy_all">すべてコピー</string>
-    <string name="general_copy_all_content">すべての内容をコピー</string>
     <string name="general_copy_as_image">画像としてコピー</string>
     <string name="general_copy_as_markdown">Markdown としてコピー</string>
     <string name="general_copy_path">パスをコピー</string>
@@ -769,7 +768,9 @@
     <string name="desktop_update_installed">インストール済み: %1$s</string>
     <string name="timeline_transactions_expanded">トランザクションをデフォルトで展開</string>
     <string name="database_transaction_nested">ネストされたトランザクション</string>
+    <string name="general_copy_all_content">すべての内容をコピー</string>
     <string name="database_row_update">更新</string>
+    <string name="database_row_detail">詳細を表示</string>
     <string name="database_row_set_null">NULLを設定</string>
     <string name="database_row_updated">行を更新しました</string>
     <string name="database_row_update_not_found">行は更新されませんでした: デバイス上で削除または変更されています</string>

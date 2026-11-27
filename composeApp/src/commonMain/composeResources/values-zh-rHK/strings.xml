@@ -472,7 +472,6 @@
     <string name="general_clear">清空</string>
     <string name="general_copy">複製</string>
     <string name="general_copy_all">複製全部</string>
-    <string name="general_copy_all_content">複製全部內容</string>
     <string name="general_copy_as_image">複製為圖片</string>
     <string name="general_copy_as_markdown">複製為 Markdown</string>
     <string name="general_copy_path">複製路徑</string>
@@ -771,7 +770,9 @@
     <string name="desktop_update_installed">已安裝：%1$s</string>
     <string name="timeline_transactions_expanded">預設展開交易</string>
     <string name="database_transaction_nested">巢狀交易</string>
+    <string name="general_copy_all_content">複製全部內容</string>
     <string name="database_row_update">更新</string>
+    <string name="database_row_detail">查看詳情</string>
     <string name="database_row_set_null">設為 NULL</string>
     <string name="database_row_updated">資料列已更新</string>
     <string name="database_row_update_not_found">資料列未更新：它已在裝置上被刪除或修改</string>

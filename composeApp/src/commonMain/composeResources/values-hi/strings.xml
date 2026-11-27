@@ -475,7 +475,6 @@
     <string name="general_clear">हटाएँ</string>
     <string name="general_copy">कॉपी करें</string>
     <string name="general_copy_all">सब कॉपी करें</string>
-    <string name="general_copy_all_content">पूरा कंटेंट कॉपी करें</string>
     <string name="general_copy_as_image">इमेज के रूप में कॉपी करें</string>
     <string name="general_copy_as_markdown">Markdown के रूप में कॉपी करें</string>
     <string name="general_copy_path">पाथ कॉपी करें</string>
@@ -776,7 +775,9 @@
     <string name="desktop_update_installed">इंस्टॉल्ड: %1$s</string>
     <string name="timeline_transactions_expanded">ट्रांज़ैक्शन डिफ़ॉल्ट रूप से फैलाएँ</string>
     <string name="database_transaction_nested">नेस्टेड ट्रांज़ैक्शन</string>
+    <string name="general_copy_all_content">पूरा कंटेंट कॉपी करें</string>
     <string name="database_row_update">अपडेट करें</string>
+    <string name="database_row_detail">विवरण देखें</string>
     <string name="database_row_set_null">NULL सेट करें</string>
     <string name="database_row_updated">पंक्ति अपडेट हो गई</string>
     <string name="database_row_update_not_found">पंक्ति अपडेट नहीं हुई: डिवाइस पर इसे मिटा दिया गया या बदल दिया गया</string>

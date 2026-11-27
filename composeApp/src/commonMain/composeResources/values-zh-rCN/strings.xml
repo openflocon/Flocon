@@ -472,7 +472,6 @@
     <string name="general_clear">清空</string>
     <string name="general_copy">复制</string>
     <string name="general_copy_all">复制全部</string>
-    <string name="general_copy_all_content">复制全部内容</string>
     <string name="general_copy_as_image">复制为图片</string>
     <string name="general_copy_as_markdown">复制为 Markdown</string>
     <string name="general_copy_path">复制路径</string>
@@ -771,7 +770,9 @@
     <string name="desktop_update_installed">已安装：%1$s</string>
     <string name="timeline_transactions_expanded">默认展开事务</string>
     <string name="database_transaction_nested">嵌套事务</string>
+    <string name="general_copy_all_content">复制全部内容</string>
     <string name="database_row_update">更新</string>
+    <string name="database_row_detail">查看详情</string>
     <string name="database_row_set_null">设为 NULL</string>
     <string name="database_row_updated">行已更新</string>
     <string name="database_row_update_not_found">行未更新：它已在设备上被删除或修改</string>

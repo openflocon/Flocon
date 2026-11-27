@@ -470,7 +470,6 @@
     <string name="general_clear">ล้าง</string>
     <string name="general_copy">คัดลอก</string>
     <string name="general_copy_all">คัดลอกทั้งหมด</string>
-    <string name="general_copy_all_content">คัดลอกเนื้อหาทั้งหมด</string>
     <string name="general_copy_as_image">คัดลอกเป็นรูปภาพ</string>
     <string name="general_copy_as_markdown">คัดลอกเป็น Markdown</string>
     <string name="general_copy_path">คัดลอกเส้นทาง</string>
@@ -769,7 +768,9 @@
     <string name="desktop_update_installed">ติดตั้งแล้ว: %1$s</string>
     <string name="timeline_transactions_expanded">ขยายทรานแซกชันตามค่าเริ่มต้น</string>
     <string name="database_transaction_nested">ทรานแซกชันซ้อน</string>
+    <string name="general_copy_all_content">คัดลอกเนื้อหาทั้งหมด</string>
     <string name="database_row_update">อัปเดต</string>
+    <string name="database_row_detail">ดูรายละเอียด</string>
     <string name="database_row_set_null">ตั้งค่าเป็น NULL</string>
     <string name="database_row_updated">อัปเดตแถวแล้ว</string>
     <string name="database_row_update_not_found">ไม่ได้อัปเดตแถว: แถวถูกลบหรือเปลี่ยนแปลงบนอุปกรณ์</string>

@@ -1,7 +1,6 @@
 package io.github.openflocon.flocondesktop.features.database.model
 
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.serialization.Serializable
 
 sealed interface QueryResultUiModel {
     data class Text(
@@ -15,7 +14,6 @@ sealed interface QueryResultUiModel {
     ) : QueryResultUiModel
 }
 
-@Serializable
 data class DatabaseRowUiModel(
     val items: List<String?>,
 )

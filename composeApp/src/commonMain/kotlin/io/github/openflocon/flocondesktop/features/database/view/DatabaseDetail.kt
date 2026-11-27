@@ -7,14 +7,14 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEdi
 
 @Composable
 fun DatabaseDetails(
-    state: DetailResultItem,
+    values: List<String?>,
     columns: List<String>,
     modifier: Modifier = Modifier,
     editTarget: DatabaseRowEditTargetUiModel? = null,
 ) {
     DatabaseRowDetail(
         modifier = modifier.fillMaxSize(),
-        state = state,
+        values = values,
         columns = columns,
         editTarget = editTarget,
     )

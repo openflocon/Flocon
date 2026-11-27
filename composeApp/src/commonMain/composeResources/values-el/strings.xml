@@ -475,7 +475,6 @@
     <string name="general_clear">Εκκαθάριση</string>
     <string name="general_copy">Αντιγραφή</string>
     <string name="general_copy_all">Αντιγραφή όλων</string>
-    <string name="general_copy_all_content">Αντιγραφή όλου του περιεχομένου</string>
     <string name="general_copy_as_image">Αντιγραφή ως εικόνα</string>
     <string name="general_copy_as_markdown">Αντιγραφή ως Markdown</string>
     <string name="general_copy_path">Αντιγραφή διαδρομής</string>
@@ -776,7 +775,9 @@
     <string name="desktop_update_installed">Εγκατεστημένο: %1$s</string>
     <string name="timeline_transactions_expanded">Ανάπτυξη συναλλαγών από προεπιλογή</string>
     <string name="database_transaction_nested">Εμφωλευμένη συναλλαγή</string>
+    <string name="general_copy_all_content">Αντιγραφή όλου του περιεχομένου</string>
     <string name="database_row_update">Ενημέρωση</string>
+    <string name="database_row_detail">Εμφάνιση λεπτομερειών</string>
     <string name="database_row_set_null">Ορισμός NULL</string>
     <string name="database_row_updated">Η γραμμή ενημερώθηκε</string>
     <string name="database_row_update_not_found">Η γραμμή δεν ενημερώθηκε: διαγράφηκε ή άλλαξε στη συσκευή</string>

@@ -485,7 +485,6 @@
     <string name="general_clear">Vymazat</string>
     <string name="general_copy">Kopírovat</string>
     <string name="general_copy_all">Kopírovat vše</string>
-    <string name="general_copy_all_content">Kopírovat veškerý obsah</string>
     <string name="general_copy_as_image">Kopírovat jako obrázek</string>
     <string name="general_copy_as_markdown">Kopírovat jako Markdown</string>
     <string name="general_copy_path">Kopírovat cestu</string>
@@ -790,7 +789,9 @@
     <string name="desktop_update_installed">Nainstalováno: %1$s</string>
     <string name="timeline_transactions_expanded">Ve výchozím stavu rozbalit transakce</string>
     <string name="database_transaction_nested">Vnořená transakce</string>
+    <string name="general_copy_all_content">Kopírovat veškerý obsah</string>
     <string name="database_row_update">Aktualizovat</string>
+    <string name="database_row_detail">Zobrazit podrobnosti</string>
     <string name="database_row_set_null">Nastavit NULL</string>
     <string name="database_row_updated">Řádek byl aktualizován</string>
     <string name="database_row_update_not_found">Řádek nebyl aktualizován: v zařízení byl smazán nebo změněn</string>

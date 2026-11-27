@@ -62,14 +62,14 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DatabaseRowDetail(
-    state: DetailResultItem,
+    values: List<String?>,
     columns: List<String>,
     modifier: Modifier = Modifier,
     editTarget: DatabaseRowEditTargetUiModel? = null,
 ) {
     val params = DatabaseRowDetailViewModel.Params(
         columns = columns,
-        values = state.item.items,
+        values = values,
         editTarget = editTarget,
     )
     val viewModel = koinViewModel<DatabaseRowDetailViewModel>(key = params.toString()) {
@@ -240,19 +240,21 @@ private fun DetailItem(
                 containerColor = FloconTheme.colors.bg000,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
-            ) {
-                FloconCheckbox(
-                    checked = value == null,
-                    onCheckedChange = onNullChanged,
-                )
-                Text(
-                    style = FloconTheme.typography.bodySmall,
-                    text = stringResource(Res.string.database_row_set_null),
-                    color = contentColor,
-                )
+            if (field.canSetNull) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FloconTheme.spacing.extraSmall),
+                ) {
+                    FloconCheckbox(
+                        checked = value == null,
+                        onCheckedChange = onNullChanged,
+                    )
+                    Text(
+                        style = FloconTheme.typography.bodySmall,
+                        text = stringResource(Res.string.database_row_set_null),
+                        color = contentColor,
+                    )
+                }
             }
         } else {
             Text(

@@ -17,15 +17,17 @@ data class DatabaseRowDetailUiModel(
         val column: String,
         val value: String?,
         val isEditable: Boolean,
+        /** `false` for a NOT NULL column and for the primary key. */
+        val canSetNull: Boolean,
     )
 }
 
 fun previewDatabaseRowDetailUiModel() = DatabaseRowDetailUiModel(
     fields = persistentListOf(
-        DatabaseRowDetailUiModel.Field(column = "id", value = "1", isEditable = true),
-        DatabaseRowDetailUiModel.Field(column = "name", value = "John Doe", isEditable = true),
-        DatabaseRowDetailUiModel.Field(column = "city", value = null, isEditable = true),
-        DatabaseRowDetailUiModel.Field(column = "avatar", value = "[blob]", isEditable = false),
+        DatabaseRowDetailUiModel.Field(column = "id", value = "1", isEditable = true, canSetNull = false),
+        DatabaseRowDetailUiModel.Field(column = "name", value = "John Doe", isEditable = true, canSetNull = false),
+        DatabaseRowDetailUiModel.Field(column = "city", value = null, isEditable = true, canSetNull = true),
+        DatabaseRowDetailUiModel.Field(column = "avatar", value = "[blob]", isEditable = false, canSetNull = false),
     ),
     isEditable = true,
     canUpdate = true,

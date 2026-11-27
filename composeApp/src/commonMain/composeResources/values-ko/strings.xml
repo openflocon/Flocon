@@ -470,7 +470,6 @@
     <string name="general_clear">지우기</string>
     <string name="general_copy">복사</string>
     <string name="general_copy_all">모두 복사</string>
-    <string name="general_copy_all_content">모든 내용 복사</string>
     <string name="general_copy_as_image">이미지로 복사</string>
     <string name="general_copy_as_markdown">Markdown으로 복사</string>
     <string name="general_copy_path">경로 복사</string>
@@ -769,7 +768,9 @@
     <string name="desktop_update_installed">설치됨: %1$s</string>
     <string name="timeline_transactions_expanded">트랜잭션을 기본으로 펼치기</string>
     <string name="database_transaction_nested">중첩 트랜잭션</string>
+    <string name="general_copy_all_content">모든 내용 복사</string>
     <string name="database_row_update">업데이트</string>
+    <string name="database_row_detail">상세 보기</string>
     <string name="database_row_set_null">NULL로 설정</string>
     <string name="database_row_updated">행이 업데이트됨</string>
     <string name="database_row_update_not_found">행이 업데이트되지 않음: 기기에서 삭제되었거나 변경되었습니다</string>

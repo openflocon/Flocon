@@ -485,7 +485,6 @@
     <string name="general_clear">Очистити</string>
     <string name="general_copy">Копіювати</string>
     <string name="general_copy_all">Копіювати все</string>
-    <string name="general_copy_all_content">Копіювати весь вміст</string>
     <string name="general_copy_as_image">Копіювати як зображення</string>
     <string name="general_copy_as_markdown">Копіювати як Markdown</string>
     <string name="general_copy_path">Копіювати шлях</string>
@@ -790,7 +789,9 @@
     <string name="desktop_update_installed">Встановлено: %1$s</string>
     <string name="timeline_transactions_expanded">Розгортати транзакції за замовчуванням</string>
     <string name="database_transaction_nested">Вкладена транзакція</string>
+    <string name="general_copy_all_content">Копіювати весь вміст</string>
     <string name="database_row_update">Оновити</string>
+    <string name="database_row_detail">Показати подробиці</string>
     <string name="database_row_set_null">Установити NULL</string>
     <string name="database_row_updated">Рядок оновлено</string>
     <string name="database_row_update_not_found">Рядок не оновлено: його видалено або змінено на пристрої</string>

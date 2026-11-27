@@ -8,7 +8,6 @@ import io.github.openflocon.flocondesktop.features.database.model.DatabaseRowEdi
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseDetails
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseQueryLogPanel
 import io.github.openflocon.flocondesktop.features.database.view.DatabaseScreen
-import io.github.openflocon.flocondesktop.features.database.view.DetailResultItem
 import io.github.openflocon.navigation.FloconRoute
 import io.github.openflocon.navigation.PanelPinGroups
 import io.github.openflocon.navigation.PanelRoute
@@ -22,8 +21,8 @@ sealed interface DatabaseRoutes : FloconRoute {
 
     @Serializable
     data class Detail(
-        val result: DetailResultItem,
         val columns: List<String>,
+        val values: List<String?>,
         val editTarget: DatabaseRowEditTargetUiModel? = null,
     ) : DatabaseRoutes,
         PanelRoute
@@ -56,7 +55,7 @@ fun EntryProviderScope<FloconRoute>.databaseRoutes() {
         }
     ) {
         DatabaseDetails(
-            state = it.result,
+            values = it.values,
             columns = it.columns,
             editTarget = it.editTarget,
         )
