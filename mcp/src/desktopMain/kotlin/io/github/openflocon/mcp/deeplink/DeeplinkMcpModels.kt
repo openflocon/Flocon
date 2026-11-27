@@ -31,7 +31,9 @@ internal data class DeeplinkMcpModel(
 internal data class DeeplinkParameterMcpModel(
     val name: String,
     val type: DeeplinkParameterType,
+    /** The values only. See [suggestionItems] for the labels and the default one. */
     val suggestions: List<String>? = null,
+    val suggestionItems: List<DeeplinkSuggestionMcpModel>? = null,
     val variableName: String? = null,
 )
 
@@ -40,7 +42,17 @@ internal data class DeeplinkVariableMcpModel(
     val name: String,
     val description: String?,
     val mode: DeeplinkVariableMode,
+    /** The values only. See [suggestionItems] for the labels and the default one. */
     val suggestions: List<String>? = null,
+    val suggestionItems: List<DeeplinkSuggestionMcpModel>? = null,
+)
+
+@Serializable
+internal data class DeeplinkSuggestionMcpModel(
+    val value: String,
+    val label: String? = null,
+    /** Pre-selected by Flocon Desktop when the field is empty */
+    val isDefault: Boolean = false,
 )
 
 @Serializable

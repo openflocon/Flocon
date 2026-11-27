@@ -53,7 +53,7 @@ The tools are shared by every SDK, but each SDK sends what it supports. With the
 | Investigate a crash | `list_crash_reports` for the exception type and message, `get_crash_report` for the full stack trace |
 | Debug a WebView (JS console errors, failed page loads, calls from the page to native code) | `list_webview_events` (filters: `kind` console / page / bridge, text, start timestamp); the requests made by the page are not captured yet |
 | Check analytics events | `count_analytics_events` for an overview per event name, `list_analytics_events` for the properties, `list_analytics_tables` |
-| Check the deeplinks of the app | `list_deeplinks` (declared links and parameters), `list_deeplink_history`, `open_deeplink` (opens a link on the device, fill its parameters first) |
+| Check the deeplinks of the app | `list_deeplinks` (declared links and parameters; `suggestionItems` gives the label and the default of each suggestion, `suggestions` only the values), `list_deeplink_history`, `open_deeplink` (opens a link on the device, fill its parameters first) |
 | See the current screen, or keep a visual trace | `take_screenshot` (saves a PNG and returns the image) |
 | See what the Flocon desktop app itself displays (the screen the user is looking at in Flocon) | `take_flocon_desktop_screenshot` (returns the image of the visible window, nothing is saved; not the device screen) |
 | Read or change the ports of the Flocon servers (websocket 9023, HTTP 9024 by default) | `get_server_ports` (effective, saved, defaults, forced by a launch option), `set_server_ports` (`websocketPort`, `httpPort`, at least one) |

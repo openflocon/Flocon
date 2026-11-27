@@ -4,6 +4,7 @@ import io.github.openflocon.domain.common.Either
 import io.github.openflocon.domain.common.Failure
 import io.github.openflocon.domain.common.Success
 import io.github.openflocon.domain.deeplink.models.DeeplinkDomainModel
+import io.github.openflocon.domain.deeplink.models.DeeplinkSuggestionDomainModel
 import io.github.openflocon.domain.deeplink.models.DeeplinkVariableDomainModel
 import io.github.openflocon.domain.deeplink.models.Deeplinks
 import io.github.openflocon.domain.deeplink.repository.DeeplinkRepository
@@ -41,7 +42,13 @@ class DeeplinkMcpToolProviderTest {
         description = "Opens a profile",
         parameters = listOf(
             DeeplinkDomainModel.Parameter.Variable(name = "userId", variableName = "currentUser"),
-            DeeplinkDomainModel.Parameter.AutoComplete(name = "tab", autoComplete = listOf("posts", "likes")),
+            DeeplinkDomainModel.Parameter.AutoComplete(
+                name = "tab",
+                suggestions = listOf(
+                    DeeplinkSuggestionDomainModel("posts", label = "Posts", isDefault = true),
+                    DeeplinkSuggestionDomainModel("likes"),
+                ),
+            ),
         ),
     )
 
@@ -60,7 +67,13 @@ class DeeplinkMcpToolProviderTest {
                         deeplinks = listOf(profile),
                         variables = listOf(
                             DeeplinkVariableDomainModel("currentUser", DeeplinkVariableDomainModel.Mode.Input, "The user id"),
-                            DeeplinkVariableDomainModel("env", DeeplinkVariableDomainModel.Mode.AutoComplete(listOf("dev", "prod")), null),
+                            DeeplinkVariableDomainModel(
+                                "env",
+                                DeeplinkVariableDomainModel.Mode.AutoComplete(
+                                    listOf(DeeplinkSuggestionDomainModel("dev"), DeeplinkSuggestionDomainModel("prod", label = "Production"))
+                                ),
+                                null
+                            ),
                         ),
                     ),
                     history = listOf(profile.copy(id = 2, link = "app://profile/42?tab=posts", parameters = emptyList())),
@@ -120,6 +133,11 @@ class DeeplinkMcpToolProviderTest {
         val variables = result["variables"]!!.jsonArray.map { it.jsonObject }
         assertEquals(listOf("input", "auto_complete"), variables.map { it["mode"]!!.jsonPrimitive.content })
         assertEquals(listOf("dev", "prod"), variables[1]["suggestions"]!!.jsonArray.map { it.jsonPrimitive.content })
+        val items = variables[1]["suggestionItems"]!!.jsonArray.map { it.jsonObject }
+        assertEquals("Production", items[1]["label"]!!.jsonPrimitive.content)
+        val parameterItems = parameters[1]["suggestionItems"]!!.jsonArray.map { it.jsonObject }
+        assertEquals("Posts", parameterItems[0]["label"]!!.jsonPrimitive.content)
+        assertEquals("true", parameterItems[0]["isDefault"]!!.jsonPrimitive.content)
     }
 
     @Test

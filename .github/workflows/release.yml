@@ -121,6 +121,21 @@ jobs:
       - name: List downloaded artifacts
         run: ls -la release-assets
 
+      - name: Smooth the PR titles in the release notes
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # "* feat: [NETWORK] Faster scroll by @user in url" -> "* **NETWORK**: Faster scroll by @user in url"
+          gh release view "$TAG" --json body --jq .body > notes.md
+          sed -E \
+            -e 's/^(\* )(feat|fix|refact|perf|docs|test|chore)(\([^)]*\))?: /\1/' \
+            -e 's/^(\* )\[([^]]+)\] /\1**\2**: /' \
+            -e 's/^(\* (\*\*[^*]+\*\*: )?)([a-z])/\1\u\3/' \
+            notes.md > notes-clean.md
+          gh release edit "$TAG" --notes-file notes-clean.md
+
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v3
         with:

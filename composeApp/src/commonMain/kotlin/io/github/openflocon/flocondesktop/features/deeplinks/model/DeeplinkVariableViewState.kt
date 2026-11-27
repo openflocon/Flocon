@@ -1,6 +1,7 @@
 package io.github.openflocon.flocondesktop.features.deeplinks.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 data class DeeplinkVariableViewState(
@@ -13,6 +14,6 @@ data class DeeplinkVariableViewState(
     sealed interface Mode {
         data object Input : Mode
 
-        @Immutable data class AutoComplete(val suggestions: List<String>) : Mode
+        @Immutable data class AutoComplete(val suggestions: ImmutableList<DeeplinkSuggestionUiModel>) : Mode
     }
 }

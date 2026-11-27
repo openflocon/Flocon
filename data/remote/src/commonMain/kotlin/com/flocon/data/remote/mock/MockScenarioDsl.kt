@@ -394,7 +394,20 @@ class MockDeeplinksBuilder internal constructor() {
 
     /** A variable shared by deeplinks: free input, or a list of suggestions when [suggestions] is set. */
     fun variable(name: String, description: String? = null, suggestions: List<String>? = null) {
-        variables += MockEvent.Deeplinks.Variable(name = name, description = description, suggestions = suggestions)
+        variables += MockEvent.Deeplinks.Variable(
+            name = name,
+            description = description,
+            suggestions = suggestions?.map { MockEvent.Deeplinks.Suggestion(value = it) },
+        )
+    }
+
+    /** A variable shared by deeplinks, with labelled suggestions and maybe a default one. */
+    fun variable(name: String, description: String? = null, suggestions: MockDeeplinkSuggestionsBuilder.() -> Unit) {
+        variables += MockEvent.Deeplinks.Variable(
+            name = name,
+            description = description,
+            suggestions = MockDeeplinkSuggestionsBuilder().apply(suggestions).suggestions.toList(),
+        )
     }
 }
 
@@ -403,11 +416,31 @@ class MockDeeplinkParametersBuilder internal constructor() {
     internal val parameters = mutableListOf<MockEvent.Deeplinks.Parameter>()
 
     fun autoComplete(name: String, vararg values: String) {
-        parameters += MockEvent.Deeplinks.Parameter.AutoComplete(name = name, values = values.toList())
+        parameters += MockEvent.Deeplinks.Parameter.AutoComplete(
+            name = name,
+            suggestions = values.map { MockEvent.Deeplinks.Suggestion(value = it) },
+        )
+    }
+
+    /** Suggestions with a label, and maybe a default one. */
+    fun autoComplete(name: String, suggestions: MockDeeplinkSuggestionsBuilder.() -> Unit) {
+        parameters += MockEvent.Deeplinks.Parameter.AutoComplete(
+            name = name,
+            suggestions = MockDeeplinkSuggestionsBuilder().apply(suggestions).suggestions.toList(),
+        )
     }
 
     fun variable(name: String, variableName: String) {
         parameters += MockEvent.Deeplinks.Parameter.Variable(name = name, variableName = variableName)
+    }
+}
+
+@MockScenarioDslMarker
+class MockDeeplinkSuggestionsBuilder internal constructor() {
+    internal val suggestions = mutableListOf<MockEvent.Deeplinks.Suggestion>()
+
+    fun suggest(value: String, label: String? = null, isDefault: Boolean = false) {
+        suggestions += MockEvent.Deeplinks.Suggestion(value = value, label = label, isDefault = isDefault)
     }
 }
 

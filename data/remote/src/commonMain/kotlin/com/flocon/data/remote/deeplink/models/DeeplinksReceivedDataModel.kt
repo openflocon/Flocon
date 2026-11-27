@@ -25,7 +25,7 @@ internal fun DeeplinksReceivedDataModel.toDomain(): Deeplinks = Deeplinks(
         DeeplinkVariableDomainModel(
             name = it.name,
             mode = when (val mode = it.mode) {
-                is DeeplinkVariableReceivedDataModel.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(mode.suggestions)
+                is DeeplinkVariableReceivedDataModel.Mode.AutoComplete -> DeeplinkVariableDomainModel.Mode.AutoComplete(toDomainSuggestions(mode.suggestions, mode.items))
                 DeeplinkVariableReceivedDataModel.Mode.Input -> DeeplinkVariableDomainModel.Mode.Input
             },
             description = it.description
@@ -36,7 +36,7 @@ internal fun DeeplinksReceivedDataModel.toDomain(): Deeplinks = Deeplinks(
 private fun DeeplinkReceivedDataModel.Parameter.toDomain() = when (this) {
     is DeeplinkReceivedDataModel.Parameter.AutoComplete -> DeeplinkDomainModel.Parameter.AutoComplete(
         name = name,
-        autoComplete = autoComplete
+        suggestions = toDomainSuggestions(autoComplete, suggestions)
     )
 
     is DeeplinkReceivedDataModel.Parameter.Variable -> DeeplinkDomainModel.Parameter.Variable(

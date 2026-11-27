@@ -64,12 +64,14 @@ import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkScree
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkTabUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkVariableViewState
 import io.github.openflocon.flocondesktop.features.deeplinks.model.DeeplinkViewState
+import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkSuggestionUiModel
 import io.github.openflocon.flocondesktop.features.deeplinks.model.previewDeeplinkViewState
 import io.github.openflocon.library.designsystem.FloconTheme
 import io.github.openflocon.library.designsystem.components.FloconActionButton
 import io.github.openflocon.library.designsystem.components.FloconIcon
 import io.github.openflocon.library.designsystem.components.FloconTextButton
 import io.github.openflocon.library.designsystem.components.FloconTextFieldWithoutM3
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
 private val DetectedVariableWidth = 380.dp
@@ -132,7 +134,12 @@ private fun DeeplinkLinkDetail(
     modifier: Modifier = Modifier,
 ) {
     val fields = remember(item) { item.parts.filterIsInstance<DeeplinkPart.TextField>() }
-    val values = remember(item.deeplinkId, item.isHistory) { mutableStateMapOf<DeeplinkPart.TextField, String>() }
+    val values = remember(item.deeplinkId, item.isHistory) {
+        mutableStateMapOf<DeeplinkPart.TextField, String>().apply {
+            // the suggestion the app marked as default is pre-selected
+            fields.forEach { field -> field.defaultValue?.let { put(field, it) } }
+        }
+    }
     val link = item.parts.buildLink(values)
     val sendEnabled = canSend &&
         item.missingVariablesCount == 0 &&
@@ -527,7 +534,13 @@ private fun DeeplinkLinkDetailPreview() {
                             DeeplinkPart.Text("myapp://profile/"),
                             DeeplinkPart.Variable(value = "{userId}", name = "userId", isResolved = false),
                             DeeplinkPart.Text("?tab="),
-                            DeeplinkPart.TextField("tab", autoComplete = listOf("posts", "friends")),
+                            DeeplinkPart.TextField(
+                                "tab",
+                                suggestions = persistentListOf(
+                                    previewDeeplinkSuggestionUiModel(value = "posts", isDefault = true),
+                                    previewDeeplinkSuggestionUiModel(value = "friends", label = "Friends list"),
+                                ),
+                            ),
                         ),
                     ),
                 ),

@@ -1,11 +1,21 @@
 changelog:
+  exclude:
+    labels:
+      - 'skip-changelog'
   categories:
     - title: 🏕 Features
       labels:
         - 'enhancement'
+        - 'enhancements'
     - title: 🛠 Fixes
       labels:
         - 'bug'
+    - title: 📚 Docs
+      labels:
+        - 'documentation'
     - title: 👒 Dependencies
       labels:
         - 'dependencies'
+    - title: 🧹 Other changes
+      labels:
+        - '*'
